@@ -23,6 +23,7 @@ struct SerializedPicture {
   std::vector<FontStats> fonts;
   size_t image_bytes = 0;
   size_t image_count = 0;
+  size_t bitmap_glyphs = 0;
   std::string error;
 };
 

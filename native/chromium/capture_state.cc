@@ -37,6 +37,7 @@ base::DictValue Encode(Snapshot snapshot) {
     }
     base::DictValue resource;
     resource.Set("localId",record.local_id);
+    resource.Set("bitmapGlyphs",static_cast<int>(encoded.bitmap_glyphs));
     resource.Set("quadScale",record.quad_scale);
     // SkData owns exactly size() immutable bytes for the duration of encoding.
     resource.Set("skp",base::Base64Encode(UNSAFE_BUFFERS(base::span(encoded.bytes->bytes(),encoded.bytes->size()))));

@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-15T08:07:17.507Z",
+  "verifiedAt": "2026-10-15T09:52:09.880Z",
   "native": true,
   "scope": "stock-browser-export-native-subset-CanvasKit",
   "sourceBrowser": "155.0.8059.79",
@@ -15,6 +15,7 @@
       "outputBytes": 676007,
       "imageBytes": 746,
       "imageCount": 2,
+      "bitmapGlyphs": 0,
       "fonts": [
         {
           "family": "PingFang SC",
@@ -59,9 +60,10 @@
       "nativePixelsExact": false,
       "nativeChangedPixels": 77,
       "nativeMaxChannelError": 11,
-      "outputBytes": 1445170,
-      "imageBytes": 746,
-      "imageCount": 2,
+      "outputBytes": 1121649,
+      "imageBytes": 6110,
+      "imageCount": 5,
+      "bitmapGlyphs": 3,
       "fonts": [
         {
           "family": "PingFang SC",
@@ -78,13 +80,6 @@
           "subsetBytes": 121942
         },
         {
-          "family": "Apple Color Emoji",
-          "glyphs": 4,
-          "missingGlyphs": 0,
-          "originalBytes": 191891376,
-          "subsetBytes": 330721
-        },
-        {
           "family": "PingFang SC",
           "glyphs": 5,
           "missingGlyphs": 0,
@@ -97,8 +92,8 @@
         {
           "selector": "#text",
           "ink": 3113,
-          "uncovered": 37,
-          "uncoveredFraction": 0.011885640860905879,
+          "uncovered": 42,
+          "uncoveredFraction": 0.013491808544812078,
           "sourceMinContrast": 176.25,
           "replayMinContrast": 58.75,
           "neighborhoodPixels": 1

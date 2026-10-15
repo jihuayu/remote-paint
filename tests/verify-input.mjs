@@ -1,3 +1,4 @@
+import {assertColorGlyph} from './text-pixels.mjs';
 // Real browser input/CDP boundary. Drawing uses an explicitly declared fixture
 // unless REMOTE_PAINT_CHROMIUM is supplied, in which case verify the full path.
 import assert from 'node:assert/strict';
@@ -18,7 +19,7 @@ try{
   source=fakeSource();Object.assign(source,{page,pageEpoch:1,viewportVersion:1,viewport:{cssWidth:960,cssHeight:640},inputSeq:0});source.control=await createControl(source);live=await startLiveTransport(source,{port:0});
  }
  if(native){await source.page.locator('#stop-clock').click();await source.page.evaluate(()=>document.getAnimations().forEach(a=>a.pause()));}
- let inputPixelsFractionOver24=null;
+ let inputPixelsFractionOver24=null,colorGlyph=null;
  const page=await viewerBrowser.newPage({viewport:{width:720,height:900}}),errors=[],requests=[];
  page.on('pageerror',error=>errors.push(error.message));page.on('request',request=>requests.push(new URL(request.url()).origin));
  await page.goto(live.url);await page.waitForFunction(()=>window.remotePaintResult?.frameId>0);await page.locator('#control').click();await page.waitForFunction(()=>document.querySelector('#controlState').textContent==='你正在操作');
@@ -43,8 +44,13 @@ try{
  await click('#save');await source.page.waitForFunction(()=>document.querySelector('#saved').textContent==='已保存：粘贴🌈AB');
  if(native){
   const processed=source.inputSeq;await page.waitForFunction(seq=>window.remotePaintResult?.lastProcessedInputSeq>=seq,processed);
-  const original=PNG.sync.read(await source.page.screenshot());
+  await mkdir('artifacts/input',{recursive:true});
+  const original=PNG.sync.read(await source.page.screenshot({path:'artifacts/input/source-save.png'}));
   const encoded=await page.locator('canvas').evaluate(c=>c.toDataURL());const replay=PNG.sync.read(Buffer.from(encoded.split(',')[1],'base64'));
+  await writeFile('artifacts/input/replay-save.png',PNG.sync.write(replay));
+  colorGlyph=await assertColorGlyph(source.page,original,replay,'#saved','🌈');
+  const blank={...replay,data:Buffer.alloc(replay.data.length,255)};
+  await assert.rejects(()=>assertColorGlyph(source.page,original,blank,'#saved','🌈'),/Color glyph lost/);
   const box=await source.page.locator('#name').boundingBox(),saved=await source.page.locator('#saved').boundingBox();
   const left=Math.floor(Math.min(box.x,saved.x)),right=Math.ceil(Math.max(box.x+box.width,saved.x+saved.width));
   const top=Math.floor(Math.min(box.y,saved.y)),bottom=Math.ceil(Math.max(box.y+box.height,saved.y+saved.height));
@@ -73,6 +79,6 @@ try{
  await source.control.input(peer.id,{...grant,seq:grant.nextSeq,event:{kind:'mouse',type:'mousePressed',x:pressed.x+pressed.width/2,y:pressed.y+pressed.height/2,button:'left',buttons:1,clickCount:1}});
  await source.control.revoke('test');assert.equal(await source.page.evaluate(()=>cleanupClicks),0,'Lease cleanup must not activate a button held on disconnect');await cdp.detach();assert.ok(requests.every(origin=>origin===live.origin));assert.deepEqual(errors,[]);
  await mkdir('artifacts/input',{recursive:true});await page.screenshot({path:'artifacts/input/viewer.png'});
- const report={verifiedAt:new Date().toISOString(),nativeDrawing:native,drawingFixtureOnly:!native,sourceBrowser:source.page.context().browser().version(),viewerBrowser:viewerBrowser.version(),sourceInput:await source.page.locator('#name').inputValue(),saved:await source.page.locator('#saved').textContent(),editor:await source.page.locator('#editor').innerText(),newlineArrowDeleteAndTab:true,scrollY:scrollAfterWheel,cssScaling:true,inputPixelsFractionOver24,imeViaActualLocalAndRemoteCDP:true,repeatedImeTextInsertion:true,physicalOsImeCandidateWindowTested:false,leaseAndStaleTags:true,heldButtonCleanupWithoutClick:true,pointerCaptureCleanupWithoutClick:true,lastProcessedInputSeq:source.inputSeq,viewerSourceRequests:0,errors};
+ const report={verifiedAt:new Date().toISOString(),nativeDrawing:native,drawingFixtureOnly:!native,gpuMode:native?'in-process':null,bitmapGlyphs:native?source.latest.native.bitmapGlyphs:null,sourceBrowser:source.page.context().browser().version(),viewerBrowser:viewerBrowser.version(),sourceInput:await source.page.locator('#name').inputValue(),saved:await source.page.locator('#saved').textContent(),editor:await source.page.locator('#editor').innerText(),newlineArrowDeleteAndTab:true,scrollY:scrollAfterWheel,cssScaling:true,inputPixelsFractionOver24,colorGlyph,missingColorGlyphRejected:native,imeViaActualLocalAndRemoteCDP:true,repeatedImeTextInsertion:true,physicalOsImeCandidateWindowTested:false,leaseAndStaleTags:true,heldButtonCleanupWithoutClick:true,pointerCaptureCleanupWithoutClick:true,lastProcessedInputSeq:source.inputSeq,viewerSourceRequests:0,errors};
  await writeFile('artifacts/input/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await viewerBrowser.close();await live?.close();if(!native){await source?.control?.close();await sourceBrowser?.close();await fixture?.close();}}

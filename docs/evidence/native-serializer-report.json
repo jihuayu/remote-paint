@@ -1,14 +1,13 @@
 {
-  "verifiedAt": "2026-10-15T09:26:39.375367+00:00",
+  "verifiedAt": "2026-10-15T09:59:09.012430+00:00",
   "scope": "native-serializer-unit-only",
   "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
   "skiaRevision": "29ed1e87a0a50f3d8347e988842d9d59e7573efa",
   "platform": "macOS arm64",
-  "binarySha256": "b732338e0000937913539b2ad12d8b650026572e7786b72c8b29c1b1f5ac7d08",
+  "binarySha256": "681e2053d3ba5415f235cc8dca2a112360e817cd03adaca35756345e525f63e9",
   "command": "out/RemotePaint/serializer_tests",
   "exitCode": 0,
-  "testsPassed": 3,
+  "testsPassed": 4,
   "fullNativeBrowserRuntimeAccepted": false,
-  "stdout": "[==========] Running 3 tests from 1 test suite.\n[----------] Global test environment set-up.\n[----------] 3 tests from RemotePaintSerializer\n[ RUN      ] RemotePaintSerializer.RetainsOriginalGlyphIdsAndPixels\n[       OK ] RemotePaintSerializer.RetainsOriginalGlyphIdsAndPixels (34 ms)\n[ RUN      ] RemotePaintSerializer.RefusesSmallBudgetInsteadOfDroppingFont\n[       OK ] RemotePaintSerializer.RefusesSmallBudgetInsteadOfDroppingFont (0 ms)\n[ RUN      ] RemotePaintSerializer.NestedPicturesKeepTheirFontCoverage\n[       OK ] RemotePaintSerializer.NestedPicturesKeepTheirFontCoverage (0 ms)\n[----------] 3 tests from RemotePaintSerializer (35 ms total)\n\n[----------] Global test environment tear-down\n[==========] 3 tests from 1 test suite ran. (35 ms total)\n[  PASSED  ] 3 tests.\n",
-  "rawOutput": "[==========] Running 3 tests from 1 test suite.\n[----------] Global test environment set-up.\n[----------] 3 tests from RemotePaintSerializer\n[ RUN      ] RemotePaintSerializer.RetainsOriginalGlyphIdsAndPixels\n[       OK ] RemotePaintSerializer.RetainsOriginalGlyphIdsAndPixels (28 ms)\n[ RUN      ] RemotePaintSerializer.RefusesSmallBudgetInsteadOfDroppingFont\n[       OK ] RemotePaintSerializer.RefusesSmallBudgetInsteadOfDroppingFont (0 ms)\n[ RUN      ] RemotePaintSerializer.NestedPicturesKeepTheirFontCoverage\n[       OK ] RemotePaintSerializer.NestedPicturesKeepTheirFontCoverage (0 ms)\n[----------] 3 tests from RemotePaintSerializer (30 ms total)\n\n[----------] Global test environment tear-down\n[==========] 3 tests from 1 test suite ran. (30 ms total)\n[  PASSED  ] 3 tests.\n"
+  "stdout": "[==========] Running 4 tests from 1 test suite.\n[----------] Global test environment set-up.\n[----------] 4 tests from RemotePaintSerializer\n[ RUN      ] RemotePaintSerializer.RetainsOriginalGlyphIdsAndPixels\n[       OK ] RemotePaintSerializer.RetainsOriginalGlyphIdsAndPixels (25 ms)\n[ RUN      ] RemotePaintSerializer.BitmapEmojiKeepsOriginalNativePixels\n[       OK ] RemotePaintSerializer.BitmapEmojiKeepsOriginalNativePixels (2 ms)\n[ RUN      ] RemotePaintSerializer.RefusesSmallBudgetInsteadOfDroppingFont\n[       OK ] RemotePaintSerializer.RefusesSmallBudgetInsteadOfDroppingFont (0 ms)\n[ RUN      ] RemotePaintSerializer.NestedPicturesKeepTheirFontCoverage\n[       OK ] RemotePaintSerializer.NestedPicturesKeepTheirFontCoverage (0 ms)\n[----------] 4 tests from RemotePaintSerializer (29 ms total)\n\n[----------] Global test environment tear-down\n[==========] 4 tests from 1 test suite ran. (30 ms total)\n[  PASSED  ] 4 tests.\n"
 }

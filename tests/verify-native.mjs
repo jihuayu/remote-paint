@@ -43,8 +43,9 @@ try{
  const count=capture.count;await new Promise(r=>setTimeout(r,150));assert.equal(capture.count,count);
  await page.locator('#advance').click();const second=await captureOnDemand(capture);
  assert.notEqual(first.resources[0].skp,second.resources[0].skp);
+ const bitmapGlyphs=second.resources.reduce((n,r)=>n+r.bitmapGlyphs,0);assert.ok(bitmapGlyphs>0,'Native color glyph pixels must be preserved');
  const report={verifiedAt:new Date().toISOString(),browser:browser.version(),gpuMode:'in-process',nativeBrowserCapture:true,noViewerCaptures:0,
-   captures:capture.count,sourceBenchmarkingApiExposed:false,isolatedCaptureApi:true,incorrectSecretRejected:true,sourcePulsesDuringCapture:pulses,
+   captures:capture.count,bitmapGlyphs,sourceBenchmarkingApiExposed:false,isolatedCaptureApi:true,incorrectSecretRejected:true,sourcePulsesDuringCapture:pulses,
    recordingThread:first.recordingThread,encodingThread:first.encodingThread,
    namespace:first.viz.namespace,frameToken:first.frameToken,vizIpc:viz.stats,
    layerIds:first.resources.map(r=>r.localId),resourceBytes:second.resources.map(r=>Buffer.from(r.skp,'base64').length)};

@@ -26,7 +26,7 @@ try{
     const files=(await readdir(raw)).filter(f=>f.endsWith('.skp'));assert.equal(files.length,1);
     const output=join(directory,`${state}.skp`);
     const stats=await subsetPicture(join(raw,files[0]),output,join(directory,`${state}-native.png`));
-    assert.equal(stats.imageCount,2);
+    assert.equal(stats.imageCount,2+stats.bitmapGlyphs);
     assert.ok(stats.outputBytes<stats.inputBytes/10,'Actual font data must shrink substantially');
     assert.ok(stats.fonts.every(f=>f.missingGlyphs===0),'Source contains missing glyphs');
     assert.ok(stats.fonts.every(f=>f.subsetBytes<f.originalBytes));
@@ -49,7 +49,7 @@ try{
     snapshot.delete();surface.delete();pic.delete();
   }
   assert.notEqual(reports[0].text,reports[1].text);
-  assert.ok(reports[1].fonts.some(f=>f.family.includes('Emoji')));
+  assert.ok(reports[1].bitmapGlyphs>0,'Color emoji pixels must survive native strike selection');
   const result={verifiedAt:new Date().toISOString(),native:true,scope:'stock-browser-export-native-subset-CanvasKit',sourceBrowser:browser.version(),nativeBrowserCapture:false,fontsPredeclared:false,stages:reports,sourceRequests:fixture.stats,
     skiaRevision:'29ed1e87a0a50f3d8347e988842d9d59e7573efa',canvaskit:'0.42.0'};
   await writeFile(join(directory,'report.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));

@@ -30,3 +30,33 @@ export async function assertTextInk(page,source,replay,regions){
  }
  return results;
 }
+
+// Check a color glyph on its own so a mostly blank field cannot hide its loss.
+export async function assertColorGlyph(page,source,replay,selector,text){
+ const box=await page.locator(selector).evaluate((el,text)=>{
+  const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let node;
+  while(node=walker.nextNode()){const index=node.data.indexOf(text);if(index<0)continue;
+   const range=document.createRange();range.setStart(node,index);range.setEnd(node,index+text.length);
+   const r=range.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};}
+ },text);
+ assert.ok(box,'Color glyph source range missing');
+ const left=Math.max(1,Math.floor(box.x)-1),top=Math.max(1,Math.floor(box.y)-1);
+ const right=Math.min(source.width-1,Math.ceil(box.x+box.width)+1),bottom=Math.min(source.height-1,Math.ceil(box.y+box.height)+1);
+ const results=[];
+ for(const [from,to] of [[source,replay],[replay,source]]){
+  let colored=0,unmatched=0;
+  for(let y=top;y<bottom;y++)for(let x=left;x<right;x++){
+   const i=(y*from.width+x)*4,color=[...from.data.subarray(i,i+3)];
+   if(Math.max(...color)-Math.min(...color)<64)continue;colored++;let matched=false;
+   for(let dy=-1;dy<=1&&!matched;dy++)for(let dx=-1;dx<=1;dx++){
+    const j=((y+dy)*to.width+x+dx)*4;
+    if(color.every((c,k)=>Math.abs(c-to.data[j+k])<=24)){matched=true;break;}
+   }
+   if(!matched)unmatched++;
+  }
+  assert.ok(colored>20,'Color glyph has no visible color pixels');
+  assert.ok(unmatched/colored<0.02,`Color glyph lost ${(100*unmatched/colored).toFixed(2)}% of its colors`);
+  results.push({colored,unmatched,fraction:unmatched/colored});
+ }
+ return {selector,text,neighborhoodPixels:1,channelTolerance:24,sourceToReplay:results[0],replayToSource:results[1]};
+}

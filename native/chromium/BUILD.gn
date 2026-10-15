@@ -12,7 +12,9 @@ source_set("capture") {
 }
 
 test("serializer_tests") {
-  sources = [ "serializer_unittest.cc", "test_main.cc" ]
+  sources = [ "serializer_unittest.cc", "test_main.cc",
+    "//base/test/test_discardable_memory_allocator.cc",
+    "//base/test/test_discardable_memory_allocator.h" ]
   deps = [
     ":serializer",
     "//base",

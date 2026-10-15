@@ -1,12 +1,16 @@
 #include "components/remote_paint/serializer.h"
 
 #include <cstring>
+#include <optional>
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkSerialProcs.h"
 #include <string>
 
 #include "base/compiler_specific.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
@@ -48,6 +52,26 @@ TEST(RemotePaintSerializer, RetainsOriginalGlyphIdsAndPixels) {
   ASSERT_EQ(pa.computeByteSize(), pb.computeByteSize());
   // Both live raster surfaces expose exactly the validated pixmap byte size.
   EXPECT_EQ(UNSAFE_BUFFERS(std::memcmp(pa.addr(), pb.addr(), pa.computeByteSize())), 0);
+}
+
+TEST(RemotePaintSerializer, BitmapEmojiKeepsOriginalNativePixels) {
+  const auto original = TextPicture("🌈", "Apple Color Emoji");
+  const auto encoded = SerializePicture(*original);
+  ASSERT_TRUE(encoded.error.empty()) << encoded.error;
+  ASSERT_TRUE(encoded.bytes);
+  ASSERT_GT(encoded.bitmap_glyphs,0u);
+  ASSERT_GT(encoded.image_count,0u);
+  SkDeserialProcs procs;
+  procs.fImageProc=[](const void* data,size_t size,std::optional<SkAlphaType> alpha,void*) {
+    return SkImages::DeferredFromEncodedData(SkData::MakeWithCopy(data,size),alpha);
+  };
+  auto decoded = SkPicture::MakeFromData(encoded.bytes->data(),encoded.bytes->size(),&procs);
+  ASSERT_TRUE(decoded);
+  auto a=SkSurfaces::Raster(SkImageInfo::MakeN32Premul(640,80,SkColorSpace::MakeSRGB()));
+  auto b=SkSurfaces::Raster(SkImageInfo::MakeN32Premul(640,80,SkColorSpace::MakeSRGB()));
+  a->getCanvas()->drawPicture(original);b->getCanvas()->drawPicture(decoded);
+  SkPixmap pa,pb;ASSERT_TRUE(a->peekPixels(&pa));ASSERT_TRUE(b->peekPixels(&pb));
+  EXPECT_EQ(UNSAFE_BUFFERS(std::memcmp(pa.addr(),pb.addr(),pa.computeByteSize())),0);
 }
 
 TEST(RemotePaintSerializer, RefusesSmallBudgetInsteadOfDroppingFont) {

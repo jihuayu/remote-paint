@@ -1,0 +1,42 @@
+{
+  "verifiedAt": "2026-10-15T09:58:13.471Z",
+  "nativeDrawing": true,
+  "drawingFixtureOnly": false,
+  "gpuMode": "in-process",
+  "bitmapGlyphs": 2,
+  "sourceBrowser": "155.0.8059.79",
+  "viewerBrowser": "155.0.8059.79",
+  "sourceInput": "粘贴🌈AB",
+  "saved": "已保存：粘贴🌈AB",
+  "editor": "rich text\nline",
+  "newlineArrowDeleteAndTab": true,
+  "scrollY": 500,
+  "cssScaling": true,
+  "inputPixelsFractionOver24": 0.05383966244725739,
+  "colorGlyph": {
+    "selector": "#saved",
+    "text": "🌈",
+    "neighborhoodPixels": 1,
+    "channelTolerance": 24,
+    "sourceToReplay": {
+      "colored": 237,
+      "unmatched": 0,
+      "fraction": 0
+    },
+    "replayToSource": {
+      "colored": 237,
+      "unmatched": 0,
+      "fraction": 0
+    }
+  },
+  "missingColorGlyphRejected": true,
+  "imeViaActualLocalAndRemoteCDP": true,
+  "repeatedImeTextInsertion": true,
+  "physicalOsImeCandidateWindowTested": false,
+  "leaseAndStaleTags": true,
+  "heldButtonCleanupWithoutClick": true,
+  "pointerCaptureCleanupWithoutClick": true,
+  "lastProcessedInputSeq": 83,
+  "viewerSourceRequests": 0,
+  "errors": []
+}

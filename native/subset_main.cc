@@ -89,7 +89,7 @@ int main(int argc,char** argv) {
       if(max_error>16||changed_pixels>size_t(a.width())*a.height()/1000)
         throw std::runtime_error("Font subsetting exceeded native replay pixel budget: "+std::to_string(changed_pixels)+" pixels, max "+std::to_string(max_error));
     }
-    std::cout<<"{\"inputBytes\":"<<bytes.size()<<",\"nativePixelsExact\":"<<(argc==4?(changed_pixels?"false":"true"):"null")<<",\"nativeChangedPixels\":"<<changed_pixels<<",\"nativeMaxChannelError\":"<<max_error<<",\"outputBytes\":"<<result.bytes->size()<<",\"imageBytes\":"<<result.image_bytes<<",\"imageCount\":"<<result.image_count<<",\"fonts\":[";
+    std::cout<<"{\"inputBytes\":"<<bytes.size()<<",\"nativePixelsExact\":"<<(argc==4?(changed_pixels?"false":"true"):"null")<<",\"nativeChangedPixels\":"<<changed_pixels<<",\"nativeMaxChannelError\":"<<max_error<<",\"outputBytes\":"<<result.bytes->size()<<",\"imageBytes\":"<<result.image_bytes<<",\"imageCount\":"<<result.image_count<<",\"bitmapGlyphs\":"<<result.bitmap_glyphs<<",\"fonts\":[";
     bool first=true;
     for(const auto& font:result.fonts){if(!first)std::cout<<",";first=false;
       std::cout<<"{\"family\":"<<std::quoted(font.family)<<",\"glyphs\":"<<font.glyphs<<",\"missingGlyphs\":"<<font.missing_glyphs<<",\"originalBytes\":"<<font.original_bytes<<",\"subsetBytes\":"<<font.subset_bytes<<"}";}
