@@ -8,7 +8,9 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
  if(!executablePath)throw new Error('Set REMOTE_PAINT_CHROMIUM to the custom compiled headless_shell (npm run native:chromium)');
  const viz=await startVizIPC(),token=nativeToken();let browser,capture;
  try{
-  browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:['--enable-gpu-benchmarking',`--remote-paint-token=${token}`,'--disable-gpu-rasterization','--no-sandbox']});
+  // The token switch installs capture in the Broker's isolated world. Do not
+  // enable legacy GPU benchmarking APIs (including disk export) in source JS.
+  browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:[`--remote-paint-token=${token}`,'--disable-gpu-rasterization','--no-sandbox']});
   const page=await browser.newPage({viewport,deviceScaleFactor:1});await page.goto(url,{waitUntil:'networkidle'});
   capture=new NativeCapture(page,{token,viz,interval});await capture.initialize();
   const source=new EventEmitter();Object.assign(source,{page,browser,capture,viz,pageEpoch:1,viewportVersion:1,latest:null,demand:0,inputSeq:0,mapper:new SceneMapper(),producer:null,

@@ -21,11 +21,12 @@ async function captureOnDemand(capture){
  finally{capture.setDemand(0);cleanup();}
 }
 const token=nativeToken();const fixture=await startDynamicFixture();const viz=await startVizIPC();
-const browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:['--enable-gpu-benchmarking',`--remote-paint-token=${token}`,'--disable-gpu-rasterization','--no-sandbox']});
+const browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:[`--remote-paint-token=${token}`,'--disable-gpu-rasterization','--no-sandbox']});
 let capture;
 try{
  const page=await browser.newPage({viewport:{width:960,height:640}});await page.goto(new URL('/glyphs',fixture.url).href);
  await page.waitForFunction(()=>[...document.images].every(i=>i.complete&&i.naturalWidth));
+ assert.equal(await page.evaluate(()=>typeof globalThis.chrome?.gpuBenchmarking),'undefined','Source JS must not receive capture or legacy disk export APIs');
  await page.screenshot();
  capture=new NativeCapture(page,{token,viz});await capture.initialize();
  await new Promise(r=>setTimeout(r,150));assert.equal(capture.count,0);
@@ -42,7 +43,7 @@ try{
  await page.locator('#advance').click();const second=await captureOnDemand(capture);
  assert.notEqual(first.resources[0].skp,second.resources[0].skp);
  const report={verifiedAt:new Date().toISOString(),browser:browser.version(),noViewerCaptures:0,
-   captures:capture.count,incorrectSecretRejected:true,sourcePulsesDuringCapture:pulses,
+   captures:capture.count,sourceBenchmarkingApiExposed:false,isolatedCaptureApi:true,incorrectSecretRejected:true,sourcePulsesDuringCapture:pulses,
    recordingThread:first.recordingThread,encodingThread:first.encodingThread,
    namespace:first.viz.namespace,frameToken:first.frameToken,vizIpc:viz.stats,
    layerIds:first.resources.map(r=>r.localId),resourceBytes:second.resources.map(r=>Buffer.from(r.skp,'base64').length)};

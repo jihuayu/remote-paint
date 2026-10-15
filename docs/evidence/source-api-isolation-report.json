@@ -1,0 +1,19 @@
+{
+  "verifiedAt": "2026-10-15T08:44:03.852Z",
+  "scope": "stock-browser-main-world-flag-boundary",
+  "customIsolatedCaptureTested": false,
+  "observations": [
+    {
+      "browser": "155.0.8059.79",
+      "benchmarkingFlag": true,
+      "benchmarking": "object",
+      "diskExport": "function"
+    },
+    {
+      "browser": "155.0.8059.79",
+      "benchmarkingFlag": false,
+      "benchmarking": "undefined",
+      "diskExport": "undefined"
+    }
+  ]
+}
