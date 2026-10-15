@@ -7,6 +7,7 @@ import {PNG} from 'pngjs';
 import {launchCaptureBrowser} from '../capture/browser.mjs';
 import {subsetPicture} from '../native/subset.mjs';
 import {startDynamicFixture} from './dynamic-fixture.mjs';
+import {assertTextInk} from './text-pixels.mjs';
 
 const directory=resolve('artifacts/fonts');await mkdir(directory,{recursive:true});
 const ck=await CanvasKitInit({locateFile:()=>createRequire(import.meta.url).resolve('canvaskit-wasm/bin/full/canvaskit.wasm')});
@@ -33,18 +34,23 @@ try{
     const surface=ck.MakeSurface(960,640);surface.getCanvas().clear(ck.WHITE);surface.getCanvas().drawPicture(pic);surface.flush();
     const snapshot=surface.makeImageSnapshot();const bytes=snapshot.encodeToBytes();await writeFile(join(directory,`${state}-wasm.png`),bytes);
     const source=PNG.sync.read(await readFile(join(directory,`${state}-source.png`)));const replay=PNG.sync.read(Buffer.from(bytes));
+    const textInk=await assertTextInk(page,source,replay,[{selector:'#text',background:[255,255,255]}]);
+    // A replay with all text absent must fail, even though most page pixels
+    // are still white and would fit an aggregate page-difference allowance.
+    const absent={...replay,data:Buffer.alloc(replay.data.length,255)};
+    await assert.rejects(()=>assertTextInk(page,source,absent,[{selector:'#text',background:[255,255,255]}]),/lost 100.00%/);
     for(const img of await page.locator('img').all()){
       const box=await img.boundingBox();assert.ok(box);
       for(let y=Math.ceil(box.y)+5;y<Math.floor(box.y+box.height)-5;y++)for(let x=Math.ceil(box.x)+5;x<Math.floor(box.x+box.width)-5;x++){
         const i=(y*960+x)*4;assert.deepEqual([...replay.data.subarray(i,i+4)],[...source.data.subarray(i,i+4)],'Authenticated/blob image pixels changed');
       }
     }
-    reports.push({state,...stats,text:await page.locator('#text').innerText(),authenticatedAndBlobPixelsExact:true});
+    reports.push({state,...stats,text:await page.locator('#text').innerText(),textInk,missingTextNegativeControlRejected:true,authenticatedAndBlobPixelsExact:true});
     snapshot.delete();surface.delete();pic.delete();
   }
   assert.notEqual(reports[0].text,reports[1].text);
   assert.ok(reports[1].fonts.some(f=>f.family.includes('Emoji')));
-  const result={verifiedAt:new Date().toISOString(),native:true,fontsPredeclared:false,stages:reports,sourceRequests:fixture.stats,
+  const result={verifiedAt:new Date().toISOString(),native:true,scope:'stock-browser-export-native-subset-CanvasKit',sourceBrowser:browser.version(),nativeBrowserCapture:false,fontsPredeclared:false,stages:reports,sourceRequests:fixture.stats,
     skiaRevision:'29ed1e87a0a50f3d8347e988842d9d59e7573efa',canvaskit:'0.42.0'};
   await writeFile(join(directory,'report.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));
 }finally{await browser.close();await fixture.close();}

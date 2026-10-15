@@ -8,6 +8,8 @@ Pinned Skia: `29ed1e87a0a50f3d8347e988842d9d59e7573efa` (Chromium 155.0.8059.79)
 
 The Arial self-test is pixel-exact. CoreText rendering of the original and subset Chinese/Emoji fonts differs at 22 / 77 pixels of 614400, maximum channel error 6 / 11. The verification budget is at most 0.1% changed pixels and 16/255 channel error; this is an antialiasing tolerance, not a claim of byte-identical fonts. The authenticated and blob image interiors match source Chrome pixels exactly. See `docs/evidence/font-image-report.json` for measured sizes.
 
+CanvasKit text is checked separately from the page background. At least 98% of strong source text ink must have replay ink within one pixel; stroke strength is measured relative to the known background and computed text color to exclude antialiasing fringes. The test rejects an otherwise white replay with its text removed. This is a stroke-presence comparison, not pixel identity or a guarantee for every font. The same check covers the fixed header in the pending native scene/live acceptance. The font report explicitly identifies its stock-browser export and native-subset scope.
+
 This checkpoint only adds the reusable native serializer and a command-line harness around the existing synchronous Chrome exporter. It does not yet claim demand gating, asynchronous browser capture, compositor mapping or real-time streaming. GPU-backed images explicitly fail instead of silently disappearing.
 
 `chromium/` can be copied into the pinned Chromium tree using `node native/prepare.mjs /path/to/chromium/src`; its GN integration is separate from the standalone helper. Chromium-integrated compilation is not established by the standalone build.

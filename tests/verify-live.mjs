@@ -1,4 +1,5 @@
 import {assertPrivateImagePixels} from './image-pixels.mjs';
+import {assertTextInk} from './text-pixels.mjs';
 import {recoverDroppedResource} from './fault-viewer.mjs';
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
@@ -26,6 +27,7 @@ try{
  const a=PNG.sync.read(sourceBytes),b=PNG.sync.read(replay);assert.equal(a.width,b.width);assert.equal(a.height,b.height);
  let changed=0;for(let i=0;i<a.data.length;i+=4)if([0,1,2,3].some(c=>Math.abs(a.data[i+c]-b.data[i+c])>24))changed++;
  const imagePixels=await assertPrivateImagePixels(source.page,a,b);
+ const textInk=await assertTextInk(source.page,a,b,[{selector:'header h1',background:[20,34,59]},{selector:'header p',background:[20,34,59]}]);
  const pixelFractionOver24=changed/(a.width*a.height);assert.ok(pixelFractionOver24<0.06,`Native Viewer pixel difference ${pixelFractionOver24}`);
  const frozen=await page.evaluate(()=>window.remotePaintResult);await source.page.evaluate(()=>document.getAnimations().forEach(a=>a.play()));
  n=source.stats.captures;await wait(()=>source.stats.captures>n+2);await page.waitForFunction(n=>window.remotePaintResult?.deltaFrames>n,frozen.deltaFrames);
@@ -45,6 +47,6 @@ try{
  assert.ok(streamed.resourcesReceived>streamed.resources,'Changed native resources must retire from the client cache');assert.equal(resized.lastProcessedInputSeq,source.inputSeq);
  assert.ok(requests.every(origin=>origin===live.origin));assert.deepEqual(errors,[]);assert.equal(await page.locator('iframe').count(),0);
  await page.screenshot({path:'artifacts/live/viewer.png'});await page.close();await wait(()=>source.demand===0);n=source.stats.captures;await delay(600);assert.equal(source.stats.captures,n);
- const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,missingResourceRecovery,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),first,dynamic,frozen,animated,streamed,beforeReconnect,recovered,navigated,resized,imagePixels,pixelFractionOver24,slowClientClose:1013,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,viewerSourceRequests:0,errors,stats:source.stats};
+ const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,missingResourceRecovery,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),first,dynamic,frozen,animated,streamed,beforeReconnect,recovered,navigated,resized,imagePixels,textInk,pixelFractionOver24,slowClientClose:1013,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,viewerSourceRequests:0,errors,stats:source.stats};
  await writeFile('artifacts/live/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await browser.close();await live.close();}

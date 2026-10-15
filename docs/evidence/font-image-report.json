@@ -1,6 +1,9 @@
 {
-  "verifiedAt": "2026-10-15T05:22:22.693Z",
+  "verifiedAt": "2026-10-15T08:07:17.507Z",
   "native": true,
+  "scope": "stock-browser-export-native-subset-CanvasKit",
+  "sourceBrowser": "155.0.8059.79",
+  "nativeBrowserCapture": false,
   "fontsPredeclared": false,
   "stages": [
     {
@@ -36,6 +39,18 @@
         }
       ],
       "text": "初始中文 / Initial text",
+      "textInk": [
+        {
+          "selector": "#text",
+          "ink": 1416,
+          "uncovered": 0,
+          "uncoveredFraction": 0,
+          "sourceMinContrast": 176.25,
+          "replayMinContrast": 58.75,
+          "neighborhoodPixels": 1
+        }
+      ],
+      "missingTextNegativeControlRejected": true,
       "authenticatedAndBlobPixelsExact": true
     },
     {
@@ -78,6 +93,18 @@
         }
       ],
       "text": "动态新增汉字：龘麤𠮷；Emoji 🌈🚀🧑‍💻",
+      "textInk": [
+        {
+          "selector": "#text",
+          "ink": 3113,
+          "uncovered": 37,
+          "uncoveredFraction": 0.011885640860905879,
+          "sourceMinContrast": 176.25,
+          "replayMinContrast": 58.75,
+          "neighborhoodPixels": 1
+        }
+      ],
+      "missingTextNegativeControlRejected": true,
       "authenticatedAndBlobPixelsExact": true
     }
   ],
