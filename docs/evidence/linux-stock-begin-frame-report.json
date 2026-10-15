@@ -1,0 +1,55 @@
+{
+  "verifiedAt": "2026-10-15T13:37:05.765Z",
+  "platform": "linux",
+  "architecture": "x64",
+  "browser": "156.0.8078.4",
+  "executableSha256": "4fa61f0ba0b4f89b7bec242c32ca16d3bccf69dbfef0651924a9ba8fede5f9d6",
+  "scope": "stock Linux clock probe; not native drawing acceptance",
+  "noScreenshotReadback": true,
+  "before": {
+    "raf": 0,
+    "timers": 0
+  },
+  "paused": {
+    "raf": 0,
+    "timers": 16
+  },
+  "steps": [
+    {
+      "raf": 1,
+      "timers": 20
+    },
+    {
+      "raf": 2,
+      "timers": 23
+    },
+    {
+      "raf": 3,
+      "timers": 26
+    },
+    {
+      "raf": 4,
+      "timers": 28
+    },
+    {
+      "raf": 5,
+      "timers": 31
+    }
+  ],
+  "pausedAgain": {
+    "raf": 5,
+    "timers": 47
+  },
+  "resumed": {
+    "raf": 20,
+    "timers": 73
+  },
+  "stats": {
+    "mode": "begin-frame",
+    "issued": 21,
+    "acked": 21,
+    "damaged": 1,
+    "errors": 0,
+    "lastError": null
+  }
+}
