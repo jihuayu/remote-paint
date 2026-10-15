@@ -23,6 +23,7 @@
     "verify:input": "node tests/verify-input.mjs",
     "verify:live": "node tests/verify-live.mjs",
     "verify:begin-frame": "node tests/verify-begin-frame.mjs",
+    "verify:linux": "node tests/verify-linux.mjs",
     "serve:linux-proof": "node tests/serve-linux-proof.mjs",
     "verify:linux-mac": "node tests/verify-linux-mac.mjs"
   },

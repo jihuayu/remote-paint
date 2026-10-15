@@ -41,6 +41,12 @@ Chromium's data files. Publish only the Viewer port on Mac loopback:
 
 ```sh
 docker build --platform linux/arm64 -t remote-paint-runtime:linux-arm64 -f docker/Dockerfile.runtime .
+mkdir -p artifacts/linux-acceptance
+docker run --rm --platform linux/arm64 --init --shm-size=2g \
+  -v /absolute/independent/chromium/src/out/RemotePaintLinux:/browser:ro \
+  -v /absolute/remote-paint:/project:ro \
+  -v /absolute/remote-paint/artifacts/linux-acceptance:/project/artifacts \
+  remote-paint-runtime:linux-arm64 npm run verify:linux
 mkdir -p artifacts/linux-mac
 docker run --name remote-paint-linux --platform linux/arm64 --init --shm-size=2g \
   -p 127.0.0.1:4176:4176 \
@@ -51,6 +57,13 @@ docker run --name remote-paint-linux --platform linux/arm64 --init --shm-size=2g
 # Run this on the Mac host, in the project directory:
 npm run verify:linux-mac
 ```
+
+`verify:linux` first checks ARM64 ELF headers, hashes, build arguments and patch
+receipts. It then runs the serializer, external BeginFrame clock, native
+capture, scene, input and live recovery checks in order. Each command has a
+five-minute limit and its own log in `artifacts/linux-suite`; a failure stops
+the suite and leaves a failed report. Linux results do not establish that the
+Mac Viewer works, so the host acceptance is still required separately.
 
 The proof server uses the normal native SKP/Viz transport and BeginFrame driver.
 Its private bind-mounted file channel exports source observations and accepts a
