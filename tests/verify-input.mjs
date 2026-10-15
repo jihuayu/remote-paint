@@ -2,6 +2,7 @@
 // unless REMOTE_PAINT_CHROMIUM is supplied, in which case verify the full path.
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
+import {PNG} from 'pngjs';
 import {launchCaptureBrowser} from '../capture/browser.mjs';
 import {startDynamicFixture} from './dynamic-fixture.mjs';
 import {fakeSource} from './live-helpers.mjs';
@@ -16,6 +17,8 @@ try{
   fixture=await startDynamicFixture();sourceBrowser=await launchCaptureBrowser();const page=await sourceBrowser.newPage({viewport:{width:960,height:640}});await page.goto(fixture.url);
   source=fakeSource();Object.assign(source,{page,pageEpoch:1,viewportVersion:1,viewport:{cssWidth:960,cssHeight:640},inputSeq:0});source.control=await createControl(source);live=await startLiveTransport(source,{port:0});
  }
+ if(native){await source.page.locator('#stop-clock').click();await source.page.evaluate(()=>document.getAnimations().forEach(a=>a.pause()));}
+ let inputPixelsFractionOver24=null;
  const page=await viewerBrowser.newPage({viewport:{width:720,height:900}}),errors=[],requests=[];
  page.on('pageerror',error=>errors.push(error.message));page.on('request',request=>requests.push(new URL(request.url()).origin));
  await page.goto(live.url);await page.waitForFunction(()=>window.remotePaintResult?.frameId>0);await page.locator('#control').click();await page.waitForFunction(()=>document.querySelector('#controlState').textContent==='你正在操作');
@@ -34,6 +37,18 @@ try{
  await page.locator('#inputProxy').evaluate(element=>{const transfer=new DataTransfer();transfer.setData('text/plain','粘贴🌈ABC');element.dispatchEvent(new ClipboardEvent('paste',{clipboardData:transfer,bubbles:true,cancelable:true}));});
  await source.page.waitForFunction(()=>document.querySelector('#name').value==='粘贴🌈ABC');await page.keyboard.press('Backspace');await source.page.waitForFunction(()=>document.querySelector('#name').value==='粘贴🌈AB');
  await click('#save');await source.page.waitForFunction(()=>document.querySelector('#saved').textContent==='已保存：粘贴🌈AB');
+ if(native){
+  const processed=source.inputSeq;await page.waitForFunction(seq=>window.remotePaintResult?.lastProcessedInputSeq>=seq,processed);
+  const original=PNG.sync.read(await source.page.screenshot());
+  const encoded=await page.locator('canvas').evaluate(c=>c.toDataURL());const replay=PNG.sync.read(Buffer.from(encoded.split(',')[1],'base64'));
+  const box=await source.page.locator('#name').boundingBox(),saved=await source.page.locator('#saved').boundingBox();
+  const left=Math.floor(Math.min(box.x,saved.x)),right=Math.ceil(Math.max(box.x+box.width,saved.x+saved.width));
+  const top=Math.floor(Math.min(box.y,saved.y)),bottom=Math.ceil(Math.max(box.y+box.height,saved.y+saved.height));
+  assert.equal(original.width,replay.width);assert.equal(original.height,replay.height);let changed=0;
+  for(let y=top;y<bottom;y++)for(let x=left;x<right;x++){const i=(y*original.width+x)*4;if([0,1,2,3].some(c=>Math.abs(original.data[i+c]-replay.data[i+c])>24))changed++;}
+  inputPixelsFractionOver24=changed/((right-left)*(bottom-top));assert.ok(inputPixelsFractionOver24<0.06,`Input/save replay mismatch: ${inputPixelsFractionOver24}`);
+ }
+
  await click('#editor');await page.keyboard.press('Meta+A');await page.keyboard.type('rich text');await source.page.waitForFunction(()=>document.querySelector('#editor').textContent==='rich text');
  const canvas=await page.locator('#viewport').boundingBox();await page.mouse.move(canvas.x+canvas.width/2,canvas.y+canvas.height/2);await page.mouse.wheel(0,500);await source.page.waitForFunction(()=>scrollY>200);
  const header=await source.page.locator('header').boundingBox();assert.equal(header.y,0);
@@ -46,6 +61,6 @@ try{
  const before=source.inputSeq;for(const bad of [{pageEpoch:0},{viewportVersion:0},{lease:'revoked'},{seq:0}])assert.throws(()=>source.control.input(peer.id,{...grant,seq:grant.nextSeq,event:{kind:'text',text:'BAD'},...bad}));assert.equal(source.inputSeq,before);
  await source.control.revoke('test');await cdp.detach();assert.ok(requests.every(origin=>origin===live.origin));assert.deepEqual(errors,[]);
  await mkdir('artifacts/input',{recursive:true});await page.screenshot({path:'artifacts/input/viewer.png'});
- const report={verifiedAt:new Date().toISOString(),nativeDrawing:native,drawingFixtureOnly:!native,sourceBrowser:source.page.context().browser().version(),viewerBrowser:viewerBrowser.version(),sourceInput:await source.page.locator('#name').inputValue(),saved:await source.page.locator('#saved').textContent(),editor:await source.page.locator('#editor').textContent(),scrollY:await source.page.evaluate(()=>scrollY),cssScaling:true,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,leaseAndStaleTags:true,lastProcessedInputSeq:source.inputSeq,viewerSourceRequests:0,errors};
+ const report={verifiedAt:new Date().toISOString(),nativeDrawing:native,drawingFixtureOnly:!native,sourceBrowser:source.page.context().browser().version(),viewerBrowser:viewerBrowser.version(),sourceInput:await source.page.locator('#name').inputValue(),saved:await source.page.locator('#saved').textContent(),editor:await source.page.locator('#editor').textContent(),scrollY:await source.page.evaluate(()=>scrollY),cssScaling:true,inputPixelsFractionOver24,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,leaseAndStaleTags:true,lastProcessedInputSeq:source.inputSeq,viewerSourceRequests:0,errors};
  await writeFile('artifacts/input/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await viewerBrowser.close();await live?.close();if(!native){await source?.control?.close();await sourceBrowser?.close();await fixture?.close();}}
