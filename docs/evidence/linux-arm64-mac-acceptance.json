@@ -1,0 +1,120 @@
+{
+  "verifiedAt": "2026-10-15T23:43:38.726Z",
+  "status": "passed",
+  "scope": "Linux ARM64 native SKP/Viz + BeginFrame and Mac ARM64 Viewer acceptance",
+  "orb": {
+    "cpus": 9,
+    "memoryGiB": 48,
+    "container": "remote-paint-linux-build",
+    "oomKilled": false
+  },
+  "binary": {
+    "path": "work/linux-build/chromium/src/out/RemotePaintLinux/headless_shell",
+    "format": "ELF64",
+    "machine": "AArch64",
+    "sha256": "c0d950d9f6d82644da98272d054f2b74448054fb76e290196a0019d94fb90b74"
+  },
+  "linuxSuite": {
+    "status": "passed",
+    "checks": [
+      {
+        "name": "serializer",
+        "code": 0,
+        "elapsedMs": 107
+      },
+      {
+        "name": "begin-frame",
+        "code": 0,
+        "elapsedMs": 1545
+      },
+      {
+        "name": "native",
+        "code": 0,
+        "elapsedMs": 896
+      },
+      {
+        "name": "scene",
+        "code": 0,
+        "elapsedMs": 1840
+      },
+      {
+        "name": "input",
+        "code": 0,
+        "elapsedMs": 3631
+      },
+      {
+        "name": "live",
+        "code": 0,
+        "elapsedMs": 14170
+      },
+      {
+        "name": "latency",
+        "code": 0,
+        "elapsedMs": 6369
+      }
+    ]
+  },
+  "native": {
+    "platform": "linux",
+    "architecture": "arm64",
+    "beginFrame": {
+      "mode": "begin-frame",
+      "issued": 31,
+      "acked": 30,
+      "damaged": 6,
+      "errors": 0
+    },
+    "captures": 2,
+    "vizReceived": 2
+  },
+  "input": {
+    "nativeDrawing": true,
+    "lastProcessedInputSeq": 83,
+    "beginFrame": {
+      "mode": "begin-frame",
+      "issued": 161,
+      "acked": 161,
+      "damaged": 87,
+      "errors": 0
+    },
+    "errors": []
+  },
+  "macViewer": {
+    "viewerPlatform": "darwin",
+    "viewerArchitecture": "arm64",
+    "sourcePlatform": "linux",
+    "sourceArchitecture": "arm64",
+    "beginFrame": {
+      "mode": "begin-frame",
+      "issued": 1177,
+      "acked": 1176,
+      "damaged": 479,
+      "errors": 0
+    },
+    "dynamic": {
+      "frameId": 4,
+      "deltaFrames": 3,
+      "renderMs": 6.90000057220459
+    },
+    "pixelFractionOver24": 0.009715169270833334,
+    "saved": "已保存：Mac 控制 Linux 🌈",
+    "missingResourceRecovery": {
+      "droppedResources": 1,
+      "keyframeRequests": 1,
+      "recovered": true,
+      "errors": []
+    },
+    "inputLatencyMs": {
+      "baselineP50": 185.19999980926514,
+      "baselineP95": 257.6000003814697,
+      "optimizedP50": 152.5,
+      "optimizedP95": 226.9000005722046
+    },
+    "errors": []
+  },
+  "sourceReports": {
+    "linuxSuite": "work/linux-build/native-artifacts/linux-suite/report.json",
+    "linuxMac": "work/linux-build/native-artifacts/linux-mac/report.json",
+    "buildProvenance": "work/linux-build/chromium/src/out/RemotePaintLinux/remote-paint-build.json"
+  }
+}

@@ -2,7 +2,7 @@
 
 源 Chromium 执行网页 JS、DOM 和布局；原生组件录制光栅化前的 SKP，按同一 captureId 与真实 aggregated Viz 场景配对；独立 Viewer 用 CanvasKit 重放。绘图流只包含 SKP 和场景元数据，源 HTML、JS、URL、Cookie 及对照截图不发送给 Viewer。
 
-本次范围为路线 **3–7**，并扩展到 Mac 本机 Docker 中的 Linux ARM64、BeginFrame 和输入延迟优化。Linux 浏览器正在编译，完整 Linux 及 Mac Viewer 远控验收仍待运行；现有 Mac 结果在下方单独标明。iframe/复杂效果回退、Steel/Gateway 接入和生产解码隔离尚未实现。
+本次范围为路线 **3–7**，并扩展到 Mac 本机 Docker 中的 Linux ARM64、BeginFrame 和输入延迟优化。Linux ARM64 浏览器已在 OrbStack 中完成编译，Linux 原生套件和 Mac Viewer 远控验收均已通过；完整收据见 [Linux ARM64 + Mac 验收](docs/evidence/linux-arm64-mac-acceptance.json)。iframe/复杂效果回退、Steel/Gateway 接入和生产解码隔离尚未实现。
 
 ## 当前验收状态
 
@@ -15,6 +15,8 @@
 完整动态对照全页差异为 1.37%；流式文字区域 2345 个强墨迹像素全部获得邻域覆盖，并验证去掉文字会失败。导航/resize 中断了两次在途捕获，后续新 epoch/viewport 均恢复，最终错误状态为空。CanvasKit 实际像素缓冲分配/释放为 202/202、残留 0。[资源生命周期报告](docs/evidence/surface-lifecycle-report.json) 保留的 fixture 报告仍只证明各自契约。
 
 最新 Mac 原生测试修复了合成光标继承圆角裁剪时持续停帧的问题，并优化输入触发采集和 CanvasKit 的 Alpha 合成。正常 6 px 圆角和可见光标下，16 次输入均成功显示，采集错误为零；Viewer 重放从约 54 ms 降到约 6.3 ms。最终输入到像素中位数为 148.5 ms、p95 为 191.9 ms，周期采集基线为 222.5 / 278.0 ms。测试期间 Linux 编译占用九核，物理键盘和显示扫描不在测量范围。[最终 Mac 延迟与动态验收](docs/evidence/mac-direct-presentation.json) 同时记录了 83 条输入、91 次动态采集和丢资源恢复；[重放画面](docs/evidence/mac-direct-presentation-replay.png) 只证明 Mac 链路。Linux 构建、缓存与独立验收命令见 [Docker 说明](docker/README.md)。
+
+最新 Linux ARM64 运行收据确认 ELF/AArch64 `headless_shell` 已链接，Linux serializer、BeginFrame、原生 Viz、场景、输入、live 和 latency 套件全部返回 0。Mac ARM64 Viewer 动态重放 Linux ARM64 输出，增量帧、输入、导航/resize、断线恢复和丢资源关键帧恢复均通过；本次跨平台输入延迟优化后 p50/p95 为 152.5/226.9 ms，CanvasKit 重放约 6.9 ms。Linux demo 由 watcher 保持在 `http://127.0.0.1:4176/`，构建产物和缓存位于宿主机挂载的 `work/linux-build/`。
 
 ## 构建与启动动态版本
 
