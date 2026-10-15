@@ -1,0 +1,13 @@
+{
+  "scope": "Linux ARM64 native Viz C++ compilation only; not a complete browser/runtime acceptance",
+  "exitCode": 0,
+  "elapsedSeconds": 101.69093108177185,
+  "sourceSha256": "34623fbf90bddfe73e5554a6835ec45a5ea791e04a9f90ec9c682100a9336ae2",
+  "objectFormat": "ELF64 AArch64",
+  "objectSha256": "e7d1315eb2cee52803c1f914a039d1b1417510bfbcb7f0f2d783bac0ccd39d4e",
+  "objectBytes": 29776,
+  "recordedAt": "2026-10-15T16:26:35.706792+00:00",
+  "completeBrowserVerified": false,
+  "generatedChromiumCompileCommand": true,
+  "outputIsSeparateFromRunningBuild": true
+}

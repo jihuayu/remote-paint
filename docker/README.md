@@ -46,6 +46,14 @@ downloaded Mac and Linux interpreter directories are both retained.
 
 This is the build harness. Runtime/BeginFrame acceptance is recorded separately; preparing an image or generating the build graph does not establish that the Linux drawing path works.
 
+The current rounded-clip Viz exporter has also passed a separate compilation
+with the generated Chromium Linux ARM64 command. Its output is a 29,776-byte
+ELF64 AArch64 object, and its source hash matches the project. See the
+[scoped report](../docs/evidence/linux-viz-compile-report.json) and
+[compiler log](../docs/evidence/linux-viz-compile.log). The object was written
+outside the running build's output, so this check does not establish that the
+complete browser is linked or that Linux runtime acceptance has passed.
+
 ## Native runtime and Mac acceptance
 
 Build the runtime for ARM64 and mount the entire output directory, including

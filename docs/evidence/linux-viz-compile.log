@@ -1,0 +1,10 @@
+Checking Linux ARM64 Viz exporter with the generated Chromium command; output is separate from the running build
+{
+  "scope": "Linux ARM64 native Viz C++ compilation only; not a complete browser/runtime acceptance",
+  "exitCode": 0,
+  "elapsedSeconds": 101.69093108177185,
+  "sourceSha256": "34623fbf90bddfe73e5554a6835ec45a5ea791e04a9f90ec9c682100a9336ae2",
+  "objectFormat": "ELF64 AArch64",
+  "objectSha256": "e7d1315eb2cee52803c1f914a039d1b1417510bfbcb7f0f2d783bac0ccd39d4e",
+  "objectBytes": 29776
+}
