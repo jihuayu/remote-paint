@@ -1,0 +1,24 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>Remote Paint live page</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:16px system-ui,sans-serif;color:#172a40;background:#f1f5f9}
+header{position:fixed;z-index:10;inset:0 0 auto;background:#14223b;color:white;height:86px;padding:16px 30px;will-change:transform;border-bottom:4px solid #4be0ad}
+h1{font-size:24px;margin:0 0 5px}header p{margin:0;font-size:13px;color:#bdcbd9}
+main{padding:110px 30px 30px}section{background:white;border:1px solid #d5e0ea;border-radius:10px;padding:20px;margin-bottom:20px}h2{font-size:19px;margin:0 0 14px}.row{display:flex;gap:24px;align-items:start}.grow{flex:1}
+label{display:block;margin:10px 0 6px}input,button,[contenteditable]{font:16px system-ui,sans-serif;border:1px solid #9cabb9;border-radius:6px;padding:10px;background:white;color:#172a40}input{width:300px}button{cursor:pointer;background:#176d57;color:white;margin:8px 8px 8px 0}[contenteditable]{min-height:68px;max-width:550px}img{width:150px;height:100px;border-radius:6px}figcaption{font-size:12px;color:#697e91}figure{margin:0}#stream{white-space:pre-wrap;line-height:1.8;min-height:70px;color:#1c6356}#saved{min-height:28px;color:#13664f}.table-row{padding:14px;border-top:1px solid #e6ebf0;display:flex;justify-content:space-between}.dot{width:14px;height:14px;border-radius:50%;background:#ef9c42;display:inline-block;vertical-align:middle;animation:shift 2s infinite alternate linear}@keyframes shift{to{transform:translateX(150px)}}#clock{font-variant-numeric:tabular-nums}
+</style>
+<header><h1>远程绘制 · 动态网页 <span class="dot"></span></h1><p>固定导航栏 / Fixed header · 帧计数 <span id="clock">0</span></p></header>
+<main>
+<section><div class="row"><div class="grow"><h2>同一个浏览器，真实输入</h2><label for="name">中文、Emoji 与选区替换</label><input id="name" value="初始文字"><br><button id="save">保存输入</button><span id="saved"></span><label for="editor">富文本编辑器</label><div id="editor" contenteditable="true">可以在这里输入中文。</div></div><figure><img id="private-image" src="/private.png"><figcaption>需要 HttpOnly Cookie 的图片</figcaption><img id="blob-image"><figcaption>浏览器 blob 图片</figcaption></figure></div></section>
+<section><h2>LLM 流式追加文字</h2><button id="start-stream">开始流式输出</button><button id="stop-clock">暂停计数</button><div id="stream">等待开始……</div></section>
+<section><h2>滚动、缓存与资源生命周期</h2><div id="rows"></div></section>
+</main>
+<script>
+let count=0;const clock=setInterval(()=>document.querySelector('#clock').textContent=++count,500);
+document.querySelector('#stop-clock').onclick=()=>clearInterval(clock);
+document.querySelector('#save').onclick=()=>document.querySelector('#saved').textContent='已保存：'+document.querySelector('#name').value;
+document.querySelector('#rows').innerHTML=Array.from({length:45},(_,i)=>`<div class="table-row"><span>内容行 ${i+1} / Content row</span><span>中文与图片资源 ${i+1}</span></div>`).join('');
+const words=['正在生成：','远程','绘制','实时','更新。','中文','新字形：','龘','麤','𠮷','。','Emoji：','🌈','🚀','🧑‍💻','。','输入和滚动','都由原始网页处理。'];
+document.querySelector('#start-stream').onclick=()=>{let i=0;const target=document.querySelector('#stream');target.textContent='';const timer=setInterval(()=>{target.textContent+=words[i++];if(i===words.length)clearInterval(timer);},180);};
+fetch('/private.png').then(r=>r.blob()).then(blob=>{document.querySelector('#blob-image').src=URL.createObjectURL(blob);});
+window.fixtureReady=true;
+</script></html>

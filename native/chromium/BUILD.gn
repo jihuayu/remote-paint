@@ -1,0 +1,19 @@
+import("//testing/test.gni")
+
+source_set("serializer") {
+  sources = [ "serializer.cc", "serializer.h", "font_subset.cc", "font_subset.h" ]
+  defines = [ "REMOTE_PAINT_CHROMIUM" ]
+  deps = [ "//base", "//skia", "//third_party/harfbuzz" ]
+}
+
+test("serializer_tests") {
+  sources = [ "serializer_unittest.cc" ]
+  deps = [
+    ":serializer",
+    "//base",
+    "//base/test:test_support",
+    "//components/test:run_all_unittests",
+    "//skia",
+    "//testing/gtest",
+  ]
+}

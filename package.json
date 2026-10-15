@@ -6,6 +6,8 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "capture": "node capture/cli.mjs",
+    "native:build": "node native/build.mjs",
+    "verify:fonts": "node tests/verify-fonts.mjs",
     "start": "node server.mjs",
     "demo": "node server.mjs --directory examples/verified-capture",
     "test": "node --test tests/*.test.mjs",

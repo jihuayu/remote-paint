@@ -1,0 +1,3 @@
+<!doctype html><html><meta charset="utf-8"><style>body{margin:24px;font:28px system-ui;background:white;color:#14223b}p{margin:16px 0}img{width:150px;height:100px}button{font:20px system-ui;padding:10px;background:#126c56;color:white;border:0;border-radius:5px}</style>
+<p id="text">初始中文 / Initial text</p><button id="advance">新增文字</button><p><img src="/private.png"> <img id="blob"></p>
+<script>fetch('/private.png').then(r=>r.blob()).then(blob=>document.querySelector('#blob').src=URL.createObjectURL(blob));document.querySelector('#advance').onclick=()=>{document.querySelector('#text').textContent='动态新增汉字：龘麤𠮷；Emoji 🌈🚀🧑‍💻';};</script></html>
