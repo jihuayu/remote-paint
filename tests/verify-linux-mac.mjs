@@ -59,8 +59,23 @@ try{
  const frozen=await page.evaluate(()=>window.remotePaintResult);await command('animate');
  await page.waitForFunction(n=>window.remotePaintResult?.deltaFrames>n+2,frozen.deltaFrames);
  const animated=await page.evaluate(()=>window.remotePaintResult);assert.equal(animated.resourcesReceived,frozen.resourcesReceived);
- await command('freeze');await page.locator('#control').click();await page.waitForFunction(()=>document.querySelector('#controlState').textContent==='你正在操作');
+ await command('freeze');await page.setViewportSize({width:720,height:1000});
+ assert.ok((await page.locator('canvas').boundingBox()).width<initial.state.viewport.cssWidth,'Mac Viewer must exercise CSS coordinate scaling');
+ await page.locator('#control').click();await page.waitForFunction(()=>document.querySelector('#controlState').textContent==='你正在操作');
  async function click(selector){const {state}=await command('snapshot'),r=state.document.elements[selector].box,c=await page.locator('canvas').boundingBox();await page.mouse.click(c.x+(r.x+r.width/2)*c.width/state.viewport.cssWidth,c.y+(r.y+r.height/2)*c.height/state.viewport.cssHeight);}
+ async function compareText(label,regions){
+  const before=(await command('snapshot')).state;await waitSource(s=>s.captures>before.captures+1);
+  const observed=await command('screenshot');
+  await page.waitForFunction(native=>{const shown=window.remotePaintResult?.native;return shown?.producer===native.producer&&shown.frameToken>=native.frameToken;},observed.state.native);
+  const source=PNG.sync.read(await readFile(join(directory,observed.screenshot)));
+  const replay=PNG.sync.read(Buffer.from((await page.locator('canvas').evaluate(c=>c.toDataURL())).split(',')[1],'base64'));
+  await writeFile(join(directory,`${label}-source.png`),PNG.sync.write(source));await writeFile(join(directory,`${label}-replay.png`),PNG.sync.write(replay));
+  const geometry={locator:selector=>({boundingBox:async()=>observed.state.document.elements[selector].box,evaluate:async()=>observed.state.document.elements[selector].foreground})};
+  const ink=await assertTextInk(geometry,source,replay,regions);
+  const erased={...replay,data:Buffer.alloc(replay.data.length,255)};
+  await assert.rejects(()=>assertTextInk(geometry,source,erased,regions),/lost 100.00%/);
+  return ink;
+ }
  await click('#name');await page.keyboard.press('Meta+A');await page.keyboard.type('Mac');
  await waitSource(s=>s.document.name==='Mac');
  const cdp=await page.context().newCDPSession(page);
@@ -71,8 +86,15 @@ try{
  await waitSource(s=>s.document.name==='Mac 控制 Linux 🌈');await click('#save');
  const saved=await waitSource(s=>s.document.saved==='已保存：Mac 控制 Linux 🌈');
  await page.waitForFunction(n=>window.remotePaintResult?.lastProcessedInputSeq>=n,saved.inputSeq);
+ const savedTextInk=await compareText('saved',[{selector:'#saved',background:[255,255,255]}]);
+ await click('#editor');await page.keyboard.press('Meta+A');await page.keyboard.type('rich text');
+ await waitSource(s=>s.document.editor==='rich text');await page.keyboard.press('Enter');await page.keyboard.type('line2');
+ await waitSource(s=>s.document.editor==='rich text\nline2');await page.keyboard.press('ArrowLeft');await page.keyboard.press('Delete');
+ const edited=await waitSource(s=>s.document.editor==='rich text\nline');await page.keyboard.press('Tab');
+ const editorTextInk=await compareText('editor',[{selector:'#editor',background:[255,255,255]}]);
  await click('#start-stream');const streamed=await waitSource(s=>s.document.stream.endsWith('都由原始网页处理。'));
  await page.waitForFunction(n=>window.remotePaintResult?.lastProcessedInputSeq>=n,streamed.inputSeq);
+ const streamTextInk=await compareText('stream',[{selector:'#stream',background:[255,255,255]}]);
  const canvas=await page.locator('canvas').boundingBox();await page.mouse.move(canvas.x+canvas.width/2,canvas.y+canvas.height/2);await page.mouse.wheel(0,500);
  const scrolled=await waitSource(s=>s.document.scrollY>200);assert.equal(scrolled.document.elements.header.box.y,0);
  await page.locator('#reconnect').click();await page.waitForFunction(()=>document.body.dataset.ready==='true'&&document.querySelector('#controlState').textContent==='Agent 控制');
@@ -84,7 +106,7 @@ try{
  const disconnected=await waitSource(s=>s.demand===0);await delay(500);const final=(await command('snapshot')).state;
  assert.equal(final.captures,disconnected.captures);assert.ok(final.beginFrame.acked>0);assert.equal(final.beginFrame.errors,0);
  assert.ok(requests.every(origin=>origin===ready.origin));assert.deepEqual(errors,[]);
- const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,drawingFixtureOnly:false,viewerPlatform:process.platform,viewerArchitecture:process.arch,viewerBrowser:browser.version(),sourcePlatform:final.platform,sourceArchitecture:final.architecture,sourceBrowser:final.browser,gpuMode:final.gpuMode,beginFrame:final.beginFrame,first,dynamic,animated,imagePixels,textInk,pixelFractionOver24,saved:saved.document.saved,streamText:streamed.document.stream,scrollY:scrolled.document.scrollY,reconnectedControlMode:reconnected.controlMode,missingResourceRecovery,source:final,macInputToLinux:true,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,viewerSourceRequests:0,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,errors};
+ const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,drawingFixtureOnly:false,viewerPlatform:process.platform,viewerArchitecture:process.arch,viewerBrowser:browser.version(),sourcePlatform:final.platform,sourceArchitecture:final.architecture,sourceBrowser:final.browser,gpuMode:final.gpuMode,beginFrame:final.beginFrame,first,dynamic,animated,imagePixels,textInk,pixelFractionOver24,saved:saved.document.saved,savedTextInk,editor:edited.document.editor,editorTextInk,streamText:streamed.document.stream,streamTextInk,missingUpdatedTextRejected:true,cssScaling:true,scrollY:scrolled.document.scrollY,reconnectedControlMode:reconnected.controlMode,missingResourceRecovery,source:final,macInputToLinux:true,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,viewerSourceRequests:0,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,errors};
  await writeFile(join(directory,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
  await command('reset');
 }finally{await page?.close();await browser.close();}

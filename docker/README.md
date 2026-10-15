@@ -59,6 +59,9 @@ screenshots are acceptance comparisons only. Viewer pixels always come from
 CanvasKit replay. The Mac test checks native dynamic frames, image/text pixels,
 animation resource reuse, keyboard/IME/paste, scrolling, reconnect, navigation,
 resize, dropped-resource recovery, and zero capture demand after disconnect.
+Mac input also exercises a CSS-scaled Viewer and rich-text editing; saved input,
+edited text and streamed new glyphs receive separate source/replay ink checks
+that must reject an erased replay.
 Reports are written under `artifacts/linux-mac`; the physical OS IME candidate
 window is outside the automated test's scope.
 
