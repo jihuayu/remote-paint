@@ -4,7 +4,7 @@ import {randomBytes,timingSafeEqual,createHash} from 'node:crypto';
 import {WebSocketServer} from 'ws';
 import {LivePeer} from './peer.mjs';
 const root=new URL('../',import.meta.url);
-export async function startLiveTransport(source,{port=4175,ackTimeout=5000}={}){
+export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackTimeout=5000}={}){
  const wasm=await readFile(new URL('node_modules/canvaskit-wasm/bin/full/canvaskit.wasm',root));
  const renderer={canvaskit:'0.42.0',wasmSha256:createHash('sha256').update(wasm).digest('hex')};
  const producer={chromium:source.browser?.version()??'test',skiaRevision:'29ed1e87a0a50f3d8347e988842d9d59e7573efa',skpVersion:110};
@@ -41,7 +41,7 @@ export async function startLiveTransport(source,{port=4175,ackTimeout=5000}={}){
  const frame=()=>{for(const peer of peers){try{peer.onFrame();}catch{peer.close(1008,'Frame delivery failed');}}};
  const failure=()=>{for(const peer of peers)if(peer.ready&&!peer.closed)peer.send({type:'CaptureError',message:'原生采集暂时失败，正在重试'});};
  source.on('frame',frame);source.on('captureError',failure);
- try{await new Promise((ok,fail)=>{server.once('error',fail);server.listen(port,'127.0.0.1',ok);});}
+ try{await new Promise((ok,fail)=>{server.once('error',fail);server.listen(port,host,ok);});}
  catch(error){source.off('frame',frame);source.off('captureError',failure);await new Promise(r=>wss.close(r));throw error;}
  origin=`http://127.0.0.1:${server.address().port}`;
  return {origin,key,url:`${origin}/#key=${key}`,renderer,peers,
