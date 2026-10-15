@@ -1,0 +1,379 @@
+{
+  "gpuMode": "in-process",
+  "streamText": "正在生成：远程绘制实时更新。中文新字形：龘麤𠮷。Emoji：🌈🚀🧑‍💻。输入和滚动都由原始网页处理。",
+  "streamTextInk": [
+    {
+      "selector": "#stream",
+      "ink": 2345,
+      "uncovered": 0,
+      "uncoveredFraction": 0,
+      "sourceMinContrast": 170.25,
+      "replayMinContrast": 56.75,
+      "neighborhoodPixels": 1
+    }
+  ],
+  "missingStreamTextRejected": true,
+  "captureFailures": [
+    {
+      "phase": "navigation",
+      "message": "cdpSession.send: Protocol error (Runtime.evaluate): Inspected target navigated or closed"
+    },
+    {
+      "phase": "resize",
+      "message": "Navigation invalidated the in-flight capture"
+    }
+  ],
+  "verifiedAt": "2026-10-15T10:05:04.125Z",
+  "nativeDrawing": true,
+  "missingResourceRecovery": {
+    "droppedResources": 1,
+    "keyframeRequests": 1,
+    "recovered": {
+      "protocol": 3,
+      "pageEpoch": 3,
+      "viewportVersion": 2,
+      "frameId": 2,
+      "native": {
+        "captureId": "c8148e52-ccf6-41ed-b966-7648f38a4239",
+        "producer": "31635:3",
+        "namespace": [
+          4,
+          13
+        ],
+        "frameToken": 35,
+        "sourceFrame": 9,
+        "bitmapGlyphs": 0
+      },
+      "lastProcessedInputSeq": 3,
+      "resourceBytes": 1044105,
+      "resources": 3,
+      "resourcesReceived": 5,
+      "receivedBytes": 2101925,
+      "fullFrames": 1,
+      "deltaFrames": 0,
+      "renderMs": 67.90000057220459,
+      "requiredResources": [
+        "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+        "68295b24e3cf7ecf46c386aecb3435c0411dffc4c90f0684d9d3760ba82f6ca4",
+        "ace538fed88b6bba9d7cf7d6de8aeb54ea08cf9a288a88f663c42be169d86d12"
+      ]
+    },
+    "viewerSourceRequests": 0,
+    "errors": []
+  },
+  "sourceBrowser": "155.0.8059.79",
+  "viewerBrowser": "155.0.8059.79",
+  "first": {
+    "protocol": 3,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 1,
+    "native": {
+      "captureId": "b2543b03-2a8d-4536-983c-a0f59fb66305",
+      "producer": "31635:2",
+      "namespace": [
+        4,
+        10
+      ],
+      "frameToken": 108,
+      "sourceFrame": 7,
+      "bitmapGlyphs": 0
+    },
+    "lastProcessedInputSeq": 0,
+    "resourceBytes": 1049741,
+    "resources": 3,
+    "resourcesReceived": 3,
+    "receivedBytes": 1056935,
+    "fullFrames": 1,
+    "deltaFrames": 0,
+    "renderMs": 76.39999961853027,
+    "requiredResources": [
+      "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+      "38fe4e8cbedee504889bc75683d9783c83b523a5165b808c7f1a89bda5855981",
+      "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80"
+    ]
+  },
+  "dynamic": {
+    "protocol": 3,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 3,
+    "native": {
+      "captureId": "48cbd1ac-72e5-4ede-8052-410729b9c722",
+      "producer": "31635:2",
+      "namespace": [
+        4,
+        10
+      ],
+      "frameToken": 123,
+      "sourceFrame": 10,
+      "bitmapGlyphs": 0
+    },
+    "lastProcessedInputSeq": 0,
+    "resourceBytes": 1046445,
+    "resources": 3,
+    "resourcesReceived": 4,
+    "receivedBytes": 1436823,
+    "fullFrames": 1,
+    "deltaFrames": 2,
+    "renderMs": 44.30000019073486,
+    "requiredResources": [
+      "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+      "72b3b43ed26d1aea216b91672bfb04dd49f6896c05c3f30ceb90366f8aa328d3",
+      "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80"
+    ]
+  },
+  "frozen": {
+    "protocol": 3,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 7,
+    "native": {
+      "captureId": "d1c12190-7aec-4032-b85f-f7e67fa5252e",
+      "producer": "31635:2",
+      "namespace": [
+        4,
+        10
+      ],
+      "frameToken": 138,
+      "sourceFrame": 18,
+      "bitmapGlyphs": 0
+    },
+    "lastProcessedInputSeq": 0,
+    "resourceBytes": 1046445,
+    "resources": 3,
+    "resourcesReceived": 4,
+    "receivedBytes": 1457435,
+    "fullFrames": 1,
+    "deltaFrames": 6,
+    "renderMs": 43.80000019073486,
+    "requiredResources": [
+      "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+      "72b3b43ed26d1aea216b91672bfb04dd49f6896c05c3f30ceb90366f8aa328d3",
+      "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80"
+    ]
+  },
+  "animated": {
+    "protocol": 3,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 10,
+    "native": {
+      "captureId": "0a3386e9-7590-4750-a5b2-994270a41fcc",
+      "producer": "31635:2",
+      "namespace": [
+        4,
+        10
+      ],
+      "frameToken": 155,
+      "sourceFrame": 23,
+      "bitmapGlyphs": 0
+    },
+    "lastProcessedInputSeq": 0,
+    "resourceBytes": 1046445,
+    "resources": 3,
+    "resourcesReceived": 4,
+    "receivedBytes": 1477374,
+    "fullFrames": 1,
+    "deltaFrames": 9,
+    "renderMs": 42,
+    "requiredResources": [
+      "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+      "72b3b43ed26d1aea216b91672bfb04dd49f6896c05c3f30ceb90366f8aa328d3",
+      "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80"
+    ]
+  },
+  "streamed": {
+    "protocol": 3,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 41,
+    "native": {
+      "captureId": "9a4a94df-be87-4a60-be31-8c18da20b775",
+      "producer": "31635:2",
+      "namespace": [
+        4,
+        10
+      ],
+      "frameToken": 379,
+      "sourceFrame": 226,
+      "bitmapGlyphs": 3
+    },
+    "lastProcessedInputSeq": 3,
+    "resourceBytes": 1467853,
+    "resources": 3,
+    "resourcesReceived": 23,
+    "receivedBytes": 18776675,
+    "fullFrames": 1,
+    "deltaFrames": 40,
+    "renderMs": 69.90000057220459,
+    "requiredResources": [
+      "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+      "72b3b43ed26d1aea216b91672bfb04dd49f6896c05c3f30ceb90366f8aa328d3",
+      "bf67e56eb29a358bfd276c21fc0770ccf9e4096506df764ddfdb278dc31075da"
+    ]
+  },
+  "beforeReconnect": {
+    "protocol": 3,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 83,
+    "native": {
+      "captureId": "faec9ec9-14e7-4805-97e1-d6d97366fc53",
+      "producer": "31635:2",
+      "namespace": [
+        4,
+        10
+      ],
+      "frameToken": 682,
+      "sourceFrame": 270,
+      "bitmapGlyphs": 3
+    },
+    "lastProcessedInputSeq": 3,
+    "resourceBytes": 1467853,
+    "resources": 3,
+    "resourcesReceived": 23,
+    "receivedBytes": 19056825,
+    "fullFrames": 1,
+    "deltaFrames": 82,
+    "renderMs": 42.70000076293945,
+    "requiredResources": [
+      "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+      "72b3b43ed26d1aea216b91672bfb04dd49f6896c05c3f30ceb90366f8aa328d3",
+      "bf67e56eb29a358bfd276c21fc0770ccf9e4096506df764ddfdb278dc31075da"
+    ]
+  },
+  "recovered": {
+    "protocol": 3,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 2,
+    "native": {
+      "captureId": "2405c9d5-fb57-4739-8ed6-77c2ade8df82",
+      "producer": "31635:2",
+      "namespace": [
+        4,
+        10
+      ],
+      "frameToken": 689,
+      "sourceFrame": 271,
+      "bitmapGlyphs": 3
+    },
+    "lastProcessedInputSeq": 3,
+    "resourceBytes": 1467853,
+    "resources": 3,
+    "resourcesReceived": 3,
+    "receivedBytes": 1481794,
+    "fullFrames": 1,
+    "deltaFrames": 1,
+    "renderMs": 40.89999961853027,
+    "requiredResources": [
+      "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+      "72b3b43ed26d1aea216b91672bfb04dd49f6896c05c3f30ceb90366f8aa328d3",
+      "bf67e56eb29a358bfd276c21fc0770ccf9e4096506df764ddfdb278dc31075da"
+    ]
+  },
+  "navigated": {
+    "protocol": 3,
+    "pageEpoch": 3,
+    "viewportVersion": 1,
+    "frameId": 3,
+    "native": {
+      "captureId": "b057e13e-3fab-429c-9884-2f6ae97fdb10",
+      "producer": "31635:3",
+      "namespace": [
+        4,
+        13
+      ],
+      "frameToken": 6,
+      "sourceFrame": 3,
+      "bitmapGlyphs": 0
+    },
+    "lastProcessedInputSeq": 3,
+    "resourceBytes": 1047437,
+    "resources": 3,
+    "resourcesReceived": 5,
+    "receivedBytes": 2536078,
+    "fullFrames": 2,
+    "deltaFrames": 1,
+    "renderMs": 47.59999942779541,
+    "requiredResources": [
+      "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+      "9ae8f424fc0d48af85f7c2021ab117d953e228432cd1bee8114165c1d014b86d",
+      "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80"
+    ]
+  },
+  "resized": {
+    "protocol": 3,
+    "pageEpoch": 3,
+    "viewportVersion": 2,
+    "frameId": 4,
+    "native": {
+      "captureId": "e6fd85ab-acb0-4285-8f34-dd804b758fbe",
+      "producer": "31635:3",
+      "namespace": [
+        4,
+        13
+      ],
+      "frameToken": 20,
+      "sourceFrame": 6,
+      "bitmapGlyphs": 0
+    },
+    "lastProcessedInputSeq": 3,
+    "resourceBytes": 1047437,
+    "resources": 3,
+    "resourcesReceived": 7,
+    "receivedBytes": 3590536,
+    "fullFrames": 3,
+    "deltaFrames": 1,
+    "renderMs": 38,
+    "requiredResources": [
+      "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+      "30d5d83a1d2f7963ae225a90415cd5b65cf71481edcc98f955c45aeefbcb2ab8",
+      "ace538fed88b6bba9d7cf7d6de8aeb54ea08cf9a288a88f663c42be169d86d12"
+    ]
+  },
+  "imagePixels": [
+    {
+      "selector": "#private-image",
+      "pixelsCompared": 10400,
+      "maxChannelError": 0
+    },
+    {
+      "selector": "#blob-image",
+      "pixelsCompared": 10400,
+      "maxChannelError": 0
+    }
+  ],
+  "textInk": [
+    {
+      "selector": "header h1",
+      "ink": 2166,
+      "uncovered": 0,
+      "uncoveredFraction": 0,
+      "sourceMinContrast": 176.25,
+      "replayMinContrast": 58.75,
+      "neighborhoodPixels": 1
+    },
+    {
+      "selector": "header p",
+      "ink": 686,
+      "uncovered": 0,
+      "uncoveredFraction": 0,
+      "sourceMinContrast": 126.75,
+      "replayMinContrast": 42.25,
+      "neighborhoodPixels": 1
+    }
+  ],
+  "pixelFractionOver24": 0.013683268229166667,
+  "slowClientClose": 1013,
+  "noViewerCapturesInitially": 0,
+  "noViewerCapturesAfterDisconnect": 0,
+  "viewerSourceRequests": 0,
+  "errors": [],
+  "stats": {
+    "captures": 91,
+    "errors": 2,
+    "lastError": null
+  }
+}
