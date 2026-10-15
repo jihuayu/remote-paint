@@ -11,12 +11,15 @@
     "native:build": "node native/build.mjs",
     "verify:fonts": "node tests/verify-fonts.mjs",
     "start": "node server.mjs",
-    "demo": "node server.mjs --directory examples/verified-capture",
+    "demo": "node live.mjs",
     "test": "node --test tests/*.test.mjs",
     "verify": "node tests/verify.mjs",
     "native:chromium": "node native/build-chromium.mjs",
     "verify:native": "node tests/verify-native.mjs",
-    "verify:scene": "node tests/verify-scene.mjs"
+    "verify:scene": "node tests/verify-scene.mjs",
+    "demo:static": "node server.mjs --directory examples/verified-capture",
+    "live": "node live.mjs",
+    "verify:viewer": "node tests/verify-live-viewer.mjs"
   },
   "dependencies": {
     "canvaskit-wasm": "0.42.0",

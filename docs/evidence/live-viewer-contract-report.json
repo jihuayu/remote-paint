@@ -1,0 +1,88 @@
+{
+  "verifiedAt": "2026-10-15T06:02:53.309Z",
+  "contractFixtureOnly": true,
+  "first": {
+    "protocol": 2,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 1,
+    "native": {
+      "captureId": "contract-1",
+      "producer": "contract-fixture",
+      "namespace": [
+        1,
+        2
+      ],
+      "frameToken": 1,
+      "sourceFrame": 1
+    },
+    "lastProcessedInputSeq": 0,
+    "resourceBytes": 33594,
+    "resources": 1,
+    "resourcesReceived": 1,
+    "receivedBytes": 34752,
+    "fullFrames": 1,
+    "deltaFrames": 0,
+    "renderMs": 58.10000038146973,
+    "requiredResources": [
+      "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+    ]
+  },
+  "second": {
+    "protocol": 2,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 2,
+    "native": {
+      "captureId": "contract-2",
+      "producer": "contract-fixture",
+      "namespace": [
+        1,
+        2
+      ],
+      "frameToken": 1,
+      "sourceFrame": 1
+    },
+    "lastProcessedInputSeq": 0,
+    "resourceBytes": 33594,
+    "resources": 1,
+    "resourcesReceived": 1,
+    "receivedBytes": 35606,
+    "fullFrames": 1,
+    "deltaFrames": 1,
+    "renderMs": 29.09999942779541,
+    "requiredResources": [
+      "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+    ]
+  },
+  "recovered": {
+    "protocol": 2,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 1,
+    "native": {
+      "captureId": "contract-3",
+      "producer": "contract-fixture",
+      "namespace": [
+        1,
+        2
+      ],
+      "frameToken": 1,
+      "sourceFrame": 1
+    },
+    "lastProcessedInputSeq": 0,
+    "resourceBytes": 33594,
+    "resources": 1,
+    "resourcesReceived": 1,
+    "receivedBytes": 34755,
+    "fullFrames": 1,
+    "deltaFrames": 0,
+    "renderMs": 31.899999618530273,
+    "requiredResources": [
+      "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+    ]
+  },
+  "slowClientClose": 1013,
+  "sourceDemand": 1,
+  "sourceNetworkRequests": 0
+}
