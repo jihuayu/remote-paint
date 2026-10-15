@@ -41,6 +41,19 @@ if [ ! -x third_party/gperf/cipd/bin/gperf ]; then
   unzip -o /tmp/remote-paint-gperf.zip -d third_party/gperf/cipd
   chmod +x third_party/gperf/cipd/bin/gperf
 fi
+# DevTools pins a patched esbuild in its own DEPS. A Mac-synced checkout
+# contains a Mach-O binary here even when Chromium's Linux Node is present.
+esbuild_dir=third_party/devtools-frontend/src/third_party/esbuild
+esbuild_sha=5b354621aca49a8b134cb339ea00d666bff3b35afd4f7a1e516fe7a2c0fae4f7
+if ! printf '%s  %s\n' "$esbuild_sha" "$esbuild_dir/esbuild" | sha256sum --check --status; then
+  curl --fail --location --retry 3 \
+    'https://chrome-infra-packages.appspot.com/dl/infra/3pp/tools/esbuild/linux-amd64/+/version:3@0.28.2.chromium.2' \
+    -o /tmp/remote-paint-esbuild.zip
+  mkdir -p "$esbuild_dir"
+  unzip -o /tmp/remote-paint-esbuild.zip -d "$esbuild_dir"
+  printf '%s  %s\n' "$esbuild_sha" "$esbuild_dir/esbuild" | sha256sum --check
+  chmod +x "$esbuild_dir/esbuild"
+fi
 node /project/native/prepare.mjs /chromium/src linux-arm64
 mkdir -p out/RemotePaintLinux
 cp /project/native/linux-arm64.args.gn out/RemotePaintLinux/args.gn
