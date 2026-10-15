@@ -11,6 +11,7 @@ export async function startLiveTransport(source,{port=4175,ackTimeout=5000}={}){
  const key=randomBytes(24).toString('hex'),peers=new Set();let origin,closed=false;
  const files=new Map([
   ['/', ['viewer/live.html','text/html; charset=utf-8']],['/live.mjs',['viewer/live.mjs','text/javascript']],
+  ['/input.mjs',['viewer/input.mjs','text/javascript']],
   ['/live.css',['viewer/live.css','text/css']],['/scene-renderer.mjs',['viewer/scene-renderer.mjs','text/javascript']],
   ['/protocol/live-wire.mjs',['protocol/live-wire.mjs','text/javascript']],['/protocol/wire.mjs',['protocol/wire.mjs','text/javascript']],
   ['/vendor/canvaskit.js',['node_modules/canvaskit-wasm/bin/full/canvaskit.js','text/javascript']],
@@ -34,7 +35,7 @@ export async function startLiveTransport(source,{port=4175,ackTimeout=5000}={}){
  const updateDemand=()=>source.setDemand(closed?0:[...peers].filter(p=>p.ready&&!p.closed).length);
  wss.on('connection',ws=>{
   const peer=new LivePeer(ws,source,{renderer,producer,ackTimeout,onReady:updateDemand});peers.add(peer);
-  ws.on('message',(bytes,binary)=>{try{if(binary)throw new Error('Client binary unsupported');peer.message(JSON.parse(bytes.toString()));}catch(error){peer.close(1008,error.message.slice(0,100));}});
+  ws.on('message',(bytes,binary)=>{try{if(binary)throw new Error('Client binary unsupported');Promise.resolve(peer.message(JSON.parse(bytes.toString()))).catch(()=>peer.close(1008,'Message processing failed'));}catch(error){peer.close(1008,error.message.slice(0,100));}});
   const detach=()=>{peer.dispose();peers.delete(peer);updateDemand();};ws.on('close',detach);ws.on('error',detach);
  });
  const frame=()=>{for(const peer of peers){try{peer.onFrame();}catch{peer.close(1008,'Frame delivery failed');}}};

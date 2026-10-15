@@ -1,8 +1,10 @@
+import {ViewerInput} from '/input.mjs';
 import {decodeResource,isHash} from '/protocol/wire.mjs';
 import {LIVE_VERSION,LIVE_LIMITS,LiveFrameGate,RecoveryRequired} from '/protocol/live-wire.mjs';
 import {SceneRenderer} from '/scene-renderer.mjs';
 const $=id=>document.getElementById(id),status=text=>$('status').textContent=text;
 const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
+const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$('control'),label:$('controlState'),send:message=>{if(socket?.readyState===1)socket.send(JSON.stringify(message));}});
 let ck,renderer,sceneRenderer,surface,socket,generation=0,retryTimer,stopped=false,retryDelay=250;
 function fail(error){$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';}
 async function initialize(){
@@ -18,7 +20,7 @@ function draw(frame,resources){
  }finally{output.image.delete();output.surface.delete();}
 }
 async function connect(){
- if(stopped)return;clearTimeout(retryTimer);const current=++generation;socket?.close();sceneRenderer.clear();
+ if(stopped)return;clearTimeout(retryTimer);const current=++generation;socket?.close();input.reset();sceneRenderer.clear();
  document.body.dataset.ready='false';$('error').hidden=true;status('连接绘制通道');
  const key=new URLSearchParams(location.hash.slice(1)).get('key');if(!key)throw new Error('请使用服务端输出的完整 Viewer 链接');
  const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${location.host}/stream?key=${encodeURIComponent(key)}`);socket=ws;ws.binaryType='arraybuffer';
@@ -39,17 +41,18 @@ async function connect(){
     }
     if(size>LIVE_LIMITS.sceneBytes)throw new Error('Metadata budget exceeded');const message=JSON.parse(event.data);
     if(message.type==='Welcome'){
-     if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||message.input!==false)throw new Error('Incompatible live handshake');
-     welcome=true;retryDelay=250;$('build').textContent=`${message.producer.chromium} · Skia ${message.producer.skiaRevision.slice(0,12)} · CanvasKit ${renderer.canvaskit}`;return;
+     if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean')throw new Error('Incompatible live handshake');
+     welcome=true;input.welcome(message);retryDelay=250;$('build').textContent=`${message.producer.chromium} · Skia ${message.producer.skiaRevision.slice(0,12)} · CanvasKit ${renderer.canvaskit}`;return;
     }
     if(!welcome)throw new Error('Message before handshake');
+    if(input.message(message))return;
     if(message.type==='SceneUpdate'){
      try{gate.stage(message.frame);}catch(error){if(error instanceof RecoveryRequired){recover();return;}throw error;}
     }else if(message.type==='FrameCommit'){
      if(recovering&&!gate.pending)return;
      const started=performance.now();const frame=gate.commit(message.pageEpoch,message.frameId,draw);
      if(!frame){recover();return;}
-     gate.collect();sceneRenderer.retain(new Set(gate.resources.keys()));
+     input.display(frame);gate.collect();sceneRenderer.retain(new Set(gate.resources.keys()));
      if(frame.baseFrameId===null)full++;else delta++;recovering=false;
      const renderMs=performance.now()-started;$('error').hidden=true;
      $('frame').textContent=`第 ${frame.frameId} 帧`;$('mode').textContent=frame.baseFrameId===null?'完整场景':'增量更新';
@@ -68,7 +71,7 @@ async function connect(){
   });
  };
  ws.onclose=event=>{
-  if(current!==generation||stopped)return;document.body.dataset.ready='false';
+  if(current!==generation||stopped)return;input.reset();document.body.dataset.ready='false';
   if(event.code===1008){status('连接被拒绝，请检查错误后重新连接');return;}
   status('连接中断，正在重新同步');retryTimer=setTimeout(()=>connect().catch(fail),retryDelay);retryDelay=Math.min(2000,retryDelay*2);
  };

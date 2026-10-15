@@ -1,5 +1,5 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Remote Paint · 实时绘制</title><link rel="stylesheet" href="/live.css"></head><body>
-<header><div><strong>Remote Paint</strong><span class="tag">实时网页</span></div><div class="actions"><span id="status" role="status">正在准备</span><button id="reconnect">重新连接</button></div></header>
-<main><div id="error" role="alert" hidden></div><div class="viewport-wrap"><canvas id="viewport" tabindex="0" aria-label="远程网页画面"></canvas></div>
+<header><div><strong>Remote Paint</strong><span class="tag">实时网页</span></div><div class="actions"><span id="status" role="status">正在准备</span><span id="controlState">只读</span><button id="control" hidden>接管操作</button><button id="reconnect">重新连接</button></div></header>
+<main><div id="error" role="alert" hidden></div><div class="viewport-wrap"><canvas id="viewport" tabindex="0" aria-label="远程网页画面"></canvas><textarea id="inputProxy" aria-label="远程中文与键盘输入" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea></div>
 <footer><span id="frame">等待首帧</span><span id="mode"></span><span id="dimensions"></span><span id="renderTime"></span><span id="bytes"></span></footer><p class="detail" id="build"></p></main>
 <script src="/vendor/canvaskit.js"></script><script type="module" src="/live.mjs"></script></body></html>

@@ -19,7 +19,8 @@
     "verify:scene": "node tests/verify-scene.mjs",
     "demo:static": "node server.mjs --directory examples/verified-capture",
     "live": "node live.mjs",
-    "verify:viewer": "node tests/verify-live-viewer.mjs"
+    "verify:viewer": "node tests/verify-live-viewer.mjs",
+    "verify:input": "node tests/verify-input.mjs"
   },
   "dependencies": {
     "canvaskit-wasm": "0.42.0",

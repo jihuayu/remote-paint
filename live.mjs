@@ -1,3 +1,4 @@
+import {createControl} from './live/input.mjs';
 import {parseArgs} from 'node:util';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -6,9 +7,9 @@ import {startLiveTransport} from './live/transport.mjs';
 import {startDynamicFixture} from './tests/dynamic-fixture.mjs';
 export async function startLive({url,port=4175,executablePath,interval=120}={}){
  const fixture=url?null:await startDynamicFixture();let source,transport;
- try{source=await startLiveSource({url:url??fixture.url,executablePath,interval});transport=await startLiveTransport(source,{port});
-  return {...transport,source,close:async()=>{await transport.close();await source.close();await fixture?.close();}};
- }catch(error){await transport?.close();await source?.close();await fixture?.close();throw error;}
+ try{source=await startLiveSource({url:url??fixture.url,executablePath,interval});source.control=await createControl(source);transport=await startLiveTransport(source,{port});
+  return {...transport,source,close:async()=>{await transport.close();await source.control.close();await source.close();await fixture?.close();}};
+ }catch(error){await transport?.close();await source?.control?.close();await source?.close();await fixture?.close();throw error;}
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
  const {values}=parseArgs({options:{url:{type:'string'},port:{type:'string'},browser:{type:'string'}}});
