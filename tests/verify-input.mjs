@@ -32,6 +32,10 @@ try{
  const cdp=await page.context().newCDPSession(page);
  await cdp.send('Input.imeSetComposition',{text:'中文',selectionStart:2,selectionEnd:2});await cdp.send('Input.imeSetComposition',{text:'中文输入',selectionStart:4,selectionEnd:4});await cdp.send('Input.insertText',{text:'中文输入'});
  await source.page.waitForFunction(()=>document.querySelector('#name').value==='English中文输入');
+ // A later insertion may legitimately repeat the preceding IME commit. Its
+ // text must not be mistaken for the commit's browser-generated duplicate.
+ await page.waitForTimeout(50);await cdp.send('Input.insertText',{text:'中文输入'});
+ await source.page.waitForFunction(()=>document.querySelector('#name').value==='English中文输入中文输入');
  await page.keyboard.press('Meta+A');
  // Clipboard event at the local editor boundary, using plain text only.
  await page.locator('#inputProxy').evaluate(element=>{const transfer=new DataTransfer();transfer.setData('text/plain','粘贴🌈ABC');element.dispatchEvent(new ClipboardEvent('paste',{clipboardData:transfer,bubbles:true,cancelable:true}));});
@@ -69,6 +73,6 @@ try{
  await source.control.input(peer.id,{...grant,seq:grant.nextSeq,event:{kind:'mouse',type:'mousePressed',x:pressed.x+pressed.width/2,y:pressed.y+pressed.height/2,button:'left',buttons:1,clickCount:1}});
  await source.control.revoke('test');assert.equal(await source.page.evaluate(()=>cleanupClicks),0,'Lease cleanup must not activate a button held on disconnect');await cdp.detach();assert.ok(requests.every(origin=>origin===live.origin));assert.deepEqual(errors,[]);
  await mkdir('artifacts/input',{recursive:true});await page.screenshot({path:'artifacts/input/viewer.png'});
- const report={verifiedAt:new Date().toISOString(),nativeDrawing:native,drawingFixtureOnly:!native,sourceBrowser:source.page.context().browser().version(),viewerBrowser:viewerBrowser.version(),sourceInput:await source.page.locator('#name').inputValue(),saved:await source.page.locator('#saved').textContent(),editor:await source.page.locator('#editor').innerText(),newlineArrowDeleteAndTab:true,scrollY:scrollAfterWheel,cssScaling:true,inputPixelsFractionOver24,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,leaseAndStaleTags:true,heldButtonCleanupWithoutClick:true,pointerCaptureCleanupWithoutClick:true,lastProcessedInputSeq:source.inputSeq,viewerSourceRequests:0,errors};
+ const report={verifiedAt:new Date().toISOString(),nativeDrawing:native,drawingFixtureOnly:!native,sourceBrowser:source.page.context().browser().version(),viewerBrowser:viewerBrowser.version(),sourceInput:await source.page.locator('#name').inputValue(),saved:await source.page.locator('#saved').textContent(),editor:await source.page.locator('#editor').innerText(),newlineArrowDeleteAndTab:true,scrollY:scrollAfterWheel,cssScaling:true,inputPixelsFractionOver24,imeViaActualLocalAndRemoteCDP:true,repeatedImeTextInsertion:true,physicalOsImeCandidateWindowTested:false,leaseAndStaleTags:true,heldButtonCleanupWithoutClick:true,pointerCaptureCleanupWithoutClick:true,lastProcessedInputSeq:source.inputSeq,viewerSourceRequests:0,errors};
  await writeFile('artifacts/input/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await viewerBrowser.close();await live?.close();if(!native){await source?.control?.close();await sourceBrowser?.close();await fixture?.close();}}

@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-15T07:16:42.853Z",
+  "verifiedAt": "2026-10-15T07:53:19.604Z",
   "nativeDrawing": false,
   "drawingFixtureOnly": true,
   "sourceBrowser": "155.0.8059.79",
@@ -12,11 +12,12 @@
   "cssScaling": true,
   "inputPixelsFractionOver24": null,
   "imeViaActualLocalAndRemoteCDP": true,
+  "repeatedImeTextInsertion": true,
   "physicalOsImeCandidateWindowTested": false,
   "leaseAndStaleTags": true,
   "heldButtonCleanupWithoutClick": true,
   "pointerCaptureCleanupWithoutClick": true,
-  "lastProcessedInputSeq": 82,
+  "lastProcessedInputSeq": 83,
   "viewerSourceRequests": 0,
   "errors": []
 }

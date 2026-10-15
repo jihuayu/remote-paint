@@ -21,10 +21,11 @@ export class ViewerInput {
   proxy.addEventListener('paste',e=>{if(!this.active)return;e.preventDefault();this.push({kind:'text',text:e.clipboardData.getData('text/plain')});proxy.value='';});
   proxy.addEventListener('compositionstart',()=>{if(!this.active)return;this.composing=true;this.push({kind:'composition',phase:'start',text:''});});
   proxy.addEventListener('compositionupdate',e=>{if(this.active)this.push({kind:'composition',phase:'update',text:e.data});});
-  proxy.addEventListener('compositionend',e=>{if(!this.active)return;this.composing=false;this.suppressText=e.data;this.push({kind:'composition',phase:e.data?'commit':'cancel',text:e.data});proxy.value='';});
+  proxy.addEventListener('compositionend',e=>{if(!this.active)return;this.composing=false;this.push({kind:'composition',phase:e.data?'commit':'cancel',text:e.data});proxy.value='';});
   proxy.addEventListener('beforeinput',e=>{
    if(!this.active)return;if(this.composing||e.isComposing)return;e.preventDefault();
-   if(e.data&&e.data===this.suppressText){this.suppressText=null;return;}
+   // Composition text was handled while isComposing was true. A later
+   // insertText is a distinct edit, even when it equals the last IME commit.
    if(e.inputType==='insertText'&&e.data)this.push({kind:'text',text:e.data});
   });
   proxy.addEventListener('input',()=>{if(!this.composing)proxy.value='';});
@@ -34,7 +35,7 @@ export class ViewerInput {
  tags(){return {sessionId:this.sessionId,pageEpoch:this.frame?.pageEpoch,viewportVersion:this.frame?.viewportVersion,lease:this.lease};}
  welcome(message){this.reset();this.frame=null;this.enabled=message.input;this.sessionId=message.sessionId;this.peerId=message.peerId;this.button.hidden=!this.enabled;}
  display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=frame;this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);}
- reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.pending=null;this.queue=[];this.composing=false;this.suppressText=null;this.proxy.value='';this.proxy.blur();this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
+ reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.pending=null;this.queue=[];this.composing=false;this.proxy.value='';this.proxy.blur();this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
  message(message){
   if(message.type==='ControlState'){
    this.mode=message.mode;if(message.mode!=='human'||message.holder!==this.peerId){this.reset();this.button.disabled=!this.enabled||!this.frame||message.mode!=='agent';}
