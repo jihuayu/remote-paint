@@ -42,3 +42,12 @@ already being encoded never claims to contain later input.
 Each picture is replayed into an isolated transparent layer. Native recording preambles may use `clear`/Src; drawing them directly into a composed pass would erase earlier quads through transparent corners. The picture layer is blended back over the pass after replay. A raster regression covers a clearing circle over an opaque background.
 
 CanvasKit CPU surfaces own a separate Wasm pixel allocation. Scene pass cleanup, Viewer resize and page exit use `surface.dispose()`, which frees that allocation and then deletes the native surface. A test intercepts the actual CanvasKit `_malloc`/`_free` calls: 100 two-pass frames plus a failing render allocate and free all 202 pixel buffers, retaining zero after each completed frame/error (`docs/evidence/surface-lifecycle-report.json`).
+
+Render-pass surfaces now use premultiplied RGBA. CanvasKit's default
+`MakeSurface` uses unpremultiplied alpha for HTML ImageData; using that format
+for intermediate layers forced a full-surface conversion on every layer
+restore. The premultiplied surface owns its Wasm allocation and releases it on
+dispose or a refused native allocation. Real native scroll/input pixel checks
+and translucent nested-pass tests cover the change. The [Mac measurement](evidence/mac-premultiplied-passes.json)
+records about 25 ms Viewer replay instead of 54 ms, with 180.7 ms median and
+212.7 ms p95 input-to-pixel latency under concurrent Linux compilation.

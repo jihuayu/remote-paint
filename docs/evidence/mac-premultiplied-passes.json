@@ -1,0 +1,225 @@
+{
+  "scope": "Actual macOS native SKP/Viz with premultiplied intermediate pass surfaces; Linux acceptance pending",
+  "rendererSha256": "fc7a01833a7e208a098e25a74fa0fde0a7231faa2a2df6f83b07e776925b5dc3",
+  "latency": {
+    "verifiedAt": "2026-10-15T16:04:12.517Z",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "gpuMode": "in-process",
+    "beginFrame": null,
+    "viewerPlatform": "darwin",
+    "sourceBrowser": "155.0.8059.79",
+    "viewerBrowser": "155.0.8059.79",
+    "nativeDrawing": true,
+    "executableSha256": "7e19d5a2e81bf15d1c4010eeb510131c12cf2ead78f26c8905d9714b1703c234",
+    "captureIntervalMs": 120,
+    "captureOnInput": true,
+    "inputStyle": {
+      "borderRadius": "6px",
+      "caretColor": "rgb(23, 42, 64)"
+    },
+    "sourceStats": {
+      "captures": 41,
+      "errors": 0,
+      "lastError": null
+    },
+    "captureMs": {
+      "samples": [
+        88.52829199999996,
+        76.10362499999974,
+        66.56174999999985,
+        64.23074999999972,
+        91.02329199999986,
+        106.6952080000001,
+        89.86845799999992,
+        110.69158299999981,
+        96.75533299999915,
+        86.86162499999955,
+        94.66854200000034,
+        91.54449999999997,
+        92.1723750000001,
+        87.78712499999983,
+        96.85633299999972,
+        89.21729099999993,
+        92.6375420000004,
+        88.59920799999963,
+        102.04212499999994,
+        106.16525000000001,
+        108.45954100000017,
+        91.84029099999952,
+        99.45629199999985,
+        88.67754200000036,
+        90.01766599999974,
+        88.60308299999997,
+        89.91595900000084,
+        88.14983299999949,
+        92.67150000000038,
+        87.42716699999983,
+        98.00504099999944,
+        91.76341700000012,
+        95.38808399999925,
+        90.97866599999998,
+        102.61949999999979,
+        95.60029200000008,
+        101.61650000000009,
+        96.35862500000076,
+        86.44633299999987,
+        89.85850000000028,
+        98.56841699999859
+      ],
+      "p50": 91.76341700000012,
+      "p95": 106.6952080000001
+    },
+    "scope": "Viewer keydown to matching native source paint observed in the CanvasKit canvas; excludes physical keyboard and monitor scanout",
+    "samples": [
+      {
+        "key": "A",
+        "inputToPixelsMs": 200.69999980926514,
+        "frameId": 5,
+        "inputSequence": 5,
+        "renderMs": 29.100000381469727
+      },
+      {
+        "key": "B",
+        "inputToPixelsMs": 201.39999961853027,
+        "frameId": 7,
+        "inputSequence": 7,
+        "renderMs": 24.600000381469727
+      },
+      {
+        "key": "C",
+        "inputToPixelsMs": 202.5999994277954,
+        "frameId": 9,
+        "inputSequence": 9,
+        "renderMs": 25
+      },
+      {
+        "key": "D",
+        "inputToPixelsMs": 145.5,
+        "frameId": 11,
+        "inputSequence": 10,
+        "renderMs": 25.199999809265137
+      },
+      {
+        "key": "E",
+        "inputToPixelsMs": 187.9000005722046,
+        "frameId": 14,
+        "inputSequence": 13,
+        "renderMs": 24.800000190734863
+      },
+      {
+        "key": "F",
+        "inputToPixelsMs": 133.10000038146973,
+        "frameId": 16,
+        "inputSequence": 14,
+        "renderMs": 25.200000762939453
+      },
+      {
+        "key": "G",
+        "inputToPixelsMs": 208.69999980926514,
+        "frameId": 19,
+        "inputSequence": 17,
+        "renderMs": 24.800000190734863
+      },
+      {
+        "key": "H",
+        "inputToPixelsMs": 174.9000005722046,
+        "frameId": 21,
+        "inputSequence": 19,
+        "renderMs": 24.800000190734863
+      },
+      {
+        "key": "I",
+        "inputToPixelsMs": 162.0999994277954,
+        "frameId": 23,
+        "inputSequence": 20,
+        "renderMs": 25
+      },
+      {
+        "key": "J",
+        "inputToPixelsMs": 122.5,
+        "frameId": 25,
+        "inputSequence": 22,
+        "renderMs": 24.699999809265137
+      },
+      {
+        "key": "K",
+        "inputToPixelsMs": 180.69999980926514,
+        "frameId": 28,
+        "inputSequence": 25,
+        "renderMs": 24.699999809265137
+      },
+      {
+        "key": "L",
+        "inputToPixelsMs": 212.69999980926514,
+        "frameId": 31,
+        "inputSequence": 27,
+        "renderMs": 24.59999942779541
+      },
+      {
+        "key": "M",
+        "inputToPixelsMs": 183.39999961853027,
+        "frameId": 33,
+        "inputSequence": 29,
+        "renderMs": 24.699999809265137
+      },
+      {
+        "key": "N",
+        "inputToPixelsMs": 171.5,
+        "frameId": 35,
+        "inputSequence": 31,
+        "renderMs": 24.59999942779541
+      },
+      {
+        "key": "O",
+        "inputToPixelsMs": 158.69999980926514,
+        "frameId": 37,
+        "inputSequence": 32,
+        "renderMs": 25
+      },
+      {
+        "key": "P",
+        "inputToPixelsMs": 202.19999980926514,
+        "frameId": 40,
+        "inputSequence": 35,
+        "renderMs": 24.800000190734863
+      }
+    ],
+    "p50Ms": 180.69999980926514,
+    "p95Ms": 212.69999980926514,
+    "maxMs": 212.69999980926514,
+    "meanMs": 178.03749990463257,
+    "errors": []
+  },
+  "nativeScene": {
+    "scrollingReusesResources": true,
+    "animationChangesScene": true,
+    "stages": [
+      {
+        "offset": 0,
+        "pixelFractionOver24": 0.013727213541666667,
+        "headerChangedPixels": 1236
+      },
+      {
+        "offset": 700,
+        "pixelFractionOver24": 0.030021158854166667,
+        "headerChangedPixels": 1236
+      },
+      {
+        "offset": 0,
+        "pixelFractionOver24": 0.013727213541666667,
+        "headerChangedPixels": 1236
+      }
+    ]
+  },
+  "nativeInput": {
+    "nativeDrawing": true,
+    "lastProcessedInputSeq": 83,
+    "inputPixelsFractionOver24": 0.05383966244725739,
+    "leaseAndStaleTags": true,
+    "heldButtonCleanupWithoutClick": true,
+    "pointerCaptureCleanupWithoutClick": true,
+    "errors": []
+  },
+  "allocationRegression": "Real CanvasKit allocator checks cover 202 released frame buffers and one additional buffer released after native surface refusal"
+}

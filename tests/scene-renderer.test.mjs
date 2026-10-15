@@ -46,6 +46,16 @@ test('CanvasKit composites an earlier render pass at its actual output origin',(
  finally{output.image.delete();output.surface.dispose();renderer.clear();}
 });
 
+test('premultiplied pass surfaces preserve translucent colors through nested passes',()=>{
+ const renderer=new SceneRenderer(ck),output=renderer.render({rootPass:'root',passes:[
+  {id:'child',output:rect,quads:[solid([1,0.5,0,0.5])]},
+  {id:'root',output:rect,quads:[{kind:'pass',passId:'child',matrix,rect,visible:rect,clip:null,opacity:0.5}]},
+ ]},new Map());
+ try{const png=PNG.sync.read(Buffer.from(output.image.encodeToBytes())),actual=pixel(png,50,50);
+  [255,128,0,64].forEach((value,c)=>assert.ok(Math.abs(actual[c]-value)<=1,`${actual}`));
+ }finally{output.image.delete();output.surface.dispose();renderer.clear();}
+});
+
 test('full pictures honor rebased tile origins after clipping in quad coordinates',()=>{
  const recorder=new ck.PictureRecorder(),canvas=recorder.beginRecording(rect),paint=new ck.Paint();
  paint.setColor([1,0,0,1]);canvas.drawRect([0,0,100,50],paint);
@@ -91,5 +101,12 @@ test('CanvasKit frees actual CPU surface pixel buffers across frames and render 
   assert.throws(()=>renderer.render(scene,new Map()),/Unsupported scene command/);
   assert.equal(live.size,0,'Failed rendering must release every surface buffer');
   assert.equal(allocated,202);assert.equal(freed,allocated);
+  const makeSurface=ck.MakeRasterDirectSurface;
+  try{
+   ck.MakeRasterDirectSurface=()=>null;
+   assert.throws(()=>renderer.render({rootPass:'root',passes:[{id:'root',output:rect,quads:[]}]},new Map()),/Cannot allocate/);
+   assert.equal(live.size,0,'A refused native surface must free its already allocated buffer');
+   assert.equal(allocated,203);assert.equal(freed,allocated);
+  }finally{ck.MakeRasterDirectSurface=makeSurface;}
  }finally{renderer.clear();ck._malloc=malloc;ck._free=free;}
 });

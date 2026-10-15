@@ -9,7 +9,7 @@ export class SceneRenderer {
    for(const pass of scene.passes){
     const [x,y,right,bottom]=pass.output,width=right-x,height=bottom-y;
     if(![width,height].every(n=>Number.isInteger(n)&&n>0&&n<=8192)||(totalPixels+=width*height)>32*1024*1024)throw new Error('Render-pass surface budget exceeded');
-    const surface=ck.MakeSurface(width,height);if(!surface)throw new Error('Cannot allocate render-pass surface');
+    const surface=makePremultipliedSurface(ck,width,height);if(!surface)throw new Error('Cannot allocate render-pass surface');
     const canvas=surface.getCanvas();canvas.clear(ck.TRANSPARENT);canvas.translate(-x,-y);
     const record={surface,output:pass.output,image:null};passes.set(pass.id,record);
     for(const q of [...pass.quads].reverse()){
@@ -50,4 +50,19 @@ export class SceneRenderer {
    const output={surface:root.surface,image:root.image,output:root.output};passes.delete(scene.rootPass);return output;
   }finally{for(const p of passes.values()){p.image?.delete();p.surface.dispose();}}
  }
+}
+
+// CanvasKit.MakeSurface uses Unpremul for HTML ImageData. Intermediate Skia
+// layers should stay premultiplied: otherwise every saveLayer restore and
+// image blend converts the whole destination between alpha representations.
+function makePremultipliedSurface(ck,width,height){
+ const pixels=ck.Malloc(Uint8Array,width*height*4);let surface;
+ try{
+  surface=ck.MakeRasterDirectSurface({width,height,colorType:ck.ColorType.RGBA_8888,
+   alphaType:ck.AlphaType.Premul,colorSpace:ck.ColorSpace.SRGB},pixels,width*4);
+  if(!surface){ck.Free(pixels);return null;}
+ }catch(error){ck.Free(pixels);throw error;}
+ let disposed=false;
+ surface.dispose=()=>{if(disposed)return;disposed=true;try{surface.delete();}finally{ck.Free(pixels);}};
+ return surface;
 }
