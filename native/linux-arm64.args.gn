@@ -1,0 +1,17 @@
+target_os = "linux"
+target_cpu = "arm64"
+is_debug = false
+is_component_build = false
+symbol_level = 0
+blink_symbol_level = 0
+v8_symbol_level = 0
+use_remoteexec = false
+use_siso = false
+use_thin_lto = false
+enable_paint_preview = true
+use_gtk = false
+use_qt = false
+ozone_auto_platforms = false
+ozone_platform_headless = true
+ozone_platform_x11 = false
+ozone_platform_wayland = false

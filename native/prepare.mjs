@@ -8,7 +8,9 @@ if (!process.argv[2]) throw new Error('Usage: node native/prepare.mjs /path/to/c
 const expected = 'a49e2e3d4addfd84e765b52afe230bedb81096db';
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim();
 if (revision !== expected) throw new Error(`Expected Chromium ${expected}, got ${revision}`);
-const output = join(source, 'out/RemotePaint');
+const platform = process.argv[3] ?? 'mac-arm64';
+if (!['mac-arm64', 'linux-arm64'].includes(platform)) throw new Error('Unknown build platform');
+const output = join(source, platform === 'mac-arm64' ? 'out/RemotePaint' : 'out/RemotePaintLinux');
 await mkdir(output, { recursive: true });
 const statePath=join(output,'remote-paint-patches.json');
 const state=JSON.parse(await readFile(statePath,'utf8').catch(error=>{if(error.code==='ENOENT')return '{}';throw error;}));
@@ -33,5 +35,5 @@ if (!build.includes('group("remote_paint_tools") {\n  testonly = true')) {
   build = build.replace('group("remote_paint_tools") {', 'group("remote_paint_tools") {\n  testonly = true');
   await writeFile(rootBuild, build);
 }
-await cp(new URL('./mac-arm64.args.gn', import.meta.url), join(output, 'args.gn'));
+await cp(new URL(`./${platform}.args.gn`, import.meta.url), join(output, 'args.gn'));
 console.log(`Prepared ${source}; generate out/RemotePaint and build remote_paint_tools`);
