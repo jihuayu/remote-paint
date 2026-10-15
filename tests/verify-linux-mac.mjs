@@ -87,7 +87,8 @@ try{
  const inputLatency={baseline,optimized,inputStyle:optimizedProbe.inputStyle,p50ImprovementMs:baseline.p50Ms-optimized.p50Ms,p95ImprovementMs:baseline.p95Ms-optimized.p95Ms};
  await writeFile(join(directory,'input-latency.json'),JSON.stringify(inputLatency,null,2));
  assert.ok(optimized.p50Ms<baseline.p50Ms,`Input capture did not improve median latency: ${JSON.stringify(inputLatency)}`);
- await command('latency-done');
+ const latencyState=(await command('latency-done')).state;
+ assert.equal(latencyState.stats.errors,0,latencyState.stats.lastError);
  await page.keyboard.press('Meta+A');await page.keyboard.type('Mac');
  await waitSource(s=>s.document.name==='Mac');
  const cdp=await page.context().newCDPSession(page);
@@ -116,9 +117,9 @@ try{
  const missingResourceRecovery=await recoverDroppedResource(browser,ready);
  await page.screenshot({path:join(directory,'mac-viewer.png')});await cdp.detach();await page.close();page=null;
  const disconnected=await waitSource(s=>s.demand===0);await delay(500);const final=(await command('snapshot')).state;
- assert.equal(final.captures,disconnected.captures);assert.ok(final.beginFrame.acked>0);assert.equal(final.beginFrame.errors,0);assert.equal(final.stats.errors,0,final.stats.lastError);
+ assert.equal(final.captures,disconnected.captures);assert.ok(final.beginFrame.acked>0);assert.equal(final.beginFrame.errors,0);assert.equal(final.stats.lastError,null,'Capture must recover after intentional navigation/resize');
  assert.ok(requests.every(origin=>origin===ready.origin));assert.deepEqual(errors,[]);
- const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,drawingFixtureOnly:false,viewerPlatform:process.platform,viewerArchitecture:process.arch,viewerBrowser:browser.version(),sourcePlatform:final.platform,sourceArchitecture:final.architecture,sourceBrowser:final.browser,gpuMode:final.gpuMode,beginFrame:final.beginFrame,first,dynamic,animated,imagePixels,textInk,pixelFractionOver24,saved:saved.document.saved,savedTextInk,editor:edited.document.editor,editorTextInk,streamText:streamed.document.stream,streamTextInk,missingUpdatedTextRejected:true,cssScaling:true,scrollY:scrolled.document.scrollY,reconnectedControlMode:reconnected.controlMode,missingResourceRecovery,source:final,macInputToLinux:true,inputLatency,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,viewerSourceRequests:0,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,errors};
+ const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,drawingFixtureOnly:false,viewerPlatform:process.platform,viewerArchitecture:process.arch,viewerBrowser:browser.version(),sourcePlatform:final.platform,sourceArchitecture:final.architecture,sourceBrowser:final.browser,gpuMode:final.gpuMode,beginFrame:final.beginFrame,first,dynamic,animated,imagePixels,textInk,pixelFractionOver24,saved:saved.document.saved,savedTextInk,editor:edited.document.editor,editorTextInk,streamText:streamed.document.stream,streamTextInk,missingUpdatedTextRejected:true,cssScaling:true,scrollY:scrolled.document.scrollY,reconnectedControlMode:reconnected.controlMode,missingResourceRecovery,source:final,macInputToLinux:true,inputLatency,steadyInputCaptureErrors:latencyState.stats.errors,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,viewerSourceRequests:0,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,errors};
  await writeFile(join(directory,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
  await command('reset');
 }finally{await page?.close();await browser.close();}

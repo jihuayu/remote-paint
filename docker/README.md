@@ -91,7 +91,10 @@ The Mac latency check retains the ordinary input radius and visible caret.
 It compares the 120 ms periodic baseline with input-triggered capture on the
 same Linux source and Mac Viewer. Sixteen keydown-to-actual-pixel samples per
 mode produce p50/p95/maximum values in `input-latency.json`; median improvement
-and zero native capture errors are required. InputAck alone cannot satisfy
+and zero native capture errors during the input measurements are required.
+Intentional navigation/resize can cancel an in-flight capture; the report
+retains those errors and requires later recovery to a clear final error state.
+InputAck alone cannot satisfy
 the check. Physical keyboard and display scanout delay are outside its scope.
 Reports are written under `artifacts/linux-mac`; the physical OS IME candidate
 window is outside the automated test's scope.
