@@ -1,0 +1,30 @@
+--- a/services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc
++++ b/services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc
+@@ -48,7 +48,8 @@
+   }
+   out->frame_token = data.frame_token();
+   if (!data.ReadRemotePaintCaptureId(&out->remote_paint_capture_id) ||
+-      out->remote_paint_capture_id.size() > 128) return false;
++      out->remote_paint_capture_id.size() > 128)
++    return base::unexpected(DeserializationError());
+ 
+   if (!data.ReadContentColorUsage(&out->content_color_usage)) {
+     return base::unexpected(DeserializationError());
+--- a/cc/BUILD.gn
++++ b/cc/BUILD.gn
+@@ -27,7 +27,6 @@
+   ]
+   deps = [
+     "//base",
+-    "//components/remote_paint:capture",
+     "//ui/gfx",
+     "//ui/gfx/geometry",
+   ]
+@@ -520,6 +519,7 @@
+   deps = [
+     "//base",
+     "//build:chromeos_buildflags",
++    "//components/remote_paint:capture",
+     "//components/metrics/dwa:dwa_builders",
+     "//components/metrics/dwa/mojom",
+     "//components/viz/client",

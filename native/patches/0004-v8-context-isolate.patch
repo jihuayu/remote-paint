@@ -1,0 +1,12 @@
+--- a/content/renderer/gpu_benchmarking_extension.cc
++++ b/content/renderer/gpu_benchmarking_extension.cc
+@@ -621,7 +621,8 @@
+ 
+ void GpuBenchmarking::InstallInContext(base::WeakPtr<RenderFrameImpl> frame,
+                                        v8::Local<v8::Context> context) {
+-  v8::Isolate* isolate = context->GetIsolate();
++  v8::Isolate* isolate =
++      frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+   v8::Context::Scope context_scope(context);
+ 
+   auto* controller = cppgc::MakeGarbageCollected<GpuBenchmarking>(

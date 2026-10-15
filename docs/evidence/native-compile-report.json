@@ -1,0 +1,21 @@
+{
+  "verifiedAt": "2026-10-15T06:22:12.257289+00:00",
+  "chromium": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+  "platform": "macOS arm64",
+  "compiler": "Chromium pinned clang llvmorg-24-init-7747-g62397f8b-27",
+  "compiledObjects": [
+    "capture_state.o",
+    "viz_capture.o",
+    "layer_tree_host_impl.o",
+    "gpu_benchmarking_extension.o",
+    "render_frame_impl.o",
+    "surface_aggregator.o",
+    "compositor_frame_metadata_mojom_traits.o"
+  ],
+  "gnHeaderChecks": [
+    "//cc:cc",
+    "//content/renderer:renderer"
+  ],
+  "browserLinked": false,
+  "nativeRuntimeAccepted": false
+}
