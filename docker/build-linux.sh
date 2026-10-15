@@ -16,5 +16,7 @@ fi
 node /project/native/prepare.mjs /chromium/src linux-arm64
 mkdir -p out/RemotePaintLinux
 cp /project/native/linux-arm64.args.gn out/RemotePaintLinux/args.gn
-buildtools/linux64/gn gen out/RemotePaintLinux
-ninja -C out/RemotePaintLinux -j"${BUILD_JOBS:-4}" headless_shell remote_paint_tools
+buildtools/linux64/gn gen out/RemotePaintLinux \
+  --script-executable=/chromium/src/third_party/cpython3/linux-amd64/bin/python3
+ninja -C out/RemotePaintLinux -j"${BUILD_JOBS:-4}" remote_paint_tools
+ninja -C out/RemotePaintLinux -j"${BUILD_JOBS:-4}" headless_shell

@@ -13,7 +13,15 @@ if (!['mac-arm64', 'linux-arm64'].includes(platform)) throw new Error('Unknown b
 const output = join(source, platform === 'mac-arm64' ? 'out/RemotePaint' : 'out/RemotePaintLinux');
 await mkdir(output, { recursive: true });
 const statePath=join(output,'remote-paint-patches.json');
-const state=JSON.parse(await readFile(statePath,'utf8').catch(error=>{if(error.code==='ENOENT')return '{}';throw error;}));
+const readState=async path=>JSON.parse(await readFile(path,'utf8').catch(error=>{if(error.code==='ENOENT')return '{}';throw error;}));
+const state=await readState(statePath);
+// Patches modify the source tree, so a cloned, already prepared checkout keeps
+// their receipt even when its toolchain/output switches platforms. Later
+// patches can overlap earlier hunks; reverse-checking each alone is invalid.
+if(!Object.keys(state).length){
+ const previous=join(source,platform==='linux-arm64'?'out/RemotePaint':'out/RemotePaintLinux','remote-paint-patches.json');
+ Object.assign(state,await readState(previous));
+}
 for(const name of (await readdir(new URL('./patches/',import.meta.url))).filter(n=>n.endsWith('.patch')).sort()) {
   const patch=new URL(`./patches/${name}`,import.meta.url);
   const hash=createHash('sha256').update(await readFile(patch)).digest('hex');
@@ -23,6 +31,7 @@ for(const name of (await readdir(new URL('./patches/',import.meta.url))).filter(
   catch {execFileSync('git',['apply',patch.pathname],{cwd:source,stdio:'inherit'});}
   state[name]=hash;await writeFile(statePath,JSON.stringify(state,null,2));
 }
+await writeFile(statePath,JSON.stringify(state,null,2));
 await mkdir(join(source, 'components/remote_paint'), { recursive: true });
 await cp(new URL('./chromium/', import.meta.url), join(source, 'components/remote_paint'), { recursive: true });
 const rootBuild = join(source, 'BUILD.gn');
@@ -36,4 +45,4 @@ if (!build.includes('group("remote_paint_tools") {\n  testonly = true')) {
   await writeFile(rootBuild, build);
 }
 await cp(new URL(`./${platform}.args.gn`, import.meta.url), join(output, 'args.gn'));
-console.log(`Prepared ${source}; generate out/RemotePaint and build remote_paint_tools`);
+console.log(`Prepared ${source}; generate ${output} and build remote_paint_tools`);
