@@ -6,12 +6,13 @@
 
 ## 当前验收状态
 
-- 动态字形子集及认证/blob 图片：真实 Chrome + 原生序列化器 + CanvasKit 对照通过。
-- 原生捕获与 Viz 配对：相关 C++ 文件全部通过 pinned Chromium 编译，cc/renderer GN 头文件依赖检查通过；**完整浏览器构建及原生运行验收仍在进行**。
-- 增量、原子提交、缓存释放、慢客户端、重连：实际 WebSocket 和浏览器 Viewer 通过，绘图输入为明确声明的 SKP fixture。
-- 输入与控制租约：真实源 Chrome 和 Viewer 通过鼠标、滚轮、键盘、中文 composition、粘贴、删除、选区替换、富文本、CSS 坐标缩放、交接及旧标签拒绝；这次输入边界验收的显示仍使用 fixture。
+- **3 字体和图片**：真实动态页面新增中文、罕见字、Emoji；原 glyph/位置和字体子集重放，bitmap 字形保留源像素，认证/blob 图片内部像素一致。
+- **4 原生捕获**：完整定制 Chromium 已构建并运行。隔离世界 API、错误 token 拒绝、无 Viewer 零采集、后台编码和真实 Unix IPC 均通过。[原生捕获报告](docs/evidence/native-capture-report.json)
+- **5 内容与合成映射**：实际 Viz 场景配对，固定头部与 0/700/0 滚动正确，内容 hash/revision 复用；全页超过 24/255 通道误差的像素约 1.37%–3.00%。[场景报告](docs/evidence/native-scene-report.json)
+- **6 动态增量和恢复**：原生 SKP 经真实 WS 重放；计数和流式文字更新、合成动画资源复用、慢客户端隔离、重连、导航、resize 和实际丢 SKP 后关键帧恢复通过。[完整动态报告](docs/evidence/native-live-report.json)
+- **7 输入与控制租约**：真实源页面和动态 Viewer 通过鼠标、滚轮、键盘、中文 composition、粘贴、删除、选区替换、富文本、CSS 坐标缩放、交接及旧标签拒绝，83 条输入。[原生输入报告](docs/evidence/native-input-report.json)
 
-以上边界分别记录于 [验收证据](docs/evidence/)；fixture 验证不代表原生动态显示已经验收完成。
+完整动态对照全页差异为 1.37%；流式文字区域 2345 个强墨迹像素全部获得邻域覆盖，并验证去掉文字会失败。导航/resize 中断了两次在途捕获，后续新 epoch/viewport 均恢复，最终错误状态为空。CanvasKit 实际像素缓冲分配/释放为 202/202、残留 0。[资源生命周期报告](docs/evidence/surface-lifecycle-report.json) 保留的 fixture 报告仍只证明各自契约。
 
 ## 构建与启动动态版本
 
@@ -28,7 +29,7 @@ npm run demo -- --url http://127.0.0.1:3000
 
 打开终端输出的完整 Viewer 链接（含 `#key=`）。默认测试页含动态计数、CSS 合成动画、中文/Emoji 流式追加、认证及 blob 图片、表单、富文本和长列表。点击“接管操作”后操作画面；“交还 Agent”恢复受管 Agent 输入。没有 Viewer 时停止额外采集，源网页继续运行。
 
-动态版本必须使用自编译的 `captureRemotePaint` API，普通 Chrome 会明确报错。项目保留软件 raster 对照路径；图片以浏览器驻留像素编码进 SKP，不从 Viewer 访问源站。GPU 图片、子 Surface、3D 排序、复杂 masks/filters 会明确拒绝，未声称覆盖所有网页。
+动态版本必须使用自编译的 `captureRemotePaint` API，普通 Chrome 会明确报错。本机使用 `--in-process-gpu`，GPU/Viz 位于浏览器进程，Renderer 保持独立进程；独立 GPU 子进程启动在本机未通过。项目保留软件 raster 对照路径；图片以浏览器驻留像素编码进 SKP，不从 Viewer 访问源站。GPU 图片、子 Surface、3D 排序、复杂 masks/filters 会明确拒绝，未声称覆盖所有网页。
 
 ## 验证
 
@@ -43,7 +44,7 @@ npm run verify:scene    # 固定头部、0/700/0滚动、合成动画与 Chrome 
 npm run verify:live     # 完整动态链路、字形更新、动画复用、慢客户端、导航/重连/resize
 ```
 
-文字重放沿用服务器的 glyph 和字形位置。字体子集与原字体存在已测量的抗锯齿容差；具体像素阈值和结果见 [字体/图片报告](docs/evidence/font-image-report.json)。中文 IME 验证使用真实本地及远端 CDP composition；物理系统候选窗口和光标定位尚未验收。`lastProcessedInputSeq` 表示已处理的输入，不保证业务操作成功。
+文字重放沿用服务器的 glyph 和字形位置。字体子集与原字体存在已测量的抗锯齿容差；[字体/图片报告](docs/evidence/font-image-report.json) 标明其普通 Chrome 导出与原生 helper 范围，完整动态证据见上方独立报告。中文 IME 验证使用真实本地及远端 CDP composition；物理系统候选窗口和光标定位尚未验收。`lastProcessedInputSeq` 表示已处理的输入，不保证业务操作成功。
 
 ## 版本和边界
 

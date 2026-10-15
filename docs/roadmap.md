@@ -1,6 +1,14 @@
-# 下一阶段实施拆分
+# 实施路线与当前验收
 
-每一行作为独立实现/验收/提交检查点。本次只实现单台 macOS 上的 3–7，1–2 和 8–10 保留。3 已通过真实资源验收；4–5 的原生插桩编译通过，整浏览器运行验收仍待完成；6 的真实 Viewer/WS fixture 验证及 7 的真实 CDP 输入边界验证通过。最终状态以 README 与实际 evidence 报告为准。
+每一行作为独立实现/验收/提交检查点。本次单台 Apple Silicon macOS 的 **3–7 已完成真实定制 Chromium 动态验收**；1–2 和 8–10 留待后续。当前运行使用浏览器进程内 GPU/Viz 和独立 Renderer，只验收普通网页软件路径。
+
+| 已完成 | 运行证据 |
+|---|---|
+| 3 | [字体/图片](evidence/font-image-report.json)、[原生序列化 4 项测试](evidence/native-serializer-report.json)、[动态流式字形](evidence/native-live-report.json) |
+| 4 | [真实捕获、token、线程与 Viz IPC](evidence/native-capture-report.json) |
+| 5 | [0/700/0 滚动、固定头部、资源复用与像素对照](evidence/native-scene-report.json) |
+| 6 | [完整动态、慢客户端、导航/resize、丢资源恢复](evidence/native-live-report.json)、[实际 CanvasKit 缓冲释放](evidence/surface-lifecycle-report.json) |
+| 7 | [原生动态显示下的 83 条输入与控制交接](evidence/native-input-report.json) |
 
 | 顺序 | 独立任务 | 可检查的完成条件 |
 |---|---|---|
@@ -15,15 +23,15 @@
 | 9 | Steel Worker 与 Gateway 接入 | 原有会话与 Agent 继续用原通道；Broker 绑定同一页面；跨 Session 不串流；人工接管有交接点 |
 | 10 | 解码隔离与性能测量 | 原生图片尺寸/字体/复杂度预算和模糊测试；实际网站测 CPU、内存、输入延迟、带宽、回退比例 |
 
-## Chromium 的首个真实补丁如何限定
+## Chromium 实现范围
 
 在 `cc/raster/raster_source.cc` 的 `RasterSource::PlaybackToCanvas()` 附近保留原软件 raster 路径，给独立组件加旁路捕获。这个函数现有代码负责裁剪、矩阵和 `PlaybackDisplayListToCanvas()`。补丁前先确定重放坐标系、整个 tile 的矩形以及 partial raster 的旧内容语义；远程资源必须是完整 tile 的替换记录。
 
 不能把传入的 raster canvas、DisplayItemList 或 GPU 对象的裸指针交给后台编码线程。先在允许的线程拿到所有权明确的不可变记录，序列化/压缩再由独立任务处理。图像读取可能受 GPU context 和线程约束，软件路径成功不代表 GPU 路径覆盖。
 
-首个补丁只覆盖这个已锁定的软件路径。后续才修改资源提交和 Viz remap 的传递路径。`SurfaceAggregator` 的输出可作为合成依据，但不能凭最终 texture id 还原文字绘制；必须在资源生命周期上提前关联本模块生成的 ID。
+原生补丁只覆盖这个已锁定的软件路径。资源提交和 Viz remap 传递路径已接入。`SurfaceAggregator` 输出真实合成关系，资源生命周期提前关联本模块生成的 ID；最终 texture id 仅供诊断。
 
-现在已有 pinned Chromium checkout、工具链、四个按顺序应用的补丁、原生组件和真实插桩对象编译检查。四个补丁在 14 个上游文件上完成逆向/正向 round-trip 检查。整浏览器链接和动态运行验收仍需通过后，才能声明原生路径完成。
+已有 pinned Chromium checkout、工具链、四个按顺序应用的补丁、完整 headless_shell 和运行验收。四个补丁在 14 个上游文件上完成逆向/正向 round-trip 检查。完整动态验收含源页面与 CanvasKit 像素对照，未以 fixture 或编译成功代替原生证据。复杂网页覆盖和性能优化不由该验收推断。
 
 ## Steel / Gateway 的接入契约
 
