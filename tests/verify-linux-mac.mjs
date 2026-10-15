@@ -9,6 +9,7 @@ import {launchCaptureBrowser} from '../capture/browser.mjs';
 import {assertPrivateImagePixels} from './image-pixels.mjs';
 import {assertTextInk} from './text-pixels.mjs';
 import {recoverDroppedResource} from './fault-viewer.mjs';
+import {measureInputLatency} from './input-latency.mjs';
 assert.equal(process.platform,'darwin','The Viewer acceptance must run on the Mac host');
 const directory=resolve(process.env.REMOTE_PAINT_LINUX_PROOF??'artifacts/linux-mac');
 const ready=JSON.parse(await readFile(join(directory,'ready.json'),'utf8'));
@@ -76,7 +77,18 @@ try{
   await assert.rejects(()=>assertTextInk(geometry,source,erased,regions),/lost 100.00%/);
   return ink;
  }
- await click('#name');await page.keyboard.press('Meta+A');await page.keyboard.type('Mac');
+ await click('#name');
+ const latencyProbe=(await command('latency-baseline')).probe;
+ assert.notEqual(latencyProbe.inputStyle.caretColor,'rgba(0, 0, 0, 0)');
+ assert.notEqual(latencyProbe.inputStyle.borderRadius,'0px');
+ const baseline=await measureInputLatency(page,latencyProbe);
+ const optimizedProbe=(await command('latency-optimized')).probe;
+ const optimized=await measureInputLatency(page,optimizedProbe);
+ const inputLatency={baseline,optimized,inputStyle:optimizedProbe.inputStyle,p50ImprovementMs:baseline.p50Ms-optimized.p50Ms,p95ImprovementMs:baseline.p95Ms-optimized.p95Ms};
+ await writeFile(join(directory,'input-latency.json'),JSON.stringify(inputLatency,null,2));
+ assert.ok(optimized.p50Ms<baseline.p50Ms,`Input capture did not improve median latency: ${JSON.stringify(inputLatency)}`);
+ await command('latency-done');
+ await page.keyboard.press('Meta+A');await page.keyboard.type('Mac');
  await waitSource(s=>s.document.name==='Mac');
  const cdp=await page.context().newCDPSession(page);
  await cdp.send('Input.imeSetComposition',{text:'中文',selectionStart:2,selectionEnd:2});await cdp.send('Input.insertText',{text:'中文'});
@@ -104,9 +116,9 @@ try{
  const missingResourceRecovery=await recoverDroppedResource(browser,ready);
  await page.screenshot({path:join(directory,'mac-viewer.png')});await cdp.detach();await page.close();page=null;
  const disconnected=await waitSource(s=>s.demand===0);await delay(500);const final=(await command('snapshot')).state;
- assert.equal(final.captures,disconnected.captures);assert.ok(final.beginFrame.acked>0);assert.equal(final.beginFrame.errors,0);
+ assert.equal(final.captures,disconnected.captures);assert.ok(final.beginFrame.acked>0);assert.equal(final.beginFrame.errors,0);assert.equal(final.stats.errors,0,final.stats.lastError);
  assert.ok(requests.every(origin=>origin===ready.origin));assert.deepEqual(errors,[]);
- const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,drawingFixtureOnly:false,viewerPlatform:process.platform,viewerArchitecture:process.arch,viewerBrowser:browser.version(),sourcePlatform:final.platform,sourceArchitecture:final.architecture,sourceBrowser:final.browser,gpuMode:final.gpuMode,beginFrame:final.beginFrame,first,dynamic,animated,imagePixels,textInk,pixelFractionOver24,saved:saved.document.saved,savedTextInk,editor:edited.document.editor,editorTextInk,streamText:streamed.document.stream,streamTextInk,missingUpdatedTextRejected:true,cssScaling:true,scrollY:scrolled.document.scrollY,reconnectedControlMode:reconnected.controlMode,missingResourceRecovery,source:final,macInputToLinux:true,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,viewerSourceRequests:0,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,errors};
+ const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,drawingFixtureOnly:false,viewerPlatform:process.platform,viewerArchitecture:process.arch,viewerBrowser:browser.version(),sourcePlatform:final.platform,sourceArchitecture:final.architecture,sourceBrowser:final.browser,gpuMode:final.gpuMode,beginFrame:final.beginFrame,first,dynamic,animated,imagePixels,textInk,pixelFractionOver24,saved:saved.document.saved,savedTextInk,editor:edited.document.editor,editorTextInk,streamText:streamed.document.stream,streamTextInk,missingUpdatedTextRejected:true,cssScaling:true,scrollY:scrolled.document.scrollY,reconnectedControlMode:reconnected.controlMode,missingResourceRecovery,source:final,macInputToLinux:true,inputLatency,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,viewerSourceRequests:0,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,errors};
  await writeFile(join(directory,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
  await command('reset');
 }finally{await page?.close();await browser.close();}

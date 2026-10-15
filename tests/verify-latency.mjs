@@ -8,7 +8,8 @@ import {installInputLatencyProbe,measureInputLatency} from './input-latency.mjs'
 
 const directory=resolve(process.env.REMOTE_PAINT_LATENCY_OUTPUT??'artifacts/latency');
 const interval=Number(process.env.REMOTE_PAINT_CAPTURE_INTERVAL??120);
-const live=await startLive({port:0,interval}),source=live.source;
+const captureOnInput=process.env.REMOTE_PAINT_INPUT_CAPTURE!=='0';
+const live=await startLive({port:0,interval,captureOnInput}),source=live.source;
  let browser,page;
 try{
  await source.page.locator('#stop-clock').click();await source.page.evaluate(()=>document.getAnimations().forEach(a=>a.pause()));
@@ -22,7 +23,8 @@ try{
  const latency=await measureInputLatency(page,point);
  assert.ok((await source.page.locator('#name').inputValue()).endsWith(latency.samples.map(r=>r.key).join('')));
  assert.deepEqual(errors,[]);
- const report={verifiedAt:new Date().toISOString(),...nativeRuntimeInfo(source.frameDriver),viewerPlatform:process.platform,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),nativeDrawing:true,captureIntervalMs:interval,...latency,errors};
+ assert.equal(source.stats.errors,0,source.stats.lastError);
+ const report={verifiedAt:new Date().toISOString(),...nativeRuntimeInfo(source.frameDriver),viewerPlatform:process.platform,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),nativeDrawing:true,captureIntervalMs:interval,captureOnInput,inputStyle:point.inputStyle,...latency,errors};
  await mkdir(directory,{recursive:true});await writeFile(resolve(directory,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
 }catch(error){
  await mkdir(directory,{recursive:true});

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 // only after a normal Viewer key event reaches the real remote input element.
 export async function installInputLatencyProbe(page){
  return page.evaluate(()=>{
+  window.removeInputLatencyProbe?.();
   const input=document.querySelector('#name'),original=input.value;
   const marker=document.createElement('div');marker.id='remote-paint-latency-probe';
   Object.assign(marker.style,{position:'fixed',right:'16px',top:'100px',width:'24px',height:'24px',zIndex:'99999',background:'rgb(0,0,0)',pointerEvents:'none'});
@@ -11,7 +12,8 @@ export async function installInputLatencyProbe(page){
   const update=()=>{const code=input.value.charCodeAt(input.value.length-1);marker.style.background=`rgb(${32+code*53%192},${32+code*97%192},${32+code*131%192})`;};
   input.addEventListener('input',update);
   window.removeInputLatencyProbe=()=>{input.removeEventListener('input',update);input.value=original;marker.remove();delete window.removeInputLatencyProbe;};
-  const r=marker.getBoundingClientRect();return {x:Math.floor(r.x+r.width/2),y:Math.floor(r.y+r.height/2)};
+  const r=marker.getBoundingClientRect(),style=getComputedStyle(input);
+  return {x:Math.floor(r.x+r.width/2),y:Math.floor(r.y+r.height/2),inputStyle:{borderRadius:style.borderRadius,caretColor:style.caretColor}};
  });
 }
 

@@ -6,6 +6,7 @@ import {resolve,join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {startLive} from '../live.mjs';
 import {nativeRuntimeInfo} from '../native/launch.mjs';
+import {installInputLatencyProbe} from './input-latency.mjs';
 assert.equal(process.platform,'linux');assert.equal(process.arch,'arm64');
 const directory=resolve(process.env.REMOTE_PAINT_LINUX_PROOF??'artifacts/linux-mac');
 await mkdir(directory,{recursive:true});
@@ -35,6 +36,7 @@ async function poll(){
   if(command.runId===runId&&command.id!==handled&&/^[a-f0-9-]{36}$/.test(command.id)){
    handled=command.id;
    try{
+    let probe=null;
     switch(command.op){
      case 'snapshot':break;
      case 'freeze':await source.page.locator('#stop-clock').click();await source.page.evaluate(()=>document.getAnimations().forEach(a=>a.pause()));break;
@@ -43,9 +45,12 @@ async function poll(){
      case 'resize':await source.resize({width:800,height:600});break;
      case 'reset':await source.resize({width:960,height:640});await source.page.reload();break;
      case 'screenshot':await source.page.screenshot({path:join(directory,`source-${command.id}.png`)});break;
+     case 'latency-baseline':source.capture.captureOnInput=false;probe=await installInputLatencyProbe(source.page);break;
+     case 'latency-optimized':source.capture.captureOnInput=true;probe=await installInputLatencyProbe(source.page);break;
+     case 'latency-done':source.capture.captureOnInput=true;await source.page.evaluate(()=>window.removeInputLatencyProbe?.());break;
      default:throw new Error('Unknown Linux proof operation');
     }
-    await atomic('response.json',{id:command.id,state:await snapshot(),screenshot:command.op==='screenshot'?`source-${command.id}.png`:null});
+    await atomic('response.json',{id:command.id,state:await snapshot(),probe,screenshot:command.op==='screenshot'?`source-${command.id}.png`:null});
    }catch(error){await atomic('response.json',{id:command.id,error:error.stack});}
   }
  }catch(error){if(error.code!=='ENOENT')console.error(error);}

@@ -66,7 +66,7 @@ npm run verify:linux-mac
 
 `verify:linux` first checks ARM64 ELF headers, hashes, build arguments and patch
 receipts. It then runs the serializer, external BeginFrame clock, native
-capture, scene, input and live recovery checks in order. Each command has a
+capture, scene, input, live recovery and input latency checks in order. Each command has a
 five-minute limit and its own log in `artifacts/linux-suite`; a failure stops
 the suite and leaves a failed report. Linux results do not establish that the
 Mac Viewer works, so the host acceptance is still required separately.
@@ -81,6 +81,12 @@ resize, dropped-resource recovery, and zero capture demand after disconnect.
 Mac input also exercises a CSS-scaled Viewer and rich-text editing; saved input,
 edited text and streamed new glyphs receive separate source/replay ink checks
 that must reject an erased replay.
+The Mac latency check retains the ordinary input radius and visible caret.
+It compares the 120 ms periodic baseline with input-triggered capture on the
+same Linux source and Mac Viewer. Sixteen keydown-to-actual-pixel samples per
+mode produce p50/p95/maximum values in `input-latency.json`; median improvement
+and zero native capture errors are required. InputAck alone cannot satisfy
+the check. Physical keyboard and display scanout delay are outside its scope.
 Reports are written under `artifacts/linux-mac`; the physical OS IME candidate
 window is outside the automated test's scope.
 

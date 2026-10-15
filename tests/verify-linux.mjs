@@ -51,11 +51,11 @@ try{
  }
  report.preflight={platform:process.platform,architecture:process.arch,browser:browserElf,serializer:serializerElf,argsSha256:createHash('sha256').update(args).digest('hex'),patches};await save();
  await run('serializer',serializer,[],output);
- for(const name of ['begin-frame','native','scene','input','live'])await run(name,process.execPath,[`tests/verify-${name}.mjs`]);
+ for(const name of ['begin-frame','native','scene','input','live','latency'])await run(name,process.execPath,[`tests/verify-${name}.mjs`]);
  const json=async path=>JSON.parse(await readFile(join(project,'artifacts',path),'utf8'));
  const clock=await json('linux/begin-frame-report.json');assert.equal(clock.scope,'custom Linux browser external clock');assert.equal(clock.executableSha256,browserElf.sha256);
  assert.equal(clock.stats.errors,0);assert.ok(clock.stats.acked>0);
- for(const [path,flag] of [['native/report.json','nativeBrowserCapture'],['scene/report.json','nativeBrowserCapture'],['input/report.json','nativeDrawing'],['live/report.json','nativeDrawing']]){
+ for(const [path,flag] of [['native/report.json','nativeBrowserCapture'],['scene/report.json','nativeBrowserCapture'],['input/report.json','nativeDrawing'],['live/report.json','nativeDrawing'],['latency/report.json','nativeDrawing']]){
   const result=await json(path);assert.equal(result[flag],true);assert.equal(result.platform,'linux');assert.equal(result.architecture,'arm64');assert.ok(result.beginFrame.acked>0);assert.equal(result.beginFrame.errors,0);
  }
  report.status='passed';
