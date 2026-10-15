@@ -23,6 +23,18 @@ VM overhead). The builder retains its nine-CPU quota and 48 GiB container limit.
 Its existing mounted output directory is reused for incremental compilation.
 Monitor actual memory before increasing concurrency further.
 
+The Linux development profile disables `use_v8_context_snapshot`. Chromium's
+context-snapshot generator otherwise builds Blink again for the x64 host. An
+independent GN/Ninja graph comparison removed 24,432 reachable object outputs
+(38.4%) while retaining the exact same 33,526 ARM64 object outputs, including
+native Viz capture and serialization. The ordinary V8 startup snapshot remains
+enabled. New V8 contexts use normal initialization, which can increase context
+creation time; runtime and input latency still require the complete acceptance
+suite. The [graph evidence](../docs/evidence/linux-context-snapshot-graph.json)
+establishes dependency reduction, not measured build-time savings or runtime
+acceptance. Existing objects stay in the mounted cache, including completed
+host objects that are no longer needed by this profile.
+
 Keep the same source mount and output directory to retain the incremental
 cache. Object files, static libraries, generated sources, `.ninja_log` and
 `.ninja_deps` live in `src/out/RemotePaintLinux` on the Mac. Downloaded LLVM,

@@ -8,6 +8,9 @@ v8_symbol_level = 0
 use_remoteexec = false
 use_siso = false
 use_thin_lto = false
+# Avoid compiling a second Blink for the x64 context-snapshot generator.
+# New contexts use normal initialization; the ordinary V8 snapshot stays enabled.
+use_v8_context_snapshot = false
 use_mold = false
 enable_paint_preview = true
 use_gtk = false

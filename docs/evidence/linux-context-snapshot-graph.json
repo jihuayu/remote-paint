@@ -1,0 +1,58 @@
+{
+  "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+  "target": {
+    "os": "linux",
+    "cpu": "arm64"
+  },
+  "effectiveArgumentChange": {
+    "use_v8_context_snapshot": {
+      "before": true,
+      "after": false
+    }
+  },
+  "baseline": {
+    "reachableObjectOutputs": 63594,
+    "defaultArm64Objects": 33526,
+    "contextSnapshotHostObjects": 27317,
+    "objectListSha256": "d195decf544bd53483a8e88a680cf0960ade04fbd5827ecda4cc69f358530411",
+    "arm64ObjectListSha256": "eb6adc408b6bc124c843c4f06354b16ba42369ec056c00a7fd1e52b003b723dc"
+  },
+  "candidate": {
+    "reachableObjectOutputs": 39162,
+    "defaultArm64Objects": 33526,
+    "contextSnapshotHostObjects": 2969,
+    "objectListSha256": "f1f4885ab7246af5d5e465a5a299e5362fc6bec1a3eb281bea1923c9104d727c",
+    "arm64ObjectListSha256": "eb6adc408b6bc124c843c4f06354b16ba42369ec056c00a7fd1e52b003b723dc"
+  },
+  "removedObjects": 24432,
+  "addedObjects": 0,
+  "removedByToolchain": {
+    "clang_x64": 84,
+    "clang_x64_v8_arm64": 24348
+  },
+  "arm64Removed": [],
+  "arm64Added": [],
+  "nativeVizRetained": true,
+  "nativeSerializerRetained": true,
+  "removedBlinkExamples": [
+    "clang_x64_v8_arm64/obj/third_party/blink/common/common/accelerated_static_bitmap_image_mojom_traits.o",
+    "clang_x64_v8_arm64/obj/third_party/blink/common/common/address_space_feature.o",
+    "clang_x64_v8_arm64/obj/third_party/blink/common/common/approximated_device_memory.o",
+    "clang_x64_v8_arm64/obj/third_party/blink/common/common/associated_interface_provider.o",
+    "clang_x64_v8_arm64/obj/third_party/blink/common/common/associated_interface_registry.o",
+    "clang_x64_v8_arm64/obj/third_party/blink/common/common/blob_utils.o"
+  ],
+  "baselineArgs": "target_os = \"linux\"\ntarget_cpu = \"arm64\"\nis_debug = false\nis_component_build = false\nsymbol_level = 0\nblink_symbol_level = 0\nv8_symbol_level = 0\nuse_remoteexec = false\nuse_siso = false\nuse_thin_lto = false\nuse_mold = false\nenable_paint_preview = true\nuse_gtk = false\nuse_qt5 = false\nuse_qt6 = false\nozone_auto_platforms = false\nozone_platform_headless = true\nozone_platform_x11 = false\nozone_platform_wayland = false\n",
+  "candidateArgs": "target_os = \"linux\"\ntarget_cpu = \"arm64\"\nis_debug = false\nis_component_build = false\nsymbol_level = 0\nblink_symbol_level = 0\nv8_symbol_level = 0\nuse_remoteexec = false\nuse_siso = false\nuse_thin_lto = false\nuse_mold = false\nenable_paint_preview = true\nuse_gtk = false\nuse_qt5 = false\nuse_qt6 = false\nozone_auto_platforms = false\nozone_platform_headless = true\nozone_platform_x11 = false\nozone_platform_wayland = false\n\nuse_v8_context_snapshot = false\n",
+  "recordedAt": "2026-10-15T17:51:58.489225+00:00",
+  "scope": "GN/Ninja reachable object graph comparison only; not executable or runtime acceptance",
+  "method": {
+    "baseline": "ninja -C out/RemotePaintLinux -t graph headless_shell",
+    "candidate": "ninja -C out/RemotePaintLinuxGraphProbe -t graph headless_shell",
+    "counting": "Unique quoted graph node labels ending in .o; toolchain paths are relative to the corresponding output directory",
+    "candidateGn": "Same arguments plus use_v8_context_snapshot = false; independent GN generation exited 0"
+  },
+  "removedFraction": 0.3841871874705161,
+  "runtimeTradeoff": "New Blink V8 contexts use normal initialization instead of the prewarmed context. Ordinary V8 startup snapshot remains enabled. Context creation may be slower; runtime and latency acceptance are pending.",
+  "buildTimeSavingsMeasured": false
+}
