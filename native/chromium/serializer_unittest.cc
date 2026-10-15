@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -20,6 +21,13 @@
 
 namespace remote_paint {
 namespace {
+#if BUILDFLAG(IS_MAC)
+constexpr char kTextFamily[] = "Arial";
+constexpr char kColorFamily[] = "Apple Color Emoji";
+#else
+constexpr char kTextFamily[] = "DejaVu Sans";
+constexpr char kColorFamily[] = "Noto Color Emoji";
+#endif
 sk_sp<SkPicture> TextPicture(const std::string& text, const char* family) {
   auto face = skia::DefaultFontMgr()->matchFamilyStyle(family, SkFontStyle());
   EXPECT_TRUE(face);
@@ -34,7 +42,7 @@ sk_sp<SkPicture> TextPicture(const std::string& text, const char* family) {
 }
 
 TEST(RemotePaintSerializer, RetainsOriginalGlyphIdsAndPixels) {
-  const auto original = TextPicture("Remote Paint glyph IDs 1579", "Arial");
+  const auto original = TextPicture("Remote Paint glyph IDs 1579", kTextFamily);
   const auto encoded = SerializePicture(*original);
   ASSERT_TRUE(encoded.error.empty()) << encoded.error;
   ASSERT_TRUE(encoded.bytes);
@@ -55,7 +63,7 @@ TEST(RemotePaintSerializer, RetainsOriginalGlyphIdsAndPixels) {
 }
 
 TEST(RemotePaintSerializer, BitmapEmojiKeepsOriginalNativePixels) {
-  const auto original = TextPicture("🌈", "Apple Color Emoji");
+  const auto original = TextPicture("🌈", kColorFamily);
   const auto encoded = SerializePicture(*original);
   ASSERT_TRUE(encoded.error.empty()) << encoded.error;
   ASSERT_TRUE(encoded.bytes);
@@ -75,14 +83,14 @@ TEST(RemotePaintSerializer, BitmapEmojiKeepsOriginalNativePixels) {
 }
 
 TEST(RemotePaintSerializer, RefusesSmallBudgetInsteadOfDroppingFont) {
-  const auto original = TextPicture("This font must be included", "Arial");
+  const auto original = TextPicture("This font must be included", kTextFamily);
   const auto encoded = SerializePicture(*original, 100);
   EXPECT_FALSE(encoded.bytes);
   EXPECT_FALSE(encoded.error.empty());
 }
 
 TEST(RemotePaintSerializer, NestedPicturesKeepTheirFontCoverage) {
-  auto child = TextPicture("Nested child text", "Arial");
+  auto child = TextPicture("Nested child text", kTextFamily);
   SkPictureRecorder recorder;
   auto* canvas = recorder.beginRecording(640, 160);
   canvas->drawPicture(child);

@@ -38,13 +38,19 @@ void WriteScene(std::string path,std::string bytes){
       // SAFETY: The path length is checked against the destination above.
       std::ranges::copy(path,std::begin(address.sun_path));
       timeval timeout{1,0};setsockopt(fd,SOL_SOCKET,SO_SNDTIMEO,&timeout,sizeof(timeout));
+#if defined(SO_NOSIGPIPE)
       int no_sigpipe=1;setsockopt(fd,SOL_SOCKET,SO_NOSIGPIPE,&no_sigpipe,sizeof(no_sigpipe));
+#endif
       if(connect(fd,reinterpret_cast<sockaddr*>(&address),sizeof(address))==0){
         uint32_t length=htonl(bytes.size());std::string packet(reinterpret_cast<const char*>(&length),sizeof(length));packet+=bytes;
         size_t sent=0;
         while(sent<packet.size()){
           const auto remaining=base::span(packet).subspan(sent);
-          auto written=send(fd,remaining.data(),remaining.size(),0);
+          int flags=0;
+#if defined(MSG_NOSIGNAL)
+          flags=MSG_NOSIGNAL;
+#endif
+          auto written=send(fd,remaining.data(),remaining.size(),flags);
           if(written<=0)break;sent+=written;
         }
       }

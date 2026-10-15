@@ -5,6 +5,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     libglib2.0-dev libnss3-dev libdbus-1-dev libatk1.0-dev libatk-bridge2.0-dev \
     libx11-dev libx11-xcb-dev libxcomposite-dev libxdamage-dev libxext-dev libxfixes-dev \
     libxrandr-dev libxkbcommon-dev libdrm-dev libgbm-dev libpango1.0-dev libasound2-dev \
-    libatspi2.0-dev libudev-dev libcups2-dev fonts-noto-cjk fonts-noto-color-emoji \
+    libatspi2.0-dev libudev-dev libcups2-dev fonts-dejavu-core fonts-noto-cjk fonts-noto-color-emoji \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /chromium/src
