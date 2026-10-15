@@ -17,7 +17,7 @@ test("serializer_tests") {
     ":serializer",
     "//base",
     "//base/test:test_support",
-    "//components/test:run_all_unittests",
+    "//base/test:run_all_unittests",
     "//skia",
     "//testing/gtest",
   ]
