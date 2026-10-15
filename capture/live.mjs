@@ -5,8 +5,10 @@ export const nativeToken=()=>randomBytes(32).toString('hex');
 // One broker owns one page target. The secret is evaluated only in a CDP
 // isolated world; source JavaScript never receives it. No disk-path API.
 export class NativeCapture extends EventEmitter {
-  constructor(page,{token,interval=120,viz}={}) {
+  constructor(page,{token,interval=120,viz,frameDriver}={}) {
     super();this.page=page;this.token=token;this.interval=interval;this.viz=viz;
+    this.frameDriver=frameDriver;this.nextCaptureAt=0;
+    this.onFrame=()=>{if(performance.now()>=this.nextCaptureAt)void this.tick();};
     this.viewers=0;this.running=false;this.stopped=false;this.count=0;this.generation=0;
   }
   async initialize() {
@@ -16,6 +18,7 @@ export class NativeCapture extends EventEmitter {
     await this.ensureWorld();
     const result=await this.cdp.send('Runtime.evaluate',{contextId:this.world,expression:'typeof chrome?.gpuBenchmarking?.captureRemotePaint',returnByValue:true});
     if(result.result.value!=='function')throw new Error('Custom native Chromium captureRemotePaint is required; stock Chrome cannot stream this protocol');
+    this.frameDriver?.on('frame',this.onFrame);
   }
   async ensureWorld() {
     if(this.world)return;
@@ -53,7 +56,7 @@ export class NativeCapture extends EventEmitter {
     this.running=true;const start=performance.now(),context=this.sampleContext?.();
     try {const value=await this.capture();if(this.viewers&&!this.stopped)this.emit('capture',value,context);}
     catch(error){if(!this.stopped)this.emit('captureError',error);}
-    finally {this.running=false;if(this.viewers&&!this.stopped)this.timer=setTimeout(()=>void this.tick(),Math.max(0,this.interval-(performance.now()-start)));}
+    finally {this.running=false;this.nextCaptureAt=Math.max(start+this.interval,performance.now());if(!this.frameDriver&&this.viewers&&!this.stopped)this.timer=setTimeout(()=>void this.tick(),Math.max(0,this.interval-(performance.now()-start)));}
   }
-  async close() {this.stopped=true;clearTimeout(this.timer);await this.cdp?.detach();}
+  async close() {this.stopped=true;this.frameDriver?.off('frame',this.onFrame);clearTimeout(this.timer);await this.cdp?.detach();}
 }
