@@ -1,3 +1,4 @@
+import {LIVE_VERSION} from '../protocol/live-wire.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {LiveFrameGate,RecoveryRequired,makeDelta} from '../protocol/live-wire.mjs';
@@ -6,7 +7,7 @@ import {snapshot,frame,payload,hash,fakeSource} from './live-helpers.mjs';
 const renderer={canvaskit:'0.42.0',wasmSha256:'renderer'};
 function peer(source,options={}){
  const ws={readyState:1,bufferedAmount:0,sent:[],send(value){this.sent.push(value);},close(code,reason){this.code=code;this.reason=reason;this.readyState=3;}};
- const peer=new LivePeer(ws,source,{renderer,producer:{},ackTimeout:1000,...options});peer.message({type:'Hello',protocol:2,renderer});return {peer,ws};
+ const peer=new LivePeer(ws,source,{renderer,producer:{},ackTimeout:1000,...options});peer.message({type:'Hello',protocol:LIVE_VERSION,renderer});return {peer,ws};
 }
 test('delta depends on the acknowledged base; missing resources/failed decode never advance the visible frame',()=>{
  const gate=new LiveFrameGate(),a=snapshot();gate.put(hash,payload);gate.stage(frame(a,1));assert.equal(gate.commit(1,1).frameId,1);

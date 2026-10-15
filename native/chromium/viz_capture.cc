@@ -78,6 +78,7 @@ void EmitVizScene(const viz::AggregatedFrame& frame,const std::string& id,std::p
       base::DictValue q;q.Set("localId",static_cast<double>(sqs.layer_id));
       q.Set("namespace",Numbers({double(sqs.layer_namespace_id.first),double(sqs.layer_namespace_id.second)}));
       q.Set("matrix",Matrix(sqs.quad_to_target_transform));q.Set("visible",Rect(quad->visible_rect));q.Set("rect",Rect(quad->rect));
+      q.Set("contentOrigin",Numbers({double(sqs.quad_layer_rect.x()),double(sqs.quad_layer_rect.y())}));
       q.Set("opacity",sqs.opacity);if(sqs.clip_rect)q.Set("clip",Rect(*sqs.clip_rect));
       q.Set("vizResource",static_cast<double>(quad->resource_id.GetUnsafeValue()));
       if(quad->material==viz::DrawQuad::Material::kSolidColor){

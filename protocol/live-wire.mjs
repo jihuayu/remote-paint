@@ -1,5 +1,5 @@
 import {isHash} from './wire.mjs';
-export const LIVE_VERSION=2;
+export const LIVE_VERSION=3;
 export const LIVE_LIMITS=Object.freeze({resourceBytes:16*1024*1024,sceneBytes:256*1024,frameBytes:64*1024*1024,
  cacheBytes:128*1024*1024,cacheResources:512,passes:64,quads:2048,dimension:4096});
 export class RecoveryRequired extends Error {}
@@ -16,7 +16,7 @@ export function validateScene(scene,required,viewport){
    if(++quads>LIVE_LIMITS.quads||!numbers(q.matrix,9)||!numbers(q.visible,4)||!numbers(q.rect,4)||
       q.clip!==null&&!numbers(q.clip,4)||!Number.isFinite(q.opacity)||q.opacity<0||q.opacity>1)throw new Error('Invalid quad');
    if(q.kind==='picture'){
-    if(!isHash(q.resourceId)||typeof q.logical!=='string'||q.logical.length>512||!integer(q.revision)||
+    if(!numbers(q.contentOrigin,2)||!isHash(q.resourceId)||typeof q.logical!=='string'||q.logical.length>512||!integer(q.revision)||
       !integer(q.width)||!integer(q.height)||q.width>8192||q.height>8192||!Number.isFinite(q.quadScale)||q.quadScale<=0||q.quadScale>128)throw new Error('Invalid picture reference');
     used.add(q.resourceId);
    }else if(q.kind==='pass'){if(!ids.has(q.passId))throw new Error('Cyclic or missing child pass');}

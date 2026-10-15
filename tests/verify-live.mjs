@@ -1,3 +1,4 @@
+import {LIVE_VERSION} from '../protocol/live-wire.mjs';
 import {assertPrivateImagePixels} from './image-pixels.mjs';
 import {assertTextInk} from './text-pixels.mjs';
 import {recoverDroppedResource} from './fault-viewer.mjs';
@@ -38,7 +39,7 @@ try{
  const click=async selector=>{const r=await source.page.locator(selector).boundingBox(),c=await page.locator('canvas').boundingBox();await page.mouse.click(c.x+(r.x+r.width/2)*c.width/960,c.y+(r.y+r.height/2)*c.height/640);};
  await click('#start-stream');await source.page.waitForFunction(()=>document.querySelector('#stream').textContent.endsWith('都由原始网页处理。'));await page.waitForFunction(n=>window.remotePaintResult?.resourcesReceived>n,animated.resourcesReceived);
  const streamed=await page.evaluate(()=>window.remotePaintResult);assert.ok(streamed.lastProcessedInputSeq>0);
- const slow=new WebSocket(`${live.origin.replace('http','ws')}/stream?key=${live.key}`,{origin:live.origin});await once(slow,'open');slow.send(JSON.stringify({type:'Hello',protocol:2,renderer:live.renderer}));assert.equal((await once(slow,'close'))[0],1013);
+ const slow=new WebSocket(`${live.origin.replace('http','ws')}/stream?key=${live.key}`,{origin:live.origin});await once(slow,'open');slow.send(JSON.stringify({type:'Hello',protocol:LIVE_VERSION,renderer:live.renderer}));assert.equal((await once(slow,'close'))[0],1013);
  const beforeReconnect=await page.evaluate(()=>window.remotePaintResult);await page.locator('#reconnect').click();await page.waitForFunction(()=>window.remotePaintResult?.frameId===1);const recovered=await page.evaluate(()=>window.remotePaintResult);assert.equal(recovered.fullFrames,1);assert.notEqual(recovered.native.captureId,first.native.captureId);
  await wait(()=>source.control.mode==='agent');
  const oldEpoch=source.pageEpoch;await source.page.reload();await page.waitForFunction(epoch=>window.remotePaintResult?.pageEpoch>epoch,oldEpoch);const navigated=await page.evaluate(()=>window.remotePaintResult);

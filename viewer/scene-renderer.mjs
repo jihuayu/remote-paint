@@ -29,7 +29,7 @@ export class SceneRenderer {
          if(cull[0]!==0||cull[1]!==0||cull[2]!==q.width||cull[3]!==q.height){picture.delete();throw new Error('Native picture bounds mismatch');}
          this.pictures.set(q.resourceId,picture);
         }
-        canvas.scale(q.quadScale,q.quadScale);canvas.drawPicture(picture);
+        canvas.translate(...q.contentOrigin);canvas.scale(q.quadScale,q.quadScale);canvas.drawPicture(picture);
        }else if(q.kind==='solid'){
         const paint=new ck.Paint();try{paint.setColor(q.color);paint.setAntiAlias(false);canvas.drawRect(q.rect,paint);}finally{paint.delete();}
        }else if(q.kind==='pass'){

@@ -31,3 +31,17 @@ test('CanvasKit composites an earlier render pass at its actual output origin',(
  try{const png=PNG.sync.read(Buffer.from(output.image.encodeToBytes()));assert.deepEqual(pixel(png,15,25),[0,255,0,255]);assert.deepEqual(pixel(png,5,5),[0,0,0,0]);}
  finally{output.image.delete();output.surface.delete();renderer.clear();}
 });
+
+test('full pictures honor rebased tile origins after clipping in quad coordinates',()=>{
+ const recorder=new ck.PictureRecorder(),canvas=recorder.beginRecording(rect),paint=new ck.Paint();
+ paint.setColor([1,0,0,1]);canvas.drawRect([0,0,100,50],paint);
+ paint.setColor([0,0,1,1]);canvas.drawRect([0,50,100,100],paint);
+ const picture=recorder.finishRecordingAsPicture(),bytes=picture.serialize();
+ const renderer=new SceneRenderer(ck),output=renderer.render({rootPass:'root',passes:[{id:'root',output:rect,quads:[
+  {kind:'picture',resourceId:'cached',width:100,height:100,quadScale:1,contentOrigin:[0,-50],matrix,rect,visible:[0,10,100,60],clip:null,opacity:1},
+ ]}]},new Map([['cached',bytes]]));
+ try{const png=PNG.sync.read(Buffer.from(output.image.encodeToBytes()));
+  assert.deepEqual(pixel(png,10,20),[0,0,255,255]);
+  assert.deepEqual(pixel(png,10,5),[0,0,0,0]);assert.deepEqual(pixel(png,10,55),[0,0,0,0]);
+ }finally{output.image.delete();output.surface.delete();renderer.clear();picture.delete();recorder.delete();paint.delete();}
+});

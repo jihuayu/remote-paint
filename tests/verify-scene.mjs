@@ -25,6 +25,7 @@ try{
  for(const offset of [0,700,0]){
   await page.evaluate(y=>window.scrollTo(0,y),offset);await page.screenshot();
   const native=await capture.capture();const mapped=mapper.map(native,1);const replay=renderer.render(mapped.scene,mapped.payloads);
+  await writeFile(`artifacts/scene/scene-${stages.length}.json`,JSON.stringify(mapped.scene,null,2));
   const source=PNG.sync.read(await page.screenshot({path:`artifacts/scene/source-${stages.length}.png`}));
   const bytes=replay.image.encodeToBytes();await writeFile(`artifacts/scene/replay-${stages.length}.png`,bytes);const pixels=PNG.sync.read(Buffer.from(bytes));
   assert.equal(pixels.width,source.width);assert.equal(pixels.height,source.height);
@@ -38,11 +39,13 @@ try{
   await writeFile(`artifacts/scene/scene-${stages.length-1}.json`,JSON.stringify(mapped.scene,null,2));
   replay.image.delete();replay.surface.delete();renderer.retain(new Set(mapped.payloads.keys()));
  }
+ assert.deepEqual(stages[1].resources,stages[0].resources,'Scrolling must reuse unchanged full-layer resources');
+ assert.deepEqual(stages[2].resources,stages[0].resources,'Scrolling back must reuse unchanged resources');
  // A compositor animation must change scene geometry even when JS/DOM content
  // remains frozen. This checks the sampled active compositor + aggregated Viz.
  await page.evaluate(()=>document.getAnimations().forEach(a=>a.play()));
  const a=mapper.map(await capture.capture(),1);await new Promise(r=>setTimeout(r,250));const b=mapper.map(await capture.capture(),1);
  assert.notEqual(JSON.stringify(a.scene),JSON.stringify(b.scene),'Compositor animation did not update scene');
- const report={verifiedAt:new Date().toISOString(),browser:browser.version(),stages,animationChangesScene:true,ipc:viz.stats};
+ const report={verifiedAt:new Date().toISOString(),browser:browser.version(),gpuMode:'in-process',nativeBrowserCapture:true,stages,scrollingReusesResources:true,animationChangesScene:true,ipc:viz.stats};
  await writeFile('artifacts/scene/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{renderer.clear();await capture?.close();await browser.close();await viz.close();await fixture.close();}

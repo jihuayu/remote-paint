@@ -1,3 +1,4 @@
+import {LIVE_VERSION} from '../protocol/live-wire.mjs';
 import {recoverDroppedResource} from './fault-viewer.mjs';
 // Protocol/Viewer acceptance using a declared capture fixture. This does not
 // substitute for verify:scene / verify:live on the custom native browser.
@@ -22,7 +23,7 @@ try{
  assert.equal(second.resourcesReceived,first.resourcesReceived);assert.ok(second.deltaFrames>=1);
  assert.notEqual(createHash('sha256').update(firstPixels).digest('hex'),createHash('sha256').update(secondPixels).digest('hex'));
  const slow=new WebSocket(`${transport.origin.replace('http','ws')}/stream?key=${transport.key}`,{origin:transport.origin});
- await once(slow,'open');slow.send(JSON.stringify({type:'Hello',protocol:2,renderer:transport.renderer}));
+ await once(slow,'open');slow.send(JSON.stringify({type:'Hello',protocol:LIVE_VERSION,renderer:transport.renderer}));
  const closed=once(slow,'close');source.publish(snapshot({captureId:'contract-3',translation:-100}));
  await page.waitForFunction(()=>window.remotePaintResult?.native.captureId==='contract-3');assert.equal((await closed)[0],1013);
  await page.locator('#reconnect').click();await page.waitForFunction(()=>window.remotePaintResult?.frameId===1&&window.remotePaintResult?.native.captureId==='contract-3');

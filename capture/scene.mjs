@@ -24,6 +24,8 @@ export class SceneMapper {
      if(!passIds.has(q.passId))throw new Error('Cyclic or missing Viz pass');out.passId=q.passId;
     }else if(q.kind==='picture'){
      if(!sameNamespace(q.namespace,viz.namespace))throw new Error('Child Surface painting is not implemented');
+     if(!finite(q.contentOrigin,2))throw new Error('Invalid native content origin');
+     out.contentOrigin=q.contentOrigin;
      const r=byId.get(q.localId);
      if(!r||!Number.isInteger(r.localId)||!Number.isFinite(r.quadScale)||r.quadScale<=0||r.quadScale>128||
        ![r.width,r.height].every(n=>Number.isInteger(n)&&n>0&&n<=8192))throw new Error('Viz content has no matching native full-layer record');
