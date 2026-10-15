@@ -1,3 +1,4 @@
+import {recoverDroppedResource} from './fault-viewer.mjs';
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {once} from 'node:events';
@@ -36,9 +37,12 @@ try{
  await wait(()=>source.control.mode==='agent');
  const oldEpoch=source.pageEpoch;await source.page.reload();await page.waitForFunction(epoch=>window.remotePaintResult?.pageEpoch>epoch,oldEpoch);const navigated=await page.evaluate(()=>window.remotePaintResult);
  await source.resize({width:800,height:600});await page.waitForFunction(()=>window.remotePaintResult?.viewportVersion===2);assert.equal(await page.locator('canvas').getAttribute('width'),'800');
- const resized=await page.evaluate(()=>window.remotePaintResult);assert.equal(resized.lastProcessedInputSeq,source.inputSeq);
+ const resized=await page.evaluate(()=>window.remotePaintResult);
+ const missingResourceRecovery=await recoverDroppedResource(browser,live);
+ for(const result of [first,dynamic,frozen,animated,streamed,recovered,navigated,resized])assert.equal(result.resources,result.requiredResources.length,'Retired resources must be collected after commit');
+ assert.ok(streamed.resourcesReceived>streamed.resources,'Changed native resources must retire from the client cache');assert.equal(resized.lastProcessedInputSeq,source.inputSeq);
  assert.ok(requests.every(origin=>origin===live.origin));assert.deepEqual(errors,[]);assert.equal(await page.locator('iframe').count(),0);
  await page.screenshot({path:'artifacts/live/viewer.png'});await page.close();await wait(()=>source.demand===0);n=source.stats.captures;await delay(600);assert.equal(source.stats.captures,n);
- const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),first,dynamic,frozen,animated,streamed,beforeReconnect,recovered,navigated,resized,pixelFractionOver24,slowClientClose:1013,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,viewerSourceRequests:0,errors,stats:source.stats};
+ const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,missingResourceRecovery,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),first,dynamic,frozen,animated,streamed,beforeReconnect,recovered,navigated,resized,pixelFractionOver24,slowClientClose:1013,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,viewerSourceRequests:0,errors,stats:source.stats};
  await writeFile('artifacts/live/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await browser.close();await live.close();}

@@ -1,6 +1,39 @@
 {
-  "verifiedAt": "2026-10-15T06:02:53.309Z",
+  "verifiedAt": "2026-10-15T06:45:59.131Z",
   "contractFixtureOnly": true,
+  "missingResourceRecovery": {
+    "droppedResources": 1,
+    "keyframeRequests": 1,
+    "recovered": {
+      "protocol": 2,
+      "pageEpoch": 1,
+      "viewportVersion": 1,
+      "frameId": 2,
+      "native": {
+        "captureId": "contract-3",
+        "producer": "contract-fixture",
+        "namespace": [
+          1,
+          2
+        ],
+        "frameToken": 1,
+        "sourceFrame": 1
+      },
+      "lastProcessedInputSeq": 0,
+      "resourceBytes": 33594,
+      "resources": 1,
+      "resourcesReceived": 1,
+      "receivedBytes": 35632,
+      "fullFrames": 1,
+      "deltaFrames": 0,
+      "renderMs": 60,
+      "requiredResources": [
+        "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+      ]
+    },
+    "viewerSourceRequests": 0,
+    "errors": []
+  },
   "first": {
     "protocol": 2,
     "pageEpoch": 1,
@@ -20,10 +53,10 @@
     "resourceBytes": 33594,
     "resources": 1,
     "resourcesReceived": 1,
-    "receivedBytes": 34752,
+    "receivedBytes": 34800,
     "fullFrames": 1,
     "deltaFrames": 0,
-    "renderMs": 58.10000038146973,
+    "renderMs": 61.80000019073486,
     "requiredResources": [
       "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
     ]
@@ -47,10 +80,10 @@
     "resourceBytes": 33594,
     "resources": 1,
     "resourcesReceived": 1,
-    "receivedBytes": 35606,
+    "receivedBytes": 35654,
     "fullFrames": 1,
     "deltaFrames": 1,
-    "renderMs": 29.09999942779541,
+    "renderMs": 28,
     "requiredResources": [
       "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
     ]
@@ -74,10 +107,10 @@
     "resourceBytes": 33594,
     "resources": 1,
     "resourcesReceived": 1,
-    "receivedBytes": 34755,
+    "receivedBytes": 34803,
     "fullFrames": 1,
     "deltaFrames": 0,
-    "renderMs": 31.899999618530273,
+    "renderMs": 31.199999809265137,
     "requiredResources": [
       "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
     ]

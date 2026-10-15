@@ -1,3 +1,4 @@
+import {recoverDroppedResource} from './fault-viewer.mjs';
 // Protocol/Viewer acceptance using a declared capture fixture. This does not
 // substitute for verify:scene / verify:live on the custom native browser.
 import assert from 'node:assert/strict';
@@ -28,7 +29,8 @@ try{
  const recovered=await page.evaluate(()=>window.remotePaintResult);assert.equal(recovered.fullFrames,1);assert.equal(recovered.deltaFrames,0);
  assert.ok(requests.every(origin=>origin===transport.origin));assert.deepEqual(consoleErrors,[]);
  assert.equal(await page.locator('iframe').count(),0);
+ const missingResourceRecovery=await recoverDroppedResource(browser,transport);
  await mkdir('artifacts/live-viewer',{recursive:true});await page.screenshot({path:'artifacts/live-viewer/viewer.png'});
- const report={verifiedAt:new Date().toISOString(),contractFixtureOnly:true,first,second,recovered,slowClientClose:1013,sourceDemand:source.demand,sourceNetworkRequests:0};
+ const report={verifiedAt:new Date().toISOString(),contractFixtureOnly:true,missingResourceRecovery,first,second,recovered,slowClientClose:1013,sourceDemand:source.demand,sourceNetworkRequests:0};
  await writeFile('artifacts/live-viewer/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await browser.close();await transport.close();}
