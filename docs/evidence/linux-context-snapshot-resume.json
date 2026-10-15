@@ -1,0 +1,93 @@
+{
+  "verifiedAt": "2026-10-15T17:58:57.444140+00:00",
+  "scope": "Live incremental Linux build resumed under the reduced dependency graph; not executable or runtime acceptance",
+  "configurationCommit": "f7ab3f2a735e2c0f76ba587e090e07dc4546bf94",
+  "builder": {
+    "sameContainerId": "1cacde833c0b28b0c362ab54925b32b59f62dbac62ee4c9005188031ab62cec9",
+    "status": "running",
+    "startedAt": "2026-10-15T17:54:12.405855844Z",
+    "cpuLimit": 9.0,
+    "memoryLimitBytes": 51539607552,
+    "buildJobs": 12,
+    "oomKilled": false
+  },
+  "interruption": {
+    "intentional": true,
+    "reason": "Apply the committed official context snapshot build option",
+    "ninjaMessage": "ninja: build stopped: interrupted by user.",
+    "containerExitCode": 2,
+    "logsPreserved": "chromium-build-before-context-snapshot.log"
+  },
+  "buildPlan": {
+    "oldPendingHeadlessActions": 39422,
+    "newPendingHeadlessActionsAtStart": 14821,
+    "fewerScheduledActions": 24601,
+    "latestObserved": {
+      "completed": 1123,
+      "total": 14821,
+      "action": "CXX clang_x64_v8_arm64/obj/third_party/perfetto/src/trace_processor/importers/proto/minimal/protovm_incremental_tracing.o"
+    },
+    "wallTimeSavingsMeasured": false
+  },
+  "cache": {
+    "sameMountedOutputDirectory": true,
+    "cleaned": false,
+    "files": {
+      ".ninja_log": {
+        "before": {
+          "bytes": 11337945,
+          "sha256": "bfd31f00da340c0bc378502f32b9658fb8164a0f8b6e7284a2d59d931ec0cd2f"
+        },
+        "after": {
+          "bytes": 11601152,
+          "exists": true
+        }
+      },
+      ".ninja_deps": {
+        "before": {
+          "bytes": 25942220,
+          "sha256": "6a0a3a687c74325b0b8db4a6278f6dfc6da5bbd953e813fb42b059813155eec4"
+        },
+        "after": {
+          "bytes": 26246568,
+          "exists": true
+        }
+      },
+      "serializer_tests": {
+        "before": {
+          "bytes": 15493400,
+          "sha256": "b22dcf6fe95e316100c43a69d27b160cee880ebe26c753a669c5749bd72df2fa"
+        },
+        "after": {
+          "bytes": 15493400,
+          "exists": true,
+          "sha256": "b22dcf6fe95e316100c43a69d27b160cee880ebe26c753a669c5749bd72df2fa",
+          "sameContent": true
+        }
+      },
+      "obj/components/viz/service/service/viz_capture.o": {
+        "before": {
+          "bytes": 29776,
+          "sha256": "e7d1315eb2cee52803c1f914a039d1b1417510bfbcb7f0f2d783bac0ccd39d4e"
+        },
+        "after": {
+          "bytes": 29776,
+          "exists": true,
+          "sha256": "e7d1315eb2cee52803c1f914a039d1b1417510bfbcb7f0f2d783bac0ccd39d4e",
+          "sameContent": true
+        }
+      }
+    },
+    "nativeVizRecompiledAtStep": 21,
+    "note": "Preparation recopies native sources, so native objects are rebuilt. Other completed objects remain available through the same Ninja logs and output directory."
+  },
+  "inputPreflight": {
+    "passed": true,
+    "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+    "skiaRevision": "29ed1e87a0a50f3d8347e988842d9d59e7573efa",
+    "argsSha256": "b62b6f08a29354eb0e06f69cc2fb633ae9b787af0e24b13768d9f32707ee5335",
+    "nativeSourceCount": 13,
+    "patchedSourceCount": 14
+  },
+  "runtimeAcceptance": "pending complete headless_shell build"
+}

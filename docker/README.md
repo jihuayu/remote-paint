@@ -35,6 +35,12 @@ establishes dependency reduction, not measured build-time savings or runtime
 acceptance. Existing objects stay in the mounted cache, including completed
 host objects that are no longer needed by this profile.
 
+The same container and cache were then resumed with this profile. Pending
+headless build actions fell from 39,422 to 14,821, and compilation advanced
+under the existing nine-CPU, 48 GiB limits. The copied native sources, revisions,
+arguments and patch receipts passed preflight. The [resume evidence](../docs/evidence/linux-context-snapshot-resume.json)
+records these observations; complete browser/runtime acceptance is still pending.
+
 Keep the same source mount and output directory to retain the incremental
 cache. Object files, static libraries, generated sources, `.ninja_log` and
 `.ninja_deps` live in `src/out/RemotePaintLinux` on the Mac. Downloaded LLVM,
