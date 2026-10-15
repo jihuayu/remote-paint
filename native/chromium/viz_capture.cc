@@ -80,7 +80,9 @@ void EmitVizScene(const viz::AggregatedFrame& frame,const std::string& id,std::p
     for(const auto* quad:pass->quad_list){
       if(++count>2048){error="Viz quad budget exceeded";break;}
       const auto& sqs=*quad->shared_quad_state;
-      if(!sqs.quad_to_target_transform.Is2dTransform() || sqs.sorting_context_id || !sqs.mask_filter_info.IsEmpty() || sqs.blend_mode!=SkBlendMode::kSrcOver){error="Unsupported Viz mask, 3D or blend";break;}
+      if(!sqs.quad_to_target_transform.Is2dTransform() || sqs.sorting_context_id){error="Unsupported Viz 3D transform or sorting context";break;}
+      if(!sqs.mask_filter_info.IsEmpty()){error="Unsupported Viz mask";break;}
+      if(sqs.blend_mode!=SkBlendMode::kSrcOver){error="Unsupported Viz blend mode "+base::NumberToString(static_cast<int>(sqs.blend_mode));break;}
       base::DictValue q;q.Set("localId",static_cast<double>(sqs.layer_id));
       q.Set("namespace",Numbers({double(sqs.layer_namespace_id.first),double(sqs.layer_namespace_id.second)}));
       q.Set("matrix",Matrix(sqs.quad_to_target_transform));q.Set("visible",Rect(quad->visible_rect));q.Set("rect",Rect(quad->rect));
