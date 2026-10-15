@@ -47,6 +47,6 @@ export class SceneRenderer {
    }
    root=passes.get(scene.rootPass);if(!root)throw new Error('Missing root render pass');
    const output={surface:root.surface,image:root.image,output:root.output};passes.delete(scene.rootPass);return output;
-  }finally{for(const p of passes.values()){p.image?.delete();p.surface.delete();}}
+  }finally{for(const p of passes.values()){p.image?.delete();p.surface.dispose();}}
  }
 }

@@ -1,0 +1,12 @@
+{
+  "verifiedAt": "2026-10-15T10:00:52.840641+00:00",
+  "scope": "actual CanvasKit Wasm allocator in scene renderer",
+  "frames": 100,
+  "renderPassesPerFrame": 2,
+  "exceptionPath": true,
+  "allocatedPixelBuffers": 202,
+  "freedPixelBuffers": 202,
+  "outstandingPixelBuffers": 0,
+  "testOutput": "\u2714 CanvasKit frees actual CPU surface pixel buffers across frames and render errors (42.999833ms)",
+  "unitTestsPassed": 27
+}

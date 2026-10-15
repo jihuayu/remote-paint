@@ -46,7 +46,7 @@ try{
       }
     }
     reports.push({state,...stats,text:await page.locator('#text').innerText(),textInk,missingTextNegativeControlRejected:true,authenticatedAndBlobPixelsExact:true});
-    snapshot.delete();surface.delete();pic.delete();
+    snapshot.delete();surface.dispose();pic.delete();
   }
   assert.notEqual(reports[0].text,reports[1].text);
   assert.ok(reports[1].bitmapGlyphs>0,'Color emoji pixels must survive native strike selection');

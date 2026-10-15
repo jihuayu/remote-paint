@@ -29,7 +29,7 @@ function draw(frame, gate) {
     if (!image) throw new Error('Snapshot allocation failed');
     const canvas = $('viewport');
     if (!surface || canvas.width !== width || canvas.height !== height) {
-      surface?.delete(); canvas.width = width; canvas.height = height;
+      surface?.dispose(); canvas.width = width; canvas.height = height;
       surface = ck.MakeSWCanvasSurface(canvas);
       if (!surface) throw new Error('Viewer surface allocation failed');
     }
@@ -99,4 +99,4 @@ async function connect() {
 }
 $('reconnect').onclick = () => connect().catch(fail);
 await init().then(connect).catch(fail);
-window.addEventListener('pagehide', () => { socket?.close(); surface?.delete(); });
+window.addEventListener('pagehide', () => { socket?.close(); surface?.dispose(); });

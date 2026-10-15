@@ -20,7 +20,7 @@ test('CanvasKit replays Viz front-to-back order, target clips, scrolling transfo
   const p=pixel(png,10,10);assert.ok(Math.abs(p[0]-128)<=1&&Math.abs(p[2]-127)<=1);assert.equal(p[3],255);
   assert.deepEqual(pixel(png,10,30),[0,0,255,255]);
   assert.deepEqual(pixel(png,80,30),[0,0,0,0]);assert.deepEqual(pixel(png,10,70),[0,0,0,0]);
- }finally{output.image.delete();output.surface.delete();renderer.clear();}
+ }finally{output.image.delete();output.surface.dispose();renderer.clear();}
 });
 test('CanvasKit composites an earlier render pass at its actual output origin',()=>{
  const renderer=new SceneRenderer(ck);const area=[10,20,30,40];
@@ -29,7 +29,7 @@ test('CanvasKit composites an earlier render pass at its actual output origin',(
   {id:'root',output:rect,quads:[{kind:'pass',passId:'child',matrix,rect:area,visible:area,clip:null,opacity:1}]},
  ]},new Map());
  try{const png=PNG.sync.read(Buffer.from(output.image.encodeToBytes()));assert.deepEqual(pixel(png,15,25),[0,255,0,255]);assert.deepEqual(pixel(png,5,5),[0,0,0,0]);}
- finally{output.image.delete();output.surface.delete();renderer.clear();}
+ finally{output.image.delete();output.surface.dispose();renderer.clear();}
 });
 
 test('full pictures honor rebased tile origins after clipping in quad coordinates',()=>{
@@ -43,7 +43,7 @@ test('full pictures honor rebased tile origins after clipping in quad coordinate
  try{const png=PNG.sync.read(Buffer.from(output.image.encodeToBytes()));
   assert.deepEqual(pixel(png,10,20),[0,0,255,255]);
   assert.deepEqual(pixel(png,10,5),[0,0,0,0]);assert.deepEqual(pixel(png,10,55),[0,0,0,0]);
- }finally{output.image.delete();output.surface.delete();renderer.clear();picture.delete();recorder.delete();paint.delete();}
+ }finally{output.image.delete();output.surface.dispose();renderer.clear();picture.delete();recorder.delete();paint.delete();}
 });
 
 test('transparent picture clears never punch through previously composed content',()=>{
@@ -56,5 +56,26 @@ test('transparent picture clears never punch through previously composed content
  ]}]},new Map([['circle',picture.serialize()]]));
  try{const png=PNG.sync.read(Buffer.from(output.image.encodeToBytes()));
   assert.deepEqual(pixel(png,1,1),[0,0,255,255]);assert.deepEqual(pixel(png,10,10),[255,0,0,255]);
- }finally{output.image.delete();output.surface.delete();renderer.clear();picture.delete();recorder.delete();paint.delete();}
+ }finally{output.image.delete();output.surface.dispose();renderer.clear();picture.delete();recorder.delete();paint.delete();}
+});
+
+test('CanvasKit frees actual CPU surface pixel buffers across frames and render errors',()=>{
+ const malloc=ck._malloc,free=ck._free,live=new Set();let allocated=0,freed=0;
+ ck._malloc=size=>{const pointer=malloc(size);live.add(pointer);allocated++;return pointer;};
+ ck._free=pointer=>{if(live.delete(pointer))freed++;free(pointer);};
+ const renderer=new SceneRenderer(ck),scene={rootPass:'root',passes:[
+  {id:'child',output:rect,quads:[solid([0,1,0,1])]},
+  {id:'root',output:rect,quads:[{kind:'pass',passId:'child',matrix,rect,visible:rect,clip:null,opacity:1}]},
+ ]};
+ try{
+  for(let i=0;i<100;i++){
+   const output=renderer.render(scene,new Map());
+   assert.equal(live.size,1,'Only the returned root surface may retain pixels');
+   output.image.delete();output.surface.dispose();assert.equal(live.size,0);
+  }
+  scene.passes[1].quads[0].kind='invalid';
+  assert.throws(()=>renderer.render(scene,new Map()),/Unsupported scene command/);
+  assert.equal(live.size,0,'Failed rendering must release every surface buffer');
+  assert.equal(allocated,202);assert.equal(freed,allocated);
+ }finally{renderer.clear();ck._malloc=malloc;ck._free=free;}
 });

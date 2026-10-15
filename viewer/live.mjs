@@ -15,9 +15,9 @@ function draw(frame,resources){
  const output=sceneRenderer.render(frame.scene,resources);
  try{
   const canvas=$('viewport'),{cssWidth:width,cssHeight:height}=frame.viewport;
-  if(!surface||canvas.width!==width||canvas.height!==height){surface?.delete();canvas.width=width;canvas.height=height;surface=ck.MakeSWCanvasSurface(canvas);if(!surface)throw new Error('Cannot allocate Viewer surface');}
+  if(!surface||canvas.width!==width||canvas.height!==height){surface?.dispose();canvas.width=width;canvas.height=height;surface=ck.MakeSWCanvasSurface(canvas);if(!surface)throw new Error('Cannot allocate Viewer surface');}
   const target=surface.getCanvas();target.clear(ck.WHITE);target.drawImage(output.image,0,0);surface.flush();
- }finally{output.image.delete();output.surface.delete();}
+ }finally{output.image.delete();output.surface.dispose();}
 }
 async function connect(){
  if(stopped)return;clearTimeout(retryTimer);const current=++generation;socket?.close();input.reset();sceneRenderer.clear();
@@ -78,5 +78,5 @@ async function connect(){
  ws.onerror=()=>{if(current===generation)status('连接暂时不可用，等待重连');};
 }
 $('reconnect').onclick=()=>connect().catch(fail);
-window.addEventListener('pagehide',()=>{stopped=true;clearTimeout(retryTimer);socket?.close();surface?.delete();sceneRenderer?.clear();});
+window.addEventListener('pagehide',()=>{stopped=true;clearTimeout(retryTimer);socket?.close();surface?.dispose();sceneRenderer?.clear();});
 await initialize().then(connect).catch(fail);

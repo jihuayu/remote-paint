@@ -37,7 +37,7 @@ try{
   assert.ok(headerChanged/(960*86)<0.08,'Fixed header composition changed materially');
   stages.push({offset,imagePixels,textInk,native:mapped.native,resources:mapped.mappings,released:mapped.released,pixelFractionOver24:fraction,headerChangedPixels:headerChanged,quads:mapped.scene.passes.reduce((n,p)=>n+p.quads.length,0)});
   await writeFile(`artifacts/scene/scene-${stages.length-1}.json`,JSON.stringify(mapped.scene,null,2));
-  replay.image.delete();replay.surface.delete();renderer.retain(new Set(mapped.payloads.keys()));
+  replay.image.delete();replay.surface.dispose();renderer.retain(new Set(mapped.payloads.keys()));
  }
  assert.deepEqual(stages[1].resources,stages[0].resources,'Scrolling must reuse unchanged full-layer resources');
  assert.deepEqual(stages[2].resources,stages[0].resources,'Scrolling back must reuse unchanged resources');

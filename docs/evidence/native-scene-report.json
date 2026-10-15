@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-15T09:37:18.073Z",
+  "verifiedAt": "2026-10-15T10:00:11.079Z",
   "browser": "155.0.8059.79",
   "gpuMode": "in-process",
   "nativeBrowserCapture": true,
@@ -39,35 +39,36 @@
         }
       ],
       "native": {
-        "captureId": "9a81e851-caa8-4ec2-87bf-16115d5e4c76",
-        "producer": "2868:2",
+        "captureId": "260ebd9e-eff2-464f-92e9-fc72a233ea10",
+        "producer": "26902:2",
         "namespace": [
           4,
           10
         ],
-        "frameToken": 8,
-        "sourceFrame": 7
+        "frameToken": 9,
+        "sourceFrame": 8,
+        "bitmapGlyphs": 0
       },
       "resources": [
         {
-          "logical": "1/2868:2/4:10/22",
+          "logical": "1/26902:2/4:10/22",
           "resourceId": "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
           "revision": 1
         },
         {
-          "logical": "1/2868:2/4:10/21",
+          "logical": "1/26902:2/4:10/21",
           "resourceId": "9ae8f424fc0d48af85f7c2021ab117d953e228432cd1bee8114165c1d014b86d",
           "revision": 2
         },
         {
-          "logical": "1/2868:2/4:10/20",
+          "logical": "1/26902:2/4:10/20",
           "resourceId": "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80",
           "revision": 3
         }
       ],
       "released": [],
-      "pixelFractionOver24": 0.013709309895833334,
-      "headerChangedPixels": 1225,
+      "pixelFractionOver24": 0.013727213541666667,
+      "headerChangedPixels": 1236,
       "quads": 16
     },
     {
@@ -94,35 +95,36 @@
         }
       ],
       "native": {
-        "captureId": "7230e8f5-c812-4e2b-b38f-38488bc8746c",
-        "producer": "2868:2",
+        "captureId": "a42bff40-e4e4-43ac-9822-05ca9e3ffb6f",
+        "producer": "26902:2",
         "namespace": [
           4,
           10
         ],
-        "frameToken": 16,
-        "sourceFrame": 16
+        "frameToken": 17,
+        "sourceFrame": 16,
+        "bitmapGlyphs": 0
       },
       "resources": [
         {
-          "logical": "1/2868:2/4:10/22",
+          "logical": "1/26902:2/4:10/22",
           "resourceId": "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
           "revision": 1
         },
         {
-          "logical": "1/2868:2/4:10/21",
+          "logical": "1/26902:2/4:10/21",
           "resourceId": "9ae8f424fc0d48af85f7c2021ab117d953e228432cd1bee8114165c1d014b86d",
           "revision": 2
         },
         {
-          "logical": "1/2868:2/4:10/20",
+          "logical": "1/26902:2/4:10/20",
           "resourceId": "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80",
           "revision": 3
         }
       ],
       "released": [],
-      "pixelFractionOver24": 0.030003255208333333,
-      "headerChangedPixels": 1225,
+      "pixelFractionOver24": 0.030021158854166667,
+      "headerChangedPixels": 1236,
       "quads": 16
     },
     {
@@ -160,35 +162,36 @@
         }
       ],
       "native": {
-        "captureId": "8fb6c0ad-de81-4a65-8b91-5b27a6caf79b",
-        "producer": "2868:2",
+        "captureId": "d721ff1b-7ad8-467f-8608-65f1f18d8d9e",
+        "producer": "26902:2",
         "namespace": [
           4,
           10
         ],
-        "frameToken": 20,
-        "sourceFrame": 22
+        "frameToken": 21,
+        "sourceFrame": 22,
+        "bitmapGlyphs": 0
       },
       "resources": [
         {
-          "logical": "1/2868:2/4:10/22",
+          "logical": "1/26902:2/4:10/22",
           "resourceId": "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
           "revision": 1
         },
         {
-          "logical": "1/2868:2/4:10/21",
+          "logical": "1/26902:2/4:10/21",
           "resourceId": "9ae8f424fc0d48af85f7c2021ab117d953e228432cd1bee8114165c1d014b86d",
           "revision": 2
         },
         {
-          "logical": "1/2868:2/4:10/20",
+          "logical": "1/26902:2/4:10/20",
           "resourceId": "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80",
           "revision": 3
         }
       ],
       "released": [],
-      "pixelFractionOver24": 0.013709309895833334,
-      "headerChangedPixels": 1225,
+      "pixelFractionOver24": 0.013727213541666667,
+      "headerChangedPixels": 1236,
       "quads": 16
     }
   ],
@@ -197,6 +200,6 @@
   "ipc": {
     "received": 5,
     "rejected": 0,
-    "maxBufferedBytes": 4366
+    "maxBufferedBytes": 4368
   }
 }
