@@ -17,6 +17,7 @@ export class SceneRenderer {
      canvas.save();let alpha;
      try{
       if(q.clip)canvas.clipRect(q.clip,ck.ClipOp.Intersect,false);
+      if(q.roundedClip)canvas.clipRRect(q.roundedClip,ck.ClipOp.Intersect,true);
       if(q.opacity!==1){alpha=new ck.Paint();alpha.setAlphaf(q.opacity);canvas.saveLayer(alpha);}
       try{
        canvas.concat(q.matrix);canvas.clipRect(q.visible,ck.ClipOp.Intersect,false);

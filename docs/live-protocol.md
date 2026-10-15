@@ -2,7 +2,7 @@
 
 The live entry point is `REMOTE_PAINT_CHROMIUM=/path/to/headless_shell npm run demo`. It starts a real changing source page on the same device and the Viewer at a separate origin. A stock browser cannot provide the native capture API. `--url` binds another ordinary page to the same source/Viewer session.
 
-The resource envelope remains binary RPNT v1 (SHA-256 + a self-contained SKP); the live scene envelope is protocol 3. Hello strictly matches protocol, CanvasKit version and Wasm hash. Resources are session-scoped and have no public hash lookup endpoint. Source HTML, JavaScript, DOM, cookies, image URLs and screenshots are not part of the Viewer stream.
+The resource envelope remains binary RPNT v1 (SHA-256 + a self-contained SKP); the live scene envelope is protocol 4. Hello strictly matches protocol, CanvasKit version and Wasm hash. Resources are session-scoped and have no public hash lookup endpoint. Source HTML, JavaScript, DOM, cookies, image URLs and screenshots are not part of the Viewer stream.
 
 A full SceneUpdate has `baseFrameId: null` and a complete render-pass graph. A delta has an explicit acknowledged base and ordered pass upserts/removals. FrameCommit does not advance the visible/dependency state until every required resource is present and CanvasKit decoding/replay succeeds. Releases cannot remove displayed or staged dependencies. The Viewer frees retired resources after a successful atomic display.
 
@@ -23,6 +23,13 @@ The Viewer uses source CSS coordinates, one InputAck in flight, at most 60 queue
 `npm run verify:input` exercises real source and Viewer Chrome with a declared drawing fixture. Set REMOTE_PAINT_CHROMIUM to repeat it against native dynamic drawing. The report records which boundary was tested.
 
 Picture quads carry `contentOrigin`, the origin of the complete layer recording in rebased quad coordinates. Chromium shifts tile rectangles by the visible-layer origin to avoid floating-point precision loss, compensating the shared transform. The Viewer clips in quad coordinates, translates by `contentOrigin`, then applies the recording scale. Omitting this field repeats the page top when scrolling. Version 3 requires the field and rejects older scene handshakes. The immutable resource hash and revision remain unchanged for geometry-only scrolling.
+
+Version 4 adds optional `roundedClip`: target-space left/top/right/bottom and
+the x/y radius of each corner (top-left, top-right, bottom-right, bottom-left).
+It applies before the quad transform, with antialiasing, matching Chromium's
+software renderer. Composited input carets can inherit the input's rounded
+clip. Gradient masks remain rejected. Older Viewers are rejected at the
+handshake so they cannot silently omit this clip.
 
 Each picture is replayed into an isolated transparent layer. Native recording preambles may use `clear`/Src; drawing them directly into a composed pass would erase earlier quads through transparent corners. The picture layer is blended back over the pass after replay. A raster regression covers a clearing circle over an opaque background.
 

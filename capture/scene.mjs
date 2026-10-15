@@ -18,6 +18,10 @@ export class SceneMapper {
    for(const q of pass.quads){
     if(++quads>2048||!finite(q.matrix,9)||!finite(q.visible,4)||!finite(q.rect,4)||q.clip&&!finite(q.clip,4)||!Number.isFinite(q.opacity)||q.opacity<0||q.opacity>1)throw new Error('Invalid Viz quad');
     const out={kind:q.kind,matrix:q.matrix,visible:q.visible,rect:q.rect,clip:q.clip??null,opacity:q.opacity};
+    if(q.roundedClip!==undefined){
+     if(!finite(q.roundedClip,12)||q.roundedClip[2]<=q.roundedClip[0]||q.roundedClip[3]<=q.roundedClip[1]||q.roundedClip.slice(4).some(n=>n<0||n>8192))throw new Error('Invalid Viz rounded clip');
+     out.roundedClip=q.roundedClip;
+    }
     if(q.kind==='solid'){
      if(!finite(q.color,4)||q.color.some(c=>c<0||c>1))throw new Error('Invalid Viz color');out.color=q.color;
     }else if(q.kind==='pass'){

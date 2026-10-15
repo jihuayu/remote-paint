@@ -20,6 +20,7 @@
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "third_party/skia/include/core/SkRRect.h"
 namespace remote_paint {
 namespace {
 std::atomic<int> pending_writes{0};
@@ -81,13 +82,25 @@ void EmitVizScene(const viz::AggregatedFrame& frame,const std::string& id,std::p
       if(++count>2048){error="Viz quad budget exceeded";break;}
       const auto& sqs=*quad->shared_quad_state;
       if(!sqs.quad_to_target_transform.Is2dTransform() || sqs.sorting_context_id){error="Unsupported Viz 3D transform or sorting context";break;}
-      if(!sqs.mask_filter_info.IsEmpty()){error="Unsupported Viz mask";break;}
+      if(sqs.mask_filter_info.HasGradientMask()){error="Unsupported Viz gradient mask";break;}
       if(sqs.blend_mode!=SkBlendMode::kSrcOver){error="Unsupported Viz blend mode "+base::NumberToString(static_cast<int>(sqs.blend_mode));break;}
       base::DictValue q;q.Set("localId",static_cast<double>(sqs.layer_id));
       q.Set("namespace",Numbers({double(sqs.layer_namespace_id.first),double(sqs.layer_namespace_id.second)}));
       q.Set("matrix",Matrix(sqs.quad_to_target_transform));q.Set("visible",Rect(quad->visible_rect));q.Set("rect",Rect(quad->rect));
       q.Set("contentOrigin",Numbers({double(sqs.quad_layer_rect.x()),double(sqs.quad_layer_rect.y())}));
       q.Set("opacity",sqs.opacity);if(sqs.clip_rect)q.Set("clip",Rect(*sqs.clip_rect));
+      // Like SoftwareRenderer::SetClipRRect, this clip is in target space,
+      // before the quad transform. Composited carets inherit input radii.
+      if(!sqs.mask_filter_info.IsEmpty()){
+        const auto rounded=static_cast<SkRRect>(sqs.mask_filter_info.rounded_corner_bounds());
+        const auto bounds=rounded.rect();
+        auto clip=Numbers({bounds.left(),bounds.top(),bounds.right(),bounds.bottom()});
+        for(int corner=0;corner<4;corner++){
+          const auto radius=rounded.radii(static_cast<SkRRect::Corner>(corner));
+          clip.Append(radius.x());clip.Append(radius.y());
+        }
+        q.Set("roundedClip",std::move(clip));
+      }
       q.Set("vizResource",static_cast<double>(quad->resource_id.GetUnsafeValue()));
       if(quad->material==viz::DrawQuad::Material::kSolidColor){
         q.Set("kind","solid");const auto color=viz::SolidColorDrawQuad::MaterialCast(quad)->color;

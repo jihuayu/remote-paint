@@ -8,6 +8,20 @@ const ck=await CanvasKitInit({locateFile:()=>createRequire(import.meta.url).reso
 const matrix=[1,0,0,0,1,0,0,0,1],rect=[0,0,100,100];
 const solid=(color,area=rect,extra={})=>({kind:'solid',color,rect:area,visible:area,matrix,opacity:1,clip:null,...extra});
 const pixel=(png,x,y)=>[...png.data.subarray((y*png.width+x)*4,(y*png.width+x)*4+4)];
+test('rounded input clips stay in target coordinates when their caret quad moves',()=>{
+ const renderer=new SceneRenderer(ck),roundedClip=[10,10,70,70,20,20,0,0,10,10,0,0];
+ const output=renderer.render({rootPass:'root',passes:[{id:'root',output:rect,quads:[
+  solid([1,0,0,1],rect,{matrix:[1,0,10,0,1,0,0,0,1],roundedClip}),solid([0,0,1,1]),
+ ]}]},new Map());
+ try{const png=PNG.sync.read(Buffer.from(output.image.encodeToBytes()));
+  assert.deepEqual(pixel(png,40,20),[255,0,0,255]);
+  assert.deepEqual(pixel(png,12,12),[0,0,255,255]);
+  assert.deepEqual(pixel(png,75,40),[0,0,255,255]);
+  assert.deepEqual(pixel(png,68,12),[255,0,0,255]);
+  assert.deepEqual(pixel(png,68,68),[0,0,255,255]);
+  assert.deepEqual(pixel(png,12,68),[255,0,0,255]);
+ }finally{output.image.delete();output.surface.dispose();renderer.clear();}
+});
 test('CanvasKit replays Viz front-to-back order, target clips, scrolling transforms and opacity',()=>{
  const renderer=new SceneRenderer(ck);
  const scene={rootPass:'root',passes:[{id:'root',output:rect,quads:[
