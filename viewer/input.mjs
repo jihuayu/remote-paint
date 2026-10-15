@@ -32,7 +32,7 @@ export class ViewerInput {
   this.reset();
  }
  tags(){return {sessionId:this.sessionId,pageEpoch:this.frame?.pageEpoch,viewportVersion:this.frame?.viewportVersion,lease:this.lease};}
- welcome(message){this.reset();this.enabled=message.input;this.sessionId=message.sessionId;this.peerId=message.peerId;this.button.hidden=!this.enabled;}
+ welcome(message){this.reset();this.frame=null;this.enabled=message.input;this.sessionId=message.sessionId;this.peerId=message.peerId;this.button.hidden=!this.enabled;}
  display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=frame;this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);}
  reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.pending=null;this.queue=[];this.composing=false;this.suppressText=null;this.proxy.value='';this.proxy.blur();this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
  message(message){
