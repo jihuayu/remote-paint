@@ -1,3 +1,4 @@
+import {nativeLaunchArgs} from '../native/launch.mjs';
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {chromium} from 'playwright';
@@ -21,7 +22,7 @@ async function captureOnDemand(capture){
  finally{capture.setDemand(0);cleanup();}
 }
 const token=nativeToken();const fixture=await startDynamicFixture();const viz=await startVizIPC();
-const browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:[`--remote-paint-token=${token}`,'--disable-gpu-rasterization','--no-sandbox']});
+const browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:nativeLaunchArgs(token)});
 let capture;
 try{
  const page=await browser.newPage({viewport:{width:960,height:640}});await page.goto(new URL('/glyphs',fixture.url).href);

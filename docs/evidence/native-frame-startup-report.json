@@ -1,0 +1,10 @@
+{
+  "verifiedAt": "2026-10-15T09:19:57.921Z",
+  "browser": "155.0.8059.79",
+  "gpuMode": "in-process",
+  "rendererMode": "separate-process",
+  "animationFrames": 5,
+  "screenshotBytes": 9582,
+  "nativeCaptureAccepted": false,
+  "pending": "Native capture now reaches serializer but rejects typeface subsetting"
+}

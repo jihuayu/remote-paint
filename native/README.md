@@ -37,3 +37,7 @@ GN generation, actual compilation of the compositor/renderer/Viz/Mojo hook units
 ## Native serializer suite
 
 The actual Chromium-toolchain `serializer_tests` binary now runs all three tests successfully: original glyph IDs and Arial pixels, explicit budget refusal, and nested-picture font coverage. See `docs/evidence/native-serializer-report.json` for the binary hash and raw GTest output. Its small entry point initializes process globals and Skia, then runs Google Test; no browser test clients, trace processor or component resource bundles are needed. This is native serializer runtime evidence. The full headless browser and dynamic Viz/Viewer acceptance remain separate required steps.
+
+## macOS frame startup configuration
+
+The full `headless_shell` binary now links successfully. On this host the separate GPU child stalls in dyld before entering Chromium, leaving frame-sink creation pending (DOM scripts run but animation frames and screenshots do not). The single-device harness uses `--in-process-gpu`; renderer processes stay separate, and the native capture hook and Unix scene IPC remain enabled. Five actual animation frames and a real screenshot pass in `docs/evidence/native-frame-startup-report.json`. Independent GPU-process startup is not accepted by this checkpoint. The first native capture now reaches font serialization and rejects a typeface; the native acceptance gate remains pending.

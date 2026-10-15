@@ -1,3 +1,4 @@
+import {nativeLaunchArgs} from '../native/launch.mjs';
 import {assertPrivateImagePixels} from './image-pixels.mjs';
 import {assertTextInk} from './text-pixels.mjs';
 import assert from 'node:assert/strict';
@@ -13,7 +14,7 @@ import {SceneRenderer} from '../viewer/scene-renderer.mjs';
 import {startDynamicFixture} from './dynamic-fixture.mjs';
 const executablePath=process.env.REMOTE_PAINT_CHROMIUM;if(!executablePath)throw new Error('Set REMOTE_PAINT_CHROMIUM');
 const viz=await startVizIPC(),fixture=await startDynamicFixture(),token=nativeToken();
-const browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:[`--remote-paint-token=${token}`,'--disable-gpu-rasterization','--no-sandbox']});
+const browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:nativeLaunchArgs(token)});
 const ck=await CanvasKitInit({locateFile:()=>createRequire(import.meta.url).resolve('canvaskit-wasm/bin/full/canvaskit.wasm')});
 const renderer=new SceneRenderer(ck),mapper=new SceneMapper();let capture;
 try{
