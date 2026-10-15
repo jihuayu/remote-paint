@@ -1,0 +1,154 @@
+--- a/content/renderer/gpu_benchmarking_extension.cc
++++ b/content/renderer/gpu_benchmarking_extension.cc
+@@ -16,7 +16,8 @@
+ #include "base/base64.h"
+ #include "base/task/thread_pool.h"
+ #include "base/threading/platform_thread.h"
+-#include "components/remote_paint/serializer.h"
++#include "components/remote_paint/capture_state.h"
++#include "base/task/bind_post_task.h"
+ #include "base/command_line.h"
+ #include "base/debug/profiler.h"
+ #include "base/files/file_path.h"
+--- a/content/renderer/BUILD.gn
++++ b/content/renderer/BUILD.gn
+@@ -238,7 +238,7 @@
+     "//cc/paint",
+     "//components/discardable_memory/client",
+     "//components/input",
+-    "//components/remote_paint:serializer",
++    "//components/remote_paint:capture",
+     "//components/metrics",
+     "//components/metrics:single_sample_metrics",
+     "//components/performance_manager/scenario_api",
+--- a/cc/BUILD.gn
++++ b/cc/BUILD.gn
+@@ -27,6 +27,7 @@
+   ]
+   deps = [
+     "//base",
++    "//components/remote_paint:capture",
+     "//ui/gfx",
+     "//ui/gfx/geometry",
+   ]
+--- a/cc/trees/layer_tree_host_impl.cc
++++ b/cc/trees/layer_tree_host_impl.cc
+@@ -3,6 +3,12 @@
+ // found in the LICENSE file.
+ 
+ #include "cc/trees/layer_tree_host_impl.h"
++#include "components/remote_paint/capture_state.h"
++#include "base/process/process_handle.h"
++#include "base/threading/platform_thread.h"
++#include "cc/layers/picture_layer_impl.h"
++#include "cc/mojom/layer_type.mojom.h"
++#include "third_party/skia/include/core/SkPictureRecorder.h"
+ 
+ #include <stddef.h>
+ #include <stdint.h>
+@@ -2799,6 +2805,7 @@
+   last_draw_active_tree_begin_frame_args_ =
+       active_tree_->CreatedBeginFrameArgs();
+   auto compositor_frame = GenerateCompositorFrame(frame);
++#include "components/remote_paint/cc_capture.inc"
+   const auto frame_token = compositor_frame.metadata.frame_token;
+   frame->frame_token = frame_token;
+   if (dump_compositor_frame_ && frame_token >= dump_compositor_frame_begin_ &&
+--- a/components/viz/common/quads/compositor_frame_metadata.h
++++ b/components/viz/common/quads/compositor_frame_metadata.h
+@@ -11,6 +11,7 @@
+ #include <memory>
+ #include <optional>
+ #include <vector>
++#include <string>
+ 
+ #include "base/time/time.h"
+ #include "build/build_config.h"
+@@ -171,6 +172,9 @@
+   // comparisons.
+   uint32_t frame_token = kInvalidFrameToken;
+ 
++  // Opt-in Remote Paint pairing token; contains no paint payload.
++  std::string remote_paint_capture_id;
++
+   // Once the display compositor processes a frame with
+   // |send_frame_token_to_embedder| flag turned on, the |frame_token| for the
+   // frame is sent to embedder of the frame. This is helpful when the embedder
+--- a/components/viz/common/quads/compositor_frame_metadata.cc
++++ b/components/viz/common/quads/compositor_frame_metadata.cc
+@@ -153,6 +153,7 @@
+       deadline(other.deadline),
+       begin_frame_ack(other.begin_frame_ack),
+       frame_token(other.frame_token),
++      remote_paint_capture_id(other.remote_paint_capture_id),
+       send_frame_token_to_embedder(other.send_frame_token_to_embedder),
+       min_page_scale_factor(other.min_page_scale_factor),
+       top_controls_visible_height(other.top_controls_visible_height),
+--- a/services/viz/public/mojom/compositing/compositor_frame_metadata.mojom
++++ b/services/viz/public/mojom/compositing/compositor_frame_metadata.mojom
+@@ -49,6 +49,7 @@
+   array<SurfaceIdAndDeadline> activation_dependencies;
+   BeginFrameAck begin_frame_ack;
+   uint32 frame_token;
++  string remote_paint_capture_id;
+   bool send_frame_token_to_embedder;
+   float? top_controls_visible_height;
+   uint32? view_transition_deadline_in_frames;
+--- a/services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h
++++ b/services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h
+@@ -138,6 +138,9 @@
+     return metadata.begin_frame_ack;
+   }
+ 
++  static const std::string& remote_paint_capture_id(const viz::CompositorFrameMetadata& metadata) {
++    return metadata.remote_paint_capture_id;
++  }
+   static uint32_t frame_token(const viz::CompositorFrameMetadata& metadata) {
+     DCHECK_GT(metadata.frame_token, 0u);
+     return metadata.frame_token;
+--- a/services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc
++++ b/services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc
+@@ -47,6 +47,8 @@
+     return base::unexpected(DeserializationError());
+   }
+   out->frame_token = data.frame_token();
++  if (!data.ReadRemotePaintCaptureId(&out->remote_paint_capture_id) ||
++      out->remote_paint_capture_id.size() > 128) return false;
+ 
+   if (!data.ReadContentColorUsage(&out->content_color_usage)) {
+     return base::unexpected(DeserializationError());
+--- a/components/viz/service/BUILD.gn
++++ b/components/viz/service/BUILD.gn
+@@ -54,6 +54,8 @@
+ 
+ viz_component("service") {
+   sources = [
++    "//components/remote_paint/viz_capture.cc",
++    "//components/remote_paint/viz_capture.h",
+     "display/aggregated_frame.cc",
+     "display/aggregated_frame.h",
+     "display/bsp_tree.cc",
+--- a/components/viz/service/display/surface_aggregator.cc
++++ b/components/viz/service/display/surface_aggregator.cc
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
+ 
+ #include "components/viz/service/display/surface_aggregator.h"
++#include "components/remote_paint/viz_capture.h"
+ 
+ #include <stddef.h>
+ 
+@@ -2293,6 +2294,13 @@
+ 
+   AddRootReadbackPass();
+ 
++  for (const auto& remote_surface : contained_surfaces_) {
++    auto remote_frame = resolved_frames_.find(remote_surface);
++    if (remote_frame != resolved_frames_.end() && remote_frame->second.is_valid()) {
++      const auto& tag = remote_frame->second.GetMetadata().remote_paint_capture_id;
++      if (!tag.empty()) remote_paint::EmitVizScene(frame, tag, remote_frame->second.GetClientNamespaceId());
++    }
++  }
+   ProcessAddedAndRemovedSurfaces();
+   contained_surfaces_.swap(previous_contained_surfaces_);
+   contained_frame_sinks_.swap(previous_contained_frame_sinks_);

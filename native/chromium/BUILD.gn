@@ -6,6 +6,11 @@ source_set("serializer") {
   deps = [ "//base", "//skia", "//third_party/harfbuzz" ]
 }
 
+source_set("capture") {
+  sources = [ "capture_state.cc", "capture_state.h" ]
+  deps = [ ":serializer", "//base", "//skia" ]
+}
+
 test("serializer_tests") {
   sources = [ "serializer_unittest.cc" ]
   deps = [

@@ -1,12 +1,12 @@
 import {EventEmitter} from 'node:events';
-import {randomBytes} from 'node:crypto';
+import {randomBytes,randomUUID} from 'node:crypto';
 export const nativeToken=()=>randomBytes(32).toString('hex');
 
 // One broker owns one page target. The secret is evaluated only in a CDP
 // isolated world; source JavaScript never receives it. No disk-path API.
 export class NativeCapture extends EventEmitter {
-  constructor(page,{token,interval=120}={}) {
-    super();this.page=page;this.token=token;this.interval=interval;
+  constructor(page,{token,interval=120,viz}={}) {
+    super();this.page=page;this.token=token;this.interval=interval;this.viz=viz;
     this.viewers=0;this.running=false;this.stopped=false;this.count=0;this.generation=0;
   }
   async initialize() {
@@ -30,15 +30,23 @@ export class NativeCapture extends EventEmitter {
   async capture() {
     const generation=this.generation;
     await this.ensureWorld();
+    if(!this.viz)throw new Error('A private Viz IPC receiver is required');
+    const captureId=randomUUID();
+    const scene=this.viz.waitFor(captureId);scene.catch(()=>{});
+    try {
     const {result,exceptionDetails}=await this.cdp.send('Runtime.evaluate',{
       contextId:this.world,awaitPromise:true,returnByValue:true,
-      expression:`new Promise((resolve,reject)=>{if(!chrome.gpuBenchmarking.captureRemotePaint(${JSON.stringify(this.token)},resolve))reject(new Error('Native capture refused'));})`,
+      expression:`new Promise((resolve,reject)=>{if(!chrome.gpuBenchmarking.captureRemotePaint(${JSON.stringify(this.token)},${JSON.stringify(captureId)},resolve))reject(new Error('Native capture refused'));})`,
     });
     if(generation!==this.generation)throw new Error('Navigation invalidated the in-flight capture');
     if(exceptionDetails)throw new Error(exceptionDetails.exception?.description??exceptionDetails.text);
     if(result.value?.error)throw new Error(result.value.error);
+    if(result.value?.captureId!==captureId)throw new Error('Native capture pairing mismatch');
     if(!Array.isArray(result.value?.resources))throw new Error('Incomplete native capture');
-    this.count++;return result.value;
+    const viz=await scene;
+    if(generation!==this.generation)throw new Error('Navigation invalidated the Viz frame');
+    this.count++;return {...result.value,viz};
+    }catch(error){this.viz.cancel(captureId);throw error;}
   }
   async tick() {
     if(this.running||!this.viewers||this.stopped)return;
