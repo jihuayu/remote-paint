@@ -1,3 +1,4 @@
+import {assertPrivateImagePixels} from './image-pixels.mjs';
 import assert from 'node:assert/strict';
 import {writeFile,mkdir,readFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
@@ -27,9 +28,10 @@ try{
   assert.equal(pixels.width,source.width);assert.equal(pixels.height,source.height);
   let changed=0,headerChanged=0;
   for(let i=0;i<source.data.length;i+=4){let d=0;for(let c=0;c<4;c++)d=Math.max(d,Math.abs(source.data[i+c]-pixels.data[i+c]));if(d>24){changed++;if(i/4<960*86)headerChanged++;}}
+  const imagePixels=offset===0?await assertPrivateImagePixels(page,source,pixels):[];
   const fraction=changed/(pixels.width*pixels.height);assert.ok(fraction<0.06,`Scene replay differs at ${(fraction*100).toFixed(2)}% of pixels`);
   assert.ok(headerChanged/(960*86)<0.08,'Fixed header composition changed materially');
-  stages.push({offset,native:mapped.native,resources:mapped.mappings,released:mapped.released,pixelFractionOver24:fraction,headerChangedPixels:headerChanged,quads:mapped.scene.passes.reduce((n,p)=>n+p.quads.length,0)});
+  stages.push({offset,imagePixels,native:mapped.native,resources:mapped.mappings,released:mapped.released,pixelFractionOver24:fraction,headerChangedPixels:headerChanged,quads:mapped.scene.passes.reduce((n,p)=>n+p.quads.length,0)});
   await writeFile(`artifacts/scene/scene-${stages.length-1}.json`,JSON.stringify(mapped.scene,null,2));
   replay.image.delete();replay.surface.delete();renderer.retain(new Set(mapped.payloads.keys()));
  }
