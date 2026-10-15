@@ -3,6 +3,7 @@
 #include <cstring>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -44,7 +45,9 @@ TEST(RemotePaintSerializer, RetainsOriginalGlyphIdsAndPixels) {
   SkPixmap pa, pb;
   ASSERT_TRUE(a->peekPixels(&pa));
   ASSERT_TRUE(b->peekPixels(&pb));
-  EXPECT_EQ(std::memcmp(pa.addr(), pb.addr(), pa.computeByteSize()), 0);
+  ASSERT_EQ(pa.computeByteSize(), pb.computeByteSize());
+  // Both live raster surfaces expose exactly the validated pixmap byte size.
+  EXPECT_EQ(UNSAFE_BUFFERS(std::memcmp(pa.addr(), pb.addr(), pa.computeByteSize())), 0);
 }
 
 TEST(RemotePaintSerializer, RefusesSmallBudgetInsteadOfDroppingFont) {

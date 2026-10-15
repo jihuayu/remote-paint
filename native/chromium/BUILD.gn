@@ -12,12 +12,10 @@ source_set("capture") {
 }
 
 test("serializer_tests") {
-  sources = [ "serializer_unittest.cc" ]
+  sources = [ "serializer_unittest.cc", "test_main.cc" ]
   deps = [
     ":serializer",
     "//base",
-    "//base/test:test_support",
-    "//base/test:run_all_unittests",
     "//skia",
     "//testing/gtest",
   ]
