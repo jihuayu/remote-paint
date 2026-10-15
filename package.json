@@ -1,0 +1,19 @@
+{
+  "name": "remote-paint-prototype",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "capture": "node capture/cli.mjs",
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "verify": "node tests/verify.mjs"
+  },
+  "dependencies": {
+    "canvaskit-wasm": "0.42.0",
+    "playwright": "1.64.1",
+    "pngjs": "7.0.0",
+    "ws": "8.18.3"
+  }
+}
