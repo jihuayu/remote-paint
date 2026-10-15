@@ -38,6 +38,12 @@ preparation adds `-Wno-error=nonportable-include-path` only to SwiftShader's
 config. It keeps the diagnostic visible and retains all other error checks;
 the upstream include spelling stays intact.
 
+Preparation also points this independent checkout's `.gn` at the pinned
+`cpython3/linux-amd64` interpreter. V8 metagen invokes a nested `gn desc`, which
+does not inherit the outer `gn gen --script-executable` override. Leaving the
+Mac-synced `cpython3/host` default would run Mach-O in the Linux builder. The
+downloaded Mac and Linux interpreter directories are both retained.
+
 This is the build harness. Runtime/BeginFrame acceptance is recorded separately; preparing an image or generating the build graph does not establish that the Linux drawing path works.
 
 ## Native runtime and Mac acceptance

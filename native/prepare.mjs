@@ -35,6 +35,15 @@ await writeFile(statePath,JSON.stringify(state,null,2));
 await mkdir(join(source, 'components/remote_paint'), { recursive: true });
 await cp(new URL('./chromium/', import.meta.url), join(source, 'components/remote_paint'), { recursive: true });
 if(platform==='linux-arm64'){
+  // Nested `gn desc` calls (notably V8 metagen) do not inherit the top-level
+  // `gn gen --script-executable` override. A Mac-synced host/ contains Mach-O.
+  const dotfile=join(source,'.gn'),linuxPython='script_executable = "//third_party/cpython3/linux-amd64/bin/python3"';
+  let settings=await readFile(dotfile,'utf8');
+  if(!settings.includes(linuxPython)){
+    const original='script_executable = "//third_party/cpython3/host/bin/python3"';
+    if(!settings.includes(original))throw new Error('Pinned GN Python setting changed');
+    await writeFile(dotfile,settings.replace(original,linuxPython));
+  }
   // OrbStack bind mounts on a case-insensitive Mac volume can report a
   // lowercase canonical Vulkan path for SwiftShader's correctly cased include.
   // Keep the diagnostic visible without making it fatal for these targets.
