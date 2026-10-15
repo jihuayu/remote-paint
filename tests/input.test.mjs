@@ -10,6 +10,20 @@ test('strict session/page/viewport/lease/sequence checks prevent any CDP dispatc
  for(const [field,value,code] of [['sessionId','old','STALE_SESSION'],['pageEpoch',0,'STALE_EPOCH'],['viewportVersion',0,'STALE_VIEWPORT'],['lease','old','STALE_LEASE'],['seq',3,'STALE_SEQUENCE']])assert.throws(()=>c.input('a',{...input,[field]:value}),{code});
  assert.equal(calls.length,0);await c.input('a',input);assert.equal(calls.at(-1).params.text,'中文😀');assert.throws(()=>c.input('a',input),{code:'STALE_SEQUENCE'});await c.close();
 });
+test('fresh capture is requested only after accepted CDP input and its sequence watermark',async()=>{
+ const {source,control:c,cdp}=setup(),requests=[];
+ source.requestCapture=()=>requests.push(source.inputSeq);
+ const grant=await c.acquire('a',tags(c));let finish,entered;
+ const started=new Promise(r=>entered=r);
+ cdp.send=async()=>{entered();await new Promise(r=>finish=r);};
+ const input=c.input('a',{...grant,seq:1,event:text});await started;
+ assert.deepEqual(requests,[]);assert.equal(source.inputSeq,0);
+ finish();assert.equal((await input).accepted,true);assert.deepEqual(requests,[1]);
+ assert.throws(()=>c.input('a',{...grant,seq:1,event:text}),{code:'STALE_SEQUENCE'});assert.deepEqual(requests,[1]);
+ cdp.send=async()=>{throw new Error('CDP failed');};
+ await assert.rejects(c.input('a',{...grant,seq:2,event:text}),/CDP failed/);assert.deepEqual(requests,[1]);
+ await c.close();
+});
 test('handoff fences accepted Agent work, blocks new Agent work and releases held state',async()=>{
  const {control:c,cdp,calls}=setup();let release,entered;const ready=new Promise(r=>entered=r);const original=cdp.send;
  cdp.send=async(method,params)=>{if(params.code==='KeyA'&&params.type==='keyDown'){entered();await new Promise(r=>release=r);}await original(method,params);};

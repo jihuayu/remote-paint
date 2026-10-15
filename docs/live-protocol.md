@@ -31,6 +31,14 @@ software renderer. Composited input carets can inherit the input's rounded
 clip. Gradient masks remain rejected. Older Viewers are rejected at the
 handshake so they cannot silently omit this clip.
 
+Accepted human or Agent input requests a fresh capture after CDP dispatch.
+Input bursts coalesce, and input arriving during encoding requests one more
+capture after that encoding finishes. Linux uses the next BeginFrame ACK;
+other platforms schedule a task immediately instead of waiting for the normal
+120 ms capture interval. This preserves one capture in flight and zero capture
+without Viewers. Input watermarks are sampled at capture start, so a frame
+already being encoded never claims to contain later input.
+
 Each picture is replayed into an isolated transparent layer. Native recording preambles may use `clear`/Src; drawing them directly into a composed pass would erase earlier quads through transparent corners. The picture layer is blended back over the pass after replay. A raster regression covers a clearing circle over an opaque background.
 
 CanvasKit CPU surfaces own a separate Wasm pixel allocation. Scene pass cleanup, Viewer resize and page exit use `surface.dispose()`, which frees that allocation and then deletes the native surface. A test intercepts the actual CanvasKit `_malloc`/`_free` calls: 100 two-pass frames plus a failing render allocate and free all 202 pixel buffers, retaining zero after each completed frame/error (`docs/evidence/surface-lifecycle-report.json`).

@@ -5,9 +5,9 @@ import {pathToFileURL} from 'node:url';
 import {startLiveSource} from './live/source.mjs';
 import {startLiveTransport} from './live/transport.mjs';
 import {startDynamicFixture} from './tests/dynamic-fixture.mjs';
-export async function startLive({url,port=4175,host='127.0.0.1',executablePath,interval=120}={}){
+export async function startLive({url,port=4175,host='127.0.0.1',executablePath,interval=120,captureOnInput=true}={}){
  const fixture=url?null:await startDynamicFixture();let source,transport;
- try{source=await startLiveSource({url:url??fixture.url,executablePath,interval});source.control=await createControl(source);transport=await startLiveTransport(source,{port,host});
+ try{source=await startLiveSource({url:url??fixture.url,executablePath,interval,captureOnInput});source.control=await createControl(source);transport=await startLiveTransport(source,{port,host});
   return {...transport,source,close:async()=>{await transport.close();await source.control.close();await source.close();await fixture?.close();}};
  }catch(error){await transport?.close();await source?.control?.close();await source?.close();await fixture?.close();throw error;}
 }

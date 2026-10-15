@@ -89,7 +89,7 @@ export class ControlLease {
   validateInput(message.event,this.source.viewport);const version=this.version;
   const promise=this.enqueue(async()=>{
    this.validLease(peer,message);if(this.version!==version)reject('STALE_LEASE');
-   await this.dispatch(message.event);this.source.inputSeq=message.seq;
+   await this.dispatch(message.event);this.source.inputSeq=message.seq;this.source.requestCapture?.();
    return {type:'InputAck',seq:message.seq,accepted:true,lastProcessedInputSeq:this.source.inputSeq};
   });
   this.nextSeq++;return promise;
@@ -116,7 +116,7 @@ export class ControlLease {
  agent(event){
   if(this.mode!=='agent')reject('AGENT_PAUSED');validateInput(event,this.source.viewport);
   const epoch=this.source.pageEpoch,viewport=this.source.viewportVersion;
-  return this.enqueue(async()=>{if(this.source.pageEpoch!==epoch||this.source.viewportVersion!==viewport)reject('STALE_AGENT_PAGE');await this.dispatch(event);});
+  return this.enqueue(async()=>{if(this.source.pageEpoch!==epoch||this.source.viewportVersion!==viewport)reject('STALE_AGENT_PAGE');await this.dispatch(event);this.source.requestCapture?.();});
  }
  async handle(peer,message){
   try{

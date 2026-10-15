@@ -6,7 +6,7 @@ import {NativeCapture,nativeToken} from '../capture/live.mjs';
 import {startVizIPC} from '../capture/viz-ipc.mjs';
 import {SceneMapper} from '../capture/scene.mjs';
 import {validateScene} from '../protocol/live-wire.mjs';
-export async function startLiveSource({url,executablePath=process.env.REMOTE_PAINT_CHROMIUM,viewport={width:960,height:640},interval=120,beginFrames=process.platform==='linux'}={}){
+export async function startLiveSource({url,executablePath=process.env.REMOTE_PAINT_CHROMIUM,viewport={width:960,height:640},interval=120,beginFrames=process.platform==='linux',captureOnInput=true}={}){
  if(!executablePath)throw new Error('Set REMOTE_PAINT_CHROMIUM to the custom compiled headless_shell (npm run native:chromium)');
  const viz=await startVizIPC(),token=nativeToken();let browser,capture,frameDriver;
  try{
@@ -16,10 +16,11 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
   const page=await browser.newPage({viewport,deviceScaleFactor:1});
   if(beginFrames)frameDriver=await startBeginFrames(page);
   await page.goto(url,{waitUntil:'networkidle'});
-  capture=new NativeCapture(page,{token,viz,interval,frameDriver});await capture.initialize();
+  capture=new NativeCapture(page,{token,viz,interval,frameDriver,captureOnInput});await capture.initialize();
   const source=new EventEmitter();Object.assign(source,{page,browser,capture,viz,frameDriver,pageEpoch:1,viewportVersion:1,latest:null,demand:0,inputSeq:0,mapper:new SceneMapper(),producer:null,
    viewport:{cssWidth:viewport.width,cssHeight:viewport.height,deviceScaleFactor:1},stats:{captures:0,errors:0,lastError:null}});
   source.setDemand=count=>{source.demand=count;capture.setDemand(count);};
+  source.requestCapture=()=>capture.requestCapture();
   source.invalidate=reason=>{source.pageEpoch++;source.latest=null;source.mapper.reset();source.emit('invalidate',reason);};
   capture.on('navigation',()=>source.invalidate('navigation'));
   const failure=error=>{source.stats.errors++;source.stats.lastError=error.message;source.emit('captureError',error);};

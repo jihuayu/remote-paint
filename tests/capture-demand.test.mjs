@@ -22,3 +22,21 @@ test('frame input watermark samples capture start rather than later encoding com
  capture.on('capture',(_,context)=>delivered=context);capture.setDemand(1);inputSeq=8;resolve({resources:[]});
  await new Promise(setImmediate);assert.equal(delivered,7);await capture.close();
 });
+
+test('input bursts bypass the idle interval without overlapping captures or claiming late input',async t=>{
+ t.mock.timers.enable({apis:['setTimeout']});
+ const capture=new NativeCapture(null,{interval:10000}),delivered=[];
+ let calls=0,finish,inputSeq=7;
+ capture.sampleContext=()=>inputSeq;capture.capture=()=>{calls++;return new Promise(r=>finish=r);};
+ capture.on('capture',(_,seq)=>delivered.push(seq));
+ capture.requestCapture();t.mock.timers.tick(0);assert.equal(calls,0);
+ capture.setDemand(1);assert.equal(calls,1);
+ inputSeq=8;for(let i=0;i<20;i++)capture.requestCapture();
+ t.mock.timers.tick(0);assert.equal(calls,1);
+ finish({});await new Promise(setImmediate);assert.deepEqual(delivered,[7]);
+ t.mock.timers.tick(0);assert.equal(calls,2);
+ inputSeq=9;capture.requestCapture();capture.setDemand(0);finish({});await new Promise(setImmediate);
+ t.mock.timers.tick(10000);assert.equal(calls,2);assert.deepEqual(delivered,[7]);
+ capture.setDemand(1);finish({});await new Promise(setImmediate);
+ capture.requestCapture();await capture.close();t.mock.timers.tick(10000);assert.equal(calls,3);
+});
