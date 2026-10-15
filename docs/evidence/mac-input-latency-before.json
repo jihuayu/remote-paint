@@ -1,0 +1,35 @@
+{
+  "error": "AssertionError [ERR_ASSERTION]: {\"error\":\"No matching native paint within 10 seconds\",\"key\":\"A\",\"expected\":[213,193,99],\"pixel\":[0,0,0,255],\"previous\":0,\"inputSequence\":0,\"frameId\":4,\"viewerError\":\"\"}\n+ actual - expected\n\n+ 'No matching native paint within 10 seconds'\n- undefined\n\n    at measureInputLatency (file:///Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/tests/input-latency.mjs:41:74)\n    at async file:///Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/tests/verify-latency.mjs:22:16",
+  "sourceStats": {
+    "captures": 4,
+    "errors": 82,
+    "lastError": "Unsupported Viz mask, 3D or blend"
+  },
+  "native": {
+    "captureId": "48d15325-deed-4a68-a6d7-b41735fcabea",
+    "producer": "32147:2",
+    "namespace": [
+      4,
+      10
+    ],
+    "frameToken": 43,
+    "sourceFrame": 12,
+    "bitmapGlyphs": 0
+  },
+  "input": "\u521d\u59cb\u6587\u5b57A",
+  "marker": {
+    "color": "rgb(213, 193, 99)",
+    "box": {
+      "x": 920,
+      "y": 100,
+      "width": 24,
+      "height": 24,
+      "top": 100,
+      "right": 944,
+      "bottom": 124,
+      "left": 920
+    }
+  },
+  "scope": "Real macOS native SKP/Viz latency probe before optimization; input reached source DOM but capture stopped; not Linux acceptance",
+  "verifiedAt": "2026-10-15T15:19:13.379245+00:00"
+}

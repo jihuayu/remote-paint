@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {startLive} from '../live.mjs';
+import {launchCaptureBrowser} from '../capture/browser.mjs';
+import {nativeRuntimeInfo} from '../native/launch.mjs';
+import {installInputLatencyProbe,measureInputLatency} from './input-latency.mjs';
+
+const directory=resolve(process.env.REMOTE_PAINT_LATENCY_OUTPUT??'artifacts/latency');
+const interval=Number(process.env.REMOTE_PAINT_CAPTURE_INTERVAL??120);
+const live=await startLive({port:0,interval}),source=live.source;
+ let browser,page;
+try{
+ await source.page.locator('#stop-clock').click();await source.page.evaluate(()=>document.getAnimations().forEach(a=>a.pause()));
+ const point=await installInputLatencyProbe(source.page);
+ browser=await launchCaptureBrowser();page=await browser.newPage({viewport:{width:1100,height:1000}});const errors=[];
+ page.on('pageerror',error=>errors.push(error.message));await page.goto(live.url);
+ await page.waitForFunction(()=>window.remotePaintResult?.frameId>0,null,{timeout:60000});
+ await page.locator('#control').click();await page.waitForFunction(()=>document.querySelector('#controlState').textContent==='你正在操作');
+ const input=await source.page.locator('#name').boundingBox(),canvas=await page.locator('canvas').boundingBox();
+ await page.mouse.click(canvas.x+(input.x+input.width/2)*canvas.width/source.viewport.cssWidth,canvas.y+(input.y+input.height/2)*canvas.height/source.viewport.cssHeight);
+ const latency=await measureInputLatency(page,point);
+ assert.ok((await source.page.locator('#name').inputValue()).endsWith(latency.samples.map(r=>r.key).join('')));
+ assert.deepEqual(errors,[]);
+ const report={verifiedAt:new Date().toISOString(),...nativeRuntimeInfo(source.frameDriver),viewerPlatform:process.platform,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),nativeDrawing:true,captureIntervalMs:interval,...latency,errors};
+ await mkdir(directory,{recursive:true});await writeFile(resolve(directory,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+}catch(error){
+ await mkdir(directory,{recursive:true});
+ await source.page.screenshot({path:resolve(directory,'failure-source.png')}).catch(()=>{});
+ if(page){await page.screenshot({path:resolve(directory,'failure-viewer.png')}).catch(()=>{});const image=await page.locator('canvas').evaluate(c=>c.toDataURL()).catch(()=>null);if(image)await writeFile(resolve(directory,'failure-replay.png'),Buffer.from(image.split(',')[1],'base64'));}
+ await writeFile(resolve(directory,'failure.json'),JSON.stringify({error:error.stack,sourceStats:source.stats,native:source.latest?.native,input:await source.page.locator('#name').inputValue(),marker:await source.page.locator('#remote-paint-latency-probe').evaluate(el=>({color:getComputedStyle(el).backgroundColor,box:el.getBoundingClientRect().toJSON()}))},null,2));throw error;
+}finally{await browser?.close();await live.close();}
