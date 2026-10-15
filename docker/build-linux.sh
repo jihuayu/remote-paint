@@ -25,6 +25,14 @@ if ! printf '%s  %s\n' "$format_sha" "$format_path" | sha256sum --check --status
   mkdir -p buildtools/linux64-format
   install -m 755 /tmp/remote-paint-clang-format "$format_path"
 fi
+if [ ! -x third_party/gperf/cipd/bin/gperf ]; then
+  curl --fail --location --retry 3 \
+    'https://chrome-infra-packages.appspot.com/dl/infra/3pp/tools/gperf/linux-amd64/+/version:3@3.2' \
+    -o /tmp/remote-paint-gperf.zip
+  mkdir -p third_party/gperf/cipd
+  unzip -o /tmp/remote-paint-gperf.zip -d third_party/gperf/cipd
+  chmod +x third_party/gperf/cipd/bin/gperf
+fi
 node /project/native/prepare.mjs /chromium/src linux-arm64
 mkdir -p out/RemotePaintLinux
 cp /project/native/linux-arm64.args.gn out/RemotePaintLinux/args.gn
