@@ -43,7 +43,7 @@ try{
  const count=capture.count;await new Promise(r=>setTimeout(r,150));assert.equal(capture.count,count);
  await page.locator('#advance').click();const second=await captureOnDemand(capture);
  assert.notEqual(first.resources[0].skp,second.resources[0].skp);
- const report={verifiedAt:new Date().toISOString(),browser:browser.version(),noViewerCaptures:0,
+ const report={verifiedAt:new Date().toISOString(),browser:browser.version(),gpuMode:'in-process',nativeBrowserCapture:true,noViewerCaptures:0,
    captures:capture.count,sourceBenchmarkingApiExposed:false,isolatedCaptureApi:true,incorrectSecretRejected:true,sourcePulsesDuringCapture:pulses,
    recordingThread:first.recordingThread,encodingThread:first.encodingThread,
    namespace:first.viz.namespace,frameToken:first.frameToken,vizIpc:viz.stats,

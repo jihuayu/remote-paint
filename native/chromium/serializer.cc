@@ -72,9 +72,12 @@ SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* opaque) {
   }
   // Retain the source glyph IDs and the source variation coordinates.
   // Failure is explicit: never silently omit a font or use a client fallback.
-  auto subset = SubsetTypeface(typeface, found->second);
+  std::string subset_error;
+  auto subset = SubsetTypeface(typeface, found->second, &subset_error);
   if (!subset || subset->size() > ctx.budget) {
-    ctx.result.error = "Typeface subsetting failed or exceeded byte budget";
+    SkString family; typeface->getFamilyName(&family);
+    ctx.result.error = std::string("Typeface ") + family.c_str() + ": " +
+      (subset ? "subset exceeds byte budget" : subset_error);
     return SkData::MakeEmpty();
   }
   SkString name;

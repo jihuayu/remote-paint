@@ -1,0 +1,30 @@
+{
+  "verifiedAt": "2026-10-15T09:26:39.271Z",
+  "browser": "155.0.8059.79",
+  "gpuMode": "in-process",
+  "nativeBrowserCapture": true,
+  "noViewerCaptures": 0,
+  "captures": 2,
+  "sourceBenchmarkingApiExposed": false,
+  "isolatedCaptureApi": true,
+  "incorrectSecretRejected": true,
+  "sourcePulsesDuringCapture": 10,
+  "recordingThread": "205922291",
+  "encodingThread": "205922285",
+  "namespace": [
+    4,
+    10
+  ],
+  "frameToken": 4,
+  "vizIpc": {
+    "received": 2,
+    "rejected": 0,
+    "maxBufferedBytes": 3399
+  },
+  "layerIds": [
+    18
+  ],
+  "resourceBytes": [
+    820306
+  ]
+}
