@@ -1,0 +1,33 @@
+{
+  "verifiedAt": "2026-10-15T14:25:47.975031+00:00",
+  "scope": "Native Linux ARM64 serializer only; browser SKP/Viz and Mac Viewer acceptance are not yet verified",
+  "builderPlatform": "linux/amd64",
+  "runtimePlatform": "linux/arm64",
+  "binaryFormat": "ELF 64-bit AArch64",
+  "binaryBuildId": "c31f112f37cc7829",
+  "binarySha256": "b22dcf6fe95e316100c43a69d27b160cee880ebe26c753a669c5749bd72df2fa",
+  "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+  "projectCommit": "0f95b6ed91ca08d17affcf108d5cb44c61a5f0d0",
+  "nativeSourceSha256": {
+    "font_subset.cc": "57fe42d2f751946a369d688f52864fce1cc586b8c44e334f427d795b9ea0357c",
+    "font_subset.h": "0b60f6db554665df98c51eb4f97f8ffe9908cc2d6f6517f34ff623be1c391860",
+    "serializer.cc": "410efe65f4482aadad0e393f82ae3eeb4c1091371b830ae200460ed2ef8a8fb5",
+    "serializer.h": "a4b0ffe57bbe8edc5dac249d905b1657bd4110321809c66e937caf3958a3ba8b",
+    "serializer_unittest.cc": "556c6db434e882a061ce34f5e2da89db1d8944b23c44dd276be319d809d18f91",
+    "test_main.cc": "2683a596f6572109fb43c7a70c125ceb023df1796e70fc025f44a477012d9fb6"
+  },
+  "testsPassed": 4,
+  "testsFailed": 0,
+  "tests": [
+    "RetainsOriginalGlyphIdsAndPixels",
+    "BitmapEmojiKeepsOriginalNativePixels",
+    "RefusesSmallBudgetInsteadOfDroppingFont",
+    "NestedPicturesKeepTheirFontCoverage"
+  ],
+  "fonts": {
+    "text": "DejaVu Sans",
+    "color": "Noto Color Emoji"
+  },
+  "exitCode": 0,
+  "log": "linux-serializer-tests.log"
+}

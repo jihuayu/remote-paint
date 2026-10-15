@@ -1,0 +1,16 @@
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 4 tests from RemotePaintSerializer
+[ RUN      ] RemotePaintSerializer.RetainsOriginalGlyphIdsAndPixels
+[       OK ] RemotePaintSerializer.RetainsOriginalGlyphIdsAndPixels (109 ms)
+[ RUN      ] RemotePaintSerializer.BitmapEmojiKeepsOriginalNativePixels
+[       OK ] RemotePaintSerializer.BitmapEmojiKeepsOriginalNativePixels (0 ms)
+[ RUN      ] RemotePaintSerializer.RefusesSmallBudgetInsteadOfDroppingFont
+[       OK ] RemotePaintSerializer.RefusesSmallBudgetInsteadOfDroppingFont (0 ms)
+[ RUN      ] RemotePaintSerializer.NestedPicturesKeepTheirFontCoverage
+[       OK ] RemotePaintSerializer.NestedPicturesKeepTheirFontCoverage (0 ms)
+[----------] 4 tests from RemotePaintSerializer (111 ms total)
+
+[----------] Global test environment tear-down
+[==========] 4 tests from 1 test suite ran. (112 ms total)
+[  PASSED  ] 4 tests.
