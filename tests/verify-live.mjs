@@ -20,8 +20,10 @@ try{
  const dynamic=await page.evaluate(()=>window.remotePaintResult);assert.notEqual(dynamic.native.captureId,first.native.captureId);
  // Stop content updates and the compositor animation for an aligned comparison.
  await source.page.locator('#stop-clock').click();await source.page.evaluate(()=>document.getAnimations().forEach(a=>a.pause()));
- let n=source.stats.captures;await wait(()=>source.stats.captures>n+1);const stable=source.latest.native.captureId;
- await page.waitForFunction(id=>window.remotePaintResult?.native.captureId===id,stable);
+ let n=source.stats.captures;await wait(()=>source.stats.captures>n+1);const stable=source.latest.native;
+ // A slow Viewer can coalesce this exact capture before its next ACK. Any
+ // newer frame from the same producer is equally stable while paint is paused.
+ await page.waitForFunction(native=>{const shown=window.remotePaintResult?.native;return shown?.producer===native.producer&&JSON.stringify(shown.namespace)===JSON.stringify(native.namespace)&&shown.frameToken>=native.frameToken;},stable);
  const sourceBytes=await source.page.screenshot({path:'artifacts/live/source.png'}),viewerBytes=await page.locator('canvas').evaluate(c=>c.toDataURL());
  const replay=Buffer.from(viewerBytes.split(',')[1],'base64');await writeFile('artifacts/live/replay.png',replay);
  const a=PNG.sync.read(sourceBytes),b=PNG.sync.read(replay);assert.equal(a.width,b.width);assert.equal(a.height,b.height);
