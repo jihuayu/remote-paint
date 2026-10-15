@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Remote Paint Lab</title><link rel="stylesheet" href="/style.css"><script defer src="/vendor/canvaskit.js"></script><script type="module" src="/viewer.mjs"></script></head>
+<body>
+<header><a href="/">◈ <strong>Remote Paint</strong><span>LAB</span></a><div class="pill">阶段 A · 跨端绘制</div></header>
+<main>
+  <section class="intro"><div><p class="eyebrow">CHROMIUM → SKIA PICTURE → CANVASKIT</p><h1>网页在服务器运行，<br>画面在这里重放。</h1><p class="subtitle">独立的绘制通道 · 内嵌字体与图片 · 本地 Wasm</p></div><div class="status-box"><span id="lamp"></span><span id="status" role="status">初始化渲染器</span><button id="reconnect">重新连接</button></div></section>
+  <section class="workspace"><div class="toolbar"><div><i></i><i></i><i></i><span>远程网页视口</span></div><span id="dimensions">—</span></div><div class="canvas-wrap"><canvas id="viewport" width="960" height="640" aria-label="服务器网页的静态绘图快照"></canvas></div><div id="error" role="alert" hidden></div></section>
+  <section class="metrics"><article><p>绘制资源</p><strong id="bytes">—</strong><span>二进制 SKP</span></article><article><p>提交帧</p><strong id="frame">—</strong><span>资源齐全后提交</span></article><article><p>解码与绘制</p><strong id="renderTime">—</strong><span>本次客户端耗时</span></article><article><p>运行模式</p><strong>静态快照</strong><span>尚未连接输入通道</span></article></section>
+  <footer><span id="build">CanvasKit 0.42.0</span><span>实验性跨版本 SKP · 单层视口 · 仅本机访问</span></footer>
+</main>
+</body></html>
