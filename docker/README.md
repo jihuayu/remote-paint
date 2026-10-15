@@ -16,3 +16,34 @@ docker run --name remote-paint-linux-build --platform linux/amd64 --init \
 `BUILD_JOBS` defaults to four and can be set to reduce memory pressure. The script downloads the pinned Linux toolchain, GN and both host/target sysroots, applies the existing Remote Paint patches, generates GN and builds `headless_shell` plus the serializer tests. The ARM64 test binary must execute in the ARM64 runtime rather than the x86_64 builder. The standalone macOS/CoreText helper is not used.
 
 This is the build harness. Runtime/BeginFrame acceptance is recorded separately; preparing an image or generating the build graph does not establish that the Linux drawing path works.
+
+## Native runtime and Mac acceptance
+
+Build the runtime for ARM64 and mount the entire output directory, including
+Chromium's data files. Publish only the Viewer port on Mac loopback:
+
+```sh
+docker build --platform linux/arm64 -t remote-paint-runtime:linux-arm64 -f docker/Dockerfile.runtime .
+mkdir -p artifacts/linux-mac
+docker run --name remote-paint-linux --platform linux/arm64 --init --shm-size=2g \
+  -p 127.0.0.1:4176:4176 \
+  -v /absolute/independent/chromium/src/out/RemotePaintLinux:/browser:ro \
+  -v /absolute/remote-paint:/project:ro \
+  -v /absolute/remote-paint/artifacts:/project/artifacts \
+  remote-paint-runtime:linux-arm64 node tests/serve-linux-proof.mjs
+# Run this on the Mac host, in the project directory:
+npm run verify:linux-mac
+```
+
+The proof server uses the normal native SKP/Viz transport and BeginFrame driver.
+Its private bind-mounted file channel exports source observations and accepts a
+fixed set of test operations; it exposes no HTTP test API or CDP port. Source
+screenshots are acceptance comparisons only. Viewer pixels always come from
+CanvasKit replay. The Mac test checks native dynamic frames, image/text pixels,
+animation resource reuse, keyboard/IME/paste, scrolling, reconnect, navigation,
+resize, dropped-resource recovery, and zero capture demand after disconnect.
+Reports are written under `artifacts/linux-mac`; the physical OS IME candidate
+window is outside the automated test's scope.
+
+For an ordinary demo without the private proof channel, use the image's default
+command instead of `node tests/serve-linux-proof.mjs`.

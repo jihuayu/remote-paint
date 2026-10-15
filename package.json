@@ -22,7 +22,9 @@
     "verify:viewer": "node tests/verify-live-viewer.mjs",
     "verify:input": "node tests/verify-input.mjs",
     "verify:live": "node tests/verify-live.mjs",
-    "verify:begin-frame": "node tests/verify-begin-frame.mjs"
+    "verify:begin-frame": "node tests/verify-begin-frame.mjs",
+    "serve:linux-proof": "node tests/serve-linux-proof.mjs",
+    "verify:linux-mac": "node tests/verify-linux-mac.mjs"
   },
   "dependencies": {
     "canvaskit-wasm": "0.42.0",
