@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-15T07:04:50.692Z",
+  "verifiedAt": "2026-10-15T07:16:42.853Z",
   "nativeDrawing": false,
   "drawingFixtureOnly": true,
   "sourceBrowser": "155.0.8059.79",
@@ -8,13 +8,15 @@
   "saved": "已保存：粘贴🌈AB",
   "editor": "rich text\nline",
   "newlineArrowDeleteAndTab": true,
-  "scrollY": 366,
+  "scrollY": 500,
   "cssScaling": true,
   "inputPixelsFractionOver24": null,
   "imeViaActualLocalAndRemoteCDP": true,
   "physicalOsImeCandidateWindowTested": false,
   "leaseAndStaleTags": true,
-  "lastProcessedInputSeq": 81,
+  "heldButtonCleanupWithoutClick": true,
+  "pointerCaptureCleanupWithoutClick": true,
+  "lastProcessedInputSeq": 82,
   "viewerSourceRequests": 0,
   "errors": []
 }

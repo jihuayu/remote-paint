@@ -56,7 +56,7 @@ try{
  await source.page.waitForFunction(()=>document.querySelector('#editor').innerText==='rich text\nline');
  await page.keyboard.press('Tab');await source.page.waitForFunction(()=>document.activeElement.id==='start-stream');
  const canvas=await page.locator('#viewport').boundingBox();await page.mouse.move(canvas.x+canvas.width/2,canvas.y+canvas.height/2);await page.mouse.wheel(0,500);await source.page.waitForFunction(()=>scrollY>200);
- const header=await source.page.locator('header').boundingBox();assert.equal(header.y,0);
+ const header=await source.page.locator('header').boundingBox();assert.equal(header.y,0);const scrollAfterWheel=await source.page.evaluate(()=>scrollY);
  await page.locator('#control').click();await page.waitForFunction(()=>document.querySelector('#controlState').textContent==='Agent 控制');assert.equal(source.control.mode,'agent');
  // Reconnecting must revoke the old peer and require a fresh control lease.
  const oldPeer=[...live.peers][0];await page.locator('#reconnect').click();
@@ -64,8 +64,11 @@ try{
  assert.ok(oldPeer.closed);assert.equal(source.control.mode,'agent');
  const peer=[...live.peers][0];assert.notEqual(peer.id,oldPeer.id);const grant=await source.control.acquire(peer.id,{sessionId:source.control.sessionId,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion});
  const before=source.inputSeq;for(const bad of [{pageEpoch:0},{viewportVersion:0},{lease:'revoked'},{seq:0}])assert.throws(()=>source.control.input(peer.id,{...grant,seq:grant.nextSeq,event:{kind:'text',text:'BAD'},...bad}));assert.equal(source.inputSeq,before);
- await source.control.revoke('test');await cdp.detach();assert.ok(requests.every(origin=>origin===live.origin));assert.deepEqual(errors,[]);
+ await source.page.evaluate(()=>{window.cleanupClicks=0;document.querySelector('#save').addEventListener('click',()=>cleanupClicks++);document.querySelector('#save').addEventListener('pointerdown',e=>e.target.setPointerCapture(e.pointerId));scrollTo(0,0);});
+ const pressed=await source.page.locator('#save').boundingBox();
+ await source.control.input(peer.id,{...grant,seq:grant.nextSeq,event:{kind:'mouse',type:'mousePressed',x:pressed.x+pressed.width/2,y:pressed.y+pressed.height/2,button:'left',buttons:1,clickCount:1}});
+ await source.control.revoke('test');assert.equal(await source.page.evaluate(()=>cleanupClicks),0,'Lease cleanup must not activate a button held on disconnect');await cdp.detach();assert.ok(requests.every(origin=>origin===live.origin));assert.deepEqual(errors,[]);
  await mkdir('artifacts/input',{recursive:true});await page.screenshot({path:'artifacts/input/viewer.png'});
- const report={verifiedAt:new Date().toISOString(),nativeDrawing:native,drawingFixtureOnly:!native,sourceBrowser:source.page.context().browser().version(),viewerBrowser:viewerBrowser.version(),sourceInput:await source.page.locator('#name').inputValue(),saved:await source.page.locator('#saved').textContent(),editor:await source.page.locator('#editor').innerText(),newlineArrowDeleteAndTab:true,scrollY:await source.page.evaluate(()=>scrollY),cssScaling:true,inputPixelsFractionOver24,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,leaseAndStaleTags:true,lastProcessedInputSeq:source.inputSeq,viewerSourceRequests:0,errors};
+ const report={verifiedAt:new Date().toISOString(),nativeDrawing:native,drawingFixtureOnly:!native,sourceBrowser:source.page.context().browser().version(),viewerBrowser:viewerBrowser.version(),sourceInput:await source.page.locator('#name').inputValue(),saved:await source.page.locator('#saved').textContent(),editor:await source.page.locator('#editor').innerText(),newlineArrowDeleteAndTab:true,scrollY:scrollAfterWheel,cssScaling:true,inputPixelsFractionOver24,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,leaseAndStaleTags:true,heldButtonCleanupWithoutClick:true,pointerCaptureCleanupWithoutClick:true,lastProcessedInputSeq:source.inputSeq,viewerSourceRequests:0,errors};
  await writeFile('artifacts/input/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await viewerBrowser.close();await live?.close();if(!native){await source?.control?.close();await sourceBrowser?.close();await fixture?.close();}}

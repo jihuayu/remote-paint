@@ -97,7 +97,10 @@ export class ControlLease {
  async cleanup(){
   const commands=[['Input.imeSetComposition',{text:'',selectionStart:0,selectionEnd:0}],
    ...[...this.keys.values()].map(params=>['Input.dispatchKeyEvent',params]),
-   ...[...this.buttons.keys()].map(button=>['Input.dispatchMouseEvent',{type:'mouseReleased',...this.pointer,button,buttons:0,clickCount:1}])];
+   // A lease can end between press and release. Moving outside the page
+   // before releasing prevents ordinary HTML button activation on cleanup.
+   ...(this.buttons.size?[['Input.dispatchMouseEvent',{type:'mouseMoved',x:-1,y:-1,button:'none',buttons:[...this.buttons.keys()].reduce((bits,b)=>bits|({left:1,right:2,middle:4}[b]??0),0),clickCount:0}]]:[]),
+   ...[...this.buttons.keys()].map(button=>['Input.dispatchMouseEvent',{type:'mouseReleased',x:-1,y:-1,button,buttons:0,clickCount:0}])];
   this.keys.clear();this.buttons.clear();for(const [method,params] of commands){try{await this.cdp.send(method,params);}catch{}}
  }
  fence(fn){const promise=this.tail.then(fn);this.tail=promise.catch(()=>{});return promise;}
