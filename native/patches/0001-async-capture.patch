@@ -1,0 +1,103 @@
+--- a/content/renderer/gpu_benchmarking_extension.cc
++++ b/content/renderer/gpu_benchmarking_extension.cc
+@@ -14,6 +14,9 @@
+ #include <vector>
+ 
+ #include "base/base64.h"
++#include "base/task/thread_pool.h"
++#include "base/threading/platform_thread.h"
++#include "components/remote_paint/serializer.h"
+ #include "base/command_line.h"
+ #include "base/debug/profiler.h"
+ #include "base/files/file_path.h"
+@@ -612,6 +615,12 @@
+   if (context.IsEmpty())
+     return;
+ 
++  InstallInContext(std::move(frame), context);
++}
++
++void GpuBenchmarking::InstallInContext(base::WeakPtr<RenderFrameImpl> frame,
++                                       v8::Local<v8::Context> context) {
++  v8::Isolate* isolate = context->GetIsolate();
+   v8::Context::Scope context_scope(context);
+ 
+   auto* controller = cppgc::MakeGarbageCollected<GpuBenchmarking>(
+@@ -644,6 +653,7 @@
+                  &GpuBenchmarking::SetNeedsDisplayOnAllLayers)
+       .SetMethod("setRasterizeOnlyVisibleContent",
+                  &GpuBenchmarking::SetRasterizeOnlyVisibleContent)
++      .SetMethod("captureRemotePaint", &GpuBenchmarking::CaptureRemotePaint)
+       .SetMethod("printToSkPicture", &GpuBenchmarking::PrintToSkPicture)
+       .SetMethod("printPagesToSkPictures",
+                  &GpuBenchmarking::PrintPagesToSkPictures)
+@@ -757,6 +767,8 @@
+ #endif
+ }
+ 
++#include "components/remote_paint/extension_capture.inc"
++
+ void GpuBenchmarking::PrintToSkPicture(v8::Isolate* isolate,
+                                        const std::string& dirname) {
+   GpuBenchmarkingContext context(render_frame_.get());
+--- a/content/renderer/gpu_benchmarking_extension.h
++++ b/content/renderer/gpu_benchmarking_extension.h
+@@ -33,6 +33,8 @@
+   GpuBenchmarking& operator=(const GpuBenchmarking&) = delete;
+ 
+   static void Install(base::WeakPtr<RenderFrameImpl> frame);
++  static void InstallInContext(base::WeakPtr<RenderFrameImpl> frame,
++                               v8::Local<v8::Context> context);
+ 
+   // Make public for cppgc::MakeGarbageCollected.
+   explicit GpuBenchmarking(base::WeakPtr<RenderFrameImpl> frame);
+@@ -48,6 +50,7 @@
+   // JavaScript handlers.
+   void SetNeedsDisplayOnAllLayers();
+   void SetRasterizeOnlyVisibleContent();
++  bool CaptureRemotePaint(gin::Arguments* args);
+   void PrintToSkPicture(v8::Isolate* isolate, const std::string& dirname);
+   void PrintPagesToSkPictures(v8::Isolate* isolate,
+                               const std::string& filename);
+@@ -121,6 +124,8 @@
+ 
+   base::WeakPtr<RenderFrameImpl> render_frame_;
+   mojo::Remote<mojom::InputInjector> input_injector_;
++  bool remote_capture_in_flight_ = false;
++  base::WeakPtrFactory<GpuBenchmarking> weak_factory_{this};
+ };
+ 
+ }  // namespace content
+--- a/content/renderer/BUILD.gn
++++ b/content/renderer/BUILD.gn
+@@ -238,6 +238,7 @@
+     "//cc/paint",
+     "//components/discardable_memory/client",
+     "//components/input",
++    "//components/remote_paint:serializer",
+     "//components/metrics",
+     "//components/metrics:single_sample_metrics",
+     "//components/performance_manager/scenario_api",
+--- a/content/browser/renderer_host/render_process_host_impl.cc
++++ b/content/browser/renderer_host/render_process_host_impl.cc
+@@ -3996,6 +3996,7 @@
+       switches::kDisableCompositedAntialiasing,
+       switches::kDisableThreadedAnimation,
+       switches::kEnableGpuBenchmarking,
++      "remote-paint-token",
+       switches::kEnableClippedImageScaling,
+       switches::kDumpCompositorFrame,
+       switches::kShowCompositedLayerBorders,
+--- a/content/renderer/render_frame_impl.cc
++++ b/content/renderer/render_frame_impl.cc
+@@ -4953,6 +4953,10 @@
+   v8::MicrotasksScope microtasks(GetAgentGroupScheduler().Isolate(),
+                                  context->GetMicrotaskQueue(),
+                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
++  if (world_id != ISOLATED_WORLD_ID_GLOBAL &&
++      base::CommandLine::ForCurrentProcess()->HasSwitch("remote-paint-token")) {
++    GpuBenchmarking::InstallInContext(weak_factory_.GetWeakPtr(), context);
++  }
+   if ((enable_mojo_js_bindings_ ||
+        (enabled_bindings_.Has(BindingsPolicyValue::kMojoWebUi) &&
+         IsMainFrame())) &&

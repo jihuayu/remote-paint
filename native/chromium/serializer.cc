@@ -14,7 +14,11 @@
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
+#if defined(REMOTE_PAINT_CHROMIUM)
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
+#else
 #include "third_party/skia/include/encode/SkPngEncoder.h"
+#endif
 
 namespace remote_paint {
 namespace {
@@ -94,7 +98,11 @@ SkSerialReturnType SerializeImage(SkImage* image, void* opaque) {
   }
   // Read pixels already fetched by the browser, including authenticated/blob
   // images. The Viewer never receives a URL and never refetches source assets.
+#if defined(REMOTE_PAINT_CHROMIUM)
+  auto encoded = SkPngRustEncoder::Encode(nullptr, image, {});
+#else
   auto encoded = SkPngEncoder::Encode(nullptr, image, {});
+#endif
   if (!encoded || encoded->size() > ctx.budget - ctx.result.image_bytes) {
     ctx.result.error = "Image encoding failed or exceeded byte budget";
     return SkData::MakeEmpty();

@@ -1,0 +1,51 @@
+import {EventEmitter} from 'node:events';
+import {randomBytes} from 'node:crypto';
+export const nativeToken=()=>randomBytes(32).toString('hex');
+
+// One broker owns one page target. The secret is evaluated only in a CDP
+// isolated world; source JavaScript never receives it. No disk-path API.
+export class NativeCapture extends EventEmitter {
+  constructor(page,{token,interval=120}={}) {
+    super();this.page=page;this.token=token;this.interval=interval;
+    this.viewers=0;this.running=false;this.stopped=false;this.count=0;this.generation=0;
+  }
+  async initialize() {
+    this.cdp=await this.page.context().newCDPSession(this.page);
+    await this.cdp.send('Page.enable');
+    this.cdp.on('Page.frameNavigated',({frame})=>{if(!frame.parentId){this.world=null;this.generation++;this.emit('navigation');}});
+    await this.ensureWorld();
+    const result=await this.cdp.send('Runtime.evaluate',{contextId:this.world,expression:'typeof chrome?.gpuBenchmarking?.captureRemotePaint',returnByValue:true});
+    if(result.result.value!=='function')throw new Error('Custom native Chromium captureRemotePaint is required; stock Chrome cannot stream this protocol');
+  }
+  async ensureWorld() {
+    if(this.world)return;
+    const {frameTree}=await this.cdp.send('Page.getFrameTree');
+    const {executionContextId}=await this.cdp.send('Page.createIsolatedWorld',{frameId:frameTree.frame.id,worldName:'remote-paint-broker'});
+    this.world=executionContextId;
+  }
+  setDemand(count) {
+    this.viewers=Math.max(0,count);
+    if(this.viewers&&!this.running&&!this.stopped)void this.tick();
+  }
+  async capture() {
+    const generation=this.generation;
+    await this.ensureWorld();
+    const {result,exceptionDetails}=await this.cdp.send('Runtime.evaluate',{
+      contextId:this.world,awaitPromise:true,returnByValue:true,
+      expression:`new Promise((resolve,reject)=>{if(!chrome.gpuBenchmarking.captureRemotePaint(${JSON.stringify(this.token)},resolve))reject(new Error('Native capture refused'));})`,
+    });
+    if(generation!==this.generation)throw new Error('Navigation invalidated the in-flight capture');
+    if(exceptionDetails)throw new Error(exceptionDetails.exception?.description??exceptionDetails.text);
+    if(result.value?.error)throw new Error(result.value.error);
+    if(!Array.isArray(result.value?.resources))throw new Error('Incomplete native capture');
+    this.count++;return result.value;
+  }
+  async tick() {
+    if(this.running||!this.viewers||this.stopped)return;
+    this.running=true;const start=performance.now();
+    try {const value=await this.capture();if(this.viewers&&!this.stopped)this.emit('capture',value);}
+    catch(error){if(!this.stopped)this.emit('captureError',error);}
+    finally {this.running=false;if(this.viewers&&!this.stopped)this.timer=setTimeout(()=>void this.tick(),Math.max(0,this.interval-(performance.now()-start)));}
+  }
+  async close() {this.stopped=true;clearTimeout(this.timer);await this.cdp?.detach();}
+}

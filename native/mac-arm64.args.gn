@@ -8,3 +8,4 @@ enable_dsyms = false
 use_remoteexec = false
 use_siso = false
 use_thin_lto = false
+enable_paint_preview = true

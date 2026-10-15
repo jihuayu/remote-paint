@@ -7,12 +7,22 @@ if (!process.argv[2]) throw new Error('Usage: node native/prepare.mjs /path/to/c
 const expected = 'a49e2e3d4addfd84e765b52afe230bedb81096db';
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim();
 if (revision !== expected) throw new Error(`Expected Chromium ${expected}, got ${revision}`);
+const patch = new URL('./patches/0001-async-capture.patch', import.meta.url);
+try {
+  execFileSync('git', ['apply', '--reverse', '--check', patch.pathname], {cwd: source, stdio:'pipe'});
+} catch {
+  execFileSync('git', ['apply', patch.pathname], {cwd: source, stdio:'inherit'});
+}
 await mkdir(join(source, 'components/remote_paint'), { recursive: true });
 await cp(new URL('./chromium/', import.meta.url), join(source, 'components/remote_paint'), { recursive: true });
 const rootBuild = join(source, 'BUILD.gn');
 let build = await readFile(rootBuild, 'utf8');
 if (!build.includes('group("remote_paint_tools")')) {
-  build += '\n# Local Remote Paint targets (native/prepare.mjs).\ngroup("remote_paint_tools") {\n  deps = [ "//components/remote_paint:serializer_tests" ]\n}\n';
+  build += '\n# Local Remote Paint targets (native/prepare.mjs).\ngroup("remote_paint_tools") {\n  testonly = true\n  deps = [ "//components/remote_paint:serializer_tests" ]\n}\n';
+  await writeFile(rootBuild, build);
+}
+if (!build.includes('group("remote_paint_tools") {\n  testonly = true')) {
+  build = build.replace('group("remote_paint_tools") {', 'group("remote_paint_tools") {\n  testonly = true');
   await writeFile(rootBuild, build);
 }
 const output = join(source, 'out/RemotePaint');
