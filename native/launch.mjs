@@ -7,3 +7,9 @@ export function nativeLaunchArgs(token,{beginFrames=false}={}){
   ...(beginFrames?['--enable-begin-frame-control','--run-all-compositor-stages-before-draw']:[]),
   '--no-sandbox'];
 }
+
+export function nativeRuntimeInfo(frameDriver){
+ return {platform:process.platform,architecture:process.arch,
+  gpuMode:process.platform==='darwin'?'in-process':'software-compositing',
+  beginFrame:frameDriver?{...frameDriver.stats}:null};
+}

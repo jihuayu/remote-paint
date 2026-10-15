@@ -1,4 +1,5 @@
-import {nativeLaunchArgs} from '../native/launch.mjs';
+import {nativeLaunchArgs,nativeRuntimeInfo} from '../native/launch.mjs';
+import {startBeginFrames} from '../capture/begin-frame.mjs';
 import {assertPrivateImagePixels} from './image-pixels.mjs';
 import {assertTextInk} from './text-pixels.mjs';
 import assert from 'node:assert/strict';
@@ -14,14 +15,17 @@ import {SceneRenderer} from '../viewer/scene-renderer.mjs';
 import {startDynamicFixture} from './dynamic-fixture.mjs';
 const executablePath=process.env.REMOTE_PAINT_CHROMIUM;if(!executablePath)throw new Error('Set REMOTE_PAINT_CHROMIUM');
 const viz=await startVizIPC(),fixture=await startDynamicFixture(),token=nativeToken();
-const browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:nativeLaunchArgs(token)});
+const beginFrames=process.platform==='linux';
+const browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:nativeLaunchArgs(token,{beginFrames})});
 const ck=await CanvasKitInit({locateFile:()=>createRequire(import.meta.url).resolve('canvaskit-wasm/bin/full/canvaskit.wasm')});
-const renderer=new SceneRenderer(ck),mapper=new SceneMapper();let capture;
+const renderer=new SceneRenderer(ck),mapper=new SceneMapper();let capture,frameDriver;
 try{
- await mkdir('artifacts/scene',{recursive:true});const page=await browser.newPage({viewport:{width:960,height:640},deviceScaleFactor:1});await page.goto(fixture.url);
+ await mkdir('artifacts/scene',{recursive:true});const page=await browser.newPage({viewport:{width:960,height:640},deviceScaleFactor:1});
+ if(beginFrames)frameDriver=await startBeginFrames(page);
+ await page.goto(fixture.url);
  await page.waitForFunction(()=>window.fixtureReady&&[...document.images].every(i=>i.complete&&i.naturalWidth));
  await page.locator('#stop-clock').click();await page.evaluate(()=>document.getAnimations().forEach(a=>a.pause()));
- capture=new NativeCapture(page,{token,viz});await capture.initialize();const stages=[];
+ capture=new NativeCapture(page,{token,viz,frameDriver});await capture.initialize();const stages=[];
  for(const offset of [0,700,0]){
   await page.evaluate(y=>window.scrollTo(0,y),offset);await page.screenshot();
   const native=await capture.capture();const mapped=mapper.map(native,1);const replay=renderer.render(mapped.scene,mapped.payloads);
@@ -46,6 +50,7 @@ try{
  await page.evaluate(()=>document.getAnimations().forEach(a=>a.play()));
  const a=mapper.map(await capture.capture(),1);await new Promise(r=>setTimeout(r,250));const b=mapper.map(await capture.capture(),1);
  assert.notEqual(JSON.stringify(a.scene),JSON.stringify(b.scene),'Compositor animation did not update scene');
- const report={verifiedAt:new Date().toISOString(),browser:browser.version(),gpuMode:'in-process',nativeBrowserCapture:true,stages,scrollingReusesResources:true,animationChangesScene:true,ipc:viz.stats};
+ if(beginFrames){assert.ok(frameDriver.stats.acked>0);assert.equal(frameDriver.stats.errors,0);}
+ const report={verifiedAt:new Date().toISOString(),browser:browser.version(),...nativeRuntimeInfo(frameDriver),nativeBrowserCapture:true,stages,scrollingReusesResources:true,animationChangesScene:true,ipc:viz.stats};
  await writeFile('artifacts/scene/report.json',JSON.stringify(report,null,2));console.log(report);
-}finally{renderer.clear();await capture?.close();await browser.close();await viz.close();await fixture.close();}
+}finally{renderer.clear();await capture?.close();await frameDriver?.close();await browser.close();await viz.close();await fixture.close();}

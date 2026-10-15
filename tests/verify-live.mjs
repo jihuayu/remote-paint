@@ -1,4 +1,5 @@
 import {LIVE_VERSION} from '../protocol/live-wire.mjs';
+import {nativeRuntimeInfo} from '../native/launch.mjs';
 import {assertPrivateImagePixels} from './image-pixels.mjs';
 import {assertTextInk} from './text-pixels.mjs';
 import {recoverDroppedResource} from './fault-viewer.mjs';
@@ -68,6 +69,7 @@ try{
   (['navigation','resize'].includes(f.phase)&&/Navigation invalidated|Execution context was destroyed|Cannot find context with specified id/.test(f.message))||
   (f.phase==='navigation'&&f.message==='cdpSession.send: Protocol error (Runtime.evaluate): Inspected target navigated or closed')
  ),JSON.stringify(captureFailures));
- const report={gpuMode:'in-process',streamText,streamTextInk,missingStreamTextRejected:true,captureFailures,verifiedAt:new Date().toISOString(),nativeDrawing:true,missingResourceRecovery,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),first,dynamic,frozen,animated,streamed,beforeReconnect,recovered,navigated,resized,imagePixels,textInk,pixelFractionOver24,slowClientClose:1013,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,viewerSourceRequests:0,errors,stats:source.stats};
+ if(process.platform==='linux'){assert.ok(source.frameDriver.stats.acked>0);assert.equal(source.frameDriver.stats.errors,0);}
+ const report={...nativeRuntimeInfo(source.frameDriver),streamText,streamTextInk,missingStreamTextRejected:true,captureFailures,verifiedAt:new Date().toISOString(),nativeDrawing:true,missingResourceRecovery,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),first,dynamic,frozen,animated,streamed,beforeReconnect,recovered,navigated,resized,imagePixels,textInk,pixelFractionOver24,slowClientClose:1013,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,viewerSourceRequests:0,errors,stats:source.stats};
  await writeFile('artifacts/live/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await browser.close();await live.close();}
