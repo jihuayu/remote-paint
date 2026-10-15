@@ -3,6 +3,7 @@
 #include <map>
 #include <utility>
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -37,7 +38,8 @@ base::DictValue Encode(Snapshot snapshot) {
     base::DictValue resource;
     resource.Set("localId",record.local_id);
     resource.Set("quadScale",record.quad_scale);
-    resource.Set("skp",base::Base64Encode(base::span(encoded.bytes->bytes(),encoded.bytes->size())));
+    // SkData owns exactly size() immutable bytes for the duration of encoding.
+    resource.Set("skp",base::Base64Encode(UNSAFE_BUFFERS(base::span(encoded.bytes->bytes(),encoded.bytes->size()))));
     resource.Set("width",record.picture->cullRect().width());
     resource.Set("height",record.picture->cullRect().height());
     resources.Append(std::move(resource));
