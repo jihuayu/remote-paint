@@ -5,6 +5,14 @@ set -eu
 cd /chromium/src
 python3 tools/clang/scripts/update.py --host-os linux
 python3 tools/rust/update_rust.py
+if [ ! -f third_party/llvm-libclang/lib/libclang.so ]; then
+  curl --fail --location --retry 3 \
+    'https://storage.googleapis.com/chromium-browser-clang/Linux_x64/rust-libclang-1edd55dcfcd573872c727fa3e086369a71661ee0-1-llvmorg-24-init-7747-g62397f8b.tar.xz' \
+    -o /tmp/remote-paint-libclang.tar.xz
+  printf '%s  %s\n' bddbd5de33e5289703e61a65d51de735fd6b589a81c8db47f98b3f7894600577 /tmp/remote-paint-libclang.tar.xz | sha256sum --check
+  mkdir -p third_party/llvm-libclang
+  tar -xJf /tmp/remote-paint-libclang.tar.xz -C third_party/llvm-libclang
+fi
 python3 build/linux/sysroot_scripts/install-sysroot.py --arch amd64
 python3 build/linux/sysroot_scripts/install-sysroot.py --arch arm64
 mkdir -p buildtools/linux64
