@@ -2,7 +2,7 @@
 
 The complete custom `headless_shell` builds and passes native capture, scene, input and streaming acceptance on Apple Silicon macOS. The source page executes JS/DOM/layout in Chromium; the Viewer receives SKPs and actual aggregated Viz composition. It does not receive source HTML/JS, cookies or the comparison screenshot.
 
-Pinned versions: Chromium `a49e2e3d4addfd84e765b52afe230bedb81096db` (155.0.8059.79), Skia `29ed1e87a0a50f3d8347e988842d9d59e7573efa`, SKP 110, CanvasKit 0.42.0. Live protocol 3 and the Wasm hash are checked in the handshake.
+Pinned versions: Chromium `a49e2e3d4addfd84e765b52afe230bedb81096db` (155.0.8059.79), Skia `29ed1e87a0a50f3d8347e988842d9d59e7573efa`, SKP 110, CanvasKit 0.42.0. Live protocol 4 and the Wasm hash are checked in the handshake.
 
 ## Build and run
 
@@ -59,7 +59,20 @@ The complete dynamic pixel comparison measures 1.37% of pixels over 24/255 chann
 
 Run `verify:native`, `verify:scene`, `verify:input` and `verify:live` with `REMOTE_PAINT_CHROMIUM` set to reproduce the real drawing gates. Without that path, the separate input-contract test uses an explicitly marked drawing fixture. Earlier fixture reports retain their original scope.
 
-Physical OS IME candidate-window/caret placement, independent GPU-process startup, GPU raster paths, child Surfaces/iframes, complex masks/filters/3D, Linux, cross-device use, Steel/Gateway integration and production SKP decoder isolation are outside this acceptance. Unsupported composition fails explicitly. The managed Agent input API enforces leases; arbitrary external CDP is not isolated by that lease.
+Rounded target-space clips now preserve the normal composited input caret. The
+separate [Mac latency report](../docs/evidence/mac-input-latency-rounded-clip.json)
+records sixteen successful keydown-to-pixel samples per mode, the exact browser
+hash, visible caret style, and zero capture errors. Input-triggered capture
+improved the median from 222.5 to 203.5 ms; p95 regressed from 278.0 to 340.1 ms
+under concurrent Linux compilation. Further latency work remains. These are
+Mac measurements, not Linux acceptance.
+
+The Linux ARM64 browser build and Mac-to-Linux acceptance harness are described
+in [docker/README.md](../docker/README.md). The browser is still compiling;
+serializer tests and a stock BeginFrame clock probe do not prove the complete
+native Linux path.
+
+Physical OS IME candidate-window/caret placement, independent GPU-process startup on Mac, GPU raster paths, child Surfaces/iframes, gradient masks/complex filters/3D, cross-device use, Steel/Gateway integration and production SKP decoder isolation are outside the current acceptance. Unsupported composition fails explicitly. The managed Agent input API enforces leases; arbitrary external CDP is not isolated by that lease.
 
 ## Attribution
 

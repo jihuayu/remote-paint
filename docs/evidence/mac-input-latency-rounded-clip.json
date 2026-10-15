@@ -1,0 +1,415 @@
+{
+  "scope": "Real macOS native SKP/Viz after rounded-clip fix and input-driven capture; not Linux acceptance",
+  "recordedAt": "2026-10-15T15:55:42.383202+00:00",
+  "sourceAndViewer": "darwin/arm64",
+  "nativeSourcesSha256": {
+    "viz_capture.cc": "34623fbf90bddfe73e5554a6835ec45a5ea791e04a9f90ec9c682100a9336ae2",
+    "capture_state.cc": "c8ab63c3384c407298b27ed2eaae123c56c16114ba47b08b911594a71f3c9442"
+  },
+  "nativeBuildMethod": "Recompiled Viz capture object, restored two missing protobuf objects, refreshed Viz archive, linked a separate headless_shell_rounded_clip from the existing pinned Mac output",
+  "sameBinaryForBothModes": true,
+  "backgroundLoad": "Linux builder running with nine CPU quota during both measurements",
+  "baseline": {
+    "verifiedAt": "2026-10-15T15:53:50.456Z",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "gpuMode": "in-process",
+    "beginFrame": null,
+    "viewerPlatform": "darwin",
+    "sourceBrowser": "155.0.8059.79",
+    "viewerBrowser": "155.0.8059.79",
+    "nativeDrawing": true,
+    "executableSha256": "7e19d5a2e81bf15d1c4010eeb510131c12cf2ead78f26c8905d9714b1703c234",
+    "captureIntervalMs": 120,
+    "captureOnInput": false,
+    "inputStyle": {
+      "borderRadius": "6px",
+      "caretColor": "rgb(23, 42, 64)"
+    },
+    "sourceStats": {
+      "captures": 47,
+      "errors": 0,
+      "lastError": null
+    },
+    "captureMs": {
+      "samples": [
+        87.27066700000023,
+        73.81925000000001,
+        69.31491599999981,
+        58.87783399999989,
+        71.94991699999991,
+        93.35037499999999,
+        94.9165410000005,
+        101.52370900000005,
+        95.37020800000028,
+        100.30195800000001,
+        103.34174999999959,
+        105.2347920000002,
+        98.49679199999991,
+        93.02387499999986,
+        93.28762499999993,
+        125.64075000000048,
+        92.48691600000075,
+        87.06212500000038,
+        97.68133300000045,
+        91.83141700000033,
+        100.97966600000018,
+        90.16758299999947,
+        89.42466699999932,
+        88.88270900000043,
+        96.35025000000041,
+        99.90091699999994,
+        94.68754200000058,
+        99.70045800000025,
+        88.35350000000017,
+        89.25758399999995,
+        105.23708299999998,
+        99.7802499999998,
+        99.63991699999951,
+        114.96862500000043,
+        91.40791699999954,
+        89.98929099999987,
+        89.18545900000026,
+        86.99641599999995,
+        89.12637500000073,
+        91.38145900000018,
+        86.14666700000089,
+        91.08537500000057,
+        91.2789159999993,
+        92.60391600000003,
+        94.15670800000044,
+        96.80133399999977,
+        97.20941599999969,
+        108.18841700000121
+      ],
+      "p50": 93.02387499999986,
+      "p95": 105.23708299999998
+    },
+    "scope": "Viewer keydown to matching native source paint observed in the CanvasKit canvas; excludes physical keyboard and monitor scanout",
+    "samples": [
+      {
+        "key": "A",
+        "inputToPixelsMs": 275.80000019073486,
+        "frameId": 6,
+        "inputSequence": 5,
+        "renderMs": 57.80000019073486
+      },
+      {
+        "key": "B",
+        "inputToPixelsMs": 219.39999961853027,
+        "frameId": 8,
+        "inputSequence": 7,
+        "renderMs": 53
+      },
+      {
+        "key": "C",
+        "inputToPixelsMs": 201.79999923706055,
+        "frameId": 10,
+        "inputSequence": 8,
+        "renderMs": 52.5
+      },
+      {
+        "key": "D",
+        "inputToPixelsMs": 221.89999961853027,
+        "frameId": 13,
+        "inputSequence": 11,
+        "renderMs": 53.09999942779541
+      },
+      {
+        "key": "E",
+        "inputToPixelsMs": 278,
+        "frameId": 16,
+        "inputSequence": 13,
+        "renderMs": 53.89999961853027
+      },
+      {
+        "key": "F",
+        "inputToPixelsMs": 248.5,
+        "frameId": 19,
+        "inputSequence": 15,
+        "renderMs": 53.10000038146973
+      },
+      {
+        "key": "G",
+        "inputToPixelsMs": 222.5,
+        "frameId": 22,
+        "inputSequence": 17,
+        "renderMs": 54
+      },
+      {
+        "key": "H",
+        "inputToPixelsMs": 181.4000005722046,
+        "frameId": 24,
+        "inputSequence": 18,
+        "renderMs": 53.5
+      },
+      {
+        "key": "I",
+        "inputToPixelsMs": 198.80000019073486,
+        "frameId": 26,
+        "inputSequence": 20,
+        "renderMs": 53.60000038146973
+      },
+      {
+        "key": "J",
+        "inputToPixelsMs": 229.80000019073486,
+        "frameId": 29,
+        "inputSequence": 23,
+        "renderMs": 53
+      },
+      {
+        "key": "K",
+        "inputToPixelsMs": 253.5999994277954,
+        "frameId": 32,
+        "inputSequence": 25,
+        "renderMs": 52.89999961853027
+      },
+      {
+        "key": "L",
+        "inputToPixelsMs": 203.89999961853027,
+        "frameId": 35,
+        "inputSequence": 27,
+        "renderMs": 52.79999923706055
+      },
+      {
+        "key": "M",
+        "inputToPixelsMs": 208.9000005722046,
+        "frameId": 37,
+        "inputSequence": 29,
+        "renderMs": 52.89999961853027
+      },
+      {
+        "key": "N",
+        "inputToPixelsMs": 250.20000076293945,
+        "frameId": 40,
+        "inputSequence": 31,
+        "renderMs": 53.60000038146973
+      },
+      {
+        "key": "O",
+        "inputToPixelsMs": 246.39999961853027,
+        "frameId": 43,
+        "inputSequence": 33,
+        "renderMs": 53.10000038146973
+      },
+      {
+        "key": "P",
+        "inputToPixelsMs": 256.20000076293945,
+        "frameId": 46,
+        "inputSequence": 35,
+        "renderMs": 53.5
+      }
+    ],
+    "p50Ms": 222.5,
+    "p95Ms": 278,
+    "maxMs": 278,
+    "meanMs": 231.06875002384186,
+    "errors": []
+  },
+  "optimized": {
+    "verifiedAt": "2026-10-15T15:54:11.032Z",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "gpuMode": "in-process",
+    "beginFrame": null,
+    "viewerPlatform": "darwin",
+    "sourceBrowser": "155.0.8059.79",
+    "viewerBrowser": "155.0.8059.79",
+    "nativeDrawing": true,
+    "executableSha256": "7e19d5a2e81bf15d1c4010eeb510131c12cf2ead78f26c8905d9714b1703c234",
+    "captureIntervalMs": 120,
+    "captureOnInput": true,
+    "inputStyle": {
+      "borderRadius": "6px",
+      "caretColor": "rgb(23, 42, 64)"
+    },
+    "sourceStats": {
+      "captures": 47,
+      "errors": 0,
+      "lastError": null
+    },
+    "captureMs": {
+      "samples": [
+        82.91737499999999,
+        64.34729199999992,
+        66.86158299999988,
+        65.53620799999999,
+        92.56962500000009,
+        97.02750000000015,
+        99.67304100000001,
+        89.5515419999997,
+        88.65579100000014,
+        93.27408300000025,
+        95.10562499999969,
+        99.13904100000036,
+        87.58979199999976,
+        85.66608300000007,
+        89.11395799999991,
+        110.27275000000009,
+        110.98762499999975,
+        93.97595799999999,
+        98.62487500000043,
+        101.61162499999955,
+        95.31141699999989,
+        92.3667089999999,
+        106.01737500000036,
+        98.97900000000027,
+        93.32208300000002,
+        91.74229100000048,
+        98.07116599999972,
+        88.67250000000058,
+        100.15391600000021,
+        102.92029199999979,
+        96.21791699999994,
+        88.8744999999999,
+        93.59000000000015,
+        109.78649999999925,
+        93.96179200000006,
+        91.88208400000076,
+        91.42866700000013,
+        95.2947920000006,
+        100.63374999999996,
+        93.70866699999988,
+        88.01758300000074,
+        93.16449999999986,
+        98.39208300000064,
+        110.59604199999922,
+        94.29433400000016,
+        115.43462499999987,
+        102.82924999999977,
+        97.90470800000003
+      ],
+      "p50": 93.97595799999999,
+      "p95": 110.59604199999922
+    },
+    "scope": "Viewer keydown to matching native source paint observed in the CanvasKit canvas; excludes physical keyboard and monitor scanout",
+    "samples": [
+      {
+        "key": "A",
+        "inputToPixelsMs": 340.0999994277954,
+        "frameId": 6,
+        "inputSequence": 5,
+        "renderMs": 53.20000076293945
+      },
+      {
+        "key": "B",
+        "inputToPixelsMs": 193.69999980926514,
+        "frameId": 8,
+        "inputSequence": 7,
+        "renderMs": 52.89999961853027
+      },
+      {
+        "key": "C",
+        "inputToPixelsMs": 178.19999980926514,
+        "frameId": 10,
+        "inputSequence": 9,
+        "renderMs": 53.5
+      },
+      {
+        "key": "D",
+        "inputToPixelsMs": 214.60000038146973,
+        "frameId": 13,
+        "inputSequence": 11,
+        "renderMs": 52.60000038146973
+      },
+      {
+        "key": "E",
+        "inputToPixelsMs": 237,
+        "frameId": 16,
+        "inputSequence": 13,
+        "renderMs": 53.39999961853027
+      },
+      {
+        "key": "F",
+        "inputToPixelsMs": 203.20000076293945,
+        "frameId": 19,
+        "inputSequence": 15,
+        "renderMs": 53.60000038146973
+      },
+      {
+        "key": "G",
+        "inputToPixelsMs": 195.5,
+        "frameId": 22,
+        "inputSequence": 17,
+        "renderMs": 53.30000019073486
+      },
+      {
+        "key": "H",
+        "inputToPixelsMs": 203.5,
+        "frameId": 24,
+        "inputSequence": 19,
+        "renderMs": 53.70000076293945
+      },
+      {
+        "key": "I",
+        "inputToPixelsMs": 161,
+        "frameId": 26,
+        "inputSequence": 20,
+        "renderMs": 53.69999980926514
+      },
+      {
+        "key": "J",
+        "inputToPixelsMs": 211.39999961853027,
+        "frameId": 29,
+        "inputSequence": 23,
+        "renderMs": 53.5
+      },
+      {
+        "key": "K",
+        "inputToPixelsMs": 203.0999994277954,
+        "frameId": 32,
+        "inputSequence": 25,
+        "renderMs": 54
+      },
+      {
+        "key": "L",
+        "inputToPixelsMs": 211.0999994277954,
+        "frameId": 35,
+        "inputSequence": 27,
+        "renderMs": 53.39999961853027
+      },
+      {
+        "key": "M",
+        "inputToPixelsMs": 172.20000076293945,
+        "frameId": 37,
+        "inputSequence": 28,
+        "renderMs": 53
+      },
+      {
+        "key": "N",
+        "inputToPixelsMs": 222.80000019073486,
+        "frameId": 40,
+        "inputSequence": 31,
+        "renderMs": 53.10000038146973
+      },
+      {
+        "key": "O",
+        "inputToPixelsMs": 226.5,
+        "frameId": 43,
+        "inputSequence": 33,
+        "renderMs": 53.70000076293945
+      },
+      {
+        "key": "P",
+        "inputToPixelsMs": 226.4000005722046,
+        "frameId": 46,
+        "inputSequence": 35,
+        "renderMs": 53.5
+      }
+    ],
+    "p50Ms": 203.5,
+    "p95Ms": 340.0999994277954,
+    "maxMs": 340.0999994277954,
+    "meanMs": 212.51875001192093,
+    "errors": []
+  },
+  "p50ImprovementMs": 19.0,
+  "p50ImprovementPercent": 8.539325842696629,
+  "p95ChangeMs": 62.09999942779541,
+  "tailLatencyImproved": false,
+  "limitations": [
+    "Sixteen samples per mode; measurements include concurrent Linux compilation load",
+    "Physical keyboard and monitor scanout excluded",
+    "Linux and Mac-to-Linux acceptance still pending"
+  ]
+}

@@ -1,8 +1,8 @@
-# Remote Paint：单台 macOS 上的动态网页重放
+# Remote Paint：原生网页远程绘制
 
 源 Chromium 执行网页 JS、DOM 和布局；原生组件录制光栅化前的 SKP，按同一 captureId 与真实 aggregated Viz 场景配对；独立 Viewer 用 CanvasKit 重放。绘图流只包含 SKP 和场景元数据，源 HTML、JS、URL、Cookie 及对照截图不发送给 Viewer。
 
-本次范围为路线 **3–7**。Linux、跨设备、iframe/复杂效果回退、Steel/Gateway 接入和生产解码隔离不在本次范围。
+本次范围为路线 **3–7**，并扩展到 Mac 本机 Docker 中的 Linux ARM64、BeginFrame 和输入延迟优化。Linux 浏览器正在编译，完整 Linux 及 Mac Viewer 远控验收仍待运行；现有 Mac 结果在下方单独标明。iframe/复杂效果回退、Steel/Gateway 接入和生产解码隔离尚未实现。
 
 ## 当前验收状态
 
@@ -13,6 +13,8 @@
 - **7 输入与控制租约**：真实源页面和动态 Viewer 通过鼠标、滚轮、键盘、中文 composition、粘贴、删除、选区替换、富文本、CSS 坐标缩放、交接及旧标签拒绝，83 条输入。[原生输入报告](docs/evidence/native-input-report.json)
 
 完整动态对照全页差异为 1.37%；流式文字区域 2345 个强墨迹像素全部获得邻域覆盖，并验证去掉文字会失败。导航/resize 中断了两次在途捕获，后续新 epoch/viewport 均恢复，最终错误状态为空。CanvasKit 实际像素缓冲分配/释放为 202/202、残留 0。[资源生命周期报告](docs/evidence/surface-lifecycle-report.json) 保留的 fixture 报告仍只证明各自契约。
+
+最新 Mac 原生测试修复了合成光标继承圆角裁剪时持续停帧的问题。正常 6 px 圆角和可见光标下，两种采集模式各 16 次输入均成功显示，采集错误为零。输入触发采集的中位延迟为 203.5 ms，周期采集为 222.5 ms；p95 为 340.1 / 278.0 ms，本次尾延迟未改善。测试期间 Linux 编译占用九核，物理键盘和显示扫描不在测量范围。[独立对照报告](docs/evidence/mac-input-latency-rounded-clip.json) 与 [重放画面](docs/evidence/mac-input-latency-rounded-replay.png) 只证明 Mac 链路；Linux 的构建、缓存与独立验收命令见 [Docker 说明](docker/README.md)。
 
 ## 构建与启动动态版本
 
@@ -42,6 +44,7 @@ npm run verify:input    # 实际输入/CDP边界；设置原生路径则使用�
 npm run verify:native   # token、需求门控、异步编码与 Viz 配对
 npm run verify:scene    # 固定头部、0/700/0滚动、合成动画与 Chrome 像素对照
 npm run verify:live     # 完整动态链路、字形更新、动画复用、慢客户端、导航/重连/resize
+npm run verify:latency  # 正常圆角/光标，按键到真实重放像素的延迟
 ```
 
 文字重放沿用服务器的 glyph 和字形位置。字体子集与原字体存在已测量的抗锯齿容差；[字体/图片报告](docs/evidence/font-image-report.json) 标明其普通 Chrome 导出与原生 helper 范围，完整动态证据见上方独立报告。中文 IME 验证使用真实本地及远端 CDP composition；物理系统候选窗口和光标定位尚未验收。`lastProcessedInputSeq` 表示已处理的输入，不保证业务操作成功。

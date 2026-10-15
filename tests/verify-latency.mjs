@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
+import {createReadStream} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {startLive} from '../live.mjs';
 import {launchCaptureBrowser} from '../capture/browser.mjs';
 import {nativeRuntimeInfo} from '../native/launch.mjs';
@@ -10,6 +12,10 @@ const directory=resolve(process.env.REMOTE_PAINT_LATENCY_OUTPUT??'artifacts/late
 const interval=Number(process.env.REMOTE_PAINT_CAPTURE_INTERVAL??120);
 const captureOnInput=process.env.REMOTE_PAINT_INPUT_CAPTURE!=='0';
 const live=await startLive({port:0,interval,captureOnInput}),source=live.source;
+const browserHash=createHash('sha256');for await(const bytes of createReadStream(process.env.REMOTE_PAINT_CHROMIUM))browserHash.update(bytes);
+const executableSha256=browserHash.digest('hex');
+const captureTimes=[],capture=source.capture.capture.bind(source.capture);
+source.capture.capture=async()=>{const started=performance.now();try{return await capture();}finally{captureTimes.push(performance.now()-started);}};
  let browser,page;
 try{
  await source.page.locator('#stop-clock').click();await source.page.evaluate(()=>document.getAnimations().forEach(a=>a.pause()));
@@ -24,8 +30,13 @@ try{
  assert.ok((await source.page.locator('#name').inputValue()).endsWith(latency.samples.map(r=>r.key).join('')));
  assert.deepEqual(errors,[]);
  assert.equal(source.stats.errors,0,source.stats.lastError);
- const report={verifiedAt:new Date().toISOString(),...nativeRuntimeInfo(source.frameDriver),viewerPlatform:process.platform,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),nativeDrawing:true,captureIntervalMs:interval,captureOnInput,inputStyle:point.inputStyle,...latency,errors};
- await mkdir(directory,{recursive:true});await writeFile(resolve(directory,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+ const times=[...captureTimes].sort((a,b)=>a-b),captureMs={samples:captureTimes,p50:times[Math.ceil(times.length*0.5)-1],p95:times[Math.ceil(times.length*0.95)-1]};
+ const report={verifiedAt:new Date().toISOString(),...nativeRuntimeInfo(source.frameDriver),viewerPlatform:process.platform,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),nativeDrawing:true,executableSha256,captureIntervalMs:interval,captureOnInput,inputStyle:point.inputStyle,sourceStats:{...source.stats},captureMs,...latency,errors};
+ await mkdir(directory,{recursive:true});
+ await source.page.screenshot({path:resolve(directory,'source.png')});
+ const replay=await page.locator('canvas').evaluate(c=>c.toDataURL());
+ await writeFile(resolve(directory,'replay.png'),Buffer.from(replay.split(',')[1],'base64'));
+ await writeFile(resolve(directory,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
 }catch(error){
  await mkdir(directory,{recursive:true});
  await source.page.screenshot({path:resolve(directory,'failure-source.png')}).catch(()=>{});
