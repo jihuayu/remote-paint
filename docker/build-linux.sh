@@ -13,6 +13,18 @@ if [ ! -x buildtools/linux64/gn ]; then
   unzip -o /tmp/remote-paint-gn.zip gn -d buildtools/linux64
   chmod +x buildtools/linux64/gn
 fi
+# Crubit's generated C++ headers depend on the DEPS-pinned Linux formatter.
+# A checkout synced on macOS does not fetch this host-only GCS dependency.
+format_path=buildtools/linux64-format/clang-format
+format_sha=5d384f2a3e72f01c5c61dd07e3a2577723cfa20c8c019131467f00fb6da8a75c
+if ! printf '%s  %s\n' "$format_sha" "$format_path" | sha256sum --check --status; then
+  curl --fail --location --retry 3 \
+    'https://storage.googleapis.com/chromium-clang-format/f5485c39451137ee943021a0fb63738b306c5026' \
+    -o /tmp/remote-paint-clang-format
+  printf '%s  %s\n' "$format_sha" /tmp/remote-paint-clang-format | sha256sum --check
+  mkdir -p buildtools/linux64-format
+  install -m 755 /tmp/remote-paint-clang-format "$format_path"
+fi
 node /project/native/prepare.mjs /chromium/src linux-arm64
 mkdir -p out/RemotePaintLinux
 cp /project/native/linux-arm64.args.gn out/RemotePaintLinux/args.gn
