@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-10-15T14:45:08.695400+00:00",
+  "scope": "OrbStack resource allocation and incremental build resume; browser acceptance is pending",
+  "orbStackStatus": "Running",
+  "orbStackMemoryMiB": 49152,
+  "docker": {
+    "cpus": 12,
+    "usableMemoryBytes": 50500259840,
+    "architecture": "aarch64"
+  },
+  "builder": {
+    "cpuLimit": 9.0,
+    "memoryLimitBytes": 51539607552,
+    "memorySwapLimitBytes": 51539607552,
+    "buildJobs": 12,
+    "status": "running",
+    "oomKilled": false
+  },
+  "cache": {
+    "location": "independent Chromium checkout: src/out/RemotePaintLinux",
+    "hostBindMount": true,
+    "files": {
+      ".ninja_log": {
+        "exists": true,
+        "bytes": 1358676
+      },
+      ".ninja_deps": {
+        "exists": true,
+        "bytes": 3266348
+      }
+    },
+    "cleaned": false
+  }
+}

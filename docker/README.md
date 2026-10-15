@@ -17,10 +17,11 @@ docker run --name remote-paint-linux-build --platform linux/amd64 --init \
 
 The example allocates 75% of this Mac's 12 CPUs and 64 GiB RAM: nine CPUs and a
 48 GiB container limit, with 12 compiler jobs to fill CPU time during I/O waits.
-The VM also needs enough RAM. OrbStack's memory setting was raised to 48 GiB,
-but the user chose to defer the required VM restart; its current effective
-capacity is still 16 GiB. CPU limits apply immediately. Monitor actual memory
-before increasing concurrency further.
+The VM also needs enough RAM. OrbStack was restarted with its memory setting
+at 48 GiB; Docker now reports 50,500,259,840 usable bytes (about 47.03 GiB after
+VM overhead). The builder retains its nine-CPU quota and 48 GiB container limit.
+Its existing mounted output directory is reused for incremental compilation.
+Monitor actual memory before increasing concurrency further.
 
 Keep the same source mount and output directory to retain the incremental
 cache. Object files, static libraries, generated sources, `.ninja_log` and
