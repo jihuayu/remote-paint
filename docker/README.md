@@ -71,7 +71,13 @@ npm run verify:linux-mac
 ```
 
 `verify:linux` first checks ARM64 ELF headers, hashes, build arguments and patch
-receipts. It then runs the serializer, external BeginFrame clock, native
+receipts. The build also writes `remote-paint-build.json` after an incremental
+Ninja dry run confirms there is no pending work. It binds the actual Chromium
+and Skia revisions, copied native source hashes, patched Chromium file hashes,
+Linux host configuration and both executable hashes. Runtime acceptance
+compares this receipt against the mounted binaries and current native project;
+an older Viz exporter with matching build arguments cannot pass preflight.
+It then runs the serializer, external BeginFrame clock, native
 capture, scene, input, live recovery and input latency checks in order. Each command has a
 five-minute limit and its own log in `artifacts/linux-suite`; a failure stops
 the suite and leaves a failed report. Linux results do not establish that the

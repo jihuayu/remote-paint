@@ -7,6 +7,7 @@ import {createHash} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import {dirname,join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {verifyLinuxReceipt} from '../native/linux-receipt.mjs';
 
 const project=fileURLToPath(new URL('../',import.meta.url));
 const directory=join(project,'artifacts/linux-suite');
@@ -49,7 +50,10 @@ try{
  for(const name of (await readdir(join(project,'native/patches'))).filter(n=>n.endsWith('.patch')).sort()){
   patches[name]=await sha256(join(project,'native/patches',name));assert.equal(applied[name],patches[name],`Build receipt mismatch: ${name}`);
  }
- report.preflight={platform:process.platform,architecture:process.arch,browser:browserElf,serializer:serializerElf,argsSha256:createHash('sha256').update(args).digest('hex'),patches};await save();
+ const argsSha256=createHash('sha256').update(args).digest('hex');
+ const build=JSON.parse(await readFile(join(output,'remote-paint-build.json'),'utf8'));
+ await verifyLinuxReceipt(build,{browserSha256:browserElf.sha256,serializerSha256:serializerElf.sha256,argsSha256,patches});
+ report.preflight={platform:process.platform,architecture:process.arch,browser:browserElf,serializer:serializerElf,argsSha256,patches,build};await save();
  await run('serializer',serializer,[],output);
  for(const name of ['begin-frame','native','scene','input','live','latency'])await run(name,process.execPath,[`tests/verify-${name}.mjs`]);
  const json=async path=>JSON.parse(await readFile(join(project,'artifacts',path),'utf8'));
