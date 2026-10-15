@@ -7,13 +7,29 @@ Use an **independent** checkout of Chromium `a49e2e3d4addfd84e765b52afe230bedb81
 ```sh
 docker build --platform linux/amd64 -t remote-paint-build:linux-arm64 -f docker/Dockerfile.build .
 docker run --name remote-paint-linux-build --platform linux/amd64 --init \
-  --shm-size=2g --memory=12g --cpus=8 \
+  --shm-size=2g --memory=48g --memory-swap=48g --cpus=9 -e BUILD_JOBS=12 \
   -v /absolute/independent/chromium:/chromium \
   -v /absolute/remote-paint:/project:ro \
   remote-paint-build:linux-arm64 /project/docker/build-linux.sh
 ```
 
 `BUILD_JOBS` defaults to four and can be set to reduce memory pressure. The script downloads the pinned Linux toolchain, GN and both host/target sysroots, applies the existing Remote Paint patches, generates GN and builds `headless_shell` plus the serializer tests. The ARM64 test binary must execute in the ARM64 runtime rather than the x86_64 builder. The standalone macOS/CoreText helper is not used.
+
+The example allocates 75% of this Mac's 12 CPUs and 64 GiB RAM: nine CPUs and a
+48 GiB container limit, with 12 compiler jobs to fill CPU time during I/O waits.
+The VM also needs enough RAM. OrbStack's memory setting was raised to 48 GiB,
+but the user chose to defer the required VM restart; its current effective
+capacity is still 16 GiB. CPU limits apply immediately. Monitor actual memory
+before increasing concurrency further.
+
+Keep the same source mount and output directory to retain the incremental
+cache. Object files, static libraries, generated sources, `.ninja_log` and
+`.ninja_deps` live in `src/out/RemotePaintLinux` on the Mac. Downloaded LLVM,
+Rust, GN and sysroots also live in this mounted checkout. Stopping or replacing
+the builder container preserves these files. Resume a stopped builder with
+`docker start -a remote-paint-linux-build`; do not clean the output directory or
+prune the mounted checkout. This is Ninja's persistent incremental cache, not a
+configured ccache/sccache service. Docker image/build layers are retained too.
 
 This is the build harness. Runtime/BeginFrame acceptance is recorded separately; preparing an image or generating the build graph does not establish that the Linux drawing path works.
 
