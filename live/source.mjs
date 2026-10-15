@@ -17,11 +17,12 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
   source.invalidate=reason=>{source.pageEpoch++;source.latest=null;source.mapper.reset();source.emit('invalidate',reason);};
   capture.on('navigation',()=>source.invalidate('navigation'));
   capture.on('captureError',error=>{source.stats.errors++;source.stats.lastError=error.message;source.emit('captureError',error);});
-  capture.on('capture',native=>{
+  capture.sampleContext=()=>source.inputSeq;
+  capture.on('capture',(native,inputSeq)=>{
    try{
     if(source.producer&&source.producer!==native.producer)source.invalidate('producer');source.producer=native.producer;
     const mapped=source.mapper.map(native,source.pageEpoch);validateScene(mapped.scene,[...mapped.payloads.keys()],source.viewport);
-    source.latest={...mapped,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,viewport:{...source.viewport},lastProcessedInputSeq:source.inputSeq};
+    source.latest={...mapped,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,viewport:{...source.viewport},lastProcessedInputSeq:inputSeq};
     source.stats.captures++;source.stats.lastError=null;source.emit('frame',source.latest);
    }catch(error){source.stats.errors++;source.stats.lastError=error.message;source.emit('captureError',error);}
   });

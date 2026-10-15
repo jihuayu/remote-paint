@@ -50,8 +50,8 @@ export class NativeCapture extends EventEmitter {
   }
   async tick() {
     if(this.running||!this.viewers||this.stopped)return;
-    this.running=true;const start=performance.now();
-    try {const value=await this.capture();if(this.viewers&&!this.stopped)this.emit('capture',value);}
+    this.running=true;const start=performance.now(),context=this.sampleContext?.();
+    try {const value=await this.capture();if(this.viewers&&!this.stopped)this.emit('capture',value,context);}
     catch(error){if(!this.stopped)this.emit('captureError',error);}
     finally {this.running=false;if(this.viewers&&!this.stopped)this.timer=setTimeout(()=>void this.tick(),Math.max(0,this.interval-(performance.now()-start)));}
   }

@@ -34,7 +34,7 @@ export class ViewerInput {
  tags(){return {sessionId:this.sessionId,pageEpoch:this.frame?.pageEpoch,viewportVersion:this.frame?.viewportVersion,lease:this.lease};}
  welcome(message){this.reset();this.enabled=message.input;this.sessionId=message.sessionId;this.peerId=message.peerId;this.button.hidden=!this.enabled;}
  display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=frame;this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);}
- reset(){clearInterval(this.renewTimer);this.active=false;this.lease=null;this.pending=null;this.queue=[];this.composing=false;this.suppressText=null;this.proxy.value='';this.proxy.blur();this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
+ reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.pending=null;this.queue=[];this.composing=false;this.suppressText=null;this.proxy.value='';this.proxy.blur();this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
  message(message){
   if(message.type==='ControlState'){
    this.mode=message.mode;if(message.mode!=='human'||message.holder!==this.peerId){this.reset();this.button.disabled=!this.enabled||!this.frame||message.mode!=='agent';}
@@ -48,7 +48,7 @@ export class ViewerInput {
   if(message.type==='ControlDenied'){this.reset();this.label.textContent=`操作被拒绝：${message.code}`;this.button.disabled=!this.enabled||!this.frame;return true;}
   if(message.type==='InputAck'){
    if(!this.pending||message.seq!==this.pending.seq)return true;
-   this.pending=null;if(!message.accepted){this.reset();this.label.textContent=`输入已停止：${message.code}`;return true;}this.pump();return true;
+   clearTimeout(this.ackTimer);this.pending=null;if(!message.accepted){if(this.active)this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent=`输入已停止：${message.code}`;return true;}this.pump();return true;
   }
   return false;
  }
@@ -59,5 +59,5 @@ export class ViewerInput {
   else {if(this.queue.length>=60){this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent='输入过快，已交还控制';return;}this.queue.push(event);}
   this.pump();
  }
- pump(){if(!this.active||this.pending||!this.queue.length)return;const message={type:'Input',...this.tags(),seq:this.nextSeq++,event:this.queue.shift()};this.pending=message;this.send(message);}
+ pump(){if(!this.active||this.pending||!this.queue.length)return;const message={type:'Input',...this.tags(),seq:this.nextSeq++,event:this.queue.shift()};this.pending=message;this.send(message);this.ackTimer=setTimeout(()=>{if(this.active)this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent='输入确认超时，已交还控制';},5000);}
 }

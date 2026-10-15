@@ -15,3 +15,10 @@ test('demand gates native encoding, permits only one in-flight capture and drops
   resolve({resources:[]});await new Promise(setImmediate);assert.equal(delivered,1);
   await capture.close();await capture.tick();assert.equal(calls,2);
 });
+
+test('frame input watermark samples capture start rather than later encoding completion',async()=>{
+ const capture=new NativeCapture(null,{interval:10000});let inputSeq=7,resolve,delivered;
+ capture.sampleContext=()=>inputSeq;capture.capture=()=>new Promise(r=>resolve=r);
+ capture.on('capture',(_,context)=>delivered=context);capture.setDemand(1);inputSeq=8;resolve({resources:[]});
+ await new Promise(setImmediate);assert.equal(delivered,7);await capture.close();
+});
