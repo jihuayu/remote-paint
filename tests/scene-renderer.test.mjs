@@ -56,6 +56,17 @@ test('premultiplied pass surfaces preserve translucent colors through nested pas
  }finally{output.image.delete();output.surface.dispose();renderer.clear();}
 });
 
+test('Viewer white background applies only to the root and preserves transparent child blending',()=>{
+ const renderer=new SceneRenderer(ck),output=renderer.render({rootPass:'root',passes:[
+  {id:'child',output:rect,quads:[solid([1,0.5,0,0.5])]},
+  {id:'root',output:rect,quads:[{kind:'pass',passId:'child',matrix,rect,visible:rect,clip:null,opacity:0.5}]},
+ ]},new Map(),ck.WHITE);
+ try{
+  const pixels=output.image.readPixels(50,50,{width:1,height:1,colorType:ck.ColorType.RGBA_8888,alphaType:ck.AlphaType.Unpremul,colorSpace:ck.ColorSpace.SRGB});
+  [255,223,191,255].forEach((value,c)=>assert.ok(Math.abs(pixels[c]-value)<=1,`${pixels}`));
+ }finally{output.image.delete();output.surface.dispose();renderer.clear();}
+});
+
 test('full pictures honor rebased tile origins after clipping in quad coordinates',()=>{
  const recorder=new ck.PictureRecorder(),canvas=recorder.beginRecording(rect),paint=new ck.Paint();
  paint.setColor([1,0,0,1]);canvas.drawRect([0,0,100,50],paint);

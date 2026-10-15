@@ -14,7 +14,7 @@
 
 完整动态对照全页差异为 1.37%；流式文字区域 2345 个强墨迹像素全部获得邻域覆盖，并验证去掉文字会失败。导航/resize 中断了两次在途捕获，后续新 epoch/viewport 均恢复，最终错误状态为空。CanvasKit 实际像素缓冲分配/释放为 202/202、残留 0。[资源生命周期报告](docs/evidence/surface-lifecycle-report.json) 保留的 fixture 报告仍只证明各自契约。
 
-最新 Mac 原生测试修复了合成光标继承圆角裁剪时持续停帧的问题。正常 6 px 圆角和可见光标下，两种采集模式各 16 次输入均成功显示，采集错误为零。输入触发采集的中位延迟为 203.5 ms，周期采集为 222.5 ms；p95 为 340.1 / 278.0 ms，本次尾延迟未改善。测试期间 Linux 编译占用九核，物理键盘和显示扫描不在测量范围。[独立对照报告](docs/evidence/mac-input-latency-rounded-clip.json) 与 [重放画面](docs/evidence/mac-input-latency-rounded-replay.png) 只证明 Mac 链路；Linux 的构建、缓存与独立验收命令见 [Docker 说明](docker/README.md)。
+最新 Mac 原生测试修复了合成光标继承圆角裁剪时持续停帧的问题，并优化输入触发采集和 CanvasKit 的 Alpha 合成。正常 6 px 圆角和可见光标下，16 次输入均成功显示，采集错误为零；Viewer 重放从约 54 ms 降到约 6.3 ms。最终输入到像素中位数为 148.5 ms、p95 为 191.9 ms，周期采集基线为 222.5 / 278.0 ms。测试期间 Linux 编译占用九核，物理键盘和显示扫描不在测量范围。[最终 Mac 延迟与动态验收](docs/evidence/mac-direct-presentation.json) 同时记录了 83 条输入、91 次动态采集和丢资源恢复；[重放画面](docs/evidence/mac-direct-presentation-replay.png) 只证明 Mac 链路。Linux 构建、缓存与独立验收命令见 [Docker 说明](docker/README.md)。
 
 ## 构建与启动动态版本
 

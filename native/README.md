@@ -59,13 +59,18 @@ The complete dynamic pixel comparison measures 1.37% of pixels over 24/255 chann
 
 Run `verify:native`, `verify:scene`, `verify:input` and `verify:live` with `REMOTE_PAINT_CHROMIUM` set to reproduce the real drawing gates. Without that path, the separate input-contract test uses an explicitly marked drawing fixture. Earlier fixture reports retain their original scope.
 
-Rounded target-space clips now preserve the normal composited input caret. The
-separate [Mac latency report](../docs/evidence/mac-input-latency-rounded-clip.json)
-records sixteen successful keydown-to-pixel samples per mode, the exact browser
-hash, visible caret style, and zero capture errors. Input-triggered capture
-improved the median from 222.5 to 203.5 ms; p95 regressed from 278.0 to 340.1 ms
-under concurrent Linux compilation. Further latency work remains. These are
-Mac measurements, not Linux acceptance.
+Rounded target-space clips preserve the normal composited input caret. The
+[latest Mac latency and live report](../docs/evidence/mac-direct-presentation.json)
+records sixteen successful keydown-to-pixel samples, the exact browser and
+Viewer source hashes, a visible caret, and zero capture errors during input.
+Premultiplied pass surfaces and direct Canvas pixel presentation reduced
+Viewer replay from about 54 to 6.3 ms. Final input latency was 148.5 ms median /
+191.9 ms p95, compared with the periodic baseline's 222.5 / 278.0 ms. Measurements
+ran under concurrent Linux compilation; physical keyboard/scanout are excluded.
+The final Viewer also passed 83 input events and the complete dynamic recovery
+suite. Its one capture cancellation during navigation is recorded and later
+frames recovered. These measurements establish the Mac path; Linux acceptance
+remains separate.
 
 The Linux ARM64 browser build and Mac-to-Linux acceptance harness are described
 in [docker/README.md](../docker/README.md). The browser is still compiling;

@@ -3,14 +3,14 @@ export class SceneRenderer {
  constructor(ck){this.ck=ck;this.pictures=new Map();}
  clear(){for(const p of this.pictures.values())p.delete();this.pictures.clear();}
  retain(ids){for(const [id,p] of this.pictures)if(!ids.has(id)){p.delete();this.pictures.delete(id);}}
- render(scene,resources){
+ render(scene,resources,background=this.ck.TRANSPARENT){
   const ck=this.ck,passes=new Map();let root=null,totalPixels=0;
   try{
    for(const pass of scene.passes){
     const [x,y,right,bottom]=pass.output,width=right-x,height=bottom-y;
     if(![width,height].every(n=>Number.isInteger(n)&&n>0&&n<=8192)||(totalPixels+=width*height)>32*1024*1024)throw new Error('Render-pass surface budget exceeded');
-    const surface=makePremultipliedSurface(ck,width,height);if(!surface)throw new Error('Cannot allocate render-pass surface');
-    const canvas=surface.getCanvas();canvas.clear(ck.TRANSPARENT);canvas.translate(-x,-y);
+    const surface=makePremultipliedSurface(ck,width,height,pass.id===scene.rootPass&&background[3]===1);if(!surface)throw new Error('Cannot allocate render-pass surface');
+    const canvas=surface.getCanvas();canvas.clear(pass.id===scene.rootPass?background:ck.TRANSPARENT);canvas.translate(-x,-y);
     const record={surface,output:pass.output,image:null};passes.set(pass.id,record);
     for(const q of [...pass.quads].reverse()){
      if(q.opacity===0)continue;
@@ -55,11 +55,11 @@ export class SceneRenderer {
 // CanvasKit.MakeSurface uses Unpremul for HTML ImageData. Intermediate Skia
 // layers should stay premultiplied: otherwise every saveLayer restore and
 // image blend converts the whole destination between alpha representations.
-function makePremultipliedSurface(ck,width,height){
+function makePremultipliedSurface(ck,width,height,opaque=false){
  const pixels=ck.Malloc(Uint8Array,width*height*4);let surface;
  try{
   surface=ck.MakeRasterDirectSurface({width,height,colorType:ck.ColorType.RGBA_8888,
-   alphaType:ck.AlphaType.Premul,colorSpace:ck.ColorSpace.SRGB},pixels,width*4);
+   alphaType:opaque?ck.AlphaType.Opaque:ck.AlphaType.Premul,colorSpace:ck.ColorSpace.SRGB},pixels,width*4);
   if(!surface){ck.Free(pixels);return null;}
  }catch(error){ck.Free(pixels);throw error;}
  let disposed=false;

@@ -5,18 +5,22 @@ import {SceneRenderer} from '/scene-renderer.mjs';
 const $=id=>document.getElementById(id),status=text=>$('status').textContent=text;
 const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
 const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$('control'),label:$('controlState'),send:message=>{if(socket?.readyState===1)socket.send(JSON.stringify(message));}});
-let ck,renderer,sceneRenderer,surface,socket,generation=0,retryTimer,stopped=false,retryDelay=250;
+let ck,renderer,sceneRenderer,socket,generation=0,retryTimer,stopped=false,retryDelay=250;
 function fail(error){$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';}
 async function initialize(){
  const wasmBinary=await(await fetch('/vendor/canvaskit.wasm')).arrayBuffer();renderer={canvaskit:'0.42.0',wasmSha256:await digest(wasmBinary)};
  ck=await CanvasKitInit({wasmBinary,locateFile:file=>`/vendor/${file}`});sceneRenderer=new SceneRenderer(ck);
 }
 function draw(frame,resources){
- const output=sceneRenderer.render(frame.scene,resources);
+ const output=sceneRenderer.render(frame.scene,resources,ck.WHITE);
  try{
   const canvas=$('viewport'),{cssWidth:width,cssHeight:height}=frame.viewport;
-  if(!surface||canvas.width!==width||canvas.height!==height){surface?.dispose();canvas.width=width;canvas.height=height;surface=ck.MakeSWCanvasSurface(canvas);if(!surface)throw new Error('Cannot allocate Viewer surface');}
-  const target=surface.getCanvas();target.clear(ck.WHITE);target.drawImage(output.image,0,0);surface.flush();
+  const pixels=output.image.readPixels(0,0,{width,height,colorType:ck.ColorType.RGBA_8888,
+   alphaType:ck.AlphaType.Unpremul,colorSpace:ck.ColorSpace.SRGB});
+  if(!pixels||pixels.byteLength!==width*height*4)throw new Error('Cannot read completed Viewer pixels');
+  if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
+  const context=canvas.getContext('2d');if(!context)throw new Error('Cannot allocate Viewer canvas');
+  context.putImageData(new ImageData(new Uint8ClampedArray(pixels.buffer,pixels.byteOffset,pixels.byteLength),width,height),0,0);
  }finally{output.image.delete();output.surface.dispose();}
 }
 async function connect(){
@@ -78,5 +82,5 @@ async function connect(){
  ws.onerror=()=>{if(current===generation)status('连接暂时不可用，等待重连');};
 }
 $('reconnect').onclick=()=>connect().catch(fail);
-window.addEventListener('pagehide',()=>{stopped=true;clearTimeout(retryTimer);socket?.close();surface?.dispose();sceneRenderer?.clear();});
+window.addEventListener('pagehide',()=>{stopped=true;clearTimeout(retryTimer);socket?.close();sceneRenderer?.clear();});
 await initialize().then(connect).catch(fail);
