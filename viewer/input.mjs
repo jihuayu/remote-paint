@@ -15,8 +15,8 @@ export class ViewerInput {
    if(!this.active)return;if(e.isComposing||this.composing||e.key==='Process'||e.key==='Unidentified')return;
    // Let the local paste event deliver plain text; never expose host clipboard to CDP.
    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='v')return;
-   e.preventDefault();const printable=e.key.length===1&&!e.metaKey&&!e.ctrlKey&&!e.altKey;
-   this.push({kind:'key',type:type==='keydown'?'keyDown':'keyUp',key:e.key,code:e.code,windowsVirtualKeyCode:e.keyCode,modifiers:modifiers(e),...(type==='keydown'&&printable?{text:e.key}:{})});
+   e.preventDefault();const text=e.metaKey||e.ctrlKey||e.altKey?undefined:e.key==='Enter'?'\r':e.key==='Tab'?'\t':e.key.length===1?e.key:undefined;
+   this.push({kind:'key',type:type==='keydown'?'keyDown':'keyUp',key:e.key,code:e.code,windowsVirtualKeyCode:e.keyCode,modifiers:modifiers(e),...(type==='keydown'&&text!==undefined?{text}:{})});
   });
   proxy.addEventListener('paste',e=>{if(!this.active)return;e.preventDefault();this.push({kind:'text',text:e.clipboardData.getData('text/plain')});proxy.value='';});
   proxy.addEventListener('compositionstart',()=>{if(!this.active)return;this.composing=true;this.push({kind:'composition',phase:'start',text:''});});

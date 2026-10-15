@@ -50,6 +50,11 @@ try{
  }
 
  await click('#editor');await page.keyboard.press('Meta+A');await page.keyboard.type('rich text');await source.page.waitForFunction(()=>document.querySelector('#editor').textContent==='rich text');
+ await page.keyboard.press('Enter');await page.keyboard.type('line2');
+ await source.page.waitForFunction(()=>document.querySelector('#editor').innerText==='rich text\nline2');
+ await page.keyboard.press('ArrowLeft');await page.keyboard.press('Delete');
+ await source.page.waitForFunction(()=>document.querySelector('#editor').innerText==='rich text\nline');
+ await page.keyboard.press('Tab');await source.page.waitForFunction(()=>document.activeElement.id==='start-stream');
  const canvas=await page.locator('#viewport').boundingBox();await page.mouse.move(canvas.x+canvas.width/2,canvas.y+canvas.height/2);await page.mouse.wheel(0,500);await source.page.waitForFunction(()=>scrollY>200);
  const header=await source.page.locator('header').boundingBox();assert.equal(header.y,0);
  await page.locator('#control').click();await page.waitForFunction(()=>document.querySelector('#controlState').textContent==='Agent 控制');assert.equal(source.control.mode,'agent');
@@ -61,6 +66,6 @@ try{
  const before=source.inputSeq;for(const bad of [{pageEpoch:0},{viewportVersion:0},{lease:'revoked'},{seq:0}])assert.throws(()=>source.control.input(peer.id,{...grant,seq:grant.nextSeq,event:{kind:'text',text:'BAD'},...bad}));assert.equal(source.inputSeq,before);
  await source.control.revoke('test');await cdp.detach();assert.ok(requests.every(origin=>origin===live.origin));assert.deepEqual(errors,[]);
  await mkdir('artifacts/input',{recursive:true});await page.screenshot({path:'artifacts/input/viewer.png'});
- const report={verifiedAt:new Date().toISOString(),nativeDrawing:native,drawingFixtureOnly:!native,sourceBrowser:source.page.context().browser().version(),viewerBrowser:viewerBrowser.version(),sourceInput:await source.page.locator('#name').inputValue(),saved:await source.page.locator('#saved').textContent(),editor:await source.page.locator('#editor').textContent(),scrollY:await source.page.evaluate(()=>scrollY),cssScaling:true,inputPixelsFractionOver24,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,leaseAndStaleTags:true,lastProcessedInputSeq:source.inputSeq,viewerSourceRequests:0,errors};
+ const report={verifiedAt:new Date().toISOString(),nativeDrawing:native,drawingFixtureOnly:!native,sourceBrowser:source.page.context().browser().version(),viewerBrowser:viewerBrowser.version(),sourceInput:await source.page.locator('#name').inputValue(),saved:await source.page.locator('#saved').textContent(),editor:await source.page.locator('#editor').innerText(),newlineArrowDeleteAndTab:true,scrollY:await source.page.evaluate(()=>scrollY),cssScaling:true,inputPixelsFractionOver24,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,leaseAndStaleTags:true,lastProcessedInputSeq:source.inputSeq,viewerSourceRequests:0,errors};
  await writeFile('artifacts/input/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await viewerBrowser.close();await live?.close();if(!native){await source?.control?.close();await sourceBrowser?.close();await fixture?.close();}}
