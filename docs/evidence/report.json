@@ -1,0 +1,83 @@
+{
+  "verifiedAt": "2026-10-15T03:28:40.560Z",
+  "producer": {
+    "chromium": "Chrome/155.0.8059.79",
+    "chromiumRevision": "@a49e2e3d4addfd84e765b52afe230bedb81096db",
+    "skpVersion": 110
+  },
+  "renderer": {
+    "canvaskit": "0.42.0",
+    "wasmSha256": "aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+    "compatibility": "experimental-unmatched-skia-builds"
+  },
+  "captureBackend": "chromium-gpu-benchmarking-single-layer",
+  "captureMs": 2720.724417,
+  "firstPaintMs": 229.72204200000033,
+  "viewerResult": {
+    "frameId": 1,
+    "resourceBytes": 33594,
+    "receivedBytes": 34495,
+    "renderMs": 61.40000057220459,
+    "wasmSha256": "aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959"
+  },
+  "pixelMetrics": {
+    "width": 960,
+    "height": 640,
+    "changedPixelsAbove16": 11993,
+    "changedRatioAbove16": 0.019519856770833333,
+    "meanAbsoluteChannelError": 1.1836729600694444,
+    "maxChannelError": 235,
+    "pngInteriorChangedChannels": 0
+  },
+  "checks": {
+    "sourceOfflineDuringReplay": true,
+    "noSourceDomOrNetwork": true,
+    "reconnectExact": true,
+    "differentClientViewportAndDprExact": true,
+    "separateViewerBrowserFromCapture": true
+  },
+  "captureRejections": [
+    {
+      "fixture": "iframe.html",
+      "reason": "Phase A exporter does not compose iframe surfaces"
+    },
+    {
+      "fixture": "composited.html",
+      "reason": "Expected one paint layer, got 2; cannot infer composition from SKP filenames"
+    }
+  ],
+  "requests": [
+    "/",
+    "/style.css",
+    "/vendor/canvaskit.js",
+    "/viewer.mjs",
+    "/protocol/wire.mjs",
+    "/vendor/canvaskit.wasm",
+    "/vendor/canvaskit.wasm"
+  ],
+  "firstConnectionFrames": [
+    {
+      "kind": "Welcome",
+      "bytes": 364
+    },
+    {
+      "kind": "ResourcePut",
+      "bytes": 33638,
+      "magic": "RPNT"
+    },
+    {
+      "kind": "SceneUpdate",
+      "bytes": 445
+    },
+    {
+      "kind": "FrameCommit",
+      "bytes": 48
+    }
+  ],
+  "limits": [
+    "Single local machine; not tested on another physical machine",
+    "Static single-layer fixture only",
+    "Unmatched Chromium/CanvasKit Skia revisions; not general format compatibility",
+    "No realtime capture, input, Steel, iframe composition or GPU fallback"
+  ]
+}

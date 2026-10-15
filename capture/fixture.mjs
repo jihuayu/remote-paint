@@ -14,6 +14,8 @@ export async function fixtureResponse(req, res) {
   const path = new URL(req.url, 'http://localhost').pathname;
   const files = {
     '/fixture/page.html': ['page.html', 'text/html; charset=utf-8'],
+    '/fixture/iframe.html': ['iframe.html', 'text/html; charset=utf-8'],
+    '/fixture/composited.html': ['composited.html', 'text/html; charset=utf-8'],
     '/fixture/NotoSansSC-subset.ttf': ['NotoSansSC-subset.ttf', 'font/ttf'],
   };
   if (path === '/fixture/sample.png') {

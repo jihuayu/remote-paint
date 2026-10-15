@@ -1,0 +1,59 @@
+{
+  "protocol": 1,
+  "captureBackend": "chromium-gpu-benchmarking-single-layer",
+  "capturedAt": "2026-10-15T03:28:34.028Z",
+  "producer": {
+    "chromium": "Chrome/155.0.8059.79",
+    "chromiumRevision": "@a49e2e3d4addfd84e765b52afe230bedb81096db",
+    "skpVersion": 110
+  },
+  "renderer": {
+    "canvaskit": "0.42.0",
+    "wasmSha256": "aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+    "compatibility": "experimental-unmatched-skia-builds"
+  },
+  "pageEpoch": 1,
+  "frameId": 1,
+  "baseFrameId": null,
+  "viewportVersion": 1,
+  "viewport": {
+    "cssWidth": 960,
+    "cssHeight": 640,
+    "deviceScaleFactor": 1
+  },
+  "resources": [
+    {
+      "id": "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d",
+      "kind": "skp",
+      "file": "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d.skp",
+      "bytes": 33594
+    }
+  ],
+  "scene": [
+    {
+      "resourceId": "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d",
+      "matrix": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1
+      ],
+      "clip": [
+        0,
+        0,
+        960,
+        640
+      ],
+      "opacity": 1
+    }
+  ],
+  "requiredResources": [
+    "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+  ],
+  "lastProcessedInputSeq": 0
+}

@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { parseArgs } from 'node:util';
 import { WebSocketServer } from 'ws';
 import { encodeResource, validateFrame, LIMITS } from './protocol/wire.mjs';
 import { sha256 } from './capture/capture.mjs';
@@ -91,7 +92,9 @@ export async function startServer({ directory = 'artifacts/capture', port = 4173
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const server = await startServer({ directory: process.env.CAPTURE_DIR, port: Number(process.env.PORT ?? 4173) });
+  const { values } = parseArgs({ options: { directory: { type: 'string' }, port: { type: 'string' } } });
+  const server = await startServer({ directory: values.directory ?? process.env.CAPTURE_DIR,
+    port: Number(values.port ?? process.env.PORT ?? 4173) });
   console.log(`Remote Paint Viewer: ${server.url}`);
   const stop = async () => { await server.close(); process.exit(0); };
   process.once('SIGINT', stop); process.once('SIGTERM', stop);
