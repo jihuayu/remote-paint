@@ -34,6 +34,20 @@ for(const name of (await readdir(new URL('./patches/',import.meta.url))).filter(
 await writeFile(statePath,JSON.stringify(state,null,2));
 await mkdir(join(source, 'components/remote_paint'), { recursive: true });
 await cp(new URL('./chromium/', import.meta.url), join(source, 'components/remote_paint'), { recursive: true });
+if(platform==='linux-arm64'){
+  // OrbStack bind mounts on a case-insensitive Mac volume can report a
+  // lowercase canonical Vulkan path for SwiftShader's correctly cased include.
+  // Keep the diagnostic visible without making it fatal for these targets.
+  const path=join(source,'third_party/swiftshader/BUILD.gn');
+  let text=await readFile(path,'utf8');
+  const marker='# Remote Paint: Mac bind-mount case diagnostic.';
+  if(!text.includes(marker)){
+    const anchor='config("swiftshader_config") {\n  cflags = []';
+    if(!text.includes(anchor))throw new Error('Pinned SwiftShader config changed');
+    text=text.replace(anchor,`${anchor}\n  ${marker}\n  if (is_linux && is_clang) {\n    cflags += [ "-Wno-error=nonportable-include-path" ]\n  }`);
+    await writeFile(path,text);
+  }
+}
 const rootBuild = join(source, 'BUILD.gn');
 let build = await readFile(rootBuild, 'utf8');
 if (!build.includes('group("remote_paint_tools")')) {

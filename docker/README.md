@@ -32,6 +32,12 @@ the builder container preserves these files. Resume a stopped builder with
 prune the mounted checkout. This is Ninja's persistent incremental cache, not a
 configured ccache/sccache service. Docker image/build layers are retained too.
 
+On this Mac's case-insensitive bind mount, Clang can see SwiftShader's `Vulkan`
+directory as `vulkan` after an unrelated lowercase header lookup. The Linux
+preparation adds `-Wno-error=nonportable-include-path` only to SwiftShader's
+config. It keeps the diagnostic visible and retains all other error checks;
+the upstream include spelling stays intact.
+
 This is the build harness. Runtime/BeginFrame acceptance is recorded separately; preparing an image or generating the build graph does not establish that the Linux drawing path works.
 
 ## Native runtime and Mac acceptance
