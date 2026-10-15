@@ -45,3 +45,16 @@ test('full pictures honor rebased tile origins after clipping in quad coordinate
   assert.deepEqual(pixel(png,10,5),[0,0,0,0]);assert.deepEqual(pixel(png,10,55),[0,0,0,0]);
  }finally{output.image.delete();output.surface.delete();renderer.clear();picture.delete();recorder.delete();paint.delete();}
 });
+
+test('transparent picture clears never punch through previously composed content',()=>{
+ const recorder=new ck.PictureRecorder(),canvas=recorder.beginRecording([0,0,20,20]),paint=new ck.Paint();
+ canvas.clear(ck.TRANSPARENT);paint.setColor([1,0,0,1]);canvas.drawCircle(10,10,8,paint);
+ const picture=recorder.finishRecordingAsPicture(),renderer=new SceneRenderer(ck);
+ const output=renderer.render({rootPass:'root',passes:[{id:'root',output:rect,quads:[
+  {kind:'picture',resourceId:'circle',width:20,height:20,quadScale:1,contentOrigin:[0,0],matrix,rect:[0,0,20,20],visible:[0,0,20,20],clip:null,opacity:1},
+  solid([0,0,1,1]),
+ ]}]},new Map([['circle',picture.serialize()]]));
+ try{const png=PNG.sync.read(Buffer.from(output.image.encodeToBytes()));
+  assert.deepEqual(pixel(png,1,1),[0,0,255,255]);assert.deepEqual(pixel(png,10,10),[255,0,0,255]);
+ }finally{output.image.delete();output.surface.delete();renderer.clear();picture.delete();recorder.delete();paint.delete();}
+});

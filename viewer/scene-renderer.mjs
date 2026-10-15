@@ -29,7 +29,11 @@ export class SceneRenderer {
          if(cull[0]!==0||cull[1]!==0||cull[2]!==q.width||cull[3]!==q.height){picture.delete();throw new Error('Native picture bounds mismatch');}
          this.pictures.set(q.resourceId,picture);
         }
-        canvas.translate(...q.contentOrigin);canvas.scale(q.quadScale,q.quadScale);canvas.drawPicture(picture);
+        // A recording may clear with kSrc. Replay into an isolated layer so
+        // it cannot erase previously composed quads through transparent pixels.
+        canvas.saveLayer();
+        try{canvas.translate(...q.contentOrigin);canvas.scale(q.quadScale,q.quadScale);canvas.drawPicture(picture);}
+        finally{canvas.restore();}
        }else if(q.kind==='solid'){
         const paint=new ck.Paint();try{paint.setColor(q.color);paint.setAntiAlias(false);canvas.drawRect(q.rect,paint);}finally{paint.delete();}
        }else if(q.kind==='pass'){

@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-15T09:32:20.344Z",
+  "verifiedAt": "2026-10-15T09:37:18.073Z",
   "browser": "155.0.8059.79",
   "gpuMode": "in-process",
   "nativeBrowserCapture": true,
@@ -39,35 +39,35 @@
         }
       ],
       "native": {
-        "captureId": "15317188-bbce-42b7-8656-69fef24306c6",
-        "producer": "97972:2",
+        "captureId": "9a81e851-caa8-4ec2-87bf-16115d5e4c76",
+        "producer": "2868:2",
         "namespace": [
           4,
           10
         ],
-        "frameToken": 10,
-        "sourceFrame": 9
+        "frameToken": 8,
+        "sourceFrame": 7
       },
       "resources": [
         {
-          "logical": "1/97972:2/4:10/22",
+          "logical": "1/2868:2/4:10/22",
           "resourceId": "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
           "revision": 1
         },
         {
-          "logical": "1/97972:2/4:10/21",
+          "logical": "1/2868:2/4:10/21",
           "resourceId": "9ae8f424fc0d48af85f7c2021ab117d953e228432cd1bee8114165c1d014b86d",
           "revision": 2
         },
         {
-          "logical": "1/97972:2/4:10/20",
+          "logical": "1/2868:2/4:10/20",
           "resourceId": "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80",
           "revision": 3
         }
       ],
       "released": [],
-      "pixelFractionOver24": 0.013772786458333333,
-      "headerChangedPixels": 1250,
+      "pixelFractionOver24": 0.013709309895833334,
+      "headerChangedPixels": 1225,
       "quads": 16
     },
     {
@@ -94,35 +94,35 @@
         }
       ],
       "native": {
-        "captureId": "2b7362b2-56d4-4bd1-b3ee-74736bcbfbc3",
-        "producer": "97972:2",
+        "captureId": "7230e8f5-c812-4e2b-b38f-38488bc8746c",
+        "producer": "2868:2",
         "namespace": [
           4,
           10
         ],
-        "frameToken": 17,
-        "sourceFrame": 17
+        "frameToken": 16,
+        "sourceFrame": 16
       },
       "resources": [
         {
-          "logical": "1/97972:2/4:10/22",
+          "logical": "1/2868:2/4:10/22",
           "resourceId": "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
           "revision": 1
         },
         {
-          "logical": "1/97972:2/4:10/21",
+          "logical": "1/2868:2/4:10/21",
           "resourceId": "9ae8f424fc0d48af85f7c2021ab117d953e228432cd1bee8114165c1d014b86d",
           "revision": 2
         },
         {
-          "logical": "1/97972:2/4:10/20",
+          "logical": "1/2868:2/4:10/20",
           "resourceId": "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80",
           "revision": 3
         }
       ],
       "released": [],
-      "pixelFractionOver24": 0.0301513671875,
-      "headerChangedPixels": 1250,
+      "pixelFractionOver24": 0.030003255208333333,
+      "headerChangedPixels": 1225,
       "quads": 16
     },
     {
@@ -160,35 +160,35 @@
         }
       ],
       "native": {
-        "captureId": "bf31ba20-c05f-432f-ab59-9fc5cf6893c8",
-        "producer": "97972:2",
+        "captureId": "8fb6c0ad-de81-4a65-8b91-5b27a6caf79b",
+        "producer": "2868:2",
         "namespace": [
           4,
           10
         ],
-        "frameToken": 21,
-        "sourceFrame": 23
+        "frameToken": 20,
+        "sourceFrame": 22
       },
       "resources": [
         {
-          "logical": "1/97972:2/4:10/22",
+          "logical": "1/2868:2/4:10/22",
           "resourceId": "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
           "revision": 1
         },
         {
-          "logical": "1/97972:2/4:10/21",
+          "logical": "1/2868:2/4:10/21",
           "resourceId": "9ae8f424fc0d48af85f7c2021ab117d953e228432cd1bee8114165c1d014b86d",
           "revision": 2
         },
         {
-          "logical": "1/97972:2/4:10/20",
+          "logical": "1/2868:2/4:10/20",
           "resourceId": "fd02a63fcea84086d283bdc4b01c67e3d73501c64bd27193e3747376f9400f80",
           "revision": 3
         }
       ],
       "released": [],
-      "pixelFractionOver24": 0.013772786458333333,
-      "headerChangedPixels": 1250,
+      "pixelFractionOver24": 0.013709309895833334,
+      "headerChangedPixels": 1225,
       "quads": 16
     }
   ],
@@ -197,6 +197,6 @@
   "ipc": {
     "received": 5,
     "rejected": 0,
-    "maxBufferedBytes": 4368
+    "maxBufferedBytes": 4366
   }
 }
