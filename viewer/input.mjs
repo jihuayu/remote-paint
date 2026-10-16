@@ -1,4 +1,23 @@
 // Local textarea captures text/IME only. The remote page remains the editor.
+export function predictOptimistic(state,event){
+ if(!state||!['input','textarea','contenteditable'].includes(state.kind))return null;
+ const text=state.text,start=Math.max(0,Math.min(text.length,Number.isInteger(state.selectionStart)?state.selectionStart:text.length));
+ const end=Math.max(start,Math.min(text.length,Number.isInteger(state.selectionEnd)?state.selectionEnd:start));
+ let next=text,nextStart=start,nextEnd=start;
+ const replace=value=>{next=text.slice(0,start)+value+text.slice(end);nextStart=nextEnd=start+value.length;};
+ if(event.kind==='text'||event.kind==='key'&&event.type==='keyDown'&&event.text!==undefined)replace(event.text);
+ else if(event.kind==='key'&&event.type==='keyDown'){
+  if(event.key==='Backspace'){if(start!==end)replace('');else if(start>0){next=text.slice(0,start-1)+text.slice(end);nextStart=nextEnd=start-1;}}
+  else if(event.key==='Delete'){if(start!==end)replace('');else if(end<text.length){next=text.slice(0,start)+text.slice(end+1);nextStart=nextEnd=start;}}
+  else if(event.key==='ArrowLeft'){nextStart=nextEnd=Math.max(0,start-1);}
+  else if(event.key==='ArrowRight'){nextStart=nextEnd=Math.min(text.length,end+1);}
+  else if(event.key==='Home'){nextStart=nextEnd=0;}
+  else if(event.key==='End'){nextStart=nextEnd=text.length;}
+  else return null;
+ }else if(event.kind==='composition'&&event.phase==='commit')replace(event.text);
+ else return null;
+ return {...state,text:next,selectionStart:nextStart,selectionEnd:nextEnd,style:{...state.style}};
+}
 export class ViewerInput {
  constructor({canvas,proxy,button,label,overlay,send}){
   Object.assign(this,{canvas,proxy,button,label,overlay,send});this.queue=[];this.active=false;this.frame=null;this.composing=false;
@@ -38,7 +57,7 @@ export class ViewerInput {
  display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=frame;this.lastFrameInputSeq=Math.max(this.lastFrameInputSeq,frame.lastProcessedInputSeq??0);if(this.overlaySeq&&this.lastFrameInputSeq>=this.overlaySeq)this.clearOptimistic();this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);}
  reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.pending=null;this.queue=[];this.composing=false;this.proxy.value='';this.proxy.blur();this.clearOptimistic();this.lastFrameInputSeq=0;this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
  clearOptimistic(){this.overlaySeq=0;if(this.overlay)this.overlay.replaceChildren();window.remotePaintOptimistic=null;}
- showOptimistic(seq,state){
+  showOptimistic(seq,state){
   if(!this.overlay||!this.frame||!state||!['input','textarea','contenteditable'].includes(state.kind))return;
   const values=['x','y','width','height'].map(key=>state[key]);if(!values.every(Number.isFinite)||values.some(value=>value<0)||state.width<=0||state.height<=0||typeof state.text!=='string'||state.text.length>8192)return;
   const safeStyle=Object.fromEntries(Object.entries(state.style??{}).filter(([key,value])=>typeof value==='string'&&value.length<=256&&!/[;{}<>]|url\s*\(|expression\s*\(/i.test(value)));
@@ -54,7 +73,7 @@ export class ViewerInput {
   const before=document.createElement('span'),selected=document.createElement('span'),after=document.createElement('span'),caret=document.createElement('span');
   before.textContent=state.text.slice(0,start);selected.textContent=state.text.slice(start,end);after.textContent=state.text.slice(end);caret.className='optimistic-caret';
   if(start!==end)selected.className='optimistic-selection';element.append(before,caret,selected,after);this.overlay.replaceChildren(element);this.overlaySeq=seq;
-  window.remotePaintOptimistic={seq,shownAt:performance.now()};
+  this.optimisticState={...state,style:{...state.style}};window.remotePaintOptimistic={seq,shownAt:performance.now()};
  }
  message(message){
   if(message.type==='ControlState'){
@@ -82,5 +101,5 @@ export class ViewerInput {
   else {if(this.queue.length>=60){this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent='输入过快，已交还控制';return;}this.queue.push(event);}
   this.pump();
  }
- pump(){if(!this.active||this.pending||!this.queue.length)return;const message={type:'Input',...this.tags(),seq:this.nextSeq++,event:this.queue.shift()};this.pending=message;this.send(message);this.ackTimer=setTimeout(()=>{if(this.active)this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent='输入确认超时，已交还控制';},5000);}
+ pump(){if(!this.active||this.pending||!this.queue.length)return;const message={type:'Input',...this.tags(),seq:this.nextSeq++,event:this.queue.shift()};this.pending=message;const predicted=predictOptimistic(this.optimisticState,message.event);if(predicted)this.showOptimistic(message.seq,predicted);this.send(message);this.ackTimer=setTimeout(()=>{if(this.active)this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent='输入确认超时，已交还控制';},5000);}
 }

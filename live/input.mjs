@@ -86,7 +86,7 @@ export class ControlLease {
  }
  async optimisticState(event){
   if(event.kind==='key'&&event.type==='keyUp')return null;
-  if(!['key','text','composition'].includes(event.kind))return null;
+  if(!['key','text','composition'].includes(event.kind)&&!(event.kind==='mouse'&&event.type==='mousePressed'))return null;
   try{return await this.source.page.evaluate(()=>{
    const element=document.activeElement;
    const editable=element instanceof HTMLInputElement||element instanceof HTMLTextAreaElement||element?.isContentEditable;
