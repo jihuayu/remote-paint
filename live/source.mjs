@@ -9,8 +9,9 @@ import {NativeBroker} from '../native/broker.mjs';
 import {validateScene} from '../protocol/live-wire.mjs';
 export async function startLiveSource({url,executablePath=process.env.REMOTE_PAINT_CHROMIUM,viewport={width:960,height:640},interval=120,beginFrames=process.platform==='linux',captureOnInput=true}={}){
  if(!executablePath)throw new Error('Set REMOTE_PAINT_CHROMIUM to the custom compiled headless_shell (npm run native:chromium)');
- const viz=await startVizIPC(),token=nativeToken();let browser,capture,frameDriver,broker;
+ let browser,capture,frameDriver,broker;
  if(process.env.REMOTE_PAINT_DATA_PLANE!=='node')broker=new NativeBroker();
+ const viz=await startVizIPC({broker}),token=nativeToken();
  try{
   // The token switch installs capture in the Broker's isolated world. Do not
   // enable legacy GPU benchmarking APIs (including disk export) in source JS.

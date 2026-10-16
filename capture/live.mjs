@@ -47,6 +47,7 @@ export class NativeCapture extends EventEmitter {
     const captureId=randomUUID();
     const scene=this.viz.waitFor(captureId);scene.catch(()=>{});
     try {
+    await scene.registered;
     const {result,exceptionDetails}=await this.cdp.send('Runtime.evaluate',{
       contextId:this.world,awaitPromise:true,returnByValue:true,
       expression:`new Promise((resolve,reject)=>{if(!chrome.gpuBenchmarking.captureRemotePaint(${JSON.stringify(this.token)},${JSON.stringify(captureId)},resolve))reject(new Error('Native capture refused'));})`,

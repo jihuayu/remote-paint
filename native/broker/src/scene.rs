@@ -266,7 +266,7 @@ impl Mapper {
             .filter(|n| *n > 0 && *n <= 4096)
             .ok_or("Invalid viewport")?;
         if viewport["deviceScaleFactor"] != 1
-            || mapped.last().unwrap()["output"] != json!([0, 0, width, height])
+            || numbers(&mapped.last().unwrap()["output"],4)? != vec![0.,0.,width as f64,height as f64]
         {
             return Err("Root viewport mismatch".into());
         }
