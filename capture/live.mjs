@@ -34,8 +34,10 @@ export class NativeCapture extends EventEmitter {
   requestCapture() {
     if(!this.captureOnInput||!this.viewers||this.stopped)return;
     this.urgent=true;
-    // Linux waits for the next external BeginFrame ACK. The fallback coalesces
-    // a burst into one task; an in-flight encoding always completes first.
+    // Ask the external clock for a frame immediately. If one is already in
+    // flight, requestNow() coalesces with it; the fallback coalesces a burst
+    // into one task and an in-flight encoding always completes first.
+    if(this.frameDriver)void this.frameDriver.requestNow().catch(()=>{});
     if(!this.frameDriver&&!this.running){clearTimeout(this.timer);this.timer=setTimeout(()=>void this.tick(),0);}
   }
   async capture() {

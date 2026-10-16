@@ -28,6 +28,7 @@ export class BeginFrameDriver extends EventEmitter {
   })();
   this.pending=work.finally(()=>{this.pending=null;});return this.pending;
  }
+ requestNow(){return this.step();}
  start(){
   if(this.closed)throw new Error('BeginFrame driver is closed');
   if(this.running)return;this.running=true;void this.pump();

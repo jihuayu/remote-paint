@@ -34,13 +34,14 @@ test('frame-clock capture waits for frame notifications, serializes encoding and
  assert.equal(frameDriver.listenerCount('frame'),0);
 });
 
-test('input-driven capture uses the next BeginFrame and retains input arriving during encoding',async()=>{
- const frameDriver=new EventEmitter(),capture=new NativeCapture(null,{interval:10000,frameDriver});
+test('input-driven capture requests an immediate BeginFrame and retains input arriving during encoding',async()=>{
+ const frameDriver=new EventEmitter();let requests=0;frameDriver.requestNow=()=>{requests++;return Promise.resolve();};
+ const capture=new NativeCapture(null,{interval:10000,frameDriver});
  frameDriver.on('frame',capture.onFrame);
  let calls=0,finish;capture.capture=()=>{calls++;return new Promise(r=>finish=r);};
  capture.setDemand(1);finish({});await new Promise(setImmediate);
  frameDriver.emit('frame');assert.equal(calls,1,'Idle interval still throttles animation captures');
- for(let i=0;i<20;i++)capture.requestCapture();assert.equal(calls,1,'Input does not bypass the external frame clock');
+ for(let i=0;i<20;i++)capture.requestCapture();assert.equal(requests,20,'Input requests the external clock immediately');assert.equal(calls,1,'Input keeps capture serialized');
  frameDriver.emit('frame');assert.equal(calls,2);
  capture.requestCapture();frameDriver.emit('frame');assert.equal(calls,2,'Encoding stays serialized');
  finish({});await new Promise(setImmediate);frameDriver.emit('frame');assert.equal(calls,3);
