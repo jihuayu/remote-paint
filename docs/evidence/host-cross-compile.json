@@ -21,5 +21,12 @@
     "hostObjectSha256": "0297136d0c92cb5eb93249987f71bda216596ef20071805b8e21bf1e1ff79c90",
     "byteIdentical": true,
     "scope": "Same pinned compiler and exact GN command for protobuf doc_comment.cc; Linux host-tool object compared byte-for-byte."
+  },
+  "incrementalDependencyValidation": {
+    "verifiedAt": "2026-10-16T04:38:33.506626+00:00",
+    "identicalPinnedResourceHeaders": 327,
+    "firstBuild": "1 compilation through Docker-to-Mac relay",
+    "secondBuild": "ninja: no work to do.",
+    "scope": "Separate Linux Ninja graph using Clang resource headers; dependency paths normalized to their byte-identical Linux toolchain files."
   }
 }

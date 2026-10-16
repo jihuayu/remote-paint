@@ -34,6 +34,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     if flag in argv:
                         path=(cwd/argv[argv.index(flag)+1]).resolve()
                         if not path.is_relative_to(source/'out'):raise ValueError('Output outside build directory')
+                        if flag=='-MF':
+                            # Clang's built-in headers come from the Mac compiler.
+                            # Record their identical pinned Linux equivalents so
+                            # Ninja can validate dependencies inside the VM.
+                            depfile=path.read_text()
+                            for original,replacement in [(str(compiler.parent/'lib/clang'),'/chromium/src/third_party/llvm-build/Release+Asserts/lib/clang'),(str(source),'/chromium/src')]:
+                                depfile=depfile.replace(original.replace(' ','\\ '),replacement.replace(' ','\\ '))
+                            path.write_text(depfile)
                         data=path.read_bytes()
                         artifacts.append({'path':str(path.relative_to(source)),'sha256':hashlib.sha256(data).hexdigest()})
             response=json.dumps({'code':process.returncode,'output':output,'artifacts':artifacts}).encode()
