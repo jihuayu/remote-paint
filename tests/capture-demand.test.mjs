@@ -41,3 +41,30 @@ test('input bursts bypass the idle interval without overlapping captures or clai
  capture.setDemand(1);finish({});await new Promise(setImmediate);
  capture.requestCapture();await capture.close();t.mock.timers.tick(10000);assert.equal(calls,3);
 });
+
+test('a lost CDP callback cannot hide Viz failure or permanently block capture',async()=>{
+ let rejectScene,canceled=0;
+ const capture=new NativeCapture(null,{token:'test',viz:{
+  waitFor(){return new Promise((_,reject)=>rejectScene=reject);},cancel(){canceled++;}
+ }});
+ capture.world=1;capture.cdp={send:()=>new Promise(()=>{}),detach:async()=>{}};
+ let failure;const attempt=capture.capture().catch(error=>failure=error);
+ await new Promise(setImmediate);rejectScene(new Error('Viz request expired'));
+ await new Promise(setImmediate);
+ assert.equal(failure?.message,'Viz request expired');assert.equal(canceled,1);
+ await attempt;await capture.close();
+});
+
+test('a completed Viz frame with a lost CDP callback expires and releases single-flight capture',async t=>{
+ t.mock.timers.enable({apis:['setTimeout']});
+ let canceled=0;
+ const capture=new NativeCapture(null,{token:'test',frameDriver:{requestNow:async()=>{},off(){}},viz:{
+  waitFor:()=>Promise.resolve({native:true}),cancel(){canceled++;}
+ }});
+ capture.world=1;capture.cdp={send:()=>new Promise(()=>{}),detach:async()=>{}};
+ let failure;capture.on('captureError',error=>failure=error);
+ capture.setDemand(1);await new Promise(setImmediate);assert.equal(capture.running,true);
+ t.mock.timers.tick(6000);await new Promise(setImmediate);
+ assert.match(failure?.message??'',/Native capture deadline/);assert.equal(capture.running,false);assert.equal(canceled,1);
+ await capture.close();
+});
