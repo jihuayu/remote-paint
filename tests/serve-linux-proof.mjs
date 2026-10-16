@@ -27,7 +27,7 @@ const snapshot=async()=>({
   }];})),
  }),selectors),
 });
-await atomic('ready.json',{runId,url:live.url,origin:live.origin,source:await snapshot()});
+await atomic('ready.json',{runId,url:live.url,origin:live.origin,streamOrigin:live.streamOrigin,source:await snapshot()});
 console.log(`Native Linux proof Viewer: ${live.url}`);
 let handled=null,closing=false,timer;
 async function poll(){
