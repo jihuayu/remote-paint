@@ -44,8 +44,9 @@ export class BeginFrameDriver extends EventEmitter {
  async close(){await this.stop();this.closed=true;await this.cdp.detach();}
 }
 
-export async function startBeginFrames(page,options){
- const cdp=await page.context().newCDPSession(page),driver=new BeginFrameDriver(cdp,options);
- try{await driver.step();driver.start();return driver;}
+export async function startBeginFrames(page,options={}){
+ const {autoStart=true,...driverOptions}=options;
+ const cdp=await page.context().newCDPSession(page),driver=new BeginFrameDriver(cdp,driverOptions);
+ try{await driver.step();if(autoStart)driver.start();return driver;}
  catch(error){await driver.close();throw new Error(`BeginFrame control unavailable: ${error.message}`,{cause:error});}
 }

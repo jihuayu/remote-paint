@@ -21,6 +21,21 @@ test('BeginFrame missing ACK fails closed instead of issuing overlapping frames'
  assert.equal(calls,1);assert.equal(driver.stats.errors,1);await driver.close();
 });
 
+test('BeginFrame startup can leave the external clock paused until a viewer arrives',async()=>{
+ let calls=0,finish;const cdp={send:async(method)=>{
+  assert.equal(method,'HeadlessExperimental.beginFrame');calls++;
+  if(calls===1)return {hasDamage:false};
+  return new Promise(resolve=>finish=resolve);
+ },detach:async()=>{}};
+ const {startBeginFrames}=await import('../capture/begin-frame.mjs');
+ const page={context:()=>({newCDPSession:async()=>cdp})};
+ const driver=await startBeginFrames(page,{autoStart:false});
+ assert.equal(calls,1,'startup primes one frame for page initialization');
+ await new Promise(resolve=>setTimeout(resolve,10));assert.equal(calls,1);
+ driver.start();await new Promise(resolve=>setTimeout(resolve,5));assert.equal(calls,2);
+ finish({hasDamage:true});await driver.stop();assert.equal(driver.stats.issued,driver.stats.acked);await driver.close();
+});
+
 test('frame-clock capture waits for frame notifications, serializes encoding and stops with demand',async()=>{
  const frameDriver=new EventEmitter(),capture=new NativeCapture(null,{interval:0,frameDriver});
  // initialize() normally attaches this listener after checking the native API.

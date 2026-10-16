@@ -14,12 +14,18 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
   // enable legacy GPU benchmarking APIs (including disk export) in source JS.
   browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:nativeLaunchArgs(token,{beginFrames})});
   const page=await browser.newPage({viewport,deviceScaleFactor:1});
-  if(beginFrames)frameDriver=await startBeginFrames(page);
+  if(beginFrames)frameDriver=await startBeginFrames(page,{autoStart:false});
   await page.goto(url,{waitUntil:'networkidle'});
   capture=new NativeCapture(page,{token,viz,interval,frameDriver,captureOnInput});await capture.initialize();
   const source=new EventEmitter();Object.assign(source,{page,browser,capture,viz,frameDriver,pageEpoch:1,viewportVersion:1,latest:null,demand:0,inputSeq:0,mapper:new SceneMapper(),producer:null,
    viewport:{cssWidth:viewport.width,cssHeight:viewport.height,deviceScaleFactor:1},stats:{captures:0,errors:0,lastError:null}});
-  source.setDemand=count=>{source.demand=count;capture.setDemand(count);};
+  source.setDemand=count=>{
+   source.demand=count;capture.setDemand(count);
+   if(frameDriver){
+    if(count>0)frameDriver.start();
+    else void frameDriver.stop();
+   }
+  };
   source.requestCapture=()=>capture.requestCapture();
   source.invalidate=reason=>{source.pageEpoch++;source.latest=null;source.mapper.reset();source.emit('invalidate',reason);};
   capture.on('navigation',()=>source.invalidate('navigation'));
