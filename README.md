@@ -8,9 +8,9 @@
 
 1–8 项优化和原生 Broker/Gateway 已落到代码，设计、协议和每项验证入口见 [原生数据面说明](docs/native-data-plane.md)。默认使用 Rust SceneMapper/资源去重/WS Peer，Chromium 通过常驻二进制 IPC 直接传送场景和原始 SKP；Node 负责控制面。Viewer 的 WS、校验、CanvasKit 和 OffscreenCanvas 在 Worker 中运行。
 
-当前新增路径已通过 58 项单元测试、原生 Mapper/IPC/分块资源验证和实际 Linux ARM64 → Mac Worker 功能检查。资源修复验证浏览器以三个更新的 C++ 对象单独重链，已通过原生字节重发、Broker 缓存清空恢复、连续五次导航/resize，以及 Mac 输入、双 Viewer、图文像素和丢资源恢复；[完整测量收据](docs/evidence/native-mac-recovery-probe.json)明确记录了该构建边界。
+完整 Ninja 图已编译、链接并通过无待构建项检查，Linux ARM64 的 serializer、BeginFrame、native、scene、input、live、latency 七项验收全部返回 0；60 个单元测试在 Mac 和 Linux Node.js 22 均通过。正式浏览器的完整 Mac Worker 验收也通过，含单/双 Viewer、图文像素、真实输入、IME/CDP、滚动、导航/resize、重连及丢资源恢复。[最终验收及逐项核对](docs/native-final-acceptance.md)链接完整收据和报告。
 
-新增渲染进程登记确认后的[完整 Mac 探针验收](docs/evidence/native-capture-registration.json)中，暂停编译负载后，16 次真实输入到 CanvasKit 像素的 p50/p95 为 **37.5/58.1 ms**，单 Viewer 约 **51 FPS**，双 Viewer 各约 **52 FPS**；尚未达到 30 ms。同会话交替对照每条路径各 64 次输入，登记确认使 p50 从 41.4 降到 35.6 ms，但完整流程延迟与此前探针接近，不能泛化该收益。Linux 完整 Ninja 图仍在保留缓存重建，最终 no-pending-work 收据及完整 Linux 套件尚待完成；**下方已有延迟和 native 报告是升级前基线**。
+正式产物中，16 次真实输入到 Mac CanvasKit 像素的 p50/p95 为 **48.8/57.8 ms**，单 Viewer **47.6 FPS**，双 Viewer 各 **47.1/47.6 FPS**；每 Peer 约 **0.98–1.02 MB/s**。Node/Broker/Chromium 分别约 **0.18–0.21 / 0.11–0.12 / 0.49–0.55 核**。Node 中的绘图资源记录和 Viz 场景均为零，稳定输入和 BeginFrame 错误均为零。**尚未达到 30 ms**；两秒帧率窗口和 16 次输入不能代表所有网页或物理显示延迟。[正式 Mac 报告](docs/evidence/native-mac-final.json)与早先[登记时序探针](docs/evidence/native-capture-registration.json)分别保留，**下方报告均为升级前基线**。
 
 先执行 `npm run native:broker` 构建当前宿主机的 Broker。Linux 版本必须单独构建为 AArch64 ELF，通过 `REMOTE_PAINT_BROKER` 指定；运行容器需要同时映射 UI 4176 和原生 WS 4177。`REMOTE_PAINT_DATA_PLANE=node` 可切换兼容路径，`?mainThread` 可切换主线程 Viewer。
 

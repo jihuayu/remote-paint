@@ -1,0 +1,2058 @@
+{
+  "scope": "Completed full Ninja graph, AArch64 ELF, seven actual Linux native browser acceptance checks; Mac Viewer measured separately",
+  "provenance": {
+    "projectRevision": "08aefec1822802f5291a16b54b03504146dd9d45",
+    "runtimeFileSha256": {
+      "capture/live.mjs": "00edf8786bf94a687ea2975c7b70aa88692b631bd4c4961b570edeee4ab2e227",
+      "capture/begin-frame.mjs": "f381306410fd289f96bdab588342f08332a0f672f02a72dd658ba8f952f10edc",
+      "live/source.mjs": "e9aac3c1f52ddff2a7c0ce9d4aea8a58fd195952a77c3ceb0ca1ae7daf1cebcb",
+      "live/input.mjs": "ed5badb51a47e4c6a78b107bb56af2c412fb5d0f448fac9761d9c885179bab00",
+      "live/transport.mjs": "83b9161a289ede316cf435db97ab5be653c448d0771c2205b34b6adb8681883e",
+      "native/broker.mjs": "d42f265e1e0cbc53c87a38a0a339cdabb134db16de9379e1efadbf598a89d1c9",
+      "protocol/asset-wire.mjs": "25e61f8e49cb38a692ca3c33aa9536f801280eef4d90f5b4d59652bc8f604fe3",
+      "viewer/live.mjs": "1da3ab3d0bf315b8723d5a23da3579d257f7212c493247d75997440830668e53",
+      "viewer/stream-worker.mjs": "8415588fbb622b211654c255d76469130986f1b128607e8102a66f36cfddfda0",
+      "viewer/scene-renderer.mjs": "938d29e950c70aefb78a7be18f6c2600cd053c502a06b122c146624bbca86b78",
+      "viewer/input.mjs": "a17c745e009c6cd0a76fd8c96995a7847c2548e40ac77bb54cb593a05041f095",
+      "native/broker/Cargo.lock": "7c8f5a4ad09fd546062291fb42da755bf81690c62780beec6c8f3ec0605d662e",
+      "native/broker/Cargo.toml": "e3489be5b67959e5d2be922a9ef14f69561e8939f5238bcfcb08a4c90ed65568",
+      "native/broker/src/assets.rs": "be424daa0d1107d56ab5087c792654e7378384f181270e1318e67a5eb8896227",
+      "native/broker/src/gateway.rs": "26118f51b72d304fc5edbfea6e52fac5d3747874caf4bca979dcbcdae27ffce0",
+      "native/broker/src/main.rs": "50e2ae1181e3178bec28405b9304d8c616c2dacc6158c47e1e2e2f7c45124ecb",
+      "native/broker/src/scene.rs": "a0b509dd3638baea661820556decdadc435bbabf5b216dd09b2525eda867ad85",
+      "native/broker/src/viz.rs": "6320ccc5c010f8bf2bde76ff8b0dd6a7be78a48b188c6750d644ebde444c41de"
+    },
+    "brokerSha256": "f1dc5ccc2ec23cf9db544f44d3394f7a879a22be390906212b0ec9d19c3fee99",
+    "runtimeImageId": "sha256:ba52f926ae3c951e29dc1625d70537c18db389cf166f4465a1e5b836d802c133",
+    "buildReceipt": {
+      "format": 1,
+      "target": {
+        "os": "linux",
+        "cpu": "arm64"
+      },
+      "buildProfile": "linux-arm64-host-cc",
+      "hostCrossCompiler": {
+        "mode": "mac-arm64-clang-cross",
+        "target": "aarch64-linux-gnu",
+        "compilerSha256": "b3785ad91b93cb56eac31eaef5d8cf5ef71fae512843417a55bd3912b4d41766",
+        "compilerVersion": "clang version 24.0.0git (https://chromium.googlesource.com/a/external/github.com/llvm/llvm-project 86922d51225db089fffb99475eefc4904f79e3c8)",
+        "jobs": 9
+      },
+      "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+      "skiaRevision": "29ed1e87a0a50f3d8347e988842d9d59e7573efa",
+      "nativeSources": {
+        "BUILD.gn": "c4ee4bdfddc3da6b92fce01d8f56076e2caafffdc030a9ac32ee34a6af23a3ee",
+        "capture_state.cc": "39421cae7a4064db7dda36448db557b59dd44c02e801b1add871d392e86c5678",
+        "capture_state.h": "3a692cc50ce86e5fcfcf20ac8402a1b06a4ab0188b29ecf94b3bea28e859b347",
+        "cc_capture.inc": "c8a43a57946b08c935ea81922cdf0d182ba0b64521e17a6d47e38b03f4a1e851",
+        "extension_capture.inc": "d4cca278fcfb24f90bd253d366eda190e5d81d0e33bf8c5f21b6d267dfe08421",
+        "font_subset.cc": "57fe42d2f751946a369d688f52864fce1cc586b8c44e334f427d795b9ea0357c",
+        "font_subset.h": "0b60f6db554665df98c51eb4f97f8ffe9908cc2d6f6517f34ff623be1c391860",
+        "serializer.cc": "9c75f8ca47c97c5649657210ef778d05a27c3c1874cc0da18acd8f40bd5d950f",
+        "serializer.h": "d840e8c2b8de490ae5b1262db0d7f80804cd3e919b204b07c8131dcc880b4c10",
+        "serializer_unittest.cc": "0b773b864007f06da857266c039e7f18770b32dedaec2509bfd7a5069cc000c5",
+        "socket_transport.h": "aa55764ef39cc802f560c03bde5886fcb382b8c1833314465f19189a3e2ad4c1",
+        "test_main.cc": "2683a596f6572109fb43c7a70c125ceb023df1796e70fc025f44a477012d9fb6",
+        "viz_capture.cc": "b24bf3f6c7d99e8276155b250a0dffc4067b5ef3fecc0ae420ad05b03f97d717",
+        "viz_capture.h": "c10433e61457d8deeba6b0f73505bb01037e7726e5fbae6f3f07995c40da7306"
+      },
+      "patches": {
+        "0001-async-capture.patch": "50b45c2d8fea81c8230644bdf9e3bd80c92b23285d263d88cefbf1fd368b5e2f",
+        "0002-compositor-viz-pairing.patch": "ecefbed1a09f81f23082955c74f2aa6a94946fa724e45901cb4926bf66fab45b",
+        "0003-chromium-build-contracts.patch": "618e568969d778b55836d02cbecc62709968bd7c3c1a896fc536262b19fffe31",
+        "0004-v8-context-isolate.patch": "e6d91dd928da133c1d9437e8f55ccceb451029a4b4fdb5e9df6c6fdba2225983",
+        "0005-accumulate-tile-damage.patch": "8cbe9fd8c08c1cf77ea41c59e5e13ddcf9b6feaf813a56baab8fffa783e04a6a",
+        "0006-copy-damage-region-rects.patch": "f785000d601d48d2988430b8154da2996d7fa28a76a0c9971dc4da18e391801f"
+      },
+      "patchedSources": {
+        "content/renderer/gpu_benchmarking_extension.cc": "e3becb774bcce814073a6da5e33fbbc1350fade2e11d1164d26e7a24a3728b67",
+        "content/renderer/gpu_benchmarking_extension.h": "d674acd0223fe1f0c9068a9ca62f78452b9c1a049520d5f587419874dbfd4ab8",
+        "content/renderer/BUILD.gn": "2d4bcd546ae90a6cf1a99f25e55fad7d5545784327338b97d1f05eb1ff89924b",
+        "content/browser/renderer_host/render_process_host_impl.cc": "12b866e91c414a2f1fb8776a44ada9a34d32dcdfd793103bf5434de2016e3b6c",
+        "content/renderer/render_frame_impl.cc": "4c4703a9eeab1d4b914dabab3d00b739958714b6e8384a19a2277571c62524c9",
+        "cc/BUILD.gn": "62b777a82e7bb5d79604627b5cae7dcad602e15846bc72c92bb66543852fe582",
+        "cc/trees/layer_tree_host_impl.cc": "56f9cd202b1e9221347cbc8e15a8d7c9cb65d76b0ccd7811905026fa1a7ff73e",
+        "components/viz/common/quads/compositor_frame_metadata.h": "e605ec46868e93bf6d7b57451d1512415fbbf1707dcbaa758459f9ebd004a1c4",
+        "components/viz/common/quads/compositor_frame_metadata.cc": "ebe0b12fa91c1ec334f20b4e6bf457d9c63bfd79034a1b29bbca058803b3b870",
+        "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom": "ca153263077f4cbfe4af35a7ab446b2e77acf4bd6baa9b268ed2ffd684f7bfd1",
+        "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h": "38445da06359dfe644723b9f5048e3bc43c2eee9a6e79d8ddb0ec93a5a9a8f2d",
+        "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc": "3ebcab9dbdae731eb4d8241ca567a5d8290f437d5e2eb2279eba5983a8c468b1",
+        "components/viz/service/BUILD.gn": "115cbde256b205691a7a639cd62590e2102f73777d1abc96eddc592f68438f5f",
+        "components/viz/service/display/surface_aggregator.cc": "ab5095dac86fbee8498968e17d9485c314db82031c943a4f25ddb5af45849e8b",
+        "cc/layers/picture_layer_impl.cc": "56aef3ef25e1f22ff947b4f575af421e8b6d066914b19e981bd310738a143f53"
+      },
+      "argsSha256": "25a86fd4153e0f0fb6a2025dc9dc35ed4cb3993b92553d25b370fe49a005b339",
+      "hostConfiguration": {
+        "gnSha256": "36fe330f4e6a0c8cebcc893a72a6e70871fb395b501a811a231c80465b3fec9d",
+        "swiftShaderSha256": "75f21859d5caa845546086fc67816353d33b0da1edfc7d6a1844664f0b745fa8"
+      },
+      "binaries": {
+        "headless_shell": "eaaaf5f70f6e8b1e9fc94a727827e13a5f00d295b2748d60d08c251e0a465426",
+        "serializer_tests": "1095713757d26c8692c09c1438cdf449a56d86ae52106ea9c1419beac4f48de4"
+      },
+      "builtAt": "2026-10-16T12:14:18.962Z",
+      "incrementalGraphUpToDate": true,
+      "ninjaVersion": "1.13.2"
+    }
+  },
+  "suite": {
+    "startedAt": "2026-10-16T12:14:20.297Z",
+    "status": "passed",
+    "scope": "Linux native browser acceptance; Mac Viewer acceptance is separate",
+    "macViewerVerified": false,
+    "checks": [
+      {
+        "name": "serializer",
+        "code": 0,
+        "signal": null,
+        "timedOut": false,
+        "elapsedMs": 294
+      },
+      {
+        "name": "begin-frame",
+        "code": 0,
+        "signal": null,
+        "timedOut": false,
+        "elapsedMs": 1840
+      },
+      {
+        "name": "native",
+        "code": 0,
+        "signal": null,
+        "timedOut": false,
+        "elapsedMs": 1397
+      },
+      {
+        "name": "scene",
+        "code": 0,
+        "signal": null,
+        "timedOut": false,
+        "elapsedMs": 2688
+      },
+      {
+        "name": "input",
+        "code": 0,
+        "signal": null,
+        "timedOut": false,
+        "elapsedMs": 7426
+      },
+      {
+        "name": "live",
+        "code": 0,
+        "signal": null,
+        "timedOut": false,
+        "elapsedMs": 17409
+      },
+      {
+        "name": "latency",
+        "code": 0,
+        "signal": null,
+        "timedOut": false,
+        "elapsedMs": 6518
+      }
+    ],
+    "preflight": {
+      "platform": "linux",
+      "architecture": "arm64",
+      "browser": {
+        "format": "ELF64",
+        "machine": "AArch64",
+        "sha256": "eaaaf5f70f6e8b1e9fc94a727827e13a5f00d295b2748d60d08c251e0a465426"
+      },
+      "serializer": {
+        "format": "ELF64",
+        "machine": "AArch64",
+        "sha256": "1095713757d26c8692c09c1438cdf449a56d86ae52106ea9c1419beac4f48de4"
+      },
+      "argsSha256": "25a86fd4153e0f0fb6a2025dc9dc35ed4cb3993b92553d25b370fe49a005b339",
+      "patches": {
+        "0001-async-capture.patch": "50b45c2d8fea81c8230644bdf9e3bd80c92b23285d263d88cefbf1fd368b5e2f",
+        "0002-compositor-viz-pairing.patch": "ecefbed1a09f81f23082955c74f2aa6a94946fa724e45901cb4926bf66fab45b",
+        "0003-chromium-build-contracts.patch": "618e568969d778b55836d02cbecc62709968bd7c3c1a896fc536262b19fffe31",
+        "0004-v8-context-isolate.patch": "e6d91dd928da133c1d9437e8f55ccceb451029a4b4fdb5e9df6c6fdba2225983",
+        "0005-accumulate-tile-damage.patch": "8cbe9fd8c08c1cf77ea41c59e5e13ddcf9b6feaf813a56baab8fffa783e04a6a",
+        "0006-copy-damage-region-rects.patch": "f785000d601d48d2988430b8154da2996d7fa28a76a0c9971dc4da18e391801f"
+      },
+      "build": {
+        "format": 1,
+        "target": {
+          "os": "linux",
+          "cpu": "arm64"
+        },
+        "buildProfile": "linux-arm64-host-cc",
+        "hostCrossCompiler": {
+          "mode": "mac-arm64-clang-cross",
+          "target": "aarch64-linux-gnu",
+          "compilerSha256": "b3785ad91b93cb56eac31eaef5d8cf5ef71fae512843417a55bd3912b4d41766",
+          "compilerVersion": "clang version 24.0.0git (https://chromium.googlesource.com/a/external/github.com/llvm/llvm-project 86922d51225db089fffb99475eefc4904f79e3c8)",
+          "jobs": 9
+        },
+        "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+        "skiaRevision": "29ed1e87a0a50f3d8347e988842d9d59e7573efa",
+        "nativeSources": {
+          "BUILD.gn": "c4ee4bdfddc3da6b92fce01d8f56076e2caafffdc030a9ac32ee34a6af23a3ee",
+          "capture_state.cc": "39421cae7a4064db7dda36448db557b59dd44c02e801b1add871d392e86c5678",
+          "capture_state.h": "3a692cc50ce86e5fcfcf20ac8402a1b06a4ab0188b29ecf94b3bea28e859b347",
+          "cc_capture.inc": "c8a43a57946b08c935ea81922cdf0d182ba0b64521e17a6d47e38b03f4a1e851",
+          "extension_capture.inc": "d4cca278fcfb24f90bd253d366eda190e5d81d0e33bf8c5f21b6d267dfe08421",
+          "font_subset.cc": "57fe42d2f751946a369d688f52864fce1cc586b8c44e334f427d795b9ea0357c",
+          "font_subset.h": "0b60f6db554665df98c51eb4f97f8ffe9908cc2d6f6517f34ff623be1c391860",
+          "serializer.cc": "9c75f8ca47c97c5649657210ef778d05a27c3c1874cc0da18acd8f40bd5d950f",
+          "serializer.h": "d840e8c2b8de490ae5b1262db0d7f80804cd3e919b204b07c8131dcc880b4c10",
+          "serializer_unittest.cc": "0b773b864007f06da857266c039e7f18770b32dedaec2509bfd7a5069cc000c5",
+          "socket_transport.h": "aa55764ef39cc802f560c03bde5886fcb382b8c1833314465f19189a3e2ad4c1",
+          "test_main.cc": "2683a596f6572109fb43c7a70c125ceb023df1796e70fc025f44a477012d9fb6",
+          "viz_capture.cc": "b24bf3f6c7d99e8276155b250a0dffc4067b5ef3fecc0ae420ad05b03f97d717",
+          "viz_capture.h": "c10433e61457d8deeba6b0f73505bb01037e7726e5fbae6f3f07995c40da7306"
+        },
+        "patches": {
+          "0001-async-capture.patch": "50b45c2d8fea81c8230644bdf9e3bd80c92b23285d263d88cefbf1fd368b5e2f",
+          "0002-compositor-viz-pairing.patch": "ecefbed1a09f81f23082955c74f2aa6a94946fa724e45901cb4926bf66fab45b",
+          "0003-chromium-build-contracts.patch": "618e568969d778b55836d02cbecc62709968bd7c3c1a896fc536262b19fffe31",
+          "0004-v8-context-isolate.patch": "e6d91dd928da133c1d9437e8f55ccceb451029a4b4fdb5e9df6c6fdba2225983",
+          "0005-accumulate-tile-damage.patch": "8cbe9fd8c08c1cf77ea41c59e5e13ddcf9b6feaf813a56baab8fffa783e04a6a",
+          "0006-copy-damage-region-rects.patch": "f785000d601d48d2988430b8154da2996d7fa28a76a0c9971dc4da18e391801f"
+        },
+        "patchedSources": {
+          "content/renderer/gpu_benchmarking_extension.cc": "e3becb774bcce814073a6da5e33fbbc1350fade2e11d1164d26e7a24a3728b67",
+          "content/renderer/gpu_benchmarking_extension.h": "d674acd0223fe1f0c9068a9ca62f78452b9c1a049520d5f587419874dbfd4ab8",
+          "content/renderer/BUILD.gn": "2d4bcd546ae90a6cf1a99f25e55fad7d5545784327338b97d1f05eb1ff89924b",
+          "content/browser/renderer_host/render_process_host_impl.cc": "12b866e91c414a2f1fb8776a44ada9a34d32dcdfd793103bf5434de2016e3b6c",
+          "content/renderer/render_frame_impl.cc": "4c4703a9eeab1d4b914dabab3d00b739958714b6e8384a19a2277571c62524c9",
+          "cc/BUILD.gn": "62b777a82e7bb5d79604627b5cae7dcad602e15846bc72c92bb66543852fe582",
+          "cc/trees/layer_tree_host_impl.cc": "56f9cd202b1e9221347cbc8e15a8d7c9cb65d76b0ccd7811905026fa1a7ff73e",
+          "components/viz/common/quads/compositor_frame_metadata.h": "e605ec46868e93bf6d7b57451d1512415fbbf1707dcbaa758459f9ebd004a1c4",
+          "components/viz/common/quads/compositor_frame_metadata.cc": "ebe0b12fa91c1ec334f20b4e6bf457d9c63bfd79034a1b29bbca058803b3b870",
+          "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom": "ca153263077f4cbfe4af35a7ab446b2e77acf4bd6baa9b268ed2ffd684f7bfd1",
+          "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h": "38445da06359dfe644723b9f5048e3bc43c2eee9a6e79d8ddb0ec93a5a9a8f2d",
+          "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc": "3ebcab9dbdae731eb4d8241ca567a5d8290f437d5e2eb2279eba5983a8c468b1",
+          "components/viz/service/BUILD.gn": "115cbde256b205691a7a639cd62590e2102f73777d1abc96eddc592f68438f5f",
+          "components/viz/service/display/surface_aggregator.cc": "ab5095dac86fbee8498968e17d9485c314db82031c943a4f25ddb5af45849e8b",
+          "cc/layers/picture_layer_impl.cc": "56aef3ef25e1f22ff947b4f575af421e8b6d066914b19e981bd310738a143f53"
+        },
+        "argsSha256": "25a86fd4153e0f0fb6a2025dc9dc35ed4cb3993b92553d25b370fe49a005b339",
+        "hostConfiguration": {
+          "gnSha256": "36fe330f4e6a0c8cebcc893a72a6e70871fb395b501a811a231c80465b3fec9d",
+          "swiftShaderSha256": "75f21859d5caa845546086fc67816353d33b0da1edfc7d6a1844664f0b745fa8"
+        },
+        "binaries": {
+          "headless_shell": "eaaaf5f70f6e8b1e9fc94a727827e13a5f00d295b2748d60d08c251e0a465426",
+          "serializer_tests": "1095713757d26c8692c09c1438cdf449a56d86ae52106ea9c1419beac4f48de4"
+        },
+        "builtAt": "2026-10-16T12:14:18.962Z",
+        "incrementalGraphUpToDate": true,
+        "ninjaVersion": "1.13.2"
+      }
+    },
+    "finishedAt": "2026-10-16T12:14:59.762Z"
+  },
+  "reports": {
+    "beginFrame": {
+      "verifiedAt": "2026-10-16T12:14:23.798Z",
+      "platform": "linux",
+      "architecture": "arm64",
+      "browser": "155.0.8059.79",
+      "executableSha256": "eaaaf5f70f6e8b1e9fc94a727827e13a5f00d295b2748d60d08c251e0a465426",
+      "scope": "custom Linux browser external clock",
+      "noScreenshotReadback": true,
+      "before": {
+        "raf": 0,
+        "timers": 0
+      },
+      "paused": {
+        "raf": 0,
+        "timers": 15
+      },
+      "steps": [
+        {
+          "raf": 1,
+          "timers": 18
+        },
+        {
+          "raf": 2,
+          "timers": 21
+        },
+        {
+          "raf": 3,
+          "timers": 23
+        },
+        {
+          "raf": 4,
+          "timers": 26
+        },
+        {
+          "raf": 5,
+          "timers": 29
+        }
+      ],
+      "pausedAgain": {
+        "raf": 5,
+        "timers": 44
+      },
+      "resumed": {
+        "raf": 13,
+        "timers": 69
+      },
+      "stats": {
+        "mode": "begin-frame",
+        "cadence": "idle",
+        "issued": 14,
+        "acked": 14,
+        "damaged": 1,
+        "errors": 0,
+        "lastError": null
+      }
+    },
+    "native": {
+      "verifiedAt": "2026-10-16T12:14:25.659Z",
+      "browser": "155.0.8059.79",
+      "platform": "linux",
+      "architecture": "arm64",
+      "gpuMode": "software-compositing",
+      "beginFrame": {
+        "mode": "begin-frame",
+        "cadence": "active",
+        "issued": 38,
+        "acked": 38,
+        "damaged": 9,
+        "errors": 0,
+        "lastError": null
+      },
+      "nativeBrowserCapture": true,
+      "noViewerCaptures": 0,
+      "captures": 4,
+      "bitmapGlyphs": 3,
+      "sourceBenchmarkingApiExposed": false,
+      "isolatedCaptureApi": true,
+      "incorrectSecretRejected": true,
+      "sourcePulsesDuringCapture": 4,
+      "recordingThread": "196",
+      "encodingThread": "193",
+      "namespace": [
+        4,
+        10
+      ],
+      "frameToken": 4,
+      "vizIpc": {
+        "received": 4,
+        "rejected": 0,
+        "maxBufferedBytes": 2956
+      },
+      "layerIds": [
+        18
+      ],
+      "resourceBytes": [
+        675668
+      ],
+      "stableTiming": {
+        "base64Ms": 0,
+        "cachedLayers": 1,
+        "encodeTotalMs": 0.11399999260902405,
+        "encodingThreads": 1,
+        "fontCacheHits": 0,
+        "fontMs": 0,
+        "glyphCollectionMs": 0,
+        "imageCacheHits": 0,
+        "imageMs": 0,
+        "parallelLayers": 1,
+        "portableMs": 0,
+        "recordingCacheHits": 1,
+        "recordingCacheMisses": 0,
+        "recordingMs": 0.008,
+        "resultAssemblyMs": 0.022,
+        "serializeMs": 0,
+        "captureRoundTripMs": 7.754723000000013,
+        "cdpReplyMs": 7.726014999999961,
+        "vizWaitMs": 0.00708400000007714
+      },
+      "stableResources": 1,
+      "resourceResendWithoutSerialization": true
+    },
+    "scene": {
+      "verifiedAt": "2026-10-16T12:14:28.361Z",
+      "browser": "155.0.8059.79",
+      "platform": "linux",
+      "architecture": "arm64",
+      "gpuMode": "software-compositing",
+      "beginFrame": {
+        "mode": "begin-frame",
+        "cadence": "active",
+        "issued": 71,
+        "acked": 70,
+        "damaged": 41,
+        "errors": 0,
+        "lastError": null
+      },
+      "nativeBrowserCapture": true,
+      "stages": [
+        {
+          "offset": 0,
+          "imagePixels": [
+            {
+              "selector": "#private-image",
+              "pixelsCompared": 10320,
+              "maxChannelError": 0
+            },
+            {
+              "selector": "#blob-image",
+              "pixelsCompared": 10320,
+              "maxChannelError": 0
+            }
+          ],
+          "textInk": [
+            {
+              "selector": "header h1",
+              "ink": 1936,
+              "uncovered": 0,
+              "uncoveredFraction": 0,
+              "sourceMinContrast": 176.25,
+              "replayMinContrast": 58.75,
+              "neighborhoodPixels": 1
+            },
+            {
+              "selector": "header p",
+              "ink": 474,
+              "uncovered": 0,
+              "uncoveredFraction": 0,
+              "sourceMinContrast": 126.75,
+              "replayMinContrast": 42.25,
+              "neighborhoodPixels": 1
+            }
+          ],
+          "native": {
+            "captureId": "e0fcab43-5505-4d55-abce-a037a9283c77",
+            "producer": "267:2",
+            "namespace": [
+              4,
+              10
+            ],
+            "frameToken": 13,
+            "sourceFrame": 11,
+            "bitmapGlyphs": 0,
+            "timing": {
+              "base64Ms": 0.5589999999999999,
+              "cachedLayers": 0,
+              "encodeTotalMs": 27.655000001192093,
+              "encodingThreads": 3,
+              "fontCacheHits": 0,
+              "fontMs": 38.15808503329754,
+              "glyphCollectionMs": 0.03412400186061859,
+              "imageCacheHits": 0,
+              "imageMs": 1.175562009215355,
+              "parallelLayers": 3,
+              "portableMs": 5.110607996582985,
+              "recordingCacheHits": 0,
+              "recordingCacheMisses": 3,
+              "recordingMs": 0.06,
+              "resultAssemblyMs": 1.136,
+              "serializeMs": 39.67697098851204,
+              "captureRoundTripMs": 65.19872099999998,
+              "cdpReplyMs": 64.97164199999997,
+              "vizWaitMs": 0.02141699999992852
+            }
+          },
+          "resources": [
+            {
+              "logical": "1/267:2/4:10/22",
+              "resourceId": "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+              "revision": 1
+            },
+            {
+              "logical": "1/267:2/4:10/21",
+              "resourceId": "7806ac08b5da26eb902d0014cf8facd732be1bcc4f6dc6329ecfda0ce53f00b5",
+              "revision": 2
+            },
+            {
+              "logical": "1/267:2/4:10/20",
+              "resourceId": "c521d33dd7c5ad8771e9aea229b91d68b03e9cd296c1b7ca67230c50c44d2217",
+              "revision": 3
+            }
+          ],
+          "released": [],
+          "pixelFractionOver24": 0.009698893229166667,
+          "headerChangedPixels": 1701,
+          "quads": 15
+        },
+        {
+          "offset": 700,
+          "imagePixels": [],
+          "textInk": [
+            {
+              "selector": "header h1",
+              "ink": 1936,
+              "uncovered": 0,
+              "uncoveredFraction": 0,
+              "sourceMinContrast": 176.25,
+              "replayMinContrast": 58.75,
+              "neighborhoodPixels": 1
+            },
+            {
+              "selector": "header p",
+              "ink": 474,
+              "uncovered": 0,
+              "uncoveredFraction": 0,
+              "sourceMinContrast": 126.75,
+              "replayMinContrast": 42.25,
+              "neighborhoodPixels": 1
+            }
+          ],
+          "native": {
+            "captureId": "c6f97626-545a-4a04-b060-95eef2a7480b",
+            "producer": "267:2",
+            "namespace": [
+              4,
+              10
+            ],
+            "frameToken": 18,
+            "sourceFrame": 16,
+            "bitmapGlyphs": 0,
+            "timing": {
+              "base64Ms": 0.472,
+              "cachedLayers": 2,
+              "encodeTotalMs": 5.06300000846386,
+              "encodingThreads": 2,
+              "fontCacheHits": 3,
+              "fontMs": 0.010332003235816956,
+              "glyphCollectionMs": 0.028333008289337158,
+              "imageCacheHits": 2,
+              "imageMs": 0.0022079944610595703,
+              "parallelLayers": 3,
+              "portableMs": 1.490096002817154,
+              "recordingCacheHits": 2,
+              "recordingCacheMisses": 1,
+              "recordingMs": 0.2,
+              "resultAssemblyMs": 0.691,
+              "serializeMs": 0.17212100327014923,
+              "captureRoundTripMs": 26.56097899999986,
+              "cdpReplyMs": 26.518063999999868,
+              "vizWaitMs": 0.015540999999984706
+            }
+          },
+          "resources": [
+            {
+              "logical": "1/267:2/4:10/22",
+              "resourceId": "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+              "revision": 1
+            },
+            {
+              "logical": "1/267:2/4:10/21",
+              "resourceId": "7806ac08b5da26eb902d0014cf8facd732be1bcc4f6dc6329ecfda0ce53f00b5",
+              "revision": 2
+            },
+            {
+              "logical": "1/267:2/4:10/20",
+              "resourceId": "c521d33dd7c5ad8771e9aea229b91d68b03e9cd296c1b7ca67230c50c44d2217",
+              "revision": 3
+            }
+          ],
+          "released": [],
+          "pixelFractionOver24": 0.017923177083333332,
+          "headerChangedPixels": 1701,
+          "quads": 15
+        },
+        {
+          "offset": 0,
+          "imagePixels": [
+            {
+              "selector": "#private-image",
+              "pixelsCompared": 10320,
+              "maxChannelError": 0
+            },
+            {
+              "selector": "#blob-image",
+              "pixelsCompared": 10320,
+              "maxChannelError": 0
+            }
+          ],
+          "textInk": [
+            {
+              "selector": "header h1",
+              "ink": 1936,
+              "uncovered": 0,
+              "uncoveredFraction": 0,
+              "sourceMinContrast": 176.25,
+              "replayMinContrast": 58.75,
+              "neighborhoodPixels": 1
+            },
+            {
+              "selector": "header p",
+              "ink": 474,
+              "uncovered": 0,
+              "uncoveredFraction": 0,
+              "sourceMinContrast": 126.75,
+              "replayMinContrast": 42.25,
+              "neighborhoodPixels": 1
+            }
+          ],
+          "native": {
+            "captureId": "029940f2-3114-44d7-b819-51b89d8731bb",
+            "producer": "267:2",
+            "namespace": [
+              4,
+              10
+            ],
+            "frameToken": 21,
+            "sourceFrame": 20,
+            "bitmapGlyphs": 0,
+            "timing": {
+              "base64Ms": 0.477,
+              "cachedLayers": 2,
+              "encodeTotalMs": 6.556999996304512,
+              "encodingThreads": 2,
+              "fontCacheHits": 3,
+              "fontMs": 0.01066601276397705,
+              "glyphCollectionMs": 0.026666998863220215,
+              "imageCacheHits": 2,
+              "imageMs": 0.0024159997701644897,
+              "parallelLayers": 3,
+              "portableMs": 0.7191950082778931,
+              "recordingCacheHits": 2,
+              "recordingCacheMisses": 1,
+              "recordingMs": 0.054,
+              "resultAssemblyMs": 0.673,
+              "serializeMs": 0.26232799887657166,
+              "captureRoundTripMs": 26.248861000000034,
+              "cdpReplyMs": 26.21257000000014,
+              "vizWaitMs": 0.011290999999800988
+            }
+          },
+          "resources": [
+            {
+              "logical": "1/267:2/4:10/22",
+              "resourceId": "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+              "revision": 1
+            },
+            {
+              "logical": "1/267:2/4:10/21",
+              "resourceId": "7806ac08b5da26eb902d0014cf8facd732be1bcc4f6dc6329ecfda0ce53f00b5",
+              "revision": 2
+            },
+            {
+              "logical": "1/267:2/4:10/20",
+              "resourceId": "c521d33dd7c5ad8771e9aea229b91d68b03e9cd296c1b7ca67230c50c44d2217",
+              "revision": 3
+            }
+          ],
+          "released": [],
+          "pixelFractionOver24": 0.009698893229166667,
+          "headerChangedPixels": 1701,
+          "quads": 15
+        }
+      ],
+      "scrollingReusesResources": true,
+      "animationChangesScene": true,
+      "ipc": {
+        "received": 5,
+        "rejected": 0,
+        "maxBufferedBytes": 3269
+      }
+    },
+    "input": {
+      "verifiedAt": "2026-10-16T12:14:35.721Z",
+      "nativeDrawing": true,
+      "drawingFixtureOnly": false,
+      "platform": "linux",
+      "architecture": "arm64",
+      "gpuMode": "software-compositing",
+      "beginFrame": {
+        "mode": "begin-frame",
+        "cadence": "active",
+        "issued": 313,
+        "acked": 313,
+        "damaged": 128,
+        "errors": 0,
+        "lastError": null
+      },
+      "bitmapGlyphs": 3,
+      "sourceBrowser": "155.0.8059.79",
+      "viewerBrowser": "155.0.8059.79",
+      "sourceInput": "粘贴🌈AB",
+      "saved": "已保存：粘贴🌈AB",
+      "editor": "rich text\nline",
+      "newlineArrowDeleteAndTab": true,
+      "scrollY": 500,
+      "cssScaling": true,
+      "inputPixelsFractionOver24": 0.026546184738955824,
+      "colorGlyph": {
+        "selector": "#saved",
+        "text": "🌈",
+        "neighborhoodPixels": 1,
+        "channelTolerance": 24,
+        "sourceToReplay": {
+          "colored": 204,
+          "unmatched": 0,
+          "fraction": 0
+        },
+        "replayToSource": {
+          "colored": 204,
+          "unmatched": 0,
+          "fraction": 0
+        }
+      },
+      "missingColorGlyphRejected": true,
+      "imeViaActualLocalAndRemoteCDP": true,
+      "repeatedImeTextInsertion": true,
+      "physicalOsImeCandidateWindowTested": false,
+      "leaseAndStaleTags": true,
+      "heldButtonCleanupWithoutClick": true,
+      "pointerCaptureCleanupWithoutClick": true,
+      "lastProcessedInputSeq": 83,
+      "viewerSourceRequests": 0,
+      "errors": []
+    },
+    "live": {
+      "platform": "linux",
+      "architecture": "arm64",
+      "gpuMode": "software-compositing",
+      "beginFrame": {
+        "mode": "begin-frame",
+        "cadence": "active",
+        "issued": 1116,
+        "acked": 1116,
+        "damaged": 1073,
+        "errors": 0,
+        "lastError": null
+      },
+      "streamText": "正在生成：远程绘制实时更新。中文新字形：龘麤𠮷。Emoji：🌈🚀🧑‍💻。输入和滚动都由原始网页处理。",
+      "streamTextInk": [
+        {
+          "selector": "#stream",
+          "ink": 2392,
+          "uncovered": 0,
+          "uncoveredFraction": 0,
+          "sourceMinContrast": 170.25,
+          "replayMinContrast": 56.75,
+          "neighborhoodPixels": 1
+        }
+      ],
+      "missingStreamTextRejected": true,
+      "captureFailures": [
+        {
+          "phase": "navigation",
+          "message": "Navigation invalidated the in-flight capture"
+        }
+      ],
+      "resizeRecovery": [
+        {
+          "width": 800,
+          "viewportVersion": 2,
+          "frameId": 11
+        },
+        {
+          "width": 960,
+          "viewportVersion": 3,
+          "frameId": 15
+        },
+        {
+          "width": 800,
+          "viewportVersion": 4,
+          "frameId": 19
+        }
+      ],
+      "nativeResourceCacheRecovery": {
+        "recoveries": 1,
+        "resumed": true
+      },
+      "verifiedAt": "2026-10-16T12:14:53.161Z",
+      "nativeDrawing": true,
+      "missingResourceRecovery": {
+        "droppedResources": 1,
+        "keyframeRequests": 1,
+        "recovered": {
+          "protocol": 4,
+          "connectionGeneration": 1,
+          "pageEpoch": 3,
+          "viewportVersion": 4,
+          "frameId": 2,
+          "native": {
+            "bitmapGlyphs": 0,
+            "captureId": "18462c28-8aa6-4116-a13c-3411bfcd184b",
+            "frameToken": 129,
+            "namespace": [
+              4,
+              13
+            ],
+            "producer": "519:3",
+            "sourceFrame": 48,
+            "timing": {
+              "base64Ms": 0,
+              "cachedLayers": 57,
+              "captureRoundTripMs": 7.880651000001308,
+              "cdpReplyMs": 7.744705000000977,
+              "encodeTotalMs": 2.1990000009536743,
+              "encodingThreads": 5,
+              "fontCacheHits": 0,
+              "fontMs": 0,
+              "glyphCollectionMs": 0,
+              "imageCacheHits": 0,
+              "imageMs": 0,
+              "parallelLayers": 57,
+              "portableMs": 0,
+              "recordingCacheHits": 57,
+              "recordingCacheMisses": 0,
+              "recordingMs": 0.038,
+              "resultAssemblyMs": 0.188,
+              "serializeMs": 0,
+              "vizWaitMs": 0.008832999999867752
+            }
+          },
+          "lastProcessedInputSeq": 3,
+          "resourceBytes": 5032128,
+          "resources": 17,
+          "resourcesReceived": 33,
+          "receivedBytes": 10112619,
+          "fullFrames": 1,
+          "deltaFrames": 0,
+          "renderMs": 473.59999999403954,
+          "requiredResources": [
+            "26488ad5dbb0b43a5642085dc1f6416c987e32e09a49543151d2fba75ff9fa06",
+            "4ddac367bfcc2fcbc4678e484bc9400a9d51aec59038669cce445917235c29c2",
+            "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+            "5e59f5ef95d0615ed8d735b33f363f2cce1d13f1df753c3b898f4a11f73c85cb",
+            "6d3576232f7def18ca34dd28889890a06d74e228206af12854e1585d62098103",
+            "8473fafb59e0f6aa7c727940e154ccc23571e82a84ed6ecd9c60ba1468ff06a3",
+            "8a0c10d7afdc6683b08978c76032128a4a1b0796fe54131965104c76b2311f91",
+            "a2370f2b513016e15dfa5c339e6718ccdc496f9e53d3299a864e40e79f0ee151",
+            "b5ae6410cfabf11c16584318d693cfde0badaab7fa1c4bdfb93fbf8146e41764",
+            "b7678a6b9f7c2f75ee650808f1f04a50c0566c0c2c1158e0090921d650dd199f",
+            "bac77817639c19032b4e6c084c2cce514495bb64554e5d59131292b177d72ce8",
+            "bfb0719df76fbd6225250f1c18dc19f67ddc4ff148d03d7f0cfc2a9c0e7bf2d4",
+            "cf60a794b91049732e05119286ba718cad7f6cb18dae675be6e72d735948ebe4",
+            "d2336ca2c08177ea9d3ef927e088e9b4b97a57f48b375958bef7f5e8330c27e4",
+            "e002cb9521f4afa425c9756f3125dbaba19270a08b92c926fec38bcee9c9a44f",
+            "e0ec49b659a6ea07e7b1279ccf96c1ed37747644e48be2b9fe79875fc658b04d",
+            "f67fbb712aa00cc927ce43471e0c067d5ca4bfa0488b242bf023947ff081bda6"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 17,
+            "pictureRasters": 17,
+            "pictureRasterHits": 24,
+            "passRenders": 1,
+            "passHits": 0,
+            "isolatedDraws": 0
+          },
+          "assetStats": {
+            "receivedChunks": 91,
+            "receivedBytes": 10053121,
+            "fontBytes": 10033966,
+            "imageBytes": 2190,
+            "reusedBytes": 10726,
+            "cacheBytes": 5026765
+          },
+          "worker": true
+        },
+        "viewerSourceRequests": 0,
+        "errors": []
+      },
+      "sourceBrowser": "155.0.8059.79",
+      "viewerBrowser": "155.0.8059.79",
+      "first": {
+        "protocol": 4,
+        "connectionGeneration": 1,
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "frameId": 1,
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "bf64ae74-3a8a-40d0-bd97-21c955d4e648",
+          "frameToken": 76,
+          "namespace": [
+            4,
+            10
+          ],
+          "producer": "519:2",
+          "sourceFrame": 4,
+          "timing": {
+            "base64Ms": 0.008,
+            "cachedLayers": 0,
+            "captureRoundTripMs": 127.00701800000002,
+            "cdpReplyMs": 125.653366,
+            "encodeTotalMs": 106.13699999451636,
+            "encodingThreads": 11,
+            "fontCacheHits": 28,
+            "fontMs": 890.4923989772797,
+            "glyphCollectionMs": 0.11019298434257507,
+            "imageCacheHits": 4,
+            "imageMs": 8.184910982847214,
+            "parallelLayers": 57,
+            "portableMs": 64.21604192256927,
+            "recordingCacheHits": 0,
+            "recordingCacheMisses": 57,
+            "recordingMs": 0.304,
+            "resultAssemblyMs": 0.201,
+            "serializeMs": 916.5257290303708,
+            "vizWaitMs": 0.021955999999818232
+          }
+        },
+        "lastProcessedInputSeq": 0,
+        "resourceBytes": 6177358,
+        "resources": 17,
+        "resourcesReceived": 17,
+        "receivedBytes": 5058772,
+        "fullFrames": 1,
+        "deltaFrames": 0,
+        "renderMs": 492.5,
+        "requiredResources": [
+          "06626f676fabf989ead774735bae2de104f0c8c3878fb92cc47c4562635bd1fa",
+          "0edbd535c51d01e6d18cac07bb9e8644bfa9a2edc072aabc488e4355dd65b86d",
+          "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+          "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+          "6d446328917ac1ee5f56872fc00a1e5dd9e94e845599940ed76b5aaa9bf19aa5",
+          "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+          "8f474aa726bfcdd9381f66de13ef7b9cc39d547031af3b6a3810cd241f2ee658",
+          "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+          "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+          "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+          "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+          "ba9d92bb3a7922aded226200b0de5a9c03af92877b5aaf8518e0bbc0ee7647b0",
+          "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+          "c36c9679c758e8e9dda7de3d979bb6949ad1d53ac6562b2e015afdbfecab70b9",
+          "d24f3369457475bc349c47309003026c8149e5d04eb380a03c3cf0a8f638f861",
+          "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+          "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 17,
+          "pictureRasters": 17,
+          "pictureRasterHits": 24,
+          "passRenders": 1,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 47,
+          "receivedBytes": 5027649,
+          "fontBytes": 6159761,
+          "imageBytes": 2190,
+          "reusedBytes": 1149709,
+          "cacheBytes": 5027649
+        },
+        "worker": true
+      },
+      "dynamic": {
+        "protocol": 4,
+        "connectionGeneration": 1,
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "frameId": 3,
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "cc862671-9bc6-4fe8-b357-fbedcee9e193",
+          "frameToken": 144,
+          "namespace": [
+            4,
+            10
+          ],
+          "producer": "519:2",
+          "sourceFrame": 32,
+          "timing": {
+            "base64Ms": 0,
+            "cachedLayers": 57,
+            "captureRoundTripMs": 10.879343000000064,
+            "cdpReplyMs": 10.747315000000071,
+            "encodeTotalMs": 1.0509999990463257,
+            "encodingThreads": 1,
+            "fontCacheHits": 0,
+            "fontMs": 0,
+            "glyphCollectionMs": 0,
+            "imageCacheHits": 0,
+            "imageMs": 0,
+            "parallelLayers": 57,
+            "portableMs": 0,
+            "recordingCacheHits": 57,
+            "recordingCacheMisses": 0,
+            "recordingMs": 0.034,
+            "resultAssemblyMs": 0.183,
+            "serializeMs": 0,
+            "vizWaitMs": 0.004873999999745138
+          }
+        },
+        "lastProcessedInputSeq": 0,
+        "resourceBytes": 6177290,
+        "resources": 17,
+        "resourcesReceived": 18,
+        "receivedBytes": 5107977,
+        "fullFrames": 1,
+        "deltaFrames": 2,
+        "renderMs": 7.199999988079071,
+        "requiredResources": [
+          "06626f676fabf989ead774735bae2de104f0c8c3878fb92cc47c4562635bd1fa",
+          "0edbd535c51d01e6d18cac07bb9e8644bfa9a2edc072aabc488e4355dd65b86d",
+          "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+          "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+          "6d446328917ac1ee5f56872fc00a1e5dd9e94e845599940ed76b5aaa9bf19aa5",
+          "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+          "8f474aa726bfcdd9381f66de13ef7b9cc39d547031af3b6a3810cd241f2ee658",
+          "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+          "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+          "a3a8b6e720f0a46d03299b55da335ed53398eb25acb4c3909c457d53605d00df",
+          "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+          "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+          "ba9d92bb3a7922aded226200b0de5a9c03af92877b5aaf8518e0bbc0ee7647b0",
+          "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+          "c36c9679c758e8e9dda7de3d979bb6949ad1d53ac6562b2e015afdbfecab70b9",
+          "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+          "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 18,
+          "pictureRasters": 18,
+          "pictureRasterHits": 105,
+          "passRenders": 3,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 49,
+          "receivedBytes": 5034111,
+          "fontBytes": 6661502,
+          "imageBytes": 2190,
+          "reusedBytes": 1645965,
+          "cacheBytes": 5034111
+        },
+        "worker": true
+      },
+      "frozen": {
+        "protocol": 4,
+        "connectionGeneration": 1,
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "frameId": 7,
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "e4771e79-31f4-452a-b099-f7e250e67b79",
+          "frameToken": 159,
+          "namespace": [
+            4,
+            10
+          ],
+          "producer": "519:2",
+          "sourceFrame": 42,
+          "timing": {
+            "base64Ms": 0,
+            "cachedLayers": 55,
+            "captureRoundTripMs": 32.13149700000031,
+            "cdpReplyMs": 31.278709000000163,
+            "encodeTotalMs": 23.67699998617172,
+            "encodingThreads": 8,
+            "fontCacheHits": 0,
+            "fontMs": 32.506834000349045,
+            "glyphCollectionMs": 0.00824899971485138,
+            "imageCacheHits": 0,
+            "imageMs": 0,
+            "parallelLayers": 57,
+            "portableMs": 0.11477899551391602,
+            "recordingCacheHits": 55,
+            "recordingCacheMisses": 2,
+            "recordingMs": 0.054,
+            "resultAssemblyMs": 0.177,
+            "serializeMs": 32.77309799194336,
+            "vizWaitMs": 0.00670799999988958
+          }
+        },
+        "lastProcessedInputSeq": 0,
+        "resourceBytes": 6179454,
+        "resources": 17,
+        "resourcesReceived": 19,
+        "receivedBytes": 5193285,
+        "fullFrames": 1,
+        "deltaFrames": 6,
+        "renderMs": 3.5,
+        "requiredResources": [
+          "06626f676fabf989ead774735bae2de104f0c8c3878fb92cc47c4562635bd1fa",
+          "0edbd535c51d01e6d18cac07bb9e8644bfa9a2edc072aabc488e4355dd65b86d",
+          "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+          "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+          "6d446328917ac1ee5f56872fc00a1e5dd9e94e845599940ed76b5aaa9bf19aa5",
+          "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+          "8f474aa726bfcdd9381f66de13ef7b9cc39d547031af3b6a3810cd241f2ee658",
+          "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+          "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+          "a3a8b6e720f0a46d03299b55da335ed53398eb25acb4c3909c457d53605d00df",
+          "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+          "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+          "b4c83f5ef6f2820e40afacffaa0ba0089c69d3aa74ee16c5bf5019f2e012dc3d",
+          "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+          "c36c9679c758e8e9dda7de3d979bb6949ad1d53ac6562b2e015afdbfecab70b9",
+          "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+          "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 19,
+          "pictureRasters": 19,
+          "pictureRasterHits": 268,
+          "passRenders": 7,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 50,
+          "receivedBytes": 5034543,
+          "fontBytes": 7161543,
+          "imageBytes": 2190,
+          "reusedBytes": 2146255,
+          "cacheBytes": 5034543
+        },
+        "worker": true
+      },
+      "animated": {
+        "protocol": 4,
+        "connectionGeneration": 1,
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "frameId": 11,
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "18d0899f-1908-4f0f-8fa5-b3bb33028089",
+          "frameToken": 167,
+          "namespace": [
+            4,
+            10
+          ],
+          "producer": "519:2",
+          "sourceFrame": 47,
+          "timing": {
+            "base64Ms": 0,
+            "cachedLayers": 57,
+            "captureRoundTripMs": 11.094986999999492,
+            "cdpReplyMs": 10.972499999999854,
+            "encodeTotalMs": 0.8289999961853027,
+            "encodingThreads": 7,
+            "fontCacheHits": 0,
+            "fontMs": 0,
+            "glyphCollectionMs": 0,
+            "imageCacheHits": 0,
+            "imageMs": 0,
+            "parallelLayers": 57,
+            "portableMs": 0,
+            "recordingCacheHits": 57,
+            "recordingCacheMisses": 0,
+            "recordingMs": 0.039,
+            "resultAssemblyMs": 0.178,
+            "serializeMs": 0,
+            "vizWaitMs": 0.006833000000369793
+          }
+        },
+        "lastProcessedInputSeq": 0,
+        "resourceBytes": 6179454,
+        "resources": 17,
+        "resourcesReceived": 19,
+        "receivedBytes": 5277333,
+        "fullFrames": 1,
+        "deltaFrames": 10,
+        "renderMs": 5.9000000059604645,
+        "requiredResources": [
+          "06626f676fabf989ead774735bae2de104f0c8c3878fb92cc47c4562635bd1fa",
+          "0edbd535c51d01e6d18cac07bb9e8644bfa9a2edc072aabc488e4355dd65b86d",
+          "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+          "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+          "6d446328917ac1ee5f56872fc00a1e5dd9e94e845599940ed76b5aaa9bf19aa5",
+          "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+          "8f474aa726bfcdd9381f66de13ef7b9cc39d547031af3b6a3810cd241f2ee658",
+          "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+          "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+          "a3a8b6e720f0a46d03299b55da335ed53398eb25acb4c3909c457d53605d00df",
+          "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+          "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+          "b4c83f5ef6f2820e40afacffaa0ba0089c69d3aa74ee16c5bf5019f2e012dc3d",
+          "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+          "c36c9679c758e8e9dda7de3d979bb6949ad1d53ac6562b2e015afdbfecab70b9",
+          "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+          "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 19,
+          "pictureRasters": 19,
+          "pictureRasterHits": 432,
+          "passRenders": 11,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 50,
+          "receivedBytes": 5034543,
+          "fontBytes": 7161543,
+          "imageBytes": 2190,
+          "reusedBytes": 2146255,
+          "cacheBytes": 5034543
+        },
+        "worker": true
+      },
+      "streamed": {
+        "protocol": 4,
+        "connectionGeneration": 1,
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "frameId": 129,
+        "native": {
+          "bitmapGlyphs": 12,
+          "captureId": "522533aa-03df-4d86-90a2-1dd7ada7c179",
+          "frameToken": 422,
+          "namespace": [
+            4,
+            10
+          ],
+          "producer": "519:2",
+          "sourceFrame": 283,
+          "timing": {
+            "base64Ms": 0,
+            "cachedLayers": 57,
+            "captureRoundTripMs": 13.266014999999244,
+            "cdpReplyMs": 13.067493999998987,
+            "encodeTotalMs": 1.9900000095367432,
+            "encodingThreads": 5,
+            "fontCacheHits": 0,
+            "fontMs": 0,
+            "glyphCollectionMs": 0,
+            "imageCacheHits": 0,
+            "imageMs": 0,
+            "parallelLayers": 57,
+            "portableMs": 0,
+            "recordingCacheHits": 57,
+            "recordingCacheMisses": 0,
+            "recordingMs": 0.127,
+            "resultAssemblyMs": 0.221,
+            "serializeMs": 0,
+            "vizWaitMs": 0.1146549999994022
+          }
+        },
+        "lastProcessedInputSeq": 3,
+        "resourceBytes": 8409266,
+        "resources": 17,
+        "resourcesReceived": 59,
+        "receivedBytes": 25260253,
+        "fullFrames": 1,
+        "deltaFrames": 128,
+        "renderMs": 4,
+        "requiredResources": [
+          "0a9b81031ee587327c6604f31682b49c60fb02cfd87fd20c69cb60af5b1f75df",
+          "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+          "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+          "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+          "943ba312bd5c24260127adff059216875a146391cf1548c5c339b0446b451429",
+          "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+          "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+          "a3a8b6e720f0a46d03299b55da335ed53398eb25acb4c3909c457d53605d00df",
+          "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+          "abed56efd83f76130b67bf1bd6cb0376b50e64c474d513d82f0cc0f3f468de12",
+          "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+          "b2c6927bfeca9caffe4d3e40c9ce74485c814bd22b8dce991e86c6d83531148c",
+          "b4c83f5ef6f2820e40afacffaa0ba0089c69d3aa74ee16c5bf5019f2e012dc3d",
+          "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+          "c36c9679c758e8e9dda7de3d979bb6949ad1d53ac6562b2e015afdbfecab70b9",
+          "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+          "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 59,
+          "pictureRasters": 59,
+          "pictureRasterHits": 5230,
+          "passRenders": 129,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 144,
+          "receivedBytes": 22502272,
+          "fontBytes": 37685521,
+          "imageBytes": 46261,
+          "reusedBytes": 15372356,
+          "cacheBytes": 22502272
+        },
+        "worker": true
+      },
+      "beforeReconnect": {
+        "protocol": 4,
+        "connectionGeneration": 1,
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "frameId": 350,
+        "native": {
+          "bitmapGlyphs": 12,
+          "captureId": "ae327b46-3046-45c5-99b5-91d80d94d525",
+          "frameToken": 852,
+          "namespace": [
+            4,
+            10
+          ],
+          "producer": "519:2",
+          "sourceFrame": 504,
+          "timing": {
+            "base64Ms": 0,
+            "cachedLayers": 57,
+            "captureRoundTripMs": 5.960181000000375,
+            "cdpReplyMs": 5.75299399999858,
+            "encodeTotalMs": 0.9549999982118608,
+            "encodingThreads": 11,
+            "fontCacheHits": 0,
+            "fontMs": 0,
+            "glyphCollectionMs": 0,
+            "imageCacheHits": 0,
+            "imageMs": 0,
+            "parallelLayers": 57,
+            "portableMs": 0,
+            "recordingCacheHits": 57,
+            "recordingCacheMisses": 0,
+            "recordingMs": 0.04,
+            "resultAssemblyMs": 0.226,
+            "serializeMs": 0,
+            "vizWaitMs": 0.005957000001217239
+          }
+        },
+        "lastProcessedInputSeq": 3,
+        "resourceBytes": 8409266,
+        "resources": 17,
+        "resourcesReceived": 59,
+        "receivedBytes": 29908469,
+        "fullFrames": 1,
+        "deltaFrames": 349,
+        "renderMs": 4,
+        "requiredResources": [
+          "0a9b81031ee587327c6604f31682b49c60fb02cfd87fd20c69cb60af5b1f75df",
+          "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+          "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+          "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+          "943ba312bd5c24260127adff059216875a146391cf1548c5c339b0446b451429",
+          "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+          "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+          "a3a8b6e720f0a46d03299b55da335ed53398eb25acb4c3909c457d53605d00df",
+          "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+          "abed56efd83f76130b67bf1bd6cb0376b50e64c474d513d82f0cc0f3f468de12",
+          "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+          "b2c6927bfeca9caffe4d3e40c9ce74485c814bd22b8dce991e86c6d83531148c",
+          "b4c83f5ef6f2820e40afacffaa0ba0089c69d3aa74ee16c5bf5019f2e012dc3d",
+          "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+          "c36c9679c758e8e9dda7de3d979bb6949ad1d53ac6562b2e015afdbfecab70b9",
+          "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+          "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 59,
+          "pictureRasters": 59,
+          "pictureRasterHits": 14291,
+          "passRenders": 350,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 144,
+          "receivedBytes": 22502272,
+          "fontBytes": 37685521,
+          "imageBytes": 46261,
+          "reusedBytes": 15372356,
+          "cacheBytes": 22502272
+        },
+        "worker": true
+      },
+      "recovered": {
+        "protocol": 4,
+        "connectionGeneration": 2,
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "frameId": 2,
+        "native": {
+          "bitmapGlyphs": 12,
+          "captureId": "b4ae4943-90a8-41f9-ab59-aaa7c01b4ba1",
+          "frameToken": 867,
+          "namespace": [
+            4,
+            10
+          ],
+          "producer": "519:2",
+          "sourceFrame": 512,
+          "timing": {
+            "base64Ms": 0,
+            "cachedLayers": 57,
+            "captureRoundTripMs": 22.883154000001017,
+            "cdpReplyMs": 18.734371000000465,
+            "encodeTotalMs": 7.908000007271767,
+            "encodingThreads": 5,
+            "fontCacheHits": 0,
+            "fontMs": 0,
+            "glyphCollectionMs": 0,
+            "imageCacheHits": 0,
+            "imageMs": 0,
+            "parallelLayers": 57,
+            "portableMs": 0,
+            "recordingCacheHits": 57,
+            "recordingCacheMisses": 0,
+            "recordingMs": 0.039,
+            "resultAssemblyMs": 0.663,
+            "serializeMs": 0,
+            "vizWaitMs": 3.841813999999431
+          }
+        },
+        "lastProcessedInputSeq": 3,
+        "resourceBytes": 8409266,
+        "resources": 17,
+        "resourcesReceived": 17,
+        "receivedBytes": 6514234,
+        "fullFrames": 1,
+        "deltaFrames": 1,
+        "renderMs": 13.600000008940697,
+        "requiredResources": [
+          "0a9b81031ee587327c6604f31682b49c60fb02cfd87fd20c69cb60af5b1f75df",
+          "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+          "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+          "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+          "943ba312bd5c24260127adff059216875a146391cf1548c5c339b0446b451429",
+          "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+          "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+          "a3a8b6e720f0a46d03299b55da335ed53398eb25acb4c3909c457d53605d00df",
+          "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+          "abed56efd83f76130b67bf1bd6cb0376b50e64c474d513d82f0cc0f3f468de12",
+          "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+          "b2c6927bfeca9caffe4d3e40c9ce74485c814bd22b8dce991e86c6d83531148c",
+          "b4c83f5ef6f2820e40afacffaa0ba0089c69d3aa74ee16c5bf5019f2e012dc3d",
+          "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+          "c36c9679c758e8e9dda7de3d979bb6949ad1d53ac6562b2e015afdbfecab70b9",
+          "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+          "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 76,
+          "pictureRasters": 76,
+          "pictureRasterHits": 14479,
+          "passRenders": 355,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 54,
+          "receivedBytes": 6459092,
+          "fontBytes": 8359613,
+          "imageBytes": 13330,
+          "reusedBytes": 1950174,
+          "cacheBytes": 6459092
+        },
+        "worker": true
+      },
+      "navigated": {
+        "protocol": 4,
+        "connectionGeneration": 2,
+        "pageEpoch": 3,
+        "viewportVersion": 1,
+        "frameId": 7,
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "7faa6133-4536-43e4-a33e-e9fc4f296169",
+          "frameToken": 19,
+          "namespace": [
+            4,
+            13
+          ],
+          "producer": "519:3",
+          "sourceFrame": 5,
+          "timing": {
+            "base64Ms": 0,
+            "cachedLayers": 57,
+            "captureRoundTripMs": 9.941522000000989,
+            "cdpReplyMs": 9.809160999999222,
+            "encodeTotalMs": 1.0539999902248385,
+            "encodingThreads": 6,
+            "fontCacheHits": 0,
+            "fontMs": 0,
+            "glyphCollectionMs": 0,
+            "imageCacheHits": 0,
+            "imageMs": 0,
+            "parallelLayers": 57,
+            "portableMs": 0,
+            "recordingCacheHits": 57,
+            "recordingCacheMisses": 0,
+            "recordingMs": 0.029,
+            "resultAssemblyMs": 0.191,
+            "serializeMs": 0,
+            "vizWaitMs": 0.008249000000432716
+          }
+        },
+        "lastProcessedInputSeq": 3,
+        "resourceBytes": 6179126,
+        "resources": 17,
+        "resourcesReceived": 24,
+        "receivedBytes": 7539473,
+        "fullFrames": 2,
+        "deltaFrames": 5,
+        "renderMs": 4.5999999940395355,
+        "requiredResources": [
+          "06626f676fabf989ead774735bae2de104f0c8c3878fb92cc47c4562635bd1fa",
+          "0edbd535c51d01e6d18cac07bb9e8644bfa9a2edc072aabc488e4355dd65b86d",
+          "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+          "37ff48cb412854b8da6265a5d503e83db95b8728eb368235bfe96d8c2ef7d00a",
+          "3e2a31a9132deb58b750c993e216b8080f07d9d484ad26fc0df28bb19e146c71",
+          "40558401c7dc037f1d6626cf7bdd46689313620568a1432e90687c94f164d4ea",
+          "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+          "6d446328917ac1ee5f56872fc00a1e5dd9e94e845599940ed76b5aaa9bf19aa5",
+          "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+          "8f474aa726bfcdd9381f66de13ef7b9cc39d547031af3b6a3810cd241f2ee658",
+          "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+          "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+          "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+          "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+          "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+          "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+          "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 83,
+          "pictureRasters": 83,
+          "pictureRasterHits": 14677,
+          "passRenders": 360,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 67,
+          "receivedBytes": 7374672,
+          "fontBytes": 10916448,
+          "imageBytes": 13330,
+          "reusedBytes": 3597648,
+          "cacheBytes": 7374672
+        },
+        "worker": true
+      },
+      "resized": {
+        "protocol": 4,
+        "connectionGeneration": 2,
+        "pageEpoch": 3,
+        "viewportVersion": 4,
+        "frameId": 19,
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "bc201aa7-8e3e-448d-be6f-c7e3ee181ee4",
+          "frameToken": 83,
+          "namespace": [
+            4,
+            13
+          ],
+          "producer": "519:3",
+          "sourceFrame": 23,
+          "timing": {
+            "base64Ms": 0,
+            "cachedLayers": 57,
+            "captureRoundTripMs": 4.765177999999651,
+            "cdpReplyMs": 4.506703999999445,
+            "encodeTotalMs": 0.7380000054836273,
+            "encodingThreads": 8,
+            "fontCacheHits": 0,
+            "fontMs": 0,
+            "glyphCollectionMs": 0,
+            "imageCacheHits": 0,
+            "imageMs": 0,
+            "parallelLayers": 57,
+            "portableMs": 0,
+            "recordingCacheHits": 57,
+            "recordingCacheMisses": 0,
+            "recordingMs": 0.03,
+            "resultAssemblyMs": 0.169,
+            "serializeMs": 0,
+            "vizWaitMs": 0.006250000000363798
+          }
+        },
+        "lastProcessedInputSeq": 3,
+        "resourceBytes": 5032148,
+        "resources": 17,
+        "resourcesReceived": 74,
+        "receivedBytes": 7854046,
+        "fullFrames": 5,
+        "deltaFrames": 14,
+        "renderMs": 2.5999999940395355,
+        "requiredResources": [
+          "26488ad5dbb0b43a5642085dc1f6416c987e32e09a49543151d2fba75ff9fa06",
+          "4ddac367bfcc2fcbc4678e484bc9400a9d51aec59038669cce445917235c29c2",
+          "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+          "5e59f5ef95d0615ed8d735b33f363f2cce1d13f1df753c3b898f4a11f73c85cb",
+          "6d3576232f7def18ca34dd28889890a06d74e228206af12854e1585d62098103",
+          "8473fafb59e0f6aa7c727940e154ccc23571e82a84ed6ecd9c60ba1468ff06a3",
+          "8a0c10d7afdc6683b08978c76032128a4a1b0796fe54131965104c76b2311f91",
+          "a2370f2b513016e15dfa5c339e6718ccdc496f9e53d3299a864e40e79f0ee151",
+          "b5ae6410cfabf11c16584318d693cfde0badaab7fa1c4bdfb93fbf8146e41764",
+          "b7678a6b9f7c2f75ee650808f1f04a50c0566c0c2c1158e0090921d650dd199f",
+          "bac77817639c19032b4e6c084c2cce514495bb64554e5d59131292b177d72ce8",
+          "bfb0719df76fbd6225250f1c18dc19f67ddc4ff148d03d7f0cfc2a9c0e7bf2d4",
+          "c127edbbf3ec73de7b9269582631b5f46d93e17ffe490039230044f7b45c1287",
+          "cf60a794b91049732e05119286ba718cad7f6cb18dae675be6e72d735948ebe4",
+          "d2336ca2c08177ea9d3ef927e088e9b4b97a57f48b375958bef7f5e8330c27e4",
+          "e0ec49b659a6ea07e7b1279ccf96c1ed37747644e48be2b9fe79875fc658b04d",
+          "f67fbb712aa00cc927ce43471e0c067d5ca4bfa0488b242bf023947ff081bda6"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 133,
+          "pictureRasters": 133,
+          "pictureRasterHits": 15119,
+          "passRenders": 372,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 92,
+          "receivedBytes": 7410006,
+          "fontBytes": 28115889,
+          "imageBytes": 17710,
+          "reusedBytes": 20810873,
+          "cacheBytes": 7410006
+        },
+        "worker": true
+      },
+      "imagePixels": [
+        {
+          "selector": "#private-image",
+          "pixelsCompared": 10320,
+          "maxChannelError": 0
+        },
+        {
+          "selector": "#blob-image",
+          "pixelsCompared": 10320,
+          "maxChannelError": 0
+        }
+      ],
+      "textInk": [
+        {
+          "selector": "header h1",
+          "ink": 1939,
+          "uncovered": 0,
+          "uncoveredFraction": 0,
+          "sourceMinContrast": 176.25,
+          "replayMinContrast": 58.75,
+          "neighborhoodPixels": 1
+        },
+        {
+          "selector": "header p",
+          "ink": 474,
+          "uncovered": 0,
+          "uncoveredFraction": 0,
+          "sourceMinContrast": 126.75,
+          "replayMinContrast": 42.25,
+          "neighborhoodPixels": 1
+        }
+      ],
+      "pixelFractionOver24": 0.009713541666666667,
+      "slowClientClose": 1013,
+      "noViewerCapturesInitially": 0,
+      "noViewerCapturesAfterDisconnect": 0,
+      "viewerSourceRequests": 0,
+      "errors": [],
+      "stats": {
+        "captures": 463,
+        "errors": 1,
+        "resourceRecoveries": 1,
+        "lastError": null,
+        "recentErrors": [
+          {
+            "message": "Navigation invalidated the in-flight capture",
+            "pageEpoch": 2,
+            "viewportVersion": 1,
+            "captures": 393
+          }
+        ],
+        "lastCaptureMs": 7.951352000000043,
+        "lastMapMs": 2.080453000002308
+      }
+    },
+    "latency": {
+      "verifiedAt": "2026-10-16T12:14:59.589Z",
+      "platform": "linux",
+      "architecture": "arm64",
+      "gpuMode": "software-compositing",
+      "beginFrame": {
+        "mode": "begin-frame",
+        "cadence": "active",
+        "issued": 300,
+        "acked": 300,
+        "damaged": 142,
+        "errors": 0,
+        "lastError": null
+      },
+      "viewerPlatform": "linux",
+      "sourceBrowser": "155.0.8059.79",
+      "viewerBrowser": "155.0.8059.79",
+      "nativeDrawing": true,
+      "executableSha256": "eaaaf5f70f6e8b1e9fc94a727827e13a5f00d295b2748d60d08c251e0a465426",
+      "captureIntervalMs": 16.666666666666668,
+      "captureOnInput": true,
+      "inputStyle": {
+        "borderRadius": "6px",
+        "caretColor": "rgb(23, 42, 64)"
+      },
+      "sourceStats": {
+        "captures": 42,
+        "errors": 0,
+        "resourceRecoveries": 0,
+        "lastError": null,
+        "recentErrors": [],
+        "lastCaptureMs": 25.736652999999933,
+        "lastMapMs": 1.8484770000004573
+      },
+      "captureMs": {
+        "samples": [
+          157.89622599999984,
+          6.988865999999689,
+          4.579029999999875,
+          203.02172400000018,
+          192.9705469999999,
+          32.96749499999987,
+          22.419200999999703,
+          14.559256999999889,
+          13.950735999999779,
+          24.331920999999966,
+          23.024931000000834,
+          37.38091799999984,
+          34.357184999999845,
+          42.62542099999973,
+          13.889367000000675,
+          15.49482800000078,
+          21.284192000000075,
+          33.45569499999965,
+          14.27228599999944,
+          12.11109100000067,
+          21.825636999999915,
+          14.54621700000007,
+          12.495759999999791,
+          13.000292000000627,
+          12.294323000000077,
+          25.38752199999999,
+          11.220974000000751,
+          28.900786999999582,
+          15.377464999999575,
+          14.576046999999562,
+          44.54009899999983,
+          48.30533900000046,
+          13.55406799999946,
+          15.482621000000108,
+          19.397511000000122,
+          9.301629999999932,
+          14.937718000000132,
+          29.69557999999961,
+          16.04181299999982,
+          6.215570999999727,
+          38.08322000000044,
+          25.849640999999792,
+          20.995221999999558,
+          12.143629999999575
+        ],
+        "p50": 16.04181299999982,
+        "p95": 157.89622599999984
+      },
+      "scope": "Viewer keydown to matching native source paint observed in the CanvasKit canvas; excludes physical keyboard and monitor scanout",
+      "samples": [
+        {
+          "key": "A",
+          "inputToPixelsMs": 516.4000000059605,
+          "frameId": 5,
+          "inputSequence": 5,
+          "renderMs": 17.599999994039536
+        },
+        {
+          "key": "B",
+          "inputToPixelsMs": 92.29999999701977,
+          "frameId": 7,
+          "inputSequence": 7,
+          "renderMs": 1.5
+        },
+        {
+          "key": "C",
+          "inputToPixelsMs": 62.900000005960464,
+          "frameId": 9,
+          "inputSequence": 9,
+          "renderMs": 2.4000000059604645
+        },
+        {
+          "key": "D",
+          "inputToPixelsMs": 85.40000000596046,
+          "frameId": 11,
+          "inputSequence": 11,
+          "renderMs": 2.3999999910593033
+        },
+        {
+          "key": "E",
+          "inputToPixelsMs": 122.80000001192093,
+          "frameId": 15,
+          "inputSequence": 13,
+          "renderMs": 1.0999999940395355
+        },
+        {
+          "key": "F",
+          "inputToPixelsMs": 75,
+          "frameId": 17,
+          "inputSequence": 15,
+          "renderMs": 5.700000002980232
+        },
+        {
+          "key": "G",
+          "inputToPixelsMs": 89.70000000298023,
+          "frameId": 19,
+          "inputSequence": 17,
+          "renderMs": 2.699999988079071
+        },
+        {
+          "key": "H",
+          "inputToPixelsMs": 68.70000000298023,
+          "frameId": 21,
+          "inputSequence": 19,
+          "renderMs": 1.7999999970197678
+        },
+        {
+          "key": "I",
+          "inputToPixelsMs": 44.5,
+          "frameId": 23,
+          "inputSequence": 21,
+          "renderMs": 1.2000000029802322
+        },
+        {
+          "key": "J",
+          "inputToPixelsMs": 77.20000000298023,
+          "frameId": 25,
+          "inputSequence": 23,
+          "renderMs": 1
+        },
+        {
+          "key": "K",
+          "inputToPixelsMs": 67.19999998807907,
+          "frameId": 27,
+          "inputSequence": 25,
+          "renderMs": 1
+        },
+        {
+          "key": "L",
+          "inputToPixelsMs": 77.79999999701977,
+          "frameId": 29,
+          "inputSequence": 27,
+          "renderMs": 0.9000000059604645
+        },
+        {
+          "key": "M",
+          "inputToPixelsMs": 109.29999999701977,
+          "frameId": 31,
+          "inputSequence": 29,
+          "renderMs": 1.2000000029802322
+        },
+        {
+          "key": "N",
+          "inputToPixelsMs": 92.29999999701977,
+          "frameId": 34,
+          "inputSequence": 30,
+          "renderMs": 32
+        },
+        {
+          "key": "O",
+          "inputToPixelsMs": 85.79999999701977,
+          "frameId": 38,
+          "inputSequence": 33,
+          "renderMs": 1.2999999970197678
+        },
+        {
+          "key": "P",
+          "inputToPixelsMs": 98.3999999910593,
+          "frameId": 40,
+          "inputSequence": 35,
+          "renderMs": 1.5999999940395355
+        }
+      ],
+      "p50Ms": 85.40000000596046,
+      "p95Ms": 516.4000000059605,
+      "maxMs": 516.4000000059605,
+      "meanMs": 110.35625000018626,
+      "errors": []
+    }
+  },
+  "contracts": {
+    "scope": "Rust protocol/Mapper/tile fixtures and actual CanvasKit Worker with the completed Linux browser; distinct from actual capture suite",
+    "checks": [
+      "verify-broker",
+      "verify-broker-viz",
+      "verify-broker-resources",
+      "verify-broker-tiles",
+      "verify-broker-gateway"
+    ],
+    "exitCode": 0,
+    "gatewayReport": {
+      "verifiedAt": "2026-10-16T12:16:56.042Z",
+      "scope": "Native Rust SceneMapper + native WebSocket data plane, fixture capture and real CanvasKit Worker",
+      "first": {
+        "protocol": 4,
+        "connectionGeneration": 1,
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "frameId": 1,
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "native-gateway-1",
+          "frameToken": 1,
+          "namespace": [
+            1,
+            2
+          ],
+          "producer": "contract-native-broker",
+          "sourceFrame": 1,
+          "timing": null
+        },
+        "lastProcessedInputSeq": 0,
+        "resourceBytes": 33594,
+        "resources": 1,
+        "resourcesReceived": 1,
+        "receivedBytes": 35294,
+        "fullFrames": 1,
+        "deltaFrames": 0,
+        "renderMs": 300.40000000596046,
+        "requiredResources": [
+          "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 1,
+          "pictureRasters": 1,
+          "pictureRasterHits": 0,
+          "passRenders": 1,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 2,
+          "receivedBytes": 33594,
+          "fontBytes": 0,
+          "imageBytes": 0,
+          "reusedBytes": 0,
+          "cacheBytes": 33594
+        },
+        "worker": true
+      },
+      "second": {
+        "protocol": 4,
+        "connectionGeneration": 1,
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "frameId": 2,
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "native-gateway-2",
+          "frameToken": 2,
+          "namespace": [
+            1,
+            2
+          ],
+          "producer": "contract-native-broker",
+          "sourceFrame": 2,
+          "timing": null
+        },
+        "lastProcessedInputSeq": 0,
+        "resourceBytes": 33594,
+        "resources": 1,
+        "resourcesReceived": 1,
+        "receivedBytes": 36311,
+        "fullFrames": 1,
+        "deltaFrames": 1,
+        "renderMs": 4.5999999940395355,
+        "requiredResources": [
+          "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 1,
+          "pictureRasters": 1,
+          "pictureRasterHits": 1,
+          "passRenders": 2,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 2,
+          "receivedBytes": 33594,
+          "fontBytes": 0,
+          "imageBytes": 0,
+          "reusedBytes": 0,
+          "cacheBytes": 33594
+        },
+        "worker": true
+      },
+      "multipleViewers": true,
+      "slowClientClose": 1013,
+      "rendererMismatchClose": 1008,
+      "missingResourceRecovery": {
+        "droppedResources": 1,
+        "keyframeRequests": 1,
+        "recovered": {
+          "protocol": 4,
+          "connectionGeneration": 1,
+          "pageEpoch": 1,
+          "viewportVersion": 1,
+          "frameId": 2,
+          "native": {
+            "bitmapGlyphs": 0,
+            "captureId": "native-gateway-2",
+            "frameToken": 2,
+            "namespace": [
+              1,
+              2
+            ],
+            "producer": "contract-native-broker",
+            "sourceFrame": 2,
+            "timing": null
+          },
+          "lastProcessedInputSeq": 0,
+          "resourceBytes": 33594,
+          "resources": 1,
+          "resourcesReceived": 1,
+          "receivedBytes": 37455,
+          "fullFrames": 1,
+          "deltaFrames": 0,
+          "renderMs": 389.29999999701977,
+          "requiredResources": [
+            "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 1,
+            "pictureRasters": 1,
+            "pictureRasterHits": 0,
+            "passRenders": 1,
+            "passHits": 0,
+            "isolatedDraws": 0
+          },
+          "assetStats": {
+            "receivedChunks": 3,
+            "receivedBytes": 34420,
+            "fontBytes": 0,
+            "imageBytes": 0,
+            "reusedBytes": 0,
+            "cacheBytes": 33594
+          },
+          "worker": true
+        },
+        "viewerSourceRequests": 0,
+        "errors": []
+      },
+      "peers": [
+        {
+          "id": "native-0",
+          "stats": {
+            "bytes": 36831,
+            "coalesced": 0,
+            "delta": 1,
+            "full": 2,
+            "maxInflight": 1,
+            "resources": 1,
+            "slowDisconnects": 0
+          }
+        },
+        {
+          "id": "native-1",
+          "stats": {
+            "bytes": 36831,
+            "coalesced": 0,
+            "delta": 1,
+            "full": 2,
+            "maxInflight": 1,
+            "resources": 1,
+            "slowDisconnects": 0
+          }
+        }
+      ]
+    }
+  },
+  "unitTests": {
+    "darwin": {
+      "passed": 60,
+      "failed": 0
+    },
+    "linuxNode22": {
+      "passed": 60,
+      "failed": 0
+    }
+  }
+}

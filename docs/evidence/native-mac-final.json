@@ -1,0 +1,1259 @@
+{
+  "scope": "Actual Linux ARM64 source, native Rust data plane, Mac ARM64 Chrome CanvasKit Worker; full graph browser from matching Linux receipt",
+  "provenance": {
+    "projectRevision": "08aefec1822802f5291a16b54b03504146dd9d45",
+    "runtimeFileSha256": {
+      "capture/live.mjs": "00edf8786bf94a687ea2975c7b70aa88692b631bd4c4961b570edeee4ab2e227",
+      "capture/begin-frame.mjs": "f381306410fd289f96bdab588342f08332a0f672f02a72dd658ba8f952f10edc",
+      "live/source.mjs": "e9aac3c1f52ddff2a7c0ce9d4aea8a58fd195952a77c3ceb0ca1ae7daf1cebcb",
+      "live/input.mjs": "ed5badb51a47e4c6a78b107bb56af2c412fb5d0f448fac9761d9c885179bab00",
+      "live/transport.mjs": "83b9161a289ede316cf435db97ab5be653c448d0771c2205b34b6adb8681883e",
+      "native/broker.mjs": "d42f265e1e0cbc53c87a38a0a339cdabb134db16de9379e1efadbf598a89d1c9",
+      "protocol/asset-wire.mjs": "25e61f8e49cb38a692ca3c33aa9536f801280eef4d90f5b4d59652bc8f604fe3",
+      "viewer/live.mjs": "1da3ab3d0bf315b8723d5a23da3579d257f7212c493247d75997440830668e53",
+      "viewer/stream-worker.mjs": "8415588fbb622b211654c255d76469130986f1b128607e8102a66f36cfddfda0",
+      "viewer/scene-renderer.mjs": "938d29e950c70aefb78a7be18f6c2600cd053c502a06b122c146624bbca86b78",
+      "viewer/input.mjs": "a17c745e009c6cd0a76fd8c96995a7847c2548e40ac77bb54cb593a05041f095",
+      "native/broker/Cargo.lock": "7c8f5a4ad09fd546062291fb42da755bf81690c62780beec6c8f3ec0605d662e",
+      "native/broker/Cargo.toml": "e3489be5b67959e5d2be922a9ef14f69561e8939f5238bcfcb08a4c90ed65568",
+      "native/broker/src/assets.rs": "be424daa0d1107d56ab5087c792654e7378384f181270e1318e67a5eb8896227",
+      "native/broker/src/gateway.rs": "26118f51b72d304fc5edbfea6e52fac5d3747874caf4bca979dcbcdae27ffce0",
+      "native/broker/src/main.rs": "50e2ae1181e3178bec28405b9304d8c616c2dacc6158c47e1e2e2f7c45124ecb",
+      "native/broker/src/scene.rs": "a0b509dd3638baea661820556decdadc435bbabf5b216dd09b2525eda867ad85",
+      "native/broker/src/viz.rs": "6320ccc5c010f8bf2bde76ff8b0dd6a7be78a48b188c6750d644ebde444c41de"
+    },
+    "brokerSha256": "f1dc5ccc2ec23cf9db544f44d3394f7a879a22be390906212b0ec9d19c3fee99",
+    "runtimeImageId": "sha256:ba52f926ae3c951e29dc1625d70537c18db389cf166f4465a1e5b836d802c133",
+    "buildReceipt": {
+      "format": 1,
+      "target": {
+        "os": "linux",
+        "cpu": "arm64"
+      },
+      "buildProfile": "linux-arm64-host-cc",
+      "hostCrossCompiler": {
+        "mode": "mac-arm64-clang-cross",
+        "target": "aarch64-linux-gnu",
+        "compilerSha256": "b3785ad91b93cb56eac31eaef5d8cf5ef71fae512843417a55bd3912b4d41766",
+        "compilerVersion": "clang version 24.0.0git (https://chromium.googlesource.com/a/external/github.com/llvm/llvm-project 86922d51225db089fffb99475eefc4904f79e3c8)",
+        "jobs": 9
+      },
+      "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+      "skiaRevision": "29ed1e87a0a50f3d8347e988842d9d59e7573efa",
+      "nativeSources": {
+        "BUILD.gn": "c4ee4bdfddc3da6b92fce01d8f56076e2caafffdc030a9ac32ee34a6af23a3ee",
+        "capture_state.cc": "39421cae7a4064db7dda36448db557b59dd44c02e801b1add871d392e86c5678",
+        "capture_state.h": "3a692cc50ce86e5fcfcf20ac8402a1b06a4ab0188b29ecf94b3bea28e859b347",
+        "cc_capture.inc": "c8a43a57946b08c935ea81922cdf0d182ba0b64521e17a6d47e38b03f4a1e851",
+        "extension_capture.inc": "d4cca278fcfb24f90bd253d366eda190e5d81d0e33bf8c5f21b6d267dfe08421",
+        "font_subset.cc": "57fe42d2f751946a369d688f52864fce1cc586b8c44e334f427d795b9ea0357c",
+        "font_subset.h": "0b60f6db554665df98c51eb4f97f8ffe9908cc2d6f6517f34ff623be1c391860",
+        "serializer.cc": "9c75f8ca47c97c5649657210ef778d05a27c3c1874cc0da18acd8f40bd5d950f",
+        "serializer.h": "d840e8c2b8de490ae5b1262db0d7f80804cd3e919b204b07c8131dcc880b4c10",
+        "serializer_unittest.cc": "0b773b864007f06da857266c039e7f18770b32dedaec2509bfd7a5069cc000c5",
+        "socket_transport.h": "aa55764ef39cc802f560c03bde5886fcb382b8c1833314465f19189a3e2ad4c1",
+        "test_main.cc": "2683a596f6572109fb43c7a70c125ceb023df1796e70fc025f44a477012d9fb6",
+        "viz_capture.cc": "b24bf3f6c7d99e8276155b250a0dffc4067b5ef3fecc0ae420ad05b03f97d717",
+        "viz_capture.h": "c10433e61457d8deeba6b0f73505bb01037e7726e5fbae6f3f07995c40da7306"
+      },
+      "patches": {
+        "0001-async-capture.patch": "50b45c2d8fea81c8230644bdf9e3bd80c92b23285d263d88cefbf1fd368b5e2f",
+        "0002-compositor-viz-pairing.patch": "ecefbed1a09f81f23082955c74f2aa6a94946fa724e45901cb4926bf66fab45b",
+        "0003-chromium-build-contracts.patch": "618e568969d778b55836d02cbecc62709968bd7c3c1a896fc536262b19fffe31",
+        "0004-v8-context-isolate.patch": "e6d91dd928da133c1d9437e8f55ccceb451029a4b4fdb5e9df6c6fdba2225983",
+        "0005-accumulate-tile-damage.patch": "8cbe9fd8c08c1cf77ea41c59e5e13ddcf9b6feaf813a56baab8fffa783e04a6a",
+        "0006-copy-damage-region-rects.patch": "f785000d601d48d2988430b8154da2996d7fa28a76a0c9971dc4da18e391801f"
+      },
+      "patchedSources": {
+        "content/renderer/gpu_benchmarking_extension.cc": "e3becb774bcce814073a6da5e33fbbc1350fade2e11d1164d26e7a24a3728b67",
+        "content/renderer/gpu_benchmarking_extension.h": "d674acd0223fe1f0c9068a9ca62f78452b9c1a049520d5f587419874dbfd4ab8",
+        "content/renderer/BUILD.gn": "2d4bcd546ae90a6cf1a99f25e55fad7d5545784327338b97d1f05eb1ff89924b",
+        "content/browser/renderer_host/render_process_host_impl.cc": "12b866e91c414a2f1fb8776a44ada9a34d32dcdfd793103bf5434de2016e3b6c",
+        "content/renderer/render_frame_impl.cc": "4c4703a9eeab1d4b914dabab3d00b739958714b6e8384a19a2277571c62524c9",
+        "cc/BUILD.gn": "62b777a82e7bb5d79604627b5cae7dcad602e15846bc72c92bb66543852fe582",
+        "cc/trees/layer_tree_host_impl.cc": "56f9cd202b1e9221347cbc8e15a8d7c9cb65d76b0ccd7811905026fa1a7ff73e",
+        "components/viz/common/quads/compositor_frame_metadata.h": "e605ec46868e93bf6d7b57451d1512415fbbf1707dcbaa758459f9ebd004a1c4",
+        "components/viz/common/quads/compositor_frame_metadata.cc": "ebe0b12fa91c1ec334f20b4e6bf457d9c63bfd79034a1b29bbca058803b3b870",
+        "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom": "ca153263077f4cbfe4af35a7ab446b2e77acf4bd6baa9b268ed2ffd684f7bfd1",
+        "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h": "38445da06359dfe644723b9f5048e3bc43c2eee9a6e79d8ddb0ec93a5a9a8f2d",
+        "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc": "3ebcab9dbdae731eb4d8241ca567a5d8290f437d5e2eb2279eba5983a8c468b1",
+        "components/viz/service/BUILD.gn": "115cbde256b205691a7a639cd62590e2102f73777d1abc96eddc592f68438f5f",
+        "components/viz/service/display/surface_aggregator.cc": "ab5095dac86fbee8498968e17d9485c314db82031c943a4f25ddb5af45849e8b",
+        "cc/layers/picture_layer_impl.cc": "56aef3ef25e1f22ff947b4f575af421e8b6d066914b19e981bd310738a143f53"
+      },
+      "argsSha256": "25a86fd4153e0f0fb6a2025dc9dc35ed4cb3993b92553d25b370fe49a005b339",
+      "hostConfiguration": {
+        "gnSha256": "36fe330f4e6a0c8cebcc893a72a6e70871fb395b501a811a231c80465b3fec9d",
+        "swiftShaderSha256": "75f21859d5caa845546086fc67816353d33b0da1edfc7d6a1844664f0b745fa8"
+      },
+      "binaries": {
+        "headless_shell": "eaaaf5f70f6e8b1e9fc94a727827e13a5f00d295b2748d60d08c251e0a465426",
+        "serializer_tests": "1095713757d26c8692c09c1438cdf449a56d86ae52106ea9c1419beac4f48de4"
+      },
+      "builtAt": "2026-10-16T12:14:18.962Z",
+      "incrementalGraphUpToDate": true,
+      "ninjaVersion": "1.13.2"
+    }
+  },
+  "report": {
+    "verifiedAt": "2026-10-16T12:15:41.444Z",
+    "nativeDrawing": true,
+    "drawingFixtureOnly": false,
+    "viewerPlatform": "darwin",
+    "viewerArchitecture": "arm64",
+    "viewerBrowser": "155.0.8059.84",
+    "sourcePlatform": "linux",
+    "sourceArchitecture": "arm64",
+    "sourceBrowser": "155.0.8059.79",
+    "gpuMode": "software-compositing",
+    "beginFrame": {
+      "mode": "begin-frame",
+      "cadence": "active",
+      "issued": 2003,
+      "acked": 2003,
+      "damaged": 1113,
+      "errors": 0,
+      "lastError": null
+    },
+    "first": {
+      "protocol": 4,
+      "connectionGeneration": 1,
+      "pageEpoch": 1,
+      "viewportVersion": 1,
+      "frameId": 3,
+      "native": {
+        "bitmapGlyphs": 0,
+        "captureId": "e9a91e25-57ec-4eaf-af1b-d2f70072e262",
+        "frameToken": 233,
+        "namespace": [
+          4,
+          10
+        ],
+        "producer": "77:2",
+        "sourceFrame": 14,
+        "timing": {
+          "base64Ms": 0,
+          "cachedLayers": 57,
+          "captureRoundTripMs": 12.191917000000103,
+          "cdpReplyMs": 12.075012000000244,
+          "encodeTotalMs": 6.216999992728233,
+          "encodingThreads": 10,
+          "fontCacheHits": 0,
+          "fontMs": 0,
+          "glyphCollectionMs": 0,
+          "imageCacheHits": 0,
+          "imageMs": 0,
+          "parallelLayers": 57,
+          "portableMs": 0,
+          "recordingCacheHits": 57,
+          "recordingCacheMisses": 0,
+          "recordingMs": 0.069,
+          "resultAssemblyMs": 0.206,
+          "serializeMs": 0,
+          "vizWaitMs": 0.012541000000055648
+        }
+      },
+      "lastProcessedInputSeq": 0,
+      "resourceBytes": 6177226,
+      "resources": 17,
+      "resourcesReceived": 18,
+      "receivedBytes": 5107693,
+      "fullFrames": 1,
+      "deltaFrames": 2,
+      "renderMs": 3.6000003814697266,
+      "requiredResources": [
+        "06626f676fabf989ead774735bae2de104f0c8c3878fb92cc47c4562635bd1fa",
+        "0edbd535c51d01e6d18cac07bb9e8644bfa9a2edc072aabc488e4355dd65b86d",
+        "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+        "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+        "5a1c9af6f9cfd12cb1f2174c8059f63090c5d1dcfccc01af94ba7c1eac56dd23",
+        "6668d11a8e1851ee0d26da38954aa367c5f7d3d0a669c03b5c2cc9deff51d44c",
+        "6d446328917ac1ee5f56872fc00a1e5dd9e94e845599940ed76b5aaa9bf19aa5",
+        "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+        "8f474aa726bfcdd9381f66de13ef7b9cc39d547031af3b6a3810cd241f2ee658",
+        "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+        "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+        "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+        "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+        "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+        "c36c9679c758e8e9dda7de3d979bb6949ad1d53ac6562b2e015afdbfecab70b9",
+        "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+        "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+      ],
+      "rendererStats": {
+        "pictureDecodes": 18,
+        "pictureRasters": 18,
+        "pictureRasterHits": 105,
+        "passRenders": 3,
+        "passHits": 0,
+        "isolatedDraws": 0
+      },
+      "assetStats": {
+        "receivedChunks": 49,
+        "receivedBytes": 5033931,
+        "fontBytes": 6661322,
+        "imageBytes": 2190,
+        "reusedBytes": 1645965,
+        "cacheBytes": 5033931
+      },
+      "worker": true
+    },
+    "dynamic": {
+      "protocol": 4,
+      "connectionGeneration": 1,
+      "pageEpoch": 1,
+      "viewportVersion": 1,
+      "frameId": 25,
+      "native": {
+        "bitmapGlyphs": 0,
+        "captureId": "28f28a11-62ef-4a1a-ac1d-ebe9a85d30ff",
+        "frameToken": 277,
+        "namespace": [
+          4,
+          10
+        ],
+        "producer": "77:2",
+        "sourceFrame": 37,
+        "timing": {
+          "base64Ms": 0,
+          "cachedLayers": 56,
+          "captureRoundTripMs": 8.518376999999418,
+          "cdpReplyMs": 8.392472999999882,
+          "encodeTotalMs": 2.5729999989271164,
+          "encodingThreads": 11,
+          "fontCacheHits": 2,
+          "fontMs": 0.6418099999427795,
+          "glyphCollectionMs": 0.004166990518569946,
+          "imageCacheHits": 0,
+          "imageMs": 0,
+          "parallelLayers": 57,
+          "portableMs": 0.3548800051212311,
+          "recordingCacheHits": 56,
+          "recordingCacheMisses": 1,
+          "recordingMs": 0.061,
+          "resultAssemblyMs": 0.167,
+          "serializeMs": 0.7291339933872223,
+          "vizWaitMs": 0.005166000000826898
+        }
+      },
+      "lastProcessedInputSeq": 0,
+      "resourceBytes": 6177230,
+      "resources": 17,
+      "resourcesReceived": 19,
+      "receivedBytes": 5576010,
+      "fullFrames": 1,
+      "deltaFrames": 24,
+      "renderMs": 4.59999942779541,
+      "requiredResources": [
+        "06626f676fabf989ead774735bae2de104f0c8c3878fb92cc47c4562635bd1fa",
+        "0edbd535c51d01e6d18cac07bb9e8644bfa9a2edc072aabc488e4355dd65b86d",
+        "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+        "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+        "5a1c9af6f9cfd12cb1f2174c8059f63090c5d1dcfccc01af94ba7c1eac56dd23",
+        "6d446328917ac1ee5f56872fc00a1e5dd9e94e845599940ed76b5aaa9bf19aa5",
+        "6f222afb1f92f803bd5a0a85dcc17c9268892a9939bbe56ecc84d243362841b0",
+        "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+        "8f474aa726bfcdd9381f66de13ef7b9cc39d547031af3b6a3810cd241f2ee658",
+        "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+        "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+        "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+        "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+        "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+        "c36c9679c758e8e9dda7de3d979bb6949ad1d53ac6562b2e015afdbfecab70b9",
+        "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+        "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+      ],
+      "rendererStats": {
+        "pictureDecodes": 19,
+        "pictureRasters": 19,
+        "pictureRasterHits": 1006,
+        "passRenders": 25,
+        "passHits": 0,
+        "isolatedDraws": 0
+      },
+      "assetStats": {
+        "receivedChunks": 51,
+        "receivedBytes": 5040421,
+        "fontBytes": 7163091,
+        "imageBytes": 2190,
+        "reusedBytes": 2142221,
+        "cacheBytes": 5040421
+      },
+      "worker": true
+    },
+    "animated": {
+      "protocol": 4,
+      "connectionGeneration": 1,
+      "pageEpoch": 1,
+      "viewportVersion": 1,
+      "frameId": 39,
+      "native": {
+        "bitmapGlyphs": 0,
+        "captureId": "f5599ef3-ba7b-4b0f-9e6c-3bc438a5d269",
+        "frameToken": 310,
+        "namespace": [
+          4,
+          10
+        ],
+        "producer": "77:2",
+        "sourceFrame": 58,
+        "timing": {
+          "base64Ms": 0,
+          "cachedLayers": 57,
+          "captureRoundTripMs": 7.682378999999855,
+          "cdpReplyMs": 7.509937999999238,
+          "encodeTotalMs": 0.9449999928474426,
+          "encodingThreads": 5,
+          "fontCacheHits": 0,
+          "fontMs": 0,
+          "glyphCollectionMs": 0,
+          "imageCacheHits": 0,
+          "imageMs": 0,
+          "parallelLayers": 57,
+          "portableMs": 0,
+          "recordingCacheHits": 57,
+          "recordingCacheMisses": 0,
+          "recordingMs": 0.028,
+          "resultAssemblyMs": 0.179,
+          "serializeMs": 0,
+          "vizWaitMs": 0.004916000001685461
+        }
+      },
+      "lastProcessedInputSeq": 0,
+      "resourceBytes": 6179510,
+      "resources": 17,
+      "resourcesReceived": 20,
+      "receivedBytes": 5795271,
+      "fullFrames": 1,
+      "deltaFrames": 38,
+      "renderMs": 2.1999998092651367,
+      "requiredResources": [
+        "06626f676fabf989ead774735bae2de104f0c8c3878fb92cc47c4562635bd1fa",
+        "0edbd535c51d01e6d18cac07bb9e8644bfa9a2edc072aabc488e4355dd65b86d",
+        "3024f716178e113792c3be7f4327a51e0e512004ef97c9f29a12e75349cd26b1",
+        "3670995fe7316fbdfb7665f614487a6ee5aa473dbdab459cdc2a7e5edf724cc1",
+        "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+        "6d446328917ac1ee5f56872fc00a1e5dd9e94e845599940ed76b5aaa9bf19aa5",
+        "6f222afb1f92f803bd5a0a85dcc17c9268892a9939bbe56ecc84d243362841b0",
+        "7fedb2f8ce73411b684305c353418c6a2ef95cefb48d43e4453dc236e325caae",
+        "8f474aa726bfcdd9381f66de13ef7b9cc39d547031af3b6a3810cd241f2ee658",
+        "991b6c525f7e0bce04879f680eabc32869e366a8d3d6b29f6ac64b3775ef942b",
+        "9b01b7c2c56637dadaf598f3bd352cc9e90feef4def541dc2e0c1058931902c3",
+        "ab3daf918d46a6c455aaf6da4c8c136a90120ffe2d83a35aeb35bf4118ec9a76",
+        "acee91cc5db6622006f016af45d4d86a63f59b721430957af24b34ee7d7b694e",
+        "c2760701a96eee16537f345e47b1034f59ac29bac8da63686da7d816a8ddcdd5",
+        "c36c9679c758e8e9dda7de3d979bb6949ad1d53ac6562b2e015afdbfecab70b9",
+        "f5bf5e02a593a3b9378caa6a935d6fe808daf45ac3beb228338945185fa43cfb",
+        "fb8b4b0f4a81aab00385ec2995a8d9c8ad1d3e1039a87041fececa2cc460ce25"
+      ],
+      "rendererStats": {
+        "pictureDecodes": 20,
+        "pictureRasters": 20,
+        "pictureRasterHits": 1415,
+        "passRenders": 35,
+        "passHits": 4,
+        "isolatedDraws": 0
+      },
+      "assetStats": {
+        "receivedChunks": 52,
+        "receivedBytes": 5040853,
+        "fontBytes": 7663160,
+        "imageBytes": 2190,
+        "reusedBytes": 2642539,
+        "cacheBytes": 5040853
+      },
+      "worker": true
+    },
+    "imagePixels": [
+      {
+        "selector": "#private-image",
+        "pixelsCompared": 10320,
+        "maxChannelError": 0
+      },
+      {
+        "selector": "#blob-image",
+        "pixelsCompared": 10320,
+        "maxChannelError": 0
+      }
+    ],
+    "textInk": [
+      {
+        "selector": "header h1",
+        "ink": 1939,
+        "uncovered": 0,
+        "uncoveredFraction": 0,
+        "sourceMinContrast": 176.25,
+        "replayMinContrast": 58.75,
+        "neighborhoodPixels": 1
+      },
+      {
+        "selector": "header p",
+        "ink": 478,
+        "uncovered": 0,
+        "uncoveredFraction": 0,
+        "sourceMinContrast": 126.75,
+        "replayMinContrast": 42.25,
+        "neighborhoodPixels": 1
+      }
+    ],
+    "pixelFractionOver24": 0.009729817708333333,
+    "saved": "已保存：Mac 控制 Linux 🌈",
+    "savedTextInk": [
+      {
+        "selector": "#saved",
+        "ink": 618,
+        "uncovered": 0,
+        "uncoveredFraction": 0,
+        "sourceMinContrast": 177,
+        "replayMinContrast": 59,
+        "neighborhoodPixels": 1
+      }
+    ],
+    "editor": "rich text\nline",
+    "editorTextInk": [
+      {
+        "selector": "#editor",
+        "ink": 206,
+        "uncovered": 0,
+        "uncoveredFraction": 0,
+        "sourceMinContrast": 174,
+        "replayMinContrast": 58,
+        "neighborhoodPixels": 1
+      }
+    ],
+    "streamText": "正在生成：远程绘制实时更新。中文新字形：龘麤𠮷。Emoji：🌈🚀🧑‍💻。输入和滚动都由原始网页处理。",
+    "streamTextInk": [
+      {
+        "selector": "#stream",
+        "ink": 2392,
+        "uncovered": 0,
+        "uncoveredFraction": 0,
+        "sourceMinContrast": 170.25,
+        "replayMinContrast": 56.75,
+        "neighborhoodPixels": 1
+      }
+    ],
+    "missingUpdatedTextRejected": true,
+    "cssScaling": true,
+    "scrollY": 500,
+    "reconnectedControlMode": "agent",
+    "missingResourceRecovery": {
+      "droppedResources": 1,
+      "keyframeRequests": 1,
+      "recovered": {
+        "protocol": 4,
+        "connectionGeneration": 1,
+        "pageEpoch": 3,
+        "viewportVersion": 2,
+        "frameId": 3,
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "86262bd7-a41f-44c8-a008-9ba44fb4e27d",
+          "frameToken": 75,
+          "namespace": [
+            4,
+            13
+          ],
+          "producer": "77:3",
+          "sourceFrame": 31,
+          "timing": {
+            "base64Ms": 0,
+            "cachedLayers": 57,
+            "captureRoundTripMs": 7.557391000002099,
+            "cdpReplyMs": 7.451153000001796,
+            "encodeTotalMs": 1.1169999986886978,
+            "encodingThreads": 8,
+            "fontCacheHits": 0,
+            "fontMs": 0,
+            "glyphCollectionMs": 0,
+            "imageCacheHits": 0,
+            "imageMs": 0,
+            "parallelLayers": 57,
+            "portableMs": 0,
+            "recordingCacheHits": 57,
+            "recordingCacheMisses": 0,
+            "recordingMs": 0.037,
+            "resultAssemblyMs": 0.195,
+            "serializeMs": 0,
+            "vizWaitMs": 0.008165999999619089
+          }
+        },
+        "lastProcessedInputSeq": 169,
+        "resourceBytes": 4082875,
+        "resources": 17,
+        "resourcesReceived": 33,
+        "receivedBytes": 8235058,
+        "fullFrames": 1,
+        "deltaFrames": 1,
+        "renderMs": 3.1999998092651367,
+        "requiredResources": [
+          "103e09077b2d1c975c67fddd509910640a523e3017ac7909e0074a29a411487a",
+          "2130ba49d8a30e4b6b6a7298b0f61026a12754ac6420d214dc5842c2421c552b",
+          "26488ad5dbb0b43a5642085dc1f6416c987e32e09a49543151d2fba75ff9fa06",
+          "4ddac367bfcc2fcbc4678e484bc9400a9d51aec59038669cce445917235c29c2",
+          "5411f54a491db6f526840c57a7ef74026b3828155f98238343defa36df326b1d",
+          "5e59f5ef95d0615ed8d735b33f363f2cce1d13f1df753c3b898f4a11f73c85cb",
+          "6058a3907826a4e728074f0f4b15199398552cb1da6ef4a2c64e7237349027ec",
+          "6d3576232f7def18ca34dd28889890a06d74e228206af12854e1585d62098103",
+          "8473fafb59e0f6aa7c727940e154ccc23571e82a84ed6ecd9c60ba1468ff06a3",
+          "8a0c10d7afdc6683b08978c76032128a4a1b0796fe54131965104c76b2311f91",
+          "9c664fec2c983f9f068f5b50f27c0f6902ce0b2c0d9b30f4119b7f71832baa18",
+          "b7678a6b9f7c2f75ee650808f1f04a50c0566c0c2c1158e0090921d650dd199f",
+          "bfb0719df76fbd6225250f1c18dc19f67ddc4ff148d03d7f0cfc2a9c0e7bf2d4",
+          "d0fd0d5b53eda8a1b53dad8fec1364def3b9efa5b4b0ee3edc1c1a2daabe8dc6",
+          "e0ec49b659a6ea07e7b1279ccf96c1ed37747644e48be2b9fe79875fc658b04d",
+          "edd9e69237cf5276ad70055c14464e9f11fe88ee526535449a3ddc8a1107a46e",
+          "f67fbb712aa00cc927ce43471e0c067d5ca4bfa0488b242bf023947ff081bda6"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 17,
+          "pictureRasters": 17,
+          "pictureRasterHits": 65,
+          "passRenders": 2,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 85,
+          "receivedBytes": 8155829,
+          "fontBytes": 8135124,
+          "imageBytes": 730,
+          "reusedBytes": 9252,
+          "cacheBytes": 4078249
+        },
+        "worker": true
+      },
+      "viewerSourceRequests": 0,
+      "errors": []
+    },
+    "source": {
+      "dataPlane": {
+        "backend": "rust",
+        "nativeReceipts": 465,
+        "legacyReceipts": 0,
+        "resourceRecordsInNode": 0,
+        "vizScenesInNode": 0
+      },
+      "platform": "linux",
+      "architecture": "arm64",
+      "gpuMode": "software-compositing",
+      "beginFrame": {
+        "mode": "begin-frame",
+        "cadence": "active",
+        "issued": 2003,
+        "acked": 2003,
+        "damaged": 1113,
+        "errors": 0,
+        "lastError": null
+      },
+      "browser": "155.0.8059.79",
+      "stats": {
+        "captures": 465,
+        "errors": 0,
+        "resourceRecoveries": 0,
+        "lastError": null,
+        "recentErrors": [],
+        "lastCaptureMs": 13.421873999999661,
+        "lastMapMs": 2.3610909999988507
+      },
+      "viz": {
+        "received": 466,
+        "rejected": 0,
+        "maxBufferedBytes": 0
+      },
+      "native": {
+        "bitmapGlyphs": 0,
+        "captureId": "34bd99b6-0c2b-4dab-94b4-df68c11e3252",
+        "frameToken": 88,
+        "namespace": [
+          4,
+          13
+        ],
+        "producer": "77:3",
+        "sourceFrame": 39,
+        "timing": {
+          "base64Ms": 0,
+          "cachedLayers": 57,
+          "captureRoundTripMs": 13.42187399999966,
+          "cdpReplyMs": 12.060429999997725,
+          "encodeTotalMs": 1.1990000009536743,
+          "encodingThreads": 1,
+          "fontCacheHits": 0,
+          "fontMs": 0,
+          "glyphCollectionMs": 0,
+          "imageCacheHits": 0,
+          "imageMs": 0,
+          "parallelLayers": 57,
+          "portableMs": 0,
+          "recordingCacheHits": 57,
+          "recordingCacheMisses": 0,
+          "recordingMs": 0.04,
+          "resultAssemblyMs": 0.19,
+          "serializeMs": 0,
+          "vizWaitMs": 1.1513820000036503
+        }
+      },
+      "captures": 465,
+      "demand": 0,
+      "inputSeq": 169,
+      "pageEpoch": 3,
+      "viewportVersion": 2,
+      "viewport": {
+        "cssWidth": 800,
+        "cssHeight": 600,
+        "deviceScaleFactor": 1
+      },
+      "controlMode": "agent",
+      "document": {
+        "name": "初始文字",
+        "saved": "",
+        "editor": "可以在这里输入中文。",
+        "stream": "等待开始……",
+        "scrollY": 375,
+        "elements": {
+          "header": {
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 800,
+              "height": 86
+            },
+            "foreground": [
+              255,
+              255,
+              255
+            ]
+          },
+          "header h1": {
+            "box": {
+              "x": 30,
+              "y": 16,
+              "width": 740,
+              "height": 35
+            },
+            "foreground": [
+              255,
+              255,
+              255
+            ]
+          },
+          "header p": {
+            "box": {
+              "x": 30,
+              "y": 56,
+              "width": 740,
+              "height": 19
+            },
+            "foreground": [
+              189,
+              203,
+              217
+            ]
+          },
+          "#name": {
+            "box": {
+              "x": 51,
+              "y": -173,
+              "width": 300,
+              "height": 41
+            },
+            "foreground": [
+              23,
+              42,
+              64
+            ]
+          },
+          "#save": {
+            "box": {
+              "x": 51,
+              "y": -124,
+              "width": 86,
+              "height": 46
+            },
+            "foreground": [
+              255,
+              255,
+              255
+            ]
+          },
+          "#saved": {
+            "box": {
+              "x": 145,
+              "y": -109,
+              "width": 0,
+              "height": 19
+            },
+            "foreground": [
+              19,
+              102,
+              79
+            ]
+          },
+          "#editor": {
+            "box": {
+              "x": 51,
+              "y": -30,
+              "width": 508.28125,
+              "height": 68
+            },
+            "foreground": [
+              23,
+              42,
+              64
+            ]
+          },
+          "#start-stream": {
+            "box": {
+              "x": 51,
+              "y": 149,
+              "width": 118,
+              "height": 46
+            },
+            "foreground": [
+              255,
+              255,
+              255
+            ]
+          },
+          "#stop-clock": {
+            "box": {
+              "x": 177,
+              "y": 149,
+              "width": 86,
+              "height": 46
+            },
+            "foreground": [
+              255,
+              255,
+              255
+            ]
+          },
+          "#stream": {
+            "box": {
+              "x": 51,
+              "y": 203,
+              "width": 698,
+              "height": 70
+            },
+            "foreground": [
+              28,
+              99,
+              86
+            ]
+          },
+          "#private-image": {
+            "box": {
+              "x": 583.28125,
+              "y": -244,
+              "width": 150,
+              "height": 100
+            },
+            "foreground": [
+              23,
+              42,
+              64
+            ]
+          },
+          "#blob-image": {
+            "box": {
+              "x": 583.28125,
+              "y": -123,
+              "width": 150,
+              "height": 100
+            },
+            "foreground": [
+              23,
+              42,
+              64
+            ]
+          }
+        }
+      }
+    },
+    "macInputToLinux": true,
+    "inputLatency": {
+      "baseline": {
+        "scope": "Viewer keydown to matching native source paint observed in the CanvasKit canvas; excludes physical keyboard and monitor scanout",
+        "samples": [
+          {
+            "key": "A",
+            "inputToPixelsMs": 589.8000001907349,
+            "frameId": 281,
+            "inputSequence": 5,
+            "renderMs": 5.59999942779541
+          },
+          {
+            "key": "B",
+            "inputToPixelsMs": 549.9000005722046,
+            "frameId": 282,
+            "inputSequence": 7,
+            "renderMs": 5.100000381469727
+          },
+          {
+            "key": "C",
+            "inputToPixelsMs": 564.5,
+            "frameId": 283,
+            "inputSequence": 9,
+            "renderMs": 5.5
+          },
+          {
+            "key": "D",
+            "inputToPixelsMs": 549.5,
+            "frameId": 284,
+            "inputSequence": 11,
+            "renderMs": 5.100000381469727
+          },
+          {
+            "key": "E",
+            "inputToPixelsMs": 549,
+            "frameId": 285,
+            "inputSequence": 13,
+            "renderMs": 5.199999809265137
+          },
+          {
+            "key": "F",
+            "inputToPixelsMs": 48,
+            "frameId": 286,
+            "inputSequence": 14,
+            "renderMs": 4.600000381469727
+          },
+          {
+            "key": "G",
+            "inputToPixelsMs": 47.5,
+            "frameId": 287,
+            "inputSequence": 17,
+            "renderMs": 4.699999809265137
+          },
+          {
+            "key": "H",
+            "inputToPixelsMs": 552.8000001907349,
+            "frameId": 288,
+            "inputSequence": 19,
+            "renderMs": 4.5
+          },
+          {
+            "key": "I",
+            "inputToPixelsMs": 569.5999994277954,
+            "frameId": 289,
+            "inputSequence": 21,
+            "renderMs": 4.699999809265137
+          },
+          {
+            "key": "J",
+            "inputToPixelsMs": 569.3000001907349,
+            "frameId": 290,
+            "inputSequence": 23,
+            "renderMs": 5
+          },
+          {
+            "key": "K",
+            "inputToPixelsMs": 51.90000057220459,
+            "frameId": 291,
+            "inputSequence": 25,
+            "renderMs": 5.200000762939453
+          },
+          {
+            "key": "L",
+            "inputToPixelsMs": 51,
+            "frameId": 292,
+            "inputSequence": 26,
+            "renderMs": 8.5
+          },
+          {
+            "key": "M",
+            "inputToPixelsMs": 572.6999998092651,
+            "frameId": 293,
+            "inputSequence": 29,
+            "renderMs": 6.100000381469727
+          },
+          {
+            "key": "N",
+            "inputToPixelsMs": 556.0999994277954,
+            "frameId": 294,
+            "inputSequence": 31,
+            "renderMs": 5.699999809265137
+          },
+          {
+            "key": "O",
+            "inputToPixelsMs": 556.4000005722046,
+            "frameId": 295,
+            "inputSequence": 33,
+            "renderMs": 5.800000190734863
+          },
+          {
+            "key": "P",
+            "inputToPixelsMs": 56.40000057220459,
+            "frameId": 296,
+            "inputSequence": 35,
+            "renderMs": 5.699999809265137
+          }
+        ],
+        "p50Ms": 549.9000005722046,
+        "p95Ms": 589.8000001907349,
+        "maxMs": 589.8000001907349,
+        "meanMs": 402.15000009536743
+      },
+      "optimized": {
+        "scope": "Viewer keydown to matching native source paint observed in the CanvasKit canvas; excludes physical keyboard and monitor scanout",
+        "samples": [
+          {
+            "key": "A",
+            "inputToPixelsMs": 57.40000057220459,
+            "frameId": 299,
+            "inputSequence": 37,
+            "renderMs": 0.6000003814697266
+          },
+          {
+            "key": "B",
+            "inputToPixelsMs": 33.90000057220459,
+            "frameId": 301,
+            "inputSequence": 39,
+            "renderMs": 0.6000003814697266
+          },
+          {
+            "key": "C",
+            "inputToPixelsMs": 50.30000019073486,
+            "frameId": 303,
+            "inputSequence": 41,
+            "renderMs": 0.39999961853027344
+          },
+          {
+            "key": "D",
+            "inputToPixelsMs": 49.30000019073486,
+            "frameId": 305,
+            "inputSequence": 43,
+            "renderMs": 0.5
+          },
+          {
+            "key": "E",
+            "inputToPixelsMs": 48.80000019073486,
+            "frameId": 307,
+            "inputSequence": 45,
+            "renderMs": 0.5
+          },
+          {
+            "key": "F",
+            "inputToPixelsMs": 31.59999942779541,
+            "frameId": 308,
+            "inputSequence": 46,
+            "renderMs": 5
+          },
+          {
+            "key": "G",
+            "inputToPixelsMs": 48.30000019073486,
+            "frameId": 311,
+            "inputSequence": 49,
+            "renderMs": 0.5
+          },
+          {
+            "key": "H",
+            "inputToPixelsMs": 34.80000019073486,
+            "frameId": 312,
+            "inputSequence": 50,
+            "renderMs": 4.800000190734863
+          },
+          {
+            "key": "I",
+            "inputToPixelsMs": 36.90000057220459,
+            "frameId": 315,
+            "inputSequence": 53,
+            "renderMs": 0.5999994277954102
+          },
+          {
+            "key": "J",
+            "inputToPixelsMs": 52,
+            "frameId": 317,
+            "inputSequence": 55,
+            "renderMs": 0.5
+          },
+          {
+            "key": "K",
+            "inputToPixelsMs": 52.5,
+            "frameId": 319,
+            "inputSequence": 57,
+            "renderMs": 0.40000057220458984
+          },
+          {
+            "key": "L",
+            "inputToPixelsMs": 52.30000019073486,
+            "frameId": 321,
+            "inputSequence": 59,
+            "renderMs": 0.8000001907348633
+          },
+          {
+            "key": "M",
+            "inputToPixelsMs": 57.79999923706055,
+            "frameId": 323,
+            "inputSequence": 61,
+            "renderMs": 0.5
+          },
+          {
+            "key": "N",
+            "inputToPixelsMs": 40,
+            "frameId": 324,
+            "inputSequence": 62,
+            "renderMs": 5.899999618530273
+          },
+          {
+            "key": "O",
+            "inputToPixelsMs": 56.30000019073486,
+            "frameId": 329,
+            "inputSequence": 65,
+            "renderMs": 0.5
+          },
+          {
+            "key": "P",
+            "inputToPixelsMs": 40.69999980926514,
+            "frameId": 331,
+            "inputSequence": 67,
+            "renderMs": 0.7000007629394531
+          }
+        ],
+        "p50Ms": 48.80000019073486,
+        "p95Ms": 57.79999923706055,
+        "maxMs": 57.79999923706055,
+        "meanMs": 46.43125009536743
+      },
+      "optimistic": {
+        "scope": "Viewer keydown to optimistic editor DOM mutation; may be superseded before monitor scanout; exact remote SKP/Viz pixels measured separately",
+        "samples": [
+          {
+            "key": "A",
+            "optimisticMs": 0.19999980926513672,
+            "seq": 68,
+            "source": "local"
+          },
+          {
+            "key": "B",
+            "optimisticMs": 0.10000038146972656,
+            "seq": 70,
+            "source": "local"
+          },
+          {
+            "key": "C",
+            "optimisticMs": 18.200000762939453,
+            "seq": 72,
+            "source": "local"
+          },
+          {
+            "key": "D",
+            "optimisticMs": 0.10000038146972656,
+            "seq": 74,
+            "source": "local"
+          },
+          {
+            "key": "E",
+            "optimisticMs": 0.19999980926513672,
+            "seq": 76,
+            "source": "local"
+          },
+          {
+            "key": "F",
+            "optimisticMs": 0.20000076293945312,
+            "seq": 78,
+            "source": "local"
+          },
+          {
+            "key": "G",
+            "optimisticMs": 0.10000038146972656,
+            "seq": 80,
+            "source": "local"
+          },
+          {
+            "key": "H",
+            "optimisticMs": 0.20000076293945312,
+            "seq": 82,
+            "source": "local"
+          },
+          {
+            "key": "I",
+            "optimisticMs": 8.899999618530273,
+            "seq": 84,
+            "source": "local"
+          },
+          {
+            "key": "J",
+            "optimisticMs": 0.19999980926513672,
+            "seq": 86,
+            "source": "local"
+          },
+          {
+            "key": "K",
+            "optimisticMs": 0.10000038146972656,
+            "seq": 88,
+            "source": "local"
+          },
+          {
+            "key": "L",
+            "optimisticMs": 0.10000038146972656,
+            "seq": 90,
+            "source": "local"
+          },
+          {
+            "key": "M",
+            "optimisticMs": 12.59999942779541,
+            "seq": 92,
+            "source": "local"
+          },
+          {
+            "key": "N",
+            "optimisticMs": 0.09999942779541016,
+            "seq": 94,
+            "source": "local"
+          },
+          {
+            "key": "O",
+            "optimisticMs": 0.19999980926513672,
+            "seq": 96,
+            "source": "local"
+          },
+          {
+            "key": "P",
+            "optimisticMs": 0.10000038146972656,
+            "seq": 98,
+            "source": "local"
+          }
+        ],
+        "p50Ms": 0.19999980926513672,
+        "p95Ms": 18.200000762939453,
+        "maxMs": 18.200000762939453,
+        "meanMs": 2.6000001430511475
+      },
+      "inputStyle": {
+        "borderRadius": "6px",
+        "caretColor": "rgb(23, 42, 64)"
+      },
+      "p50ImprovementMs": 501.1000003814697,
+      "p95ImprovementMs": 532.0000009536743
+    },
+    "runtimePerformance": {
+      "scope": "Linux source and native Broker process counters; actual Mac Worker presentation; compositor animation, two-second windows",
+      "oneViewer": {
+        "seconds": 2.1201115679999982,
+        "sourceFramesPerSecond": 49.05402223624869,
+        "cpuCoreEquivalents": {
+          "node": 0.179235850478601,
+          "broker": 0.10848485686862691,
+          "chromium": 0.4858234894551553
+        },
+        "rssBytes": {
+          "node": 187858944,
+          "broker": 77864960,
+          "chromium": 445218816
+        },
+        "peers": [
+          {
+            "id": "native-0",
+            "bytesPerSecond": 1016503.580532325,
+            "framesPerSecond": 48.582348945515534
+          }
+        ],
+        "presentations": [
+          {
+            "framesPerSecond": 47.63900236404921,
+            "lastRenderMs": 2.3000001907348633,
+            "rendererStats": {
+              "pictureDecodes": 20,
+              "pictureRasters": 20,
+              "pictureRasterHits": 5720,
+              "passRenders": 140,
+              "passHits": 4,
+              "isolatedDraws": 0
+            },
+            "assetStats": {
+              "receivedChunks": 52,
+              "receivedBytes": 5040853,
+              "fontBytes": 7663160,
+              "imageBytes": 2190,
+              "reusedBytes": 2642539,
+              "cacheBytes": 5040853
+            }
+          }
+        ]
+      },
+      "twoViewers": {
+        "seconds": 2.165094497,
+        "sourceFramesPerSecond": 47.11110768667756,
+        "cpuCoreEquivalents": {
+          "node": 0.2078431221471069,
+          "chromium": 0.549629589677905,
+          "broker": 0.11546840119283718
+        },
+        "rssBytes": {
+          "node": 188620800,
+          "chromium": 446578688,
+          "broker": 79929344
+        },
+        "peers": [
+          {
+            "id": "native-0",
+            "bytesPerSecond": 976146.3081304021,
+            "framesPerSecond": 46.649234081906215
+          },
+          {
+            "id": "native-1",
+            "bytesPerSecond": 995383.3437691288,
+            "framesPerSecond": 47.57298129144891
+          }
+        ],
+        "presentations": [
+          {
+            "framesPerSecond": 47.11110768667756,
+            "lastRenderMs": 2.3000001907348633,
+            "rendererStats": {
+              "pictureDecodes": 20,
+              "pictureRasters": 20,
+              "pictureRasterHits": 11009,
+              "passRenders": 269,
+              "passHits": 4,
+              "isolatedDraws": 0
+            },
+            "assetStats": {
+              "receivedChunks": 52,
+              "receivedBytes": 5040853,
+              "fontBytes": 7663160,
+              "imageBytes": 2190,
+              "reusedBytes": 2642539,
+              "cacheBytes": 5040853
+            }
+          },
+          {
+            "framesPerSecond": 47.57298129144891,
+            "lastRenderMs": 2.3999996185302734,
+            "rendererStats": {
+              "pictureDecodes": 17,
+              "pictureRasters": 17,
+              "pictureRasterHits": 4493,
+              "passRenders": 110,
+              "passHits": 0,
+              "isolatedDraws": 0
+            },
+            "assetStats": {
+              "receivedChunks": 46,
+              "receivedBytes": 5024087,
+              "fontBytes": 6161913,
+              "imageBytes": 2190,
+              "reusedBytes": 1155423,
+              "cacheBytes": 5024087
+            }
+          }
+        ]
+      }
+    },
+    "steadyInputCaptureErrors": 0,
+    "imeViaActualLocalAndRemoteCDP": true,
+    "physicalOsImeCandidateWindowTested": false,
+    "viewerSourceRequests": 0,
+    "noViewerCapturesInitially": 0,
+    "noViewerCapturesAfterDisconnect": 0,
+    "errors": []
+  },
+  "limitations": [
+    "Sixteen keyboard samples per latency variant; two-second animation metric windows",
+    "Physical keyboard, monitor scanout and physical OS IME candidate windows excluded",
+    "RSS sums include duplicated shared pages",
+    "Baseline disables input capture and uses 120-ms capture pacing plus adaptive clock; it is not the prior product release",
+    "Linux-only latency uses software-compositing Viewer and includes startup outliers; it is not the Mac result",
+    "No sub-30-ms latency claim; unsupported complex page effects and Steel integration remain outside this optimization goal"
+  ]
+}

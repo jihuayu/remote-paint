@@ -62,6 +62,6 @@ Viewer HTTP 及原生 WS 使用相邻端口，例如 4176/4177，都只映射到
 
 Mac 的输入探针在 keydown 后采样已经提交给 HTML canvas 的真实像素，支持 OffscreenCanvas，不以 InputAck 或乐观覆盖层代替原生像素。Linux proof 强制要求 Rust 数据面和实际 Worker Viewer，并记录进入 Node 的资源记录/Viz 场景数必须为零。单/双 Viewer 两秒窗口记录源采集 FPS、每 Peer 发送 FPS/带宽、Mac Worker 实际呈现 FPS/重放耗时、Node/Broker/Chromium 进程 CPU 核当量及 RSS 总和；缺失或非有限指标不能通过验收。RSS 包含进程间共享页的重复计数，不能等同于物理独占内存。
 
-Fixture 测试仅证明各自协议、缓存或 Viewer 边界。完整 Linux 重编、Linux native 套件和 Mac Viewer 验收通过前，不将旧版 150ms 左右的结果或 fixture 的 2–3ms 重放时间当成新链路端到端结果。
+Fixture 测试仅证明各自协议、缓存或 Viewer 边界。2026-10-16 的完整 Linux 重编、无待构建项收据、七项 Linux native 套件和正式 Mac Viewer 验收已通过，见[最终验收](native-final-acceptance.md)。正式 Mac 输入像素 p50/p95 为 48.8/57.8 ms，单 Viewer 47.6 FPS、双 Viewer 各 47.1/47.6 FPS。旧版约 150ms 的结果、早期探针和 fixture 的 2–3ms 重放时间均不作为这次正式链路端到端结果。
 
 2026-10-16 的[实际 Linux → Mac 修复验证](evidence/native-mac-recovery-probe.json)使用三个更新 C++ 对象单独重链的浏览器，已覆盖完整 Mac 功能流程；不代替仍在重建的完整 Ninja 图收据。暂停编译时真实输入像素 p50/p95 为 37.6/57.2 ms（16 次输入），实际 Worker 单 Viewer 约 46 FPS、双 Viewer 各约 48 FPS（两秒窗口）。进入 Node 的资源记录和 Viz 场景均为零，稳定输入采集错误及 BeginFrame 错误均为零。物理键盘、显示器扫描与系统 IME 候选窗口不在本次测量范围。

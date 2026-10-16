@@ -1,0 +1,129 @@
+Native mapper: JS parity, incremental references, checksum, namespace and reset verified
+Native binary Viz: persistent fragmented stream, pairing without Node scene payload, error and unknown frame rejection passed
+Native SKP IPC: fragmented raw payload, out-of-order scene/resources, hash-only epoch reuse, no Node resource bytes passed
+Native tile expansion: pixel composition, seam boundary, rebased coordinates and offscreen hash reuse passed
+{
+  verifiedAt: '2026-10-16T12:16:56.042Z',
+  scope: 'Native Rust SceneMapper + native WebSocket data plane, fixture capture and real CanvasKit Worker',
+  first: {
+    protocol: 4,
+    connectionGeneration: 1,
+    pageEpoch: 1,
+    viewportVersion: 1,
+    frameId: 1,
+    native: {
+      bitmapGlyphs: 0,
+      captureId: 'native-gateway-1',
+      frameToken: 1,
+      namespace: [Array],
+      producer: 'contract-native-broker',
+      sourceFrame: 1,
+      timing: null
+    },
+    lastProcessedInputSeq: 0,
+    resourceBytes: 33594,
+    resources: 1,
+    resourcesReceived: 1,
+    receivedBytes: 35294,
+    fullFrames: 1,
+    deltaFrames: 0,
+    renderMs: 300.40000000596046,
+    requiredResources: [
+      'cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d'
+    ],
+    rendererStats: {
+      pictureDecodes: 1,
+      pictureRasters: 1,
+      pictureRasterHits: 0,
+      passRenders: 1,
+      passHits: 0,
+      isolatedDraws: 0
+    },
+    assetStats: {
+      receivedChunks: 2,
+      receivedBytes: 33594,
+      fontBytes: 0,
+      imageBytes: 0,
+      reusedBytes: 0,
+      cacheBytes: 33594
+    },
+    worker: true
+  },
+  second: {
+    protocol: 4,
+    connectionGeneration: 1,
+    pageEpoch: 1,
+    viewportVersion: 1,
+    frameId: 2,
+    native: {
+      bitmapGlyphs: 0,
+      captureId: 'native-gateway-2',
+      frameToken: 2,
+      namespace: [Array],
+      producer: 'contract-native-broker',
+      sourceFrame: 2,
+      timing: null
+    },
+    lastProcessedInputSeq: 0,
+    resourceBytes: 33594,
+    resources: 1,
+    resourcesReceived: 1,
+    receivedBytes: 36311,
+    fullFrames: 1,
+    deltaFrames: 1,
+    renderMs: 4.5999999940395355,
+    requiredResources: [
+      'cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d'
+    ],
+    rendererStats: {
+      pictureDecodes: 1,
+      pictureRasters: 1,
+      pictureRasterHits: 1,
+      passRenders: 2,
+      passHits: 0,
+      isolatedDraws: 0
+    },
+    assetStats: {
+      receivedChunks: 2,
+      receivedBytes: 33594,
+      fontBytes: 0,
+      imageBytes: 0,
+      reusedBytes: 0,
+      cacheBytes: 33594
+    },
+    worker: true
+  },
+  multipleViewers: true,
+  slowClientClose: 1013,
+  rendererMismatchClose: 1008,
+  missingResourceRecovery: {
+    droppedResources: 1,
+    keyframeRequests: 1,
+    recovered: {
+      protocol: 4,
+      connectionGeneration: 1,
+      pageEpoch: 1,
+      viewportVersion: 1,
+      frameId: 2,
+      native: [Object],
+      lastProcessedInputSeq: 0,
+      resourceBytes: 33594,
+      resources: 1,
+      resourcesReceived: 1,
+      receivedBytes: 37455,
+      fullFrames: 1,
+      deltaFrames: 0,
+      renderMs: 389.29999999701977,
+      requiredResources: [Array],
+      rendererStats: [Object],
+      assetStats: [Object],
+      worker: true
+    },
+    viewerSourceRequests: 0,
+    errors: []
+  },
+  peers: [
+    { id: 'native-0', stats: [Object] },
+    { id: 'native-1', stats: [Object] }
+  ]
+}

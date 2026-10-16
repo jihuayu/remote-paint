@@ -1,0 +1,20 @@
+[==========] Running 6 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 6 tests from RemotePaintSerializer
+[ RUN      ] RemotePaintSerializer.RetainsOriginalGlyphIdsAndPixels
+[       OK ] RemotePaintSerializer.RetainsOriginalGlyphIdsAndPixels (286 ms)
+[ RUN      ] RemotePaintSerializer.BitmapEmojiKeepsOriginalNativePixels
+[       OK ] RemotePaintSerializer.BitmapEmojiKeepsOriginalNativePixels (1 ms)
+[ RUN      ] RemotePaintSerializer.RefusesSmallBudgetInsteadOfDroppingFont
+[       OK ] RemotePaintSerializer.RefusesSmallBudgetInsteadOfDroppingFont (0 ms)
+[ RUN      ] RemotePaintSerializer.ReusesFontSubsetWhenOnlySurroundingRecordingChanges
+[       OK ] RemotePaintSerializer.ReusesFontSubsetWhenOnlySurroundingRecordingChanges (0 ms)
+[ RUN      ] RemotePaintSerializer.IsolationAnalysisPreservesDestructiveBlendSemantics
+[       OK ] RemotePaintSerializer.IsolationAnalysisPreservesDestructiveBlendSemantics (0 ms)
+[ RUN      ] RemotePaintSerializer.NestedPicturesKeepTheirFontCoverage
+[       OK ] RemotePaintSerializer.NestedPicturesKeepTheirFontCoverage (0 ms)
+[----------] 6 tests from RemotePaintSerializer (289 ms total)
+
+[----------] Global test environment tear-down
+[==========] 6 tests from 1 test suite ran. (289 ms total)
+[  PASSED  ] 6 tests.
