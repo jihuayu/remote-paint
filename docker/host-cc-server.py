@@ -28,7 +28,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
             with slots:
                 process=subprocess.run([str(compiler/request['compiler']),*argv],cwd=cwd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=900)
             output=process.stdout.decode('utf8',errors='replace').replace(str(source),'/chromium/src')
-            response=json.dumps({'code':process.returncode,'output':output}).encode()
+            artifacts=[]
+            if process.returncode==0:
+                for flag in ['-o','-MF']:
+                    if flag in argv:
+                        path=(cwd/argv[argv.index(flag)+1]).resolve()
+                        if not path.is_relative_to(source/'out'):raise ValueError('Output outside build directory')
+                        data=path.read_bytes()
+                        artifacts.append({'path':str(path.relative_to(source)),'sha256':hashlib.sha256(data).hexdigest()})
+            response=json.dumps({'code':process.returncode,'output':output,'artifacts':artifacts}).encode()
             self.send_response(200);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(response)));self.end_headers();self.wfile.write(response)
         except Exception as error:
             self.send_error(500,str(error))
