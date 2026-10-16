@@ -79,7 +79,7 @@ async function connect(){
      $('frame').textContent=`第 ${frame.frameId} 帧`;$('mode').textContent=frame.baseFrameId===null?'完整场景':'增量更新';
      $('dimensions').textContent=`${frame.viewport.cssWidth} × ${frame.viewport.cssHeight}`;$('renderTime').textContent=`重放 ${renderMs.toFixed(1)} ms`;$('bytes').textContent=`缓存 ${(gate.bytes/1024).toFixed(0)} KiB`;
      document.body.dataset.ready='true';status('实时绘制中');
-     window.remotePaintResult={protocol:LIVE_VERSION,pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,frameId:frame.frameId,
+     window.remotePaintResult={protocol:LIVE_VERSION,connectionGeneration:current,pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,frameId:frame.frameId,
       native:frame.native,lastProcessedInputSeq:frame.lastProcessedInputSeq,resourceBytes:gate.bytes,resources:gate.resources.size,
       resourcesReceived,receivedBytes,fullFrames:full,deltaFrames:delta,renderMs,requiredResources:frame.requiredResources};
      send({type:'FrameAck',pageEpoch:frame.pageEpoch,frameId:frame.frameId});
