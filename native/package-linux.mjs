@@ -44,6 +44,8 @@ export async function packageLinux({source,cpu,broker,nodeDirectory,destination}
   if(file.startsWith('docs/evidence/')||file.startsWith('.github/'))continue;
   const to=join(root,'app',file);await mkdir(dirname(to),{recursive:true});await copyFile(join(project,file),to);
  }
+ // Nested writable mounts need an existing mountpoint under a read-only app.
+ await mkdir(join(root,'app/artifacts'),{recursive:true});
  await cp(join(project,'node_modules'),join(root,'app/node_modules'),{recursive:true,verbatimSymlinks:true});
  await mkdir(join(root,'app/native/bin'),{recursive:true});await copyFile(broker,join(root,'app/native/bin/remote-paint-broker'));
  await chmod(join(root,'app/native/bin/remote-paint-broker'),0o755);
