@@ -41,7 +41,7 @@ export async function packageLinux({source,cpu,broker,nodeDirectory,destination}
  await mkdir(destination,{recursive:true});await mkdir(root);
  const files=execFileSync('git',['ls-files','-z'],{cwd:project,encoding:'utf8'}).split('\0').filter(Boolean);
  for(const file of files){
-  if(file.startsWith('docs/evidence/')||file.startsWith('.github/')||file.startsWith('examples/'))continue;
+  if(file.startsWith('docs/evidence/')||file.startsWith('.github/'))continue;
   const to=join(root,'app',file);await mkdir(dirname(to),{recursive:true});await copyFile(join(project,file),to);
  }
  await cp(join(project,'node_modules'),join(root,'app/node_modules'),{recursive:true});

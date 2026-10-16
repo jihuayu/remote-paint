@@ -45,7 +45,7 @@ build alone is separate from the Linux-to-Mac latency acceptance results.
 
 The public workflow uses two independent x86_64 build runners to cross-build
 ARM64 and build x86_64 natively with Debian 12 toolchains. Extracted packages
-then receive serializer and native browser smoke checks on their matching
+then receive serializer, native browser, and dynamic Broker/Worker Viewer checks on their matching
 `ubuntu-24.04-arm` / `ubuntu-24.04` runners. The package artifacts remain
 available if a later smoke test fails; check the complete run result.
 

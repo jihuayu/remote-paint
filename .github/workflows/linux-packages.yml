@@ -61,6 +61,7 @@ jobs:
             -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" \
             remote-paint-ci sh /project/docker/build-linux.sh 2>&1 | tee chromium-build.log
       - name: Build Broker and create standalone package
+        id: package
         if: success()
         timeout-minutes: 15
         run: |
@@ -81,6 +82,7 @@ jobs:
             build/chromium/broker-target
           key: ${{ steps.cache.outputs.cache-primary-key }}
       - name: Upload Linux package and checksum
+        if: always() && steps.package.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: remote-paint-linux-${{ matrix.cpu == 'x64' && 'x86_64' || 'arm64' }}
@@ -136,9 +138,10 @@ jobs:
             -v "$package:/package:ro" -v "$PWD/smoke-artifacts:/package/app/artifacts" \
             -w /package/app \
             -e REMOTE_PAINT_CHROMIUM=/package/browser/headless_shell \
+            -e CHROME_EXECUTABLE_PATH=/package/browser/headless_shell \
             -e REMOTE_PAINT_BROKER=/package/app/native/bin/remote-paint-broker \
             remote-paint-runtime sh -c \
-              'cd /package/browser && ./serializer_tests && cd /package/app && /package/node/bin/node tests/verify-native.mjs'
+              'cd /package/browser && ./serializer_tests && cd /package/app && /package/node/bin/node tests/verify-native.mjs && /package/node/bin/node tests/verify-live.mjs'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
