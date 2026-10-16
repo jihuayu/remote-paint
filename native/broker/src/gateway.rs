@@ -88,7 +88,12 @@ impl Gateway {
     }
     pub fn publish(&self, snapshot: Arc<Snapshot>) {
         let mut latest = self.latest.lock().unwrap();
-        if latest.as_ref().is_some_and(|old| old.serial >= snapshot.serial) { return; }
+        if latest
+            .as_ref()
+            .is_some_and(|old| old.serial >= snapshot.serial)
+        {
+            return;
+        }
         *latest = Some(snapshot);
         drop(latest);
         let mut cache = self.deltas.lock().unwrap();

@@ -11,11 +11,11 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
  if(!executablePath)throw new Error('Set REMOTE_PAINT_CHROMIUM to the custom compiled headless_shell (npm run native:chromium)');
  let browser,capture,frameDriver,broker;
  if(process.env.REMOTE_PAINT_DATA_PLANE!=='node')broker=new NativeBroker();
- const viz=await startVizIPC({broker}),token=nativeToken();
+ const viz=await startVizIPC({broker,nativeResources:!!broker}),token=nativeToken();
  try{
   // The token switch installs capture in the Broker's isolated world. Do not
   // enable legacy GPU benchmarking APIs (including disk export) in source JS.
-  browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint,...(broker?{REMOTE_PAINT_TILED_CAPTURE:process.env.REMOTE_PAINT_TILED_CAPTURE??'1'}:{})},args:nativeLaunchArgs(token,{beginFrames})});
+  browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint,...(broker?{REMOTE_PAINT_NATIVE_RESOURCES:'1',REMOTE_PAINT_TILED_CAPTURE:process.env.REMOTE_PAINT_TILED_CAPTURE??'1'}:{})},args:nativeLaunchArgs(token,{beginFrames})});
   const page=await browser.newPage({viewport,deviceScaleFactor:1});
   // Keep the page clock alive during bootstrap: Steel/acceptance setup may
   // still interact with the source before the first Viewer demand arrives.
@@ -44,7 +44,7 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
    try{
     if(source.producer&&source.producer!==native.producer)source.invalidate('producer');source.producer=native.producer;
     const epoch=source.pageEpoch,version=source.viewportVersion;
-    const mapped=broker?await broker.map(native,{epoch,viewport:source.viewport,viewportVersion:version,inputSeq}):source.mapper.map(native,epoch);
+    const mapped=broker?await broker.map(native,{epoch,viewport:source.viewport,viewportVersion:version,inputSeq,metadataOnly:true}):source.mapper.map(native,epoch);
     if(source.pageEpoch!==epoch||source.viewportVersion!==version)return;
     if(!broker)validateScene(mapped.scene,[...mapped.payloads.keys()],source.viewport);
     source.latest={...mapped,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,viewport:{...source.viewport},lastProcessedInputSeq:inputSeq};

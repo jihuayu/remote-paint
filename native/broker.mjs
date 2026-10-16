@@ -16,8 +16,8 @@ export class NativeBroker extends EventEmitter {
   const header=Buffer.alloc(4);header.writeUInt32BE(bytes.length);const packet=Buffer.concat([header,bytes]);
   return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{this.pending.delete(id);reject(new Error(`Native Broker ${op} timeout`));this.child.kill();},15000);this.pending.set(id,{resolve,reject,timer});this.child.stdin.write(packet,error=>{if(error){this.pending.delete(id);clearTimeout(timer);reject(error);}});});
  }
- async map(capture,{epoch,viewport,viewportVersion,inputSeq=0}){
-  const result=await this.request('map',{capture,epoch,viewport,viewportVersion,inputSeq});
+ async map(capture,{epoch,viewport,viewportVersion,inputSeq=0,metadataOnly=false}){
+  const result=await this.request('map',{capture,epoch,viewport,viewportVersion,inputSeq,metadataOnly});
   return {...result.metadata,scene:result.scene,brokerSerial:result.serial,payloads:new Map(result.resources.map(item=>[item.id,{length:item.bytes,byteLength:item.bytes}]))};
  }
  reset(){return this.request('reset');}

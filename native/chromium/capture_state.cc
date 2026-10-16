@@ -17,6 +17,8 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "components/remote_paint/serializer.h"
+#include "components/remote_paint/socket_transport.h"
+#include "base/json/json_writer.h"
 #include "crypto/sha2.h"
 namespace remote_paint {
 namespace {
@@ -29,7 +31,11 @@ struct State {
 };
 State& GetState(){static base::NoDestructor<State> state;return *state;}
 std::atomic<uint64_t>& NextRecordingKey(){static std::atomic<uint64_t> next{1};return next;}
+bool NativeResourceIPC(){
+  static const bool enabled=base::Environment::Create()->GetVar("REMOTE_PAINT_NATIVE_RESOURCES").value_or("")=="1";return enabled;
+}
 struct EncodedLayer {
+  sk_sp<const SkData> payload;
   size_t index = 0;
   int local_id = 0;
   float quad_scale = 0;
@@ -82,7 +88,7 @@ EncodedLayer EncodeLayer(int host, size_t index, LayerRecord record) {
     auto mutable_encoded=std::make_shared<EncodedPicture>();
     mutable_encoded->serialized=std::move(serialized);
     const auto base64_started = base::TimeTicks::Now();
-    mutable_encoded->base64 = base::Base64Encode(UNSAFE_BUFFERS(
+    if(!NativeResourceIPC())mutable_encoded->base64 = base::Base64Encode(UNSAFE_BUFFERS(
         base::span(mutable_encoded->serialized.bytes->bytes(),
                    mutable_encoded->serialized.bytes->size())));
     result.base64_ms = (base::TimeTicks::Now() - base64_started).InMillisecondsF();
@@ -106,6 +112,7 @@ EncodedLayer EncodeLayer(int host, size_t index, LayerRecord record) {
     result.font_ms = encoded->serialized.font_ms;
     result.image_ms = encoded->serialized.image_ms;
   }
+  if(NativeResourceIPC()&&!result.reused)result.payload=encoded->serialized.bytes;
   result.skp = encoded->base64;
   result.asset_ranges=encoded->serialized.asset_ranges;
   result.resource_id = encoded->resource_id;
@@ -145,7 +152,7 @@ base::DictValue EncodeResults(Snapshot snapshot,
     base::ListValue assets;for(const auto& range:encoded.asset_ranges){base::DictValue asset;asset.Set("offset",static_cast<int>(range.offset));asset.Set("bytes",static_cast<int>(range.bytes));asset.Set("kind",range.kind);assets.Append(std::move(asset));}resource.Set("assetRanges",std::move(assets));
     resource.Set("quadScale",encoded.quad_scale);
     resource.Set("resourceId",encoded.resource_id);
-    if(encoded.reused){cached_layers++;}else resource.Set("skp",std::move(encoded.skp));
+    if(encoded.reused){cached_layers++;}else if(!NativeResourceIPC())resource.Set("skp",std::move(encoded.skp));
     resource.Set("width",encoded.width);
     resource.Set("height",encoded.height);
     threads.insert(encoded.thread);
@@ -164,6 +171,18 @@ base::DictValue EncodeResults(Snapshot snapshot,
   timing.Set("fontCacheHits",static_cast<int>(font_cache_hits));timing.Set("imageCacheHits",static_cast<int>(image_cache_hits));
   timing.Set("encodeTotalMs",(base::TimeTicks::Now() - started).InMillisecondsF());
   result.Set("timing",std::move(timing));
+  if(NativeResourceIPC()){
+    result.Set("nativeResources",true);
+    std::string metadata;if(!base::JSONWriter::Write(result,&metadata)){result.Set("error","Native metadata encoding failed");return result;}
+    BinaryWriter wire;wire.Bytes("RPA2");wire.U8(1);wire.U8(1);wire.String(snapshot.capture_id);wire.String(metadata);
+    uint32_t count=0;for(const auto& layer:layers)if(layer.payload)count++;wire.U32(count);
+    for(const auto& layer:layers)if(layer.payload){wire.String(layer.resource_id);wire.U32(layer.payload->size());wire.Bytes(std::string_view(static_cast<const char*>(layer.payload->data()),layer.payload->size()));}
+    static base::NoDestructor<VizSocket> socket(base::Environment::Create()->GetVar("REMOTE_PAINT_SOCKET").value_or(""));
+    if(!socket->Send(wire.bytes))result.Set("error","Native resource IPC failed");
+    // Only a completion receipt traverses CDP/Node. Metadata and raw SKPs stay
+    // in the native data plane, paired with Viz by capture ID.
+    result.Set("resources",base::ListValue());
+  }
   return result;
 }
 }

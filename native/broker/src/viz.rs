@@ -5,7 +5,7 @@ use std::{
     io::Read,
     os::unix::{fs::PermissionsExt, net::UnixListener},
     sync::{
-        Arc, Mutex,
+        Arc, Condvar, Mutex,
         atomic::{AtomicBool, AtomicUsize, Ordering},
     },
     thread,
@@ -14,6 +14,9 @@ use std::{
 pub struct Viz {
     expected: Mutex<HashSet<String>>,
     scenes: Mutex<HashMap<String, Value>>,
+    resources_expected: Mutex<HashSet<String>>,
+    resources: Mutex<HashMap<String, NativeResources>>,
+    resource_ready: Condvar,
     running: AtomicBool,
 }
 impl Viz {
@@ -25,6 +28,9 @@ impl Viz {
         let viz = Arc::new(Self {
             expected: Mutex::new(HashSet::new()),
             scenes: Mutex::new(HashMap::new()),
+            resources_expected: Mutex::new(HashSet::new()),
+            resources: Mutex::new(HashMap::new()),
+            resource_ready: Condvar::new(),
             running: AtomicBool::new(true),
         });
         let owner = viz.clone();
@@ -48,12 +54,39 @@ impl Viz {
                                     break;
                                 }
                                 let length = u32::from_be_bytes(header) as usize;
-                                if length == 0 || length > 256 * 1024 {
+                                if length == 0 || length > 72 * 1024 * 1024 {
                                     emit(json!({"event":"VizRejected"}));
                                     break;
                                 }
                                 let mut bytes = vec![0; length];
                                 if stream.read_exact(&mut bytes).is_err() {
+                                    break;
+                                }
+                                if bytes.starts_with(b"RPA2") {
+                                    match decode_resources(&bytes) {
+                                        Ok(resources) => {
+                                            let id = resources.metadata["captureId"]
+                                                .as_str()
+                                                .unwrap()
+                                                .to_owned();
+                                            if server.resources_expected.lock().unwrap().remove(&id)
+                                            {
+                                                server
+                                                    .resources
+                                                    .lock()
+                                                    .unwrap()
+                                                    .insert(id, resources);
+                                                server.resource_ready.notify_all();
+                                            } else {
+                                                emit(json!({"event":"VizRejected"}));
+                                            }
+                                        }
+                                        Err(_) => emit(json!({"event":"VizRejected"})),
+                                    }
+                                    continue;
+                                }
+                                if bytes.len() > 256 * 1024 {
+                                    emit(json!({"event":"VizRejected"}));
                                     break;
                                 }
                                 match decode(&bytes) {
@@ -87,17 +120,27 @@ impl Viz {
         });
         Ok(viz)
     }
-    pub fn expect(&self, id: &str) -> Result<Value> {
+    pub fn expect(&self, id: &str, resources: bool) -> Result<Value> {
         let mut expected = self.expected.lock().unwrap();
         if expected.len() >= 4 || expected.contains(id) || id.len() > 128 {
             return Err("Viz request unavailable".into());
         }
         expected.insert(id.into());
+        if resources {
+            let mut pending = self.resources_expected.lock().unwrap();
+            if pending.len() >= 4 {
+                expected.remove(id);
+                return Err("Native resource request limit".into());
+            }
+            pending.insert(id.into());
+        }
         Ok(json!(true))
     }
     pub fn cancel(&self, id: &str) {
         self.expected.lock().unwrap().remove(id);
         self.scenes.lock().unwrap().remove(id);
+        self.resources_expected.lock().unwrap().remove(id);
+        self.resources.lock().unwrap().remove(id);
     }
     pub fn take(&self, id: &str) -> Result<Value> {
         self.scenes
@@ -105,6 +148,16 @@ impl Viz {
             .unwrap()
             .remove(id)
             .ok_or("Native Viz pairing unavailable".into())
+    }
+    pub fn take_resources(&self, id: &str) -> Result<NativeResources> {
+        let resources = self.resources.lock().unwrap();
+        let (mut resources, _) = self
+            .resource_ready
+            .wait_timeout_while(resources, Duration::from_secs(3), |r| !r.contains_key(id))
+            .unwrap();
+        resources
+            .remove(id)
+            .ok_or("Native resource pairing unavailable".into())
     }
     pub fn stop(&self) {
         self.running.store(false, Ordering::Relaxed);
@@ -229,4 +282,45 @@ pub fn decode(bytes: &[u8]) -> Result<Value> {
         scene["error"] = json!(error);
     }
     Ok(scene)
+}
+
+pub struct NativeResources {
+    pub metadata: Value,
+    pub blocks: HashMap<String, Vec<u8>>,
+}
+pub fn decode_resources(bytes: &[u8]) -> Result<NativeResources> {
+    let mut r = Reader { bytes, offset: 0 };
+    if r.take(6)? != b"RPA2\x01\x01" {
+        return Err("Invalid resource header".into());
+    }
+    let id = r.string(128)?;
+    let metadata: Value = serde_json::from_str(&r.string(4 * 1024 * 1024)?)
+        .map_err(|_| "Invalid resource metadata")?;
+    if metadata["captureId"] != id || !metadata["resources"].is_array() {
+        return Err("Unpaired resource metadata".into());
+    }
+    let count = r.u32()?;
+    if count > 256 {
+        return Err("Resource count limit".into());
+    }
+    let mut blocks = HashMap::new();
+    let mut total = 0;
+    for _ in 0..count {
+        let hash = r.string(64)?;
+        let length = r.u32()? as usize;
+        total += length;
+        if length < 28 || length > 16 * 1024 * 1024 || total > 64 * 1024 * 1024 {
+            return Err("Resource byte limit".into());
+        }
+        let payload = r.take(length)?;
+        use sha2::{Digest, Sha256};
+        if hash != format!("{:x}", Sha256::digest(payload)) {
+            return Err("Native resource checksum mismatch".into());
+        }
+        blocks.insert(hash, payload.to_vec());
+    }
+    if r.offset != bytes.len() {
+        return Err("Trailing resource bytes".into());
+    }
+    Ok(NativeResources { metadata, blocks })
 }

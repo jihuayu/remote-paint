@@ -3,8 +3,8 @@ import {mkdtemp,chmod,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {decodeVizScene,isBinaryVizScene} from './viz-wire.mjs';
 const MAX=256*1024;
-export async function startVizIPC({broker}={}){
- if(broker)return startNativeVizIPC(broker);
+export async function startVizIPC({broker,nativeResources=false}={}){
+ if(broker)return startNativeVizIPC(broker,nativeResources);
  const directory=await mkdtemp('/tmp/remote-paint-');await chmod(directory,0o700);
  const endpoint=join(directory,'viz.sock');const pending=new Map(),sockets=new Set();let closed=false;
  const stats={received:0,rejected:0,maxBufferedBytes:0};
@@ -50,7 +50,7 @@ export async function startVizIPC({broker}={}){
  };
 }
 
-async function startNativeVizIPC(broker){
+async function startNativeVizIPC(broker,nativeResources){
  const directory=await mkdtemp('/tmp/remote-paint-');await chmod(directory,0o700);
  const endpoint=join(directory,'viz.sock'),pending=new Map(),stats={received:0,rejected:0,maxBufferedBytes:0};let closed=false;
  const cancel=id=>{const waiter=pending.get(id);if(waiter){pending.delete(id);clearTimeout(waiter.timer);waiter.reject(new Error('Capture canceled'));}void broker.request('cancelViz',{captureId:id}).catch(()=>{});};
@@ -60,6 +60,6 @@ async function startNativeVizIPC(broker){
  return {endpoint,stats,waitFor(id,{timeout=6000}={}){
   if(closed||pending.has(id)||pending.size>=4)throw new Error('Viz IPC request unavailable');
   const promise=new Promise((resolve,reject)=>{const timer=setTimeout(()=>{cancel(id);},timeout);pending.set(id,{resolve,reject,timer});});
-  promise.registered=broker.request('expectViz',{captureId:id});promise.registered.catch(error=>{const waiter=pending.get(id);if(waiter){pending.delete(id);clearTimeout(waiter.timer);waiter.reject(error);}});return promise;
+  promise.registered=broker.request('expectViz',{captureId:id,resources:nativeResources});promise.registered.catch(error=>{const waiter=pending.get(id);if(waiter){pending.delete(id);clearTimeout(waiter.timer);waiter.reject(error);}});return promise;
  },cancel,async close(){closed=true;for(const id of pending.keys())cancel(id);broker.off('event',event);await rm(directory,{recursive:true,force:true});}};
 }

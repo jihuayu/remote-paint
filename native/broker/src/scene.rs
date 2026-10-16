@@ -54,6 +54,35 @@ impl Mapper {
         self.revision = 0;
         self.epoch = 0;
     }
+    pub fn ingest_native(
+        &mut self,
+        capture: &Value,
+        mut blocks: HashMap<String, Vec<u8>>,
+    ) -> Result<()> {
+        for record in capture["resources"].as_array().ok_or("Missing resources")? {
+            let id = record["resourceId"].as_str().ok_or("Missing checksum")?;
+            if let Some(payload) = blocks.remove(id) {
+                if !payload.starts_with(b"skiapict") {
+                    return Err("Invalid native SKP".into());
+                }
+                if !self.resources.contains_key(id) {
+                    self.resources.insert(
+                        id.to_owned(),
+                        crate::assets::resource(
+                            payload,
+                            id,
+                            &record["assetRanges"],
+                            &mut self.chunks,
+                        )?,
+                    );
+                }
+            }
+        }
+        if !blocks.is_empty() {
+            return Err("Unreferenced native resource".into());
+        }
+        Ok(())
+    }
     pub fn map(
         &mut self,
         capture: &Value,

@@ -55,11 +55,29 @@ fn main() {
                 }
             }
         }
+        if request["op"] == "map" && request["capture"]["nativeResources"] == true {
+            let capture_id = request["capture"]["captureId"].as_str().unwrap_or("");
+            let result = viz
+                .as_ref()
+                .ok_or("Native resources unavailable".to_string())
+                .and_then(|v| v.take_resources(capture_id))
+                .and_then(|resources| {
+                    mapper.ingest_native(&resources.metadata, resources.blocks)?;
+                    let scene = request["capture"]["viz"].take();
+                    request["capture"] = resources.metadata;
+                    request["capture"]["viz"] = scene;
+                    Ok(())
+                });
+            if let Err(error) = result {
+                emit(json!({"id":id,"error":error}));
+                continue;
+            }
+        }
         let result=match request["op"].as_str(){
  Some("listenViz")=>{if viz.is_some(){Err("Viz already listening".into())}else{viz::Viz::start(request["path"].as_str().unwrap_or("")).map(|v|{viz=Some(v);json!(true)})}},
- Some("expectViz")=>viz.as_ref().ok_or("Viz not listening".into()).and_then(|v|v.expect(request["captureId"].as_str().unwrap_or(""))),
+ Some("expectViz")=>viz.as_ref().ok_or("Viz not listening".into()).and_then(|v|v.expect(request["captureId"].as_str().unwrap_or(""),request["resources"].as_bool().unwrap_or(false))),
  Some("cancelViz")=>{if let Some(v)=&viz{v.cancel(request["captureId"].as_str().unwrap_or(""));}Ok(json!(true))},
- Some("map")=>scene::expand_tiles(&request["capture"]).and_then(|capture|mapper.map(&capture,request["epoch"].as_u64().unwrap_or(0),&request["viewport"],request["viewportVersion"].as_u64().unwrap_or(0),request["inputSeq"].as_u64().unwrap_or(0))).map(|s|{let result=json!({"serial":s.serial,"scene":s.scene,"metadata":s.metadata,"resources":s.resources.iter().map(|(id,r)|json!({"id":id,"bytes":r.payload.len()})).collect::<Vec<_>>()});snapshots.insert(s.serial,s.clone());while snapshots.len()>4{snapshots.pop_first();}latest=Some(s);result}),
+ Some("map")=>scene::expand_tiles(&request["capture"]).and_then(|capture|mapper.map(&capture,request["epoch"].as_u64().unwrap_or(0),&request["viewport"],request["viewportVersion"].as_u64().unwrap_or(0),request["inputSeq"].as_u64().unwrap_or(0))).map(|s|{let result=json!({"serial":s.serial,"scene":if request["metadataOnly"]==true{Value::Null}else{s.scene.clone()},"metadata":s.metadata,"resources":s.resources.iter().map(|(id,r)|json!({"id":id,"bytes":r.payload.len()})).collect::<Vec<_>>()});snapshots.insert(s.serial,s.clone());while snapshots.len()>4{snapshots.pop_first();}latest=Some(s);result}),
  Some("publish")=>{match (&gateway,request["serial"].as_u64().and_then(|serial|snapshots.get(&serial))){(Some(g),Some(s))=>{g.publish(s.clone());Ok(json!(true))},_=>Err("Stale native snapshot".into())}},
  Some("listen")=>{if gateway.is_some(){Err("Gateway already listening".into())}else{gateway::Gateway::start(request["config"].clone()).map(|(g,port)|{if let Some(s)=&latest{g.publish(s.clone());}gateway=Some(g);json!({"port":port})})}},
  Some("send")=>gateway.as_ref().ok_or("Gateway not listening".into()).and_then(|g|g.send(request["peerId"].as_str().unwrap_or(""),request["message"].clone())),
