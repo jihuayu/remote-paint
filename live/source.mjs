@@ -25,7 +25,7 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
   await page.goto(url,{waitUntil:'networkidle'});
   capture=new NativeCapture(page,{token,viz,interval,frameDriver,captureOnInput});await capture.initialize();
   const source=new EventEmitter();Object.assign(source,{page,browser,capture,viz,frameDriver,pageEpoch:1,viewportVersion:1,latest:null,demand:0,inputSeq:0,mapper:broker?null:new SceneMapper(),broker,producer:null,
-   viewport:{cssWidth:viewport.width,cssHeight:viewport.height,deviceScaleFactor:1},stats:{captures:0,errors:0,lastError:null}});
+   viewport:{cssWidth:viewport.width,cssHeight:viewport.height,deviceScaleFactor:1},stats:{captures:0,errors:0,lastError:null,recentErrors:[]}});
   source.setDemand=count=>{
    source.demand=count;capture.setDemand(count);
    if(frameDriver){
@@ -36,7 +36,7 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
   source.requestCapture=()=>capture.requestCapture();
   source.invalidate=reason=>{source.pageEpoch++;source.latest=null;source.mapper?.reset();void broker?.resetScene().catch(error=>source.emit('captureError',error));source.emit('invalidate',reason);};
   capture.on('navigation',()=>source.invalidate('navigation'));
-  const failure=error=>{source.stats.errors++;source.stats.lastError=error.message;source.emit('captureError',error);};
+  const failure=error=>{source.stats.errors++;source.stats.lastError=error.message;source.stats.recentErrors.push({message:error.message,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,captures:source.stats.captures});if(source.stats.recentErrors.length>32)source.stats.recentErrors.shift();source.emit('captureError',error);};
   capture.on('captureError',failure);frameDriver?.on('frameError',failure);
   capture.sampleContext=()=>source.inputSeq;
   broker?.on('failure',failure);
@@ -51,7 +51,7 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
     if(!broker)validateScene(mapped.scene,[...mapped.payloads.keys()],source.viewport);
     source.latest={...mapped,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,viewport:{...source.viewport},lastProcessedInputSeq:inputSeq};
     source.stats.captures++;source.stats.lastError=null;source.emit('frame',source.latest);
-   }catch(error){source.stats.errors++;source.stats.lastError=error.message;source.emit('captureError',error);}
+   }catch(error){failure(error);}
   });
   source.resize=async({width,height})=>{
    if(![width,height].every(n=>Number.isInteger(n)&&n>0&&n<=4096))throw new Error('Invalid source viewport');
