@@ -5,6 +5,7 @@
 #include <set>
 #include <utility>
 #include "base/base64.h"
+#include "base/environment.h"
 #include "base/barrier_callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -22,6 +23,7 @@ namespace {
 struct State {
   base::Lock lock;
   std::atomic<int> pending{0};
+  std::map<std::pair<int,int>,std::array<int,4>> damages;
   std::map<int,std::unique_ptr<CaptureRequest>> requests;
   std::map<int,std::map<uint64_t,std::shared_ptr<const EncodedPicture>>> encodings;
 };
@@ -35,6 +37,8 @@ struct EncodedLayer {
   int height = 0;
   size_t bitmap_glyphs = 0;
   bool requires_isolation = false;
+  bool tiled = false;
+  int tile_x = 0, tile_y = 0;
   size_t byte_size = 0;
   std::string skp;
   std::string error;
@@ -52,6 +56,7 @@ struct EncodedLayer {
 EncodedLayer EncodeLayer(int host, size_t index, LayerRecord record) {
   EncodedLayer result;
   result.index = index;
+  result.tiled = record.tiled;result.tile_x=record.tile_x;result.tile_y=record.tile_y;
   result.local_id = record.local_id;
   result.quad_scale = record.quad_scale;
   result.width = record.picture->cullRect().width();
@@ -129,6 +134,7 @@ base::DictValue EncodeResults(Snapshot snapshot,
     }
     base::DictValue resource;
     resource.Set("localId",encoded.local_id);
+    if(encoded.tiled){base::ListValue origin;origin.Append(encoded.tile_x);origin.Append(encoded.tile_y);resource.Set("tileOrigin",std::move(origin));}
     resource.Set("bitmapGlyphs",static_cast<int>(encoded.bitmap_glyphs));
     resource.Set("requiresIsolation",encoded.requires_isolation);
     resource.Set("quadScale",encoded.quad_scale);
@@ -177,6 +183,20 @@ std::unique_ptr<CaptureRequest> TakeCapture(int host){
   base::AutoLock lock(state.lock);auto it=state.requests.find(host);
   if(it==state.requests.end())return nullptr;
   auto result=std::move(it->second);state.requests.erase(it);state.pending.fetch_sub(1,std::memory_order_relaxed);return result;
+}
+bool IsTiledCaptureEnabled(){
+  static const bool enabled=base::Environment::Create()->GetVar("REMOTE_PAINT_TILED_CAPTURE").value_or("")=="1";
+  return enabled;
+}
+void TrackLayerDamage(int host,int layer,int x,int y,int width,int height){
+  if(!IsTiledCaptureEnabled()||width<=0||height<=0)return;
+  auto& state=GetState();base::AutoLock lock(state.lock);
+  if(state.damages.size()>4096)state.damages.clear();
+  auto [it,inserted]=state.damages.try_emplace({host,layer},std::array<int,4>{x,y,x+width,y+height});
+  if(!inserted){auto& r=it->second;r[0]=std::min(r[0],x);r[1]=std::min(r[1],y);r[2]=std::max(r[2],x+width);r[3]=std::max(r[3],y+height);}
+}
+std::optional<std::array<int,4>> TakeLayerDamage(int host,int layer){
+  auto& state=GetState();base::AutoLock lock(state.lock);auto it=state.damages.find({host,layer});if(it==state.damages.end())return std::nullopt;auto result=it->second;state.damages.erase(it);return result;
 }
 uint64_t NewRecordingKey(){
   auto key=NextRecordingKey().fetch_add(1,std::memory_order_relaxed);

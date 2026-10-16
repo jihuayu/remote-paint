@@ -1,6 +1,8 @@
 #ifndef COMPONENTS_REMOTE_PAINT_CAPTURE_STATE_H_
 #define COMPONENTS_REMOTE_PAINT_CAPTURE_STATE_H_
 #include <cstdint>
+#include <array>
+#include <optional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -20,6 +22,9 @@ struct LayerRecord {
   sk_sp<const SkPicture> picture;
   uint64_t recording_key = 0;
   std::shared_ptr<const EncodedPicture> encoded;
+  bool tiled = false;
+  int tile_x = 0;
+  int tile_y = 0;
 };
 struct Snapshot {
   std::string capture_id, producer, recording_thread, error;
@@ -38,6 +43,9 @@ struct CaptureRequest {
 bool RequestCapture(int host, std::string capture_id,
                     base::OnceCallback<void(base::DictValue)> reply);
 std::unique_ptr<CaptureRequest> TakeCapture(int host);
+bool IsTiledCaptureEnabled();
+void TrackLayerDamage(int host, int layer, int x, int y, int width, int height);
+std::optional<std::array<int, 4>> TakeLayerDamage(int host, int layer);
 uint64_t NewRecordingKey();
 std::shared_ptr<const EncodedPicture> LookupCachedEncoding(int host,
                                                             uint64_t key);

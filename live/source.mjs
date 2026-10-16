@@ -15,7 +15,7 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
  try{
   // The token switch installs capture in the Broker's isolated world. Do not
   // enable legacy GPU benchmarking APIs (including disk export) in source JS.
-  browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:nativeLaunchArgs(token,{beginFrames})});
+  browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint,...(broker?{REMOTE_PAINT_TILED_CAPTURE:process.env.REMOTE_PAINT_TILED_CAPTURE??'1'}:{})},args:nativeLaunchArgs(token,{beginFrames})});
   const page=await browser.newPage({viewport,deviceScaleFactor:1});
   // Keep the page clock alive during bootstrap: Steel/acceptance setup may
   // still interact with the source before the first Viewer demand arrives.

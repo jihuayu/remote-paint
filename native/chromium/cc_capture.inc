@@ -31,6 +31,52 @@ if (auto request = remote_paint::TakeCapture(id())) {
     }
     const int local_id = layer->stable_id_for_shared_quad_state();
     scoped_refptr<const RasterSource> source_ref = source;
+    if (remote_paint::IsTiledCaptureEnabled()) {
+      struct TileRecord {
+        sk_sp<const SkPicture> picture;
+        uint64_t key = 0;
+      };
+      struct TiledLayer {
+        scoped_refptr<const RasterSource> source;
+        RemotePaintDisplayList display_list = nullptr;
+        std::map<std::pair<int,int>,TileRecord> tiles;
+      };
+      static base::NoDestructor<std::map<int,std::map<int,TiledLayer>>> tiled_caches;
+      auto& host_tiles=(*tiled_caches)[id()];
+      if(host_tiles.size()>512)host_tiles.clear();
+      auto& cache=host_tiles[local_id];
+      const auto damage=remote_paint::TakeLayerDamage(id(),local_id);
+      const bool unchanged=cache.source.get()==source_ref.get()&&cache.display_list==source->GetDisplayItemList().get();
+      const bool size_changed=!cache.source||cache.source->size()!=source->size();
+      std::map<std::pair<int,int>,TileRecord> next;
+      for(int y=0;y<source->size().height();y+=256) {
+        for(int x=0;x<source->size().width();x+=256) {
+          if(snapshot.records.size()>=256){snapshot.error="Tile recording budget exceeded";break;}
+          const gfx::Rect tile(x,y,std::min(256,source->size().width()-x),std::min(256,source->size().height()-y));
+          const auto tile_id=std::make_pair(x,y);
+          auto found=cache.tiles.find(tile_id);
+          const bool damaged=damage&&tile.Intersects(gfx::Rect((*damage)[0],(*damage)[1],(*damage)[2]-(*damage)[0],(*damage)[3]-(*damage)[1]));
+          TileRecord record;
+          if(found!=cache.tiles.end()&&!size_changed&&(!damaged&&(unchanged||damage.has_value()))) {
+            record=found->second;snapshot.recording_cache_hits++;
+          } else {
+            SkPictureRecorder recorder;
+            auto* canvas=recorder.beginRecording(tile.width(),tile.height());
+            RasterSource::PlaybackSettings settings;settings.use_lcd_text=false;
+            auto offsets=static_cast<PictureLayerTilingClient*>(picture_layer)->GetRasterInducingScrollOffsets();settings.raster_inducing_scroll_offsets=&offsets;
+            source->PlaybackToCanvas(canvas,source->size(),tile,tile,gfx::AxisTransform2d(),settings);
+            record={recorder.finishRecordingAsPicture(),remote_paint::NewRecordingKey()};snapshot.recording_cache_misses++;
+          }
+          auto encoded=remote_paint::LookupCachedEncoding(id(),record.key);
+          snapshot.records.push_back({local_id,picture_layer->GetMaximumContentsScaleForUseInAppendQuads(),record.picture,record.key,std::move(encoded),true,x,y});
+          next.emplace(tile_id,std::move(record));
+        }
+        if(!snapshot.error.empty())break;
+      }
+      cache={source_ref,static_cast<RemotePaintDisplayList>(source->GetDisplayItemList().get()),std::move(next)};
+      if(!snapshot.error.empty())break;
+      continue;
+    }
     auto cached = layer_cache.find(local_id);
     sk_sp<const SkPicture> picture;
     std::shared_ptr<const remote_paint::EncodedPicture> encoded;

@@ -1,0 +1,23 @@
+--- a/cc/layers/picture_layer_impl.cc
++++ b/cc/layers/picture_layer_impl.cc
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
+ 
+ #include "cc/layers/picture_layer_impl.h"
++#include "components/remote_paint/capture_state.h"
+ 
+ #include <stddef.h>
+ #include <stdint.h>
+@@ -604,6 +605,12 @@
+ 
+   // The |new_invalidation| must be cleared before updating tilings since they
+   // access the invalidation through the PictureLayerTilingClient interface.
++  if (remote_paint::IsTiledCaptureEnabled()) {
++    for (const auto& rect : new_invalidation) {
++      remote_paint::TrackLayerDamage(layer_tree_impl()->host_impl()->id(),
++          stable_id_for_shared_quad_state(),rect.x(),rect.y(),rect.width(),rect.height());
++    }
++  }
+   invalidation_ = std::move(new_invalidation);
+ 
+   bool can_have_tilings = CanHaveTilings();

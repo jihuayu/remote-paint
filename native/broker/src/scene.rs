@@ -81,8 +81,47 @@ impl Mapper {
             return Err("Native scene budget exceeded".into());
         }
         let mut by_id = HashMap::new();
+        let mut hashes = HashMap::new();
         for record in records {
             let id = record["localId"].as_i64().ok_or("Invalid content ID")?;
+            let hash;
+            if let Some(encoded) = record["skp"].as_str() {
+                if encoded.len() > 24 * 1024 * 1024 {
+                    return Err("Resource byte budget exceeded".into());
+                }
+                let payload = STANDARD
+                    .decode(encoded)
+                    .map_err(|_| "Invalid native SKP base64")?;
+                if payload.len() < 28
+                    || payload.len() > 16 * 1024 * 1024
+                    || !payload.starts_with(b"skiapict")
+                {
+                    return Err("Invalid native SKP".into());
+                }
+                hash = format!("{:x}", Sha256::digest(&payload));
+                if record["resourceId"].as_str().is_some_and(|id| id != hash) {
+                    return Err("Native resource checksum mismatch".into());
+                }
+                if !self.resources.contains_key(&hash) {
+                    let mut wire = b"RPNT\x01\x01\0\0".to_vec();
+                    wire.extend((payload.len() as u32).to_be_bytes());
+                    wire.extend(Sha256::digest(&payload));
+                    wire.extend(&payload);
+                    self.resources.insert(
+                        hash.clone(),
+                        Resource {
+                            payload: Bytes::from(payload),
+                            wire: Bytes::from(wire),
+                        },
+                    );
+                }
+            } else {
+                hash = record["resourceId"]
+                    .as_str()
+                    .ok_or("Missing native resource checksum")?
+                    .to_owned();
+            }
+            hashes.insert(id, hash);
             if by_id.insert(id, record).is_some() {
                 return Err("Duplicate content ID".into());
             }
@@ -181,43 +220,7 @@ impl Mapper {
                             local
                         );
                         if !entries.contains_key(&logical) {
-                            let hash;
-                            if let Some(encoded) = r["skp"].as_str() {
-                                if encoded.len() > 24 * 1024 * 1024 {
-                                    return Err("Resource byte budget exceeded".into());
-                                }
-                                let payload = STANDARD
-                                    .decode(encoded)
-                                    .map_err(|_| "Invalid native SKP base64")?;
-                                if payload.len() < 28
-                                    || payload.len() > 16 * 1024 * 1024
-                                    || !payload.starts_with(b"skiapict")
-                                {
-                                    return Err("Invalid native SKP".into());
-                                }
-                                hash = format!("{:x}", Sha256::digest(&payload));
-                                if r["resourceId"].as_str().is_some_and(|id| id != hash) {
-                                    return Err("Native resource checksum mismatch".into());
-                                }
-                                if !self.resources.contains_key(&hash) {
-                                    let mut wire = b"RPNT\x01\x01\0\0".to_vec();
-                                    wire.extend((payload.len() as u32).to_be_bytes());
-                                    wire.extend(Sha256::digest(&payload));
-                                    wire.extend(&payload);
-                                    self.resources.insert(
-                                        hash.clone(),
-                                        Resource {
-                                            payload: Bytes::from(payload),
-                                            wire: Bytes::from(wire),
-                                        },
-                                    );
-                                }
-                            } else {
-                                hash = r["resourceId"]
-                                    .as_str()
-                                    .ok_or("Missing native resource checksum")?
-                                    .to_owned();
-                            }
+                            let hash = hashes[&local].clone();
                             let resource = self
                                 .resources
                                 .get(&hash)
@@ -244,7 +247,7 @@ impl Mapper {
                             ("requiresIsolation", json!(r["requiresIsolation"] != false)),
                             (
                                 "source",
-                                json!({"namespace":q["namespace"],"stableLayerId":local,"vizResource":q["vizResource"]}),
+                                json!({"namespace":q["namespace"],"stableLayerId":r.get("sourceLocalId").unwrap_or(&q["localId"]),"vizResource":q["vizResource"]}),
                             ),
                         ] {
                             out[key] = value;
@@ -266,7 +269,8 @@ impl Mapper {
             .filter(|n| *n > 0 && *n <= 4096)
             .ok_or("Invalid viewport")?;
         if viewport["deviceScaleFactor"] != 1
-            || numbers(&mapped.last().unwrap()["output"],4)? != vec![0.,0.,width as f64,height as f64]
+            || numbers(&mapped.last().unwrap()["output"], 4)?
+                != vec![0., 0., width as f64, height as f64]
         {
             return Err("Root viewport mismatch".into());
         }
@@ -294,7 +298,8 @@ impl Mapper {
             .sum::<usize>()
             > CACHE_BYTES
         {
-            self.resources.retain(|id, _| resources.contains_key(id));
+            self.resources
+                .retain(|id, _| hashes.values().any(|hash| hash == id));
         }
         self.serial += 1;
         let mut required: Vec<_> = resources.keys().cloned().collect();
@@ -329,4 +334,78 @@ fn numbers(value: &Value, count: usize) -> Result<Vec<f64>> {
                 .ok_or("Invalid native number".into())
         })
         .collect()
+}
+
+// Expand one Chromium layer into disjoint picture quads. Composition remains
+// in Viz coordinates; a tile's SKP starts at (0,0), so its content origin moves
+// by the tile offset at the native content scale. The hard clip avoids seams
+// caused by replaying another tile's destructive clear.
+pub fn expand_tiles(capture: &Value) -> Result<Value> {
+    let records = capture["resources"].as_array().ok_or("Missing resources")?;
+    if !records.iter().any(|r| !r["tileOrigin"].is_null()) {
+        return Ok(capture.clone());
+    }
+    let mut result = capture.clone();
+    let mut resources = vec![];
+    let mut groups: HashMap<i64, Vec<Value>> = HashMap::new();
+    for r in records {
+        let local = r["localId"]
+            .as_i64()
+            .filter(|id| id.abs() <= i32::MAX as i64)
+            .ok_or("Invalid tile layer ID")?;
+        let origin = numbers(&r["tileOrigin"], 2)?;
+        let x = origin[0];
+        let y = origin[1];
+        if x < 0. || y < 0. || x >= 8192. || y >= 8192. || x % 256. != 0. || y % 256. != 0. {
+            return Err("Invalid tile origin".into());
+        }
+        let id = local * 1024 + (y as i64 / 256) * 32 + (x as i64 / 256);
+        let mut tile = r.clone();
+        tile["localId"] = json!(id);
+        tile["sourceLocalId"] = json!(local);
+        resources.push(tile.clone());
+        groups.entry(local).or_default().push(tile);
+    }
+    result["resources"] = json!(resources);
+    let passes = result["viz"]["passes"]
+        .as_array_mut()
+        .ok_or("Missing Viz passes")?;
+    for pass in passes {
+        let mut quads = vec![];
+        for q in pass["quads"].as_array().ok_or("Missing quads")? {
+            if q["kind"] != "picture" {
+                quads.push(q.clone());
+                continue;
+            }
+            let tiles = groups
+                .get(&q["localId"].as_i64().ok_or("Invalid layer")?)
+                .ok_or("Missing tile group")?;
+            let content = numbers(&q["contentOrigin"], 2)?;
+            let visible = numbers(&q["visible"], 4)?;
+            for tile in tiles {
+                let scale = tile["quadScale"].as_f64().ok_or("Invalid tile scale")?;
+                let origin = numbers(&tile["tileOrigin"], 2)?;
+                let x = content[0] + origin[0] * scale;
+                let y = content[1] + origin[1] * scale;
+                let width = tile["width"].as_f64().ok_or("Invalid tile width")?;
+                let height = tile["height"].as_f64().ok_or("Invalid tile height")?;
+                let area = [
+                    x.max(visible[0]),
+                    y.max(visible[1]),
+                    (x + width * scale).min(visible[2]),
+                    (y + height * scale).min(visible[3]),
+                ];
+                if area[2] <= area[0] || area[3] <= area[1] {
+                    continue;
+                }
+                let mut out = q.clone();
+                out["localId"] = tile["localId"].clone();
+                out["visible"] = json!(area);
+                out["contentOrigin"] = json!([x, y]);
+                quads.push(out);
+            }
+        }
+        pass["quads"] = json!(quads);
+    }
+    Ok(result)
 }
