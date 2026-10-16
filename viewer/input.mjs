@@ -37,7 +37,7 @@ export class ViewerInput {
  welcome(message){this.reset();this.frame=null;this.enabled=message.input;this.sessionId=message.sessionId;this.peerId=message.peerId;this.button.hidden=!this.enabled;}
  display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=frame;this.lastFrameInputSeq=Math.max(this.lastFrameInputSeq,frame.lastProcessedInputSeq??0);if(this.overlaySeq&&this.lastFrameInputSeq>=this.overlaySeq)this.clearOptimistic();this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);}
  reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.pending=null;this.queue=[];this.composing=false;this.proxy.value='';this.proxy.blur();this.clearOptimistic();this.lastFrameInputSeq=0;this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
- clearOptimistic(){this.overlaySeq=0;if(this.overlay)this.overlay.replaceChildren();}
+ clearOptimistic(){this.overlaySeq=0;if(this.overlay)this.overlay.replaceChildren();window.remotePaintOptimistic=null;}
  showOptimistic(seq,state){
   if(!this.overlay||!this.frame||!state||!['input','textarea','contenteditable'].includes(state.kind))return;
   const values=['x','y','width','height'].map(key=>state[key]);if(!values.every(Number.isFinite)||values.some(value=>value<0)||state.width<=0||state.height<=0||typeof state.text!=='string'||state.text.length>8192)return;

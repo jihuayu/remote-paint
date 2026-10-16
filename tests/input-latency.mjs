@@ -46,3 +46,28 @@ export async function measureInputLatency(page,point,{samples=16}={}){
  const sorted=results.map(r=>r.inputToPixelsMs).sort((a,b)=>a-b),percentile=p=>sorted[Math.ceil(sorted.length*p)-1];
  return {scope:'Viewer keydown to matching native source paint observed in the CanvasKit canvas; excludes physical keyboard and monitor scanout',samples:results,p50Ms:percentile(0.5),p95Ms:percentile(0.95),maxMs:sorted.at(-1),meanMs:sorted.reduce((a,b)=>a+b,0)/sorted.length};
 }
+
+export async function measureOptimisticLatency(page,{samples=16}={}){
+ const results=[];
+ for(let i=0;i<samples;i++){
+  const key=String.fromCharCode(65+i),previous=await page.evaluate(()=>window.remotePaintOptimistic?.seq??0);
+  await page.evaluate(({key,previous})=>{
+   const proxy=document.querySelector('#inputProxy');window.optimisticLatencySample=null;
+   proxy.addEventListener('keydown',function pressed(event){
+    if(event.key!==key)return;proxy.removeEventListener('keydown',pressed,true);const start=performance.now();
+    function observe(){
+     const result=window.remotePaintOptimistic,overlay=document.querySelector('#optimisticOverlay .optimistic-input');
+     if(result?.seq>previous&&overlay){window.optimisticLatencySample={key,optimisticMs:result.shownAt-start,seq:result.seq};return;}
+     if(performance.now()-start>5000){window.optimisticLatencySample={error:'No optimistic overlay within 5 seconds',key,previous,seq:result?.seq??0};return;}
+     requestAnimationFrame(observe);
+    }
+    requestAnimationFrame(observe);
+   },true);
+  },{key,previous});
+  await page.keyboard.type(key);await page.waitForFunction(()=>window.optimisticLatencySample!==null,null,{timeout:6000});
+  const sample=await page.evaluate(()=>window.optimisticLatencySample);assert.equal(sample.error,undefined,JSON.stringify(sample));results.push(sample);
+  await page.waitForTimeout(13+i*17%89);
+ }
+ const sorted=results.map(r=>r.optimisticMs).sort((a,b)=>a-b),percentile=p=>sorted[Math.ceil(sorted.length*p)-1];
+ return {scope:'Viewer keydown to optimistic editor overlay; exact remote SKP/Viz correction is measured separately',samples:results,p50Ms:percentile(0.5),p95Ms:percentile(0.95),maxMs:sorted.at(-1),meanMs:sorted.reduce((a,b)=>a+b,0)/sorted.length};
+}

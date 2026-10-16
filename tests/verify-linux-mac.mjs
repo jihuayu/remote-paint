@@ -9,7 +9,7 @@ import {launchCaptureBrowser} from '../capture/browser.mjs';
 import {assertPrivateImagePixels} from './image-pixels.mjs';
 import {assertTextInk} from './text-pixels.mjs';
 import {recoverDroppedResource} from './fault-viewer.mjs';
-import {measureInputLatency} from './input-latency.mjs';
+import {measureInputLatency,measureOptimisticLatency} from './input-latency.mjs';
 assert.equal(process.platform,'darwin','The Viewer acceptance must run on the Mac host');
 const directory=resolve(process.env.REMOTE_PAINT_LINUX_PROOF??'artifacts/linux-mac');
 const ready=JSON.parse(await readFile(join(directory,'ready.json'),'utf8'));
@@ -84,7 +84,8 @@ try{
  const baseline=await measureInputLatency(page,latencyProbe);
  const optimizedProbe=(await command('latency-optimized')).probe;
  const optimized=await measureInputLatency(page,optimizedProbe);
- const inputLatency={baseline,optimized,inputStyle:optimizedProbe.inputStyle,p50ImprovementMs:baseline.p50Ms-optimized.p50Ms,p95ImprovementMs:baseline.p95Ms-optimized.p95Ms};
+ const optimistic=await measureOptimisticLatency(page);
+ const inputLatency={baseline,optimized,optimistic,inputStyle:optimizedProbe.inputStyle,p50ImprovementMs:baseline.p50Ms-optimized.p50Ms,p95ImprovementMs:baseline.p95Ms-optimized.p95Ms};
  await writeFile(join(directory,'input-latency.json'),JSON.stringify(inputLatency,null,2));
  assert.ok(optimized.p50Ms<baseline.p50Ms,`Input capture did not improve median latency: ${JSON.stringify(inputLatency)}`);
  const latencyState=(await command('latency-done')).state;
