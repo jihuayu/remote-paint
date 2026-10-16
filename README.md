@@ -2,13 +2,15 @@
 
 源 Chromium 执行网页 JS、DOM 和布局；原生组件录制光栅化前的 SKP，按同一 captureId 与真实 aggregated Viz 场景配对；独立 Viewer 用 CanvasKit 重放。绘图流只包含 SKP 和场景元数据，源 HTML、JS、URL、Cookie 及对照截图不发送给 Viewer。
 
-本次范围为路线 **3–7**，并扩展到 Mac 本机 Docker 中的 Linux ARM64、BeginFrame 和输入延迟优化。Linux ARM64 浏览器已在 OrbStack 中完成编译，Linux 原生套件和 Mac Viewer 远控验收均已通过；完整收据见 [Linux ARM64 + Mac 验收](docs/evidence/linux-arm64-mac-acceptance.json)。iframe/复杂效果回退、Steel/Gateway 接入和生产解码隔离尚未实现。
+本项目覆盖路线 **3–7**，并扩展到 Mac 本机 Docker 中的 Linux ARM64、BeginFrame 和下述 1–8 项优化。升级前完整验收保留为[历史基线](docs/evidence/linux-arm64-mac-acceptance.json)，新版验证进度见下一节。iframe/复杂效果回退、Steel/Gateway 接入和生产解码隔离尚未实现。
 
 ## 原生数据面升级（2026-10-16）
 
 1–8 项优化和原生 Broker/Gateway 已落到代码，设计、协议和每项验证入口见 [原生数据面说明](docs/native-data-plane.md)。默认使用 Rust SceneMapper/资源去重/WS Peer，Chromium 通过常驻二进制 IPC 直接传送场景和原始 SKP；Node 负责控制面。Viewer 的 WS、校验、CanvasKit 和 OffscreenCanvas 在 Worker 中运行。
 
-当前新增路径已通过 50 项单元测试、原生 Mapper/IPC/分块资源验证，以及双 Worker Viewer、慢连接、异常 ACK、导航 epoch 和丢资源恢复的 fixture 验证。Linux ARM64 完整 Chromium 正在保留缓存重编，新版本端到端延迟尚待 Linux + Mac 验收；**下方已有延迟和 native 报告是升级前基线**。
+当前新增路径已通过 58 项单元测试、原生 Mapper/IPC/分块资源验证和实际 Linux ARM64 → Mac Worker 功能检查。资源修复验证浏览器以三个更新的 C++ 对象单独重链，已通过原生字节重发、Broker 缓存清空恢复、连续五次导航/resize，以及 Mac 输入、双 Viewer、图文像素和丢资源恢复；[完整测量收据](docs/evidence/native-mac-recovery-probe.json)明确记录了该构建边界。
+
+暂停编译负载后，16 次真实输入到 CanvasKit 像素的 p50/p95 为 **37.6/57.2 ms**，单 Viewer 约 **46 FPS**，双 Viewer 各约 **48 FPS**；尚未达到 30 ms。全量编译并行时 p50/p95 为 57.0/82.2 ms。Linux 完整 Ninja 图仍在保留缓存重建，最终 no-pending-work 收据及完整 Linux 套件尚待完成；**下方已有延迟和 native 报告是升级前基线**。
 
 先执行 `npm run native:broker` 构建当前宿主机的 Broker。Linux 版本必须单独构建为 AArch64 ELF，通过 `REMOTE_PAINT_BROKER` 指定；运行容器需要同时映射 UI 4176 和原生 WS 4177。`REMOTE_PAINT_DATA_PLANE=node` 可切换兼容路径，`?mainThread` 可切换主线程 Viewer。
 
