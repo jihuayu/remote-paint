@@ -9,7 +9,7 @@ import {nativeRuntimeInfo} from '../native/launch.mjs';
 import {installInputLatencyProbe,measureInputLatency} from './input-latency.mjs';
 
 const directory=resolve(process.env.REMOTE_PAINT_LATENCY_OUTPUT??'artifacts/latency');
-const interval=Number(process.env.REMOTE_PAINT_CAPTURE_INTERVAL??120);
+const interval=Number(process.env.REMOTE_PAINT_CAPTURE_INTERVAL??(1000/60));
 const captureOnInput=process.env.REMOTE_PAINT_INPUT_CAPTURE!=='0';
 const live=await startLive({port:0,interval,captureOnInput}),source=live.source;
 const browserHash=createHash('sha256');for await(const bytes of createReadStream(process.env.REMOTE_PAINT_CHROMIUM))browserHash.update(bytes);

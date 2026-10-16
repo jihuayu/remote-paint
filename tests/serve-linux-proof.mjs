@@ -47,9 +47,9 @@ async function poll(){
      case 'resize':await source.resize({width:800,height:600});break;
      case 'reset':await source.resize({width:960,height:640});await source.page.reload();break;
      case 'screenshot':await source.page.screenshot({path:join(directory,`source-${command.id}.png`)});break;
-     case 'latency-baseline':source.capture.captureOnInput=false;probe=await installInputLatencyProbe(source.page);break;
-     case 'latency-optimized':source.capture.captureOnInput=true;probe=await installInputLatencyProbe(source.page);break;
-     case 'latency-done':source.capture.captureOnInput=true;await source.page.evaluate(()=>window.removeInputLatencyProbe?.());break;
+     case 'latency-baseline':source.capture.interval=120;source.capture.captureOnInput=false;probe=await installInputLatencyProbe(source.page);break;
+     case 'latency-optimized':source.capture.interval=1000/60;source.capture.captureOnInput=true;probe=await installInputLatencyProbe(source.page);break;
+     case 'latency-done':source.capture.interval=1000/60;source.capture.captureOnInput=true;await source.page.evaluate(()=>window.removeInputLatencyProbe?.());break;
      default:throw new Error('Unknown Linux proof operation');
     }
     await atomic('response.json',{id:command.id,state:await snapshot(),probe,metrics,screenshot:command.op==='screenshot'?`source-${command.id}.png`:null});

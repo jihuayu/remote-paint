@@ -23,12 +23,13 @@ export async function measureInputLatency(page,point,{samples=16}={}){
   const key=String.fromCharCode(65+i),code=key.charCodeAt(0),rgb=[32+code*53%192,32+code*97%192,32+code*131%192];
   await page.evaluate(({key,rgb,point})=>{
    const proxy=document.querySelector('#inputProxy'),canvas=document.querySelector('canvas');
+   const sampleCanvas=document.createElement('canvas');sampleCanvas.width=sampleCanvas.height=1;const sampleContext=sampleCanvas.getContext('2d',{willReadFrequently:true});
    window.inputLatencySample=null;
    proxy.addEventListener('keydown',function pressed(event){
     if(event.key!==key)return;proxy.removeEventListener('keydown',pressed,true);
     const start=performance.now(),previous=window.remotePaintResult?.lastProcessedInputSeq??0;
     function observe(){
-     const frame=window.remotePaintResult,pixel=canvas.getContext('2d').getImageData(point.x,point.y,1,1).data;
+     const frame=window.remotePaintResult;sampleContext.drawImage(canvas,point.x,point.y,1,1,0,0,1,1);const pixel=sampleContext.getImageData(0,0,1,1).data;
      if(frame?.lastProcessedInputSeq>previous&&rgb.every((value,c)=>Math.abs(value-pixel[c])<=1)){
       window.inputLatencySample={key,inputToPixelsMs:performance.now()-start,frameId:frame.frameId,inputSequence:frame.lastProcessedInputSeq,renderMs:frame.renderMs};return;
      }

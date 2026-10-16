@@ -18,6 +18,7 @@ await publish();const transport=await startLiveTransport(source,{port:0,ackTimeo
 try{
  const errors=[],pages=await Promise.all([browser.newPage(),browser.newPage()]);for(const page of pages)page.on('pageerror',e=>errors.push(e.message));
  await Promise.all(pages.map(p=>p.goto(transport.url)));await Promise.all(pages.map(p=>p.waitForFunction(()=>window.remotePaintResult?.frameId===1)));
+ const presentedPixel=await pages[0].evaluate(()=>{const sample=document.createElement('canvas');sample.width=sample.height=1;const ctx=sample.getContext('2d');ctx.drawImage(document.querySelector('canvas'),10,10,1,1,0,0,1,1);return [...ctx.getImageData(0,0,1,1).data];});assert.equal(presentedPixel[3],255,'Main thread can sample pixels presented by OffscreenCanvas without acquiring its context');
  const first=await pages[0].evaluate(()=>window.remotePaintResult);await publish(-50);await Promise.all(pages.map(p=>p.waitForFunction(()=>window.remotePaintResult?.native.captureId==='native-gateway-2')));
  const second=await pages[0].evaluate(()=>window.remotePaintResult);assert.equal(second.resourcesReceived,first.resourcesReceived);assert.equal(second.deltaFrames,1);
  const wsUrl=`${transport.streamOrigin.replace('http','ws')}/stream?key=${transport.key}`;
