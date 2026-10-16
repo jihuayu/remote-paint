@@ -49,6 +49,11 @@ then receive serializer, native browser, and dynamic Broker/Worker Viewer checks
 `ubuntu-24.04-arm` / `ubuntu-24.04` runners. The package artifacts remain
 available if a later smoke test fails; check the complete run result.
 
+Both compilation and the final no-pending-work receipt use checksum-pinned
+Ninja 1.13.2. Debian 12's system Ninja 1.11.1 repeatedly schedules unchanged
+generators behind GN phony input groups and cannot reliably finish that check.
+Keep the build image's `/usr/local/bin` ahead of depot_tools and `/usr/bin`.
+
 Start **Linux packages → Run workflow**, or push a `v*` tag. Artifacts are kept
 for 30 days. A fresh patched Chromium build can exceed a hosted runner's
 six-hour job limit. Compilation stops at 245 minutes to allow saving the

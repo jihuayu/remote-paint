@@ -7,4 +7,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     libxrandr-dev libxkbcommon-dev libdrm-dev libgbm-dev libpango1.0-dev libasound2-dev \
     libatspi2.0-dev libudev-dev libcups2-dev fonts-dejavu-core fonts-noto-cjk fonts-noto-color-emoji \
     && rm -rf /var/lib/apt/lists/*
+# Use one Ninja for compilation and receipt checks. GN's phony input groups
+# need the newer restat bookkeeping; Debian 12's 1.11 repeats unchanged actions.
+# 1.13 also reads the v7 logs retained by current local build caches.
+RUN curl --fail --location --retry 3 \
+    https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-linux.zip \
+    -o /tmp/ninja.zip \
+    && echo '5749cbc4e668273514150a80e387a957f933c6ed3f5f11e03fb30955e2bbead6  /tmp/ninja.zip' | sha256sum --check \
+    && unzip /tmp/ninja.zip ninja -d /usr/local/bin \
+    && chmod +x /usr/local/bin/ninja && rm /tmp/ninja.zip \
+    && test "$(ninja --version)" = 1.13.2
 WORKDIR /chromium/src
