@@ -46,7 +46,7 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
     const epoch=source.pageEpoch,version=source.viewportVersion;
     const mapStarted=performance.now();
     const mapped=broker?await broker.map(native,{epoch,viewport:source.viewport,viewportVersion:version,inputSeq,metadataOnly:true}):source.mapper.map(native,epoch);
-    if(source.pageEpoch!==epoch||source.viewportVersion!==version)return;
+    if(!source.demand||source.pageEpoch!==epoch||source.viewportVersion!==version)return;
     source.stats.lastCaptureMs=native.timing?.captureRoundTripMs;source.stats.lastMapMs=performance.now()-mapStarted;
     if(!broker)validateScene(mapped.scene,[...mapped.payloads.keys()],source.viewport);
     source.latest={...mapped,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,viewport:{...source.viewport},lastProcessedInputSeq:inputSeq};
