@@ -18,7 +18,8 @@ export function validateScene(scene,required,viewport){
    if(q.roundedClip!==undefined&&(!numbers(q.roundedClip,12)||q.roundedClip[2]<=q.roundedClip[0]||q.roundedClip[3]<=q.roundedClip[1]||q.roundedClip.slice(4).some(n=>n<0||n>8192)))throw new Error('Invalid rounded clip');
    if(q.kind==='picture'){
     if(!numbers(q.contentOrigin,2)||!isHash(q.resourceId)||typeof q.logical!=='string'||q.logical.length>512||!integer(q.revision)||
-      !integer(q.width)||!integer(q.height)||q.width>8192||q.height>8192||!Number.isFinite(q.quadScale)||q.quadScale<=0||q.quadScale>128)throw new Error('Invalid picture reference');
+      !integer(q.width)||!integer(q.height)||q.width>8192||q.height>8192||!Number.isFinite(q.quadScale)||q.quadScale<=0||q.quadScale>128||
+      (q.requiresIsolation!==undefined&&typeof q.requiresIsolation!=='boolean'))throw new Error('Invalid picture reference');
     used.add(q.resourceId);
    }else if(q.kind==='pass'){if(!ids.has(q.passId))throw new Error('Cyclic or missing child pass');}
    else if(q.kind==='solid'){if(!numbers(q.color,4)||q.color.some(n=>n<0||n>1))throw new Error('Invalid color');}

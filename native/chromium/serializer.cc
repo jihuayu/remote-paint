@@ -65,6 +65,43 @@ class GlyphCollector final : public SkNoDrawCanvas {
   void onClipRegion(const SkRegion&, SkClipOp) override {}
 };
 
+class IsolationCollector final : public SkNoDrawCanvas {
+ public:
+  IsolationCollector() : SkNoDrawCanvas(SkIRect::MakeLTRB(-100000000, -100000000,
+                                                           100000000, 100000000)) {}
+  bool requires_isolation = false;
+
+ protected:
+  SaveLayerStrategy getSaveLayerStrategy(const SaveLayerRec&) override {
+    requires_isolation = true;
+    return kNoLayer_SaveLayerStrategy;
+  }
+  void onDrawPaint(const SkPaint& paint) override { Check(paint); }
+  void onDrawRect(const SkRect&, const SkPaint& paint) override { Check(paint); }
+  void onDrawRRect(const SkRRect&, const SkPaint& paint) override { Check(paint); }
+  void onDrawOval(const SkRect&, const SkPaint& paint) override { Check(paint); }
+  void onDrawPath(const SkPath&, const SkPaint& paint) override { Check(paint); }
+  void onDrawRegion(const SkRegion&, const SkPaint& paint) override { Check(paint); }
+  void onDrawPoints(PointMode, size_t, const SkPoint[], const SkPaint& paint) override { Check(paint); }
+  void onDrawTextBlob(const SkTextBlob*, SkScalar, SkScalar, const SkPaint& paint) override { Check(paint); }
+  void onDrawImage2(const SkImage*, SkScalar, SkScalar, const SkSamplingOptions&, const SkPaint* paint) override { if (paint) Check(*paint); }
+  void onDrawImageRect2(const SkImage*, const SkRect&, const SkRect&, const SkSamplingOptions&, const SkPaint* paint, SrcRectConstraint) override { if (paint) Check(*paint); }
+  void onDrawImageLattice2(const SkImage*, const Lattice&, const SkRect&, SkFilterMode, const SkPaint* paint) override { if (paint) Check(*paint); }
+  void onDrawAtlas2(const SkImage*, const SkRSXform[], const SkRect[], const SkColor[], int, SkBlendMode mode, const SkSamplingOptions&, const SkRect*, const SkPaint* paint) override {
+    if (mode != SkBlendMode::kSrcOver) requires_isolation = true;
+    if (paint) Check(*paint);
+  }
+  void onDrawPicture(const SkPicture* picture, const SkMatrix*, const SkPaint* paint) override {
+    if (paint) Check(*paint);
+    if (picture) picture->playback(this);
+  }
+
+ private:
+  void Check(const SkPaint& paint) {
+    if (paint.getBlendMode() != SkBlendMode::kSrcOver) requires_isolation = true;
+  }
+};
+
 // Bitmap-only glyphs (such as Apple Color Emoji) depend on native strike
 // selection. Preserve their source pixels; outline fonts keep subset glyphs.
 class PortableTextCanvas final : public SkNWayCanvas {
@@ -214,6 +251,9 @@ SerializedPicture SerializePicture(const SkPicture& picture, size_t byte_budget)
   if(!portable.error.empty()){ctx.result.error=portable.error;return std::move(ctx.result);}
   ctx.result.bitmap_glyphs=portable.bitmap_glyphs;
   auto normalized=recorder.finishRecordingAsPicture();
+  IsolationCollector isolation;
+  normalized->playback(&isolation);
+  ctx.result.requires_isolation = isolation.requires_isolation;
   const auto glyph_started = base::TimeTicks::Now();
   normalized->playback(&ctx.collector);
   ctx.result.glyph_collection_ms = (base::TimeTicks::Now() - glyph_started).InMillisecondsF();

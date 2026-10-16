@@ -54,6 +54,10 @@ export class SceneMapper {
       entry={logical,resourceId:hash,revision:old?.resourceId===hash?old.revision:++this.revision};entries.set(logical,entry);payloads.set(hash,bytes);
      }
      Object.assign(out,entry,{quadScale:r.quadScale,width:r.width,height:r.height,
+       // Older captures did not carry the analysis bit; keep their safe
+       // isolated replay semantics until a native producer explicitly says
+       // that direct SrcOver replay is safe.
+       requiresIsolation:r.requiresIsolation!==false,
        source:{namespace:q.namespace,stableLayerId:q.localId,vizResource:q.vizResource}});
     }else throw new Error('Unknown Viz quad');
     mapped.push(out);

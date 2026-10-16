@@ -34,6 +34,7 @@ struct EncodedLayer {
   int width = 0;
   int height = 0;
   size_t bitmap_glyphs = 0;
+  bool requires_isolation = false;
   size_t byte_size = 0;
   std::string skp;
   std::string error;
@@ -65,6 +66,7 @@ EncodedLayer EncodeLayer(int host, size_t index, LayerRecord record) {
     result.font_ms = serialized.font_ms;
     result.image_ms = serialized.image_ms;
     result.bitmap_glyphs = serialized.bitmap_glyphs;
+    result.requires_isolation = serialized.requires_isolation;
     if(!serialized.bytes){
       result.error = serialized.error.empty() ? "Picture encoding failed" : serialized.error;
       return result;
@@ -88,6 +90,7 @@ EncodedLayer EncodeLayer(int host, size_t index, LayerRecord record) {
     result.reused = true;
   }
   result.bitmap_glyphs = encoded->serialized.bitmap_glyphs;
+  result.requires_isolation = encoded->serialized.requires_isolation;
   if(!result.reused){
     result.portable_ms = encoded->serialized.portable_ms;
     result.glyph_collection_ms = encoded->serialized.glyph_collection_ms;
@@ -127,6 +130,7 @@ base::DictValue EncodeResults(Snapshot snapshot,
     base::DictValue resource;
     resource.Set("localId",encoded.local_id);
     resource.Set("bitmapGlyphs",static_cast<int>(encoded.bitmap_glyphs));
+    resource.Set("requiresIsolation",encoded.requires_isolation);
     resource.Set("quadScale",encoded.quad_scale);
     resource.Set("resourceId",encoded.resource_id);
     if(encoded.reused){cached_layers++;}else resource.Set("skp",std::move(encoded.skp));
