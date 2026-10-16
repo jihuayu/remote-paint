@@ -1,7 +1,14 @@
 import {spawn} from 'node:child_process';
-import {mkdir,copyFile} from 'node:fs/promises';
+import {mkdir,copyFile,readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {parseArgs} from 'node:util';
 import {fileURLToPath} from 'node:url';
 const target=process.env.CARGO_TARGET_DIR??fileURLToPath(new URL('../../../work/broker-target',import.meta.url));
 const manifest=fileURLToPath(new URL('./broker/Cargo.toml',import.meta.url));
-await new Promise((resolve,reject)=>{const child=spawn('cargo',['build','--release','--locked','--manifest-path',manifest],{stdio:'inherit',env:{...process.env,CARGO_TARGET_DIR:target}});child.on('error',reject);child.on('exit',code=>code===0?resolve():reject(new Error(`Broker build exited ${code}`)));});
-await mkdir(new URL('./bin/',import.meta.url),{recursive:true});await copyFile(`${target}/release/remote-paint-broker`,new URL('./bin/remote-paint-broker',import.meta.url));
+const {values}=parseArgs({options:{target:{type:'string'}}});
+const triple=values.target;
+if(triple&&!/^[a-z0-9_-]+$/.test(triple))throw new Error('Invalid Rust target triple');
+await new Promise((resolve,reject)=>{const child=spawn('cargo',['build','--release','--locked','--manifest-path',manifest,...(triple?['--target',triple]:[])],{stdio:'inherit',env:{...process.env,CARGO_TARGET_DIR:target}});child.on('error',reject);child.on('exit',code=>code===0?resolve():reject(new Error(`Broker build exited ${code}`)));});
+const directory=new URL(`./bin/${triple?`${triple}/`:''}`,import.meta.url);
+await mkdir(directory,{recursive:true});const binary=new URL('remote-paint-broker',directory);await copyFile(`${target}/${triple?`${triple}/`:''}release/remote-paint-broker`,binary);
+await writeFile(new URL('broker-build.json',directory),JSON.stringify({target:triple??`${process.arch}-${process.platform}`,sha256:createHash('sha256').update(await readFile(binary)).digest('hex'),builtAt:new Date().toISOString()},null,2));
