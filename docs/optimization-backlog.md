@@ -58,6 +58,7 @@
 | C10 | 明确各种 ACK 的语义 | 将收到字节、校验完成、资源可用、场景提交和呈现反馈分开；服务器需要知道什么可安全复用或释放，体验指标需要知道画面何时可见。 | P0，中成本。资源不能因早 ACK 被过早释放；显示回调不能被包装成网页业务完成确认。与 B7 一起升级协议。 |
 | C11 | 页面隐藏与设备故障恢复 | 标签页隐藏、设备休眠、GPU reset、Worker 崩溃时暂停或降级 Viewer，恢复后请求最新快照。区分显示消费者和仍在工作的 Agent。 | P1，中成本。隐藏后减少显示资源消耗，恢复不闪旧 epoch，不能因 Viewer 隐藏停止 Agent 所需的页面进度。 |
 | C12 | 浏览器兼容与区域回退 | 验证 Chrome、Edge、Firefox、Safari、iOS 的 Worker、OffscreenCanvas、Wasm 与 GPU 能力。对视频、WebGL 和不支持的合成效果建立区域位图或视频回退。 | P0 对目标浏览器，P1 对扩展平台。区域与 SKP 共用坐标、epoch 和提交屏障，不能错位或长期不同步。 |
+| C13 | 控制消息与重放队列调度 | 当前控制通知、资源组装与场景提交经过同一 Promise 队列，大资源可能拖后输入确认。按消息依赖和 epoch 设计优先队列；将可分片的解码工作分批，丢弃过期 viewport 的准备工作。SHA 校验已经并行启动，不需要重复实现。 | P1，中高成本。大字体或大图片下载和解码期间，接管和输入确认不长期阻塞；不能让有依赖的控制通知无条件越序，也不能直接跨 Wasm 堆传递 SkPicture。 |
 
 960×640 RGBA 一帧约 2.46 MB，47.6 FPS 对应约 117 MB/s 的单次整屏像素搬运量，尚未计入其他复制。这是 C1 和 C2 的动机，属于本地内存带宽，不能把它当作网络流量。
 
@@ -109,6 +110,8 @@ for await (const event of client.runs.events(run.id, { after: cursor, signal }))
 | B14 | 区域和传输部署 | 用同源 HTTPS/WSS 路由、短时授权、区域选择、连接健康检测和重连快照。当前 loopback URL、相邻端口和 CSP 是本地 harness 设计，上云需改为外部入口契约。 | P0，中高成本。代理、证书、负载均衡、长连接 draining 与真实公网测试通过；开启 host 绑定并不等于已完成云接入。 |
 | B15 | 会话密度与调度 | 以实测 CPU、PSS/cgroup 内存、页面复杂度和排队指标分配 Session；预热浏览器或轻量隔离环境，支持配额、TTL、回收和有界重试。 | P0 对云服务，高成本。当前短窗口 RSS 会重复计算共享页，不能据此承诺一台机器容纳多少实例。 |
 | B16 | 定制浏览器的持续维护 | 持续保存双架构构建缓存、产物来源、SBOM、依赖许可证、签名和回滚版本；定期升级 Chromium/Skia 并复跑兼容矩阵。 | P0 对发布，持续投入。当前 GitHub 双架构打包运行仍在进行，不能将工作流配置当作成品交付。 |
+| B17 | 更快且更稳的 Session 首帧 | 当前 Source 等待 `page.goto(... networkidle)` 后才初始化捕获。对长连接或持续请求的真实网页，改用可解释的准备状态：导航已提交、捕获接口可用、首个场景可显示；网络静默只作为可选业务条件。浏览器与 Viewer 的准备可并行。 | P0，中成本。长轮询、流式页面和慢资源不会无限拖住 Session；首帧和任务可操作就绪分开衡量，不能为了快而宣称业务已加载完成。 |
+| B18 | 减少服务器重复绘制 | 现有旁路记录与正常软件绘制共存。测量哪些服务器像素确实被合成、截图或 Agent 观察消费，再探索直接复用绘制记录、按需生成像素，或对合适负载启用服务器 GPU。 | P2，高成本。先验证是否存在可消除的重复工作；不能盲目关闭 raster、破坏 Viz 资源生命周期，也不能预设增加 GPU 后成本与延迟都会下降。 |
 
 在单个 inflight 模式下，吞吐存在接近 `1 / (RTT + 客户端提交耗时)` 的串行等待上限。例如 RTT 80 ms、提交 5 ms，仅这一段就约 11.8 FPS，未计入其他环节。这个例子解释 B7 的优先级，不是公网实测数据。
 
@@ -147,5 +150,5 @@ WebTransport/QUIC 可作为 B8 和 B14 的后续实验，用独立流减少不�
 - 客户端呈现与缓存：[Worker](../viewer/stream-worker.mjs)、[SceneRenderer](../viewer/scene-renderer.mjs)、[输入](../viewer/input.mjs)。
 - 捕获与时钟：[NativeCapture](../capture/live.mjs)、[BeginFrame](../capture/begin-frame.mjs)、[Source](../live/source.mjs)。
 - 服务端传输：[Rust Gateway](../native/broker/src/gateway.rs)、[Rust SceneMapper](../native/broker/src/scene.rs)、[本地 HTTP 与连接配置](../live/transport.mjs)。
-- 原生资源与缓存：[capture_state](../native/chromium/capture_state.cc)、[serializer](../native/chromium/serializer.cc)、[socket](../native/chromium/socket_transport.h)。
+- 原生资源与缓存：[tile 旁路记录](../native/chromium/cc_capture.inc)、[capture_state](../native/chromium/capture_state.cc)、[serializer](../native/chromium/serializer.cc)、[socket](../native/chromium/socket_transport.h)。
 - 控制与产品边界：[控制租约](../live/input.mjs)、[现有 Steel 接入边界](roadmap.md#steel--gateway-的接入契约)、[启动参数](../native/launch.mjs)。
