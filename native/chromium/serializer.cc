@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/src/core/SkTextBlobPriv.h"
+#include "base/time/time.h"
 #if defined(REMOTE_PAINT_CHROMIUM)
 #include "base/compiler_specific.h"
 #include "third_party/skia/include/encode/SkPngRustEncoder.h"
@@ -132,11 +133,16 @@ struct Context {
 
 SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* opaque) {
   auto& ctx = *static_cast<Context*>(opaque);
+  const auto started = base::TimeTicks::Now();
   auto existing = ctx.fonts.find(typeface->uniqueID());
-  if (existing != ctx.fonts.end()) return existing->second;
+  if (existing != ctx.fonts.end()) {
+    ctx.result.font_ms += (base::TimeTicks::Now() - started).InMillisecondsF();
+    return existing->second;
+  }
   const auto found = ctx.collector.glyphs.find(typeface->uniqueID());
   if (found == ctx.collector.glyphs.end()) {
     ctx.result.error = "Typeface was not visited by the glyph collector";
+    ctx.result.font_ms += (base::TimeTicks::Now() - started).InMillisecondsF();
     return SkData::MakeEmpty();
   }
   // Retain the source glyph IDs and the source variation coordinates.
@@ -147,6 +153,7 @@ SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* opaque) {
     SkString family; typeface->getFamilyName(&family);
     ctx.result.error = std::string("Typeface ") + family.c_str() + ": " +
       (subset ? "subset exceeds byte budget" : subset_error);
+    ctx.result.font_ms += (base::TimeTicks::Now() - started).InMillisecondsF();
     return SkData::MakeEmpty();
   }
   SkString name;
@@ -157,15 +164,21 @@ SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* opaque) {
                              original ? original->getLength() : 0,
                              subset->size(), ctx.collector.missing_glyphs[typeface->uniqueID()]});
   ctx.fonts.emplace(typeface->uniqueID(), subset);
+  ctx.result.font_ms += (base::TimeTicks::Now() - started).InMillisecondsF();
   return subset;
 }
 
 SkSerialReturnType SerializeImage(SkImage* image, void* opaque) {
   auto& ctx = *static_cast<Context*>(opaque);
+  const auto started = base::TimeTicks::Now();
+  const auto finish = [&] {
+    ctx.result.image_ms += (base::TimeTicks::Now() - started).InMillisecondsF();
+  };
   const auto info = image->imageInfo();
   if (image->isTextureBacked() || info.width() > 8192 || info.height() > 8192 ||
       info.computeMinByteSize() > 64 * 1024 * 1024) {
     ctx.result.error = "Image requires GPU readback or exceeds decoded budget";
+    finish();
     return SkData::MakeEmpty();
   }
   // Read pixels already fetched by the browser, including authenticated/blob
@@ -177,10 +190,12 @@ SkSerialReturnType SerializeImage(SkImage* image, void* opaque) {
 #endif
   if (!encoded || encoded->size() > ctx.budget - ctx.result.image_bytes) {
     ctx.result.error = "Image encoding failed or exceeded byte budget";
+    finish();
     return SkData::MakeEmpty();
   }
   ctx.result.image_bytes += encoded->size();
   ctx.result.image_count++;
+  finish();
   return encoded;
 }
 
@@ -191,19 +206,25 @@ SerializedPicture SerializePicture(const SkPicture& picture, size_t byte_budget)
   ctx.budget = byte_budget;
   SkPictureRecorder recorder;
   const auto bounds=picture.cullRect();
+  const auto portable_started = base::TimeTicks::Now();
   auto* target=recorder.beginRecording(bounds);
   PortableTextCanvas portable(target,bounds.width(),bounds.height());
   picture.playback(&portable);
+  ctx.result.portable_ms = (base::TimeTicks::Now() - portable_started).InMillisecondsF();
   if(!portable.error.empty()){ctx.result.error=portable.error;return std::move(ctx.result);}
   ctx.result.bitmap_glyphs=portable.bitmap_glyphs;
   auto normalized=recorder.finishRecordingAsPicture();
+  const auto glyph_started = base::TimeTicks::Now();
   normalized->playback(&ctx.collector);
+  ctx.result.glyph_collection_ms = (base::TimeTicks::Now() - glyph_started).InMillisecondsF();
   SkSerialProcs procs;
   procs.fTypefaceProc = SerializeTypeface;
   procs.fTypefaceCtx = &ctx;
   procs.fImageProc = SerializeImage;
   procs.fImageCtx = &ctx;
+  const auto serialize_started = base::TimeTicks::Now();
   auto data = normalized->serialize(&procs);
+  ctx.result.serialize_ms = (base::TimeTicks::Now() - serialize_started).InMillisecondsF();
   if (!data || data->size() > byte_budget) ctx.result.error = "Picture exceeds byte budget";
   if (ctx.result.error.empty()) ctx.result.bytes = std::move(data);
   return std::move(ctx.result);

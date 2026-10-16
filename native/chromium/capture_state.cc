@@ -11,6 +11,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "components/remote_paint/serializer.h"
 namespace remote_paint {
 namespace {
@@ -21,6 +22,8 @@ struct State {
 };
 State& GetState(){static base::NoDestructor<State> state;return *state;}
 base::DictValue Encode(Snapshot snapshot) {
+  const auto started = base::TimeTicks::Now();
+  double portable_ms = 0, glyph_collection_ms = 0, serialize_ms = 0, font_ms = 0, image_ms = 0, base64_ms = 0;
   base::DictValue result;
   result.Set("captureId",snapshot.capture_id);
   result.Set("producer",snapshot.producer);
@@ -32,6 +35,8 @@ base::DictValue Encode(Snapshot snapshot) {
   base::ListValue resources;size_t total=0;
   for(auto& record:snapshot.records){
     auto encoded=SerializePicture(*record.picture);
+    portable_ms += encoded.portable_ms;glyph_collection_ms += encoded.glyph_collection_ms;
+    serialize_ms += encoded.serialize_ms;font_ms += encoded.font_ms;image_ms += encoded.image_ms;
     if(!encoded.bytes||(total+=encoded.bytes->size())>64*1024*1024){
       result.Set("error",encoded.error.empty()?"Frame byte budget exceeded":encoded.error);return result;
     }
@@ -40,12 +45,21 @@ base::DictValue Encode(Snapshot snapshot) {
     resource.Set("bitmapGlyphs",static_cast<int>(encoded.bitmap_glyphs));
     resource.Set("quadScale",record.quad_scale);
     // SkData owns exactly size() immutable bytes for the duration of encoding.
+    const auto base64_started = base::TimeTicks::Now();
     resource.Set("skp",base::Base64Encode(UNSAFE_BUFFERS(base::span(encoded.bytes->bytes(),encoded.bytes->size()))));
+    base64_ms += (base::TimeTicks::Now() - base64_started).InMillisecondsF();
     resource.Set("width",record.picture->cullRect().width());
     resource.Set("height",record.picture->cullRect().height());
     resources.Append(std::move(resource));
   }
-  result.Set("resources",std::move(resources));return result;
+  result.Set("resources",std::move(resources));
+  base::DictValue timing;
+  timing.Set("recordingMs",snapshot.recording_ms);timing.Set("portableMs",portable_ms);
+  timing.Set("glyphCollectionMs",glyph_collection_ms);timing.Set("serializeMs",serialize_ms);
+  timing.Set("fontMs",font_ms);timing.Set("imageMs",image_ms);timing.Set("base64Ms",base64_ms);
+  timing.Set("encodeTotalMs",(base::TimeTicks::Now() - started).InMillisecondsF());
+  result.Set("timing",std::move(timing));
+  return result;
 }
 }
 bool RequestCapture(int host,std::string id,base::OnceCallback<void(base::DictValue)> reply){

@@ -9,6 +9,7 @@ if (auto request = remote_paint::TakeCapture(id())) {
   snapshot.frame_token = compositor_frame.metadata.frame_token;
   snapshot.source_frame = active_tree()->source_frame_number();
   compositor_frame.metadata.remote_paint_capture_id = request->capture_id;
+  const auto recording_started = base::TimeTicks::Now();
   for (auto* layer : *active_tree()) {
     if (layer->GetLayerType() != cc::mojom::LayerType::kPicture) continue;
     auto* picture_layer = static_cast<PictureLayerImpl*>(layer);
@@ -28,5 +29,6 @@ if (auto request = remote_paint::TakeCapture(id())) {
     snapshot.records.push_back({layer->stable_id_for_shared_quad_state(),
       picture_layer->GetMaximumContentsScaleForUseInAppendQuads(), recorder.finishRecordingAsPicture()});
   }
+  snapshot.recording_ms = (base::TimeTicks::Now() - recording_started).InMillisecondsF();
   remote_paint::EncodeAndReply(std::move(snapshot), std::move(request));
 }

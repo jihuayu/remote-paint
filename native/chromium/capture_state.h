@@ -16,6 +16,7 @@ struct Snapshot {
   std::string capture_id, producer, recording_thread, error;
   uint32_t frame_token = 0;
   int source_frame = 0;
+  double recording_ms = 0;
   std::vector<LayerRecord> records;
 };
 struct CaptureRequest {

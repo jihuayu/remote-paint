@@ -50,6 +50,6 @@ export class SceneMapper {
   const released=[...this.entries.keys()].filter(k=>!entries.has(k));this.entries=entries;
   if([...payloads.values()].reduce((n,b)=>n+b.length,0)>64*1024*1024)throw new Error('Scene resource budget exceeded');
   return {scene:{rootPass:passes.at(-1).id,passes},payloads,released,mappings:[...entries.values()],
-    native:{captureId:capture.captureId,producer:capture.producer,namespace:viz.namespace,frameToken:capture.frameToken,sourceFrame:capture.sourceFrame,bitmapGlyphs:capture.resources.reduce((n,r)=>n+(r.bitmapGlyphs??0),0)}};
+    native:{captureId:capture.captureId,producer:capture.producer,namespace:viz.namespace,frameToken:capture.frameToken,sourceFrame:capture.sourceFrame,bitmapGlyphs:capture.resources.reduce((n,r)=>n+(r.bitmapGlyphs??0),0),timing:capture.timing??null}};
  }
 }
