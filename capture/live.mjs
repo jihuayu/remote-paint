@@ -5,9 +5,9 @@ export const nativeToken=()=>randomBytes(32).toString('hex');
 // One broker owns one page target. The secret is evaluated only in a CDP
 // isolated world; source JavaScript never receives it. No disk-path API.
 export class NativeCapture extends EventEmitter {
-  constructor(page,{token,interval=1000/60,viz,frameDriver,captureOnInput=true}={}) {
+  constructor(page,{token,interval=1000/60,viz,frameDriver,captureOnInput=true,registrationAck=process.env.REMOTE_PAINT_CAPTURE_REGISTRATION_ACK!=='0'}={}) {
     super();this.page=page;this.token=token;this.interval=interval;this.viz=viz;
-    this.frameDriver=frameDriver;this.nextCaptureAt=0;this.captureOnInput=captureOnInput;this.urgent=false;
+    this.frameDriver=frameDriver;this.registrationAck=registrationAck;this.nextCaptureAt=0;this.captureOnInput=captureOnInput;this.urgent=false;
     this.lastCaptureAt=0;
     this.onFrame=result=>{const now=performance.now();if(this.urgent||((result?.hasDamage!==false||now-this.lastCaptureAt>=1000)&&now>=this.nextCaptureAt))void this.tick();};
     this.viewers=0;this.running=false;this.stopped=false;this.count=0;this.generation=0;
@@ -37,8 +37,8 @@ export class NativeCapture extends EventEmitter {
   requestCapture() {
     if(!this.captureOnInput||!this.viewers||this.stopped)return;
     this.urgent=true;
-    // Register capture first, then drive its compositor frame. Waking the
-    // clock before Runtime.evaluate would leave this request for a later ACK.
+    // Register capture first, then drive its compositor frame. The renderer
+    // ACK in capture() orders registration across the two CDP sessions.
     if(this.frameDriver&&!this.running)void this.tick();
     if(!this.frameDriver&&!this.running){clearTimeout(this.timer);this.timer=setTimeout(()=>void this.tick(),0);}
   }
@@ -49,18 +49,31 @@ export class NativeCapture extends EventEmitter {
     if(!this.viz)throw new Error('A private Viz IPC receiver is required');
     const captureId=randomUUID();
     const scene=this.viz.waitFor(captureId);scene.catch(()=>{});
-    let timer;
+    let timer,finished=false;
+    const registrationAck=this.registrationAck&&this.frameDriver,objectGroup=`remote-paint-${captureId}`;
     const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Native capture deadline exceeded')),6000);});
     deadline.catch(()=>{});
     try {
     await Promise.race([scene.registered,deadline]);
     if(generation!==this.generation)throw new Error('Navigation invalidated the in-flight capture');
     const requestStarted=performance.now();
-    const evaluated=this.cdp.send('Runtime.evaluate',{
-      contextId:this.world,awaitPromise:true,returnByValue:true,
+    const requested=this.cdp.send('Runtime.evaluate',{
+      contextId:this.world,awaitPromise:!registrationAck,returnByValue:!registrationAck,
+      ...(registrationAck?{objectGroup}:{}),
       expression:`new Promise((resolve,reject)=>{if(!chrome.gpuBenchmarking.captureRemotePaint(${JSON.stringify(this.token)},${JSON.stringify(captureId)},resolve,${this.forceResources===true}))reject(new Error('Native capture refused'));})`,
     });
-    if(this.frameDriver)void this.frameDriver.requestNow().catch(()=>{});
+    // An unawaited Promise handle acknowledges that the renderer ran the
+    // registration. Merely sending evaluate before BeginFrame does not do so.
+    const evaluated=registrationAck?requested.then(response=>{
+      if(response.exceptionDetails)return response;
+      if(finished||generation!==this.generation)throw new Error('Capture registration was invalidated');
+      const promiseObjectId=response.result?.objectId;
+      if(!promiseObjectId)throw new Error('Native capture registration did not return a Promise handle');
+      const reply=this.cdp.send('Runtime.awaitPromise',{promiseObjectId,returnByValue:true});
+      void this.frameDriver.requestNow().catch(()=>{});
+      return reply;
+    }):requested;
+    if(this.frameDriver&&!registrationAck)void this.frameDriver.requestNow().catch(()=>{});
     // Navigation/resize can discard a native callback after its request has
     // left the compositor queue. Observe IPC failure concurrently and bound
     // the entire transaction, including a ready Viz frame with no CDP reply.
@@ -79,7 +92,7 @@ export class NativeCapture extends EventEmitter {
     if(generation!==this.generation)throw new Error('Navigation invalidated the Viz frame');
     this.count++;return {...value,viz,timing:{...value.timing,captureRoundTripMs:performance.now()-started,cdpReplyMs:replyAt-requestStarted,vizWaitMs:performance.now()-replyAt}};
     }catch(error){this.viz.cancel(captureId);if(generation!==this.generation)throw new Error('Navigation invalidated the in-flight capture');throw error;}
-    finally{clearTimeout(timer);}
+    finally{finished=true;clearTimeout(timer);if(registrationAck)void this.cdp.send('Runtime.releaseObjectGroup',{objectGroup}).catch(()=>{});}
   }
   async tick() {
     if(this.running||!this.viewers||this.stopped)return;

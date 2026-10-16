@@ -40,6 +40,12 @@ Broker 先登记 captureId，分别配对 Viz 与资源，不把未登记包用�
 
 整个采集事务有六秒期限，并同时观察 CDP 与 IPC 的失败；更改 viewport 前先停止并等待外部 BeginFrame ACK，完成后按实际 Viewer demand 恢复时钟。
 
+Linux 采集先取得 `Runtime.evaluate` 返回的 Promise 句柄，确认渲染进程已登记请求，再发送 BeginFrame，并通过 `Runtime.awaitPromise` 等待完成。两个 CDP session 的发送顺序不能代替这个确认。完成、失败和超时均释放对象组；超时后迟到的确认不会再驱动帧。`REMOTE_PAINT_CAPTURE_REGISTRATION_ACK=0` 仅用于旧时序性能对照。
+
+[登记时序实测](evidence/native-capture-registration.json)在同一个 Linux 会话中交替运行八组 Mac 输入测试，充分预热后每条路径各 64 个样本；真实像素 p50 从 41.4 降到 35.6 ms，p95 从 58.5 降到 56.5 ms。独立冷启动组波动较大，不能据其中单组推断稳定收益。浏览器仍是三个更新对象重链的修复探针，完整构建后的最终验收另行运行。
+
+更新后的完整 Mac 探针流程也通过，真实输入 p50/p95 为 37.5/58.1 ms，与此前 37.6/57.2 ms 接近，不能把配对测试的 5.8 ms 收益泛化到所有运行。两秒窗口中单 Viewer 约 51 FPS、双 Viewer 各约 52 FPS，每 Peer 约 1.05–1.08 MB/s；Node/Broker/Chromium 约 0.14/0.09–0.10/0.41 核。登记确认增加 CDP 控制消息，Node 的 CPU 开销有所增加。进入 Node 的资源记录和 Viz 场景仍均为零，稳定输入采集错误为零。
+
 ## Viewer 资源块协商
 
 Hello 的 `capabilities: ["asset-chunks-v1"]` 启用块传输。RPNT v1 kind 2 是带 SHA-256 的独立块，kind 1 保留完整 SKP 兼容模式。`ResourceManifest` 给出完整 SKP 的 hash、长度和有序块引用；字体和图片按原始编码边界拆分，其余指令每 32 KiB 拆分。Worker 必须验证每块 SHA、重组长度、SKP magic 和完整 SKP SHA，然后才能进入场景提交门控。

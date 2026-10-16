@@ -10,7 +10,7 @@
 
 当前新增路径已通过 58 项单元测试、原生 Mapper/IPC/分块资源验证和实际 Linux ARM64 → Mac Worker 功能检查。资源修复验证浏览器以三个更新的 C++ 对象单独重链，已通过原生字节重发、Broker 缓存清空恢复、连续五次导航/resize，以及 Mac 输入、双 Viewer、图文像素和丢资源恢复；[完整测量收据](docs/evidence/native-mac-recovery-probe.json)明确记录了该构建边界。
 
-暂停编译负载后，16 次真实输入到 CanvasKit 像素的 p50/p95 为 **37.6/57.2 ms**，单 Viewer 约 **46 FPS**，双 Viewer 各约 **48 FPS**；尚未达到 30 ms。全量编译并行时 p50/p95 为 57.0/82.2 ms。Linux 完整 Ninja 图仍在保留缓存重建，最终 no-pending-work 收据及完整 Linux 套件尚待完成；**下方已有延迟和 native 报告是升级前基线**。
+新增渲染进程登记确认后的[完整 Mac 探针验收](docs/evidence/native-capture-registration.json)中，暂停编译负载后，16 次真实输入到 CanvasKit 像素的 p50/p95 为 **37.5/58.1 ms**，单 Viewer 约 **51 FPS**，双 Viewer 各约 **52 FPS**；尚未达到 30 ms。同会话交替对照每条路径各 64 次输入，登记确认使 p50 从 41.4 降到 35.6 ms，但完整流程延迟与此前探针接近，不能泛化该收益。Linux 完整 Ninja 图仍在保留缓存重建，最终 no-pending-work 收据及完整 Linux 套件尚待完成；**下方已有延迟和 native 报告是升级前基线**。
 
 先执行 `npm run native:broker` 构建当前宿主机的 Broker。Linux 版本必须单独构建为 AArch64 ELF，通过 `REMOTE_PAINT_BROKER` 指定；运行容器需要同时映射 UI 4176 和原生 WS 4177。`REMOTE_PAINT_DATA_PLANE=node` 可切换兼容路径，`?mainThread` 可切换主线程 Viewer。
 

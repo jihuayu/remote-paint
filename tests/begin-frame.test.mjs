@@ -64,9 +64,33 @@ test('register the native capture request before waking its BeginFrame',async()=
  const order=[];let id,reply;
  const frameDriver={requestNow(){order.push('frame');reply({result:{value:{captureId:id,resources:[]}}});return Promise.resolve();}};
  const viz={waitFor(captureId){id=captureId;const ready=Promise.resolve({captureId});ready.registered=Promise.resolve();return ready;},cancel(){}};
- const capture=new NativeCapture(null,{frameDriver,viz});capture.world=1;
+ const capture=new NativeCapture(null,{frameDriver,viz,registrationAck:false});capture.world=1;
  capture.cdp={send(){order.push('capture');return new Promise(resolve=>reply=resolve);}};
  await capture.capture();assert.deepEqual(order,['capture','frame']);
+});
+
+test('renderer registration ACK precedes the clock and releases its Promise handle',async()=>{
+ const order=[];let registered,reply,id;
+ const frameDriver={requestNow(){order.push('frame');reply({result:{value:{captureId:id,resources:[]}}});return Promise.resolve();}};
+ const viz={waitFor(captureId){id=captureId;return Promise.resolve({captureId});},cancel(){}};
+ const capture=new NativeCapture(null,{frameDriver,viz,registrationAck:true});capture.world=1;
+ capture.cdp={send(method,params){
+  if(method==='Runtime.evaluate'){assert.equal(params.awaitPromise,false);assert.equal(params.returnByValue,false);order.push('request');return new Promise(resolve=>registered=resolve);}
+  if(method==='Runtime.awaitPromise'){assert.equal(params.promiseObjectId,'registered');order.push('await');return new Promise(resolve=>reply=resolve);}
+  assert.equal(method,'Runtime.releaseObjectGroup');assert.match(params.objectGroup,/^remote-paint-/);order.push('release');return Promise.resolve();
+ }};
+ const attempt=capture.capture();await new Promise(setImmediate);assert.deepEqual(order,['request']);
+ registered({result:{objectId:'registered'}});await attempt;assert.deepEqual(order,['request','await','frame','release']);
+});
+
+test('a late registration ACK after timeout cannot wake another frame or leak its object group',async t=>{
+ t.mock.timers.enable({apis:['setTimeout']});let registered,frames=0,releases=0,canceled=0;
+ const capture=new NativeCapture(null,{registrationAck:true,frameDriver:{requestNow(){frames++;return Promise.resolve();}},viz:{waitFor:()=>new Promise(()=>{}),cancel(){canceled++;}}});capture.world=1;
+ capture.cdp={send(method){if(method==='Runtime.evaluate')return new Promise(resolve=>registered=resolve);assert.equal(method,'Runtime.releaseObjectGroup');releases++;return Promise.resolve();}};
+ const attempt=capture.capture();const expired=assert.rejects(attempt,/Native capture deadline/);
+ await new Promise(setImmediate);t.mock.timers.tick(6000);await expired;
+ registered({result:{objectId:'late'}});await new Promise(setImmediate);
+ assert.equal(frames,0);assert.equal(releases,1);assert.equal(canceled,1);
 });
 
 test('quiet frames reduce clock frequency and input wakes immediately without overlap',async()=>{

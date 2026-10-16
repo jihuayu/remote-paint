@@ -151,7 +151,7 @@ try{
  await page.locator('#reconnect').click();await page.waitForFunction(()=>document.body.dataset.ready==='true'&&document.querySelector('#controlState').textContent==='Agent 控制');
  const reconnected=await waitSource(s=>s.controlMode==='agent');
  await command('reload');await page.waitForFunction(epoch=>window.remotePaintResult?.pageEpoch>epoch,reconnected.pageEpoch);
- await command('resize');await page.waitForFunction(()=>window.remotePaintResult?.viewportVersion===2);assert.equal(await page.locator('canvas').getAttribute('width'),'800');
+ await command('resize');await page.waitForFunction(()=>window.remotePaintResult?.viewportVersion===2&&document.querySelector('canvas').width===800);assert.equal(await page.locator('canvas').getAttribute('width'),'800');
  const missingResourceRecovery=await recoverDroppedResource(browser,ready);
  await page.screenshot({path:join(directory,'mac-viewer.png')});await cdp.detach();await page.close();page=null;
  const disconnected=await waitSource(s=>s.demand===0);await delay(500);const final=(await command('snapshot')).state;

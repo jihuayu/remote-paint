@@ -71,7 +71,9 @@ try{
  phase='resize';const resizeRecovery=[];
  for(const width of [800,960,800]){
   await source.resize({width,height:600});
-  await page.waitForFunction(version=>window.remotePaintResult?.viewportVersion===version,source.viewportVersion);
+  // OffscreenCanvas updates its HTML placeholder during the browser's
+  // rendering step, which can follow the Worker's frame metadata message.
+  await page.waitForFunction(({version,width})=>window.remotePaintResult?.viewportVersion===version&&document.querySelector('canvas').width===width,{version:source.viewportVersion,width});
   assert.equal(await page.locator('canvas').getAttribute('width'),String(width));
   resizeRecovery.push({width,viewportVersion:source.viewportVersion,frameId:(await page.evaluate(()=>window.remotePaintResult)).frameId});
  }
