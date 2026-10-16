@@ -1,17 +1,23 @@
 // Replay Viz's render-pass graph. No source DOM, styles, fonts or image fetches.
 export class SceneRenderer {
- constructor(ck){this.ck=ck;this.pictures=new Map();}
- clear(){for(const p of this.pictures.values())p.delete();this.pictures.clear();}
+ constructor(ck,{incremental=false}={}){this.ck=ck;this.incremental=incremental;this.pictures=new Map();this.passCache=new Map();this.passVersion=0;}
+ clear(){for(const p of this.pictures.values())p.delete();this.pictures.clear();for(const {image} of this.passCache.values())image.delete();this.passCache.clear();}
  retain(ids){for(const [id,p] of this.pictures)if(!ids.has(id)){p.delete();this.pictures.delete(id);}}
  render(scene,resources,background=this.ck.TRANSPARENT){
   const ck=this.ck,passes=new Map();let root=null,totalPixels=0;
+   const activePasses=new Set(scene.passes.map(pass=>pass.id));
+   if(this.incremental)for(const [id,cached] of this.passCache)if(!activePasses.has(id)){cached.image.delete();this.passCache.delete(id);}
   try{
    for(const pass of scene.passes){
     const [x,y,right,bottom]=pass.output,width=right-x,height=bottom-y;
     if(![width,height].every(n=>Number.isInteger(n)&&n>0&&n<=8192)||(totalPixels+=width*height)>32*1024*1024)throw new Error('Render-pass surface budget exceeded');
+      const childVersions=pass.quads.filter(q=>q.kind==='pass').map(q=>`${q.passId}:${this.passCache.get(q.passId)?.version??0}`).join(',');
+      const signature=this.incremental?JSON.stringify({pass,background:pass.id===scene.rootPass?background:null,childVersions}):null;
+      const cached=this.incremental&&this.passCache.get(pass.id);
+      if(cached?.signature===signature){passes.set(pass.id,{surface:null,output:cached.output,image:cached.image,cached:true});continue;}
     const surface=makePremultipliedSurface(ck,width,height,pass.id===scene.rootPass&&background[3]===1);if(!surface)throw new Error('Cannot allocate render-pass surface');
     const canvas=surface.getCanvas();canvas.clear(pass.id===scene.rootPass?background:ck.TRANSPARENT);canvas.translate(-x,-y);
-    const record={surface,output:pass.output,image:null};passes.set(pass.id,record);
+      const record={surface,output:pass.output,image:null,cached:false};passes.set(pass.id,record);
     for(const q of [...pass.quads].reverse()){
      if(q.opacity===0)continue;
      canvas.save();let alpha;
@@ -44,11 +50,16 @@ export class SceneRenderer {
       }finally{if(alpha)canvas.restore();}
      }finally{canvas.restore();alpha?.delete();}
     }
-    surface.flush();record.image=surface.makeImageSnapshot();if(!record.image)throw new Error('Cannot snapshot render pass');
+      surface.flush();record.image=surface.makeImageSnapshot();if(!record.image)throw new Error('Cannot snapshot render pass');
+      if(this.incremental){
+       const old=this.passCache.get(pass.id);old?.image.delete();
+       this.passCache.set(pass.id,{signature,image:record.image,output:record.output,version:++this.passVersion});
+       surface.dispose();record.surface=null;record.cached=true;
+      }
    }
    root=passes.get(scene.rootPass);if(!root)throw new Error('Missing root render pass');
-   const output={surface:root.surface,image:root.image,output:root.output};passes.delete(scene.rootPass);return output;
-  }finally{for(const p of passes.values()){p.image?.delete();p.surface.dispose();}}
+   const output={surface:root.surface,image:root.image,output:root.output,release:this.incremental?()=>{}:undefined};passes.delete(scene.rootPass);return output;
+  }finally{for(const p of passes.values()){if(p.cached)continue;p.image?.delete();p.surface?.dispose();}}
  }
 }
 

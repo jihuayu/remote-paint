@@ -46,6 +46,18 @@ test('CanvasKit composites an earlier render pass at its actual output origin',(
  finally{output.image.delete();output.surface.dispose();renderer.clear();}
 });
 
+test('incremental rendering reuses unchanged passes and invalidates dependent parents',()=>{
+ const renderer=new SceneRenderer(ck,{incremental:true}),area=[0,0,20,20],original=ck.MakeRasterDirectSurface,calls=[];
+ ck.MakeRasterDirectSurface=(...args)=>{calls.push(args.slice(1,3));return original(...args);};
+ const child={id:'child',output:area,quads:[solid([0,1,0,1],area)]};
+ const scene={rootPass:'root',passes:[child,{id:'root',output:area,quads:[{kind:'pass',passId:'child',matrix,rect:area,visible:area,clip:null,opacity:1}]}]};
+ try{
+  const first=renderer.render(scene,new Map(),ck.WHITE);assert.equal(calls.length,2);assert.equal(first.surface,null);first.release();
+  const second=renderer.render(scene,new Map(),ck.WHITE);assert.equal(calls.length,2,'unchanged child and root passes should be reused');assert.equal(second.surface,null);second.release();
+  child.quads[0].color=[1,0,0,1];const third=renderer.render(scene,new Map(),ck.WHITE);assert.equal(calls.length,4,'changing a child must invalidate its dependent root');third.release();
+ }finally{renderer.clear();ck.MakeRasterDirectSurface=original;}
+});
+
 test('premultiplied pass surfaces preserve translucent colors through nested passes',()=>{
  const renderer=new SceneRenderer(ck),output=renderer.render({rootPass:'root',passes:[
   {id:'child',output:rect,quads:[solid([1,0.5,0,0.5])]},

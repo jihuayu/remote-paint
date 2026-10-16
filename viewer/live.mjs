@@ -9,7 +9,7 @@ let ck,renderer,sceneRenderer,socket,generation=0,retryTimer,stopped=false,retry
 function fail(error){$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';}
 async function initialize(){
  const wasmBinary=await(await fetch('/vendor/canvaskit.wasm')).arrayBuffer();renderer={canvaskit:'0.42.0',wasmSha256:await digest(wasmBinary)};
- ck=await CanvasKitInit({wasmBinary,locateFile:file=>`/vendor/${file}`});sceneRenderer=new SceneRenderer(ck);
+ ck=await CanvasKitInit({wasmBinary,locateFile:file=>`/vendor/${file}`});sceneRenderer=new SceneRenderer(ck,{incremental:true});
 }
 function draw(frame,resources){
  const output=sceneRenderer.render(frame.scene,resources,ck.WHITE);
@@ -21,7 +21,7 @@ function draw(frame,resources){
   if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
   const context=canvas.getContext('2d');if(!context)throw new Error('Cannot allocate Viewer canvas');
   context.putImageData(new ImageData(new Uint8ClampedArray(pixels.buffer,pixels.byteOffset,pixels.byteLength),width,height),0,0);
- }finally{output.image.delete();output.surface.dispose();}
+ }finally{if(output.release)output.release();else{output.image.delete();output.surface.dispose();}}
 }
 async function connect(){
  if(stopped)return;clearTimeout(retryTimer);const current=++generation;socket?.close();input.reset();sceneRenderer.clear();
