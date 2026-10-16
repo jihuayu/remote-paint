@@ -49,19 +49,24 @@ test('frame-clock capture waits for frame notifications, serializes encoding and
  assert.equal(frameDriver.listenerCount('frame'),0);
 });
 
-test('input-driven capture requests an immediate BeginFrame and retains input arriving during encoding',async()=>{
- const frameDriver=new EventEmitter();let requests=0;frameDriver.requestNow=()=>{requests++;return Promise.resolve();};
- const capture=new NativeCapture(null,{interval:10000,frameDriver});
- frameDriver.on('frame',capture.onFrame);
+test('input captures immediately and coalesces later input behind one encoding',async()=>{
+ const frameDriver=new EventEmitter();const capture=new NativeCapture(null,{interval:10000,frameDriver});frameDriver.on('frame',capture.onFrame);
  let calls=0,finish;capture.capture=()=>{calls++;return new Promise(r=>finish=r);};
  capture.setDemand(1);finish({});await new Promise(setImmediate);
- frameDriver.emit('frame');assert.equal(calls,1,'Idle interval still throttles animation captures');
- for(let i=0;i<20;i++)capture.requestCapture();assert.equal(requests,20,'Input requests the external clock immediately');assert.equal(calls,1,'Input keeps capture serialized');
- frameDriver.emit('frame');assert.equal(calls,2);
- capture.requestCapture();frameDriver.emit('frame');assert.equal(calls,2,'Encoding stays serialized');
- finish({});await new Promise(setImmediate);frameDriver.emit('frame');assert.equal(calls,3);
- capture.setDemand(0);finish({});await new Promise(setImmediate);frameDriver.emit('frame');assert.equal(calls,3);
- await capture.close();
+ frameDriver.emit('frame');assert.equal(calls,1);
+ for(let i=0;i<20;i++)capture.requestCapture();assert.equal(calls,2,'First input registers capture immediately');
+ frameDriver.emit('frame');assert.equal(calls,2,'Encoding stays serialized');
+ finish({});await new Promise(setImmediate);assert.equal(calls,3,'Later input coalesces into one fresh capture');
+ capture.setDemand(0);finish({});await new Promise(setImmediate);frameDriver.emit('frame');assert.equal(calls,3);await capture.close();
+});
+
+test('register the native capture request before waking its BeginFrame',async()=>{
+ const order=[];let id,reply;
+ const frameDriver={requestNow(){order.push('frame');reply({result:{value:{captureId:id,resources:[]}}});return Promise.resolve();}};
+ const viz={waitFor(captureId){id=captureId;const ready=Promise.resolve({captureId});ready.registered=Promise.resolve();return ready;},cancel(){}};
+ const capture=new NativeCapture(null,{frameDriver,viz});capture.world=1;
+ capture.cdp={send(){order.push('capture');return new Promise(resolve=>reply=resolve);}};
+ await capture.capture();assert.deepEqual(order,['capture','frame']);
 });
 
 test('quiet frames reduce clock frequency and input wakes immediately without overlap',async()=>{

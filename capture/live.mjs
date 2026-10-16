@@ -35,10 +35,9 @@ export class NativeCapture extends EventEmitter {
   requestCapture() {
     if(!this.captureOnInput||!this.viewers||this.stopped)return;
     this.urgent=true;
-    // Ask the external clock for a frame immediately. If one is already in
-    // flight, requestNow() coalesces with it; the fallback coalesces a burst
-    // into one task and an in-flight encoding always completes first.
-    if(this.frameDriver)void this.frameDriver.requestNow().catch(()=>{});
+    // Register capture first, then drive its compositor frame. Waking the
+    // clock before Runtime.evaluate would leave this request for a later ACK.
+    if(this.frameDriver&&!this.running)void this.tick();
     if(!this.frameDriver&&!this.running){clearTimeout(this.timer);this.timer=setTimeout(()=>void this.tick(),0);}
   }
   async capture() {
@@ -51,10 +50,12 @@ export class NativeCapture extends EventEmitter {
     try {
     await scene.registered;
     const requestStarted=performance.now();
-    const {result,exceptionDetails}=await this.cdp.send('Runtime.evaluate',{
+    const evaluated=this.cdp.send('Runtime.evaluate',{
       contextId:this.world,awaitPromise:true,returnByValue:true,
       expression:`new Promise((resolve,reject)=>{if(!chrome.gpuBenchmarking.captureRemotePaint(${JSON.stringify(this.token)},${JSON.stringify(captureId)},resolve))reject(new Error('Native capture refused'));})`,
     });
+    if(this.frameDriver)void this.frameDriver.requestNow().catch(()=>{});
+    const {result,exceptionDetails}=await evaluated;
     if(generation!==this.generation)throw new Error('Navigation invalidated the in-flight capture');
     if(exceptionDetails)throw new Error(exceptionDetails.exception?.description??exceptionDetails.text);
     if(result.value?.error)throw new Error(result.value.error);
@@ -71,7 +72,7 @@ export class NativeCapture extends EventEmitter {
     this.running=true;const start=performance.now(),context=this.sampleContext?.();this.lastCaptureAt=start;
     try {const value=await this.capture();if(this.viewers&&!this.stopped)this.emit('capture',value,context);else if(value.captureId)this.viz?.cancel(value.captureId);}
     catch(error){if(!this.stopped)this.emit('captureError',error);}
-    finally {this.running=false;this.nextCaptureAt=Math.max(start+this.interval,performance.now());if(!this.frameDriver&&this.viewers&&!this.stopped)this.timer=setTimeout(()=>void this.tick(),this.urgent?0:Math.max(0,this.interval-(performance.now()-start)));}
+    finally {this.running=false;this.nextCaptureAt=Math.max(start+this.interval,performance.now());if(this.viewers&&!this.stopped){if(this.frameDriver&&this.urgent)queueMicrotask(()=>void this.tick());else if(!this.frameDriver)this.timer=setTimeout(()=>void this.tick(),this.urgent?0:Math.max(0,this.interval-(performance.now()-start)));}}
   }
   async close() {this.stopped=true;this.frameDriver?.off('frame',this.onFrame);clearTimeout(this.timer);await this.cdp?.detach();}
 }
