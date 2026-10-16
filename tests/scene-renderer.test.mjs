@@ -133,3 +133,16 @@ test('CanvasKit frees actual CPU surface pixel buffers across frames and render 
   }finally{ck.MakeRasterDirectSurface=makeSurface;}
  }finally{renderer.clear();ck._malloc=malloc;ck._free=free;}
 });
+
+test('immutable pictures rasterize once across compositor moves and preserve transparent clears',()=>{
+ const recorder=new ck.PictureRecorder(),canvas=recorder.beginRecording([0,0,20,20]),paint=new ck.Paint();canvas.clear(ck.TRANSPARENT);paint.setColor([1,0,0,1]);canvas.drawCircle(10,10,8,paint);
+ const picture=recorder.finishRecordingAsPicture(),renderer=new SceneRenderer(ck,{incremental:true,rasterPixels:400});
+ const q={kind:'picture',resourceId:'raster',width:20,height:20,quadScale:1,contentOrigin:[0,0],matrix:[...matrix],rect:[0,0,20,20],visible:[0,0,20,20],clip:null,opacity:1,requiresIsolation:true};
+ const scene={rootPass:'root',passes:[{id:'root',output:rect,quads:[q,solid([0,0,1,1])]}]},resources=new Map([['raster',picture.serialize()]]);
+ try{
+  let out=renderer.render(scene,resources);assert.deepEqual(pixel(PNG.sync.read(Buffer.from(out.image.encodeToBytes())),1,1),[0,0,255,255]);out.release();
+  q.matrix[2]=20;out=renderer.render(scene,resources);const png=PNG.sync.read(Buffer.from(out.image.encodeToBytes()));assert.deepEqual(pixel(png,30,10),[255,0,0,255]);assert.deepEqual(pixel(png,21,1),[0,0,255,255]);out.release();
+  assert.equal(renderer.stats.pictureRasters,1);assert.equal(renderer.stats.pictureRasterHits,1);assert.equal(renderer.stats.isolatedDraws,0);assert.equal(renderer.rasterPixels,400);
+  renderer.retain(new Set());assert.equal(renderer.rasterPixels,0);assert.equal(renderer.pictures.size,0);
+ }finally{renderer.clear();picture.delete();recorder.delete();paint.delete();}
+});
