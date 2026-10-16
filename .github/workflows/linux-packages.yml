@@ -43,8 +43,8 @@ jobs:
             chromium-linux-${{ matrix.cpu }}-v1-${{ hashFiles('native/*.args.gn', 'native/patches/**', 'native/chromium/**', 'native/broker/**') }}-
       - name: Build pinned Linux toolchain image
         run: |
-          docker build -t remote-paint-build:ci -f docker/Dockerfile.build .
-          docker build -t remote-paint-ci -f docker/Dockerfile.ci .
+          docker build --platform linux/amd64 -t remote-paint-build:ci -f docker/Dockerfile.build .
+          docker build --platform linux/amd64 -t remote-paint-ci -f docker/Dockerfile.ci .
       - name: Sync pinned Chromium source and dependencies
         timeout-minutes: 65
         run: |
