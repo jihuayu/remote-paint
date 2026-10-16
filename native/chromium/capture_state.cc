@@ -87,12 +87,14 @@ EncodedLayer EncodeLayer(int host, size_t index, LayerRecord record) {
     result.byte_size = encoded->serialized.bytes->size();
     result.reused = true;
   }
-  result.portable_ms = encoded->serialized.portable_ms;
-  result.glyph_collection_ms = encoded->serialized.glyph_collection_ms;
-  result.serialize_ms = encoded->serialized.serialize_ms;
-  result.font_ms = encoded->serialized.font_ms;
-  result.image_ms = encoded->serialized.image_ms;
   result.bitmap_glyphs = encoded->serialized.bitmap_glyphs;
+  if(!result.reused){
+    result.portable_ms = encoded->serialized.portable_ms;
+    result.glyph_collection_ms = encoded->serialized.glyph_collection_ms;
+    result.serialize_ms = encoded->serialized.serialize_ms;
+    result.font_ms = encoded->serialized.font_ms;
+    result.image_ms = encoded->serialized.image_ms;
+  }
   result.skp = encoded->base64;
   result.resource_id = encoded->resource_id;
   return result;

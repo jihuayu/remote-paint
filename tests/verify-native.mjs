@@ -52,6 +52,10 @@ try{
  const stable=await captureOnDemand(capture);
  assert.equal(stable.timing.recordingCacheMisses,0,'Unchanged layers must reuse their recording cache');
  assert.equal(stable.timing.cachedLayers,stable.resources.length,'Unchanged layers must reuse serialized encodings');
+ assert.equal(stable.timing.serializeMs,0,'Cached layers must not report repeated serialization work');
+ assert.equal(stable.timing.fontMs,0,'Cached layers must not report repeated font work');
+ assert.equal(stable.timing.imageMs,0,'Cached layers must not report repeated image work');
+ assert.equal(stable.timing.base64Ms,0,'Cached layers must not report repeated Base64 work');
  assert.ok(stable.resources.every(r=>!r.skp&&/^[0-9a-f]{64}$/.test(r.resourceId)));
  const bitmapGlyphs=second.resources.reduce((n,r)=>n+r.bitmapGlyphs,0);assert.ok(bitmapGlyphs>0,'Native color glyph pixels must be preserved');
  if(beginFrames){assert.ok(frameDriver.stats.acked>0);assert.equal(frameDriver.stats.errors,0);}
