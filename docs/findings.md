@@ -1,4 +1,6 @@
-# 探索结论：跨端 SKP 重放可行，实时远程网页尚未实现
+# 早期静态 SKP 重放探索记录
+
+本页保留 2026 年 10 月 15 日静态文件导出阶段的结果；下文“尚不能操作”“尚未实现”等描述属于当时范围。当前已完成 Linux ARM64 原生动态链路、Rust 数据面和实际 Mac Viewer 验收，见[最终验收](native-final-acceptance.md)。WebGL 与复杂效果的兼容边界、后续工作分别见 [WebGL 实测](webgl-boundary.md)和[优化清单](optimization-backlog.md)。
 
 2026-10-15 在 macOS arm64 上，从真实 Chrome 页面导出 SKP，在另一个浏览器实例的 CanvasKit Wasm 中完成重放。源页面服务在 Viewer 启动前已经关闭。Viewer 没有源页面 DOM，也不请求源页面图片或字体。
 

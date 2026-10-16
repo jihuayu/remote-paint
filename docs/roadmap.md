@@ -1,4 +1,6 @@
-# 实施路线与当前验收
+# 早期实施路线与阶段验收
+
+下表保留最初单台 macOS 阶段的路线和证据，编号 1–10 区别于后续性能优化 1–8。当前 Linux ARM64 完整构建、原生 Broker/Gateway 与 Mac Viewer 已通过[最终验收](native-final-acceptance.md)；当前性能工作见[原生数据面](native-data-plane.md)，下一阶段见[完整优化清单](optimization-backlog.md)。初始路线中的同 revision CanvasKit 构建、复杂页面回退、Steel 集成和生产解码隔离仍需分别推进，不能将后续性能验收解释成这些能力已全部完成。
 
 每一行作为独立实现/验收/提交检查点。本次单台 Apple Silicon macOS 的 **3–7 已完成真实定制 Chromium 动态验收**；1–2 和 8–10 留待后续。当前运行使用浏览器进程内 GPU/Viz 和独立 Renderer，只验收普通网页软件路径。
 
