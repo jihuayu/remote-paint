@@ -56,8 +56,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
  if(process.argv.includes('--check-inputs'))console.log(JSON.stringify(receipt,null,2));
  else{
   // Catch source changes made after Ninja scanned the running build's inputs.
-  const dry=execFileSync('ninja',['-C',output,'-n','remote_paint_tools','headless_shell'],{encoding:'utf8'});
-  assert.ok(dry.includes('ninja: no work to do.')&&!/^\[\d/m.test(dry),'Build graph still has pending work; finish the incremental build first');
+  const dry=execFileSync('ninja',['-C',output,'-n','remote_paint_tools','headless_shell'],{encoding:'utf8',maxBuffer:16*1024*1024});
+  assert.ok(dry.includes('ninja: no work to do.')&&!/^\[\d/m.test(dry),`Build graph still has pending work; finish the incremental build first.\n${dry.split('\n').filter(line=>/^\[\d/.test(line)).slice(0,8).join('\n')}`);
   receipt.binaries={headless_shell:await fileHash(join(output,'headless_shell')),serializer_tests:await fileHash(join(output,'serializer_tests'))};
   receipt.builtAt=new Date().toISOString();receipt.incrementalGraphUpToDate=true;
   const path=join(output,'remote-paint-build.json');await writeFile(`${path}.tmp`,JSON.stringify(receipt,null,2)+'\n');await rename(`${path}.tmp`,path);
