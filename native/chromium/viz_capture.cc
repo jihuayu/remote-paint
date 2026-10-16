@@ -93,13 +93,6 @@ class VizSocket {
   int fd_ = -1;
 };
 
-base::ListValue Numbers(std::initializer_list<double> values){base::ListValue out;for(double value:values)out.Append(value);return out;}
-base::ListValue Rect(const gfx::Rect& r){return Numbers({double(r.x()),double(r.y()),double(r.right()),double(r.bottom())});}
-base::ListValue Matrix(const gfx::Transform& t){
-  base::ListValue values;
-  for(int row:{0,1,3})for(int col:{0,1,3})values.Append(t.rc(row,col));
-  return values;
-}
 class BinaryWriter {
  public:
   void Bytes(std::string_view value){bytes.append(value);}

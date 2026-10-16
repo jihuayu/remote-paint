@@ -10,6 +10,7 @@
 
 #include "components/remote_paint/font_subset.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkString.h"
@@ -80,6 +81,17 @@ class IsolationCollector final : public SkNoDrawCanvas {
   void onDrawRect(const SkRect&, const SkPaint& paint) override { Check(paint); }
   void onDrawRRect(const SkRRect&, const SkPaint& paint) override { Check(paint); }
   void onDrawOval(const SkRect&, const SkPaint& paint) override { Check(paint); }
+  void onDrawDRRect(const SkRRect&, const SkRRect&, const SkPaint& paint) override { Check(paint); }
+  void onDrawArc(const SkRect&, SkScalar, SkScalar, bool, const SkPaint& paint) override { Check(paint); }
+  void onDrawBehind(const SkPaint&) override { requires_isolation = true; }
+  bool onDoSaveBehind(const SkRect*) override { requires_isolation = true; return false; }
+  void onDrawDrawable(SkDrawable*, const SkMatrix*) override { requires_isolation = true; }
+  void onDrawShadowRec(const SkPath&, const SkDrawShadowRec&) override { requires_isolation = true; }
+  void onDrawMesh(const SkMesh&, sk_sp<SkBlender>, const SkPaint&) override { requires_isolation = true; }
+  void onDrawVerticesObject(const SkVertices*, SkBlendMode, const SkPaint&) override { requires_isolation = true; }
+  void onDrawPatch(const SkPoint[12], const SkColor[4], const SkPoint[4], SkBlendMode, const SkPaint&) override { requires_isolation = true; }
+  void onDrawEdgeAAQuad(const SkRect&, const SkPoint[4], QuadAAFlags, const SkColor4f&, SkBlendMode mode) override { if(mode!=SkBlendMode::kSrcOver) requires_isolation = true; }
+  void onDrawEdgeAAImageSet2(const ImageSetEntry[], int, const SkPoint[], const SkMatrix[], const SkSamplingOptions&, const SkPaint* paint, SrcRectConstraint) override { if(paint) Check(*paint); }
   void onDrawPath(const SkPath&, const SkPaint& paint) override { Check(paint); }
   void onDrawRegion(const SkRegion&, const SkPaint& paint) override { Check(paint); }
   void onDrawPoints(PointMode, size_t, const SkPoint[], const SkPaint& paint) override { Check(paint); }
@@ -98,7 +110,7 @@ class IsolationCollector final : public SkNoDrawCanvas {
 
  private:
   void Check(const SkPaint& paint) {
-    if (paint.getBlendMode() != SkBlendMode::kSrcOver) requires_isolation = true;
+    if (paint.getBlendMode_or(SkBlendMode::kSrc) != SkBlendMode::kSrcOver) requires_isolation = true;
   }
 };
 

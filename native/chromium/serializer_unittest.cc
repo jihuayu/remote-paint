@@ -89,6 +89,34 @@ TEST(RemotePaintSerializer, RefusesSmallBudgetInsteadOfDroppingFont) {
   EXPECT_FALSE(encoded.error.empty());
 }
 
+TEST(RemotePaintSerializer, IsolationAnalysisPreservesDestructiveBlendSemantics) {
+  SkPictureRecorder recorder;
+  auto* canvas = recorder.beginRecording(100, 100);
+  SkPaint paint;
+  paint.setColor(SK_ColorRED);
+  canvas->drawRect(SkRect::MakeWH(20, 20), paint);
+  auto safe = recorder.finishRecordingAsPicture();
+  auto direct = SerializePicture(*safe);
+  ASSERT_TRUE(direct.bytes);
+  EXPECT_FALSE(direct.requires_isolation);
+  canvas = recorder.beginRecording(100, 100);
+  canvas->clear(SK_ColorTRANSPARENT);
+  canvas->drawPicture(safe);
+  auto clear = recorder.finishRecordingAsPicture();
+  EXPECT_TRUE(SerializePicture(*clear).requires_isolation);
+  canvas = recorder.beginRecording(100, 100);
+  paint.setBlendMode(SkBlendMode::kSrc);
+  canvas->drawOval(SkRect::MakeWH(20, 20), paint);
+  auto source = recorder.finishRecordingAsPicture();
+  EXPECT_TRUE(SerializePicture(*source).requires_isolation);
+  canvas = recorder.beginRecording(100, 100);
+  canvas->saveLayer(nullptr, nullptr);
+  canvas->drawPicture(safe);
+  canvas->restore();
+  auto layer = recorder.finishRecordingAsPicture();
+  EXPECT_TRUE(SerializePicture(*layer).requires_isolation);
+}
+
 TEST(RemotePaintSerializer, NestedPicturesKeepTheirFontCoverage) {
   auto child = TextPicture("Nested child text", kTextFamily);
   SkPictureRecorder recorder;
