@@ -11,5 +11,6 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh 
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /opt/depot_tools \
     && git -C /opt/depot_tools checkout 382c208a9973e1a6c0867b6d8664dc6dc9116e30
 ENV DEPOT_TOOLS_UPDATE=0 DEPOT_TOOLS_METRICS=0
-RUN git config --global --add safe.directory /project
+RUN git config --global --add safe.directory /project \
+    && git config --global --add safe.directory /chromium/src
 WORKDIR /project
