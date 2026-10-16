@@ -25,6 +25,8 @@ struct SerializedPicture {
   size_t image_count = 0;
   size_t bitmap_glyphs = 0;
   bool requires_isolation = false;
+  size_t font_cache_hits = 0;
+  size_t image_cache_hits = 0;
   double portable_ms = 0;
   double glyph_collection_ms = 0;
   double serialize_ms = 0;

@@ -37,6 +37,7 @@ struct EncodedLayer {
   int height = 0;
   size_t bitmap_glyphs = 0;
   bool requires_isolation = false;
+  size_t font_cache_hits=0,image_cache_hits=0;
   bool tiled = false;
   int tile_x = 0, tile_y = 0;
   size_t byte_size = 0;
@@ -70,6 +71,7 @@ EncodedLayer EncodeLayer(int host, size_t index, LayerRecord record) {
     result.serialize_ms = serialized.serialize_ms;
     result.font_ms = serialized.font_ms;
     result.image_ms = serialized.image_ms;
+    result.font_cache_hits=serialized.font_cache_hits;result.image_cache_hits=serialized.image_cache_hits;
     result.bitmap_glyphs = serialized.bitmap_glyphs;
     result.requires_isolation = serialized.requires_isolation;
     if(!serialized.bytes){
@@ -121,11 +123,12 @@ base::DictValue EncodeResults(Snapshot snapshot,
   result.Set("recordingThread",snapshot.recording_thread);
   result.Set("encodingThread",base::NumberToString(base::PlatformThread::CurrentId().raw()));
   if(!snapshot.error.empty()){result.Set("error",snapshot.error);return result;}
-  base::ListValue resources;size_t total=0;std::set<std::string> threads;int cached_layers=0;
+  base::ListValue resources;size_t total=0,font_cache_hits=0,image_cache_hits=0;std::set<std::string> threads;int cached_layers=0;
   for(auto& encoded:layers){
     portable_ms += encoded.portable_ms;glyph_collection_ms += encoded.glyph_collection_ms;
     serialize_ms += encoded.serialize_ms;font_ms += encoded.font_ms;image_ms += encoded.image_ms;
     base64_ms += encoded.base64_ms;
+    font_cache_hits+=encoded.font_cache_hits;image_cache_hits+=encoded.image_cache_hits;
     if(!encoded.error.empty()){
       result.Set("error",encoded.error);return result;
     }
@@ -155,6 +158,7 @@ base::DictValue EncodeResults(Snapshot snapshot,
   timing.Set("parallelLayers",static_cast<int>(layers.size()));
   timing.Set("encodingThreads",static_cast<int>(threads.size()));
   timing.Set("cachedLayers",cached_layers);
+  timing.Set("fontCacheHits",static_cast<int>(font_cache_hits));timing.Set("imageCacheHits",static_cast<int>(image_cache_hits));
   timing.Set("encodeTotalMs",(base::TimeTicks::Now() - started).InMillisecondsF());
   result.Set("timing",std::move(timing));
   return result;

@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <span>
 #include <utility>
@@ -23,7 +24,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/src/core/SkTextBlobPriv.h"
-#include "base/time/time.h"
+#include <chrono>
 #if defined(REMOTE_PAINT_CHROMIUM)
 #include "base/compiler_specific.h"
 #include "third_party/skia/include/encode/SkPngRustEncoder.h"
@@ -34,6 +35,7 @@
 
 namespace remote_paint {
 namespace {
+double NowMs(){return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now().time_since_epoch()).count();}
 
 // Analysis only: no pixels are allocated. Preserve every glyph in the record,
 // including clipped/off-viewport glyphs, because the full record is serialized.
@@ -173,6 +175,42 @@ class PortableTextCanvas final : public SkNWayCanvas {
   }
 };
 
+// Independent immutable asset caches survive changes to surrounding text and
+// tile recordings. Locks cover map operations only; font/image encoding remains
+// parallel across worker tasks. Both entry count and retained bytes are bounded.
+struct FontAsset {
+  sk_sp<SkTypeface> face;
+  std::set<SkGlyphID> glyphs;
+  sk_sp<const SkData> bytes;
+  FontStats stats;
+};
+struct ImageAsset { sk_sp<SkImage> image; sk_sp<const SkData> bytes; };
+struct AssetCache {
+  std::mutex mutex;
+  std::vector<FontAsset> fonts;
+  std::map<uint32_t,ImageAsset> images;
+  size_t retained_bytes = 0;
+};
+AssetCache& Assets(){static auto* cache=new AssetCache;return *cache;}
+sk_sp<const SkData> LookupFont(SkTypeface* face,const std::set<SkGlyphID>& glyphs,FontStats* stats){
+  auto& cache=Assets();std::lock_guard lock(cache.mutex);
+  for(const auto& entry:cache.fonts)if(entry.face->uniqueID()==face->uniqueID()&&std::includes(entry.glyphs.begin(),entry.glyphs.end(),glyphs.begin(),glyphs.end())){*stats=entry.stats;return entry.bytes;}
+  return nullptr;
+}
+void CacheFont(SkTypeface* face,const std::set<SkGlyphID>& glyphs,sk_sp<const SkData> bytes,const FontStats& stats){
+  auto& cache=Assets();std::lock_guard lock(cache.mutex);const size_t retained=bytes->size()+stats.original_bytes;
+  if(retained>64*1024*1024)return;
+  if(cache.retained_bytes+retained>64*1024*1024||cache.fonts.size()>=128){cache.fonts.clear();cache.images.clear();cache.retained_bytes=0;}
+  cache.fonts.push_back({sk_ref_sp(face),glyphs,std::move(bytes),stats});cache.retained_bytes+=retained;
+}
+sk_sp<const SkData> LookupImage(SkImage* image){auto& cache=Assets();std::lock_guard lock(cache.mutex);auto found=cache.images.find(image->uniqueID());return found==cache.images.end()?nullptr:found->second.bytes;}
+void CacheImage(SkImage* image,sk_sp<const SkData> bytes){
+  auto& cache=Assets();std::lock_guard lock(cache.mutex);if(cache.images.contains(image->uniqueID()))return;
+  const size_t retained=bytes->size()+image->imageInfo().computeMinByteSize();if(retained>64*1024*1024)return;
+  if(cache.retained_bytes+retained>64*1024*1024||cache.images.size()>=128){cache.images.clear();cache.fonts.clear();cache.retained_bytes=0;}
+  cache.images.emplace(image->uniqueID(),ImageAsset{sk_ref_sp(image),std::move(bytes)});cache.retained_bytes+=retained;
+}
+
 struct Context {
   GlyphCollector collector;
   SerializedPicture result;
@@ -182,17 +220,24 @@ struct Context {
 
 SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* opaque) {
   auto& ctx = *static_cast<Context*>(opaque);
-  const auto started = base::TimeTicks::Now();
+  const auto started = NowMs();
   auto existing = ctx.fonts.find(typeface->uniqueID());
   if (existing != ctx.fonts.end()) {
-    ctx.result.font_ms += (base::TimeTicks::Now() - started).InMillisecondsF();
+    ctx.result.font_ms += (NowMs() - started);
     return existing->second;
   }
   const auto found = ctx.collector.glyphs.find(typeface->uniqueID());
   if (found == ctx.collector.glyphs.end()) {
     ctx.result.error = "Typeface was not visited by the glyph collector";
-    ctx.result.font_ms += (base::TimeTicks::Now() - started).InMillisecondsF();
+    ctx.result.font_ms += (NowMs() - started);
     return SkData::MakeEmpty();
+  }
+  FontStats cached_stats;
+  if(auto cached=LookupFont(typeface,found->second,&cached_stats)){
+    if(cached->size()>ctx.budget){ctx.result.error="Cached font exceeds byte budget";return SkData::MakeEmpty();}
+    cached_stats.glyphs=found->second.size();cached_stats.missing_glyphs=ctx.collector.missing_glyphs[typeface->uniqueID()];
+    ctx.result.fonts.push_back(cached_stats);ctx.fonts.emplace(typeface->uniqueID(),cached);ctx.result.font_cache_hits++;
+    ctx.result.font_ms+=(NowMs()-started);return cached;
   }
   // Retain the source glyph IDs and the source variation coordinates.
   // Failure is explicit: never silently omit a font or use a client fallback.
@@ -202,7 +247,7 @@ SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* opaque) {
     SkString family; typeface->getFamilyName(&family);
     ctx.result.error = std::string("Typeface ") + family.c_str() + ": " +
       (subset ? "subset exceeds byte budget" : subset_error);
-    ctx.result.font_ms += (base::TimeTicks::Now() - started).InMillisecondsF();
+    ctx.result.font_ms += (NowMs() - started);
     return SkData::MakeEmpty();
   }
   SkString name;
@@ -212,16 +257,17 @@ SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* opaque) {
   ctx.result.fonts.push_back({name.c_str(), found->second.size(),
                              original ? original->getLength() : 0,
                              subset->size(), ctx.collector.missing_glyphs[typeface->uniqueID()]});
+  CacheFont(typeface,found->second,subset,ctx.result.fonts.back());
   ctx.fonts.emplace(typeface->uniqueID(), subset);
-  ctx.result.font_ms += (base::TimeTicks::Now() - started).InMillisecondsF();
+  ctx.result.font_ms += (NowMs() - started);
   return subset;
 }
 
 SkSerialReturnType SerializeImage(SkImage* image, void* opaque) {
   auto& ctx = *static_cast<Context*>(opaque);
-  const auto started = base::TimeTicks::Now();
+  const auto started = NowMs();
   const auto finish = [&] {
-    ctx.result.image_ms += (base::TimeTicks::Now() - started).InMillisecondsF();
+    ctx.result.image_ms += (NowMs() - started);
   };
   const auto info = image->imageInfo();
   if (image->isTextureBacked() || info.width() > 8192 || info.height() > 8192 ||
@@ -229,6 +275,10 @@ SkSerialReturnType SerializeImage(SkImage* image, void* opaque) {
     ctx.result.error = "Image requires GPU readback or exceeds decoded budget";
     finish();
     return SkData::MakeEmpty();
+  }
+  if(auto cached=LookupImage(image)){
+    if(cached->size()>ctx.budget-ctx.result.image_bytes){ctx.result.error="Cached image exceeds byte budget";finish();return SkData::MakeEmpty();}
+    ctx.result.image_bytes+=cached->size();ctx.result.image_count++;ctx.result.image_cache_hits++;finish();return cached;
   }
   // Read pixels already fetched by the browser, including authenticated/blob
   // images. The Viewer never receives a URL and never refetches source assets.
@@ -242,6 +292,7 @@ SkSerialReturnType SerializeImage(SkImage* image, void* opaque) {
     finish();
     return SkData::MakeEmpty();
   }
+  CacheImage(image,encoded);
   ctx.result.image_bytes += encoded->size();
   ctx.result.image_count++;
   finish();
@@ -255,28 +306,28 @@ SerializedPicture SerializePicture(const SkPicture& picture, size_t byte_budget)
   ctx.budget = byte_budget;
   SkPictureRecorder recorder;
   const auto bounds=picture.cullRect();
-  const auto portable_started = base::TimeTicks::Now();
+  const auto portable_started = NowMs();
   auto* target=recorder.beginRecording(bounds);
   PortableTextCanvas portable(target,bounds.width(),bounds.height());
   picture.playback(&portable);
-  ctx.result.portable_ms = (base::TimeTicks::Now() - portable_started).InMillisecondsF();
+  ctx.result.portable_ms = (NowMs() - portable_started);
   if(!portable.error.empty()){ctx.result.error=portable.error;return std::move(ctx.result);}
   ctx.result.bitmap_glyphs=portable.bitmap_glyphs;
   auto normalized=recorder.finishRecordingAsPicture();
   IsolationCollector isolation;
   normalized->playback(&isolation);
   ctx.result.requires_isolation = isolation.requires_isolation;
-  const auto glyph_started = base::TimeTicks::Now();
+  const auto glyph_started = NowMs();
   normalized->playback(&ctx.collector);
-  ctx.result.glyph_collection_ms = (base::TimeTicks::Now() - glyph_started).InMillisecondsF();
+  ctx.result.glyph_collection_ms = (NowMs() - glyph_started);
   SkSerialProcs procs;
   procs.fTypefaceProc = SerializeTypeface;
   procs.fTypefaceCtx = &ctx;
   procs.fImageProc = SerializeImage;
   procs.fImageCtx = &ctx;
-  const auto serialize_started = base::TimeTicks::Now();
+  const auto serialize_started = NowMs();
   auto data = normalized->serialize(&procs);
-  ctx.result.serialize_ms = (base::TimeTicks::Now() - serialize_started).InMillisecondsF();
+  ctx.result.serialize_ms = (NowMs() - serialize_started);
   if (!data || data->size() > byte_budget) ctx.result.error = "Picture exceeds byte budget";
   if (ctx.result.error.empty()) ctx.result.bytes = std::move(data);
   return std::move(ctx.result);

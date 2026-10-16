@@ -89,6 +89,19 @@ TEST(RemotePaintSerializer, RefusesSmallBudgetInsteadOfDroppingFont) {
   EXPECT_FALSE(encoded.error.empty());
 }
 
+TEST(RemotePaintSerializer, ReusesFontSubsetWhenOnlySurroundingRecordingChanges) {
+  const auto picture=TextPicture("A stable font subset",kTextFamily);
+  const auto first=SerializePicture(*picture);
+  ASSERT_TRUE(first.bytes);
+  SkPictureRecorder recorder;
+  auto* canvas=recorder.beginRecording(640,80);
+  canvas->translate(1,0);canvas->drawPicture(picture);
+  const auto moved=recorder.finishRecordingAsPicture();
+  const auto second=SerializePicture(*moved);
+  ASSERT_TRUE(second.bytes);
+  EXPECT_GT(second.font_cache_hits,0u);
+}
+
 TEST(RemotePaintSerializer, IsolationAnalysisPreservesDestructiveBlendSemantics) {
   SkPictureRecorder recorder;
   auto* canvas = recorder.beginRecording(100, 100);
