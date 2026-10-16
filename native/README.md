@@ -1,6 +1,15 @@
-# Native Remote Paint on one macOS device
+# Native Remote Paint
 
-The complete custom `headless_shell` builds and passes native capture, scene, input and streaming acceptance on Apple Silicon macOS. The source page executes JS/DOM/layout in Chromium; the Viewer receives SKPs and actual aggregated Viz composition. It does not receive source HTML/JS, cookies or the comparison screenshot.
+The source page executes JS/DOM/layout in custom Chromium; the Viewer receives
+SKPs and actual aggregated Viz composition. It does not receive source HTML/JS,
+cookies or the comparison screenshot. The default data plane now uses native
+Chromium resource IPC, Rust SceneMapper/Gateway, and a CanvasKit Worker. See
+[the current 1–8 architecture and gates](../docs/native-data-plane.md).
+
+The historical Mac reports below validate the earlier complete capture/scene/
+input/streaming implementation. They do not establish acceptance of the new
+native data plane. The current Linux rebuild and Linux-to-Mac acceptance are
+still pending; build and runtime evidence remain separate.
 
 Pinned versions: Chromium `a49e2e3d4addfd84e765b52afe230bedb81096db` (155.0.8059.79), Skia `29ed1e87a0a50f3d8347e988842d9d59e7573efa`, SKP 110, CanvasKit 0.42.0. Live protocol 4 and the Wasm hash are checked in the handshake.
 
@@ -10,12 +19,13 @@ Use a pinned Chromium checkout with `gclient sync` / hooks completed, full Xcode
 
 ```sh
 npm ci
+npm run native:broker
 npm run native:chromium -- --source /path/to/chromium/src --jobs 6
 export REMOTE_PAINT_CHROMIUM=/path/to/chromium/src/out/RemotePaint/headless_shell
 npm run demo
 ```
 
-The build command applies the four patches in `patches/`, copies `chromium/` into `components/remote_paint`, generates GN, builds the browser and serializer tests, then runs the latter. Preparation checks the exact source revision and patch hashes. Do not use a changed patch over an already patched checkout without reviewing/resetting that patch first.
+The build command applies all checked-in patches in `patches/`, copies `chromium/` into `components/remote_paint`, generates GN, builds the browser and serializer tests, then runs the latter. Preparation checks the exact source revision and patch hashes. Do not use a changed patch over an already patched checkout without reviewing/resetting that patch first.
 
 Open the complete Viewer URL printed by `npm run demo`, including its fragment key. The default test page contains live counters, a compositor animation, incremental Chinese/rare-glyph/Emoji text, authenticated/blob images, editable fields and a scrollable list. `--url http://127.0.0.1:3000` selects another ordinary page.
 
@@ -25,13 +35,35 @@ The harness uses `--in-process-gpu`: GPU/Viz run in the browser process, while R
 
 A per-browser token enables `captureRemotePaint` in a CDP isolated world. The launcher omits `--enable-gpu-benchmarking`, leaving the capture/debug API absent from source-page JavaScript. Incorrect tokens are rejected. Capture runs only while subscribed, allows one request in flight, and discards records invalidated by navigation or detachment.
 
-Recording uses the active compositor tree immediately after `GenerateCompositorFrame`. Full immutable layer SKPs are copied on the owning thread; font subsetting and image encoding run on ThreadPool. No raster canvas, DOM pointer or V8 handle crosses to the encoding worker. A capture is limited to 256 resources / 64 MiB.
+Recording uses the active compositor tree immediately after
+`GenerateCompositorFrame`. With the native data plane, accumulated damage selects
+256×256 tiles to record again; unchanged immutable recordings and encodings are
+reused. Font subsetting and image encoding run on ThreadPool. No raster canvas,
+DOM pointer or V8 handle crosses to an encoding worker. A capture is limited to
+256 resources / 64 MiB. The Node compatibility path retains whole-layer capture.
 
-An opaque capture ID travels through `CompositorFrameMetadata` and Mojo to `SurfaceAggregator`. Actual aggregated passes, quad transforms, clips, opacity, content origins, stable layer IDs and remapped texture IDs travel over a length-prefixed Unix socket. The directory is 0700, the socket 0600, and writes have a timeout and at most two tasks in flight.
+An opaque capture ID travels through `CompositorFrameMetadata` and Mojo to
+`SurfaceAggregator`. Actual aggregated passes, quad transforms, clips, opacity,
+content origins, stable layer IDs and remapped texture IDs travel as RVB2 binary
+messages over a persistent length-prefixed Unix socket. RPA2 carries raw SKPs and
+resource metadata directly from Chromium to Rust; CDP returns only a completion
+receipt and timing. The directory is 0700, the socket 0600, and writes have a
+timeout and at most two tasks in flight.
 
-`capture/scene.mjs` pairs only equal capture IDs. Resource identity includes page epoch / producer / Surface namespace / local stable ID / revision. Viz texture IDs are diagnostic rather than permanent resource identities. Content revisions remain reusable when only composition changes; retired mappings are released.
+Rust pairs only equal capture IDs and owns SceneMapper, SHA deduplication,
+shared resource bytes, per-Peer ACK/delta state and recovery. Resource identity
+includes page epoch / producer / Surface namespace / local stable ID / revision.
+Viz texture IDs are diagnostic rather than permanent resource identities.
+Content revisions remain reusable when only composition changes; retired
+mappings are released. `capture/scene.mjs` remains a compatibility implementation
+selected with `REMOTE_PAINT_DATA_PLANE=node`.
 
-The Viewer replays pass order, clipping, opacity and nested passes. It applies Viz's rebased content origin before drawing a scaled SKP and isolates picture clears with `saveLayer`. CPU CanvasKit surfaces use `dispose()` to release their allocated pixel buffers on success, error and resize.
+The Viewer Worker replays pass order, clipping, opacity and nested passes. It
+applies Viz's rebased content origin before drawing a scaled SKP, reuses unchanged
+passes, and keeps an 8M-pixel immutable picture raster cache. C++ conservatively
+marks destructive pictures that need `saveLayer` isolation when drawn directly.
+CPU CanvasKit surfaces use `dispose()` to release their allocated pixel buffers
+on success, error and resize. `?mainThread` selects the comparison Viewer.
 
 ## Fonts and images
 
@@ -39,11 +71,15 @@ Outline text preserves source glyph IDs, positions, variations and validated adv
 
 Bitmap-only glyphs, including Apple Color Emoji, retain pixels rendered with the original source typeface and strike, encoded as local PNGs on the worker. Limits are 1024 × 1024 per glyph, 4096 glyphs / 16 million pixels per picture. RSXform text mixed with bitmap glyphs is explicitly unsupported. Ordinary text blobs remain intact when they need no bitmap extraction.
 
-Images are serialized from browser-resident pixels; authenticated and blob images do not require Viewer access to source URLs or cookies. GPU-backed images explicitly fail. Images and glyphs embedded in SKPs are reused through immutable picture hashes; separately externalized image/font caches are not implemented.
+Images are serialized from browser-resident pixels; authenticated and blob images do not require Viewer access to source URLs or cookies. GPU-backed images explicitly fail. C++ keeps bounded font-subset and encoded-image caches. The original SKP still
+contains the bytes needed by Skia; asset ranges allow Rust to split encoded
+fonts/images into content-addressed blocks and reuse those blocks across changed
+SKPs. The Worker verifies and reassembles the original SKP before decoding. It
+does not fetch source URLs, perform font matching or redo shaping.
 
 The standalone helper is available with `npm run native:build -- --skia-root /path/to/skia`. It requires the pinned source, CMake/Ninja, Homebrew `harfbuzz-subset` and `libpng`. Its ignored `native/bin` output is rebuilt locally. Helper compilation alone is not browser acceptance.
 
-## Runtime evidence
+## Historical Mac runtime evidence
 
 | Gate | Result and report |
 |---|---|
@@ -73,9 +109,12 @@ frames recovered. These measurements establish the Mac path; Linux acceptance
 remains separate.
 
 The Linux ARM64 browser build and Mac-to-Linux acceptance harness are described
-in [docker/README.md](../docker/README.md). The browser is still compiling;
-serializer tests and a stock BeginFrame clock probe do not prove the complete
-native Linux path.
+in [docker/README.md](../docker/README.md). A previous Linux browser passed its
+own acceptance; those receipts are the baseline in the root README. The current
+1–8/native-data-plane browser is recompiling with caches retained. Serializer,
+Broker fixture, and stock BeginFrame results do not prove this complete new
+Linux path. Public ARM64/x86_64 packaging is described in
+[Linux packages](../docs/linux-packages.md).
 
 Physical OS IME candidate-window/caret placement, independent GPU-process startup on Mac, GPU raster paths, child Surfaces/iframes, gradient masks/complex filters/3D, cross-device use, Steel/Gateway integration and production SKP decoder isolation are outside the current acceptance. Unsupported composition fails explicitly. The managed Agent input API enforces leases; arbitrary external CDP is not isolated by that lease.
 

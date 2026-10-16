@@ -1,6 +1,6 @@
 # 原生数据面与 1–8 项优化
 
-控制面由 Node 管理 Session、鉴权、控制租约、CDP 输入和网页生命周期。绘图数据面由 Chromium C++、Rust Broker/Gateway 和 Viewer Worker 承担。生产默认路径不在 Node 中解析 Viz 场景、重编码 SKP、去重资源或构造 Peer 帧；`REMOTE_PAINT_DATA_PLANE=node` 保留兼容对照路径。
+控制面由 Node 管理 Session、鉴权、控制租约、CDP 输入和网页生命周期。绘图数据面由 Chromium C++、Rust Broker/Gateway 和 Viewer Worker 承担。默认路径不在 Node 中解析 Viz 场景、重编码 SKP、去重资源或构造 Peer 帧；`REMOTE_PAINT_DATA_PLANE=node` 保留兼容对照路径。
 
 ```mermaid
 flowchart LR
