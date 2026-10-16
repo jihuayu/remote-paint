@@ -60,6 +60,10 @@ six-hour job limit. Compilation stops at 245 minutes to allow saving the
 architecture-specific Ninja output through `actions/cache`, even on failure.
 Rerun the workflow to continue from that cache; incomplete builds never produce
 a release package. The next run shallow-syncs the same pinned sources and
-normalizes their timestamps before restoring the incremental build graph.
+normalizes unchanged upstream timestamps before reusing the incremental graph.
+Fallback caches also work across native code changes: project-owned and patched
+inputs receive fresh timestamps so Ninja rebuilds them and their dependents.
+The v2 cache namespace uses Ninja 1.13.2; older system-Ninja logs are not mixed
+into it. Output caches are separated by architecture and build/toolchain profile.
 Caches are subject to GitHub quota/eviction and are separate from this Mac's
 persistent build volume, which the workflow does not access or modify.

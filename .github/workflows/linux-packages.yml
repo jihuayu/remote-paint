@@ -38,9 +38,10 @@ jobs:
           path: |
             build/chromium/src/out/RemotePaintLinux
             build/chromium/broker-target
-          key: chromium-linux-${{ matrix.cpu }}-v1-${{ hashFiles('native/*.args.gn', 'native/patches/**', 'native/chromium/**', 'native/broker/**') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: chromium-linux-${{ matrix.cpu }}-v2-${{ hashFiles('docker/Dockerfile.build', 'native/*.args.gn', 'native/patches/**') }}-${{ hashFiles('native/chromium/**', 'native/broker/**') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            chromium-linux-${{ matrix.cpu }}-v1-${{ hashFiles('native/*.args.gn', 'native/patches/**', 'native/chromium/**', 'native/broker/**') }}-
+            chromium-linux-${{ matrix.cpu }}-v2-${{ hashFiles('docker/Dockerfile.build', 'native/*.args.gn', 'native/patches/**') }}-${{ hashFiles('native/chromium/**', 'native/broker/**') }}-
+            chromium-linux-${{ matrix.cpu }}-v2-${{ hashFiles('docker/Dockerfile.build', 'native/*.args.gn', 'native/patches/**') }}-
       - name: Build pinned Linux toolchain image
         run: |
           docker build --platform linux/amd64 -t remote-paint-build:ci -f docker/Dockerfile.build .

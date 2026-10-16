@@ -34,4 +34,7 @@ node /project/native/prepare.mjs /chromium/src "linux-$TARGET_CPU"
 # after a fresh shallow sync. Generated output keeps its original timestamps.
 find src -type d \( -name .git -o -path src/out \) -prune -o \
   -type f -exec touch -d @1600000000 {} +
+# Native/patch inputs may have changed since a fallback output cache. Refresh
+# their timestamps after normalization so Ninja cannot reuse stale objects.
+python3 /project/docker/ci-source-times.py /chromium/src /project
 df -h /chromium
