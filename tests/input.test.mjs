@@ -24,6 +24,11 @@ test('fresh capture is requested only after accepted CDP input and its sequence 
  await assert.rejects(c.input('a',{...grant,seq:2,event:text}),/CDP failed/);assert.deepEqual(requests,[1]);
  await c.close();
 });
+test('accepted editor input carries a bounded optimistic state for fast Viewer feedback',async()=>{
+ const {source,control:c}=setup();let reads=0;source.page={evaluate:async()=>{reads++;return {kind:'input',x:12,y:34,width:200,height:42,text:'next',selectionStart:4,selectionEnd:4,style:{fontSize:'16px',color:'rgb(0, 0, 0)'}};}};
+ const grant=await c.acquire('a',tags(c));const result=await c.input('a',{...grant,seq:1,event:{kind:'text',text:'next'}});
+ assert.equal(result.accepted,true);assert.equal(result.optimistic.kind,'input');assert.equal(result.optimistic.text,'next');assert.equal(reads,1);await c.close();
+});
 test('handoff fences accepted Agent work, blocks new Agent work and releases held state',async()=>{
  const {control:c,cdp,calls}=setup();let release,entered;const ready=new Promise(r=>entered=r);const original=cdp.send;
  cdp.send=async(method,params)=>{if(params.code==='KeyA'&&params.type==='keyDown'){entered();await new Promise(r=>release=r);}await original(method,params);};

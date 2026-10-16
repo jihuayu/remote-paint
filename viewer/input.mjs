@@ -1,7 +1,8 @@
 // Local textarea captures text/IME only. The remote page remains the editor.
 export class ViewerInput {
- constructor({canvas,proxy,button,label,send}){
-  Object.assign(this,{canvas,proxy,button,label,send});this.queue=[];this.active=false;this.frame=null;this.composing=false;
+ constructor({canvas,proxy,button,label,overlay,send}){
+  Object.assign(this,{canvas,proxy,button,label,overlay,send});this.queue=[];this.active=false;this.frame=null;this.composing=false;
+  this.overlaySeq=0;this.lastFrameInputSeq=0;
   button.onclick=()=>{if(this.active)this.send({type:'ReleaseControl',...this.tags()});else if(this.frame)this.send({type:'AcquireControl',...this.tags()});};
   const modifiers=e=>(e.altKey?1:0)|(e.ctrlKey?2:0)|(e.metaKey?4:0)|(e.shiftKey?8:0);
   const point=e=>{const r=canvas.getBoundingClientRect(),v=this.frame.viewport;return {x:Math.min(v.cssWidth-0.001,Math.max(0,(e.clientX-r.left)*v.cssWidth/r.width)),y:Math.min(v.cssHeight-0.001,Math.max(0,(e.clientY-r.top)*v.cssHeight/r.height))};};
@@ -34,8 +35,27 @@ export class ViewerInput {
  }
  tags(){return {sessionId:this.sessionId,pageEpoch:this.frame?.pageEpoch,viewportVersion:this.frame?.viewportVersion,lease:this.lease};}
  welcome(message){this.reset();this.frame=null;this.enabled=message.input;this.sessionId=message.sessionId;this.peerId=message.peerId;this.button.hidden=!this.enabled;}
- display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=frame;this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);}
- reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.pending=null;this.queue=[];this.composing=false;this.proxy.value='';this.proxy.blur();this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
+ display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=frame;this.lastFrameInputSeq=Math.max(this.lastFrameInputSeq,frame.lastProcessedInputSeq??0);if(this.overlaySeq&&this.lastFrameInputSeq>=this.overlaySeq)this.clearOptimistic();this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);}
+ reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.pending=null;this.queue=[];this.composing=false;this.proxy.value='';this.proxy.blur();this.clearOptimistic();this.lastFrameInputSeq=0;this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
+ clearOptimistic(){this.overlaySeq=0;if(this.overlay)this.overlay.replaceChildren();}
+ showOptimistic(seq,state){
+  if(!this.overlay||!this.frame||!state||!['input','textarea','contenteditable'].includes(state.kind))return;
+  const values=['x','y','width','height'].map(key=>state[key]);if(!values.every(Number.isFinite)||values.some(value=>value<0)||state.width<=0||state.height<=0||typeof state.text!=='string'||state.text.length>8192)return;
+  const safeStyle=Object.fromEntries(Object.entries(state.style??{}).filter(([key,value])=>typeof value==='string'&&value.length<=256&&!/[;{}<>]|url\s*\(|expression\s*\(/i.test(value)));
+  const bounds=this.canvas.getBoundingClientRect(),scaleX=bounds.width/this.frame.viewport.cssWidth,scaleY=bounds.height/this.frame.viewport.cssHeight;
+  const element=document.createElement('div');element.className='optimistic-input';
+  Object.assign(element.style,{left:`${state.x*scaleX}px`,top:`${state.y*scaleY}px`,width:`${state.width*scaleX}px`,height:`${state.height*scaleY}px`,
+   fontFamily:safeStyle.fontFamily??'system-ui',fontSize:`${(parseFloat(safeStyle.fontSize)||16)*scaleY}px`,fontWeight:safeStyle.fontWeight??'400',
+   lineHeight:safeStyle.lineHeight??'normal',letterSpacing:safeStyle.letterSpacing??'normal',color:safeStyle.color??'#000',
+   backgroundColor:safeStyle.backgroundColor??'transparent',border:safeStyle.border??'0',borderRadius:safeStyle.borderRadius??'0',
+   padding:safeStyle.padding??'0',textAlign:safeStyle.textAlign??'left',whiteSpace:state.kind==='contenteditable'?'pre-wrap':'pre'});
+  const start=Math.max(0,Math.min(state.text.length,Number.isInteger(state.selectionStart)?state.selectionStart:state.text.length));
+  const end=Math.max(start,Math.min(state.text.length,Number.isInteger(state.selectionEnd)?state.selectionEnd:start));
+  const before=document.createElement('span'),selected=document.createElement('span'),after=document.createElement('span'),caret=document.createElement('span');
+  before.textContent=state.text.slice(0,start);selected.textContent=state.text.slice(start,end);after.textContent=state.text.slice(end);caret.className='optimistic-caret';
+  if(start!==end)selected.className='optimistic-selection';element.append(before,caret,selected,after);this.overlay.replaceChildren(element);this.overlaySeq=seq;
+  window.remotePaintOptimistic={seq,shownAt:performance.now()};
+ }
  message(message){
   if(message.type==='ControlState'){
    this.mode=message.mode;if(message.mode!=='human'||message.holder!==this.peerId){this.reset();this.button.disabled=!this.enabled||!this.frame||message.mode!=='agent';}
@@ -49,7 +69,9 @@ export class ViewerInput {
   if(message.type==='ControlDenied'){this.reset();this.label.textContent=`操作被拒绝：${message.code}`;this.button.disabled=!this.enabled||!this.frame;return true;}
   if(message.type==='InputAck'){
    if(!this.pending||message.seq!==this.pending.seq)return true;
-   clearTimeout(this.ackTimer);this.pending=null;if(!message.accepted){if(this.active)this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent=`输入已停止：${message.code}`;return true;}this.pump();return true;
+   clearTimeout(this.ackTimer);this.pending=null;if(!message.accepted){if(this.active)this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent=`输入已停止：${message.code}`;return true;}
+   if(message.optimistic&&message.seq>this.lastFrameInputSeq)this.showOptimistic(message.seq,message.optimistic);
+   this.pump();return true;
   }
   return false;
  }

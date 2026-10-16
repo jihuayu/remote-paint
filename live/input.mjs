@@ -84,13 +84,35 @@ export class ControlLease {
    if(event.type==='keyUp')this.keys.delete(event.code);else this.keys.set(event.code,{...command.params,type:'keyUp',text:undefined,commands:undefined,modifiers:0});
   }
  }
+ async optimisticState(event){
+  if(event.kind==='key'&&event.type==='keyUp')return null;
+  if(!['key','text','composition'].includes(event.kind))return null;
+  try{return await this.source.page.evaluate(()=>{
+   const element=document.activeElement;
+   const editable=element instanceof HTMLInputElement||element instanceof HTMLTextAreaElement||element?.isContentEditable;
+   if(!editable)return null;
+   const rect=element.getBoundingClientRect(),style=getComputedStyle(element);
+   const text=element instanceof HTMLInputElement||element instanceof HTMLTextAreaElement?element.value:element.innerText;
+   const selectionStart=typeof element.selectionStart==='number'?element.selectionStart:text.length;
+   const selectionEnd=typeof element.selectionEnd==='number'?element.selectionEnd:selectionStart;
+   return {
+    kind:element instanceof HTMLTextAreaElement?'textarea':element instanceof HTMLInputElement?'input':'contenteditable',
+    x:rect.x,y:rect.y,width:rect.width,height:rect.height,text:text.slice(0,8192),selectionStart,selectionEnd,
+    style:{fontFamily:style.fontFamily,fontSize:style.fontSize,fontWeight:style.fontWeight,lineHeight:style.lineHeight,
+     letterSpacing:style.letterSpacing,color:style.color,backgroundColor:style.backgroundColor,border:style.border,
+     borderRadius:style.borderRadius,padding:style.padding,textAlign:style.textAlign,whiteSpace:style.whiteSpace}
+   };
+  }).catch(()=>null);
+  }catch{return null;}
+ }
  input(peer,message){
   this.validLease(peer,message);if(!Number.isSafeInteger(message.seq)||message.seq!==this.nextSeq)reject('STALE_SEQUENCE');
   validateInput(message.event,this.source.viewport);const version=this.version;
   const promise=this.enqueue(async()=>{
    this.validLease(peer,message);if(this.version!==version)reject('STALE_LEASE');
-   await this.dispatch(message.event);this.source.inputSeq=message.seq;this.source.requestCapture?.();
-   return {type:'InputAck',seq:message.seq,accepted:true,lastProcessedInputSeq:this.source.inputSeq};
+   await this.dispatch(message.event);const optimistic=await this.optimisticState(message.event);
+   this.source.inputSeq=message.seq;this.source.requestCapture?.();
+   return {type:'InputAck',seq:message.seq,accepted:true,lastProcessedInputSeq:this.source.inputSeq,...(optimistic?{optimistic}:{})};
   });
   this.nextSeq++;return promise;
  }

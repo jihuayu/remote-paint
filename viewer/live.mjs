@@ -4,7 +4,7 @@ import {LIVE_VERSION,LIVE_LIMITS,LiveFrameGate,RecoveryRequired} from '/protocol
 import {SceneRenderer} from '/scene-renderer.mjs';
 const $=id=>document.getElementById(id),status=text=>$('status').textContent=text;
 const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
-const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$('control'),label:$('controlState'),send:message=>{if(socket?.readyState===1)socket.send(JSON.stringify(message));}});
+const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$('control'),label:$('controlState'),overlay:$('optimisticOverlay'),send:message=>{if(socket?.readyState===1)socket.send(JSON.stringify(message));}});
 let ck,renderer,sceneRenderer,socket,generation=0,retryTimer,stopped=false,retryDelay=250;
 function fail(error){$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';}
 async function initialize(){
