@@ -1,0 +1,187 @@
+{
+  "scope": "Actual Linux ARM64 Rust Broker/Gateway and CanvasKit Worker contracts using fixture capture and the previous Linux headless browser. New Chromium capture end-to-end acceptance remains separate.",
+  "runtime": {
+    "os": "linux",
+    "architecture": "arm64",
+    "imageId": "sha256:ba52f926ae3c951e29dc1625d70537c18db389cf166f4465a1e5b836d802c133"
+  },
+  "brokerSha256": "f1dc5ccc2ec23cf9db544f44d3394f7a879a22be390906212b0ec9d19c3fee99",
+  "viewerBrowserSha256": "18d43911d65fadd707c3a474519e01939c210c05ed39cb8c9c77e6d68b9d5685",
+  "report": {
+    "verifiedAt": "2026-10-16T05:31:43.995Z",
+    "scope": "Native Rust SceneMapper + native WebSocket data plane, fixture capture and real CanvasKit Worker",
+    "first": {
+      "protocol": 4,
+      "pageEpoch": 1,
+      "viewportVersion": 1,
+      "frameId": 1,
+      "native": {
+        "bitmapGlyphs": 0,
+        "captureId": "native-gateway-1",
+        "frameToken": 1,
+        "namespace": [
+          1,
+          2
+        ],
+        "producer": "contract-native-broker",
+        "sourceFrame": 1,
+        "timing": null
+      },
+      "lastProcessedInputSeq": 0,
+      "resourceBytes": 33594,
+      "resources": 1,
+      "resourcesReceived": 1,
+      "receivedBytes": 35294,
+      "fullFrames": 1,
+      "deltaFrames": 0,
+      "renderMs": 700.1000000014901,
+      "requiredResources": [
+        "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+      ],
+      "rendererStats": {
+        "pictureDecodes": 1,
+        "pictureRasters": 1,
+        "pictureRasterHits": 0,
+        "passRenders": 1,
+        "passHits": 0,
+        "isolatedDraws": 0
+      },
+      "assetStats": {
+        "receivedChunks": 2,
+        "receivedBytes": 33594,
+        "fontBytes": 0,
+        "imageBytes": 0,
+        "reusedBytes": 0,
+        "cacheBytes": 33594
+      },
+      "worker": true
+    },
+    "second": {
+      "protocol": 4,
+      "pageEpoch": 1,
+      "viewportVersion": 1,
+      "frameId": 2,
+      "native": {
+        "bitmapGlyphs": 0,
+        "captureId": "native-gateway-2",
+        "frameToken": 2,
+        "namespace": [
+          1,
+          2
+        ],
+        "producer": "contract-native-broker",
+        "sourceFrame": 2,
+        "timing": null
+      },
+      "lastProcessedInputSeq": 0,
+      "resourceBytes": 33594,
+      "resources": 1,
+      "resourcesReceived": 1,
+      "receivedBytes": 36311,
+      "fullFrames": 1,
+      "deltaFrames": 1,
+      "renderMs": 8.5,
+      "requiredResources": [
+        "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+      ],
+      "rendererStats": {
+        "pictureDecodes": 1,
+        "pictureRasters": 1,
+        "pictureRasterHits": 1,
+        "passRenders": 2,
+        "passHits": 0,
+        "isolatedDraws": 0
+      },
+      "assetStats": {
+        "receivedChunks": 2,
+        "receivedBytes": 33594,
+        "fontBytes": 0,
+        "imageBytes": 0,
+        "reusedBytes": 0,
+        "cacheBytes": 33594
+      },
+      "worker": true
+    },
+    "multipleViewers": true,
+    "slowClientClose": 1013,
+    "rendererMismatchClose": 1008,
+    "missingResourceRecovery": {
+      "droppedResources": 1,
+      "keyframeRequests": 1,
+      "recovered": {
+        "protocol": 4,
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "frameId": 2,
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "native-gateway-2",
+          "frameToken": 2,
+          "namespace": [
+            1,
+            2
+          ],
+          "producer": "contract-native-broker",
+          "sourceFrame": 2,
+          "timing": null
+        },
+        "lastProcessedInputSeq": 0,
+        "resourceBytes": 33594,
+        "resources": 1,
+        "resourcesReceived": 1,
+        "receivedBytes": 37455,
+        "fullFrames": 1,
+        "deltaFrames": 0,
+        "renderMs": 430.40000000596046,
+        "requiredResources": [
+          "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+        ],
+        "rendererStats": {
+          "pictureDecodes": 1,
+          "pictureRasters": 1,
+          "pictureRasterHits": 0,
+          "passRenders": 1,
+          "passHits": 0,
+          "isolatedDraws": 0
+        },
+        "assetStats": {
+          "receivedChunks": 3,
+          "receivedBytes": 34420,
+          "fontBytes": 0,
+          "imageBytes": 0,
+          "reusedBytes": 0,
+          "cacheBytes": 33594
+        },
+        "worker": true
+      },
+      "viewerSourceRequests": 0,
+      "errors": []
+    },
+    "peers": [
+      {
+        "id": "native-0",
+        "stats": {
+          "bytes": 36831,
+          "coalesced": 0,
+          "delta": 1,
+          "full": 2,
+          "maxInflight": 1,
+          "resources": 1,
+          "slowDisconnects": 0
+        }
+      },
+      {
+        "id": "native-1",
+        "stats": {
+          "bytes": 36831,
+          "coalesced": 0,
+          "delta": 1,
+          "full": 2,
+          "maxInflight": 1,
+          "resources": 1,
+          "slowDisconnects": 0
+        }
+      }
+    ]
+  }
+}
