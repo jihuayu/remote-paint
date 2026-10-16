@@ -3,12 +3,17 @@ import {readFile} from 'node:fs/promises';
 import {randomBytes,timingSafeEqual,createHash} from 'node:crypto';
 import {WebSocketServer} from 'ws';
 import {LivePeer} from './peer.mjs';
+import {encodeResource} from '../protocol/wire.mjs';
 const root=new URL('../',import.meta.url);
 export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackTimeout=5000}={}){
  const wasm=await readFile(new URL('node_modules/canvaskit-wasm/bin/full/canvaskit.wasm',root));
  const renderer={canvaskit:'0.42.0',wasmSha256:createHash('sha256').update(wasm).digest('hex')};
  const producer={chromium:source.browser?.version()??'test',skiaRevision:'29ed1e87a0a50f3d8347e988842d9d59e7573efa',skpVersion:110};
  const key=randomBytes(24).toString('hex'),peers=new Set();let origin,closed=false;
+ const sceneCache=new WeakMap(),deltaCache=new WeakMap(),resourceCache=new Map();
+ const cachedScene=scene=>{let value=sceneCache.get(scene);if(!value){value=JSON.stringify(scene);sceneCache.set(scene,value);}return value;};
+ const cachedDelta=(previous,next,delta)=>{let row=deltaCache.get(previous);if(!row){row=new WeakMap();deltaCache.set(previous,row);}let value=row.get(next);if(!value){value=JSON.stringify(delta);row.set(next,value);}return value;};
+ const codec={scene(frame,current,previous){const header={...frame};delete header.scene;delete header.delta;const prefix=JSON.stringify({type:'SceneUpdate',frame:header}).slice(0,-2);let value;if(frame.scene)value=cachedScene(frame.scene);else{let row=deltaCache.get(previous?.scene);if(!row){row=new WeakMap();if(previous?.scene)deltaCache.set(previous.scene,row);}value=previous?.scene&&current?.scene?row.get(current.scene):undefined;if(!value){value=JSON.stringify(frame.delta);if(previous?.scene&&current?.scene)row.set(current.scene,value);}}const field=frame.scene?`,"scene":${value}`:`,"delta":${value}`;return `${prefix}${field}}}`;},resource(id,payload){let value=resourceCache.get(id);if(!value){value=encodeResource(id,payload);resourceCache.set(id,value);}return value;},stats:{sceneHits:0,resourceHits:0}};
  const files=new Map([
   ['/', ['viewer/live.html','text/html; charset=utf-8']],['/live.mjs',['viewer/live.mjs','text/javascript']],
   ['/input.mjs',['viewer/input.mjs','text/javascript']],
@@ -38,7 +43,7 @@ export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackT
  });
  const updateDemand=()=>source.setDemand(closed?0:[...peers].filter(p=>p.ready&&!p.closed).length);
  wss.on('connection',ws=>{
-  const peer=new LivePeer(ws,source,{renderer,producer,ackTimeout,onReady:updateDemand});peers.add(peer);
+  const peer=new LivePeer(ws,source,{renderer,producer,ackTimeout,codec,onReady:updateDemand});peers.add(peer);
   ws.on('message',(bytes,binary)=>{try{if(binary)throw new Error('Client binary unsupported');Promise.resolve(peer.message(JSON.parse(bytes.toString()))).catch(()=>peer.close(1008,'Message processing failed'));}catch(error){peer.close(1008,error.message.slice(0,100));}});
   const detach=()=>{peer.dispose();peers.delete(peer);updateDemand();};ws.on('close',detach);ws.on('error',detach);
  });
