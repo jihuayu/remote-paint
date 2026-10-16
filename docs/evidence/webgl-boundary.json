@@ -1,0 +1,270 @@
+{
+  "scope": "Actual full Linux ARM64 browser and native Rust data plane; expected unsupported WebGL capture boundary, not successful WebGL support",
+  "baseProjectRevision": "6f5fba1392f3d3ccff7171ddce8f5494bc184e47",
+  "browserSha256": "eaaaf5f70f6e8b1e9fc94a727827e13a5f00d295b2748d60d08c251e0a465426",
+  "probeSha256": "7264a1f486651d732fc932d023a0b6b0ac6d32d611b8ac6952be476f464fb0ae",
+  "report": {
+    "at": "2026-10-16T13:02:15.051Z",
+    "scope": "Isolated source and Viewer with the supplied native browser; static WebGL clear, not arbitrary WebGL compatibility",
+    "variants": [
+      {
+        "name": "current-default",
+        "extraArgs": [],
+        "webgl": {
+          "available": true,
+          "pixel": [
+            26,
+            191,
+            64,
+            255
+          ],
+          "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+        },
+        "captureErrors": [
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer"
+        ],
+        "viewerFrame": false,
+        "viewerError": "page.waitForFunction: Timeout 12000ms exceeded.",
+        "sourcePixel": [
+          26,
+          191,
+          64,
+          255
+        ],
+        "stats": {
+          "captures": 0,
+          "errors": 14,
+          "resourceRecoveries": 0,
+          "lastError": "Missing native layer",
+          "recentErrors": [
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            }
+          ]
+        }
+      },
+      {
+        "name": "diagnostic-swiftshader",
+        "extraArgs": [
+          "--enable-unsafe-swiftshader",
+          "--use-angle=swiftshader"
+        ],
+        "webgl": {
+          "available": true,
+          "pixel": [
+            26,
+            191,
+            64,
+            255
+          ],
+          "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+        },
+        "captureErrors": [
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer",
+          "Missing native layer"
+        ],
+        "viewerFrame": false,
+        "viewerError": "page.waitForFunction: Timeout 12000ms exceeded.",
+        "sourcePixel": [
+          26,
+          191,
+          64,
+          255
+        ],
+        "stats": {
+          "captures": 0,
+          "errors": 13,
+          "resourceRecoveries": 0,
+          "lastError": "Missing native layer",
+          "recentErrors": [
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            },
+            {
+              "message": "Missing native layer",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "captures": 0
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

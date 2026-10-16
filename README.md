@@ -4,6 +4,8 @@
 
 本项目覆盖路线 **3–7**，并扩展到 Mac 本机 Docker 中的 Linux ARM64、BeginFrame 和下述 1–8 项优化。升级前完整验收保留为[历史基线](docs/evidence/linux-arm64-mac-acceptance.json)，新版验证进度见下一节。iframe/复杂效果回退、Steel/Gateway 接入和生产解码隔离尚未实现。
 
+WebGL2 在当前源浏览器中可以运行，但最小 WebGL 页面实测因 `Missing native layer` 未能向 Viewer 提交首帧，不能作为已支持能力使用；原因、复跑方法与混合回退方案见 [WebGL 兼容性边界](docs/webgl-boundary.md)。
+
 ## 原生数据面升级（2026-10-16）
 
 1–8 项优化和原生 Broker/Gateway 已落到代码，设计、协议和每项验证入口见 [原生数据面说明](docs/native-data-plane.md)。默认使用 Rust SceneMapper/资源去重/WS Peer，Chromium 通过常驻二进制 IPC 直接传送场景和原始 SKP；Node 负责控制面。Viewer 的 WS、校验、CanvasKit 和 OffscreenCanvas 在 Worker 中运行。
