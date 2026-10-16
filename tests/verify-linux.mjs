@@ -22,8 +22,8 @@ async function inspectElf(path){
  try{assert.equal((await handle.read(header,0,64,0)).bytesRead,64);}finally{await handle.close();}
  assert.equal(header.subarray(0,4).toString('hex'),'7f454c46',`${path} must be ELF`);
  assert.equal(header[4],2,'Expected a 64-bit ELF');assert.equal(header[5],1,'Expected a little-endian ELF');
- assert.equal(header.readUInt16LE(18),183,'Expected an AArch64 executable');
- return {format:'ELF64',machine:'AArch64',sha256:await sha256(path)};
+ assert.equal(header.readUInt16LE(18),process.arch==='arm64'?183:62,'ELF architecture must match runtime');
+ return {format:'ELF64',machine:process.arch==='arm64'?'AArch64':'x86_64',sha256:await sha256(path)};
 }
 async function run(name,command,args,cwd=project){
  const started=Date.now(),log=createWriteStream(join(directory,`${name}.log`));
@@ -40,7 +40,7 @@ async function run(name,command,args,cwd=project){
  }finally{clearTimeout(timer);await new Promise(resolve=>log.end(resolve));}
 }
 try{
- assert.equal(process.platform,'linux');assert.equal(process.arch,'arm64');
+ assert.equal(process.platform,'linux');assert.ok(['arm64','x64'].includes(process.arch));
  assert.notEqual(process.env.REMOTE_PAINT_CLOCK_ONLY,'1','Stock clock probes do not qualify for native acceptance');
  const [browserElf,serializerElf]=await Promise.all([inspectElf(executable),inspectElf(serializer)]);
  const args=await readFile(join(output,'args.gn'),'utf8');
@@ -52,7 +52,7 @@ try{
  }
  const argsSha256=createHash('sha256').update(args).digest('hex');
  const build=JSON.parse(await readFile(join(output,'remote-paint-build.json'),'utf8'));
- await verifyLinuxReceipt(build,{browserSha256:browserElf.sha256,serializerSha256:serializerElf.sha256,argsSha256,patches,buildProfile});
+ await verifyLinuxReceipt(build,{browserSha256:browserElf.sha256,serializerSha256:serializerElf.sha256,argsSha256,patches,buildProfile,cpu:process.arch});
  report.preflight={platform:process.platform,architecture:process.arch,browser:browserElf,serializer:serializerElf,argsSha256,patches,build};await save();
  await run('serializer',serializer,[],output);
  for(const name of ['begin-frame','native','scene','input','live','latency'])await run(name,process.execPath,[`tests/verify-${name}.mjs`]);
@@ -60,7 +60,7 @@ try{
  const clock=await json('linux/begin-frame-report.json');assert.equal(clock.scope,'custom Linux browser external clock');assert.equal(clock.executableSha256,browserElf.sha256);
  assert.equal(clock.stats.errors,0);assert.ok(clock.stats.acked>0);
  for(const [path,flag] of [['native/report.json','nativeBrowserCapture'],['scene/report.json','nativeBrowserCapture'],['input/report.json','nativeDrawing'],['live/report.json','nativeDrawing'],['latency/report.json','nativeDrawing']]){
-  const result=await json(path);assert.equal(result[flag],true);assert.equal(result.platform,'linux');assert.equal(result.architecture,'arm64');assert.ok(result.beginFrame.acked>0);assert.equal(result.beginFrame.errors,0);
+  const result=await json(path);assert.equal(result[flag],true);assert.equal(result.platform,'linux');assert.equal(result.architecture,process.arch);assert.ok(result.beginFrame.acked>0);assert.equal(result.beginFrame.errors,0);
  }
  report.status='passed';
 }catch(error){report.status='failed';report.error=error.stack;throw error;}

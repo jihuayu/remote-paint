@@ -17,7 +17,7 @@ async function expectedSources(){
  return result;
 }
 export async function linuxBuildProfile(args){
- for(const name of ['linux-arm64','linux-arm64-host-cc'])if(args===await readFile(join(project,`native/${name}.args.gn`),'utf8'))return name;
+ for(const name of ['linux-arm64','linux-arm64-host-cc','linux-x64'])if(args===await readFile(join(project,`native/${name}.args.gn`),'utf8'))return name;
  throw new Error('Build arguments differ from the supported Linux profiles');
 }
 export async function inspectLinuxInputs(source){
@@ -35,12 +35,12 @@ export async function inspectLinuxInputs(source){
   const patch=await readFile(join(project,'native/patches',name),'utf8');
   for(const match of patch.matchAll(/^\+\+\+ b\/(.+)$/gm))patchedSources[match[1]]=await fileHash(join(source,match[1]));
  }
- return {format:1,target:{os:'linux',cpu:'arm64'},buildProfile,hostCrossCompiler,chromiumRevision,skiaRevision,nativeSources,patches,patchedSources,
+ return {format:1,target:{os:'linux',cpu:buildProfile==='linux-x64'?'x64':'arm64'},buildProfile,hostCrossCompiler,chromiumRevision,skiaRevision,nativeSources,patches,patchedSources,
   argsSha256:createHash('sha256').update(args).digest('hex'),
   hostConfiguration:{gnSha256:await fileHash(join(source,'.gn')),swiftShaderSha256:await fileHash(join(source,'third_party/swiftshader/BUILD.gn'))}};
 }
-export async function verifyLinuxReceipt(receipt,{browserSha256,serializerSha256,argsSha256,patches,buildProfile}){
- assert.equal(receipt.format,1);assert.deepEqual(receipt.target,{os:'linux',cpu:'arm64'});
+export async function verifyLinuxReceipt(receipt,{browserSha256,serializerSha256,argsSha256,patches,buildProfile,cpu='arm64'}){
+ assert.equal(receipt.format,1);assert.ok(['arm64','x64'].includes(cpu));assert.deepEqual(receipt.target,{os:'linux',cpu});
  assert.equal(receipt.chromiumRevision,chromiumRevision);assert.equal(receipt.skiaRevision,skiaRevision);
  assert.deepEqual(receipt.nativeSources,await expectedSources(),'Native build sources differ from the runtime project');
  assert.deepEqual(receipt.patches,patches);assert.equal(receipt.argsSha256,argsSha256);

@@ -2,7 +2,11 @@
 set -eu
 # Mount an independent pinned checkout at /chromium, and this repo at /project.
 # Do not share a Mac checkout's platform-specific toolchain directories.
-cd /chromium/src
+project=${PROJECT_ROOT:-/project}
+source=${CHROMIUM_SOURCE:-/chromium/src}
+target=${TARGET_CPU:-arm64}
+case "$target" in arm64|x64) ;; *) echo "Unsupported TARGET_CPU: $target" >&2; exit 2 ;; esac
+cd "$source"
 python3 tools/clang/scripts/update.py --host-os linux
 python3 tools/rust/update_rust.py
 if [ ! -f third_party/llvm-libclang/lib/libclang.so ]; then
@@ -54,10 +58,10 @@ if ! printf '%s  %s\n' "$esbuild_sha" "$esbuild_dir/esbuild" | sha256sum --check
   printf '%s  %s\n' "$esbuild_sha" "$esbuild_dir/esbuild" | sha256sum --check
   chmod +x "$esbuild_dir/esbuild"
 fi
-node /project/native/prepare.mjs /chromium/src linux-arm64
+node "$project/native/prepare.mjs" "$source" "linux-$target"
 mkdir -p out/RemotePaintLinux
 buildtools/linux64/gn gen out/RemotePaintLinux \
-  --script-executable=/chromium/src/third_party/cpython3/linux-amd64/bin/python3
+  --script-executable="$source/third_party/cpython3/linux-amd64/bin/python3"
 ninja -C out/RemotePaintLinux -j"${BUILD_JOBS:-4}" remote_paint_tools
 ninja -C out/RemotePaintLinux -j"${BUILD_JOBS:-4}" headless_shell
-node /project/native/linux-receipt.mjs /chromium/src
+node "$project/native/linux-receipt.mjs" "$source"

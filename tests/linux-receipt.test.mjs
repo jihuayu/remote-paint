@@ -10,6 +10,10 @@ test('runtime refuses stale native sources even when binary, arguments and patch
  const expected={browserSha256:'a'.repeat(64),serializerSha256:'b'.repeat(64),argsSha256:'c'.repeat(64),patches:{}};
  const receipt={format:1,target:{os:'linux',cpu:'arm64'},chromiumRevision:'a49e2e3d4addfd84e765b52afe230bedb81096db',skiaRevision:'29ed1e87a0a50f3d8347e988842d9d59e7573efa',nativeSources,patches:{},argsSha256:expected.argsSha256,binaries:{headless_shell:expected.browserSha256,serializer_tests:expected.serializerSha256},incrementalGraphUpToDate:true};
  await verifyLinuxReceipt(receipt,expected);
+ const x64={...receipt,target:{os:'linux',cpu:'x64'},buildProfile:'linux-x64'};
+ await verifyLinuxReceipt(x64,{...expected,buildProfile:'linux-x64',cpu:'x64'});
+ await assert.rejects(verifyLinuxReceipt(x64,expected));
+ await assert.rejects(verifyLinuxReceipt(receipt,{...expected,cpu:'x64'}));
  await assert.rejects(verifyLinuxReceipt({...receipt,nativeSources:{...nativeSources,'viz_capture.cc':'0'.repeat(64)}},expected),/Native build sources differ/);
  await assert.rejects(verifyLinuxReceipt({...receipt,binaries:{...receipt.binaries,headless_shell:'0'.repeat(64)}},expected));
  const hostExpected={...expected,buildProfile:'linux-arm64-host-cc'};

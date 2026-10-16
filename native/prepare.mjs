@@ -9,7 +9,7 @@ const expected = 'a49e2e3d4addfd84e765b52afe230bedb81096db';
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim();
 if (revision !== expected) throw new Error(`Expected Chromium ${expected}, got ${revision}`);
 const platform = process.argv[3] ?? 'mac-arm64';
-if (!['mac-arm64', 'linux-arm64'].includes(platform)) throw new Error('Unknown build platform');
+if (!['mac-arm64', 'linux-arm64', 'linux-x64'].includes(platform)) throw new Error('Unknown build platform');
 const output = join(source, platform === 'mac-arm64' ? 'out/RemotePaint' : 'out/RemotePaintLinux');
 await mkdir(output, { recursive: true });
 const statePath=join(output,'remote-paint-patches.json');
@@ -23,7 +23,7 @@ const state=await readState(statePath);
 // their receipt even when its toolchain/output switches platforms. Later
 // patches can overlap earlier hunks; reverse-checking each alone is invalid.
 if(!Object.keys(state).length){
- const previous=join(source,platform==='linux-arm64'?'out/RemotePaint':'out/RemotePaintLinux','remote-paint-patches.json');
+ const previous=join(source,platform.startsWith('linux-')?'out/RemotePaint':'out/RemotePaintLinux','remote-paint-patches.json');
  Object.assign(state,await readState(previous));
 }
 for(const name of (await readdir(new URL('./patches/',import.meta.url))).filter(n=>n.endsWith('.patch')).sort()) {
@@ -38,7 +38,7 @@ for(const name of (await readdir(new URL('./patches/',import.meta.url))).filter(
 await writeFile(statePath,JSON.stringify(state,null,2));
 await mkdir(join(source, 'components/remote_paint'), { recursive: true });
 for(const name of await readdir(new URL('./chromium/',import.meta.url)))await copyChanged(new URL(`./chromium/${name}`,import.meta.url),join(source,'components/remote_paint',name));
-if(platform==='linux-arm64'){
+if(platform.startsWith('linux-')){
   // Nested `gn desc` calls (notably V8 metagen) do not inherit the top-level
   // `gn gen --script-executable` override. A Mac-synced host/ contains Mach-O.
   const dotfile=join(source,'.gn'),linuxPython='script_executable = "//third_party/cpython3/linux-amd64/bin/python3"';
