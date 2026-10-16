@@ -24,8 +24,9 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
   if(beginFrames)frameDriver=await startBeginFrames(page);
   await page.goto(url,{waitUntil:'networkidle'});
   capture=new NativeCapture(page,{token,viz,interval,frameDriver,captureOnInput});await capture.initialize();
+  capture.forceResources=!!broker;
   const source=new EventEmitter();Object.assign(source,{page,browser,capture,viz,frameDriver,pageEpoch:1,viewportVersion:1,latest:null,demand:0,inputSeq:0,mapper:broker?null:new SceneMapper(),broker,producer:null,
-   viewport:{cssWidth:viewport.width,cssHeight:viewport.height,deviceScaleFactor:1},stats:{captures:0,errors:0,lastError:null,recentErrors:[]}});
+   viewport:{cssWidth:viewport.width,cssHeight:viewport.height,deviceScaleFactor:1},stats:{captures:0,errors:0,resourceRecoveries:0,lastError:null,recentErrors:[]}});
   source.setDemand=count=>{
    source.demand=count;capture.setDemand(count);
    if(frameDriver){
@@ -34,7 +35,7 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
    }
   };
   source.requestCapture=()=>capture.requestCapture();
-  source.invalidate=reason=>{source.pageEpoch++;source.latest=null;source.mapper?.reset();void broker?.resetScene().catch(error=>source.emit('captureError',error));source.emit('invalidate',reason);};
+  source.invalidate=reason=>{source.pageEpoch++;source.latest=null;capture.forceResources=!!broker;source.mapper?.reset();void broker?.resetScene().catch(error=>source.emit('captureError',error));source.emit('invalidate',reason);};
   capture.on('navigation',()=>source.invalidate('navigation'));
   const failure=error=>{source.stats.errors++;source.stats.lastError=error.message;source.stats.recentErrors.push({message:error.message,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,captures:source.stats.captures});if(source.stats.recentErrors.length>32)source.stats.recentErrors.shift();source.emit('captureError',error);};
   capture.on('captureError',failure);frameDriver?.on('frameError',failure);
@@ -47,15 +48,20 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
     const mapStarted=performance.now();
     const mapped=broker?await broker.map(native,{epoch,viewport:source.viewport,viewportVersion:version,inputSeq,metadataOnly:true}):source.mapper.map(native,epoch);
     if(!source.demand||source.pageEpoch!==epoch||source.viewportVersion!==version)return;
+    if(native.resourcesComplete)capture.forceResources=false;
     source.stats.lastCaptureMs=native.timing?.captureRoundTripMs;source.stats.lastMapMs=performance.now()-mapStarted;
     if(!broker)validateScene(mapped.scene,[...mapped.payloads.keys()],source.viewport);
     source.latest={...mapped,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,viewport:{...source.viewport},lastProcessedInputSeq:inputSeq};
     source.stats.captures++;source.stats.lastError=null;source.emit('frame',source.latest);
-   }catch(error){failure(error);}
+   }catch(error){
+    if(broker&&error.message==='Incremental native resource cache miss'){
+     source.stats.resourceRecoveries++;capture.forceResources=true;capture.requestCapture();
+    }else failure(error);
+   }
   });
   source.resize=async({width,height})=>{
    if(![width,height].every(n=>Number.isInteger(n)&&n>0&&n<=4096))throw new Error('Invalid source viewport');
-   capture.setDemand(0);capture.generation++;
+   capture.setDemand(0);capture.generation++;capture.forceResources=!!broker;
    // Changing LocalSurfaceId under an outstanding external BeginFrame can
    // discard its ACK. Drain the clock before changing the compositor surface.
    try{await frameDriver?.stop();await page.setViewportSize({width,height});source.viewport={cssWidth:width,cssHeight:height,deviceScaleFactor:1};source.viewportVersion++;source.latest=null;source.emit('invalidate','viewport');}

@@ -1,0 +1,54 @@
+{
+  "verifiedAt": "2026-10-16T08:42:07.324742+00:00",
+  "scope": "Targeted Linux ARM64 recovery probe: three patched C++ objects relinked over the previous completed object set. Full Ninja graph and final Linux/Mac suite acceptance are separate and pending.",
+  "binarySha256": "ebd03703f050ac93e3ad1e43a0de5b8ceec32e5436f91cf3743379e6d92dd94d",
+  "nativeSources": {
+    "capture_state.h": "3a692cc50ce86e5fcfcf20ac8402a1b06a4ab0188b29ecf94b3bea28e859b347",
+    "capture_state.cc": "39421cae7a4064db7dda36448db557b59dd44c02e801b1add871d392e86c5678",
+    "extension_capture.inc": "d4cca278fcfb24f90bd253d366eda190e5d81d0e33bf8c5f21b6d267dfe08421"
+  },
+  "checks": {
+    "resourceResendWithoutSerialization": true,
+    "nativeCacheResetRecovery": {
+      "recoveries": 1,
+      "resumed": true
+    },
+    "viewerMissingResourceRecovery": 1,
+    "liveResizeRecovery": [
+      {
+        "width": 800,
+        "viewportVersion": 2,
+        "frameId": 10
+      },
+      {
+        "width": 960,
+        "viewportVersion": 3,
+        "frameId": 13
+      },
+      {
+        "width": 800,
+        "viewportVersion": 4,
+        "frameId": 16
+      }
+    ],
+    "liveBeginFrame": {
+      "mode": "begin-frame",
+      "cadence": "active",
+      "issued": 1110,
+      "acked": 1110,
+      "damaged": 1064,
+      "errors": 0,
+      "lastError": null
+    },
+    "reloadThenResizeIterations": 5,
+    "stressFinalBeginFrame": {
+      "mode": "begin-frame",
+      "cadence": "active",
+      "issued": 345,
+      "acked": 345,
+      "damaged": 326,
+      "errors": 0,
+      "lastError": null
+    }
+  }
+}

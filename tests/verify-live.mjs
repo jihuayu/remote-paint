@@ -57,6 +57,15 @@ try{
  // a new connection committed its keyframe without racing the transient #1.
  await page.waitForFunction(previous=>window.remotePaintResult?.connectionGeneration>previous&&window.remotePaintResult?.fullFrames===1,beforeReconnect.connectionGeneration);
  const recovered=await page.evaluate(()=>window.remotePaintResult);assert.equal(recovered.fullFrames,1);assert.notEqual(recovered.native.captureId,first.native.captureId);
+ let nativeResourceCacheRecovery=null;
+ if(source.broker){
+  const recoveries=source.stats.resourceRecoveries,captures=source.stats.captures;
+  // Deliberately forget native SKPs while Chromium still owns its encoding
+  // cache. Hash references must trigger a full byte resend and resume frames.
+  await source.broker.reset();await wait(()=>source.stats.resourceRecoveries>recoveries);
+  await wait(()=>source.stats.captures>captures&&!source.capture.forceResources);
+  nativeResourceCacheRecovery={recoveries:source.stats.resourceRecoveries-recoveries,resumed:true};
+ }
  await wait(()=>source.control.mode==='agent');
  phase='navigation';const oldEpoch=source.pageEpoch;await source.page.reload();await page.waitForFunction(epoch=>window.remotePaintResult?.pageEpoch>epoch,oldEpoch);const navigated=await page.evaluate(()=>window.remotePaintResult);
  phase='resize';const resizeRecovery=[];
@@ -80,6 +89,6 @@ try{
   (f.phase==='navigation'&&f.message==='cdpSession.send: Protocol error (Runtime.evaluate): Inspected target navigated or closed')
  ),JSON.stringify(captureFailures));
  if(process.platform==='linux'){assert.ok(source.frameDriver.stats.acked>0);assert.equal(source.frameDriver.stats.errors,0);}
- const report={...nativeRuntimeInfo(source.frameDriver),streamText,streamTextInk,missingStreamTextRejected:true,captureFailures,resizeRecovery,verifiedAt:new Date().toISOString(),nativeDrawing:true,missingResourceRecovery,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),first,dynamic,frozen,animated,streamed,beforeReconnect,recovered,navigated,resized,imagePixels,textInk,pixelFractionOver24,slowClientClose:1013,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,viewerSourceRequests:0,errors,stats:source.stats};
+ const report={...nativeRuntimeInfo(source.frameDriver),streamText,streamTextInk,missingStreamTextRejected:true,captureFailures,resizeRecovery,nativeResourceCacheRecovery,verifiedAt:new Date().toISOString(),nativeDrawing:true,missingResourceRecovery,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),first,dynamic,frozen,animated,streamed,beforeReconnect,recovered,navigated,resized,imagePixels,textInk,pixelFractionOver24,slowClientClose:1013,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,viewerSourceRequests:0,errors,stats:source.stats};
  await writeFile('artifacts/live/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await browser.close();await live.close();}

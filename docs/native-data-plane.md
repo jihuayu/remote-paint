@@ -36,6 +36,10 @@ Unix socket 位于权限 0700 的临时目录，socket 权限 0600；最多四�
 
 Broker 先登记 captureId，分别配对 Viz 与资源，不把未登记包用于映射。两者可任意先后到达；丢失资源会超时失败。导航/viewport 使旧逻辑场景失效；有界不可变缓存跨 epoch 保留，显式 full reset 才清除资源。最多保留四个待发布快照，并拒绝将旧 serial 覆盖到新快照。
 
+首次映射、导航和 viewport 更新要求一帧完整资源；Broker 的哈希缓存缺失也会请求重发。控制面仅传递 `forceResources` 标志，原始字节仍走 RPA2。Chromium 直接复用缓存中的编码结果重发，成功映射带 `resourcesComplete` 的回执后才恢复仅哈希模式。这样，取消采集丢失首次资源或有界缓存淘汰都不会造成永久缺图。`verify-native` 检查重发不重复序列化，`verify-live` 会主动清空 Broker 资源缓存再验证恢复。
+
+整个采集事务有六秒期限，并同时观察 CDP 与 IPC 的失败；更改 viewport 前先停止并等待外部 BeginFrame ACK，完成后按实际 Viewer demand 恢复时钟。
+
 ## Viewer 资源块协商
 
 Hello 的 `capabilities: ["asset-chunks-v1"]` 启用块传输。RPNT v1 kind 2 是带 SHA-256 的独立块，kind 1 保留完整 SKP 兼容模式。`ResourceManifest` 给出完整 SKP 的 hash、长度和有序块引用；字体和图片按原始编码边界拆分，其余指令每 32 KiB 拆分。Worker 必须验证每块 SHA、重组长度、SKP magic 和完整 SKP SHA，然后才能进入场景提交门控。

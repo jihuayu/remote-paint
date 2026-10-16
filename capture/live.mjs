@@ -58,24 +58,26 @@ export class NativeCapture extends EventEmitter {
     const requestStarted=performance.now();
     const evaluated=this.cdp.send('Runtime.evaluate',{
       contextId:this.world,awaitPromise:true,returnByValue:true,
-      expression:`new Promise((resolve,reject)=>{if(!chrome.gpuBenchmarking.captureRemotePaint(${JSON.stringify(this.token)},${JSON.stringify(captureId)},resolve))reject(new Error('Native capture refused'));})`,
+      expression:`new Promise((resolve,reject)=>{if(!chrome.gpuBenchmarking.captureRemotePaint(${JSON.stringify(this.token)},${JSON.stringify(captureId)},resolve,${this.forceResources===true}))reject(new Error('Native capture refused'));})`,
     });
     if(this.frameDriver)void this.frameDriver.requestNow().catch(()=>{});
     // Navigation/resize can discard a native callback after its request has
     // left the compositor queue. Observe IPC failure concurrently and bound
     // the entire transaction, including a ready Viz frame with no CDP reply.
     let replyAt;
-    const [evaluation,viz]=await Promise.race([
-      Promise.all([evaluated.then(value=>{replyAt=performance.now();return value;}),scene]),deadline,
+    const [value,viz]=await Promise.race([
+      Promise.all([evaluated.then(({result,exceptionDetails})=>{
+        replyAt=performance.now();
+        if(generation!==this.generation)throw new Error('Navigation invalidated the in-flight capture');
+        if(exceptionDetails)throw new Error(exceptionDetails.exception?.description??exceptionDetails.text);
+        if(result.value?.error)throw new Error(result.value.error);
+        if(result.value?.captureId!==captureId)throw new Error('Native capture pairing mismatch');
+        if(!Array.isArray(result.value?.resources))throw new Error('Incomplete native capture');
+        return result.value;
+      }),scene]),deadline,
     ]);
-    const {result,exceptionDetails}=evaluation;
-    if(generation!==this.generation)throw new Error('Navigation invalidated the in-flight capture');
-    if(exceptionDetails)throw new Error(exceptionDetails.exception?.description??exceptionDetails.text);
-    if(result.value?.error)throw new Error(result.value.error);
-    if(result.value?.captureId!==captureId)throw new Error('Native capture pairing mismatch');
-    if(!Array.isArray(result.value?.resources))throw new Error('Incomplete native capture');
     if(generation!==this.generation)throw new Error('Navigation invalidated the Viz frame');
-    this.count++;return {...result.value,viz,timing:{...result.value.timing,captureRoundTripMs:performance.now()-started,cdpReplyMs:replyAt-requestStarted,vizWaitMs:performance.now()-replyAt}};
+    this.count++;return {...value,viz,timing:{...value.timing,captureRoundTripMs:performance.now()-started,cdpReplyMs:replyAt-requestStarted,vizWaitMs:performance.now()-replyAt}};
     }catch(error){this.viz.cancel(captureId);if(generation!==this.generation)throw new Error('Navigation invalidated the in-flight capture');throw error;}
     finally{clearTimeout(timer);}
   }

@@ -112,7 +112,7 @@ EncodedLayer EncodeLayer(int host, size_t index, LayerRecord record) {
     result.font_ms = encoded->serialized.font_ms;
     result.image_ms = encoded->serialized.image_ms;
   }
-  if(NativeResourceIPC()&&!result.reused)result.payload=encoded->serialized.bytes;
+  if(NativeResourceIPC())result.payload=encoded->serialized.bytes;
   result.skp = encoded->base64;
   result.asset_ranges=encoded->serialized.asset_ranges;
   result.resource_id = encoded->resource_id;
@@ -126,6 +126,7 @@ base::DictValue EncodeResults(Snapshot snapshot,
   double portable_ms = 0, glyph_collection_ms = 0, serialize_ms = 0, font_ms = 0, image_ms = 0, base64_ms = 0;
   base::DictValue result;
   result.Set("captureId",snapshot.capture_id);
+  result.Set("resourcesComplete",snapshot.force_resources);
   result.Set("producer",snapshot.producer);
   result.Set("frameToken",static_cast<double>(snapshot.frame_token));
   result.Set("sourceFrame",snapshot.source_frame);
@@ -152,7 +153,8 @@ base::DictValue EncodeResults(Snapshot snapshot,
     base::ListValue assets;for(const auto& range:encoded.asset_ranges){base::DictValue asset;asset.Set("offset",static_cast<int>(range.offset));asset.Set("bytes",static_cast<int>(range.bytes));asset.Set("kind",range.kind);assets.Append(std::move(asset));}resource.Set("assetRanges",std::move(assets));
     resource.Set("quadScale",encoded.quad_scale);
     resource.Set("resourceId",encoded.resource_id);
-    if(encoded.reused){cached_layers++;}else if(!NativeResourceIPC())resource.Set("skp",std::move(encoded.skp));
+    if(encoded.reused)cached_layers++;
+    if(!NativeResourceIPC()&&(!encoded.reused||snapshot.force_resources))resource.Set("skp",std::move(encoded.skp));
     resource.Set("width",encoded.width);
     resource.Set("height",encoded.height);
     threads.insert(encoded.thread);
@@ -176,8 +178,8 @@ base::DictValue EncodeResults(Snapshot snapshot,
     result.Set("nativeResources",true);
     std::string metadata;if(!base::JSONWriter::Write(result,&metadata)){result.Set("error","Native metadata encoding failed");return result;}
     BinaryWriter wire;wire.Bytes("RPA2");wire.U8(1);wire.U8(1);wire.String(snapshot.capture_id);wire.String(metadata);
-    uint32_t count=0;for(const auto& layer:layers)if(layer.payload)count++;wire.U32(count);
-    for(const auto& layer:layers)if(layer.payload){wire.String(layer.resource_id);wire.U32(layer.payload->size());wire.Bytes(std::string_view(static_cast<const char*>(layer.payload->data()),layer.payload->size()));}
+    uint32_t count=0;for(const auto& layer:layers)if(layer.payload&&(!layer.reused||snapshot.force_resources))count++;wire.U32(count);
+    for(const auto& layer:layers)if(layer.payload&&(!layer.reused||snapshot.force_resources)){wire.String(layer.resource_id);wire.U32(layer.payload->size());wire.Bytes(std::string_view(static_cast<const char*>(layer.payload->data()),layer.payload->size()));}
     static base::NoDestructor<VizSocket> socket(base::Environment::Create()->GetVar("REMOTE_PAINT_SOCKET").value_or(""));
     if(!socket->Send(wire.bytes))result.Set("error","Native resource IPC failed");
     // Only a completion receipt traverses CDP/Node. Metadata and raw SKPs stay
@@ -187,11 +189,11 @@ base::DictValue EncodeResults(Snapshot snapshot,
   return result;
 }
 }
-bool RequestCapture(int host,std::string id,base::OnceCallback<void(base::DictValue)> reply){
+bool RequestCapture(int host,std::string id,base::OnceCallback<void(base::DictValue)> reply,bool force_resources){
   auto& state=GetState();
   {base::AutoLock lock(state.lock);
     if(state.requests.size()>=4||state.requests.contains(host))return false;
-    state.requests.emplace(host,std::make_unique<CaptureRequest>(host,id,std::move(reply)));
+    state.requests.emplace(host,std::make_unique<CaptureRequest>(host,id,std::move(reply),force_resources));
     state.pending.fetch_add(1,std::memory_order_relaxed);
   }
   base::ThreadPool::PostDelayedTask(FROM_HERE,{},base::BindOnce([](int host,std::string id){
@@ -230,6 +232,7 @@ uint64_t NewRecordingKey(){
   return key?key:NextRecordingKey().fetch_add(1,std::memory_order_relaxed);
 }
 void EncodeAndReply(Snapshot snapshot,std::unique_ptr<CaptureRequest> request){
+  snapshot.force_resources=request->force_resources;
   snapshot.encoding_started_ms=base::TimeTicks::Now().since_origin().InMillisecondsF();
   if(snapshot.records.empty()){
     base::ThreadPool::PostTask(FROM_HERE,{base::MayBlock(),base::TaskPriority::USER_VISIBLE},

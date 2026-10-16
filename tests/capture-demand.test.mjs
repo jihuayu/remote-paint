@@ -85,3 +85,10 @@ test('an isolated world created across navigation is not reused',async()=>{
  const attempt=capture.ensureWorld();await new Promise(setImmediate);capture.generation++;created({executionContextId:12});
  await assert.rejects(attempt,/Navigation invalidated/);assert.equal(capture.world,undefined);await capture.close();
 });
+
+test('a native refusal is reported immediately even if Viz never sends a frame',async()=>{
+ const capture=new NativeCapture(null,{token:'test',viz:{waitFor:()=>new Promise(()=>{}),cancel(){}}});
+ capture.world=1;capture.cdp={send:async()=>({exceptionDetails:{text:'Native capture refused'}}),detach:async()=>{}};
+ let failure;const attempt=capture.capture().catch(error=>failure=error);
+ await new Promise(setImmediate);assert.equal(failure?.message,'Native capture refused');await attempt;await capture.close();
+});

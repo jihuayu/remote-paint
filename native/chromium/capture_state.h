@@ -34,15 +34,18 @@ struct Snapshot {
   double encoding_started_ms = 0;
   int recording_cache_hits = 0;
   int recording_cache_misses = 0;
+  bool force_resources = false;
   std::vector<LayerRecord> records;
 };
 struct CaptureRequest {
   int host;
   std::string capture_id;
   base::OnceCallback<void(base::DictValue)> reply;
+  bool force_resources = false;
 };
 bool RequestCapture(int host, std::string capture_id,
-                    base::OnceCallback<void(base::DictValue)> reply);
+                    base::OnceCallback<void(base::DictValue)> reply,
+                    bool force_resources = false);
 std::unique_ptr<CaptureRequest> TakeCapture(int host);
 bool IsTiledCaptureEnabled();
 void TrackLayerDamage(int host, int layer, int x, int y, int width, int height);

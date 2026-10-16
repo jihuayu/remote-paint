@@ -57,6 +57,12 @@ try{
  assert.equal(stable.timing.imageMs,0,'Cached layers must not report repeated image work');
  assert.equal(stable.timing.base64Ms,0,'Cached layers must not report repeated Base64 work');
  assert.ok(stable.resources.every(r=>!r.skp&&/^[0-9a-f]{64}$/.test(r.resourceId)));
+ capture.forceResources=true;
+ const resent=await captureOnDemand(capture);capture.forceResources=false;
+ assert.equal(resent.resourcesComplete,true);
+ assert.equal(resent.timing.cachedLayers,resent.resources.length,'Resource repair must reuse encoded bytes');
+ assert.equal(resent.timing.serializeMs,0,'Resource repair must not serialize unchanged pictures again');
+ assert.ok(resent.resources.every(r=>r.skp),'A complete resource request must resend even cached layers');
  const bitmapGlyphs=second.resources.reduce((n,r)=>n+r.bitmapGlyphs,0);assert.ok(bitmapGlyphs>0,'Native color glyph pixels must be preserved');
  if(beginFrames){assert.ok(frameDriver.stats.acked>0);assert.equal(frameDriver.stats.errors,0);}
  const report={verifiedAt:new Date().toISOString(),browser:browser.version(),...nativeRuntimeInfo(frameDriver),nativeBrowserCapture:true,noViewerCaptures:0,
@@ -64,6 +70,6 @@ try{
    recordingThread:first.recordingThread,encodingThread:first.encodingThread,
    namespace:first.viz.namespace,frameToken:first.frameToken,vizIpc:viz.stats,
    layerIds:first.resources.map(r=>r.localId),resourceBytes:second.resources.map(r=>r.skp?Buffer.from(r.skp,'base64').length:0),
-   stableTiming:stable.timing,stableResources:stable.resources.length};
+   stableTiming:stable.timing,stableResources:stable.resources.length,resourceResendWithoutSerialization:true};
  await mkdir('artifacts/native',{recursive:true});await writeFile('artifacts/native/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await capture?.close();await frameDriver?.close();await browser.close();await viz.close();await fixture.close();}
