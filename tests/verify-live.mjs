@@ -17,6 +17,7 @@ const delay=ms=>new Promise(r=>setTimeout(r,ms));
 const wait=async predicate=>{const start=Date.now();while(!predicate()){if(Date.now()-start>30000)throw new Error(`Native live timeout: ${source.stats.lastError}`);await delay(100);}};
 try{
  await mkdir('artifacts/live',{recursive:true});await delay(300);assert.equal(source.stats.captures,0);
+ if(source.frameDriver)assert.equal(source.frameDriver.running,false,'Bootstrap clock must pause when the transport has no viewers');
  const page=await browser.newPage({viewport:{width:1100,height:900}}),errors=[],requests=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(new URL(r.url()).origin));await page.goto(live.url);
  await page.waitForFunction(()=>window.remotePaintResult?.frameId>0,null,{timeout:60000});const first=await page.evaluate(()=>window.remotePaintResult);

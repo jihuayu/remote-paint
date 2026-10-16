@@ -62,6 +62,7 @@ export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackT
  origin=`http://127.0.0.1:${server.address().port}`;
  try{if(source.broker)nativePeers=await startNativePeers(source,{renderer,producer,key,origin,host,port:port?Number(process.env.REMOTE_PAINT_GATEWAY_PORT??port+1):0,ackTimeout,peers,onDemand:updateDemand});}
  catch(error){source.off('frame',frame);source.off('captureError',failure);await new Promise(r=>wss.close(r));await new Promise(r=>server.close(r));throw error;}
+ updateDemand();
  return {origin,key,streamOrigin:nativePeers?`http://127.0.0.1:${nativePeers.port}`:origin,url:`${origin}/#key=${key}`,renderer,peers,
   async close(){closed=true;source.off('frame',frame);source.off('captureError',failure);source.setDemand(0);await nativePeers?.close();for(const peer of peers){peer.dispose();peer.ws.terminate();}await new Promise(r=>wss.close(r));await new Promise(r=>server.close(r));},
  };
