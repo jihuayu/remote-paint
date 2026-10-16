@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {NativeCapture} from '../capture/live.mjs';
 
-test('demand gates native encoding, permits only one in-flight capture and drops detached results',async()=>{
+test('demand gates native encoding, permits only one in-flight capture and drops detached results',async t=>{
+  t.mock.timers.enable({apis:['setTimeout']});
   const canceled=[];const capture=new NativeCapture(null,{interval:1,viz:{cancel:id=>canceled.push(id)}});
   let resolve,calls=0,delivered=0;
   capture.capture=()=>{calls++;return new Promise(r=>resolve=r);};
