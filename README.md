@@ -4,7 +4,15 @@
 
 本次范围为路线 **3–7**，并扩展到 Mac 本机 Docker 中的 Linux ARM64、BeginFrame 和输入延迟优化。Linux ARM64 浏览器已在 OrbStack 中完成编译，Linux 原生套件和 Mac Viewer 远控验收均已通过；完整收据见 [Linux ARM64 + Mac 验收](docs/evidence/linux-arm64-mac-acceptance.json)。iframe/复杂效果回退、Steel/Gateway 接入和生产解码隔离尚未实现。
 
-## 当前验收状态
+## 原生数据面升级（2026-10-16）
+
+1–8 项优化和原生 Broker/Gateway 已落到代码，设计、协议和每项验证入口见 [原生数据面说明](docs/native-data-plane.md)。默认使用 Rust SceneMapper/资源去重/WS Peer，Chromium 通过常驻二进制 IPC 直接传送场景和原始 SKP；Node 负责控制面。Viewer 的 WS、校验、CanvasKit 和 OffscreenCanvas 在 Worker 中运行。
+
+当前新增路径已通过 50 项单元测试、原生 Mapper/IPC/分块资源验证，以及双 Worker Viewer、慢连接、异常 ACK、导航 epoch 和丢资源恢复的 fixture 验证。Linux ARM64 完整 Chromium 正在保留缓存重编，新版本端到端延迟尚待 Linux + Mac 验收；**下方已有延迟和 native 报告是升级前基线**。
+
+先执行 `npm run native:broker` 构建当前宿主机的 Broker。Linux 版本必须单独构建为 AArch64 ELF，通过 `REMOTE_PAINT_BROKER` 指定；运行容器需要同时映射 UI 4176 和原生 WS 4177。`REMOTE_PAINT_DATA_PLANE=node` 可切换兼容路径，`?mainThread` 可切换主线程 Viewer。
+
+## 升级前验收基线
 
 - **3 字体和图片**：真实动态页面新增中文、罕见字、Emoji；原 glyph/位置和字体子集重放，bitmap 字形保留源像素，认证/blob 图片内部像素一致。
 - **4 原生捕获**：完整定制 Chromium 已构建并运行。隔离世界 API、错误 token 拒绝、无 Viewer 零采集、后台编码和真实 Unix IPC 均通过。[原生捕获报告](docs/evidence/native-capture-report.json)
@@ -40,6 +48,7 @@ npm run demo -- --url http://127.0.0.1:3000
 ```sh
 npm test                # 协议、缓存、IPC、场景合成、控制权并发及旧输入检查
 npm run verify:fonts    # 活页面新增字形 + 原生字体/图片序列化与像素对照
+npm run native:broker   # 构建当前平台的 Rust 数据面
 npm run verify:viewer   # 实际 Viewer/WS 生命周期（明确的绘图 fixture）
 npm run verify:input    # 实际输入/CDP边界；设置原生路径则使用动态绘图
 # 以下要求上面的 REMOTE_PAINT_CHROMIUM

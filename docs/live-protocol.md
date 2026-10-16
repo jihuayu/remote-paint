@@ -1,4 +1,4 @@
-# Live protocol v3
+# Live protocol v4
 
 The live entry point is `REMOTE_PAINT_CHROMIUM=/path/to/headless_shell npm run demo`. It starts a real changing source page on the same device and the Viewer at a separate origin. A stock browser cannot provide the native capture API. `--url` binds another ordinary page to the same source/Viewer session.
 
@@ -60,3 +60,22 @@ This preserves CanvasKit as the sole scene renderer and avoids another full
 alpha conversion. The [final Mac report](evidence/mac-direct-presentation.json)
 records about 6.3 ms replay and 148.5 / 191.9 ms input p50/p95, plus native input,
 scrolling, streamed text, resize and dropped-resource recovery checks.
+
+
+## Native data plane and Worker path
+
+The current native implementation and negotiated asset-chunk extension are
+specified in [native-data-plane.md](native-data-plane.md). The default source
+routes RVB2 Viz scenes and RPA2 raw SKPs directly to Rust over persistent Unix
+sockets; Node handles capture receipts and the control plane. Rust owns scene
+mapping, immutable resources, each peer's ACK state and WebSocket output.
+The default Viewer runs its socket, SHA checks, frame gate, CanvasKit and
+OffscreenCanvas in one Worker. Main-thread and Node data-plane paths remain
+explicit compatibility modes. The measurements above predate this upgrade.
+
+The capture default is now 1000/60 ms. Twelve quiet BeginFrame ACKs reduce the
+clock to 100 ms polls, undamaged frames skip encoding (with a one-second
+resynchronization heartbeat), input wakes immediately, and no Viewer pauses
+the clock after bootstrap. Safe pictures avoid saveLayer; conservative native
+metadata preserves isolation for destructive operations. Immutable picture
+raster and unchanged render passes are cached independently.

@@ -75,7 +75,7 @@ complete browser is linked or that Linux runtime acceptance has passed.
 ## Native runtime and Mac acceptance
 
 Build the runtime for ARM64 and mount the entire output directory, including
-Chromium's data files. Publish only the Viewer port on Mac loopback:
+Chromium's data files. Publish the Viewer HTTP and native Gateway ports on Mac loopback:
 
 ```sh
 docker build --platform linux/arm64 -t remote-paint-runtime:linux-arm64 -f docker/Dockerfile.runtime .
@@ -87,7 +87,7 @@ docker run --rm --platform linux/arm64 --init --shm-size=2g \
   remote-paint-runtime:linux-arm64 npm run verify:linux
 mkdir -p artifacts/linux-mac
 docker run --name remote-paint-linux --platform linux/arm64 --init --shm-size=2g \
-  -p 127.0.0.1:4176:4176 \
+  -p 127.0.0.1:4176:4176 -p 127.0.0.1:4177:4177 \
   -v /absolute/independent/chromium/src/out/RemotePaintLinux:/browser:ro \
   -v /absolute/remote-paint:/project:ro \
   -v /absolute/remote-paint/artifacts:/project/artifacts \
@@ -133,3 +133,29 @@ window is outside the automated test's scope.
 
 For an ordinary demo without the private proof channel, use the image's default
 command instead of `node tests/serve-linux-proof.mjs`.
+
+
+## Rust Broker binary
+
+The browser builder and ARM64 runtime require a separate ARM64 Linux Broker;
+the Mac `native/bin/remote-paint-broker` is a Mach-O executable. One native
+Docker build option (run in the project) is:
+
+```sh
+mkdir -p ../../work/broker-target
+docker run --rm --platform linux/arm64 \
+  -v "$PWD:/project:ro" -v "$PWD/../../work/broker-target:/target" \
+  -w /project -e CARGO_TARGET_DIR=/target rust:1.96-bookworm \
+  cargo build --release --locked --target aarch64-unknown-linux-gnu --manifest-path native/broker/Cargo.toml
+```
+
+Mount that cache at `/broker:ro` in both runtime commands and pass
+`-e REMOTE_PAINT_BROKER=/broker/aarch64-unknown-linux-gnu/release/remote-paint-broker`.
+Cargo's target directory must persist just like the Chromium output. A Mac
+cross build is also supported by `npm run native:broker -- --target
+aarch64-unknown-linux-gnu` with Rust's target standard library, an ARM64 Linux
+sysroot and `CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER` configured. It writes
+a separate binary and SHA-256 receipt under
+`native/bin/aarch64-unknown-linux-gnu/`, leaving the Mac binary available.
+The current cross-built ELF has been executed in the ARM64 runtime; full
+browser acceptance is recorded separately after the Chromium rebuild.
