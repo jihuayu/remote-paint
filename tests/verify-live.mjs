@@ -51,7 +51,7 @@ try{
  const erased={...streamReplay,data:Buffer.alloc(streamReplay.data.length,255)};
  await assert.rejects(()=>assertTextInk(source.page,streamSource,erased,[{selector:'#stream',background:[255,255,255]}]),/lost 100.00%/);
  const streamed=await page.evaluate(()=>window.remotePaintResult);assert.ok(streamed.lastProcessedInputSeq>0);
- const slow=new WebSocket(`${live.origin.replace('http','ws')}/stream?key=${live.key}`,{origin:live.origin});await once(slow,'open');slow.send(JSON.stringify({type:'Hello',protocol:LIVE_VERSION,renderer:live.renderer}));assert.equal((await once(slow,'close'))[0],1013);
+ const slow=new WebSocket(`${(live.streamOrigin??live.origin).replace('http','ws')}/stream?key=${live.key}`,{origin:live.origin});await once(slow,'open');slow.send(JSON.stringify({type:'Hello',protocol:LIVE_VERSION,renderer:live.renderer}));assert.equal((await once(slow,'close'))[0],1013);
  const beforeReconnect=await page.evaluate(()=>window.remotePaintResult);assert.ok(beforeReconnect.frameId>streamed.frameId,'Slow peer must not stall the normal Viewer');await page.locator('#reconnect').click();await page.waitForFunction(()=>window.remotePaintResult?.frameId===1);const recovered=await page.evaluate(()=>window.remotePaintResult);assert.equal(recovered.fullFrames,1);assert.notEqual(recovered.native.captureId,first.native.captureId);
  await wait(()=>source.control.mode==='agent');
  phase='navigation';const oldEpoch=source.pageEpoch;await source.page.reload();await page.waitForFunction(epoch=>window.remotePaintResult?.pageEpoch>epoch,oldEpoch);const navigated=await page.evaluate(()=>window.remotePaintResult);

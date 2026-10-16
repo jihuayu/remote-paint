@@ -38,7 +38,9 @@ async function connect(){
  if(stopped)return;clearTimeout(retryTimer);const current=++generation;socket?.close();input.reset();clearRenderer();
  document.body.dataset.ready='false';$('error').hidden=true;status('连接绘制通道');if(renderWorker)renderWorker.postMessage({type:'clear',id:++workerSeq});
  const key=new URLSearchParams(location.hash.slice(1)).get('key');if(!key)throw new Error('请使用服务端输出的完整 Viewer 链接');
- const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${location.host}/stream?key=${encodeURIComponent(key)}`);socket=ws;ws.binaryType='arraybuffer';
+ const config=await fetch('/session-config').then(response=>response.json());
+ const streamHost=config.nativePort?`${location.hostname}:${config.nativePort}`:location.host;
+ const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${streamHost}/stream?key=${encodeURIComponent(key)}`);socket=ws;ws.binaryType='arraybuffer';
  const gate=new LiveFrameGate();let welcome=false,receivedBytes=0,resourcesReceived=0,full=0,delta=0,recovering=false;
  const send=message=>{if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(message));};
  const recover=()=>{gate.recover();retainRenderer(new Set(gate.resources.keys()));if(!recovering){recovering=true;status('重新同步完整场景');send({type:'RequestKeyframe'});}};
