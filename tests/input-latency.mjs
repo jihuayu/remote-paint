@@ -56,13 +56,14 @@ export async function measureOptimisticLatency(page,{samples=16}={}){
    const proxy=document.querySelector('#inputProxy');window.optimisticLatencySample=null;
    proxy.addEventListener('keydown',function pressed(event){
     if(event.key!==key)return;proxy.removeEventListener('keydown',pressed,true);const start=performance.now();
-    function observe(){
+    // A fast native correction can remove the overlay before the next rAF.
+    // Latch its DOM mutation separately from native pixel presentation.
+    const observer=new MutationObserver(()=>{
      const result=window.remotePaintOptimistic,overlay=document.querySelector('#optimisticOverlay .optimistic-input');
-     if(result?.source==='local'&&result.seq>previous&&overlay){window.optimisticLatencySample={key,optimisticMs:result.shownAt-start,seq:result.seq,source:result.source};return;}
-     if(performance.now()-start>5000){window.optimisticLatencySample={error:'No optimistic overlay within 5 seconds',key,previous,seq:result?.seq??0};return;}
-     requestAnimationFrame(observe);
-    }
-    requestAnimationFrame(observe);
+     if(result?.source==='local'&&result.seq>previous&&overlay){window.optimisticLatencySample={key,optimisticMs:result.shownAt-start,seq:result.seq,source:result.source};observer.disconnect();clearTimeout(timer);}
+    });
+    observer.observe(document.querySelector('#optimisticOverlay'),{childList:true,subtree:true});
+    const timer=setTimeout(()=>{observer.disconnect();if(!window.optimisticLatencySample)window.optimisticLatencySample={error:'No optimistic overlay mutation within 5 seconds',key,previous,seq:window.remotePaintOptimistic?.seq??0,control:document.querySelector('#controlState').textContent};},5000);
    },true);
   },{key,previous});
   await page.keyboard.type(key);await page.waitForFunction(()=>window.optimisticLatencySample!==null,null,{timeout:6000});
@@ -70,5 +71,5 @@ export async function measureOptimisticLatency(page,{samples=16}={}){
   await page.waitForTimeout(13+i*17%89);
  }
  const sorted=results.map(r=>r.optimisticMs).sort((a,b)=>a-b),percentile=p=>sorted[Math.ceil(sorted.length*p)-1];
- return {scope:'Viewer keydown to optimistic editor overlay; exact remote SKP/Viz correction is measured separately',samples:results,p50Ms:percentile(0.5),p95Ms:percentile(0.95),maxMs:sorted.at(-1),meanMs:sorted.reduce((a,b)=>a+b,0)/sorted.length};
+ return {scope:'Viewer keydown to optimistic editor DOM mutation; may be superseded before monitor scanout; exact remote SKP/Viz pixels measured separately',samples:results,p50Ms:percentile(0.5),p95Ms:percentile(0.95),maxMs:sorted.at(-1),meanMs:sorted.reduce((a,b)=>a+b,0)/sorted.length};
 }
