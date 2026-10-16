@@ -14,6 +14,7 @@ export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackT
   ['/input.mjs',['viewer/input.mjs','text/javascript']],
   ['/live.css',['viewer/live.css','text/css']],['/scene-renderer.mjs',['viewer/scene-renderer.mjs','text/javascript']],
   ['/protocol/live-wire.mjs',['protocol/live-wire.mjs','text/javascript']],['/protocol/wire.mjs',['protocol/wire.mjs','text/javascript']],
+  ['/render-worker.mjs',['viewer/render-worker.mjs','text/javascript']],
   ['/vendor/canvaskit.js',['node_modules/canvaskit-wasm/bin/full/canvaskit.js','text/javascript']],
   ['/vendor/canvaskit.wasm',['node_modules/canvaskit-wasm/bin/full/canvaskit.wasm','application/wasm']],
  ]);
@@ -22,7 +23,10 @@ export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackT
    const path=new URL(req.url,'http://localhost').pathname;const file=files.get(path);
    res.setHeader('Cache-Control','no-store');res.setHeader('Referrer-Policy','no-referrer');res.setHeader('X-Content-Type-Options','nosniff');
    res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' ws://127.0.0.1:*; style-src 'self'; img-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
-   if(req.method!=='GET'||!file){res.writeHead(404);res.end();return;}
+   if(req.method!=='GET'||(!file&&path!=='/canvaskit-worker.mjs')){res.writeHead(404);res.end();return;}
+   if(path==='/canvaskit-worker.mjs'){
+    const source=await readFile(new URL('node_modules/canvaskit-wasm/bin/full/canvaskit.js',root),'utf8');res.writeHead(200,{'Content-Type':'text/javascript'});res.end(`${source}\nexport default CanvasKitInit;`);return;
+   }
    const bytes=path==='/vendor/canvaskit.wasm'?wasm:await readFile(new URL(file[0],root));res.writeHead(200,{'Content-Type':file[1]});res.end(bytes);
   }catch{if(!res.headersSent)res.writeHead(500);res.end('Internal error');}
  });

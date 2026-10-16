@@ -80,6 +80,13 @@ export class LiveFrameGate {
   display(frame,this.resources); // Decode/render must succeed before advancing dependencies.
   this.committed=frame;this.pending=null;return frame;
  }
+  async commitAsync(epoch,id,display=()=>{}){
+    const frame=this.pending;
+    if(!frame||frame.pageEpoch!==epoch||frame.frameId!==id)throw new Error('Unmatched frame commit');
+    if(frame.requiredResources.some(id=>!this.resources.has(id)))return null;
+    await display(frame,this.resources);
+    this.committed=frame;this.pending=null;return frame;
+  }
  release(id){
   if(this.committed?.requiredResources.includes(id)||this.pending?.requiredResources.includes(id))return false;
   const payload=this.resources.get(id);if(payload){this.bytes-=payload.byteLength;this.resources.delete(id);}return true;
