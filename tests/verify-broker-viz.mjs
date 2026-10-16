@@ -17,6 +17,7 @@ try{
  assert.equal(decodeVizScene(packet('failure-decode','native error').subarray(4)).error,'native error');
  const failure=viz.waitFor('failed');failure.catch(()=>{});await failure.registered;socket.write(packet('failed','Unsupported Viz material'));await assert.rejects(failure,/Unsupported Viz material/);
  socket.write(packet('unknown'));await new Promise(resolve=>setTimeout(resolve,30));assert.equal(viz.stats.received,3);assert.ok(viz.stats.rejected>=1);
+ await new Promise(resolve=>setTimeout(resolve,16000));const idle=viz.waitFor('after-idle');await idle.registered;socket.write(packet('after-idle'));assert.equal((await idle).native,true,'A private persistent socket must survive a paused compositor');
  for(let i=0;i<10;i++)assert.throws(()=>decodeVizScene(a.subarray(4,10+i)),/Truncated|Invalid/);
  console.log('Native binary Viz: persistent fragmented stream, pairing without Node scene payload, error and unknown frame rejection passed');
 }finally{socket?.destroy();await viz.close();await broker.close();}

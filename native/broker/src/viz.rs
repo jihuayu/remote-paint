@@ -49,11 +49,16 @@ impl Viz {
                             let _ = stream.set_nonblocking(false);
                             let _ = stream.set_read_timeout(Some(Duration::from_secs(15)));
                             loop {
+                                // Idle viewers can pause the compositor indefinitely.
+                                // Keep the private connection; bound only a packet
+                                // whose header has actually arrived.
+                                let _ = stream.set_read_timeout(None);
                                 let mut header = [0; 4];
                                 if stream.read_exact(&mut header).is_err() {
                                     break;
                                 }
                                 let length = u32::from_be_bytes(header) as usize;
+                                let _ = stream.set_read_timeout(Some(Duration::from_secs(15)));
                                 if length == 0 || length > 72 * 1024 * 1024 {
                                     emit(json!({"event":"VizRejected"}));
                                     break;
@@ -122,13 +127,13 @@ impl Viz {
     }
     pub fn expect(&self, id: &str, resources: bool) -> Result<Value> {
         let mut expected = self.expected.lock().unwrap();
-        if expected.len() >= 4 || expected.contains(id) || id.len() > 128 {
+        if expected.len()+self.scenes.lock().unwrap().len() >= 4 || expected.contains(id) || id.len() > 128 {
             return Err("Viz request unavailable".into());
         }
         expected.insert(id.into());
         if resources {
             let mut pending = self.resources_expected.lock().unwrap();
-            if pending.len() >= 4 {
+            if pending.len()+self.resources.lock().unwrap().len() >= 4 {
                 expected.remove(id);
                 return Err("Native resource request limit".into());
             }
