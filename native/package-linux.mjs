@@ -44,7 +44,7 @@ export async function packageLinux({source,cpu,broker,nodeDirectory,destination}
   if(file.startsWith('docs/evidence/')||file.startsWith('.github/'))continue;
   const to=join(root,'app',file);await mkdir(dirname(to),{recursive:true});await copyFile(join(project,file),to);
  }
- await cp(join(project,'node_modules'),join(root,'app/node_modules'),{recursive:true});
+ await cp(join(project,'node_modules'),join(root,'app/node_modules'),{recursive:true,verbatimSymlinks:true});
  await mkdir(join(root,'app/native/bin'),{recursive:true});await copyFile(broker,join(root,'app/native/bin/remote-paint-broker'));
  await chmod(join(root,'app/native/bin/remote-paint-broker'),0o755);
  await mkdir(join(root,'node/bin'),{recursive:true});
