@@ -57,7 +57,7 @@ export class ViewerInput {
  display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=frame;this.lastFrameInputSeq=Math.max(this.lastFrameInputSeq,frame.lastProcessedInputSeq??0);if(this.overlaySeq&&this.lastFrameInputSeq>=this.overlaySeq)this.clearOptimistic();this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);}
  reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.pending=null;this.queue=[];this.composing=false;this.proxy.value='';this.proxy.blur();this.clearOptimistic();this.lastFrameInputSeq=0;this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
  clearOptimistic(){this.overlaySeq=0;if(this.overlay)this.overlay.replaceChildren();window.remotePaintOptimistic=null;}
-  showOptimistic(seq,state){
+  showOptimistic(seq,state,source='ack'){
   if(!this.overlay||!this.frame||!state||!['input','textarea','contenteditable'].includes(state.kind))return;
   const values=['x','y','width','height'].map(key=>state[key]);if(!values.every(Number.isFinite)||values.some(value=>value<0)||state.width<=0||state.height<=0||typeof state.text!=='string'||state.text.length>8192)return;
   const safeStyle=Object.fromEntries(Object.entries(state.style??{}).filter(([key,value])=>typeof value==='string'&&value.length<=256&&!/[;{}<>]|url\s*\(|expression\s*\(/i.test(value)));
@@ -73,7 +73,7 @@ export class ViewerInput {
   const before=document.createElement('span'),selected=document.createElement('span'),after=document.createElement('span'),caret=document.createElement('span');
   before.textContent=state.text.slice(0,start);selected.textContent=state.text.slice(start,end);after.textContent=state.text.slice(end);caret.className='optimistic-caret';
   if(start!==end)selected.className='optimistic-selection';element.append(before,caret,selected,after);this.overlay.replaceChildren(element);this.overlaySeq=seq;
-  this.optimisticState={...state,style:{...state.style}};window.remotePaintOptimistic={seq,shownAt:performance.now()};
+  this.optimisticState={...state,style:{...state.style}};window.remotePaintOptimistic={seq,shownAt:performance.now(),source};
  }
  message(message){
   if(message.type==='ControlState'){
@@ -89,7 +89,7 @@ export class ViewerInput {
   if(message.type==='InputAck'){
    if(!this.pending||message.seq!==this.pending.seq)return true;
    clearTimeout(this.ackTimer);this.pending=null;if(!message.accepted){if(this.active)this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent=`输入已停止：${message.code}`;return true;}
-   if(message.optimistic&&message.seq>this.lastFrameInputSeq)this.showOptimistic(message.seq,message.optimistic);
+   if(message.optimistic&&message.seq>this.lastFrameInputSeq)this.showOptimistic(message.seq,message.optimistic,'ack');
    this.pump();return true;
   }
   return false;
@@ -101,5 +101,5 @@ export class ViewerInput {
   else {if(this.queue.length>=60){this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent='输入过快，已交还控制';return;}this.queue.push(event);}
   this.pump();
  }
- pump(){if(!this.active||this.pending||!this.queue.length)return;const message={type:'Input',...this.tags(),seq:this.nextSeq++,event:this.queue.shift()};this.pending=message;const predicted=predictOptimistic(this.optimisticState,message.event);if(predicted)this.showOptimistic(message.seq,predicted);this.send(message);this.ackTimer=setTimeout(()=>{if(this.active)this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent='输入确认超时，已交还控制';},5000);}
+ pump(){if(!this.active||this.pending||!this.queue.length)return;const message={type:'Input',...this.tags(),seq:this.nextSeq++,event:this.queue.shift()};this.pending=message;const predicted=predictOptimistic(this.optimisticState,message.event);if(predicted)this.showOptimistic(message.seq,predicted,'local');this.send(message);this.ackTimer=setTimeout(()=>{if(this.active)this.send({type:'ReleaseControl',...this.tags()});this.reset();this.label.textContent='输入确认超时，已交还控制';},5000);}
 }

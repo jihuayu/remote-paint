@@ -57,7 +57,7 @@ export async function measureOptimisticLatency(page,{samples=16}={}){
     if(event.key!==key)return;proxy.removeEventListener('keydown',pressed,true);const start=performance.now();
     function observe(){
      const result=window.remotePaintOptimistic,overlay=document.querySelector('#optimisticOverlay .optimistic-input');
-     if(result?.seq>previous&&overlay){window.optimisticLatencySample={key,optimisticMs:result.shownAt-start,seq:result.seq};return;}
+     if(result?.source==='local'&&result.seq>previous&&overlay){window.optimisticLatencySample={key,optimisticMs:result.shownAt-start,seq:result.seq,source:result.source};return;}
      if(performance.now()-start>5000){window.optimisticLatencySample={error:'No optimistic overlay within 5 seconds',key,previous,seq:result?.seq??0};return;}
      requestAnimationFrame(observe);
     }
