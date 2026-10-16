@@ -71,5 +71,6 @@ if (!build.includes('group("remote_paint_tools") {\n  testonly = true')) {
   build = build.replace('group("remote_paint_tools") {', 'group("remote_paint_tools") {\n  testonly = true');
   await writeFile(rootBuild, build);
 }
-await copyChanged(new URL(`./${platform}.args.gn`, import.meta.url), join(output, 'args.gn'));
+const profile=platform==='linux-arm64'&&process.env.REMOTE_PAINT_HOST_CC==='1'?'linux-arm64-host-cc':platform;
+await copyChanged(new URL(`./${profile}.args.gn`, import.meta.url), join(output, 'args.gn'));
 console.log(`Prepared ${source}; generate ${output} and build remote_paint_tools`);

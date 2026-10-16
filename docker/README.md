@@ -159,3 +159,35 @@ a separate binary and SHA-256 receipt under
 `native/bin/aarch64-unknown-linux-gnu/`, leaving the Mac binary available.
 The current cross-built ELF has been executed in the ARM64 runtime; full
 browser acceptance is recorded separately after the Chromium rebuild.
+
+## Optional Mac host compiler for Linux C/C++
+
+On this Apple Silicon host, a current AArch64 `capture_state.cc` compilation
+was 15.75 seconds in the x86 container, 2.84 seconds using the same-revision
+Mac ARM64 Clang cross compiler, and 3.46 seconds through the Docker-to-Mac
+relay. All three ELF objects had the exact same SHA-256. This is a scoped
+translation-unit measurement, not a promise of full-build speed; see
+[the measurement](../docs/evidence/host-cross-compile.json).
+
+The optional `linux-arm64-host-cc` profile adds an explicit GN `cc_wrapper`.
+It sends only explicit AArch64 Linux `-c` commands to Mac; generators, Rust,
+other targets, modules without `-c`, and linking remain on the container's
+pinned Linux toolchain. The source and output remain in the same mounted
+checkout. Existing cache files are retained; changing the GN wrapper can
+invalidate compiler command hashes and require recompilation.
+
+```sh
+python3 docker/host-cc-server.py \
+  --source /absolute/independent/chromium/src \
+  --compiler-dir /absolute/mac/chromium/src/third_party/llvm-build/Release+Asserts/bin \
+  --control /absolute/host-cc-control --jobs 9
+```
+
+The service binds Mac loopback and generates a private connection key. Add
+`-e REMOTE_PAINT_HOST_CC=1 -v /absolute/host-cc-control:/cc-control:ro` to the
+builder and use `BUILD_JOBS=9`. The service must remain running while the
+builder uses this profile. `native/prepare.mjs` selects the exact checked-in
+arguments; the build receipt records the profile, Mac compiler SHA/version,
+actual ARM64 browser/test hashes and native source hashes. Runtime acceptance
+recognizes both explicit profiles and still checks the actual ELF binaries.
+The normal Linux profile is available by omitting `REMOTE_PAINT_HOST_CC`.

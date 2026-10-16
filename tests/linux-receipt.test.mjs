@@ -12,4 +12,11 @@ test('runtime refuses stale native sources even when binary, arguments and patch
  await verifyLinuxReceipt(receipt,expected);
  await assert.rejects(verifyLinuxReceipt({...receipt,nativeSources:{...nativeSources,'viz_capture.cc':'0'.repeat(64)}},expected),/Native build sources differ/);
  await assert.rejects(verifyLinuxReceipt({...receipt,binaries:{...receipt.binaries,headless_shell:'0'.repeat(64)}},expected));
+ const hostExpected={...expected,buildProfile:'linux-arm64-host-cc'};
+ const hostReceipt={...receipt,buildProfile:'linux-arm64-host-cc',hostCrossCompiler:{mode:'mac-arm64-clang-cross',target:'aarch64-linux-gnu',compilerSha256:'d'.repeat(64)}};
+ await verifyLinuxReceipt(hostReceipt,hostExpected);
+ await assert.rejects(verifyLinuxReceipt(receipt,hostExpected));
+ await assert.rejects(verifyLinuxReceipt({...hostReceipt,hostCrossCompiler:null},hostExpected));
+ await assert.rejects(verifyLinuxReceipt({...hostReceipt,hostCrossCompiler:{...hostReceipt.hostCrossCompiler,target:'x86_64-linux-gnu'}},hostExpected));
+ await assert.rejects(verifyLinuxReceipt({...hostReceipt,hostCrossCompiler:{...hostReceipt.hostCrossCompiler,compilerSha256:'unknown'}},hostExpected));
 });

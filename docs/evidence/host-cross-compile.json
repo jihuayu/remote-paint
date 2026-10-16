@@ -1,0 +1,18 @@
+{
+  "verifiedAt": "2026-10-16T04:17:19Z",
+  "scope": "One current Chromium capture_state.cc translation unit with identical target flags; not whole-browser build speed or runtime acceptance",
+  "sourceSha256": "29ea893bfc2c4dd3f38daedfd759f474329869581b24ad1820db74fe83321a77",
+  "elfMachine": "AArch64",
+  "containerX86ClangSeconds": 15.745044528994185,
+  "macArm64CrossClangSeconds": 2.8416859582066536,
+  "containerToMacRelaySeconds": 3.4600406599929556,
+  "byteIdenticalObjects": true,
+  "objectSha256": "1f49d928a752648849880abb12dd29e766594c6a1c88ca781bc0e2aaf2b5eecc",
+  "hostCompiler": {
+    "mode": "mac-arm64-clang-cross",
+    "target": "aarch64-linux-gnu",
+    "compilerSha256": "b3785ad91b93cb56eac31eaef5d8cf5ef71fae512843417a55bd3912b4d41766",
+    "compilerVersion": "clang version 24.0.0git (https://chromium.googlesource.com/a/external/github.com/llvm/llvm-project 86922d51225db089fffb99475eefc4904f79e3c8)",
+    "jobs": 9
+  }
+}

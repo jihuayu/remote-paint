@@ -7,7 +7,7 @@ import {createHash} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import {dirname,join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {verifyLinuxReceipt} from '../native/linux-receipt.mjs';
+import {verifyLinuxReceipt,linuxBuildProfile} from '../native/linux-receipt.mjs';
 
 const project=fileURLToPath(new URL('../',import.meta.url));
 const directory=join(project,'artifacts/linux-suite');
@@ -44,7 +44,7 @@ try{
  assert.notEqual(process.env.REMOTE_PAINT_CLOCK_ONLY,'1','Stock clock probes do not qualify for native acceptance');
  const [browserElf,serializerElf]=await Promise.all([inspectElf(executable),inspectElf(serializer)]);
  const args=await readFile(join(output,'args.gn'),'utf8');
- assert.equal(args,await readFile(join(project,'native/linux-arm64.args.gn'),'utf8'),'Build arguments differ from the Linux profile');
+ const buildProfile=await linuxBuildProfile(args);
  const applied=JSON.parse(await readFile(join(output,'remote-paint-patches.json'),'utf8'));
  const patches={};
  for(const name of (await readdir(join(project,'native/patches'))).filter(n=>n.endsWith('.patch')).sort()){
@@ -52,7 +52,7 @@ try{
  }
  const argsSha256=createHash('sha256').update(args).digest('hex');
  const build=JSON.parse(await readFile(join(output,'remote-paint-build.json'),'utf8'));
- await verifyLinuxReceipt(build,{browserSha256:browserElf.sha256,serializerSha256:serializerElf.sha256,argsSha256,patches});
+ await verifyLinuxReceipt(build,{browserSha256:browserElf.sha256,serializerSha256:serializerElf.sha256,argsSha256,patches,buildProfile});
  report.preflight={platform:process.platform,architecture:process.arch,browser:browserElf,serializer:serializerElf,argsSha256,patches,build};await save();
  await run('serializer',serializer,[],output);
  for(const name of ['begin-frame','native','scene','input','live','latency'])await run(name,process.execPath,[`tests/verify-${name}.mjs`]);

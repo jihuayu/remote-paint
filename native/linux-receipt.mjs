@@ -16,6 +16,10 @@ async function expectedSources(){
  for(const name of (await readdir(join(project,'native/chromium'))).sort())result[name]=await fileHash(join(project,'native/chromium',name));
  return result;
 }
+export async function linuxBuildProfile(args){
+ for(const name of ['linux-arm64','linux-arm64-host-cc'])if(args===await readFile(join(project,`native/${name}.args.gn`),'utf8'))return name;
+ throw new Error('Build arguments differ from the supported Linux profiles');
+}
 export async function inspectLinuxInputs(source){
  const revision=path=>execFileSync('git',['rev-parse','HEAD'],{cwd:path,encoding:'utf8'}).trim();
  assert.equal(revision(source),chromiumRevision);assert.equal(revision(join(source,'third_party/skia')),skiaRevision);
@@ -23,23 +27,26 @@ export async function inspectLinuxInputs(source){
  for(const [name,hash] of Object.entries(nativeSources))assert.equal(await fileHash(join(source,'components/remote_paint',name)),hash,`Stale native source: ${name}`);
  const output=join(source,'out/RemotePaintLinux');
  const args=await readFile(join(output,'args.gn'),'utf8');
- assert.equal(args,await readFile(join(project,'native/linux-arm64.args.gn'),'utf8'));
+ const buildProfile=await linuxBuildProfile(args);
+ const hostCrossCompiler=buildProfile==='linux-arm64-host-cc'?JSON.parse(await readFile(process.env.REMOTE_PAINT_HOST_CC_MANIFEST??'/cc-control/build.json','utf8')):null;
  const applied=JSON.parse(await readFile(join(output,'remote-paint-patches.json'),'utf8')),patches={},patchedSources={};
  for(const name of (await readdir(join(project,'native/patches'))).filter(n=>n.endsWith('.patch')).sort()){
   patches[name]=await fileHash(join(project,'native/patches',name));assert.equal(applied[name],patches[name]);
   const patch=await readFile(join(project,'native/patches',name),'utf8');
   for(const match of patch.matchAll(/^\+\+\+ b\/(.+)$/gm))patchedSources[match[1]]=await fileHash(join(source,match[1]));
  }
- return {format:1,target:{os:'linux',cpu:'arm64'},chromiumRevision,skiaRevision,nativeSources,patches,patchedSources,
+ return {format:1,target:{os:'linux',cpu:'arm64'},buildProfile,hostCrossCompiler,chromiumRevision,skiaRevision,nativeSources,patches,patchedSources,
   argsSha256:createHash('sha256').update(args).digest('hex'),
   hostConfiguration:{gnSha256:await fileHash(join(source,'.gn')),swiftShaderSha256:await fileHash(join(source,'third_party/swiftshader/BUILD.gn'))}};
 }
-export async function verifyLinuxReceipt(receipt,{browserSha256,serializerSha256,argsSha256,patches}){
+export async function verifyLinuxReceipt(receipt,{browserSha256,serializerSha256,argsSha256,patches,buildProfile}){
  assert.equal(receipt.format,1);assert.deepEqual(receipt.target,{os:'linux',cpu:'arm64'});
  assert.equal(receipt.chromiumRevision,chromiumRevision);assert.equal(receipt.skiaRevision,skiaRevision);
  assert.deepEqual(receipt.nativeSources,await expectedSources(),'Native build sources differ from the runtime project');
  assert.deepEqual(receipt.patches,patches);assert.equal(receipt.argsSha256,argsSha256);
  assert.equal(receipt.binaries.headless_shell,browserSha256);assert.equal(receipt.binaries.serializer_tests,serializerSha256);
+ if(buildProfile)assert.equal(receipt.buildProfile??'linux-arm64',buildProfile);
+ if(buildProfile==='linux-arm64-host-cc'){assert.equal(receipt.hostCrossCompiler.mode,'mac-arm64-clang-cross');assert.equal(receipt.hostCrossCompiler.target,'aarch64-linux-gnu');assert.match(receipt.hostCrossCompiler.compilerSha256,/^[a-f0-9]{64}$/);}
  assert.equal(receipt.incrementalGraphUpToDate,true);
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
