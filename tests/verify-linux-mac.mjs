@@ -13,6 +13,7 @@ import {measureInputLatency,measureOptimisticLatency} from './input-latency.mjs'
 assert.equal(process.platform,'darwin','The Viewer acceptance must run on the Mac host');
 const directory=resolve(process.env.REMOTE_PAINT_LINUX_PROOF??'artifacts/linux-mac');
 const ready=JSON.parse(await readFile(join(directory,'ready.json'),'utf8'));
+assert.equal(ready.source.dataPlane?.backend,'rust','Native acceptance requires the Rust data plane');
 assert.equal(ready.source.platform,'linux');assert.equal(ready.source.architecture,'arm64');
 assert.equal(ready.source.captures,0,'No Viewer must mean zero native captures');
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
@@ -38,7 +39,7 @@ try{
  page=await browser.newPage({viewport:{width:1100,height:1000}});const errors=[],requests=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(new URL(r.url()).origin));
  await page.goto(ready.url);await page.waitForFunction(()=>window.remotePaintResult?.frameId>0,null,{timeout:60000});
- const first=await page.evaluate(()=>window.remotePaintResult);
+ const first=await page.evaluate(()=>window.remotePaintResult);assert.equal(first.worker,true,'The Mac Viewer must render in its Worker');
  await page.waitForFunction(first=>window.remotePaintResult?.resourcesReceived>first.resourcesReceived,first);
  const dynamic=await page.evaluate(()=>window.remotePaintResult);assert.notEqual(dynamic.native.captureId,first.native.captureId);
  await command('freeze');
@@ -60,10 +61,41 @@ try{
  const frozen=await page.evaluate(()=>window.remotePaintResult);await command('animate');
  await page.waitForFunction(n=>window.remotePaintResult?.deltaFrames>n+2,frozen.deltaFrames);
  const animated=await page.evaluate(()=>window.remotePaintResult);assert.equal(animated.resourcesReceived,frozen.resourcesReceived);
- const measure=async()=>{const start=(await command('metrics')).metrics;await delay(2000);const end=(await command('metrics')).metrics;const seconds=(end.atMs-start.atMs)/1000;return {seconds,sourceFramesPerSecond:(end.captures-start.captures)/seconds,cpuCoreEquivalents:Object.fromEntries(Object.entries(end.byKind).map(([kind,total])=>[kind,(total.cpuMs-(start.byKind[kind]?.cpuMs??0))/(seconds*1000)])),rssBytes:Object.fromEntries(Object.entries(end.byKind).map(([kind,total])=>[kind,total.rssBytes])),peers:end.peers.map(peer=>{const previous=start.peers.find(p=>p.id===peer.id)?.stats??{};return {id:peer.id,bytesPerSecond:(peer.stats.bytes-(previous.bytes??0))/seconds,framesPerSecond:((peer.stats.full+peer.stats.delta)-((previous.full??0)+(previous.delta??0)))/seconds};})};};
- const oneViewerMetrics=await measure();
- const secondViewer=await browser.newPage();await secondViewer.goto(ready.url);await secondViewer.waitForFunction(()=>window.remotePaintResult?.frameId>0);const twoViewerMetrics=await measure();assert.equal(twoViewerMetrics.peers.length,2);await secondViewer.close();
- const runtimePerformance={scope:'Linux source + native Broker process counters; Mac CanvasKit presentation; compositor animation, two-second windows',oneViewer:oneViewerMetrics,twoViewers:twoViewerMetrics};
+ const measure=async viewers=>{
+  const start=(await command('metrics')).metrics;
+  const before=await Promise.all(viewers.map(viewer=>viewer.evaluate(()=>window.remotePaintResult)));
+  await delay(2000);
+  const end=(await command('metrics')).metrics;
+  const after=await Promise.all(viewers.map(viewer=>viewer.evaluate(()=>window.remotePaintResult)));
+  const seconds=(end.atMs-start.atMs)/1000;
+  assert.ok(seconds>0&&Number.isFinite(seconds));
+  const cpuCoreEquivalents=Object.fromEntries(Object.entries(end.byKind).map(([kind,total])=>[kind,(total.cpuMs-(start.byKind[kind]?.cpuMs??0))/(seconds*1000)]));
+  for(const kind of ['node','broker','chromium'])assert.ok(Number.isFinite(cpuCoreEquivalents[kind])&&cpuCoreEquivalents[kind]>=0,`Missing or invalid ${kind} CPU measurement`);
+  assert.equal(end.peers.length,viewers.length);
+  const peers=end.peers.map(peer=>{
+   const previous=start.peers.find(p=>p.id===peer.id)?.stats;
+   assert.ok(previous,`Peer ${peer.id} was absent at measurement start`);
+   const bytesPerSecond=(peer.stats.bytes-previous.bytes)/seconds;
+   const framesPerSecond=((peer.stats.full+peer.stats.delta)-(previous.full+previous.delta))/seconds;
+   assert.ok(Number.isFinite(bytesPerSecond)&&bytesPerSecond>0,'A measured Peer must transmit bytes');
+   assert.ok(Number.isFinite(framesPerSecond)&&framesPerSecond>0,'A measured Peer must transmit frames');
+   return {id:peer.id,bytesPerSecond,framesPerSecond};
+  });
+  const presentations=after.map((result,index)=>{
+   assert.equal(result.worker,true);
+   const framesPerSecond=((result.fullFrames+result.deltaFrames)-(before[index].fullFrames+before[index].deltaFrames))/seconds;
+   assert.ok(Number.isFinite(framesPerSecond)&&framesPerSecond>0,'A measured Viewer must present frames');
+   assert.ok(Number.isFinite(result.renderMs)&&result.renderMs>=0,'Viewer replay time must be measured');
+   return {framesPerSecond,lastRenderMs:result.renderMs,rendererStats:result.rendererStats,assetStats:result.assetStats};
+  });
+  const sourceFramesPerSecond=(end.captures-start.captures)/seconds;
+  assert.ok(Number.isFinite(sourceFramesPerSecond)&&sourceFramesPerSecond>0);
+  return {seconds,sourceFramesPerSecond,cpuCoreEquivalents,rssBytes:Object.fromEntries(Object.entries(end.byKind).map(([kind,total])=>[kind,total.rssBytes])),peers,presentations};
+ };
+ const oneViewerMetrics=await measure([page]);
+ const secondViewer=await browser.newPage();await secondViewer.goto(ready.url);await secondViewer.waitForFunction(()=>window.remotePaintResult?.frameId>0);
+ let twoViewerMetrics;try{twoViewerMetrics=await measure([page,secondViewer]);}finally{await secondViewer.close();}
+ const runtimePerformance={scope:'Linux source and native Broker process counters; actual Mac Worker presentation; compositor animation, two-second windows',oneViewer:oneViewerMetrics,twoViewers:twoViewerMetrics};
 
  await command('freeze');await page.setViewportSize({width:720,height:1000});
  assert.ok((await page.locator('canvas').boundingBox()).width<initial.state.viewport.cssWidth,'Mac Viewer must exercise CSS coordinate scaling');
@@ -123,6 +155,8 @@ try{
  const missingResourceRecovery=await recoverDroppedResource(browser,ready);
  await page.screenshot({path:join(directory,'mac-viewer.png')});await cdp.detach();await page.close();page=null;
  const disconnected=await waitSource(s=>s.demand===0);await delay(500);const final=(await command('snapshot')).state;
+ assert.equal(final.dataPlane.backend,'rust');assert.ok(final.dataPlane.nativeReceipts>0);
+ assert.equal(final.dataPlane.legacyReceipts,0);assert.equal(final.dataPlane.resourceRecordsInNode,0);assert.equal(final.dataPlane.vizScenesInNode,0);
  assert.equal(final.captures,disconnected.captures);assert.ok(final.beginFrame.acked>0);assert.equal(final.beginFrame.errors,0);assert.equal(final.stats.lastError,null,'Capture must recover after intentional navigation/resize');
  assert.ok(requests.every(origin=>origin===ready.origin));assert.deepEqual(errors,[]);
  const report={verifiedAt:new Date().toISOString(),nativeDrawing:true,drawingFixtureOnly:false,viewerPlatform:process.platform,viewerArchitecture:process.arch,viewerBrowser:browser.version(),sourcePlatform:final.platform,sourceArchitecture:final.architecture,sourceBrowser:final.browser,gpuMode:final.gpuMode,beginFrame:final.beginFrame,first,dynamic,animated,imagePixels,textInk,pixelFractionOver24,saved:saved.document.saved,savedTextInk,editor:edited.document.editor,editorTextInk,streamText:streamed.document.stream,streamTextInk,missingUpdatedTextRejected:true,cssScaling:true,scrollY:scrolled.document.scrollY,reconnectedControlMode:reconnected.controlMode,missingResourceRecovery,source:final,macInputToLinux:true,inputLatency,runtimePerformance,steadyInputCaptureErrors:latencyState.stats.errors,imeViaActualLocalAndRemoteCDP:true,physicalOsImeCandidateWindowTested:false,viewerSourceRequests:0,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,errors};

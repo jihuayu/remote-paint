@@ -50,6 +50,6 @@ Viewer HTTP 及原生 WS 使用相邻端口，例如 4176/4177，都只映射到
 
 `native.timing` 分别记录 recording、并行编码墙钟、各层工作耗时总和、结果组装、CDP 回复、Viz 等待及采集往返。多层 font/image/serialize 的总和不能直接相加当作串行关键路径。
 
-Mac 的输入探针在 keydown 后采样已经提交给 HTML canvas 的真实像素，支持 OffscreenCanvas，不以 InputAck 或乐观覆盖层代替原生像素。Linux proof 的单/双 Viewer 两秒窗口记录源采集 FPS、每 Peer 发送 FPS/带宽、Node/Broker/Chromium 进程 CPU 核当量及 RSS 总和。RSS 包含进程间共享页的重复计数，不能等同于物理独占内存。
+Mac 的输入探针在 keydown 后采样已经提交给 HTML canvas 的真实像素，支持 OffscreenCanvas，不以 InputAck 或乐观覆盖层代替原生像素。Linux proof 强制要求 Rust 数据面和实际 Worker Viewer，并记录进入 Node 的资源记录/Viz 场景数必须为零。单/双 Viewer 两秒窗口记录源采集 FPS、每 Peer 发送 FPS/带宽、Mac Worker 实际呈现 FPS/重放耗时、Node/Broker/Chromium 进程 CPU 核当量及 RSS 总和；缺失或非有限指标不能通过验收。RSS 包含进程间共享页的重复计数，不能等同于物理独占内存。
 
 Fixture 测试仅证明各自协议、缓存或 Viewer 边界。完整 Linux 重编、Linux native 套件和 Mac Viewer 验收通过前，不将旧版 150ms 左右的结果或 fixture 的 2–3ms 重放时间当成新链路端到端结果。

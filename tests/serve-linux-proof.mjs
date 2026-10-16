@@ -13,9 +13,16 @@ const directory=resolve(process.env.REMOTE_PAINT_LINUX_PROOF??'artifacts/linux-m
 await mkdir(directory,{recursive:true});
 const live=await startLive({host:'0.0.0.0',port:4176}),source=live.source,runId=randomUUID();
 assert.ok(source.frameDriver,'Native Linux acceptance requires BeginFrame');
+const transfer={nativeReceipts:0,legacyReceipts:0,resourceRecordsInNode:0,vizScenesInNode:0};
+source.capture.on('capture',capture=>{
+ transfer[capture.nativeResources?'nativeReceipts':'legacyReceipts']++;
+ transfer.resourceRecordsInNode+=capture.resources.length;
+ if(Array.isArray(capture.viz?.passes))transfer.vizScenesInNode++;
+});
 const atomic=async(name,value)=>{const path=join(directory,name);await writeFile(`${path}.tmp`,JSON.stringify(value,null,2));await rename(`${path}.tmp`,path);};
 const selectors=['header','header h1','header p','#name','#save','#saved','#editor','#start-stream','#stop-clock','#stream','#private-image','#blob-image'];
 const snapshot=async()=>({
+ dataPlane:{backend:source.broker?'rust':'node',...transfer},
  ...nativeRuntimeInfo(source.frameDriver),browser:source.browser.version(),stats:{...source.stats},viz:{...source.viz.stats},
  native:source.latest?.native??null,captures:source.stats.captures,demand:source.demand,inputSeq:source.inputSeq,
  pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,viewport:{...source.viewport},controlMode:source.control.mode,
