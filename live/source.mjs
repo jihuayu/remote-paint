@@ -14,7 +14,11 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
   // enable legacy GPU benchmarking APIs (including disk export) in source JS.
   browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint},args:nativeLaunchArgs(token,{beginFrames})});
   const page=await browser.newPage({viewport,deviceScaleFactor:1});
-  if(beginFrames)frameDriver=await startBeginFrames(page,{autoStart:false});
+  // Keep the page clock alive during bootstrap: Steel/acceptance setup may
+  // still interact with the source before the first Viewer demand arrives.
+  // Once transport demand is observed, source.setDemand owns the clock and
+  // stops it after the last Viewer disconnects.
+  if(beginFrames)frameDriver=await startBeginFrames(page);
   await page.goto(url,{waitUntil:'networkidle'});
   capture=new NativeCapture(page,{token,viz,interval,frameDriver,captureOnInput});await capture.initialize();
   const source=new EventEmitter();Object.assign(source,{page,browser,capture,viz,frameDriver,pageEpoch:1,viewportVersion:1,latest:null,demand:0,inputSeq:0,mapper:new SceneMapper(),producer:null,

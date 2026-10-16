@@ -34,13 +34,16 @@ test('release logical resources, and never reuse a released revision within an e
 test('private length-prefixed Viz IPC correlates one requested frame and rejects unknown/oversize packets',async()=>{
  const ipc=await startVizIPC();
  async function send(buffer){await new Promise((resolve,reject)=>{const socket=net.createConnection(ipc.endpoint);socket.on('connect',()=>socket.end(buffer));socket.on('error',reject);socket.on('close',resolve);});}
+ async function persistentSend(buffers){await new Promise((resolve,reject)=>{const socket=net.createConnection(ipc.endpoint);socket.on('connect',()=>socket.end(Buffer.concat(buffers)));socket.on('error',reject);socket.on('close',resolve);});}
  const encode=value=>{const body=Buffer.from(JSON.stringify(value)),size=Buffer.alloc(4);size.writeUInt32BE(body.length);return Buffer.concat([size,body]);};
  try{
   assert.equal((await stat(ipc.endpoint)).mode&0o777,0o600);
-  const wanted=ipc.waitFor('x');await send(encode({type:'VizScene',captureId:'x',passes:[]}));assert.equal((await wanted).captureId,'x');
+  const wanted=ipc.waitFor('x'),wanted2=ipc.waitFor('y');
+  await persistentSend([encode({type:'VizScene',captureId:'x',passes:[]}),encode({type:'VizScene',captureId:'y',passes:[]})]);
+  assert.equal((await wanted).captureId,'x');assert.equal((await wanted2).captureId,'y');
   await send(encode({type:'VizScene',captureId:'not-registered'}));
   const size=Buffer.alloc(4);size.writeUInt32BE(1024*1024);await send(size);
-  assert.equal(ipc.stats.received,1);assert.equal(ipc.stats.rejected,2);
+  assert.equal(ipc.stats.received,2);assert.equal(ipc.stats.rejected,2);
  }finally{await ipc.close();}
 });
 

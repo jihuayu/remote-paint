@@ -14,6 +14,7 @@
 #include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -24,6 +25,73 @@
 namespace remote_paint {
 namespace {
 std::atomic<int> pending_writes{0};
+class VizSocket {
+ public:
+  explicit VizSocket(std::string path) : path_(std::move(path)) {}
+
+  void Send(std::string_view bytes) {
+    base::AutoLock guard(lock_);
+    if (fd_ < 0 && !Connect()) return;
+    uint32_t length = htonl(bytes.size());
+    std::string packet(reinterpret_cast<const char*>(&length), sizeof(length));
+    packet.append(bytes);
+    if (!SendAll(base::span(packet))) {
+      Close();
+    }
+  }
+
+ private:
+  bool Connect() {
+    fd_ = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (fd_ < 0) return false;
+    sockaddr_un address{};
+    address.sun_family = AF_UNIX;
+    if (path_.size() >= sizeof(address.sun_path)) {
+      Close();
+      return false;
+    }
+    // SAFETY: The path length is checked against the destination above.
+    std::ranges::copy(path_, std::begin(address.sun_path));
+    timeval timeout{1, 0};
+    setsockopt(fd_, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+#if defined(SO_NOSIGPIPE)
+    int no_sigpipe = 1;
+    setsockopt(fd_, SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe, sizeof(no_sigpipe));
+#endif
+    if (connect(fd_, reinterpret_cast<sockaddr*>(&address), sizeof(address)) != 0) {
+      Close();
+      return false;
+    }
+    return true;
+  }
+
+  bool SendAll(base::span<const char> data) {
+    size_t sent = 0;
+    while (sent < data.size()) {
+      int flags = 0;
+#if defined(MSG_NOSIGNAL)
+      flags = MSG_NOSIGNAL;
+#endif
+      const auto remaining = data.subspan(sent);
+      const auto written = send(fd_, remaining.data(), remaining.size(), flags);
+      if (written <= 0) return false;
+      sent += static_cast<size_t>(written);
+    }
+    return true;
+  }
+
+  void Close() {
+    if (fd_ >= 0) {
+      close(fd_);
+      fd_ = -1;
+    }
+  }
+
+  base::Lock lock_;
+  std::string path_;
+  int fd_ = -1;
+};
+
 base::ListValue Numbers(std::initializer_list<double> values){base::ListValue out;for(double value:values)out.Append(value);return out;}
 base::ListValue Rect(const gfx::Rect& r){return Numbers({double(r.x()),double(r.y()),double(r.right()),double(r.bottom())});}
 base::ListValue Matrix(const gfx::Transform& t){
@@ -32,32 +100,8 @@ base::ListValue Matrix(const gfx::Transform& t){
   return values;
 }
 void WriteScene(std::string path,std::string bytes){
-  const int fd=socket(AF_UNIX,SOCK_STREAM,0);
-  if(fd>=0){
-    sockaddr_un address{};address.sun_family=AF_UNIX;
-    if(path.size()<sizeof(address.sun_path)){
-      // SAFETY: The path length is checked against the destination above.
-      std::ranges::copy(path,std::begin(address.sun_path));
-      timeval timeout{1,0};setsockopt(fd,SOL_SOCKET,SO_SNDTIMEO,&timeout,sizeof(timeout));
-#if defined(SO_NOSIGPIPE)
-      int no_sigpipe=1;setsockopt(fd,SOL_SOCKET,SO_NOSIGPIPE,&no_sigpipe,sizeof(no_sigpipe));
-#endif
-      if(connect(fd,reinterpret_cast<sockaddr*>(&address),sizeof(address))==0){
-        uint32_t length=htonl(bytes.size());std::string packet(reinterpret_cast<const char*>(&length),sizeof(length));packet+=bytes;
-        size_t sent=0;
-        while(sent<packet.size()){
-          const auto remaining=base::span(packet).subspan(sent);
-          int flags=0;
-#if defined(MSG_NOSIGNAL)
-          flags=MSG_NOSIGNAL;
-#endif
-          auto written=send(fd,remaining.data(),remaining.size(),flags);
-          if(written<=0)break;sent+=written;
-        }
-      }
-    }
-    close(fd);
-  }
+  static base::NoDestructor<VizSocket> socket(path);
+  socket->Send(bytes);
   pending_writes.fetch_sub(1);
 }
 }

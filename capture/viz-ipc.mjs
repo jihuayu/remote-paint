@@ -7,24 +7,29 @@ export async function startVizIPC(){
  const endpoint=join(directory,'viz.sock');const pending=new Map(),sockets=new Set();let closed=false;
  const stats={received:0,rejected:0,maxBufferedBytes:0};
  const server=net.createServer(socket=>{
-  if(sockets.size>=4){socket.destroy();return;}sockets.add(socket);socket.setTimeout(1500,()=>socket.destroy());
+  if(sockets.size>=4){socket.destroy();return;}sockets.add(socket);
+  // Viz keeps one private connection open and sends one framed scene per
+  // capture. A long idle period is still bounded so dead browser processes do
+  // not leave sockets around forever.
+  socket.setTimeout(15000,()=>socket.destroy());
   let bytes=Buffer.alloc(0),length;
   socket.on('error',()=>{});socket.on('close',()=>sockets.delete(socket));
   socket.on('data',chunk=>{
    if(bytes.length+chunk.length>MAX+4){stats.rejected++;socket.destroy();return;}
    bytes=Buffer.concat([bytes,chunk]);stats.maxBufferedBytes=Math.max(stats.maxBufferedBytes,bytes.length);
-   if(length===undefined&&bytes.length>=4){length=bytes.readUInt32BE();if(!length||length>MAX){stats.rejected++;socket.destroy();return;}}
-   if(length===undefined||bytes.length<length+4)return;
-   try{
-    if(bytes.length!==length+4)throw new Error('Trailing IPC bytes');
-    const scene=JSON.parse(bytes.subarray(4).toString('utf8'));
-    if(scene.type!=='VizScene'||typeof scene.captureId!=='string')throw new Error('Invalid Viz message');
-    const waiter=pending.get(scene.captureId);
-    if(!waiter){stats.rejected++;socket.destroy();return;}
-    pending.delete(scene.captureId);clearTimeout(waiter.timer);stats.received++;
-    if(scene.error)waiter.reject(new Error(scene.error));else waiter.resolve(scene);
-   }catch{stats.rejected++;}
-   socket.destroy();
+   while(true){
+    if(length===undefined&&bytes.length>=4){length=bytes.readUInt32BE();if(!length||length>MAX){stats.rejected++;socket.destroy();return;}}
+    if(length===undefined||bytes.length<length+4)return;
+    const packet=bytes.subarray(4,length+4);bytes=bytes.subarray(length+4);length=undefined;
+    try{
+     const scene=JSON.parse(packet.toString('utf8'));
+     if(scene.type!=='VizScene'||typeof scene.captureId!=='string')throw new Error('Invalid Viz message');
+     const waiter=pending.get(scene.captureId);
+     if(!waiter){stats.rejected++;continue;}
+     pending.delete(scene.captureId);clearTimeout(waiter.timer);stats.received++;
+     if(scene.error)waiter.reject(new Error(scene.error));else waiter.resolve(scene);
+    }catch{stats.rejected++;}
+   }
   });
  });
  try{
