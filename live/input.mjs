@@ -110,8 +110,14 @@ export class ControlLease {
   validateInput(message.event,this.source.viewport);const version=this.version;
   const promise=this.enqueue(async()=>{
    this.validLease(peer,message);if(this.version!==version)reject('STALE_LEASE');
-   await this.dispatch(message.event);const optimistic=await this.optimisticState(message.event);
+   await this.dispatch(message.event);
+   // The source paint is authoritative once CDP accepts the event. Start its
+   // capture before the optional DOM read so that editor geometry cannot sit on
+   // the input critical path. The state read still races in parallel and is
+   // returned for the Viewer overlay when it is available.
+   const optimisticPromise=this.optimisticState(message.event);
    this.source.inputSeq=message.seq;this.source.requestCapture?.();
+   const optimistic=await optimisticPromise;
    return {type:'InputAck',seq:message.seq,accepted:true,lastProcessedInputSeq:this.source.inputSeq,...(optimistic?{optimistic}:{})};
   });
   this.nextSeq++;return promise;

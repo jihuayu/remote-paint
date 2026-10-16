@@ -24,6 +24,14 @@ test('fresh capture is requested only after accepted CDP input and its sequence 
  await assert.rejects(c.input('a',{...grant,seq:2,event:text}),/CDP failed/);assert.deepEqual(requests,[1]);
  await c.close();
 });
+test('accepted input requests capture while the optional optimistic DOM read is still pending',async()=>{
+ const {source,control:c,cdp}=setup();const requests=[];source.requestCapture=()=>requests.push(source.inputSeq);
+ let finishRead;source.page={evaluate:async()=>new Promise(resolve=>{finishRead=()=>resolve({kind:'input',x:0,y:0,width:10,height:10,text:'x',selectionStart:1,selectionEnd:1,style:{}});})};
+ const grant=await c.acquire('a',tags(c));cdp.send=async()=>{};
+ let settled=false;const input=c.input('a',{...grant,seq:1,event:text}).finally(()=>{settled=true;});
+ await new Promise(setImmediate);assert.deepEqual(requests,[1]);assert.equal(source.inputSeq,1);assert.equal(settled,false);
+ finishRead();assert.equal((await input).accepted,true);await c.close();
+});
 test('accepted editor input carries a bounded optimistic state for fast Viewer feedback',async()=>{
  const {source,control:c}=setup();let reads=0;source.page={evaluate:async()=>{reads++;return {kind:'input',x:12,y:34,width:200,height:42,text:'next',selectionStart:4,selectionEnd:4,style:{fontSize:'16px',color:'rgb(0, 0, 0)'}};}};
  const grant=await c.acquire('a',tags(c));const result=await c.input('a',{...grant,seq:1,event:{kind:'text',text:'next'}});
