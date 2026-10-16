@@ -1,0 +1,11 @@
+--- a/cc/layers/picture_layer_impl.cc
++++ b/cc/layers/picture_layer_impl.cc
+@@ -607,7 +607,7 @@
+   // access the invalidation through the PictureLayerTilingClient interface.
+   if (remote_paint::IsTiledCaptureEnabled()) {
+-    for (const auto& rect : new_invalidation) {
++    for (const auto rect : new_invalidation) {
+       remote_paint::TrackLayerDamage(layer_tree_impl()->host_impl()->id(),
+           stable_id_for_shared_quad_state(),rect.x(),rect.y(),rect.width(),rect.height());
+     }
+   }
