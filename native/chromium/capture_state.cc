@@ -169,7 +169,8 @@ base::DictValue EncodeResults(Snapshot snapshot,
   timing.Set("encodingThreads",static_cast<int>(threads.size()));
   timing.Set("cachedLayers",cached_layers);
   timing.Set("fontCacheHits",static_cast<int>(font_cache_hits));timing.Set("imageCacheHits",static_cast<int>(image_cache_hits));
-  timing.Set("encodeTotalMs",(base::TimeTicks::Now() - started).InMillisecondsF());
+  timing.Set("resultAssemblyMs",(base::TimeTicks::Now() - started).InMillisecondsF());
+  timing.Set("encodeTotalMs",base::TimeTicks::Now().since_origin().InMillisecondsF()-snapshot.encoding_started_ms);
   result.Set("timing",std::move(timing));
   if(NativeResourceIPC()){
     result.Set("nativeResources",true);
@@ -229,6 +230,7 @@ uint64_t NewRecordingKey(){
   return key?key:NextRecordingKey().fetch_add(1,std::memory_order_relaxed);
 }
 void EncodeAndReply(Snapshot snapshot,std::unique_ptr<CaptureRequest> request){
+  snapshot.encoding_started_ms=base::TimeTicks::Now().since_origin().InMillisecondsF();
   if(snapshot.records.empty()){
     base::ThreadPool::PostTask(FROM_HERE,{base::MayBlock(),base::TaskPriority::USER_VISIBLE},
       base::BindOnce([](Snapshot snapshot,std::unique_ptr<CaptureRequest> request){

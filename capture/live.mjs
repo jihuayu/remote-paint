@@ -42,6 +42,7 @@ export class NativeCapture extends EventEmitter {
     if(!this.frameDriver&&!this.running){clearTimeout(this.timer);this.timer=setTimeout(()=>void this.tick(),0);}
   }
   async capture() {
+    const started=performance.now();
     const generation=this.generation;
     await this.ensureWorld();
     if(!this.viz)throw new Error('A private Viz IPC receiver is required');
@@ -49,6 +50,7 @@ export class NativeCapture extends EventEmitter {
     const scene=this.viz.waitFor(captureId);scene.catch(()=>{});
     try {
     await scene.registered;
+    const requestStarted=performance.now();
     const {result,exceptionDetails}=await this.cdp.send('Runtime.evaluate',{
       contextId:this.world,awaitPromise:true,returnByValue:true,
       expression:`new Promise((resolve,reject)=>{if(!chrome.gpuBenchmarking.captureRemotePaint(${JSON.stringify(this.token)},${JSON.stringify(captureId)},resolve))reject(new Error('Native capture refused'));})`,
@@ -58,9 +60,9 @@ export class NativeCapture extends EventEmitter {
     if(result.value?.error)throw new Error(result.value.error);
     if(result.value?.captureId!==captureId)throw new Error('Native capture pairing mismatch');
     if(!Array.isArray(result.value?.resources))throw new Error('Incomplete native capture');
-    const viz=await scene;
+    const replyAt=performance.now(),viz=await scene;
     if(generation!==this.generation)throw new Error('Navigation invalidated the Viz frame');
-    this.count++;return {...result.value,viz};
+    this.count++;return {...result.value,viz,timing:{...result.value.timing,captureRoundTripMs:performance.now()-started,cdpReplyMs:replyAt-requestStarted,vizWaitMs:performance.now()-replyAt}};
     }catch(error){this.viz.cancel(captureId);throw error;}
   }
   async tick() {

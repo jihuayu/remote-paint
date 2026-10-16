@@ -64,7 +64,9 @@ fn main() {
                 .and_then(|resources| {
                     mapper.ingest_native(&resources.metadata, resources.blocks)?;
                     let scene = request["capture"]["viz"].take();
-                    request["capture"] = resources.metadata;
+                    let timing=request["capture"]["timing"].take();
+                request["capture"] = resources.metadata;
+                if let Some(timing)=timing.as_object(){for (key,value) in timing {request["capture"]["timing"][key]=value.clone();}}
                     request["capture"]["viz"] = scene;
                     Ok(())
                 });

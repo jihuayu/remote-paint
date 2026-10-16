@@ -31,6 +31,7 @@ struct Snapshot {
   uint32_t frame_token = 0;
   int source_frame = 0;
   double recording_ms = 0;
+  double encoding_started_ms = 0;
   int recording_cache_hits = 0;
   int recording_cache_misses = 0;
   std::vector<LayerRecord> records;

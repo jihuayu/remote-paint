@@ -5,6 +5,7 @@ import {mkdir,readFile,writeFile,rename} from 'node:fs/promises';
 import {resolve,join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {startLive} from '../live.mjs';
+import {runtimeMetrics} from '../native/runtime-metrics.mjs';
 import {nativeRuntimeInfo} from '../native/launch.mjs';
 import {installInputLatencyProbe} from './input-latency.mjs';
 assert.equal(process.platform,'linux');assert.equal(process.arch,'arm64');
@@ -36,9 +37,10 @@ async function poll(){
   if(command.runId===runId&&command.id!==handled&&/^[a-f0-9-]{36}$/.test(command.id)){
    handled=command.id;
    try{
-    let probe=null;
+    let probe=null,metrics=null;
     switch(command.op){
      case 'snapshot':break;
+     case 'metrics':metrics={...await runtimeMetrics(source),peers:[...live.peers].map(p=>({id:p.id,stats:{...p.stats}}))};break;
      case 'freeze':await source.page.locator('#stop-clock').click();await source.page.evaluate(()=>document.getAnimations().forEach(a=>a.pause()));break;
      case 'animate':await source.page.evaluate(()=>document.getAnimations().forEach(a=>a.play()));break;
      case 'reload':await source.page.reload();break;
@@ -50,7 +52,7 @@ async function poll(){
      case 'latency-done':source.capture.captureOnInput=true;await source.page.evaluate(()=>window.removeInputLatencyProbe?.());break;
      default:throw new Error('Unknown Linux proof operation');
     }
-    await atomic('response.json',{id:command.id,state:await snapshot(),probe,screenshot:command.op==='screenshot'?`source-${command.id}.png`:null});
+    await atomic('response.json',{id:command.id,state:await snapshot(),probe,metrics,screenshot:command.op==='screenshot'?`source-${command.id}.png`:null});
    }catch(error){await atomic('response.json',{id:command.id,error:error.stack});}
   }
  }catch(error){if(error.code!=='ENOENT')console.error(error);}
