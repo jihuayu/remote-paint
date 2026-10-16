@@ -25,6 +25,8 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/src/core/SkTextBlobPriv.h"
 #include <chrono>
+#include <ratio>
+#include "third_party/skia/include/core/SkBlender.h"
 #if defined(REMOTE_PAINT_CHROMIUM)
 #include "base/compiler_specific.h"
 #include "third_party/skia/include/encode/SkPngRustEncoder.h"
@@ -213,6 +215,7 @@ void CacheImage(SkImage* image,sk_sp<const SkData> bytes){
 
 struct Context {
   GlyphCollector collector;
+  std::vector<std::pair<std::string,sk_sp<const SkData>>> assets;
   SerializedPicture result;
   size_t budget;
   std::map<SkTypefaceID, sk_sp<const SkData>> fonts;
@@ -236,6 +239,7 @@ SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* opaque) {
   if(auto cached=LookupFont(typeface,found->second,&cached_stats)){
     if(cached->size()>ctx.budget){ctx.result.error="Cached font exceeds byte budget";return SkData::MakeEmpty();}
     cached_stats.glyphs=found->second.size();cached_stats.missing_glyphs=ctx.collector.missing_glyphs[typeface->uniqueID()];
+    ctx.assets.emplace_back("font",cached);
     ctx.result.fonts.push_back(cached_stats);ctx.fonts.emplace(typeface->uniqueID(),cached);ctx.result.font_cache_hits++;
     ctx.result.font_ms+=(NowMs()-started);return cached;
   }
@@ -257,6 +261,7 @@ SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* opaque) {
   ctx.result.fonts.push_back({name.c_str(), found->second.size(),
                              original ? original->getLength() : 0,
                              subset->size(), ctx.collector.missing_glyphs[typeface->uniqueID()]});
+  ctx.assets.emplace_back("font",subset);
   CacheFont(typeface,found->second,subset,ctx.result.fonts.back());
   ctx.fonts.emplace(typeface->uniqueID(), subset);
   ctx.result.font_ms += (NowMs() - started);
@@ -278,6 +283,7 @@ SkSerialReturnType SerializeImage(SkImage* image, void* opaque) {
   }
   if(auto cached=LookupImage(image)){
     if(cached->size()>ctx.budget-ctx.result.image_bytes){ctx.result.error="Cached image exceeds byte budget";finish();return SkData::MakeEmpty();}
+    ctx.assets.emplace_back("image",cached);
     ctx.result.image_bytes+=cached->size();ctx.result.image_count++;ctx.result.image_cache_hits++;finish();return cached;
   }
   // Read pixels already fetched by the browser, including authenticated/blob
@@ -292,6 +298,7 @@ SkSerialReturnType SerializeImage(SkImage* image, void* opaque) {
     finish();
     return SkData::MakeEmpty();
   }
+  ctx.assets.emplace_back("image",encoded);
   CacheImage(image,encoded);
   ctx.result.image_bytes += encoded->size();
   ctx.result.image_count++;
@@ -329,7 +336,24 @@ SerializedPicture SerializePicture(const SkPicture& picture, size_t byte_budget)
   auto data = normalized->serialize(&procs);
   ctx.result.serialize_ms = (NowMs() - serialize_started);
   if (!data || data->size() > byte_budget) ctx.result.error = "Picture exceeds byte budget";
-  if (ctx.result.error.empty()) ctx.result.bytes = std::move(data);
+  if (ctx.result.error.empty()) {
+    const auto bytes=UNSAFE_BUFFERS(std::span(static_cast<const uint8_t*>(data->data()),data->size()));
+    for(const auto& [kind,asset]:ctx.assets){
+      const auto pattern=UNSAFE_BUFFERS(std::span(static_cast<const uint8_t*>(asset->data()),asset->size()));
+      if(pattern.size()<16)continue;
+      auto begin=bytes.begin();
+      while(ctx.result.asset_ranges.size()<256){
+        auto found=std::search(begin,bytes.end(),pattern.begin(),pattern.begin()+16);
+        if(found==bytes.end())break;
+        const size_t offset=found-bytes.begin();
+        if(offset+pattern.size()<=bytes.size()&&std::equal(pattern.begin(),pattern.end(),found))ctx.result.asset_ranges.push_back({offset,pattern.size(),kind});
+        begin=found+1;
+      }
+    }
+    std::sort(ctx.result.asset_ranges.begin(),ctx.result.asset_ranges.end(),[](const auto& a,const auto& b){return a.offset<b.offset;});
+    ctx.result.asset_ranges.erase(std::unique(ctx.result.asset_ranges.begin(),ctx.result.asset_ranges.end(),[](const auto& a,const auto& b){return a.offset==b.offset;}),ctx.result.asset_ranges.end());
+    ctx.result.bytes=std::move(data);
+  }
   return std::move(ctx.result);
 }
 

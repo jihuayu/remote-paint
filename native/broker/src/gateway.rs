@@ -154,6 +154,9 @@ impl Gateway {
         let mut known = HashSet::new();
         let mut next_id = 0u64;
         let mut force_full = true;
+        let mut use_chunks = false;
+        let mut known_chunks = HashSet::new();
+        let mut chunk_bytes = 0usize;
         let mut stats = json!({"full":0,"delta":0,"resources":0,"bytes":0,"coalesced":0,"slowDisconnects":0,"maxInflight":0});
         let mut recovery_start = Instant::now();
         let mut recoveries = 0;
@@ -209,6 +212,9 @@ impl Gateway {
                             }));
                             break;
                         }
+                        use_chunks = message["capabilities"]
+                            .as_array()
+                            .is_some_and(|caps| caps.iter().any(|c| c == "asset-chunks-v1"));
                         ready = true;
                         let welcome = json!({"type":"Welcome","protocol":4,"renderer":self.config["renderer"],"producer":self.config["producer"],"mode":"live-skia-viz","input":self.config["input"]==true,"peerId":id,"sessionId":self.config["sessionId"]});
                         ws.send(Message::Text(welcome.to_string().into()))
@@ -247,6 +253,8 @@ impl Gateway {
                         inflight = None;
                         acked = None;
                         known.clear();
+                        known_chunks.clear();
+                        chunk_bytes = 0;
                         force_full = true;
                     } else if self.config["input"] == true {
                         emit(json!({"event":"Control","peerId":id,"message":message}));
@@ -313,14 +321,37 @@ impl Gateway {
             }
             let mut resource_count = 0;
             let mut bytes = scene.len();
+            if known_chunks.len() > 32768 || chunk_bytes > 64 * 1024 * 1024 {
+                ws.send(Message::Text(
+                    json!({"type":"ChunkCacheReset"}).to_string().into(),
+                ))
+                .map_err(|e| e.to_string())?;
+                known_chunks.clear();
+                chunk_bytes = 0;
+            }
             for (hash, resource) in &snapshot.resources {
-                if !known.contains(hash) {
+                if known.contains(hash) {
+                    continue;
+                }
+                if use_chunks {
+                    for chunk in resource.chunks.iter() {
+                        if known_chunks.insert(chunk.id.clone()) {
+                            ws.send(Message::Binary(chunk.wire.clone()))
+                                .map_err(|e| e.to_string())?;
+                            bytes += chunk.wire.len();
+                            chunk_bytes += chunk.wire.len() - 44;
+                        }
+                    }
+                    ws.send(Message::Text(resource.manifest.clone().into()))
+                        .map_err(|e| e.to_string())?;
+                    bytes += resource.manifest.len();
+                } else {
                     ws.send(Message::Binary(resource.wire.clone()))
                         .map_err(|e| e.to_string())?;
-                    known.insert(hash.clone());
-                    resource_count += 1;
                     bytes += resource.wire.len();
                 }
+                known.insert(hash.clone());
+                resource_count += 1;
             }
             ws.send(Message::Text(scene.into()))
                 .map_err(|e| e.to_string())?;

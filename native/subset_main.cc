@@ -43,6 +43,20 @@ void SelfTest() {
   auto encoded=remote_paint::SerializePicture(*original);
   if(!encoded.error.empty()||!encoded.bytes||encoded.fonts.size()!=1||
       encoded.fonts[0].subset_bytes>=encoded.fonts[0].original_bytes)throw std::runtime_error("Font subset invariant failed: "+encoded.error);
+  if(encoded.asset_ranges.empty())throw std::runtime_error("Font byte range missing from SKP");
+  // The same immutable font/image must be byte-identical when only drawing
+  // commands change. This is the contract used by native asset manifests.
+  auto image_surface=SkSurfaces::Raster(SkImageInfo::MakeN32Premul(32,32));
+  image_surface->getCanvas()->clear(SK_ColorBLUE);
+  auto image=image_surface->makeImageSnapshot();
+  auto make_assets=[&](int x){SkPictureRecorder r;auto* c=r.beginRecording(640,80);
+    c->drawTextBlob(blob,x,36,SkPaint());c->drawImage(image,x,40);return remote_paint::SerializePicture(*r.finishRecordingAsPicture());};
+  auto assets_a=make_assets(4),assets_b=make_assets(12);
+  size_t shared_assets=0;
+  for(const auto& a:assets_a.asset_ranges)for(const auto& b:assets_b.asset_ranges){
+    if(a.kind==b.kind&&a.bytes==b.bytes&&!std::memcmp(static_cast<const char*>(assets_a.bytes->data())+a.offset,static_cast<const char*>(assets_b.bytes->data())+b.offset,a.bytes))shared_assets++;
+  }
+  if(!assets_a.error.empty()||!assets_b.error.empty()||shared_assets<2)throw std::runtime_error("Font/image blocks changed with drawing commands");
   auto procs=DecodeProcs();auto decoded=SkPicture::MakeFromData(encoded.bytes.get(),&procs);
   if(!decoded)throw std::runtime_error("Subset cannot deserialize");
   auto a=SkSurfaces::Raster(SkImageInfo::MakeN32Premul(640,80));

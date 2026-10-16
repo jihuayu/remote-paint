@@ -1,3 +1,4 @@
+mod assets;
 mod gateway;
 mod scene;
 mod viz;

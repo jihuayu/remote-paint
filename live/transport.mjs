@@ -19,6 +19,7 @@ export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackT
   ['/', ['viewer/live.html','text/html; charset=utf-8']],['/live.mjs',['viewer/live.mjs','text/javascript']],
   ['/input.mjs',['viewer/input.mjs','text/javascript']],
   ['/live.css',['viewer/live.css','text/css']],['/scene-renderer.mjs',['viewer/scene-renderer.mjs','text/javascript']],
+  ['/protocol/asset-wire.mjs',['protocol/asset-wire.mjs','text/javascript']],
   ['/protocol/live-wire.mjs',['protocol/live-wire.mjs','text/javascript']],['/protocol/wire.mjs',['protocol/wire.mjs','text/javascript']],
   ['/stream-worker.mjs',['viewer/stream-worker.mjs','text/javascript']],
   ['/vendor/canvaskit.js',['node_modules/canvaskit-wasm/bin/full/canvaskit.js','text/javascript']],

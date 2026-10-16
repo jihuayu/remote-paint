@@ -4,7 +4,7 @@ use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::{
     collections::{HashMap, HashSet},
-    sync::Arc,
+    sync::{Arc, Weak},
 };
 
 pub type Result<T> = std::result::Result<T, String>;
@@ -14,6 +14,8 @@ pub const SCENE_BYTES: usize = 256 * 1024;
 pub struct Resource {
     pub payload: Bytes,
     pub wire: Bytes,
+    pub chunks: Arc<Vec<Arc<crate::assets::Chunk>>>,
+    pub manifest: String,
 }
 #[derive(Clone)]
 pub struct Snapshot {
@@ -26,6 +28,7 @@ pub struct Snapshot {
 pub struct Mapper {
     entries: HashMap<String, (String, u64)>,
     resources: HashMap<String, Resource>,
+    chunks: HashMap<String, Weak<crate::assets::Chunk>>,
     revision: u64,
     serial: u64,
     epoch: u64,
@@ -35,6 +38,7 @@ impl Mapper {
         Self {
             entries: HashMap::new(),
             resources: HashMap::new(),
+            chunks: HashMap::new(),
             revision: 0,
             serial: 0,
             epoch: 0,
@@ -43,6 +47,7 @@ impl Mapper {
     pub fn reset(&mut self) {
         self.entries.clear();
         self.resources.clear();
+        self.chunks.clear();
         self.revision = 0;
         self.epoch = 0;
     }
@@ -103,16 +108,14 @@ impl Mapper {
                     return Err("Native resource checksum mismatch".into());
                 }
                 if !self.resources.contains_key(&hash) {
-                    let mut wire = b"RPNT\x01\x01\0\0".to_vec();
-                    wire.extend((payload.len() as u32).to_be_bytes());
-                    wire.extend(Sha256::digest(&payload));
-                    wire.extend(&payload);
                     self.resources.insert(
                         hash.clone(),
-                        Resource {
-                            payload: Bytes::from(payload),
-                            wire: Bytes::from(wire),
-                        },
+                        crate::assets::resource(
+                            payload,
+                            &hash,
+                            &record["assetRanges"],
+                            &mut self.chunks,
+                        )?,
                     );
                 }
             } else {
@@ -294,7 +297,11 @@ impl Mapper {
         if self
             .resources
             .values()
-            .map(|r| r.payload.len() + r.wire.len())
+            .map(|r| {
+                r.payload.len()
+                    + r.wire.len()
+                    + r.chunks.iter().map(|c| c.wire.len()).sum::<usize>()
+            })
             .sum::<usize>()
             > CACHE_BYTES
         {

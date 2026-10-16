@@ -1,6 +1,7 @@
 import CanvasKitInit from '/canvaskit-worker.mjs';
 import {SceneRenderer} from '/scene-renderer.mjs';
-import {decodeResource,isHash} from '/protocol/wire.mjs';
+import {isHash} from '/protocol/wire.mjs';
+import {decodeAsset,AssetCache} from '/protocol/asset-wire.mjs';
 import {LIVE_VERSION,LIVE_LIMITS,LiveFrameGate,RecoveryRequired} from '/protocol/live-wire.mjs';
 let ck,renderer,sceneRenderer,canvas,context,socket,generation=0,retryTimer,retryDelay=250,stopped=false;
 const ui=(type,data={})=>postMessage({type,...data});
@@ -23,27 +24,32 @@ async function connect(key){
  const config=await fetch('/session-config').then(response=>response.json());if(current!==generation)return;
  const host=config.nativePort?`${location.hostname}:${config.nativePort}`:location.host;
  const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${host}/stream?key=${encodeURIComponent(key)}`);socket=ws;ws.binaryType='arraybuffer';
- const gate=new LiveFrameGate();let welcome=false,receivedBytes=0,resourcesReceived=0,full=0,delta=0,recovering=false,queue=Promise.resolve(),queuedBytes=0;
- const recover=()=>{gate.recover();sceneRenderer.retain(new Set(gate.resources.keys()));if(!recovering){recovering=true;status('重新同步完整场景');send({type:'RequestKeyframe'});}};
- ws.onopen=()=>send({type:'Hello',protocol:LIVE_VERSION,renderer});
+ const gate=new LiveFrameGate(),assets=new AssetCache();let welcome=false,receivedBytes=0,resourcesReceived=0,full=0,delta=0,recovering=false,queue=Promise.resolve(),queuedBytes=0;
+ const recover=()=>{gate.recover();assets.clear();sceneRenderer.retain(new Set(gate.resources.keys()));if(!recovering){recovering=true;status('重新同步完整场景');send({type:'RequestKeyframe'});}};
+ ws.onopen=()=>send({type:'Hello',protocol:LIVE_VERSION,renderer,capabilities:['asset-chunks-v1']});
  ws.onmessage=event=>{
   const size=typeof event.data==='string'?new TextEncoder().encode(event.data).byteLength:event.data.byteLength;
   if((queuedBytes+=size)>LIVE_LIMITS.cacheBytes+LIVE_LIMITS.sceneBytes){ui('error',{message:'Receive queue budget exceeded'});ws.close(4013,'Receive queue limit');return;}
+  // Start independent SHA checks as packets arrive, while the commit queue
+  // preserves the server's ordering and limits memory before any decode.
+  const verified=event.data instanceof ArrayBuffer?(async()=>{const asset=decodeAsset(event.data);if(await digest(asset.payload)!==asset.id)throw new Error('Resource checksum mismatch');return asset;})():null;verified?.catch(()=>{});
   queue=queue.then(async()=>{try{
    if(current!==generation)return;receivedBytes+=size;
-   if(event.data instanceof ArrayBuffer){if(!welcome)throw new Error('Resource before handshake');const {id,payload}=decodeResource(event.data);if(await digest(payload)!==id)throw new Error('Resource checksum mismatch');gate.put(id,payload);resourcesReceived++;return;}
+   if(event.data instanceof ArrayBuffer){if(!welcome)throw new Error('Resource before handshake');const {kind,id,payload}=await verified;if(kind==='chunk')assets.put(id,payload);else{gate.put(id,payload);resourcesReceived++;}return;}
    if(size>LIVE_LIMITS.sceneBytes)throw new Error('Metadata budget exceeded');const message=JSON.parse(event.data);
    if(message.type==='Welcome'){
     if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean')throw new Error('Incompatible live handshake');welcome=true;retryDelay=250;ui('welcome',{message});return;
    }
    if(!welcome)throw new Error('Message before handshake');
    if(['ControlState','ControlGranted','ControlDenied','InputAck'].includes(message.type)){ui('control',{message});return;}
+   if(message.type==='ResourceManifest'){const payload=assets.assemble(message);if(payload){if(await digest(payload)!==message.id)throw new Error('Assembled resource checksum mismatch');gate.put(message.id,payload);resourcesReceived++;}return;}
+   if(message.type==='ChunkCacheReset'){assets.clear();return;}
    if(message.type==='SceneUpdate'){try{gate.stage(message.frame);}catch(error){if(error instanceof RecoveryRequired){recover();return;}throw error;}}
    else if(message.type==='FrameCommit'){
     if(recovering&&!gate.pending)return;
     const started=performance.now(),frame=gate.commit(message.pageEpoch,message.frameId,draw);if(!frame){recover();return;}
     gate.collect();sceneRenderer.retain(new Set(gate.resources.keys()));if(frame.baseFrameId===null)full++;else delta++;recovering=false;
-    const renderMs=performance.now()-started,result={protocol:LIVE_VERSION,pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,frameId:frame.frameId,native:frame.native,lastProcessedInputSeq:frame.lastProcessedInputSeq,resourceBytes:gate.bytes,resources:gate.resources.size,resourcesReceived,receivedBytes,fullFrames:full,deltaFrames:delta,renderMs,requiredResources:frame.requiredResources,rendererStats:{...sceneRenderer.stats},worker:true};
+    const renderMs=performance.now()-started,result={protocol:LIVE_VERSION,pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,frameId:frame.frameId,native:frame.native,lastProcessedInputSeq:frame.lastProcessedInputSeq,resourceBytes:gate.bytes,resources:gate.resources.size,resourcesReceived,receivedBytes,fullFrames:full,deltaFrames:delta,renderMs,requiredResources:frame.requiredResources,rendererStats:{...sceneRenderer.stats},assetStats:{...assets.stats,cacheBytes:assets.bytes},worker:true};
     ui('frame',{result,frame:{pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,viewport:frame.viewport,lastProcessedInputSeq:frame.lastProcessedInputSeq,frameId:frame.frameId,baseFrameId:frame.baseFrameId}});send({type:'FrameAck',pageEpoch:frame.pageEpoch,frameId:frame.frameId});
    }else if(message.type==='ResourceRelease'){
     if(!Array.isArray(message.ids)||message.ids.length>512||!message.ids.every(isHash))throw new Error('Invalid resource release');for(const id of message.ids)gate.release(id);sceneRenderer.retain(new Set(gate.resources.keys()));

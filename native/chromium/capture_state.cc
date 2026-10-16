@@ -50,6 +50,7 @@ struct EncodedLayer {
   double font_ms = 0;
   double image_ms = 0;
   double base64_ms = 0;
+  std::vector<AssetRange> asset_ranges;
   bool reused = false;
   std::string resource_id;
 };
@@ -106,6 +107,7 @@ EncodedLayer EncodeLayer(int host, size_t index, LayerRecord record) {
     result.image_ms = encoded->serialized.image_ms;
   }
   result.skp = encoded->base64;
+  result.asset_ranges=encoded->serialized.asset_ranges;
   result.resource_id = encoded->resource_id;
   return result;
 }
@@ -140,6 +142,7 @@ base::DictValue EncodeResults(Snapshot snapshot,
     if(encoded.tiled){base::ListValue origin;origin.Append(encoded.tile_x);origin.Append(encoded.tile_y);resource.Set("tileOrigin",std::move(origin));}
     resource.Set("bitmapGlyphs",static_cast<int>(encoded.bitmap_glyphs));
     resource.Set("requiresIsolation",encoded.requires_isolation);
+    base::ListValue assets;for(const auto& range:encoded.asset_ranges){base::DictValue asset;asset.Set("offset",static_cast<int>(range.offset));asset.Set("bytes",static_cast<int>(range.bytes));asset.Set("kind",range.kind);assets.Append(std::move(asset));}resource.Set("assetRanges",std::move(assets));
     resource.Set("quadScale",encoded.quad_scale);
     resource.Set("resourceId",encoded.resource_id);
     if(encoded.reused){cached_layers++;}else resource.Set("skp",std::move(encoded.skp));

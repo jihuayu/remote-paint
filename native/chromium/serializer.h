@@ -18,7 +18,10 @@ struct FontStats {
   size_t missing_glyphs = 0;
 };
 
+struct AssetRange { size_t offset=0; size_t bytes=0; std::string kind; };
+
 struct SerializedPicture {
+  std::vector<AssetRange> asset_ranges;
   sk_sp<const SkData> bytes;
   std::vector<FontStats> fonts;
   size_t image_bytes = 0;
