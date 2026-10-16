@@ -50,5 +50,158 @@
       "errors": 0,
       "lastError": null
     }
+  },
+  "additionalLinuxPreflight": {
+    "scope": "Same targeted recovery probe binary; sequential BeginFrame / scene / input / latency checks all exited 0. This is not the final full-graph suite receipt.",
+    "checks": {
+      "linux/begin-frame-report.json": {
+        "reportSha256": "9bf883734bbc360ea8cc9e5c6b3abb3eabac221fb9fe3e3170c5b2df5d0311ab",
+        "verifiedAt": "2026-10-16T08:55:37.577Z",
+        "platform": "linux",
+        "architecture": "arm64",
+        "scope": "custom Linux browser external clock",
+        "stats": {
+          "mode": "begin-frame",
+          "cadence": "idle",
+          "issued": 14,
+          "acked": 14,
+          "damaged": 1,
+          "errors": 0,
+          "lastError": null
+        },
+        "noScreenshotReadback": true
+      },
+      "scene/report.json": {
+        "reportSha256": "70258c97ed84d3806377cd3ec8687b1156c56bd2391712096e2ec34e8d81fc19",
+        "verifiedAt": "2026-10-16T08:55:40.988Z",
+        "platform": "linux",
+        "architecture": "arm64",
+        "gpuMode": "software-compositing",
+        "beginFrame": {
+          "mode": "begin-frame",
+          "cadence": "active",
+          "issued": 86,
+          "acked": 86,
+          "damaged": 46,
+          "errors": 0,
+          "lastError": null
+        },
+        "nativeBrowserCapture": true,
+        "scrollingReusesResources": true,
+        "animationChangesScene": true
+      },
+      "input/report.json": {
+        "reportSha256": "9624f6ca7e9a6e76bd227b4e3b7a76251b1188e48dc8bff0d9533ec2ef1a59ba",
+        "verifiedAt": "2026-10-16T08:55:49.120Z",
+        "platform": "linux",
+        "architecture": "arm64",
+        "gpuMode": "software-compositing",
+        "beginFrame": {
+          "mode": "begin-frame",
+          "cadence": "active",
+          "issued": 326,
+          "acked": 325,
+          "damaged": 125,
+          "errors": 0,
+          "lastError": null
+        },
+        "nativeDrawing": true,
+        "newlineArrowDeleteAndTab": true,
+        "cssScaling": true,
+        "missingColorGlyphRejected": true,
+        "imeViaActualLocalAndRemoteCDP": true,
+        "repeatedImeTextInsertion": true,
+        "physicalOsImeCandidateWindowTested": false,
+        "leaseAndStaleTags": true,
+        "heldButtonCleanupWithoutClick": true,
+        "pointerCaptureCleanupWithoutClick": true,
+        "viewerSourceRequests": 0,
+        "errors": []
+      },
+      "latency/report.json": {
+        "reportSha256": "7fb6552b510fcac0e7a0ed6dec31861b06654041def6b542e0fd716e20a1e54c",
+        "verifiedAt": "2026-10-16T08:55:57.086Z",
+        "platform": "linux",
+        "architecture": "arm64",
+        "gpuMode": "software-compositing",
+        "beginFrame": {
+          "mode": "begin-frame",
+          "cadence": "active",
+          "issued": 368,
+          "acked": 368,
+          "damaged": 204,
+          "errors": 0,
+          "lastError": null
+        },
+        "nativeDrawing": true,
+        "errors": [],
+        "measurement": {
+          "p50Ms": 90,
+          "p95Ms": 521.3000000044703,
+          "maxMs": 521.3000000044703,
+          "captureMs": {
+            "samples": [
+              196.11619999999994,
+              19.160345999999663,
+              22.846340000000055,
+              186.23846500000036,
+              220.07074599999942,
+              27.86608200000046,
+              22.142132999999376,
+              20.528009999999995,
+              28.301831000000675,
+              25.08804500000042,
+              19.432761999999457,
+              16.938639999999396,
+              11.569899000000078,
+              27.48266600000079,
+              48.14925999999923,
+              30.104245999999875,
+              44.36493200000041,
+              33.696240000000216,
+              28.539913999999953,
+              13.34631300000001,
+              17.98230599999988,
+              51.270088000000214,
+              47.266593999999714,
+              31.095451999999568,
+              43.00430899999992,
+              55.208456999999726,
+              15.374893000000156,
+              28.829831000000013,
+              28.87174699999923,
+              36.68036000000029,
+              30.028328999999758,
+              23.894796000000497,
+              36.055695000000014,
+              27.59204099999988,
+              27.833415999999488,
+              14.711103000000548,
+              36.21361100000013,
+              29.283746999999494,
+              43.299558000000616,
+              28.770206000000144,
+              23.275214000000233,
+              33.85328100000061,
+              39.964772000000266,
+              10.634608999999728,
+              27.639291000000412,
+              33.94269799999984,
+              15.93918400000075,
+              42.95310100000006,
+              8.594987000000401,
+              20.810676999999487,
+              43.58101700000043,
+              32.927200000000084,
+              43.611517000000276,
+              54.06787600000007
+            ],
+            "p50": 28.829831000000013,
+            "p95": 186.23846500000036
+          }
+        },
+        "buildLoad": "Full Chromium compilation running concurrently; not the quiet Mac measurement"
+      }
+    }
   }
 }
