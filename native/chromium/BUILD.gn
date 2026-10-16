@@ -8,7 +8,7 @@ source_set("serializer") {
 
 source_set("capture") {
   sources = [ "capture_state.cc", "capture_state.h" ]
-  deps = [ ":serializer", "//base", "//skia" ]
+  deps = [ ":serializer", "//base", "//crypto", "//skia" ]
 }
 
 test("serializer_tests") {

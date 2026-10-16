@@ -53,3 +53,14 @@ test('rebased tile coordinates move full-layer content while retaining its immut
  native.viz.passes[0].quads[0].contentOrigin=[0,Infinity];
  assert.throws(()=>mapper.map(native,1),/Invalid native content origin/);
 });
+
+test('incremental native resources reuse the mapper cache and verify their checksum',()=>{
+ const mapper=new SceneMapper(),firstNative=capture(),first=mapper.map(firstNative,1);
+ const id=first.mappings[0].resourceId;
+ const incremental=capture();delete incremental.resources[0].skp;incremental.resources[0].resourceId=id;
+ const second=mapper.map(incremental,1);
+ assert.deepEqual(second.mappings,first.mappings);
+ assert.deepEqual([...second.payloads.keys()],[id]);
+ const corrupted=capture();corrupted.resources[0].resourceId='0'.repeat(64);
+ assert.throws(()=>mapper.map(corrupted,1),/checksum/);
+});

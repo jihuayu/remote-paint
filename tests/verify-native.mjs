@@ -43,16 +43,23 @@ try{
  assert.ok(first.resources.length>0);assert.match(first.producer,/^\d+:\d+$/);
  assert.equal(first.viz.captureId,first.captureId);assert.ok(first.viz.passes.length);
  assert.ok(first.resources.every(r=>Buffer.from(r.skp,'base64').subarray(0,8).toString()==='skiapict'));
+ assert.ok(first.resources.every(r=>/^[0-9a-f]{64}$/.test(r.resourceId)));
  const pulses=await page.evaluate(()=>pulses);assert.ok(pulses>0,'Source event loop should run during asynchronous font/image encoding');
  const count=capture.count;await new Promise(r=>setTimeout(r,150));assert.equal(capture.count,count);
  await page.locator('#advance').click();const second=await captureOnDemand(capture);
- assert.notEqual(first.resources[0].skp,second.resources[0].skp);
+ assert.ok(second.resources.some(r=>r.skp),'The changed layer must carry a fresh incremental resource');
+ assert.ok(second.resources.every(r=>r.skp||/^[0-9a-f]{64}$/.test(r.resourceId)));
+ const stable=await captureOnDemand(capture);
+ assert.equal(stable.timing.recordingCacheMisses,0,'Unchanged layers must reuse their recording cache');
+ assert.equal(stable.timing.cachedLayers,stable.resources.length,'Unchanged layers must reuse serialized encodings');
+ assert.ok(stable.resources.every(r=>!r.skp&&/^[0-9a-f]{64}$/.test(r.resourceId)));
  const bitmapGlyphs=second.resources.reduce((n,r)=>n+r.bitmapGlyphs,0);assert.ok(bitmapGlyphs>0,'Native color glyph pixels must be preserved');
  if(beginFrames){assert.ok(frameDriver.stats.acked>0);assert.equal(frameDriver.stats.errors,0);}
  const report={verifiedAt:new Date().toISOString(),browser:browser.version(),...nativeRuntimeInfo(frameDriver),nativeBrowserCapture:true,noViewerCaptures:0,
    captures:capture.count,bitmapGlyphs,sourceBenchmarkingApiExposed:false,isolatedCaptureApi:true,incorrectSecretRejected:true,sourcePulsesDuringCapture:pulses,
    recordingThread:first.recordingThread,encodingThread:first.encodingThread,
    namespace:first.viz.namespace,frameToken:first.frameToken,vizIpc:viz.stats,
-   layerIds:first.resources.map(r=>r.localId),resourceBytes:second.resources.map(r=>Buffer.from(r.skp,'base64').length)};
+   layerIds:first.resources.map(r=>r.localId),resourceBytes:second.resources.map(r=>r.skp?Buffer.from(r.skp,'base64').length:0),
+   stableTiming:stable.timing,stableResources:stable.resources.length};
  await mkdir('artifacts/native',{recursive:true});await writeFile('artifacts/native/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await capture?.close();await frameDriver?.close();await browser.close();await viz.close();await fixture.close();}

@@ -16,14 +16,17 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "components/remote_paint/serializer.h"
+#include "crypto/sha2.h"
 namespace remote_paint {
 namespace {
 struct State {
   base::Lock lock;
   std::atomic<int> pending{0};
   std::map<int,std::unique_ptr<CaptureRequest>> requests;
+  std::map<int,std::map<uint64_t,std::shared_ptr<const EncodedPicture>>> encodings;
 };
 State& GetState(){static base::NoDestructor<State> state;return *state;}
+std::atomic<uint64_t>& NextRecordingKey(){static std::atomic<uint64_t> next{1};return next;}
 struct EncodedLayer {
   size_t index = 0;
   int local_id = 0;
@@ -41,9 +44,11 @@ struct EncodedLayer {
   double font_ms = 0;
   double image_ms = 0;
   double base64_ms = 0;
+  bool reused = false;
+  std::string resource_id;
 };
 
-EncodedLayer EncodeLayer(size_t index, LayerRecord record) {
+EncodedLayer EncodeLayer(int host, size_t index, LayerRecord record) {
   EncodedLayer result;
   result.index = index;
   result.local_id = record.local_id;
@@ -51,22 +56,45 @@ EncodedLayer EncodeLayer(size_t index, LayerRecord record) {
   result.width = record.picture->cullRect().width();
   result.height = record.picture->cullRect().height();
   result.thread = base::NumberToString(base::PlatformThread::CurrentId().raw());
-  auto encoded=SerializePicture(*record.picture);
-  result.portable_ms = encoded.portable_ms;
-  result.glyph_collection_ms = encoded.glyph_collection_ms;
-  result.serialize_ms = encoded.serialize_ms;
-  result.font_ms = encoded.font_ms;
-  result.image_ms = encoded.image_ms;
-  result.bitmap_glyphs = encoded.bitmap_glyphs;
-  if(!encoded.bytes){
-    result.error = encoded.error.empty() ? "Picture encoding failed" : encoded.error;
-    return result;
+  std::shared_ptr<const EncodedPicture> encoded=record.encoded;
+  if(!encoded){
+    auto serialized=SerializePicture(*record.picture);
+    result.portable_ms = serialized.portable_ms;
+    result.glyph_collection_ms = serialized.glyph_collection_ms;
+    result.serialize_ms = serialized.serialize_ms;
+    result.font_ms = serialized.font_ms;
+    result.image_ms = serialized.image_ms;
+    result.bitmap_glyphs = serialized.bitmap_glyphs;
+    if(!serialized.bytes){
+      result.error = serialized.error.empty() ? "Picture encoding failed" : serialized.error;
+      return result;
+    }
+    auto mutable_encoded=std::make_shared<EncodedPicture>();
+    mutable_encoded->serialized=std::move(serialized);
+    const auto base64_started = base::TimeTicks::Now();
+    mutable_encoded->base64 = base::Base64Encode(UNSAFE_BUFFERS(
+        base::span(mutable_encoded->serialized.bytes->bytes(),
+                   mutable_encoded->serialized.bytes->size())));
+    result.base64_ms = (base::TimeTicks::Now() - base64_started).InMillisecondsF();
+    result.byte_size = mutable_encoded->serialized.bytes->size();
+    auto digest=crypto::SHA256Hash(UNSAFE_BUFFERS(base::span<const uint8_t>(
+        static_cast<const uint8_t*>(mutable_encoded->serialized.bytes->bytes()),
+        mutable_encoded->serialized.bytes->size())));
+    mutable_encoded->resource_id=base::HexEncodeLower(base::span(digest));
+    encoded=mutable_encoded;
+    StoreCachedEncoding(host,record.recording_key,encoded);
+  } else {
+    result.byte_size = encoded->serialized.bytes->size();
+    result.reused = true;
   }
-  const auto base64_started = base::TimeTicks::Now();
-  result.skp = base::Base64Encode(UNSAFE_BUFFERS(
-      base::span(encoded.bytes->bytes(), encoded.bytes->size())));
-  result.base64_ms = (base::TimeTicks::Now() - base64_started).InMillisecondsF();
-  result.byte_size = encoded.bytes->size();
+  result.portable_ms = encoded->serialized.portable_ms;
+  result.glyph_collection_ms = encoded->serialized.glyph_collection_ms;
+  result.serialize_ms = encoded->serialized.serialize_ms;
+  result.font_ms = encoded->serialized.font_ms;
+  result.image_ms = encoded->serialized.image_ms;
+  result.bitmap_glyphs = encoded->serialized.bitmap_glyphs;
+  result.skp = encoded->base64;
+  result.resource_id = encoded->resource_id;
   return result;
 }
 
@@ -83,7 +111,7 @@ base::DictValue EncodeResults(Snapshot snapshot,
   result.Set("recordingThread",snapshot.recording_thread);
   result.Set("encodingThread",base::NumberToString(base::PlatformThread::CurrentId().raw()));
   if(!snapshot.error.empty()){result.Set("error",snapshot.error);return result;}
-  base::ListValue resources;size_t total=0;std::set<std::string> threads;
+  base::ListValue resources;size_t total=0;std::set<std::string> threads;int cached_layers=0;
   for(auto& encoded:layers){
     portable_ms += encoded.portable_ms;glyph_collection_ms += encoded.glyph_collection_ms;
     serialize_ms += encoded.serialize_ms;font_ms += encoded.font_ms;image_ms += encoded.image_ms;
@@ -98,7 +126,8 @@ base::DictValue EncodeResults(Snapshot snapshot,
     resource.Set("localId",encoded.local_id);
     resource.Set("bitmapGlyphs",static_cast<int>(encoded.bitmap_glyphs));
     resource.Set("quadScale",encoded.quad_scale);
-    resource.Set("skp",std::move(encoded.skp));
+    resource.Set("resourceId",encoded.resource_id);
+    if(encoded.reused){cached_layers++;}else resource.Set("skp",std::move(encoded.skp));
     resource.Set("width",encoded.width);
     resource.Set("height",encoded.height);
     threads.insert(encoded.thread);
@@ -107,10 +136,13 @@ base::DictValue EncodeResults(Snapshot snapshot,
   result.Set("resources",std::move(resources));
   base::DictValue timing;
   timing.Set("recordingMs",snapshot.recording_ms);timing.Set("portableMs",portable_ms);
+  timing.Set("recordingCacheHits",snapshot.recording_cache_hits);
+  timing.Set("recordingCacheMisses",snapshot.recording_cache_misses);
   timing.Set("glyphCollectionMs",glyph_collection_ms);timing.Set("serializeMs",serialize_ms);
   timing.Set("fontMs",font_ms);timing.Set("imageMs",image_ms);timing.Set("base64Ms",base64_ms);
   timing.Set("parallelLayers",static_cast<int>(layers.size()));
   timing.Set("encodingThreads",static_cast<int>(threads.size()));
+  timing.Set("cachedLayers",cached_layers);
   timing.Set("encodeTotalMs",(base::TimeTicks::Now() - started).InMillisecondsF());
   result.Set("timing",std::move(timing));
   return result;
@@ -120,7 +152,7 @@ bool RequestCapture(int host,std::string id,base::OnceCallback<void(base::DictVa
   auto& state=GetState();
   {base::AutoLock lock(state.lock);
     if(state.requests.size()>=4||state.requests.contains(host))return false;
-    state.requests.emplace(host,std::make_unique<CaptureRequest>(id,std::move(reply)));
+    state.requests.emplace(host,std::make_unique<CaptureRequest>(host,id,std::move(reply)));
     state.pending.fetch_add(1,std::memory_order_relaxed);
   }
   base::ThreadPool::PostDelayedTask(FROM_HERE,{},base::BindOnce([](int host,std::string id){
@@ -140,6 +172,10 @@ std::unique_ptr<CaptureRequest> TakeCapture(int host){
   if(it==state.requests.end())return nullptr;
   auto result=std::move(it->second);state.requests.erase(it);state.pending.fetch_sub(1,std::memory_order_relaxed);return result;
 }
+uint64_t NewRecordingKey(){
+  auto key=NextRecordingKey().fetch_add(1,std::memory_order_relaxed);
+  return key?key:NextRecordingKey().fetch_add(1,std::memory_order_relaxed);
+}
 void EncodeAndReply(Snapshot snapshot,std::unique_ptr<CaptureRequest> request){
   if(snapshot.records.empty()){
     base::ThreadPool::PostTask(FROM_HERE,{base::MayBlock(),base::TaskPriority::USER_VISIBLE},
@@ -149,6 +185,7 @@ void EncodeAndReply(Snapshot snapshot,std::unique_ptr<CaptureRequest> request){
     return;
   }
   auto records=std::move(snapshot.records);
+  const int host=request->host;
   auto done = base::BarrierCallback<EncodedLayer>(records.size(),
       base::BindOnce([](Snapshot snapshot,std::unique_ptr<CaptureRequest> request,
                         std::vector<EncodedLayer> layers){
@@ -157,14 +194,30 @@ void EncodeAndReply(Snapshot snapshot,std::unique_ptr<CaptureRequest> request){
       },std::move(snapshot),std::move(request)));
   for(size_t index=0;index<records.size();index++){
     auto callback=done;
-    auto task=base::BindOnce([](size_t index,LayerRecord record,
+    auto task=base::BindOnce([](int host,size_t index,LayerRecord record,
                                 base::RepeatingCallback<void(EncodedLayer)> done){
-      done.Run(EncodeLayer(index,std::move(record)));
-    },index,std::move(records[index]),std::move(callback));
+      done.Run(EncodeLayer(host,index,std::move(record)));
+    },host,index,std::move(records[index]),std::move(callback));
     if(!base::ThreadPool::PostTask(FROM_HERE,
           {base::MayBlock(),base::TaskPriority::USER_VISIBLE},std::move(task))){
       EncodedLayer failed;failed.index=index;failed.error="Encoding task rejected";done.Run(std::move(failed));
     }
   }
+}
+
+std::shared_ptr<const EncodedPicture> LookupCachedEncoding(int host,
+                                                            uint64_t key) {
+  auto& state=GetState();base::AutoLock lock(state.lock);
+  auto host_it=state.encodings.find(host);if(host_it==state.encodings.end())return nullptr;
+  auto it=host_it->second.find(key);return it==host_it->second.end()?nullptr:it->second;
+}
+
+void StoreCachedEncoding(int host, uint64_t key,
+                         std::shared_ptr<const EncodedPicture> encoded) {
+  if(!key||!encoded)return;
+  auto& state=GetState();base::AutoLock lock(state.lock);
+  auto& cache=state.encodings[host];
+  if(cache.size()>=256&&!cache.contains(key))cache.erase(cache.begin());
+  cache[key]=std::move(encoded);
 }
 }

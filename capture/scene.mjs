@@ -2,8 +2,12 @@ import {createHash} from 'node:crypto';
 const sameNamespace=(a,b)=>Array.isArray(a)&&a.length===2&&a.every((n,i)=>Number.isSafeInteger(n)&&n>=0&&n===b[i]);
 const finite=(a,count)=>Array.isArray(a)&&a.length===count&&a.every(n=>Number.isFinite(n)&&Math.abs(n)<1e7);
 export class SceneMapper {
- constructor(){this.entries=new Map();this.revision=0;}
- reset(){this.entries.clear();this.revision=0;}
+ constructor(){this.entries=new Map();this.resources=new Map();this.resourceBytes=0;this.revision=0;}
+ reset(){this.entries.clear();this.resources.clear();this.resourceBytes=0;this.revision=0;}
+ remember(resourceId,bytes){
+  const old=this.resources.get(resourceId);if(old){this.resourceBytes-=old.length;}
+  this.resources.set(resourceId,bytes);this.resourceBytes+=bytes.length;
+ }
  map(capture,pageEpoch){
   const viz=capture.viz;
   if(!viz||viz.captureId!==capture.captureId||!Array.isArray(viz.namespace)||viz.namespace.length!==2||
@@ -36,8 +40,17 @@ export class SceneMapper {
      const logical=`${pageEpoch}/${capture.producer}/${viz.namespace.join(':')}/${r.localId}`;
      let entry=entries.get(logical);
      if(!entry){
-      const bytes=Buffer.from(r.skp,'base64');if(bytes.length<28||bytes.length>16*1024*1024||bytes.subarray(0,8).toString()!=='skiapict')throw new Error('Invalid native SKP');
-      const hash=createHash('sha256').update(bytes).digest('hex');const old=this.entries.get(logical);
+      let bytes,hash=r.resourceId;
+      if(typeof r.skp==='string'){
+       bytes=Buffer.from(r.skp,'base64');if(bytes.length<28||bytes.length>16*1024*1024||bytes.subarray(0,8).toString()!=='skiapict')throw new Error('Invalid native SKP');
+       const observed=createHash('sha256').update(bytes).digest('hex');
+       if(hash!==undefined&&hash!==observed)throw new Error('Native resource checksum mismatch');
+       hash=observed;this.remember(hash,bytes);
+      }else{
+       if(typeof hash!=='string'||!/^[0-9a-f]{64}$/.test(hash))throw new Error('Incremental native resource has no checksum');
+       bytes=this.resources.get(hash);if(!bytes)throw new Error('Incremental native resource cache miss');
+      }
+      const old=this.entries.get(logical);
       entry={logical,resourceId:hash,revision:old?.resourceId===hash?old.revision:++this.revision};entries.set(logical,entry);payloads.set(hash,bytes);
      }
      Object.assign(out,entry,{quadScale:r.quadScale,width:r.width,height:r.height,
@@ -49,6 +62,10 @@ export class SceneMapper {
   }
   const released=[...this.entries.keys()].filter(k=>!entries.has(k));this.entries=entries;
   if([...payloads.values()].reduce((n,b)=>n+b.length,0)>64*1024*1024)throw new Error('Scene resource budget exceeded');
+  for(const [id,bytes] of this.resources){
+   if(this.resourceBytes<=128*1024*1024)break;
+   if(payloads.has(id))continue;this.resources.delete(id);this.resourceBytes-=bytes.length;
+  }
   return {scene:{rootPass:passes.at(-1).id,passes},payloads,released,mappings:[...entries.values()],
     native:{captureId:capture.captureId,producer:capture.producer,namespace:viz.namespace,frameToken:capture.frameToken,sourceFrame:capture.sourceFrame,bitmapGlyphs:capture.resources.reduce((n,r)=>n+(r.bitmapGlyphs??0),0),timing:capture.timing??null}};
  }

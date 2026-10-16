@@ -1,31 +1,48 @@
 #ifndef COMPONENTS_REMOTE_PAINT_CAPTURE_STATE_H_
 #define COMPONENTS_REMOTE_PAINT_CAPTURE_STATE_H_
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "components/remote_paint/serializer.h"
 #include "third_party/skia/include/core/SkPicture.h"
 namespace remote_paint {
+struct EncodedPicture {
+  SerializedPicture serialized;
+  std::string base64;
+  std::string resource_id;
+};
 struct LayerRecord {
   int local_id;
   float quad_scale;
   sk_sp<const SkPicture> picture;
+  uint64_t recording_key = 0;
+  std::shared_ptr<const EncodedPicture> encoded;
 };
 struct Snapshot {
   std::string capture_id, producer, recording_thread, error;
   uint32_t frame_token = 0;
   int source_frame = 0;
   double recording_ms = 0;
+  int recording_cache_hits = 0;
+  int recording_cache_misses = 0;
   std::vector<LayerRecord> records;
 };
 struct CaptureRequest {
+  int host;
   std::string capture_id;
   base::OnceCallback<void(base::DictValue)> reply;
 };
 bool RequestCapture(int host, std::string capture_id,
                     base::OnceCallback<void(base::DictValue)> reply);
 std::unique_ptr<CaptureRequest> TakeCapture(int host);
+uint64_t NewRecordingKey();
+std::shared_ptr<const EncodedPicture> LookupCachedEncoding(int host,
+                                                            uint64_t key);
+void StoreCachedEncoding(int host, uint64_t key,
+                         std::shared_ptr<const EncodedPicture> encoded);
 void EncodeAndReply(Snapshot snapshot, std::unique_ptr<CaptureRequest> request);
 }
 #endif
