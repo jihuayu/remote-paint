@@ -123,7 +123,9 @@ TEST(RemotePaintSerializer, IsolationAnalysisPreservesDestructiveBlendSemantics)
   auto source = recorder.finishRecordingAsPicture();
   EXPECT_TRUE(SerializePicture(*source).requires_isolation);
   canvas = recorder.beginRecording(100, 100);
-  canvas->saveLayer(nullptr, nullptr);
+  // SkPicture may elide a redundant null-paint layer. A Src layer restore
+  // affects its destination and must retain isolation after normalization.
+  canvas->saveLayer(nullptr, &paint);
   canvas->drawPicture(safe);
   canvas->restore();
   auto layer = recorder.finishRecordingAsPicture();
