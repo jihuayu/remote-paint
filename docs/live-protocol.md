@@ -76,6 +76,7 @@ explicit compatibility modes. The measurements above predate this upgrade.
 The capture default is now 1000/60 ms. Twelve quiet BeginFrame ACKs reduce the
 clock to 100 ms polls, undamaged frames skip encoding (with a one-second
 resynchronization heartbeat), input wakes immediately, and no Viewer pauses
-the clock after bootstrap. Safe pictures avoid saveLayer; conservative native
+the clock once the first Viewer has connected. Bootstrap keeps frames available
+for source-page and Agent setup before that first connection. Safe pictures avoid saveLayer; conservative native
 metadata preserves isolation for destructive operations. Immutable picture
 raster and unchanged render passes are cached independently.

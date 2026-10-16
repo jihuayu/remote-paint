@@ -16,7 +16,7 @@ flowchart LR
 
 | 项目 | 实现 | 验证入口 |
 | --- | --- | --- |
-| 1 自适应 BeginFrame | 活动时约 60 Hz；12 次无损伤后降至 10 Hz；输入立即唤醒；无 Viewer 停止外部时钟 | `tests/begin-frame.test.mjs`、Linux BeginFrame/live 验收 |
+| 1 自适应 BeginFrame | 活动时约 60 Hz；12 次无损伤后降至 10 Hz；输入立即唤醒；启动阶段保留网页准备时钟；首次连接后，无 Viewer 停止外部时钟 | `tests/begin-frame.test.mjs`、Linux BeginFrame/live 验收 |
 | 2 输入关键路径 | CDP 输入接受后立即请求采集；可选的乐观 DOM 读并行执行；输入序号在采集开始采样 | `tests/input.test.mjs`、真实输入/延迟验收 |
 | 3 Viewer 增量 | 未变化 pass 复用；每个不可变 SKP 栅格化一次；8M 像素 LRU；依赖变化向父 pass 传播 | `tests/scene-renderer.test.mjs`、真实 Viewer |
 | 4 选择性隔离 | C++ 保守分析 clear/Src/自定义 blend/saveLayer 等操作；安全 picture 可直接绘制，破坏性 picture 保留透明隔离 | serializer native tests、透明 clear/嵌套 alpha 回归 |
