@@ -5,10 +5,11 @@ export const nativeToken=()=>randomBytes(32).toString('hex');
 // One broker owns one page target. The secret is evaluated only in a CDP
 // isolated world; source JavaScript never receives it. No disk-path API.
 export class NativeCapture extends EventEmitter {
-  constructor(page,{token,interval=120,viz,frameDriver,captureOnInput=true}={}) {
+  constructor(page,{token,interval=1000/60,viz,frameDriver,captureOnInput=true}={}) {
     super();this.page=page;this.token=token;this.interval=interval;this.viz=viz;
     this.frameDriver=frameDriver;this.nextCaptureAt=0;this.captureOnInput=captureOnInput;this.urgent=false;
-    this.onFrame=()=>{if(this.urgent||performance.now()>=this.nextCaptureAt)void this.tick();};
+    this.lastCaptureAt=0;
+    this.onFrame=result=>{const now=performance.now();if(this.urgent||((result?.hasDamage!==false||now-this.lastCaptureAt>=1000)&&now>=this.nextCaptureAt))void this.tick();};
     this.viewers=0;this.running=false;this.stopped=false;this.count=0;this.generation=0;
   }
   async initialize() {
@@ -65,7 +66,7 @@ export class NativeCapture extends EventEmitter {
   async tick() {
     if(this.running||!this.viewers||this.stopped)return;
     clearTimeout(this.timer);this.timer=undefined;this.urgent=false;
-    this.running=true;const start=performance.now(),context=this.sampleContext?.();
+    this.running=true;const start=performance.now(),context=this.sampleContext?.();this.lastCaptureAt=start;
     try {const value=await this.capture();if(this.viewers&&!this.stopped)this.emit('capture',value,context);}
     catch(error){if(!this.stopped)this.emit('captureError',error);}
     finally {this.running=false;this.nextCaptureAt=Math.max(start+this.interval,performance.now());if(!this.frameDriver&&this.viewers&&!this.stopped)this.timer=setTimeout(()=>void this.tick(),this.urgent?0:Math.max(0,this.interval-(performance.now()-start)));}

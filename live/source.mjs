@@ -7,7 +7,7 @@ import {startVizIPC} from '../capture/viz-ipc.mjs';
 import {SceneMapper} from '../capture/scene.mjs';
 import {NativeBroker} from '../native/broker.mjs';
 import {validateScene} from '../protocol/live-wire.mjs';
-export async function startLiveSource({url,executablePath=process.env.REMOTE_PAINT_CHROMIUM,viewport={width:960,height:640},interval=120,beginFrames=process.platform==='linux',captureOnInput=true}={}){
+export async function startLiveSource({url,executablePath=process.env.REMOTE_PAINT_CHROMIUM,viewport={width:960,height:640},interval=1000/60,beginFrames=process.platform==='linux',captureOnInput=true}={}){
  if(!executablePath)throw new Error('Set REMOTE_PAINT_CHROMIUM to the custom compiled headless_shell (npm run native:chromium)');
  let browser,capture,frameDriver,broker;
  if(process.env.REMOTE_PAINT_DATA_PLANE!=='node')broker=new NativeBroker();

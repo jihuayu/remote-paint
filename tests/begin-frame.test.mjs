@@ -63,3 +63,20 @@ test('input-driven capture requests an immediate BeginFrame and retains input ar
  capture.setDemand(0);finish({});await new Promise(setImmediate);frameDriver.emit('frame');assert.equal(calls,3);
  await capture.close();
 });
+
+test('quiet frames reduce clock frequency and input wakes immediately without overlap',async()=>{
+ let damage=false,calls=0,active=0,maxActive=0;
+ const driver=new BeginFrameDriver({send:async()=>{calls++;active++;maxActive=Math.max(maxActive,active);await Promise.resolve();active--;return {hasDamage:damage};},detach:async()=>{}},{interval:10,idleInterval:100,quietFrames:2});
+ await driver.step();await driver.step();assert.equal(driver.stats.cadence,'idle');
+ damage=true;await driver.requestNow();assert.equal(calls,3);assert.equal(driver.stats.cadence,'active');assert.equal(maxActive,1);
+ await driver.close();
+});
+test('undamaged frame ACKs skip encoding while an input still forces a capture',async()=>{
+ const frameDriver=new EventEmitter();frameDriver.requestNow=async()=>{};
+ const capture=new NativeCapture(null,{interval:0,frameDriver});frameDriver.on('frame',capture.onFrame);
+ let calls=0;capture.capture=async()=>{calls++;return {};};capture.setDemand(1);await new Promise(setImmediate);
+ for(let i=0;i<20;i++)frameDriver.emit('frame',{hasDamage:false});assert.equal(calls,1);
+ capture.requestCapture();frameDriver.emit('frame',{hasDamage:false});await new Promise(setImmediate);assert.equal(calls,2);
+ frameDriver.emit('frame',{hasDamage:true});await new Promise(setImmediate);assert.equal(calls,3);
+ await capture.close();
+});
