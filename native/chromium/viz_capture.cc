@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "base/containers/span.h"
 #include <cstring>
+#include <cstdint>
 #include <set>
 #include <optional>
 #include <sys/socket.h>
@@ -99,6 +100,20 @@ base::ListValue Matrix(const gfx::Transform& t){
   for(int row:{0,1,3})for(int col:{0,1,3})values.Append(t.rc(row,col));
   return values;
 }
+class BinaryWriter {
+ public:
+  void Bytes(std::string_view value){bytes.append(value);}
+  void U8(uint8_t value){bytes.push_back(static_cast<char>(value));}
+  void U32(uint32_t value){bytes.push_back(static_cast<char>(value>>24));bytes.push_back(static_cast<char>(value>>16));bytes.push_back(static_cast<char>(value>>8));bytes.push_back(static_cast<char>(value));}
+  void I32(int32_t value){U32(static_cast<uint32_t>(value));}
+  void F64(double value){uint64_t bits;std::memcpy(&bits,&value,sizeof(bits));for(int shift=56;shift>=0;shift-=8)bytes.push_back(static_cast<char>(bits>>shift));}
+  void String(std::string_view value){U32(value.size());bytes.append(value);}
+  void SetU32(size_t offset,uint32_t value){bytes[offset]=static_cast<char>(value>>24);bytes[offset+1]=static_cast<char>(value>>16);bytes[offset+2]=static_cast<char>(value>>8);bytes[offset+3]=static_cast<char>(value);}
+  size_t size() const{return bytes.size();}
+  std::string bytes;
+};
+void WriteRect(BinaryWriter* wire,const gfx::Rect& rect){wire->F64(rect.x());wire->F64(rect.y());wire->F64(rect.right());wire->F64(rect.bottom());}
+void WriteMatrix(BinaryWriter* wire,const gfx::Transform& transform){for(int row:{0,1,3})for(int col:{0,1,3})wire->F64(transform.rc(row,col));}
 void WriteScene(std::string path,std::string bytes){
   static base::NoDestructor<VizSocket> socket(path);
   socket->Send(bytes);
@@ -114,12 +129,10 @@ void EmitVizScene(const viz::AggregatedFrame& frame,const std::string& id,std::p
   if(seen->contains(id))return;
   if(seen->size()>=256)seen->clear();seen->insert(id);
   if(pending_writes.fetch_add(1)>=2){pending_writes.fetch_sub(1);return;}
-  base::DictValue result;result.Set("type","VizScene");result.Set("captureId",id);
-  result.Set("namespace",Numbers({double(ns.first),double(ns.second)}));
-  base::ListValue passes;size_t count=0;std::string error;
+  BinaryWriter wire;wire.Bytes("RVB2");wire.U8(1);wire.U8(1);wire.String(id);wire.U32(ns.first);wire.U32(ns.second);
+  const size_t pass_count_offset=wire.size();wire.U32(0);uint32_t emitted_passes=0;size_t count=0;std::string error;
   for(const auto& pass:frame.render_pass_list){
-    base::DictValue output;output.Set("id",base::NumberToString(pass->id.GetUnsafeValue()));output.Set("output",Rect(pass->output_rect));
-    base::ListValue quads;
+    wire.String(base::NumberToString(pass->id.GetUnsafeValue()));WriteRect(&wire,pass->output_rect);const size_t quad_count_offset=wire.size();wire.U32(0);uint32_t emitted_quads=0;
     // Viz order is front to back. Keep it explicit; the Viewer reverses each
     // pass for painter's order and applies the actual quad clip/transform.
     for(const auto* quad:pass->quad_list){
@@ -128,41 +141,30 @@ void EmitVizScene(const viz::AggregatedFrame& frame,const std::string& id,std::p
       if(!sqs.quad_to_target_transform.Is2dTransform() || sqs.sorting_context_id){error="Unsupported Viz 3D transform or sorting context";break;}
       if(sqs.mask_filter_info.HasGradientMask()){error="Unsupported Viz gradient mask";break;}
       if(sqs.blend_mode!=SkBlendMode::kSrcOver){error="Unsupported Viz blend mode "+base::NumberToString(static_cast<int>(sqs.blend_mode));break;}
-      base::DictValue q;q.Set("localId",static_cast<double>(sqs.layer_id));
-      q.Set("namespace",Numbers({double(sqs.layer_namespace_id.first),double(sqs.layer_namespace_id.second)}));
-      q.Set("matrix",Matrix(sqs.quad_to_target_transform));q.Set("visible",Rect(quad->visible_rect));q.Set("rect",Rect(quad->rect));
-      q.Set("contentOrigin",Numbers({double(sqs.quad_layer_rect.x()),double(sqs.quad_layer_rect.y())}));
-      q.Set("opacity",sqs.opacity);if(sqs.clip_rect)q.Set("clip",Rect(*sqs.clip_rect));
+      uint8_t kind=0;const viz::AggregatedRenderPassDrawQuad* child=nullptr;const viz::SolidColorDrawQuad* solid=nullptr;
+      if(quad->material==viz::DrawQuad::Material::kSolidColor){kind=1;solid=viz::SolidColorDrawQuad::MaterialCast(quad);}
+      else if(quad->material==viz::DrawQuad::Material::kAggregatedRenderPass){
+        child=viz::AggregatedRenderPassDrawQuad::MaterialCast(quad);
+        if(!child->filters.IsEmpty()||!child->backdrop_filters.IsEmpty()||child->resource_id!=viz::kInvalidResourceId){error="Unsupported Viz filtered/masked render pass";break;}kind=2;
+      }else if(quad->material==viz::DrawQuad::Material::kTiledContent || quad->material==viz::DrawQuad::Material::kTextureContent || quad->material==viz::DrawQuad::Material::kPictureContent)kind=3;
+      else{error="Unsupported Viz quad material";break;}
+      wire.U8(kind);wire.I32(sqs.layer_id);wire.U32(sqs.layer_namespace_id.first);wire.U32(sqs.layer_namespace_id.second);WriteMatrix(&wire,sqs.quad_to_target_transform);WriteRect(&wire,quad->visible_rect);WriteRect(&wire,quad->rect);wire.F64(sqs.quad_layer_rect.x());wire.F64(sqs.quad_layer_rect.y());wire.F64(sqs.opacity);wire.U8(sqs.clip_rect?1:0);if(sqs.clip_rect)WriteRect(&wire,*sqs.clip_rect);
       // Like SoftwareRenderer::SetClipRRect, this clip is in target space,
       // before the quad transform. Composited carets inherit input radii.
       if(!sqs.mask_filter_info.IsEmpty()){
         const auto rounded=static_cast<SkRRect>(sqs.mask_filter_info.rounded_corner_bounds());
         const auto bounds=rounded.rect();
-        auto clip=Numbers({bounds.left(),bounds.top(),bounds.right(),bounds.bottom()});
-        for(int corner=0;corner<4;corner++){
-          const auto radius=rounded.radii(static_cast<SkRRect::Corner>(corner));
-          clip.Append(radius.x());clip.Append(radius.y());
-        }
-        q.Set("roundedClip",std::move(clip));
-      }
-      q.Set("vizResource",static_cast<double>(quad->resource_id.GetUnsafeValue()));
-      if(quad->material==viz::DrawQuad::Material::kSolidColor){
-        q.Set("kind","solid");const auto color=viz::SolidColorDrawQuad::MaterialCast(quad)->color;
-        q.Set("color",Numbers({color.fR,color.fG,color.fB,color.fA}));
-      }else if(quad->material==viz::DrawQuad::Material::kAggregatedRenderPass){
-        const auto* child=viz::AggregatedRenderPassDrawQuad::MaterialCast(quad);
-        if(!child->filters.IsEmpty()||!child->backdrop_filters.IsEmpty()||child->resource_id!=viz::kInvalidResourceId){error="Unsupported Viz filtered/masked render pass";break;}
-        q.Set("kind","pass");q.Set("passId",base::NumberToString(child->render_pass_id.GetUnsafeValue()));
-      }else if(quad->material==viz::DrawQuad::Material::kTiledContent || quad->material==viz::DrawQuad::Material::kTextureContent || quad->material==viz::DrawQuad::Material::kPictureContent){q.Set("kind","picture");}
-      else{error="Unsupported Viz quad material";break;}
-      quads.Append(std::move(q));
+        wire.U8(1);wire.F64(bounds.left());wire.F64(bounds.top());wire.F64(bounds.right());wire.F64(bounds.bottom());for(int corner=0;corner<4;corner++){const auto radius=rounded.radii(static_cast<SkRRect::Corner>(corner));wire.F64(radius.x());wire.F64(radius.y());}
+      }else wire.U8(0);wire.U32(quad->resource_id.GetUnsafeValue());
+      if(kind==1){const auto color=solid->color;wire.F64(color.fR);wire.F64(color.fG);wire.F64(color.fB);wire.F64(color.fA);}
+      else if(kind==2)wire.String(base::NumberToString(child->render_pass_id.GetUnsafeValue()));
+      ++emitted_quads;wire.SetU32(quad_count_offset,emitted_quads);
     }
-    output.Set("quads",std::move(quads));passes.Append(std::move(output));
+    ++emitted_passes;wire.SetU32(pass_count_offset,emitted_passes);
     if(!error.empty())break;
   }
-  result.Set("passes",std::move(passes));if(!error.empty())result.Set("error",error);
-  auto bytes=base::WriteJson(result);
-  if(!bytes||bytes->size()>256*1024){pending_writes.fetch_sub(1);return;}
-  base::ThreadPool::PostTask(FROM_HERE,{base::MayBlock(),base::TaskPriority::USER_VISIBLE},base::BindOnce(&WriteScene,**endpoint,std::move(*bytes)));
+  wire.U8(error.empty()?0:1);if(!error.empty())wire.String(error);
+  if(wire.size()>256*1024){pending_writes.fetch_sub(1);return;}
+  base::ThreadPool::PostTask(FROM_HERE,{base::MayBlock(),base::TaskPriority::USER_VISIBLE},base::BindOnce(&WriteScene,**endpoint,std::move(wire.bytes)));
 }
 }

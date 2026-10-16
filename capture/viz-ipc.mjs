@@ -1,6 +1,7 @@
 import net from 'node:net';
 import {mkdtemp,chmod,rm} from 'node:fs/promises';
 import {join} from 'node:path';
+import {decodeVizScene,isBinaryVizScene} from './viz-wire.mjs';
 const MAX=256*1024;
 export async function startVizIPC(){
  const directory=await mkdtemp('/tmp/remote-paint-');await chmod(directory,0o700);
@@ -22,7 +23,7 @@ export async function startVizIPC(){
     if(length===undefined||bytes.length<length+4)return;
     const packet=bytes.subarray(4,length+4);bytes=bytes.subarray(length+4);length=undefined;
     try{
-     const scene=JSON.parse(packet.toString('utf8'));
+     const scene=isBinaryVizScene(packet)?decodeVizScene(packet):JSON.parse(packet.toString('utf8'));
      if(scene.type!=='VizScene'||typeof scene.captureId!=='string')throw new Error('Invalid Viz message');
      const waiter=pending.get(scene.captureId);
      if(!waiter){stats.rejected++;continue;}
