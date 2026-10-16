@@ -1,0 +1,15 @@
+FROM remote-paint-build:ci
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    gcc-aarch64-linux-gnu g++-aarch64-linux-gnu zstd \
+    && rm -rf /var/lib/apt/lists/*
+ENV RUSTUP_HOME=/opt/rustup CARGO_HOME=/opt/cargo
+ENV PATH=/opt/cargo/bin:/opt/depot_tools:$PATH
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh \
+    && sh /tmp/rustup.sh -y --profile minimal --default-toolchain 1.96.1 \
+    && rustup target add aarch64-unknown-linux-gnu x86_64-unknown-linux-gnu \
+    && rm /tmp/rustup.sh
+RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /opt/depot_tools \
+    && git -C /opt/depot_tools checkout 382c208a9973e1a6c0867b6d8664dc6dc9116e30
+ENV DEPOT_TOOLS_UPDATE=0 DEPOT_TOOLS_METRICS=0
+RUN git config --global --add safe.directory /project
+WORKDIR /project

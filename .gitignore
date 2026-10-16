@@ -4,3 +4,7 @@ native/bin/
 .DS_Store
 native/broker/target/
 __pycache__/
+build/
+packages/
+smoke-artifacts/
+chromium-build.log

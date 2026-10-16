@@ -12,6 +12,10 @@
 
 先执行 `npm run native:broker` 构建当前宿主机的 Broker。Linux 版本必须单独构建为 AArch64 ELF，通过 `REMOTE_PAINT_BROKER` 指定；运行容器需要同时映射 UI 4176 和原生 WS 4177。`REMOTE_PAINT_DATA_PLANE=node` 可切换兼容路径，`?mainThread` 可切换主线程 Viewer。
 
+## Linux 双架构安装包
+
+公开仓库的 [Linux packages Actions](https://github.com/jihuayu/remote-paint/actions/workflows/linux-packages.yml) 支持手动运行和 `v*` 标签触发，分别编译 ARM64、x86_64，并把包含定制 Chromium、Rust Broker、Node.js 和 Viewer 的完整包上传到运行页面的 Artifacts。校验、启动、缓存续编和系统依赖见 [Linux 安装包说明](docs/linux-packages.md)。工作流是否通过与实际下载产物以对应运行页面为准。
+
 ## 升级前验收基线
 
 - **3 字体和图片**：真实动态页面新增中文、罕见字、Emoji；原 glyph/位置和字体子集重放，bitmap 字形保留源像素，认证/blob 图片内部像素一致。

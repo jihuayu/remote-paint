@@ -40,3 +40,21 @@ the software-compositing acceptance scope.
 `BUILD.json`, `browser/remote-paint-build.json`, and `SHA256SUMS` identify the
 source revision and actual browser, Broker and Node executables. A successful
 build alone is separate from the Linux-to-Mac latency acceptance results.
+
+## GitHub Actions builds
+
+The public workflow uses two independent x86_64 build runners to cross-build
+ARM64 and build x86_64 natively with Debian 12 toolchains. Extracted packages
+then receive serializer and native browser smoke checks on their matching
+`ubuntu-24.04-arm` / `ubuntu-24.04` runners. The package artifacts remain
+available if a later smoke test fails; check the complete run result.
+
+Start **Linux packages → Run workflow**, or push a `v*` tag. Artifacts are kept
+for 30 days. A fresh patched Chromium build can exceed a hosted runner's
+six-hour job limit. Compilation stops at 245 minutes to allow saving the
+architecture-specific Ninja output through `actions/cache`, even on failure.
+Rerun the workflow to continue from that cache; incomplete builds never produce
+a release package. The next run shallow-syncs the same pinned sources and
+normalizes their timestamps before restoring the incremental build graph.
+Caches are subject to GitHub quota/eviction and are separate from this Mac's
+persistent build volume, which the workflow does not access or modify.
