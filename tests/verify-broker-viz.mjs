@@ -14,6 +14,7 @@ try{
  const [one,two]=await Promise.all([first,second]);assert.deepEqual(one,{captureId:'first',native:true});assert.equal(two.native,true);
  const mapped=await broker.map({captureId:'first',producer:'contract',resources:[],viz:one},{epoch:1,viewportVersion:1,viewport:{cssWidth:100,cssHeight:100,deviceScaleFactor:1}});assert.equal(mapped.scene.passes[0].quads[0].kind,'solid');
  const expected=decodeVizScene(a.subarray(4));assert.deepEqual(mapped.scene.passes[0].quads[0].color,expected.passes[0].quads[0].color);
+ assert.equal(decodeVizScene(packet('failure-decode','native error').subarray(4)).error,'native error');
  const failure=viz.waitFor('failed');failure.catch(()=>{});await failure.registered;socket.write(packet('failed','Unsupported Viz material'));await assert.rejects(failure,/Unsupported Viz material/);
  socket.write(packet('unknown'));await new Promise(resolve=>setTimeout(resolve,30));assert.equal(viz.stats.received,3);assert.ok(viz.stats.rejected>=1);
  for(let i=0;i<10;i++)assert.throws(()=>decodeVizScene(a.subarray(4,10+i)),/Truncated|Invalid/);

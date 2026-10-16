@@ -21,5 +21,6 @@ export class NativeBroker extends EventEmitter {
   return {...result.metadata,scene:result.scene,brokerSerial:result.serial,payloads:new Map(result.resources.map(item=>[item.id,{length:item.bytes,byteLength:item.bytes}]))};
  }
  reset(){return this.request('reset');}
+ resetScene(){return this.request('resetScene');}
  async close(){if(this.closed)return;this.closed=true;this.child.stdin.end();await new Promise(resolve=>{if(this.child.exitCode!==null)return resolve();this.child.once('exit',resolve);const timer=setTimeout(()=>this.child.kill(),2000);timer.unref();});}
 }

@@ -11,6 +11,7 @@ try{
  const next=await broker.map(incremental,tags);assert.deepEqual(next.mappings,actual.mappings);assert.equal(next.scene.passes[0].quads[0].matrix[5],-20);
  const bad=structuredClone(native);bad.resources[0].resourceId='0'.repeat(64);await assert.rejects(broker.map(bad,tags),/checksum mismatch/);
  bad.resources[0]=native.resources[0];bad.viz.passes[0].quads[0].namespace=[3,4];await assert.rejects(broker.map(bad,tags),/Child Surface/);
+ await broker.resetScene();const epoch2=await broker.map(incremental,{...tags,epoch:2});assert.equal(epoch2.pageEpoch,2);assert.deepEqual(epoch2.mappings.map(m=>m.resourceId),actual.mappings.map(m=>m.resourceId));
  await broker.reset();await assert.rejects(broker.map(incremental,tags),/cache miss/);
  console.log('Native mapper: JS parity, incremental references, checksum, namespace and reset verified');
 }finally{await broker.close();}

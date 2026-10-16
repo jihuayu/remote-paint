@@ -19,11 +19,11 @@ export function decodeVizScene(input) {
   let offset = 6;
   const state = {get left(){return bytes.byteLength-offset;}, take(n){const out=bytes.subarray(offset,offset+n);offset+=n;return out;}, u8(){if(this.left<1)throw new Error('Truncated Viz frame');return bytes[offset++];}, u32(){if(this.left<4)throw new Error('Truncated Viz frame');const n=view.getUint32(offset);offset+=4;return n;}, i32(){if(this.left<4)throw new Error('Truncated Viz frame');const n=view.getInt32(offset);offset+=4;return n;}, f64(){if(this.left<8)throw new Error('Truncated Viz frame');const n=view.getFloat64(offset);offset+=8;if(!Number.isFinite(n))throw new Error('Invalid Viz number');return n;}};
   const captureId=string(bytes,state,128), namespace=[state.u32(),state.u32()], passCount=state.u32();
-  if(!passCount||passCount>64)throw new Error('Invalid Viz pass count');
-  const passes=[];
+  if(passCount>64)throw new Error('Invalid Viz pass count');
+  const passes=[];let totalQuads=0;
   for(let p=0;p<passCount;p++){
     const id=string(bytes,state,128), output=Array.from({length:4},()=>state.f64()), quadCount=state.u32();
-    if(quadCount>2048)throw new Error('Invalid Viz quad count');
+    if((totalQuads+=quadCount)>2048)throw new Error('Invalid Viz quad count');
     const quads=[];
     for(let i=0;i<quadCount;i++){
       const kindCode=state.u8(), kind=kindCode===1?'solid':kindCode===2?'pass':kindCode===3?'picture':null;
@@ -39,5 +39,6 @@ export function decodeVizScene(input) {
   }
   const hasError=state.u8(), error=hasError?string(bytes,state,4096):null;
   if(state.left!==0)throw new Error('Trailing Viz bytes');
+  if(!passCount&&!error)throw new Error('Empty Viz scene');
   return {type:'VizScene',captureId,namespace,passes,...(error?{error}:{})};
 }

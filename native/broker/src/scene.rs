@@ -45,9 +45,12 @@ impl Mapper {
         }
     }
     pub fn reset(&mut self) {
-        self.entries.clear();
+        self.reset_scene();
         self.resources.clear();
         self.chunks.clear();
+    }
+    pub fn reset_scene(&mut self) {
+        self.entries.clear();
         self.revision = 0;
         self.epoch = 0;
     }
@@ -75,7 +78,7 @@ impl Mapper {
             return Err("Invalid namespace".into());
         }
         if self.epoch != epoch {
-            self.reset();
+            self.reset_scene();
             self.epoch = epoch;
         }
         let records = capture["resources"]

@@ -34,7 +34,7 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
    }
   };
   source.requestCapture=()=>capture.requestCapture();
-  source.invalidate=reason=>{source.pageEpoch++;source.latest=null;source.mapper?.reset();void broker?.reset().catch(error=>source.emit('captureError',error));source.emit('invalidate',reason);};
+  source.invalidate=reason=>{source.pageEpoch++;source.latest=null;source.mapper?.reset();void broker?.resetScene().catch(error=>source.emit('captureError',error));source.emit('invalidate',reason);};
   capture.on('navigation',()=>source.invalidate('navigation'));
   const failure=error=>{source.stats.errors++;source.stats.lastError=error.message;source.emit('captureError',error);};
   capture.on('captureError',failure);frameDriver?.on('frameError',failure);
