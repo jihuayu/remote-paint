@@ -23,8 +23,10 @@ export class NativeCapture extends EventEmitter {
   }
   async ensureWorld() {
     if(this.world)return;
+    const generation=this.generation;
     const {frameTree}=await this.cdp.send('Page.getFrameTree');
     const {executionContextId}=await this.cdp.send('Page.createIsolatedWorld',{frameId:frameTree.frame.id,worldName:'remote-paint-broker'});
+    if(generation!==this.generation)throw new Error('Navigation invalidated the isolated capture world');
     this.world=executionContextId;
   }
   setDemand(count) {
@@ -52,6 +54,7 @@ export class NativeCapture extends EventEmitter {
     deadline.catch(()=>{});
     try {
     await Promise.race([scene.registered,deadline]);
+    if(generation!==this.generation)throw new Error('Navigation invalidated the in-flight capture');
     const requestStarted=performance.now();
     const evaluated=this.cdp.send('Runtime.evaluate',{
       contextId:this.world,awaitPromise:true,returnByValue:true,

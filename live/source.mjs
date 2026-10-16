@@ -55,9 +55,11 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
   });
   source.resize=async({width,height})=>{
    if(![width,height].every(n=>Number.isInteger(n)&&n>0&&n<=4096))throw new Error('Invalid source viewport');
-   const demand=source.demand;capture.setDemand(0);capture.generation++;
-   try{await page.setViewportSize({width,height});source.viewport={cssWidth:width,cssHeight:height,deviceScaleFactor:1};source.viewportVersion++;source.latest=null;source.emit('invalidate','viewport');}
-   finally{capture.setDemand(demand);}
+   capture.setDemand(0);capture.generation++;
+   // Changing LocalSurfaceId under an outstanding external BeginFrame can
+   // discard its ACK. Drain the clock before changing the compositor surface.
+   try{await frameDriver?.stop();await page.setViewportSize({width,height});source.viewport={cssWidth:width,cssHeight:height,deviceScaleFactor:1};source.viewportVersion++;source.latest=null;source.emit('invalidate','viewport');}
+   finally{capture.setDemand(source.demand);if(frameDriver&&source.demand>0)frameDriver.start();}
   };
   source.close=async()=>{source.setDemand(0);await capture.close();await frameDriver?.close();await browser.close();await viz.close();await broker?.close();};
   return source;

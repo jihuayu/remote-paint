@@ -59,7 +59,13 @@ try{
  const recovered=await page.evaluate(()=>window.remotePaintResult);assert.equal(recovered.fullFrames,1);assert.notEqual(recovered.native.captureId,first.native.captureId);
  await wait(()=>source.control.mode==='agent');
  phase='navigation';const oldEpoch=source.pageEpoch;await source.page.reload();await page.waitForFunction(epoch=>window.remotePaintResult?.pageEpoch>epoch,oldEpoch);const navigated=await page.evaluate(()=>window.remotePaintResult);
- phase='resize';await source.resize({width:800,height:600});await page.waitForFunction(()=>window.remotePaintResult?.viewportVersion===2);assert.equal(await page.locator('canvas').getAttribute('width'),'800');
+ phase='resize';const resizeRecovery=[];
+ for(const width of [800,960,800]){
+  await source.resize({width,height:600});
+  await page.waitForFunction(version=>window.remotePaintResult?.viewportVersion===version,source.viewportVersion);
+  assert.equal(await page.locator('canvas').getAttribute('width'),String(width));
+  resizeRecovery.push({width,viewportVersion:source.viewportVersion,frameId:(await page.evaluate(()=>window.remotePaintResult)).frameId});
+ }
  const resized=await page.evaluate(()=>window.remotePaintResult);
  phase='recovery';const missingResourceRecovery=await recoverDroppedResource(browser,live);
  for(const result of [first,dynamic,frozen,animated,streamed,recovered,navigated,resized])assert.equal(result.resources,result.requiredResources.length,'Retired resources must be collected after commit');
@@ -74,6 +80,6 @@ try{
   (f.phase==='navigation'&&f.message==='cdpSession.send: Protocol error (Runtime.evaluate): Inspected target navigated or closed')
  ),JSON.stringify(captureFailures));
  if(process.platform==='linux'){assert.ok(source.frameDriver.stats.acked>0);assert.equal(source.frameDriver.stats.errors,0);}
- const report={...nativeRuntimeInfo(source.frameDriver),streamText,streamTextInk,missingStreamTextRejected:true,captureFailures,verifiedAt:new Date().toISOString(),nativeDrawing:true,missingResourceRecovery,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),first,dynamic,frozen,animated,streamed,beforeReconnect,recovered,navigated,resized,imagePixels,textInk,pixelFractionOver24,slowClientClose:1013,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,viewerSourceRequests:0,errors,stats:source.stats};
+ const report={...nativeRuntimeInfo(source.frameDriver),streamText,streamTextInk,missingStreamTextRejected:true,captureFailures,resizeRecovery,verifiedAt:new Date().toISOString(),nativeDrawing:true,missingResourceRecovery,sourceBrowser:source.browser.version(),viewerBrowser:browser.version(),first,dynamic,frozen,animated,streamed,beforeReconnect,recovered,navigated,resized,imagePixels,textInk,pixelFractionOver24,slowClientClose:1013,noViewerCapturesInitially:0,noViewerCapturesAfterDisconnect:0,viewerSourceRequests:0,errors,stats:source.stats};
  await writeFile('artifacts/live/report.json',JSON.stringify(report,null,2));console.log(report);
 }finally{await browser.close();await live.close();}

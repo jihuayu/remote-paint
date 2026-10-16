@@ -68,3 +68,20 @@ test('a completed Viz frame with a lost CDP callback expires and releases single
  assert.match(failure?.message??'',/Native capture deadline/);assert.equal(capture.running,false);assert.equal(canceled,1);
  await capture.close();
 });
+
+test('navigation during IPC registration never evaluates a cleared CDP context',async()=>{
+ let registered,calls=0,canceled=0;
+ const scene=Promise.resolve({native:true});scene.registered=new Promise(resolve=>registered=resolve);
+ const capture=new NativeCapture(null,{token:'test',viz:{waitFor:()=>scene,cancel(){canceled++;}}});
+ capture.world=1;capture.cdp={send:()=>{calls++;},detach:async()=>{}};
+ const attempt=capture.capture();await new Promise(setImmediate);
+ capture.generation++;capture.world=null;registered();
+ await assert.rejects(attempt,/Navigation invalidated/);assert.equal(calls,0);assert.equal(canceled,1);await capture.close();
+});
+
+test('an isolated world created across navigation is not reused',async()=>{
+ let created;
+ const capture=new NativeCapture(null);capture.cdp={send:async method=>method==='Page.getFrameTree'?{frameTree:{frame:{id:'old'}}}:new Promise(resolve=>created=resolve),detach:async()=>{}};
+ const attempt=capture.ensureWorld();await new Promise(setImmediate);capture.generation++;created({executionContextId:12});
+ await assert.rejects(attempt,/Navigation invalidated/);assert.equal(capture.world,undefined);await capture.close();
+});
