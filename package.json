@@ -26,7 +26,8 @@
     "verify:linux": "node tests/verify-linux.mjs",
     "verify:latency": "node tests/verify-latency.mjs",
     "serve:linux-proof": "node tests/serve-linux-proof.mjs",
-    "verify:linux-mac": "node tests/verify-linux-mac.mjs"
+    "verify:linux-mac": "node tests/verify-linux-mac.mjs",
+    "native:broker": "node native/build-broker.mjs"
   },
   "dependencies": {
     "canvaskit-wasm": "0.42.0",
