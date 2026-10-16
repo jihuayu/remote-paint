@@ -4,25 +4,28 @@ import {LIVE_VERSION,LIVE_LIMITS,LiveFrameGate,RecoveryRequired} from '/protocol
 import {SceneRenderer} from '/scene-renderer.mjs';
 const $=id=>document.getElementById(id),status=text=>$('status').textContent=text;
 const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
-const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$('control'),label:$('controlState'),overlay:$('optimisticOverlay'),send:message=>{if(socket?.readyState===1)socket.send(JSON.stringify(message));}});
-let ck,renderer,sceneRenderer,renderWorker,workerSeq=0,workerReady,socket,generation=0,retryTimer,stopped=false,retryDelay=250;
+const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$('control'),label:$('controlState'),overlay:$('optimisticOverlay'),send:message=>{if(streamWorker)streamWorker.postMessage({type:'send',message});else if(socket?.readyState===1)socket.send(JSON.stringify(message));}});
+let streamWorker,ck,renderer,sceneRenderer,socket,generation=0,retryTimer,stopped=false,retryDelay=250;
 function fail(error){$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';}
-const clearRenderer=()=>{if(renderWorker)renderWorker.postMessage({type:'clear',id:++workerSeq});else sceneRenderer?.clear();};
-const retainRenderer=ids=>{if(renderWorker)renderWorker.postMessage({type:'retain',id:++workerSeq,ids:[...ids]});else sceneRenderer?.retain(ids);};
+function workerMessage({data}){
+ if(data.type==='welcome'){input.welcome(data.message);$('build').textContent=`${data.message.producer.chromium} · Skia ${data.message.producer.skiaRevision.slice(0,12)} · CanvasKit ${data.message.renderer.canvaskit}`;}
+ else if(data.type==='control')input.message(data.message);
+ else if(data.type==='reset'){input.reset();document.body.dataset.ready='false';}
+ else if(data.type==='status')status(data.text);
+ else if(data.type==='error')fail(new Error(data.message));
+ else if(data.type==='frame'){
+  const {frame,result}=data;input.display(frame);$('error').hidden=true;
+  $('frame').textContent=`第 ${frame.frameId} 帧`;$('mode').textContent=frame.baseFrameId===null?'完整场景':'增量更新';$('dimensions').textContent=`${frame.viewport.cssWidth} × ${frame.viewport.cssHeight}`;$('renderTime').textContent=`重放 ${result.renderMs.toFixed(1)} ms`;$('bytes').textContent=`缓存 ${(result.resourceBytes/1024).toFixed(0)} KiB`;document.body.dataset.ready='true';status('实时绘制中');window.remotePaintResult=result;
+ }
+}
 async function initialize(){
- const wasmBinary=await(await fetch('/vendor/canvaskit.wasm')).arrayBuffer();renderer={canvaskit:'0.42.0',wasmSha256:await digest(wasmBinary)};
  const canvas=$('viewport');
- if(typeof Worker==='function'&&typeof canvas.transferControlToOffscreen==='function'){
-  const offscreen=canvas.transferControlToOffscreen();renderWorker=new Worker('/render-worker.mjs',{type:'module'});
-  workerReady=new Promise((resolve,reject)=>{const id=++workerSeq;const onMessage=event=>{if(event.data.id!==id)return;renderWorker.removeEventListener('message',onMessage);event.data.type==='ready'?resolve():reject(new Error(event.data.message??'Render worker initialization failed'));};renderWorker.addEventListener('message',onMessage);renderWorker.postMessage({type:'init',id,canvas:offscreen,scriptUrl:'/vendor/canvaskit.js',wasmUrl:'/vendor/canvaskit.wasm'},[offscreen]);});
-  await workerReady;
- }else{ck=await CanvasKitInit({wasmBinary,locateFile:file=>`/vendor/${file}`});sceneRenderer=new SceneRenderer(ck,{incremental:true});}
+ if(typeof Worker==='function'&&typeof canvas.transferControlToOffscreen==='function'&&!new URLSearchParams(location.search).has('mainThread')){
+  streamWorker=new Worker('/stream-worker.mjs',{type:'module'});streamWorker.addEventListener('message',workerMessage);
+  await new Promise((resolve,reject)=>{const listener=({data})=>{if(data.type==='ready'||data.type==='error'){streamWorker.removeEventListener('message',listener);data.type==='ready'?resolve():reject(new Error(data.message));}};streamWorker.addEventListener('message',listener);streamWorker.addEventListener('error',error=>reject(new Error(error.message)),{once:true});const offscreen=canvas.transferControlToOffscreen();streamWorker.postMessage({type:'init',canvas:offscreen},[offscreen]);});
+ }else{const wasmBinary=await(await fetch('/vendor/canvaskit.wasm')).arrayBuffer();renderer={canvaskit:'0.42.0',wasmSha256:await digest(wasmBinary)};ck=await CanvasKitInit({wasmBinary,locateFile:file=>`/vendor/${file}`});sceneRenderer=new SceneRenderer(ck,{incremental:true});}
 }
 function draw(frame,resources){
- if(renderWorker){
-  const id=++workerSeq,needed=frame.requiredResources.map(resourceId=>({id:resourceId,buffer:resources.get(resourceId).slice().buffer}));
-  return new Promise((resolve,reject)=>{const onMessage=event=>{if(event.data.id!==id)return;renderWorker.removeEventListener('message',onMessage);event.data.type==='rendered'?resolve(event.data.renderMs):reject(new Error(event.data.message??'Render worker failed'));};renderWorker.addEventListener('message',onMessage);renderWorker.postMessage({type:'render',id,frame,resources:needed},needed.map(item=>item.buffer));});
- }
  const output=sceneRenderer.render(frame.scene,resources,ck.WHITE);
  try{
   const canvas=$('viewport'),{cssWidth:width,cssHeight:height}=frame.viewport;
@@ -35,15 +38,16 @@ function draw(frame,resources){
  }finally{if(output.release)output.release();else{output.image.delete();output.surface.dispose();}}
 }
 async function connect(){
- if(stopped)return;clearTimeout(retryTimer);const current=++generation;socket?.close();input.reset();clearRenderer();
- document.body.dataset.ready='false';$('error').hidden=true;status('连接绘制通道');if(renderWorker)renderWorker.postMessage({type:'clear',id:++workerSeq});
+ if(stopped)return;clearTimeout(retryTimer);const current=++generation;socket?.close();input.reset();sceneRenderer?.clear();
+ document.body.dataset.ready='false';$('error').hidden=true;status('连接绘制通道');
+ if(streamWorker){streamWorker.postMessage({type:'connect',key:new URLSearchParams(location.hash.slice(1)).get('key')});return;}
  const key=new URLSearchParams(location.hash.slice(1)).get('key');if(!key)throw new Error('请使用服务端输出的完整 Viewer 链接');
  const config=await fetch('/session-config').then(response=>response.json());
  const streamHost=config.nativePort?`${location.hostname}:${config.nativePort}`:location.host;
  const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${streamHost}/stream?key=${encodeURIComponent(key)}`);socket=ws;ws.binaryType='arraybuffer';
  const gate=new LiveFrameGate();let welcome=false,receivedBytes=0,resourcesReceived=0,full=0,delta=0,recovering=false;
  const send=message=>{if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(message));};
- const recover=()=>{gate.recover();retainRenderer(new Set(gate.resources.keys()));if(!recovering){recovering=true;status('重新同步完整场景');send({type:'RequestKeyframe'});}};
+ const recover=()=>{gate.recover();sceneRenderer.retain(new Set(gate.resources.keys()));if(!recovering){recovering=true;status('重新同步完整场景');send({type:'RequestKeyframe'});}};
  ws.onopen=()=>send({type:'Hello',protocol:LIVE_VERSION,renderer});
  let queue=Promise.resolve(),queuedBytes=0;
  ws.onmessage=event=>{
@@ -69,7 +73,7 @@ async function connect(){
      if(recovering&&!gate.pending)return;
      const started=performance.now();const frame=await gate.commitAsync(message.pageEpoch,message.frameId,draw);
      if(!frame){recover();return;}
-     input.display(frame);gate.collect();retainRenderer(new Set(gate.resources.keys()));
+     input.display(frame);gate.collect();sceneRenderer.retain(new Set(gate.resources.keys()));
      if(frame.baseFrameId===null)full++;else delta++;recovering=false;
      const renderMs=performance.now()-started;$('error').hidden=true;
      $('frame').textContent=`第 ${frame.frameId} 帧`;$('mode').textContent=frame.baseFrameId===null?'完整场景':'增量更新';
@@ -80,20 +84,20 @@ async function connect(){
       resourcesReceived,receivedBytes,fullFrames:full,deltaFrames:delta,renderMs,requiredResources:frame.requiredResources};
      send({type:'FrameAck',pageEpoch:frame.pageEpoch,frameId:frame.frameId});
     }else if(message.type==='ResourceRelease'){
-     if(!Array.isArray(message.ids)||message.ids.length>512||!message.ids.every(isHash))throw new Error('Invalid resource release');for(const id of message.ids)gate.release(id);retainRenderer(new Set(gate.resources.keys()));
+     if(!Array.isArray(message.ids)||message.ids.length>512||!message.ids.every(isHash))throw new Error('Invalid resource release');for(const id of message.ids)gate.release(id);sceneRenderer.retain(new Set(gate.resources.keys()));
     }else if(message.type==='CaptureError'){status(message.message);}
     else throw new Error('Unknown message');
-   }catch(error){if(current===generation){fail(error);ws.close(1000,'Viewer rejected frame');}}
+   }catch(error){if(current===generation){fail(error);ws.close(4008,'Viewer rejected frame');}}
    finally{queuedBytes-=size;}
   });
  };
  ws.onclose=event=>{
   if(current!==generation||stopped)return;input.reset();document.body.dataset.ready='false';
-  if(event.code===1008){status('连接被拒绝，请检查错误后重新连接');return;}
+  if(event.code===1008||event.code===4008){status('连接被拒绝，请检查错误后重新连接');return;}
   status('连接中断，正在重新同步');retryTimer=setTimeout(()=>connect().catch(fail),retryDelay);retryDelay=Math.min(2000,retryDelay*2);
  };
  ws.onerror=()=>{if(current===generation)status('连接暂时不可用，等待重连');};
 }
 $('reconnect').onclick=()=>connect().catch(fail);
-window.addEventListener('pagehide',()=>{stopped=true;clearTimeout(retryTimer);socket?.close();sceneRenderer?.clear();renderWorker?.terminate();});
+window.addEventListener('pagehide',()=>{stopped=true;clearTimeout(retryTimer);socket?.close();sceneRenderer?.clear();streamWorker?.postMessage({type:'stop'});});
 await initialize().then(connect).catch(fail);
