@@ -1,5 +1,11 @@
 #!/bin/sh
 set -eu
+# Older Ninja versions can discard a newer cached build log even on -n.
+# Reject them before updating inputs or opening the retained output graph.
+if [ "$(ninja --version)" != 1.13.2 ]; then
+  echo 'Linux builds require pinned Ninja 1.13.2 from docker/Dockerfile.build' >&2
+  exit 2
+fi
 # Mount an independent pinned checkout at /chromium, and this repo at /project.
 # Do not share a Mac checkout's platform-specific toolchain directories.
 project=${PROJECT_ROOT:-/project}

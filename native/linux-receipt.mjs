@@ -52,6 +52,11 @@ export async function verifyLinuxReceipt(receipt,{browserSha256,serializerSha256
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
  assert.equal(process.platform,'linux');
  const source=resolve(process.argv[2]??'');assert.ok(process.argv[2],'Pass the pinned Chromium source directory');
+ if(!process.argv.includes('--check-inputs')){
+  // A dry run still opens/recompacts the build log. Check the tool before an
+  // older Ninja can discard the retained v7 metadata as an unknown format.
+  assert.equal(execFileSync('ninja',['--version'],{encoding:'utf8'}).trim(),'1.13.2','Linux build receipts require pinned Ninja 1.13.2');
+ }
  const receipt=await inspectLinuxInputs(source),output=join(source,'out/RemotePaintLinux');
  if(process.argv.includes('--check-inputs'))console.log(JSON.stringify(receipt,null,2));
  else{
@@ -59,7 +64,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const dry=execFileSync('ninja',['-C',output,'-n','remote_paint_tools','headless_shell'],{encoding:'utf8',maxBuffer:16*1024*1024});
   assert.ok(dry.includes('ninja: no work to do.')&&!/^\[\d/m.test(dry),`Build graph still has pending work; finish the incremental build first.\n${dry.split('\n').filter(line=>/^\[\d/.test(line)).slice(0,8).join('\n')}`);
   receipt.binaries={headless_shell:await fileHash(join(output,'headless_shell')),serializer_tests:await fileHash(join(output,'serializer_tests'))};
-  receipt.builtAt=new Date().toISOString();receipt.incrementalGraphUpToDate=true;
+  receipt.builtAt=new Date().toISOString();receipt.incrementalGraphUpToDate=true;receipt.ninjaVersion='1.13.2';
   const path=join(output,'remote-paint-build.json');await writeFile(`${path}.tmp`,JSON.stringify(receipt,null,2)+'\n');await rename(`${path}.tmp`,path);
   console.log(`Linux build provenance saved: ${path}`);
  }

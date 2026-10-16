@@ -53,6 +53,8 @@ Both compilation and the final no-pending-work receipt use checksum-pinned
 Ninja 1.13.2. Debian 12's system Ninja 1.11.1 repeatedly schedules unchanged
 generators behind GN phony input groups and cannot reliably finish that check.
 Keep the build image's `/usr/local/bin` ahead of depot_tools and `/usr/bin`.
+The build and receipt entry points reject other Ninja versions before opening
+the output graph, since even an incompatible dry run can discard its build log.
 
 Start **Linux packages → Run workflow**, or push a `v*` tag. Artifacts are kept
 for 30 days. A fresh patched Chromium build can exceed a hosted runner's
