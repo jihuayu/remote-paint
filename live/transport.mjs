@@ -3,6 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {randomBytes,timingSafeEqual,createHash} from 'node:crypto';
 import {WebSocketServer} from 'ws';
 import {LivePeer} from './peer.mjs';
+import {makeDelta} from '../protocol/live-wire.mjs';
 import {encodeResource} from '../protocol/wire.mjs';
 import {startNativePeers} from './native-peers.mjs';
 const root=new URL('../',import.meta.url);
@@ -11,10 +12,13 @@ export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackT
  const renderer={canvaskit:'0.42.0',wasmSha256:createHash('sha256').update(wasm).digest('hex')};
  const producer={chromium:source.browser?.version()??'test',skiaRevision:'29ed1e87a0a50f3d8347e988842d9d59e7573efa',skpVersion:110};
  const key=randomBytes(24).toString('hex'),peers=new Set();let origin,closed=false,nativePeers;
- const sceneCache=new WeakMap(),deltaCache=new WeakMap(),resourceCache=new Map();
+ const sceneCache=new WeakMap(),deltaCache=new WeakMap(),resourceCache=new WeakMap();
  const cachedScene=scene=>{let value=sceneCache.get(scene);if(!value){value=JSON.stringify(scene);sceneCache.set(scene,value);}return value;};
- const cachedDelta=(previous,next,delta)=>{let row=deltaCache.get(previous);if(!row){row=new WeakMap();deltaCache.set(previous,row);}let value=row.get(next);if(!value){value=JSON.stringify(delta);row.set(next,value);}return value;};
- const codec={scene(frame,current,previous){const header={...frame};delete header.scene;delete header.delta;const prefix=JSON.stringify({type:'SceneUpdate',frame:header}).slice(0,-2);let value;if(frame.scene)value=cachedScene(frame.scene);else{let row=deltaCache.get(previous?.scene);if(!row){row=new WeakMap();if(previous?.scene)deltaCache.set(previous.scene,row);}value=previous?.scene&&current?.scene?row.get(current.scene):undefined;if(!value){value=JSON.stringify(frame.delta);if(previous?.scene&&current?.scene)row.set(current.scene,value);}}const field=frame.scene?`,"scene":${value}`:`,"delta":${value}`;return `${prefix}${field}}}`;},resource(id,payload){let value=resourceCache.get(id);if(!value){value=encodeResource(id,payload);resourceCache.set(id,value);}return value;},stats:{sceneHits:0,resourceHits:0}};
+ const codec={
+  delta(previous,next){let row=deltaCache.get(previous);if(!row){row=new WeakMap();deltaCache.set(previous,row);}let value=row.get(next);if(!value){value=makeDelta(previous,next);row.set(next,value);}return value;},
+  scene(frame){const header={...frame};delete header.scene;delete header.delta;const prefix=JSON.stringify({type:'SceneUpdate',frame:header}).slice(0,-2);const value=cachedScene(frame.scene??frame.delta);return `${prefix},"${frame.scene?'scene':'delta'}":${value}}}`;},
+  resource(id,payload){let value=resourceCache.get(payload);if(!value||value.id!==id){value={id,wire:encodeResource(id,payload)};resourceCache.set(payload,value);}return value.wire;},
+ };
  const files=new Map([
   ['/', ['viewer/live.html','text/html; charset=utf-8']],['/live.mjs',['viewer/live.mjs','text/javascript']],
   ['/input.mjs',['viewer/input.mjs','text/javascript']],
@@ -56,7 +60,8 @@ export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackT
  try{await new Promise((ok,fail)=>{server.once('error',fail);server.listen(port,host,ok);});}
  catch(error){source.off('frame',frame);source.off('captureError',failure);await new Promise(r=>wss.close(r));throw error;}
  origin=`http://127.0.0.1:${server.address().port}`;
- if(source.broker)nativePeers=await startNativePeers(source,{renderer,producer,key,origin,host,port:port?Number(process.env.REMOTE_PAINT_GATEWAY_PORT??port+1):0,ackTimeout,peers,onDemand:updateDemand});
+ try{if(source.broker)nativePeers=await startNativePeers(source,{renderer,producer,key,origin,host,port:port?Number(process.env.REMOTE_PAINT_GATEWAY_PORT??port+1):0,ackTimeout,peers,onDemand:updateDemand});}
+ catch(error){source.off('frame',frame);source.off('captureError',failure);await new Promise(r=>wss.close(r));await new Promise(r=>server.close(r));throw error;}
  return {origin,key,streamOrigin:nativePeers?`http://127.0.0.1:${nativePeers.port}`:origin,url:`${origin}/#key=${key}`,renderer,peers,
   async close(){closed=true;source.off('frame',frame);source.off('captureError',failure);source.setDemand(0);await nativePeers?.close();for(const peer of peers){peer.dispose();peer.ws.terminate();}await new Promise(r=>wss.close(r));await new Promise(r=>server.close(r));},
  };

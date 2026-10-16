@@ -116,7 +116,7 @@ impl Gateway {
     ) -> Result<()> {
         stream.set_nonblocking(false).map_err(|e| e.to_string())?;
         stream
-            .set_read_timeout(Some(Duration::from_millis(1000)))
+            .set_read_timeout(Some(Duration::from_millis(5000)))
             .map_err(|e| e.to_string())?;
         stream
             .set_write_timeout(Some(Duration::from_millis(500)))
@@ -156,6 +156,8 @@ impl Gateway {
             .set_read_timeout(Some(Duration::from_millis(2)))
             .map_err(|e| e.to_string())?;
         let started = Instant::now();
+        let policy=|ws:&mut tungstenite::WebSocket<TcpStream>,reason:&'static str|{let _=ws.close(Some(CloseFrame{code:CloseCode::Policy,reason:reason.into()}));};
+        let mut input_window=Instant::now();let mut input_count=0;
         let mut ready = false;
         let mut acked: Option<(u64, Arc<Snapshot>)> = None;
         let mut inflight: Option<(u64, Arc<Snapshot>, Instant)> = None;
@@ -207,8 +209,9 @@ impl Gateway {
             }
             match ws.read() {
                 Ok(Message::Text(text)) => {
-                    let message: Value =
-                        serde_json::from_str(&text).map_err(|_| "Invalid client JSON")?;
+                    let message: Value = match serde_json::from_str(&text) { Ok(value)=>value,Err(_)=>{policy(&mut ws,"Invalid client JSON");break;} };
+                    if input_window.elapsed()>Duration::from_secs(1){input_window=Instant::now();input_count=0;}
+                    input_count+=1;if input_count>512 {policy(&mut ws,"Client message rate exceeded");break;}
                     if !ready {
                         if message["type"] != "Hello"
                             || message["protocol"] != 4
@@ -230,12 +233,12 @@ impl Gateway {
                         emit(json!({"event":"PeerReady","peerId":id}));
                     } else if message["type"] == "FrameAck" {
                         let Some((frame, snapshot, _)) = inflight.take() else {
-                            return Err("Unexpected acknowledgement".into());
+                            policy(&mut ws,"Unexpected acknowledgement");break;
                         };
                         if message["frameId"] != frame
                             || message["pageEpoch"] != snapshot.metadata["pageEpoch"]
                         {
-                            return Err("Unexpected acknowledgement".into());
+                            policy(&mut ws,"Unexpected acknowledgement");break;
                         }
                         let current: HashSet<String> = snapshot.resources.keys().cloned().collect();
                         let retired: Vec<_> = known.difference(&current).cloned().collect();
@@ -256,7 +259,7 @@ impl Gateway {
                         }
                         recoveries += 1;
                         if recoveries > 8 {
-                            return Err("Too many recovery requests".into());
+                            policy(&mut ws,"Too many recovery requests");break;
                         }
                         inflight = None;
                         acked = None;
@@ -264,15 +267,15 @@ impl Gateway {
                         known_chunks.clear();
                         chunk_bytes = 0;
                         force_full = true;
-                    } else if self.config["input"] == true {
+                    } else if self.config["input"] == true && matches!(message["type"].as_str(),Some("AcquireControl"|"RenewControl"|"ReleaseControl"|"Input")) {
                         emit(json!({"event":"Control","peerId":id,"message":message}));
                     } else {
-                        return Err("Unsupported message".into());
+                        policy(&mut ws,"Unsupported message");break;
                     }
                 }
                 Ok(Message::Close(_)) => break,
                 Ok(Message::Ping(_)) | Ok(Message::Pong(_)) => {}
-                Ok(_) => return Err("Binary client messages unsupported".into()),
+                Ok(_) => {policy(&mut ws,"Binary client messages unsupported");break;},
                 Err(tungstenite::Error::Io(e))
                     if matches!(
                         e.kind(),
@@ -295,6 +298,7 @@ impl Gateway {
             {
                 continue;
             }
+            if let Some((_,old))=&acked {stats["coalesced"]=json!(stats["coalesced"].as_u64().unwrap()+snapshot.serial.saturating_sub(old.serial+1));}
             let full = force_full
                 || acked.as_ref().is_none_or(|(_, old)| {
                     old.metadata["pageEpoch"] != snapshot.metadata["pageEpoch"]

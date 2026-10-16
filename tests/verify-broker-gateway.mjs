@@ -21,11 +21,15 @@ try{
  const first=await pages[0].evaluate(()=>window.remotePaintResult);await publish(-50);await Promise.all(pages.map(p=>p.waitForFunction(()=>window.remotePaintResult?.native.captureId==='native-gateway-2')));
  const second=await pages[0].evaluate(()=>window.remotePaintResult);assert.equal(second.resourcesReceived,first.resourcesReceived);assert.equal(second.deltaFrames,1);
  const wsUrl=`${transport.streamOrigin.replace('http','ws')}/stream?key=${transport.key}`;
- console.log('native viewers rendered delta', [...transport.peers].map(p=>({id:p.id,stats:p.stats})),broker.stderr);
+
  const slow=new WebSocket(wsUrl,{origin:transport.origin});await once(slow,'open');slow.send(JSON.stringify({type:'Hello',protocol:4,renderer:transport.renderer}));assert.equal((await once(slow,'close'))[0],1013);
- console.log('slow closed');
+
  const mismatch=new WebSocket(wsUrl,{origin:transport.origin});await once(mismatch,'open');mismatch.send(JSON.stringify({type:'Hello',protocol:4,renderer:{}}));assert.equal((await once(mismatch,'close'))[0],1008);
- console.log('mismatch closed');
+
+ for(const invalid of ['{invalid',JSON.stringify({type:'FrameAck',pageEpoch:1,frameId:999999}),Buffer.from([1,2,3])]){
+  const client=new WebSocket(wsUrl,{origin:transport.origin});await once(client,'open');client.send(JSON.stringify({type:'Hello',protocol:4,renderer:transport.renderer}));
+  await once(client,'message');const closed=once(client,'close');client.send(invalid);assert.equal((await closed)[0],1008);
+ }
  const missingResourceRecovery=await recoverDroppedResource(browser,transport);
  await publish(0,2);await Promise.all(pages.map(p=>p.waitForFunction(()=>window.remotePaintResult?.pageEpoch===2)));
  assert.deepEqual(errors,[]);const peers=[...transport.peers].map(peer=>({id:peer.id,stats:peer.stats}));assert.ok(peers.every(p=>p.id.startsWith('native-')));

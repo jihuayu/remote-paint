@@ -35,7 +35,7 @@ export class LivePeer {
   validateScene(snapshot.scene,requiredResources,snapshot.viewport);
   const frame={protocol:LIVE_VERSION,pageEpoch:snapshot.pageEpoch,frameId:++this.nextId,baseFrameId:full?null:previous.frameId,
    viewportVersion:snapshot.viewportVersion,viewport:snapshot.viewport,requiredResources,lastProcessedInputSeq:snapshot.lastProcessedInputSeq,
-   native:snapshot.native,...(full?{scene:snapshot.scene}:{delta:makeDelta(previous.snapshot.scene,snapshot.scene)})};
+   native:snapshot.native,...(full?{scene:snapshot.scene}:{delta:this.codec?.delta(previous.snapshot.scene,snapshot.scene)??makeDelta(previous.snapshot.scene,snapshot.scene)})};
   const scene=this.codec?.scene(frame, snapshot, previous?.snapshot)??JSON.stringify({type:'SceneUpdate',frame});if(Buffer.byteLength(scene)>LIVE_LIMITS.sceneBytes)throw new Error('Frame metadata budget exceeded');
   const resources=requiredResources.filter(id=>!this.known.has(id));
   const bytes=resources.reduce((n,id)=>n+snapshot.payloads.get(id).length+44,0)+Buffer.byteLength(scene)+128;
