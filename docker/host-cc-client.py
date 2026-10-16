@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""GN cc_wrapper: other targets/generators remain on the Linux toolchain."""
+"""GN cc_wrapper: compile Linux C/C++, execute generators/linking in Linux."""
 import hashlib, json, os, pathlib, subprocess, sys, time, urllib.request
 compiler,*args=sys.argv[1:]
-if '-c' not in args or not any(v in ['--target=aarch64-linux-gnu','--target=aarch64-unknown-linux-gnu'] for v in args):
+if '-c' not in args or not any(v in ['--target=aarch64-linux-gnu','--target=aarch64-unknown-linux-gnu','--target=x86_64-unknown-linux-gnu'] for v in args):
     raise SystemExit(subprocess.call([compiler,*args]))
 control=json.loads(pathlib.Path(os.environ.get('REMOTE_PAINT_HOST_CC_CONNECTION','/cc-control/connection.json')).read_text())
 cwd=str(pathlib.Path.cwd().relative_to('/chromium/src'))

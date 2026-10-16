@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Optional local Clang service for an x86 Linux builder on Apple Silicon.
-Only compiles explicit AArch64 Linux -c invocations in the shared checkout.
+Only compiles explicit AArch64/x64 Linux -c invocations in the shared checkout.
 """
 import argparse, hashlib, http.server, json, pathlib, secrets, subprocess, threading
 parser=argparse.ArgumentParser()
@@ -20,7 +20,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if not 0<size<1024*1024:self.send_error(413);return
         try:
             request=json.loads(self.rfile.read(size));argv=request['args']
-            if request['compiler'] not in ['clang','clang++'] or not isinstance(argv,list) or not all(isinstance(v,str) for v in argv) or '-c' not in argv or not any(v in ['--target=aarch64-linux-gnu','--target=aarch64-unknown-linux-gnu'] for v in argv):
+            if request['compiler'] not in ['clang','clang++'] or not isinstance(argv,list) or not all(isinstance(v,str) for v in argv) or '-c' not in argv or not any(v in ['--target=aarch64-linux-gnu','--target=aarch64-unknown-linux-gnu','--target=x86_64-unknown-linux-gnu'] for v in argv):
                 self.send_error(400);return
             cwd=(source/request['cwd']).resolve()
             if not cwd.is_relative_to(source/'out'):self.send_error(400);return
@@ -41,8 +41,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         except Exception as error:
             self.send_error(500,str(error))
 server=http.server.ThreadingHTTPServer(('127.0.0.1',0),Handler)
-(args.control/'connection.json').write_text(json.dumps({'url':f'http://host.docker.internal:{server.server_port}/compile','key':key}))
-(args.control/'connection.json').chmod(0o600)
+(args.control/'connection.json.tmp').write_text(json.dumps({'url':f'http://host.docker.internal:{server.server_port}/compile','key':key}))
+(args.control/'connection.json.tmp').chmod(0o600)
+(args.control/'connection.json.tmp').replace(args.control/'connection.json')
 (args.control/'build.json').write_text(json.dumps({'mode':'mac-arm64-clang-cross','target':'aarch64-linux-gnu','compilerSha256':hashlib.sha256((compiler/'clang').read_bytes()).hexdigest(),'compilerVersion':subprocess.check_output([str(compiler/'clang'),'--version'],text=True).splitlines()[0],'jobs':args.jobs},indent=2))
 print('Host cross compiler listening on loopback port '+str(server.server_port),flush=True)
 server.serve_forever()

@@ -170,8 +170,10 @@ translation-unit measurement, not a promise of full-build speed; see
 [the measurement](../docs/evidence/host-cross-compile.json).
 
 The optional `linux-arm64-host-cc` profile adds an explicit GN `cc_wrapper`.
-It sends only explicit AArch64 Linux `-c` commands to Mac; generators, Rust,
-other targets, modules without `-c`, and linking remain on the container's
+It sends explicit AArch64 and x64 Linux `-c` commands to Mac. The x64 host-tool
+profile was also checked with a protobuf C++ translation unit: its object was
+byte-identical to the container's Linux compiler output. Generator execution,
+Rust, other targets, modules without `-c`, and linking remain on the container's
 pinned Linux toolchain. The source and output remain in the same mounted
 checkout. Existing cache files are retained; changing the GN wrapper can
 invalidate compiler command hashes and require recompilation.

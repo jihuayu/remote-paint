@@ -14,5 +14,12 @@
     "compilerSha256": "b3785ad91b93cb56eac31eaef5d8cf5ef71fae512843417a55bd3912b4d41766",
     "compilerVersion": "clang version 24.0.0git (https://chromium.googlesource.com/a/external/github.com/llvm/llvm-project 86922d51225db089fffb99475eefc4904f79e3c8)",
     "jobs": 9
+  },
+  "x64HostToolValidation": {
+    "hostSeconds": 1.5971030415967107,
+    "linuxObjectSha256": "0297136d0c92cb5eb93249987f71bda216596ef20071805b8e21bf1e1ff79c90",
+    "hostObjectSha256": "0297136d0c92cb5eb93249987f71bda216596ef20071805b8e21bf1e1ff79c90",
+    "byteIdentical": true,
+    "scope": "Same pinned compiler and exact GN command for protobuf doc_comment.cc; Linux host-tool object compared byte-for-byte."
   }
 }
