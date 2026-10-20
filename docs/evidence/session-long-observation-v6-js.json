@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-18T02:09:50.016826+00:00",
+  "status": "passed269-tests-eachplatform-control-readiness-candidate",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/baseline-frozen-version.json",
+  "manifestSha256": "6dd24c0874064c619caed5d629fd68a819284a9e8f08189b7967d53a73325d2f",
+  "sourceFiles": 636,
+  "sourceChangesSinceFailed633": [
+    "docs/evidence/control-grant-readiness.json",
+    "docs/optimization-progress.md",
+    "tests/serve-session-control-grant.mjs",
+    "tests/verify-session-control-grant.mjs",
+    "tests/viewer-input.test.mjs",
+    "viewer/input.mjs"
+  ],
+  "testfileConcurrency": 4,
+  "fullJS": {
+    "testsEach": 269,
+    "macPass": 261,
+    "macLinuxOnlySkip": 8,
+    "linuxPass": 265,
+    "linuxMacOnlySkip": 4,
+    "failed": 0
+  },
+  "realNativeBeforeAfter": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-checkpoint-v1.json",
+  "productionChange": "Only Viewer pending control label/button: actual scoped grant required before advertising readiness. Native/Source/Gateway unchanged.",
+  "budgetsAndOriginalDeadlinesUnchanged": true,
+  "hardwareCandidatePilotsAccepted": false,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/js-results/mac.log": "3c5249670a710b28bb333e68a1d2ec1d1475ae09207a7697c3164144f000ea8c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/js-results/linux.log": "eec161cb5dd7f82e4f133e3473c076168cf12085a516cb55f22396d073265f97",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/js-results/mac-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/js-results/linux-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

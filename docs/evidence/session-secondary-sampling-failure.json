@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-18T07:09:17.915058+00:00",
+  "status": "failed-secondary-live-sample-coverage",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-frozen-version.json",
+  "manifestSha256": "fd59f69d752dc6c67fadd1108dced737798094c4f6f2f3c963a6cc4f591fee4d",
+  "failureCycle": 496,
+  "completedSamples": 11,
+  "sampleStates": [
+    "primary-only",
+    "primary-only",
+    "primary-only",
+    "primary-only",
+    "primary-only",
+    "primary-only",
+    "primary-only",
+    "primary-only",
+    "primary-only",
+    "primary-only",
+    "primary-only"
+  ],
+  "lastCompletedSampleElapsedSeconds": 607.0176522500001,
+  "secondaryCompleted": 3,
+  "eachSecondaryUpdates": 400,
+  "sourceCreatedClosed": {
+    "created": 4,
+    "closed": 4,
+    "crosssite": 2,
+    "leaseExpired": 3
+  },
+  "pairedFrames": 1789,
+  "missingFrames": 0,
+  "primaryACKs": 32,
+  "sourceExitCode": 0,
+  "viewerExitCode": 1,
+  "nativeObserverCleanup": {
+    "pid": 78048,
+    "exited": true,
+    "exitCode": 0,
+    "signal": null
+  },
+  "cleanupErrors": [],
+  "ownedQdiscRemoved": true,
+  "diagnosis": "The 60s periodic sampling points missed all three completed secondary lifetimes. The existing coverage assertion correctly rejected the run; no with-secondary sample is inferred or fabricated. Input/frame checks passed through completed windows, but this run is not accepted.",
+  "next": "Add an actual complete memory/frame sample before each secondary closes, preserving the independent 60s periodic cadence and all original deadlines/policy. Qualify a new frozen candidate with fresh baseline and netem.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-frozen-version.json": "fd59f69d752dc6c67fadd1108dced737798094c4f6f2f3c963a6cc4f591fee4d",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-source-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-viewer-exit.json": "e153f5bd2ee7416d77570b30ba1de5bb9196c55f8d145e34df9dab12190ffe43",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-viewer.log": "c6c5446c9941a0f8da6f85ea7e65d9cb400b3b93cf76128a1fb3620efe7c3450",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-results/failure.json": "937853dd875bef77484dcf541ea11314056c4f5d0a398bac45bdc9b32ffdc7c0",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-results/cleanup.json": "c1806d964ab13caf41b07db2373f5434acfb6972c0a18285226244edb1e6d9d4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-results/source-stopped.json": "7816fca671aa2d7823137910245a8c31f8c03dd7a9eb35c3091ec6d6f913f049",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-results/samples.jsonl": "67d1fc5b7a928282d59633a0a7ff9766c0302714ece0e5265c345b3f0ffedc6a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-results/secondary-results.jsonl": "803cf85fd1f65e52cf1fa79532c04b4709256834907f2567193ab9c15c4d7e3c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-results/session-observation-windows.jsonl": "b5998cc4e788aef69f9b4b567dd9dffeb59c71c2929c3aefae1e305ca513a1f7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-results/session-input-observations.jsonl": "ddeec7abff327b7ef4f3413e92283478fa2405071016ed4c7c271b058d096ccb",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v6/netem-results/session-network-windows.jsonl": "debc7aebac1d4ac0f6639f1fc5aa4f91721d1bd081667058fff51dfec9d13994"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

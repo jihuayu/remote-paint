@@ -1,0 +1,624 @@
+{
+  "at": "2026-10-18T02:09:28.910972+00:00",
+  "status": "accepted-real-Native-before-after-control-grant-readiness",
+  "scope": "Diagnostic explicit hold/release of three real Native ControlGranted messages per version. Three actual Mac GPUWorker/CPUWorker/CPUmain pass original 3s Input ACK and frame epoch/viewport/input watermark plus source text-count pixel after grant. Old reference falsely advertises readiness while no grant and no Input sent; fixed version stays pending. No claim that this is the sole cause of the failed 8h attempt; original failure did not record individual control ordering. No organic network-loss, full N1, or 8h acceptance.",
+  "cases": {
+    "reference": {
+      "status": "reproduced-premature-ready-before-fix",
+      "elapsedSeconds": 14.142814875000001,
+      "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/reference-frozen-version.json",
+      "manifestSha256": "083e26e6290592f489c561494c7bc96011fca1ee5213482a96511eb2a0cd9da5",
+      "viewerInputSha256": "c488ad11d274e55bb9263fed62f9390dc38647413b4e76f77828f0e1e326a8a6",
+      "rows": [
+        {
+          "label": "gpu-worker",
+          "pendingLabel": "你正在操作",
+          "pendingInputSent": 0,
+          "sourceStateBeforeGrant": {
+            "mode": "human",
+            "inputSeq": 0,
+            "inputLength": 0
+          },
+          "held": {
+            "ordinal": 1,
+            "peerId": "native-0",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "heldAtSourceMs": 15864.539611,
+            "releaseReason": "test-release",
+            "releasedAtSourceMs": 16040.087195,
+            "heldMs": 175.54758399999992
+          },
+          "ack": {
+            "observationOrdinal": 4,
+            "seq": 4,
+            "accepted": true,
+            "stage": "input-injected",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "eventKind": "text",
+            "sentAt": 1332.5,
+            "at": 1432.0999994277954,
+            "probeId": 1,
+            "dispatchAt": 1332.5,
+            "queueMs": 0,
+            "ms": 99.59999942779541
+          },
+          "timeline": [
+            {
+              "type": "ControlState",
+              "mode": "handoff",
+              "holder": "native-0",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1138.0999994277954
+            },
+            {
+              "type": "ControlState",
+              "mode": "human",
+              "holder": "native-0",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1138.2999992370605
+            },
+            {
+              "type": "ControlGranted",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1310
+            }
+          ],
+          "finalObserver": {
+            "nonce": "06f3c3ad-d5b4-4c60-a918-8578528d7774",
+            "sent": 4,
+            "acked": 4,
+            "rejected": 0,
+            "texts": 1,
+            "peakPending": 4,
+            "pending": 0,
+            "retained": 4,
+            "errors": [],
+            "active": false
+          },
+          "presentation": {
+            "mode": "webgl2-bitmap",
+            "frames": 5,
+            "gpuFrames": 5,
+            "cpuFrames": 0,
+            "readbackBytes": 0,
+            "totalReadbackBytes": 0,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "device": {
+              "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+              "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+            },
+            "damage": [
+              0,
+              0,
+              960,
+              640
+            ],
+            "skipped": false,
+            "renderMs": 16.299999237060547,
+            "readbackMs": 0,
+            "bitmapMs": 0,
+            "submitMs": 0.40000057220458984,
+            "totalMs": 16.699999809265137
+          },
+          "worker": true
+        },
+        {
+          "label": "cpu-worker",
+          "pendingLabel": "你正在操作",
+          "pendingInputSent": 0,
+          "sourceStateBeforeGrant": {
+            "mode": "human",
+            "inputSeq": 4,
+            "inputLength": 1
+          },
+          "held": {
+            "ordinal": 2,
+            "peerId": "native-1",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "heldAtSourceMs": 16364.668316,
+            "releaseReason": "test-release",
+            "releasedAtSourceMs": 16478.499405,
+            "heldMs": 113.83108899999934
+          },
+          "ack": {
+            "observationOrdinal": 4,
+            "seq": 8,
+            "accepted": true,
+            "stage": "input-injected",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "eventKind": "text",
+            "sentAt": 1256.0999994277954,
+            "at": 1346.8000001907349,
+            "probeId": 1,
+            "dispatchAt": 1256,
+            "queueMs": 0.09999942779541016,
+            "ms": 90.80000019073486
+          },
+          "timeline": [
+            {
+              "type": "ControlState",
+              "mode": "handoff",
+              "holder": "native-1",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1126
+            },
+            {
+              "type": "ControlState",
+              "mode": "human",
+              "holder": "native-1",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1126.0999994277954
+            },
+            {
+              "type": "ControlGranted",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1232.8000001907349
+            }
+          ],
+          "finalObserver": {
+            "nonce": "d32b7e59-283e-41b3-83bf-3fd7a5687269",
+            "sent": 4,
+            "acked": 4,
+            "rejected": 0,
+            "texts": 1,
+            "peakPending": 4,
+            "pending": 0,
+            "retained": 4,
+            "errors": [],
+            "active": false
+          },
+          "presentation": {
+            "mode": "cpu-2d",
+            "frames": 6,
+            "gpuFrames": 0,
+            "cpuFrames": 6,
+            "readbackBytes": 530448,
+            "totalReadbackBytes": 6506544,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "damage": [
+              0,
+              0,
+              514,
+              258
+            ],
+            "skipped": false,
+            "renderMs": 7.300000190734863,
+            "readbackMs": 0.09999942779541016,
+            "bitmapMs": 0,
+            "submitMs": 0,
+            "totalMs": 7.399999618530273
+          },
+          "worker": true
+        },
+        {
+          "label": "cpu-main",
+          "pendingLabel": "你正在操作",
+          "pendingInputSent": 0,
+          "sourceStateBeforeGrant": {
+            "mode": "human",
+            "inputSeq": 8,
+            "inputLength": 2
+          },
+          "held": {
+            "ordinal": 3,
+            "peerId": "native-2",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "heldAtSourceMs": 16786.644466,
+            "releaseReason": "test-release",
+            "releasedAtSourceMs": 16853.778954,
+            "heldMs": 67.13448799999969
+          },
+          "ack": {
+            "observationOrdinal": 4,
+            "seq": 12,
+            "accepted": true,
+            "stage": "input-injected",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "eventKind": "text",
+            "sentAt": 1244.8000001907349,
+            "at": 1299.8000001907349,
+            "probeId": 1,
+            "dispatchAt": 1244.6999998092651,
+            "queueMs": 0.10000038146972656,
+            "ms": 55.10000038146973
+          },
+          "timeline": [
+            {
+              "type": "ControlState",
+              "mode": "handoff",
+              "holder": "native-2",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1166.1999998092651
+            },
+            {
+              "type": "ControlState",
+              "mode": "human",
+              "holder": "native-2",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1166.3999996185303
+            },
+            {
+              "type": "ControlGranted",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1234.8000001907349
+            }
+          ],
+          "finalObserver": {
+            "nonce": "72ffad63-79dc-415f-86dd-48e8a4f22aad",
+            "sent": 4,
+            "acked": 4,
+            "rejected": 0,
+            "texts": 1,
+            "peakPending": 4,
+            "pending": 0,
+            "retained": 4,
+            "errors": [],
+            "active": false
+          },
+          "presentation": {
+            "mode": "cpu-2d",
+            "frames": 6,
+            "gpuFrames": 0,
+            "cpuFrames": 6,
+            "readbackBytes": 527352,
+            "totalReadbackBytes": 7033896,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "damage": [
+              0,
+              0,
+              511,
+              258
+            ],
+            "skipped": false,
+            "renderMs": 3.8000001907348633,
+            "readbackMs": 0.19999980926513672,
+            "bitmapMs": 0,
+            "submitMs": 0,
+            "totalMs": 4
+          },
+          "worker": false
+        }
+      ],
+      "sourceAndViewerExitCode": 0,
+      "cleanupErrors": []
+    },
+    "candidate": {
+      "status": "passed-real-Native-delayed-grant-readiness",
+      "elapsedSeconds": 14.731342667000002,
+      "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/candidate-frozen-version.json",
+      "manifestSha256": "af38da15e094aad1f74da9040df295cd58feb6b8d498ee87ce83874dabfffdf4",
+      "viewerInputSha256": "b49c09e563efad82669ccb71c89ff0771beca9dbbfa2b7662724a8e4d9565001",
+      "rows": [
+        {
+          "label": "gpu-worker",
+          "pendingLabel": "正在接管",
+          "pendingInputSent": 0,
+          "sourceStateBeforeGrant": {
+            "mode": "human",
+            "inputSeq": 0,
+            "inputLength": 0
+          },
+          "held": {
+            "ordinal": 1,
+            "peerId": "native-0",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "heldAtSourceMs": 3146.011069,
+            "releaseReason": "test-release",
+            "releasedAtSourceMs": 3261.915487,
+            "heldMs": 115.90441800000008
+          },
+          "ack": {
+            "observationOrdinal": 4,
+            "seq": 4,
+            "accepted": true,
+            "stage": "input-injected",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "eventKind": "text",
+            "sentAt": 1507.3000001907349,
+            "at": 1552.5999994277954,
+            "probeId": 1,
+            "dispatchAt": 1507.1999998092651,
+            "queueMs": 0.10000038146972656,
+            "ms": 45.39999961853027
+          },
+          "timeline": [
+            {
+              "type": "ControlState",
+              "mode": "handoff",
+              "holder": "native-0",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1378.8000001907349
+            },
+            {
+              "type": "ControlState",
+              "mode": "human",
+              "holder": "native-0",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1379
+            },
+            {
+              "type": "ControlGranted",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1490
+            }
+          ],
+          "finalObserver": {
+            "nonce": "195aa257-8ac5-4886-86c7-73408fa4d23c",
+            "sent": 4,
+            "acked": 4,
+            "rejected": 0,
+            "texts": 1,
+            "peakPending": 4,
+            "pending": 0,
+            "retained": 4,
+            "errors": [],
+            "active": false
+          },
+          "presentation": {
+            "mode": "webgl2-bitmap",
+            "frames": 5,
+            "gpuFrames": 5,
+            "cpuFrames": 0,
+            "readbackBytes": 0,
+            "totalReadbackBytes": 0,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "device": {
+              "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+              "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+            },
+            "damage": [
+              0,
+              0,
+              960,
+              640
+            ],
+            "skipped": false,
+            "renderMs": 15,
+            "readbackMs": 0,
+            "bitmapMs": 0,
+            "submitMs": 0.09999942779541016,
+            "totalMs": 15.199999809265137
+          },
+          "worker": true
+        },
+        {
+          "label": "cpu-worker",
+          "pendingLabel": "正在接管",
+          "pendingInputSent": 0,
+          "sourceStateBeforeGrant": {
+            "mode": "human",
+            "inputSeq": 4,
+            "inputLength": 1
+          },
+          "held": {
+            "ordinal": 2,
+            "peerId": "native-1",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "heldAtSourceMs": 3502.663395,
+            "releaseReason": "test-release",
+            "releasedAtSourceMs": 3610.227242,
+            "heldMs": 107.5638469999999
+          },
+          "ack": {
+            "observationOrdinal": 4,
+            "seq": 8,
+            "accepted": true,
+            "stage": "input-injected",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "eventKind": "text",
+            "sentAt": 1262.3000001907349,
+            "at": 1291.6999998092651,
+            "probeId": 1,
+            "dispatchAt": 1262.0999994277954,
+            "queueMs": 0.20000076293945312,
+            "ms": 29.600000381469727
+          },
+          "timeline": [
+            {
+              "type": "ControlState",
+              "mode": "handoff",
+              "holder": "native-1",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1149.5999994277954
+            },
+            {
+              "type": "ControlState",
+              "mode": "human",
+              "holder": "native-1",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1149.8999996185303
+            },
+            {
+              "type": "ControlGranted",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 1248.8999996185303
+            }
+          ],
+          "finalObserver": {
+            "nonce": "162fd504-a41d-4154-9958-444d0a3e6e31",
+            "sent": 4,
+            "acked": 4,
+            "rejected": 0,
+            "texts": 1,
+            "peakPending": 4,
+            "pending": 0,
+            "retained": 4,
+            "errors": [],
+            "active": false
+          },
+          "presentation": {
+            "mode": "cpu-2d",
+            "frames": 5,
+            "gpuFrames": 0,
+            "cpuFrames": 5,
+            "readbackBytes": 527352,
+            "totalReadbackBytes": 5973000,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "damage": [
+              0,
+              0,
+              511,
+              258
+            ],
+            "skipped": false,
+            "renderMs": 4.5,
+            "readbackMs": 0.20000076293945312,
+            "bitmapMs": 0,
+            "submitMs": 0,
+            "totalMs": 4.700000762939453
+          },
+          "worker": true
+        },
+        {
+          "label": "cpu-main",
+          "pendingLabel": "正在接管",
+          "pendingInputSent": 0,
+          "sourceStateBeforeGrant": {
+            "mode": "human",
+            "inputSeq": 8,
+            "inputLength": 2
+          },
+          "held": {
+            "ordinal": 3,
+            "peerId": "native-2",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "heldAtSourceMs": 3802.460261,
+            "releaseReason": "test-release",
+            "releasedAtSourceMs": 3869.586207,
+            "heldMs": 67.12594599999966
+          },
+          "ack": {
+            "observationOrdinal": 4,
+            "seq": 12,
+            "accepted": true,
+            "stage": "input-injected",
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "eventKind": "text",
+            "sentAt": 1004.6000003814697,
+            "at": 1080.8000001907349,
+            "probeId": 1,
+            "dispatchAt": 1004.5,
+            "queueMs": 0.10000038146972656,
+            "ms": 76.30000019073486
+          },
+          "timeline": [
+            {
+              "type": "ControlState",
+              "mode": "handoff",
+              "holder": "native-2",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 927.5
+            },
+            {
+              "type": "ControlState",
+              "mode": "human",
+              "holder": "native-2",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 927.7000007629395
+            },
+            {
+              "type": "ControlGranted",
+              "pageEpoch": 1,
+              "viewportVersion": 1,
+              "at": 994.7000007629395
+            }
+          ],
+          "finalObserver": {
+            "nonce": "17106a38-0b9c-4856-82fe-80754f6bb303",
+            "sent": 4,
+            "acked": 4,
+            "rejected": 0,
+            "texts": 1,
+            "peakPending": 4,
+            "pending": 0,
+            "retained": 4,
+            "errors": [],
+            "active": false
+          },
+          "presentation": {
+            "mode": "cpu-2d",
+            "frames": 5,
+            "gpuFrames": 0,
+            "cpuFrames": 5,
+            "readbackBytes": 527352,
+            "totalReadbackBytes": 6500352,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "damage": [
+              0,
+              0,
+              511,
+              258
+            ],
+            "skipped": false,
+            "renderMs": 3.5,
+            "readbackMs": 0.10000038146972656,
+            "bitmapMs": 0,
+            "submitMs": 0,
+            "totalMs": 3.799999237060547
+          },
+          "worker": false
+        }
+      ],
+      "sourceAndViewerExitCode": 0,
+      "cleanupErrors": []
+    }
+  },
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/reference-frozen-version.json": "083e26e6290592f489c561494c7bc96011fca1ee5213482a96511eb2a0cd9da5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/reference-source.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/reference-viewer.log": "20ef2d79d78b0d75ef880e20ec7094b6616f137122a0babcac5b0a7870e23c62",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/reference-source-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/reference-viewer-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/reference-results/grant-report.json": "54c4ce7831fbea4176df2f3d84b5fd1bf5a4f51976f52722b98f6c0d01e499e5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/reference-results/source-stopped.json": "2ff2b0100596ed546ec75edd9c4f0b398cddeb5b0f18b34f065e1b9f08dd3627",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/reference-results/grant-delay-records.json": "1ab743715c0482a57b2b94c821ccdc1a90cd17c97f13b6182ef2e9e16f6bc758",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/candidate-frozen-version.json": "af38da15e094aad1f74da9040df295cd58feb6b8d498ee87ce83874dabfffdf4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/candidate-source.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/candidate-viewer.log": "9af303350a9c2975d535efc71747fa94255be0a874aa0ce84aa7ce428a827fa6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/candidate-source-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/candidate-viewer-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/candidate-results/grant-report.json": "6d7e201475c8b80576291de3ff5a914c1fda179af60eecb90192aa5578df0e6d",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/candidate-results/source-stopped.json": "14c1b5050e31b9ebb05f6e73e44c7846aaa9a315fbabd253c77b4128e31d1686",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-v1/candidate-results/grant-delay-records.json": "3e914a9cd0ee3c4f30d851a02c2c096a9b94fe9f9bcc92a9c5865102ca821129"
+  },
+  "unitCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-readiness-checkpoint-v1.json",
+  "fullJSPending": true,
+  "freshBaselineNetemAnd8hPending": true,
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

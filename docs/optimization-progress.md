@@ -5,7 +5,7 @@
 WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变换、裁剪、透明度和层级，页面其余内容应正常提交。原 C12/B13 的 WebGL 位图或视频回退暂不实施。
 
 
-最新长测状态：旧运行的崩溃与连续采样间隔失败均保留历史证据；最新独立运行3319f9在约20分钟、第933轮因Viewer RSS采样阶段超过5秒终止，[失败证据](evidence/client-memory-eight-hour-sampler-failure.json)记录20份成功样本及Source/Broker正常清理。新的RSS采样器独立八小时也在第482轮因ps未及时回收终止，见末尾失败证据；当前没有八小时通过，不累计失败时长。下文早期“正在运行”描述属于其检查点当时状态。
+最新长测状态：修复 CanvasKit Wasm 字节初始化后，原始物理内存策略的独立30分钟测试已通过，见[物理验收](evidence/wasm-binary-handoff-physical.json)。只读RTT消费连接的600秒基线和丢包试跑也已分别通过。随后独立8小时尝试在预热第16轮因首个文本输入3秒内没有ACK而失败；观察器记录实际发送数为0，不能称为网络ACK迟到。旧失败完整保留，不累计时长。控制权尚未实际授予时提前显示可操作的竞态已完成[真实Native前后对照](evidence/control-grant-native.json)，修复副本Mac/Linux各269项完整JS零失败，新的600秒基线正在运行；当前没有8小时通过。下文早期“正在运行”描述属于其检查点当时状态。
 
 ## 实施顺序
 
@@ -25,7 +25,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | C2 | 屏幕损伤区域重绘 | 部分实现 | 持久 pass surface、旧/新矩阵位置和子 pass 损伤传播、整数 scissor/不可见 quad 剔除；相同画面跳过呈现。120 轮完整重画像素对照和 Mac/Linux GPU/CPU 两路径通过。GPU 根图与 bitmaprenderer 仍有整图传递，CPU raster snapshot 的拷贝尚待减少。 |
 | C3 | 取消对单个输入 ACK 的逐条等待 | 已完成（已测范围） | 16 个有界有序输入；合并仅限未发送且语义一致的移动/滚轮；租约撤销清队列，重连重置序号。真实原生输入/IME 回归保留；默认原生Source的两个独立13组矩阵、共26,000次文本输入完整到达且实际Worker像素确认，每组均通过动画、22次移动拖动、300ms全丢包及重连租约清理，见[最新网络证据](evidence/native-source-loss-default.json)。 |
 | C4 | 优化启动与版本缓存 | 已完成（Chrome 两条路径） | 公开静态资源以整体内容指纹发布，immutable/ETag/gzip；入口和会话配置 no-store。预加载不重复下载，Wasm 执行前 SHA 校验。69 项单测与实际浏览器缓存/损坏/版本拒绝验收通过；启动资产异步压缩并与浏览器并行准备。 |
-| C5 | 管理完整客户端内存 | 部分实现 | 既有buffer/解码/pass/元数据预算、Wasm/Skia观察及轮换保留；正常准入改增量计数，backing在采样/压力前校准，retained release回调不再保留已返回buffer。Mac/Linux各188项JS、52组冻结回归、28组正式烟测通过，既有真实浏览器GC合同保留。最近独立8小时因RSS采样阶段超时终止，未通过；UI/VM及完整物理占用仍待补。 |
+| C5 | 管理完整客户端内存 | 部分实现 | buffer/解码/pass/元数据预算、增量记账、Wasm/Skia观察及轮换保留；修复退役Wasm backing归属和CanvasKit忽略wasmBinary导致的重复Base64分配。原始物理策略独立30分钟测试通过，逐项重算两种状态的全部10项增长域及绝对上限。新8小时尝试在预热输入阶段失败，尚未通过；控制权就绪修复已通过真实Native前后对照和Mac/Linux各269项JS，新长测须独立验收。 |
 | C6 | 有权限边界的持久资源缓存 | 待实现 | 按原清单验收，记录实际证据 |
 | C7 | 改善指针和编辑的即时反馈 | 已完成（公开文本、Chrome 两路径） | input-feedback-v1 显式协商；仅标记公开且非敏感的文本可预览，待确认新字始终遮挡；光标/hover、接管与输入阶段区分。独立版本化 FeedbackState 不阻塞 InputAck，焦点/租约/原生画面屏障拒绝迟到状态。93 项单测及真实 Rust/Node × Worker/主线程 4 组通过；系统 IME、访问性和跨浏览器另属 C8/C12，不预测滚动。 |
 | C8 | 完整 IME 与访问性 | 待实现 | 物理系统候选窗与语义层仍待验收。C7 实验发现 CDP 取消替换选区的组合文本后不恢复原选区；已保留失败与独立复现，未描述为完整 IME 支持。 |
@@ -1390,3 +1390,9 @@ with-secondary：burst后14个样本，footprint前后中位数1878544520→1926
 首个633文件独立八小时请求在预热cycle16失败：首次文本探测超过原3秒期限，但发送观察器sent/acked/pending均0，Source inputSeq也为0；Source实际human holder已是该Viewer。Source与Viewer实际退出0/1，清理错误0，唯一已完成采样时间跨度0秒，不能算八小时或并入任何其他运行。原冻结副本、日志与失败检查点全部保留，未重启或放宽期限。
 
 确定性合同在该原633冻结版ViewerInput上复现：只收到自身持有ControlState时active仍false，界面却提前显示“你正在操作”，因此真实授权尚未到达的交错会让输入被忽略。修复为此时显示“正在接管”并禁用按钮，只有有效ControlGranted后显示可操作；原active/租约/作用域和ACK期限均保留。完全相同的新合同在旧版失败、修复后输入17项合同通过。原八小时失败没有保存逐条控制消息时序，因此暂不宣称该交错是唯一原因；仍需真实Native延迟授权复现、完整双平台检查、新两组负载与独立八小时。证据见`docs/evidence/control-grant-readiness.json`。
+
+## 控制权就绪竞态的真实 Native 前后对照
+
+主动延迟实际 ControlGranted 的独立诊断已在 Linux Native Source/Rust Gateway 与实际 Mac GPUWorker、CPUWorker、CPUmain 上各完成三项前后对照。旧版在没有凭据、输入发送为0时显示“你正在操作”；修复后保持“正在接管”并禁用接管按钮，收到有效凭据才启用。三种路径授予后的实际文本 ACK 均低于原始3秒期限，并验证同 epoch/viewport 的输入水位与 Source 文本像素。两个版本的 Source/Viewer 均实际退出0，清理无错误。
+
+这是显式控制消息延迟诊断，不证明它是先前8小时失败的唯一原因；原失败未记录控制消息逐条顺序。原8小时失败及其时间仍独立保留，不累计为通过时长。修复副本还需完整JS及新的600秒基线/丢包验收。证据见`docs/evidence/control-grant-native.json`。
