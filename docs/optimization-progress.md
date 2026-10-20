@@ -1240,3 +1240,11 @@ v1因基础runtime没有tc在施加损伤前失败，保留原记录；另建run
 owner.after的原metrics在finally关闭历史procFD之前采集，不能当探针关闭后的FD回落证明。Source actor现在在Source/历史探针/fixture/network/拒绝observer全部清理后，重新实读自身/proc/self/fd，与创建Source前（已有fixture）的baseline比较，最多允许8额外FD；失败写入正常清理错误，不忽略。
 
 一次独立真实Source actor7项合约通过，三CPU主VM保持/第二Session400图片/>64MiB/真实30s租约/跨站/3拒绝窗口与正常销毁全部完成；控制器baseline20→after19，进程实际exit0。此次只重复Source actor合约，冻结manifest继承父任务的retry工作负载说明另写clarification，未宣称此次重跑Native hash retry。未改生产文件、未修改旧失败记录或放宽物理策略。
+
+## 输入send/ACK与像素水印的有界观察器
+
+新增测试专用输入观察器：仅成功WebSocket.send(Input)后记录实际seq/epoch/viewport/kind与单页performance时间，接收ACK时匹配自身seq；不保留lease token、URL或输入文本。最多64pending/128ACK环形记录/32错误及1个活动文本probe，dispatch起3s门槛，累计sent/acked/texts标量。迟到或无对应send的ACK不能被用作当前文本确认，观察器错误保持可见。
+
+独立真实Linux合约11.126秒通过：130次正常Viewer beforeinput文本请求，全部真实发送/注入ACK<3s并逐次等待实际最终input marker与Native lastProcessedInputSeq≥该seq；包含resize及跨站。总520次实际Input send/ACK、pending0/rejected0，超过128记录边界后仍只保留128，页面observer nonce保持，Source输入最终x40与末epoch累计长度一致；正常Source/Viewer/19等已知身份关闭，逐帧map/publish/awaitPromise0。单页像素检测时间在ACK后poll，包含检测/传输开销，不当作最早显示或物理scanout。
+
+此项只为组合长测提供边界稳定的输入证据，尚未验收Mac同算法/所有输入模式/8h，也不替代CPUWorker连续窗口中的输入前缀与epoch因果校验。

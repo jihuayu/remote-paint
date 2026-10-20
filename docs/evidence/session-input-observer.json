@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-17T22:25:28.210030+00:00",
+  "status": "passed-bounded-exact-inputsend-ACK/pixel/watermark-observer",
+  "scope": "Actual Linux Source/CPUmain Viewer;130 real Viewer textdispatch→successfulWSsend(seq)→InputAck pairs under3s,actual finalpixels+Native inputwatermark perinput;ring128 crossing/64pendingbound/onepagelifetime,resize/crosssite.Source inputIME/physicaldisplay/Mac/8h/N1long notaccepted. Pixel observation uses this samepageperformanceclock afterACK,andpoll scheduling/read overhead;not earliestpresentation orphysicalscanout. Pure helperrecords do not retain lease tokens/URLs/inputtext.",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-input-observer-v1/frozen-version.json",
+    "sha256": "f67b4da91b28c46b745a83efd23b6746729136b8c535c92b9c11bb164d3e36e2"
+  },
+  "elapsedSeconds": 11.126448445999998,
+  "texts": 130,
+  "actualTotalSentAcks": 520,
+  "maxTextAckMs": 29.099999994039536,
+  "maxInputToPixelReadMs": 92.10000002384186,
+  "boundedStats": {
+    "nonce": "aa0993fb-8b64-43b5-8deb-3990d51ef7b7",
+    "sent": 520,
+    "acked": 520,
+    "rejected": 0,
+    "texts": 130,
+    "peakPending": 4,
+    "pending": 0,
+    "retained": 128,
+    "errors": [],
+    "active": false
+  },
+  "sourceEpochs": [
+    1,
+    2
+  ],
+  "viewportVersions": [
+    1,
+    2
+  ],
+  "sourceNavigationPins": 1,
+  "sourceKnownIdentitiesRetired": 8,
+  "nodeCalls": {
+    "map": 0,
+    "publish": 0,
+    "awaitPromise": 0
+  },
+  "cleanupErrors": [],
+  "artifacts": {
+    "input-observer.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-input-observer-v1/results/input-observer.json",
+      "sha256": "4a63f71a55cb39f6a531b3d9bda107486915674b23c6db8b959192b0fcdbc346"
+    },
+    "input-observer-stats.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-input-observer-v1/results/input-observer-stats.json",
+      "sha256": "584bf33b4b4f85ee0f66858ce3aa031afbc35b369794784d4a02e2a0ae38d43a"
+    }
+  },
+  "allProcessesExited": true,
+  "noCommitPush": true,
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}
