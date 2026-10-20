@@ -1,4 +1,4 @@
-import {captureObservationReference,captureObservationContext,captureObservationRequest,captureObservationOptions,validateObservationReply} from './agent-observation.mjs';
+import {captureObservationReference,captureObservationContext,captureObservationRequest,captureObservationOptions,validateObservationReply,captureAccessibilityRequest,validateAccessibilityReply} from './agent-observation.mjs';
 import {SessionClientError,createBackendTransport,freezeBackendData} from './backend-transport.mjs';
 export class AgentClientError extends SessionClientError {constructor(code,options){super(code,options);this.name='AgentClientError';this.message=code==='CLIENT_INVALID_REQUEST'?'Invalid Agent client request':'Agent API request failed';}}
 const invalid=()=>{throw new AgentClientError('CLIENT_INVALID_REQUEST',{outcome:'not-dispatched'});};
@@ -34,6 +34,7 @@ function invocation(v){
  return v.receipt===null&&error(v.error)&&(v.state==='unknown'?v.dispatchStarted&&v.error.outcome==='unknown':v.error.outcome==='not-dispatched');
 }
 function validate(status,value,expect,headers){
+ if(expect.kind==='agent-accessibility')return validateAccessibilityReply(status,value,expect,headers);
  if(['agent-observation-context','agent-observation'].includes(expect.kind))return validateObservationReply(status,value,expect,headers);
  if(expect.kind==='agent-context')return status===200&&exact(value,['binding','fence'])&&isBinding(value.binding)&&isFence(value.fence)&&value.binding.sessionId===expect.sessionId;
  if(expect.kind.startsWith('agent-invocation')){
@@ -78,6 +79,7 @@ export class AgentClient {
   })});
   Object.defineProperty(this,'observations',{enumerable:true,value:Object.freeze({
    context:(run,options={})=>{const reference=captureObservationReference(run,invalid),opts=captureObservationOptions(options,invalid);return call('GET','/v1/agent-runs/'+reference.agentRunId+'/observation-context',null,null,{kind:'agent-observation-context',reference},opts);},
+   accessibility:(supplied,input,options={})=>{const ctx=captureObservationContext(supplied,invalid),request=captureAccessibilityRequest(input,invalid),opts=captureObservationOptions(options,invalid);return call('POST','/v1/agent-runs/'+ctx.agentRunId+'/accessibility-observations',body({context:ctx,...request}),null,{kind:'agent-accessibility',context:ctx,request},opts);},
    read:(supplied,input,options={})=>{const ctx=captureObservationContext(supplied,invalid),request=captureObservationRequest(input,invalid),opts=captureObservationOptions(options,invalid);return call('POST','/v1/agent-runs/'+ctx.agentRunId+'/observations',body({context:ctx,...request}),null,{kind:'agent-observation',context:ctx,request},opts);}
   })});
   Object.defineProperty(this,'invocations',{enumerable:true,value:Object.freeze({

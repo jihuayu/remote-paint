@@ -88,7 +88,30 @@ Queries are `snapshot`, `locate` by `id`/`tag`/`testId`, or `element` with an op
 
 Each call captures its input before awaiting and makes exactly one HTTP attempt, even if the client config enables mutation retries. Observation options accept only `signal`; no idempotency key or `retries`. Cancellation/deadline ends the local wait while actual fetch/body/cancellation work retains bounded ordinary admission until settled. Independently scoped end has its own transport pool. This does not cancel or undo an admitted Source operation.
 
-Read context is fetched only when the caller asks. Stale document/element errors do not fetch a new fence, rebind a selector or replay input. A known, confirmed same-owner input Run in `recovery-required` can be inspected, but observing actual DOM never upgrades an unknown invocation or clears writer quarantine. Each fresh snapshot replaces the bounded handle registry; GC and selected metadata/document changes can also expire handles. Observations carry a snapshot revision and time, not a global DOM mutation counter. AX, screenshots/downloads, cross-frame/full locators and write-by-handle remain pending; The Python backend also provides frozen observation models and single-attempt reads; see the repository `sdk/python/README.md` and its independent qualification evidence.
+Read context is fetched only when the caller asks. Stale document/element errors do not fetch a new fence, rebind a selector or replay input. A known, confirmed same-owner input Run in `recovery-required` can be inspected, but observing actual DOM never upgrades an unknown invocation or clears writer quarantine. Each fresh snapshot replaces the bounded handle registry; GC and selected metadata/document changes can also expire handles. Observations carry a snapshot revision and time, not a global DOM mutation counter. Computed AX is available for exact main-document elements through the method below. Screenshots/downloads, cross-frame/full locators and write-by-handle remain pending; The Python backend also provides frozen observation models and single-attempt reads; see the repository `sdk/python/README.md` and its independent qualification evidence.
+
+### Computed accessibility for an existing element
+
+`reader.observations.accessibility(readContext, {elementId, limits?, rpcTimeoutMs?}, {signal?})` uses the same independent `agents:observe` scope. Supply an opaque handle returned by a DOM observation for this original Run/document. No selector, CDP/object/backend-node ID or write fence is accepted.
+
+```js
+const selected = (await reader.observations.read(readContext, {
+  query: {kind: 'locate', by: 'id', value: 'shipping-address'},
+})).data;
+if (selected.nodes[0]) {
+  const observation = (await reader.observations.accessibility(readContext, {
+    elementId: selected.nodes[0].elementId,
+    limits: {maxChars: 256},
+  })).data;
+  if (!observation.redacted) console.log(observation.ax.role, observation.ax.name);
+}
+```
+
+The frozen result has stage `accessibility-observed` and scope `main-document-element-accessibility`, the original logical IDs/version/binding/document/element, time/revision, normalized limits, truncation and a discriminated `redacted`/`ax` pair. Password/hidden elements return `redacted: true, ax: null`; other results provide computed role/name/description/value and the supported boolean/tristate states. `value` is a string or null; numeric/bool browser values have already been normalized by Source. `maxChars` defaults to 256, max 512 UTF-16 units shared by name/description/value. Role is separately limited to 64. Source and public record byte limits remain 6144/8192.
+
+The SDK captures inputs before awaiting and rejects wrong IDs, version, worker/target/document, element, budget, status/Location, metadata, redaction and extra projection/state fields. It sends one HTTP attempt regardless of configured mutation retries and accepts only the read `signal` option. Stale AX handles and documents do not trigger context refresh, selector rebind or input replay. Observing a known unknown action never upgrades history or clears writer quarantine. Actual unsettled HTTP/body/cancellation work retains local capacity; the server separately retains actual Source work after an HTTP wait ends, with independent end admission.
+
+This is computed accessibility for the exact original main-document element, not a full AX tree/frame API or a physical browser-memory qualification. Source's raw CDP reply budget is checked after decoding. Python computed AX models/methods follow in a separate checkpoint; its existing DOM/input SDK remains available. Qualification is limited by the corresponding repository evidence and installed Native flow.
 
 ## Browser connection module (experimental)
 

@@ -48,6 +48,16 @@ export interface AgentObservation extends AgentObservationContext {
  readonly stage:'observed';readonly observationId:AgentObservationId;readonly revision:number;readonly observedAt:string;readonly scope:'main-document-light-dom';
  readonly query:AgentObservationQuery;readonly limits:Required<AgentObservationLimits>;readonly url:string;readonly title:string;readonly nodes:readonly AgentObservationNode[];readonly visited:number;readonly truncated:boolean;
 }
+export interface AgentAccessibilityLimits {readonly maxChars?:number;}
+export interface AgentAccessibilityInput {readonly elementId:AgentElementId;readonly limits?:AgentAccessibilityLimits;readonly rpcTimeoutMs?:number;}
+export interface AgentAccessibilityStates {
+ readonly disabled?:boolean;readonly focused?:boolean;readonly focusable?:boolean;readonly readonly?:boolean;readonly required?:boolean;readonly selected?:boolean;readonly multiline?:boolean;readonly multiselectable?:boolean;readonly expanded?:boolean;readonly modal?:boolean;readonly busy?:boolean;readonly checked?:boolean|'mixed';readonly pressed?:boolean|'mixed';
+}
+export interface AgentAccessibilityProjection {readonly ignored:boolean;readonly role:string;readonly name:string;readonly description:string;readonly value:string|null;readonly states:AgentAccessibilityStates;}
+interface AgentAccessibilityBase extends AgentObservationContext {
+ readonly stage:'accessibility-observed';readonly scope:'main-document-element-accessibility';readonly observationId:AgentObservationId;readonly revision:number;readonly observedAt:string;readonly elementId:AgentElementId;readonly limits:Required<AgentAccessibilityLimits>;readonly url:string;readonly title:string;readonly truncated:boolean;
+}
+export type AgentAccessibilityObservation=AgentAccessibilityBase&({readonly redacted:true;readonly ax:null}|{readonly redacted:false;readonly ax:AgentAccessibilityProjection});
 export interface AgentCreateOptions extends RequestOptions {readonly idempotencyKey:string;}
 export interface PreparedAgentRun {send(options?:RequestOptions):Promise<ApiResult<AgentRun>>;}
 export interface PreparedAgentInvocation {send(options?:RequestOptions):Promise<ApiResult<AgentInvocation>>;}
@@ -63,6 +73,7 @@ export class AgentClient {
   readonly end:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentRun>>;
  };
  readonly observations:{
+  readonly accessibility:(context:AgentObservationContext,input:AgentAccessibilityInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentAccessibilityObservation>>;
   readonly context:(run:AgentObservationReference,options?:AgentObservationOptions)=>Promise<ApiResult<AgentObservationContext>>;
   readonly read:(context:AgentObservationContext,input:AgentObservationInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentObservation>>;
  };

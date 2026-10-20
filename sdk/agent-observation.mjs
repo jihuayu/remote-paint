@@ -41,3 +41,20 @@ export function validateObservationReply(status,value,expect,headers){
  const {agentRunId,sessionId,...source}=value;
  return chars<=l.maxChars&&(q.kind!=='element'||value.nodes.length===1&&value.visited===1)&&new TextEncoder().encode(JSON.stringify(value)).byteLength<=8192&&new TextEncoder().encode(JSON.stringify(source)).byteLength<=6144;
 }
+
+const axResultFields=['agentRunId','sessionId','stage','binding','document','observationId','revision','observedAt','version','scope','elementId','limits','url','title','ax','redacted','truncated'];
+const axBooleans=['disabled','focused','focusable','readonly','required','selected','multiline','multiselectable','expanded','modal','busy'],axTristates=['checked','pressed'];
+export function captureAccessibilityRequest(value,invalid){
+ const v=data(value,['elementId','limits','rpcTimeoutMs'],['elementId'],invalid),l=data(Object.hasOwn(v,'limits')?v.limits:{},['maxChars'],[],invalid),maxChars=l.maxChars??256;if(!id(v.elementId,'elh')||!integer(maxChars,0,512)||v.rpcTimeoutMs!==undefined&&!integer(v.rpcTimeoutMs,50,120000))invalid();return freezeBackendData({elementId:v.elementId,limits:{maxChars},...(v.rpcTimeoutMs===undefined?{}:{rpcTimeoutMs:v.rpcTimeoutMs})});
+}
+export function validateAccessibilityReply(status,value,expect,headers){
+ if(status!==200||headers.get('location')!==null||!exact(value,axResultFields))return false;
+ const ctx=Object.fromEntries(fields.context.map(k=>[k,value[k]])),expected=expect.context;
+ if(!validContext(ctx)||!equal(ctx,expected,['agentRunId','sessionId','version'])||!equal(ctx.binding,expected.binding,fields.binding)||!equal(ctx.document,expected.document,fields.document)||value.stage!=='accessibility-observed'||value.scope!=='main-document-element-accessibility'||value.elementId!==expect.request.elementId||!exact(value.limits,['maxChars'])||value.limits.maxChars!==expect.request.limits.maxChars||!id(value.observationId,'obs')||!integer(value.revision,1)||!string(value.observedAt,32,1)||!Number.isFinite(Date.parse(value.observedAt))||new Date(value.observedAt).toISOString()!==value.observedAt||!string(value.url,1024)||!string(value.title,256)||typeof value.truncated!=='boolean'||typeof value.redacted!=='boolean')return false;
+ if(value.redacted){if(value.ax!==null)return false;}else{
+  const a=value.ax;if(!exact(a,['ignored','role','name','description','value','states'])||typeof a.ignored!=='boolean'||!string(a.role,64)||!string(a.name,512)||!string(a.description,512)||a.value!==null&&!string(a.value,512)||a.name.length+a.description.length+(a.value?.length??0)>expect.request.limits.maxChars||!plain(a.states))return false;
+  if(Reflect.ownKeys(a.states).some(k=>![...axBooleans,...axTristates].includes(k)||typeof a.states[k]!=='boolean'&&!(axTristates.includes(k)&&a.states[k]==='mixed')))return false;
+ }
+ const {agentRunId,sessionId,...source}=value;
+ return new TextEncoder().encode(JSON.stringify(value)).byteLength<=8192&&new TextEncoder().encode(JSON.stringify(source)).byteLength<=6144;
+}

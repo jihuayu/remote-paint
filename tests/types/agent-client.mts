@@ -1,5 +1,5 @@
-import {AgentClient as RootAgentClient,AgentClientError,type AgentContext,type AgentInvocation,type AgentAction,type AgentRunId,type AgentInvocationId,type AgentObservationContext,type AgentObservation} from '../../sdk/backend.mjs';
-import {AgentClient} from '../../sdk/agent.mjs';
+import {AgentClient as RootAgentClient,AgentClientError,type AgentContext,type AgentInvocation,type AgentAction,type AgentRunId,type AgentInvocationId,type AgentObservationContext,type AgentObservation,type AgentAccessibilityObservation,type AgentAccessibilityStates} from '../../sdk/backend.mjs';
+import {AgentClient,type AgentAccessibilityInput} from '../../sdk/agent.mjs';
 const same:typeof AgentClient=RootAgentClient;void same;
 const client=new AgentClient({baseUrl:'https://api.example.test',apiKey:'backend-secret-from-environment',maxConcurrentRequests:2,maxConcurrentEndRequests:1});
 const created=await client.runs.prepareCreate('ses_example',{region:'test',version:'pinned-version',rpcTimeoutMs:5000},{idempotencyKey:'run-key'}).send();
@@ -66,3 +66,32 @@ snapshot.nodes.push(selected.nodes[0]!);
 selected.nodes[0]!.text='changed';
 // @ts-expect-error read authority cannot be used to inject
 client.invocations.create(readContext,actions[0]!,{idempotencyKey:'key'});
+
+
+const axInput:AgentAccessibilityInput={elementId:selected.nodes[0]!.elementId,limits:{maxChars:256},rpcTimeoutMs:5000};
+const axResult:AgentAccessibilityObservation=(await client.observations.accessibility(readContext,axInput,{signal:new AbortController().signal})).data;
+if(axResult.redacted){
+ const noData:null=axResult.ax;void noData;
+ // @ts-expect-error redacted results have no AX projection
+ axResult.ax.name;
+}else{
+ const role:string=axResult.ax.role;
+ const states:AgentAccessibilityStates=axResult.ax.states;
+ const checked:boolean|'mixed'|undefined=states.checked;void role;void checked;
+ // @ts-expect-error projection/state fields are readonly
+ states.readonly=false;
+}
+// @ts-expect-error requires a read document context, not a writer fence
+client.observations.accessibility(ctx,axInput);
+// @ts-expect-error exact element ID type is required
+client.observations.accessibility(readContext,{elementId:runId});
+// @ts-expect-error arbitrary selectors are not accepted
+client.observations.accessibility(readContext,{selector:'button'});
+// @ts-expect-error AX limits differ from DOM traversal limits
+client.observations.accessibility(readContext,{...axInput,limits:{maxNodes:1}});
+// @ts-expect-error AX reads have no retries or idempotency
+client.observations.accessibility(readContext,axInput,{retries:1});
+// @ts-expect-error document versions are immutable
+axResult.document.pageEpoch=2;
+// @ts-expect-error AX observations do not expose business success
+axResult.businessSuccess;

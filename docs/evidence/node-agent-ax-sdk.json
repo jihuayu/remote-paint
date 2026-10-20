@@ -1,0 +1,245 @@
+{
+  "at": "2026-10-19T19:43:51.107202+00:00",
+  "task": "Node computed AX SDK runtime types installed Native checkpoint",
+  "status": "Node-computed-AX-SDK-qualified-within-scope",
+  "scope": "Installed Node AgentClient.observations.accessibility immutable exact computed AX input and result DTO; strict logical/Source/version/document/element/budget identity and source/public byte caps, one HTTP attempt, actual fetch/body/cancel admission and independent end. Actual installed Node AX SDK-to-public-HTTP-to-canonical-Native proof. Python AX SDK/full-tree/frame/raw receiver preallocation/browser physical/postconditions remain pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/public-agent-ax-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "2636e16259908f09c5651c72147d1d5a30b3c61f6215a15d45e5d0965f39b28b",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-agent-ax-sdk-candidate-v3/frozen-version.json",
+  "executedManifestSha256": "6de6d5925ffb553042b9b09c6587cd88d7be13b27ed747c64d48757561060fab",
+  "newNodeContracts": 17,
+  "testNames": [
+    "Node AX SDK captures context/element/budget/private timeout before await and freezes exact result",
+    "Node AX SDK supports normalized defaults, zero text, supported bool/tristate and explicit redacted null",
+    "Node AX SDK rejects selectors/raw CDP/unknown fields/budgets/getters and write-context substitution before fetch",
+    "Node AX SDK accepts only signal options and has no retry/idempotency argument",
+    "Node AX SDK rejects wrong logical identity/version/worker/target/document/element and changed budget",
+    "Node AX SDK validates phase/scope/time/revision/field lengths/redaction and exact projection/state schema",
+    "Node AX SDK counts UTF16 units and independent Source/public UTF8 record limits",
+    "Node AX SDK enforces HTTP 200/no Location, JSON envelope/request correlation and transport byte budget",
+    "Node AX SDK always sends once despite configured mutation retries and never refreshes context or locator",
+    "Node AX SDK pre-abort sends nothing; mid-read cancellation keeps actual capacity while priority end remains independent",
+    "Node AX SDK noncooperative fetch timeout retains its actual slot without retry",
+    "Node AX SDK body cancellation owns actual capacity until underlying cleanup settles",
+    "Node AX SDK real HTTP reads computed metadata with independent scope and no payload persistence",
+    "Node AX SDK real HTTP zero budget and redacted result preserve exact immutable typed variants",
+    "Node AX SDK real HTTP known unknown input remains readable without history upgrade, recovery or replay",
+    "Node AX SDK real HTTP stale/unavailable/limit errors never reset the writer or fetch a replacement context",
+    "Node AX SDK real HTTP deadline finishes local HTTP wait while actual executor/end remain independently tracked"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v45/manifest.json",
+  "fullJsManifestSha256": "81ad35236f5fdfc9c59676a8519f5a91f31fd3319b5732d5759f72c004dd18c0",
+  "fullJs": {
+    "mac": {
+      "tests": 1265,
+      "pass": 1250,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "5d3db8008e417952a5cf5eb94b0f0e6aaa98c05098d7f22bf4fd2f5150503ac9"
+    },
+    "linux": {
+      "tests": 1265,
+      "pass": 1259,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "ecee3275b59e6adf7c2888fdcf53c3327dfee05187c22e4e33d6a3b6554383a7"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 132,
+      "pythonTests": 56,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 52,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "pythonArchiveBytesUnchanged": true,
+      "nodeArchiveNew": true
+    },
+    "linux": {
+      "nodeTests": 132,
+      "pythonTests": 56,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 52,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "pythonArchiveBytesUnchanged": true,
+      "nodeArchiveNew": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "689362d15972a3eab26ff4adb1261f0f66f9fc94fec9f8c14a40c38b2d229138",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "165f7944bc3b49e677d7f2597f60cdfee0d3e36aee187290d750554cf3f53b39"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-agent-ax-sdk-native-v1/manifest.json",
+  "nativeManifestSha256": "f468c387dbc10a0f3309ea4762398ec418e13f168fe1dc05696472322090ca9a",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "authorization": {
+      "independentObserveScope": true,
+      "tenantIsolation": true,
+      "noWriterFenceOrMutationOrEndOrSessionReleaseOrViewerMint": true,
+      "forgedLogicalContextRejectedBeforeSource": true
+    },
+    "metadata": {
+      "actualDOM": true,
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "targetId": "target_422bbdf3-836d-4b2c-acda-55f1c965e40b",
+      "epoch": 1,
+      "observedAt": "2026-10-19T19:39:19.076Z",
+      "passwordRedacted": true,
+      "mainDocumentLightDomOnly": true,
+      "readDoesNotRefreshWriterFence": true
+    },
+    "accessibility": {
+      "browserComputedRoleNameDescriptionValue": true,
+      "readonlyRequiredChecked": true,
+      "nestedTextAndExternalLabelSemantics": true,
+      "sameHandleDifferentBudgets": true,
+      "originalElementReplacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "computedLabelChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLabel": "Shipping changed",
+      "unicodeNameChars": 512,
+      "truncated": true,
+      "oversizedBrowserReplyRejected": {
+        "code": "AGENT_OBSERVATION_LIMIT",
+        "outcome": "not-dispatched"
+      },
+      "passwordFullyRedacted": true,
+      "explicitDomainAndObjectCleanupConfirmedByCompletedSourceRead": true,
+      "noPhysicalPreallocationClaim": true,
+      "publicHttp": true,
+      "sourcePrivateCapabilityRequired": true,
+      "readDuringHumanLease": true,
+      "oldDocumentRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "knownUnknownInputAXObservedWithoutRecovery": true
+    },
+    "unicode": {
+      "sourceChars": 4000,
+      "returnedChars": 1024,
+      "truncated": true,
+      "handleStillResolvable": true
+    },
+    "elements": {
+      "replacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "selectedMetadataChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLocatorGetsDistinctHandle": true,
+      "noAutomaticSelectorRebind": true
+    },
+    "human": {
+      "readDuringHumanLease": true,
+      "writeStillPaused": true,
+      "readAndAgentEndPreservedOriginalHumanGrant": true,
+      "fieldValue": "OBSHF"
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "oldReadContextRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "oldHandleRejectedInNewDocument": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "oldWriteFenceRejected": true,
+      "samePageTarget": true
+    },
+    "bounds": {
+      "largeFixtureNodes": 3000,
+      "visitedCap": 32,
+      "truncated": true,
+      "maxSerializedBytes": 8192,
+      "actualSnapshotBytes": 3316,
+      "noScriptOrArbitraryCdp": true
+    },
+    "unknown": {
+      "actualSlowClickOnce": true,
+      "observedActualDOMAfterUnknown": true,
+      "historyRemainedUnknown": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "httpTimeout": {
+      "http408": true,
+      "actualExecutorSlotRetained": true,
+      "writerRemainedActive": true,
+      "inputAfterActualSettlement": true
+    },
+    "disconnect": {
+      "actualExecutorSlotRetained": true,
+      "priorityEndWithIndependentScope": true,
+      "lateReadCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativeJournal": {
+    "logicalRunsClosed": 4,
+    "injected": 10,
+    "unknown": 1,
+    "rejected": 2
+  },
+  "decodedAxCdpReplyByteCap": 32768,
+  "rawCdpReceiverPreallocationQualified": false,
+  "browserAxPhysicalMemoryQualified": false,
+  "privateAxResultByteCap": 6144,
+  "maxAxTextUnits": 512,
+  "publicObservationResultByteCap": 8192,
+  "privateReadResultByteCap": 6144,
+  "standardProviderFrameByteCap": 8192,
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-agent-ax-sdk-cleanup-v1.json",
+  "cleanupAuditSha256": "b83a6ac87f37d8687501211fb5fc3d2bfbbaf7411296c8845c4b7751e6304be7",
+  "trustedNativeObservationCoreQualified": true,
+  "publicObservationQualified": true,
+  "nodeObservationSdkQualified": true,
+  "pythonObservationSdkQualified": true,
+  "observationSdkQualified": true,
+  "computedAxPrivateQualified": true,
+  "computedAxPublicQualified": true,
+  "nodeComputedAxSdkQualified": true,
+  "pythonComputedAxSdkQualified": false,
+  "computedAxSdkQualified": false,
+  "K6Complete": false,
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": true,
+  "publicAgentSdkQualified": true,
+  "agentSdkScope": "Installed Node computed AX SDK newly qualified; Node/Python seven input tools and main-light-DOM observations retained. New Node archive20 files, unchanged Python wheel10;52 current inputs reinstalled. Python AX SDK pending.",
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true
+}
