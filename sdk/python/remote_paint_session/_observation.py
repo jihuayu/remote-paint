@@ -1,4 +1,4 @@
-"""Immutable managed DOM observation DTOs and single-attempt backend reads."""
+"""Immutable managed DOM and computed AX DTOs and single-attempt reads."""
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -89,6 +89,98 @@ class ObservationExpected:
     reference: AgentObservationReference
     context: AgentObservationContext | None = None
     request: AgentObservationInput | None = None
+
+@dataclass(frozen=True, slots=True)
+class AgentAccessibilityLimits:
+    max_chars: int = 256
+@dataclass(frozen=True, slots=True)
+class AgentAccessibilityInput:
+    element_id: AgentElementId
+    limits: AgentAccessibilityLimits = field(default_factory=AgentAccessibilityLimits)
+    rpc_timeout_ms: int | None = None
+@dataclass(frozen=True, slots=True)
+class AgentAccessibilityStates:
+    disabled: bool | None = None
+    focused: bool | None = None
+    focusable: bool | None = None
+    readonly: bool | None = None
+    required: bool | None = None
+    selected: bool | None = None
+    multiline: bool | None = None
+    multiselectable: bool | None = None
+    expanded: bool | None = None
+    modal: bool | None = None
+    busy: bool | None = None
+    checked: bool | Literal['mixed'] | None = None
+    pressed: bool | Literal['mixed'] | None = None
+@dataclass(frozen=True, slots=True)
+class AgentAccessibilityProjection:
+    ignored: bool
+    role: str
+    name: str
+    description: str
+    value: str | None
+    states: AgentAccessibilityStates
+@dataclass(frozen=True, slots=True)
+class _AccessibilityObservation(AgentObservationContext):
+    observation_id: AgentObservationId
+    revision: int
+    observed_at: str
+    element_id: AgentElementId
+    limits: AgentAccessibilityLimits
+    url: str
+    title: str
+    truncated: bool
+    stage: Literal['accessibility-observed'] = field(default='accessibility-observed',init=False)
+    scope: Literal['main-document-element-accessibility'] = field(default='main-document-element-accessibility',init=False)
+@dataclass(frozen=True, slots=True)
+class AgentAccessibilityVisible(_AccessibilityObservation):
+    ax: AgentAccessibilityProjection
+    redacted: Literal[False] = field(default=False,init=False)
+@dataclass(frozen=True, slots=True)
+class AgentAccessibilityRedacted(_AccessibilityObservation):
+    ax: None = field(default=None,init=False)
+    redacted: Literal[True] = field(default=True,init=False)
+AgentAccessibilityObservation = AgentAccessibilityVisible | AgentAccessibilityRedacted
+
+@dataclass(frozen=True, slots=True)
+class AccessibilityExpected:
+    context: AgentObservationContext
+    request: AgentAccessibilityInput
+
+def _capture_accessibility(v: AgentAccessibilityInput) -> tuple[AgentAccessibilityInput,dict[str,Any]]:
+    if type(v) is not AgentAccessibilityInput or not _id(v.element_id,'elh_') or type(v.limits) is not AgentAccessibilityLimits or not _integer(v.limits.max_chars,0,512):
+        _invalid()
+    _timeout(v.rpc_timeout_ms)
+    captured = AgentAccessibilityInput(v.element_id,AgentAccessibilityLimits(v.limits.max_chars),v.rpc_timeout_ms)
+    wire: dict[str,Any] = dict(elementId=captured.element_id,limits=dict(maxChars=captured.limits.max_chars))
+    if captured.rpc_timeout_ms is not None:
+        wire['rpcTimeoutMs'] = captured.rpc_timeout_ms
+    return captured,wire
+
+def validate_accessibility(status: int, v: Any, e: AccessibilityExpected, headers: httpx.Headers) -> AgentAccessibilityObservation:
+    fields = ['agentRunId','sessionId','stage','binding','document','observationId','revision','observedAt','version','scope','elementId','limits','url','title','ax','redacted','truncated']
+    if status!=200 or 'location' in headers or not _exact(v,fields):
+        _fail()
+    ctx = _decode_context({k:v[k]for k in _CONTEXT})
+    if ctx!=e.context or v['stage']!='accessibility-observed' or v['scope']!='main-document-element-accessibility' or not _id(v['observationId'],'obs_') or not _integer(v['revision'],1,2**53-1) or not _canonical_date(v['observedAt']) or v['elementId']!=e.request.element_id or not _exact(v['limits'],['maxChars']) or not _integer(v['limits']['maxChars'],0,512) or v['limits']['maxChars']!=e.request.limits.max_chars or not _text(v['url'],1024,0) or not _text(v['title'],256,0) or type(v['redacted']) is not bool or type(v['truncated']) is not bool:
+        _fail()
+    if _byte_length(v)>8192 or _byte_length({k:value for k,value in v.items()if k not in ('agentRunId','sessionId')})>6144:
+        _fail()
+    args = dict(agent_run_id=ctx.agent_run_id,session_id=ctx.session_id,version=ctx.version,binding=ctx.binding,document=ctx.document,observation_id=AgentObservationId(v['observationId']),revision=v['revision'],observed_at=v['observedAt'],element_id=AgentElementId(v['elementId']),limits=AgentAccessibilityLimits(v['limits']['maxChars']),url=v['url'],title=v['title'],truncated=v['truncated'])
+    ax = v['ax']
+    if v['redacted']:
+        if ax is not None:
+            _fail()
+        return AgentAccessibilityRedacted(**args)
+    if not _exact(ax,['ignored','role','name','description','value','states']) or type(ax['ignored']) is not bool or not _text(ax['role'],64,0) or any(not _text(ax[k],512,0)for k in ['name','description']) or ax['value'] is not None and not _text(ax['value'],512,0):
+        _fail()
+    if len((ax['name']+ax['description']+(ax['value'] or '')).encode('utf-16-le',errors='surrogatepass'))//2>e.request.limits.max_chars:
+        _fail()
+    states = ax['states'];boolean = {'disabled','focused','focusable','readonly','required','selected','multiline','multiselectable','expanded','modal','busy'}
+    if type(states) is not dict or any(k not in boolean|{'checked','pressed'} or (type(value) is not bool if k in boolean else type(value) is not bool and value!='mixed')for k,value in states.items()):
+        _fail()
+    return AgentAccessibilityVisible(**args,ax=AgentAccessibilityProjection(ax['ignored'],ax['role'],ax['name'],ax['description'],ax['value'],AgentAccessibilityStates(**states)))
 
 def _context_wire(c: AgentObservationContext) -> dict[str,Any]:
     b,d = c.binding,c.document
@@ -207,4 +299,10 @@ class _Observations:
         payload = _body(dict(context=_context_wire(ctx),**wire));expected = ObservationExpected(AgentObservationReference(ctx.agent_run_id,ctx.session_id,ctx.version),ctx,request)
         async def send() -> ApiResult[AgentObservation]:
             return cast(ApiResult[AgentObservation],await self._transport.request('POST','/v1/agent-runs/'+ctx.agent_run_id+'/observations',payload,None,expected,0))
+        return send()
+    def accessibility(self, context: AgentObservationContext, value: AgentAccessibilityInput) -> Coroutine[Any,Any,ApiResult[AgentAccessibilityObservation]]:
+        ctx = _capture_context(context);request,wire = _capture_accessibility(value)
+        payload = _body(dict(context=_context_wire(ctx),**wire));expected = AccessibilityExpected(ctx,request)
+        async def send() -> ApiResult[AgentAccessibilityObservation]:
+            return cast(ApiResult[AgentAccessibilityObservation],await self._transport.request('POST','/v1/agent-runs/'+ctx.agent_run_id+'/accessibility-observations',payload,None,expected,0))
         return send()

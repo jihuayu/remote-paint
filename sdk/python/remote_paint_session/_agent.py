@@ -9,7 +9,7 @@ from ._client import SessionId, _date as _session_date, _integer
 from ._transport import ApiResult, BackendTransport, Outcome, RetryCount, SessionClientError, SessionClientCancelledError, TransportStatus
 
 if TYPE_CHECKING:
-    from ._observation import ObservationExpected
+    from ._observation import ObservationExpected, AccessibilityExpected
 
 AgentRunId = NewType('AgentRunId', str)
 AgentInvocationId = NewType('AgentInvocationId', str)
@@ -230,8 +230,10 @@ class _Expected:
     fence: AgentFence | None = None
     inputs: int | None = None
 
-def _validate(status: int, v: Any, e: _Expected | ObservationExpected, headers: httpx.Headers) -> Any:
-    from ._observation import ObservationExpected, validate_observation
+def _validate(status: int, v: Any, e: _Expected | ObservationExpected | AccessibilityExpected, headers: httpx.Headers) -> Any:
+    from ._observation import ObservationExpected, AccessibilityExpected, validate_observation, validate_accessibility
+    if isinstance(e,AccessibilityExpected):
+        return validate_accessibility(status,v,e,headers)
     if isinstance(e,ObservationExpected):
         return validate_observation(status,v,e,headers)
     if e.kind=='context':

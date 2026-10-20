@@ -1,7 +1,7 @@
 """Concurrent line-RPC test adapter; all Agent HTTP uses the installed Python SDK."""
 from __future__ import annotations
 import asyncio
-from dataclasses import asdict, is_dataclass
+from dataclasses import asdict, is_dataclass, FrozenInstanceError
 import json
 from pathlib import Path
 import sys
@@ -9,6 +9,11 @@ import remote_paint_session as sdk
 
 _RENAME={'agent_run_id':'agentRunId','session_id':'sessionId','invocation_id':'invocationId','holds_writer':'holdsWriter','begin_dispatch':'beginDispatch','end_dispatch':'endDispatch','created_at':'createdAt','updated_at':'updatedAt','dispatch_started':'dispatchStarted','tenant_id':'tenantId','target_id':'targetId','run_id':'runId','control_session_id':'controlSessionId','control_version':'controlVersion','page_epoch':'pageEpoch','viewport_version':'viewportVersion','request_id':'requestId','element_id':'elementId','observation_id':'observationId','observed_at':'observedAt','max_nodes':'maxNodes','max_chars':'maxChars','max_visited':'maxVisited'}
 def output(v):
+ if isinstance(v,sdk.AgentAccessibilityStates):return {k:value for k,value in asdict(v).items()if value is not None}
+ if isinstance(v,(sdk.AgentAccessibilityVisible,sdk.AgentAccessibilityRedacted)):
+  value=asdict(v)
+  if v.ax is not None:value['ax']['states']=output(v.ax.states)
+  return output(value)
  if is_dataclass(v):return output(asdict(v))
  if isinstance(v,dict):return {_RENAME.get(k,k):output(value)for k,value in v.items()}
  if isinstance(v,(tuple,list)):return [output(value)for value in v]
@@ -44,6 +49,16 @@ async def main():
    elif op=='observation-context':result=await client.observations.context(sdk.AgentObservationReference(sdk.AgentRunId(a['run']['agentRunId']),sdk.SessionId(a['run']['sessionId']),a['run']['version']))
    elif op=='observe':
     v=a['input'];l=v.get('limits',{});result=await client.observations.read(context(a['context']),sdk.AgentObservationInput(query(v['query']),sdk.AgentObservationLimits(l.get('maxNodes',8),l.get('maxChars',1024),l.get('maxVisited',128)),v.get('rpcTimeoutMs')))
+   elif op=='accessibility':
+    v=a['input'];l=v.get('limits',{});result=await client.observations.accessibility(context(a['context']),sdk.AgentAccessibilityInput(sdk.AgentElementId(v['elementId']),sdk.AgentAccessibilityLimits(l.get('maxChars',256)),v.get('rpcTimeoutMs')))
+    assert isinstance(result.data,(sdk.AgentAccessibilityVisible,sdk.AgentAccessibilityRedacted)) and not hasattr(result.data,'__dict__')
+    try:result.data.title='mutated'
+    except FrozenInstanceError:pass
+    else:raise AssertionError('AX result not frozen')
+    if result.data.ax is not None:
+     try:result.data.ax.states.required=False
+     except FrozenInstanceError:pass
+     else:raise AssertionError('AX states not frozen')
    elif op=='status':result=client.transport_status()
    else:raise AssertionError('Unknown test driver operation')
    emit({'id':rid,'value':output(result)})
@@ -53,7 +68,7 @@ async def main():
   while line:=await asyncio.to_thread(sys.stdin.readline):
    command=json.loads(line);rid=command['id'];op=command['op']
    if op=='init':
-    assert not clients;location=Path(sdk.__file__).resolve();assert location.is_relative_to(Path(sys.prefix).resolve());assert location.with_name('_observation.py').is_file();assert location.with_name('py.typed').is_file();clients={role:sdk.AgentClient(base_url=command['base'],api_key=key)for role,key in command['keys'].items()};emit({'id':rid,'value':{'module':str(location),'prefix':sys.prefix,'installedObservationSdk':True}})
+    assert not clients;location=Path(sdk.__file__).resolve();assert location.is_relative_to(Path(sys.prefix).resolve());assert location.with_name('_observation.py').is_file();assert location.with_name('py.typed').is_file();clients={role:sdk.AgentClient(base_url=command['base'],api_key=key)for role,key in command['keys'].items()};emit({'id':rid,'value':{'module':str(location),'prefix':sys.prefix,'installedObservationSdk':True,'installedAccessibilitySdk':hasattr(sdk.AgentClient,'__init__') and hasattr(sdk,'AgentAccessibilityObservation')}})
    elif op=='cancel':
     task=tasks.get(command['args']['target']);
     if task is not None:task.cancel()

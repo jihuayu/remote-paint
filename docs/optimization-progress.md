@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | Node accessibility SDK已接computed AX，严格同步捕获/关联/冻结判别DTO/字节预算，单次HTTP与实际槽、独立end；17新合同、130文件1265项双平台零失败，52输入离线132Node/56Python/类型通过。安装Node SDK真实Native字段/句柄/导航/人控/512中文/密码/超限、unknown后AX不清隔离/不重放、408/取消槽与end、4Run/namespace退役通过。Python AX SDK、raw接收前分配/物理、截图下载/完整定位/业务条件仍待做，见[Node AX范围](node-agent-ax-sdk.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | Node/Python computed AX SDK均已通过，Python新增冻结slotted模型/判别类型、同步捕获/单次读取/严格关联和字节预算，取消保留实际Task/body/close占用、end独立；17新Python合同，双平台离线132Node/73Python/类型及130文件1265项JS零失败。安装Python SDK真实Native语义/句柄/导航/人控/unknown不重放/408取消实际槽/end、4Run与namespace退役。raw接收前分配/物理、截图下载/完整定位/业务条件仍待做，见[Python AX范围](python-agent-ax-sdk.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -2010,3 +2010,8 @@ Python新增受管七工具、冻结模型、判别类型、不可变prepare与u
 ### Node computed AX SDK
 
 新增安装包accessibility方法，严格同步捕获/结果关联、深度冻结与readonly判别类型，单次HTTP、实际取消名额和独立end。17新合同、130文件1265项双平台零失败，52输入离线132Node/56Python/类型通过。真实安装SDK→公开HTTP→Native验证computed语义、句柄/导航/人控/unknown/408/取消与4closed Run、namespace退役。K6部分、41项10/17/14；Python AX SDK与全部剩余目标继续，见[证据范围](node-agent-ax-sdk.md)。
+
+
+### Python computed AX SDK
+
+新增冻结slotted模型、redacted判别类型、同步捕获和单次HTTP的accessibility接口，严格Source/逻辑ID/版本/document/元素/预算；实际取消Task/body/close和独立end保留。17新Python合同，54输入双平台离线132Node/73Python/类型及130文件1265项JS零失败。真实安装Python SDK→HTTP→Native computed语义、人控/unknown/408取消及4Run/namespace退役通过；Node AX资格保留。K6部分、41项10/17/14，其余全部目标继续，见[范围](python-agent-ax-sdk.md)。

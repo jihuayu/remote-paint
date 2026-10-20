@@ -1,4 +1,4 @@
-"""Backend-only asynchronous Session, managed input and DOM observation clients."""
+"""Backend-only asynchronous Session, managed input, DOM and computed AX clients."""
 from ._client import (
     CreateSessionInput, Operation, OperationError, OperationId,
     PreparedCreation, Session, SessionClient, SessionId,
@@ -56,3 +56,10 @@ __all__ += ['AgentElementId', 'AgentObservationId', 'AgentObservationReference',
     'AgentObservationDocument', 'AgentObservationContext', 'AgentSnapshotQuery', 'AgentLocateQuery',
     'AgentElementQuery', 'AgentObservationQuery', 'AgentObservationLimits', 'AgentObservationInput',
     'AgentObservationNode', 'AgentObservation']
+
+from ._observation import (AgentAccessibilityLimits, AgentAccessibilityInput,
+    AgentAccessibilityStates, AgentAccessibilityProjection, AgentAccessibilityVisible,
+    AgentAccessibilityRedacted, AgentAccessibilityObservation)
+__all__ += ['AgentAccessibilityLimits', 'AgentAccessibilityInput', 'AgentAccessibilityStates',
+    'AgentAccessibilityProjection', 'AgentAccessibilityVisible', 'AgentAccessibilityRedacted',
+    'AgentAccessibilityObservation']

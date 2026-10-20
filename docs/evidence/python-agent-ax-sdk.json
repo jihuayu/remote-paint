@@ -1,0 +1,245 @@
+{
+  "at": "2026-10-19T19:50:26.121164+00:00",
+  "task": "Python computed AX SDK frozen models types installed Native checkpoint",
+  "status": "Python-computed-AX-SDK-qualified-within-scope",
+  "scope": "Installed Python computed AX SDK frozen slotted snakecase models and redacted discriminated union, synchronous request capture before coroutine, strict logical/Source/version/document/element/budget result and Source/public bytes, one HTTP attempt, actual task/body/close cancellation and independent end admission. Actual installed Python AX SDK-to-public-HTTP-to-canonical-Native proof. Previously qualified Node AX SDK retained; full-tree/frame/raw CDP receiver preallocation/browser physical/postconditions pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-agent-ax-sdk-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "375c92f2dd7e64a993eb39572a10be3837e802e802374c61c7b0e457f5c3e6a7",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-ax-sdk-candidate-v3/frozen-version.json",
+  "executedManifestSha256": "135b651eea67ac9bdbe58228efe47e12470f29db66b03edb7e64cbac8e157f48",
+  "newPythonContracts": 17,
+  "testNames": [
+    "test_ax_context_element_limits_timeout_are_captured_before_await",
+    "test_ax_frozen_slotted_projection_states_and_discriminated_redaction",
+    "test_ax_default_zero_max_budgets_and_unicode_use_utf16_units",
+    "test_ax_invalid_typed_input_context_limits_timeout_subclasses_send_nothing",
+    "test_ax_reply_exact_logical_worker_version_document_element_budget_identity",
+    "test_ax_metadata_redaction_projection_and_state_whitelist",
+    "test_ax_source_public_and_transport_bytes_correlated_envelope",
+    "test_ax_single_attempt_despite_mutation_retries_errors_are_sanitized",
+    "test_ax_noncooperative_timeout_shares_actual_slot_and_has_independent_end",
+    "test_ax_caller_cancel_retains_noncooperative_task_and_no_retry",
+    "test_ax_actual_body_close_is_counted_after_timeout",
+    "test_ax_aclose_pending_tracks_actual_task_and_remains_closed",
+    "test_ax_http_independent_scope_and_installed_models",
+    "test_ax_http_redacted_and_zero_budget_projection",
+    "test_ax_http_unknown_input_read_preserves_history_and_quarantine",
+    "test_ax_http_stale_is_typed_and_does_not_quarantine_writer",
+    "test_ax_http_408_retains_actual_executor_with_independent_end"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v46/manifest.json",
+  "fullJsManifestSha256": "08d754eb6e960a248bf3d3b9e14c632a6a6b0b454465d0694e47b94d1aa940cd",
+  "fullJs": {
+    "mac": {
+      "tests": 1265,
+      "pass": 1250,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "d3dccaf4493f44ff3ddc6f686f3f6605fb6037e7b8e07ca55c90b717345f305c"
+    },
+    "linux": {
+      "tests": 1265,
+      "pass": 1259,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "49a7d76e976dcbeedd13f8ee7bf2efdb8341cacb8ccff0b903b3a06f1dffcce7"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 132,
+      "pythonTests": 73,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 54,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "nodeArchiveBytesUnchanged": true,
+      "pythonArchiveNew": true
+    },
+    "linux": {
+      "nodeTests": 132,
+      "pythonTests": 73,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 54,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "nodeArchiveBytesUnchanged": true,
+      "pythonArchiveNew": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "689362d15972a3eab26ff4adb1261f0f66f9fc94fec9f8c14a40c38b2d229138",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "f0f24a45ece05f26906c69ab96e1a883199fefa6844fb4c0f658d7a549cd7b27"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-ax-sdk-native-v1/manifest.json",
+  "nativeManifestSha256": "56858812ceb12215ff5c52d9e49b1d60a7128122f9cbd0925a4437f5484b8bfe",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "authorization": {
+      "independentObserveScope": true,
+      "tenantIsolation": true,
+      "noWriterFenceOrMutationOrEndOrSessionReleaseOrViewerMint": true,
+      "forgedLogicalContextRejectedBeforeSource": true
+    },
+    "metadata": {
+      "actualDOM": true,
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "targetId": "target_829f1fd8-5596-4999-8b3e-191967be1e8d",
+      "epoch": 1,
+      "observedAt": "2026-10-19T19:49:04.126Z",
+      "passwordRedacted": true,
+      "mainDocumentLightDomOnly": true,
+      "readDoesNotRefreshWriterFence": true
+    },
+    "accessibility": {
+      "browserComputedRoleNameDescriptionValue": true,
+      "readonlyRequiredChecked": true,
+      "nestedTextAndExternalLabelSemantics": true,
+      "sameHandleDifferentBudgets": true,
+      "originalElementReplacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "computedLabelChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLabel": "Shipping changed",
+      "unicodeNameChars": 512,
+      "truncated": true,
+      "oversizedBrowserReplyRejected": {
+        "code": "AGENT_OBSERVATION_LIMIT",
+        "outcome": "not-dispatched"
+      },
+      "passwordFullyRedacted": true,
+      "explicitDomainAndObjectCleanupConfirmedByCompletedSourceRead": true,
+      "noPhysicalPreallocationClaim": true,
+      "publicHttp": true,
+      "sourcePrivateCapabilityRequired": true,
+      "readDuringHumanLease": true,
+      "oldDocumentRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "knownUnknownInputAXObservedWithoutRecovery": true
+    },
+    "unicode": {
+      "sourceChars": 4000,
+      "returnedChars": 1024,
+      "truncated": true,
+      "handleStillResolvable": true
+    },
+    "elements": {
+      "replacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "selectedMetadataChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLocatorGetsDistinctHandle": true,
+      "noAutomaticSelectorRebind": true
+    },
+    "human": {
+      "readDuringHumanLease": true,
+      "writeStillPaused": true,
+      "readAndAgentEndPreservedOriginalHumanGrant": true,
+      "fieldValue": "OBSHF"
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "oldReadContextRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "oldHandleRejectedInNewDocument": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "oldWriteFenceRejected": true,
+      "samePageTarget": true
+    },
+    "bounds": {
+      "largeFixtureNodes": 3000,
+      "visitedCap": 32,
+      "truncated": true,
+      "maxSerializedBytes": 8192,
+      "actualSnapshotBytes": 3316,
+      "noScriptOrArbitraryCdp": true
+    },
+    "unknown": {
+      "actualSlowClickOnce": true,
+      "observedActualDOMAfterUnknown": true,
+      "historyRemainedUnknown": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "httpTimeout": {
+      "http408": true,
+      "actualExecutorSlotRetained": true,
+      "writerRemainedActive": true,
+      "inputAfterActualSettlement": true
+    },
+    "disconnect": {
+      "actualExecutorSlotRetained": true,
+      "priorityEndWithIndependentScope": true,
+      "lateReadCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativeJournal": {
+    "logicalRunsClosed": 4,
+    "injected": 10,
+    "unknown": 1,
+    "rejected": 2
+  },
+  "decodedAxCdpReplyByteCap": 32768,
+  "rawCdpReceiverPreallocationQualified": false,
+  "browserAxPhysicalMemoryQualified": false,
+  "privateAxResultByteCap": 6144,
+  "maxAxTextUnits": 512,
+  "publicObservationResultByteCap": 8192,
+  "privateReadResultByteCap": 6144,
+  "standardProviderFrameByteCap": 8192,
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-ax-sdk-cleanup-v1.json",
+  "cleanupAuditSha256": "d333f6d013191617b7993c75832f95d7ad47157d1281e3065eab6668ecf43520",
+  "trustedNativeObservationCoreQualified": true,
+  "publicObservationQualified": true,
+  "nodeObservationSdkQualified": true,
+  "pythonObservationSdkQualified": true,
+  "observationSdkQualified": true,
+  "computedAxPrivateQualified": true,
+  "computedAxPublicQualified": true,
+  "nodeComputedAxSdkQualified": true,
+  "pythonComputedAxSdkQualified": true,
+  "computedAxSdkQualified": true,
+  "K6Complete": false,
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": true,
+  "publicAgentSdkQualified": true,
+  "agentSdkScope": "Installed Python computed AX SDK newly qualified; Node AX and Node/Python seven input tools and main-light-DOM observations retained. Unchanged Node archive20 files, new Python wheel10;54 current inputs reinstalled.",
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true
+}

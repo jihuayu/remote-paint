@@ -54,3 +54,23 @@ async def observe(client: AgentClient, run: AgentObservationReference) -> None:
     _ = AgentLocateQuery('css','*')  # type: ignore[arg-type]
     _ = AgentElementQuery(run.agent_run_id)  # type: ignore[arg-type]
     await client.invocations.create(context,{'tool':'insertText','params':{'text':'private'}},idempotency_key='key')  # type: ignore[arg-type]
+
+from remote_paint_session import (AgentAccessibilityInput,AgentAccessibilityLimits,AgentAccessibilityObservation,
+    AgentAccessibilityProjection,AgentAccessibilityVisible,AgentAccessibilityRedacted)
+
+async def accessibility(client: AgentClient, context: AgentObservationContext, element: AgentElementId) -> None:
+    observed: AgentAccessibilityObservation = (await client.observations.accessibility(context,AgentAccessibilityInput(element,AgentAccessibilityLimits(512)))).data
+    if observed.redacted:
+        redacted: AgentAccessibilityRedacted = observed
+        masked: None = observed.ax
+        _ = (redacted,masked)
+    else:
+        visible: AgentAccessibilityVisible = observed
+        ax: AgentAccessibilityProjection = observed.ax
+        checked: bool | str | None = ax.states.checked
+        _ = (visible,checked)
+        ax.states.readonly = True  # type: ignore[misc]
+    observed.limits.max_chars = 1  # type: ignore[misc]
+    await client.observations.accessibility(context,AgentAccessibilityInput(context.agent_run_id))  # type: ignore[arg-type]
+    await client.observations.accessibility(context,AgentAccessibilityInput(element),retries=1)  # type: ignore[call-arg]
+    _ = observed.ax.backend_node_id  # type: ignore[union-attr]

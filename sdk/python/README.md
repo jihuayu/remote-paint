@@ -95,3 +95,29 @@ Queries are frozen `AgentSnapshotQuery()`, `AgentLocateQuery(by, value)` by `id`
 A successful response must match the captured logical Run/Session/version/Source binding/document/query/limits, be HTTP 200 without Location, and satisfy metadata, UTF-16 text, node/visit and Source/public UTF-8 bounds. `scope` is main-document light DOM; role/name are limited DOM attributes, not computed accessibility data. Password/hidden values are redacted. Snapshot revision/time are not a global DOM mutation counter. A fresh snapshot, GC, document or selected metadata changes can expire handles; no automatic selector rebind or context/fence refresh occurs.
 
 Known-bound same-owner `recovery-required` input can be inspected. Observing its actual DOM does not upgrade unknown invocation history, clear writer quarantine or replay input. AX, screenshots/downloads, full locators/frame traversal and write-by-handle remain pending. Qualification is limited by the matching repository evidence and installed Native tests.
+
+Computed AX of an existing observed element uses the same explicit read context:
+
+```python
+from remote_paint_session import AgentAccessibilityInput, AgentAccessibilityLimits
+
+result = (await client.observations.accessibility(
+    context, AgentAccessibilityInput(element_id, AgentAccessibilityLimits(256))
+)).data
+if not result.redacted:
+    print(result.ax.role, result.ax.name, result.ax.states.checked)
+```
+
+This reads browser computed semantics for the original main-document element.
+Inputs are captured before the coroutine is returned. Models, nested states and
+limits are frozen/slotted; `redacted` distinguishes `ax=None` from a projection.
+Absent optional states use `None`, while the wire accepts only whitelisted boolean
+or checked/pressed `mixed` values. Text budgets count UTF16 units (default 256,
+maximum 512); Source/public records are separately bounded at 6144/8192 bytes.
+Logical Run/Session/version, Source binding, document, element and limits must
+match. Each AX read sends once, regardless of mutation retry settings, and never
+refreshes a fence, rebinds a selector or replays an action. Cancellation/timeout
+retains actual transport/body/close admission until settlement; end uses its own
+capacity. Source raw CDP preallocation and browser AX physical memory remain
+separate unfinished gates, as do whole-tree/frame, screenshot/download and
+business postconditions.
