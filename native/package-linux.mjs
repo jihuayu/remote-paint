@@ -6,6 +6,7 @@ import {dirname,join,resolve,relative,isAbsolute} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {parseArgs} from 'node:util';
 import {fileHash,verifyLinuxReceipt} from './linux-receipt.mjs';
+import {resolveChromiumOutput} from './chromium-output.mjs';
 
 const project=fileURLToPath(new URL('../',import.meta.url));
 export function runtimePath(output,name){
@@ -20,18 +21,19 @@ export async function verifyElf(path,cpu){
  assert.equal(header.subarray(0,6).toString('hex'),'7f454c460201','Expected little-endian ELF64');
  assert.equal(header.readUInt16LE(18),cpu==='arm64'?183:62,`Wrong ELF architecture: ${path}`);
 }
-export async function packageLinux({source,cpu,broker,nodeDirectory,destination}){
+export async function packageLinux({source,outputDirectory,cpu,broker,nodeDirectory,destination}){
+ const selected=await resolveChromiumOutput(source,outputDirectory);
  assert.equal(process.platform,'linux','Package inside the Linux builder');
  assert.ok(['arm64','x64'].includes(cpu));
- source=resolve(source);destination=resolve(destination);
- const output=join(source,'out/RemotePaintLinux');
+ source=selected.source;destination=resolve(destination);
+ const output=selected.directory;
  const receipt=JSON.parse(await readFile(join(output,'remote-paint-build.json'),'utf8'));
- await verifyLinuxReceipt(receipt,{cpu,buildProfile:`linux-${cpu}`,patches:receipt.patches,
+ await verifyLinuxReceipt(receipt,{cpu,buildProfile:`linux-${cpu}`,outputDirectory:selected.relativeDirectory,patches:receipt.patches,
   argsSha256:await fileHash(join(output,'args.gn')),browserSha256:await fileHash(join(output,'headless_shell')),
   serializerSha256:await fileHash(join(output,'serializer_tests'))});
  // Reject an old receipt even if the completed binaries have not changed yet.
  const {inspectLinuxInputs}=await import('./linux-receipt.mjs');
- const inputs=await inspectLinuxInputs(source);
+ const inputs=await inspectLinuxInputs(source,{outputDirectory:selected.relativeDirectory});
  for(const key of ['nativeSources','patches','patchedSources','hostConfiguration'])assert.deepEqual(receipt[key],inputs[key],`Stale build receipt: ${key}`);
  for(const binary of [join(output,'headless_shell'),join(output,'serializer_tests'),broker,join(nodeDirectory,'bin/node')])await verifyElf(binary,cpu);
  const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:project,encoding:'utf8'}).trim();
@@ -73,7 +75,7 @@ export async function packageLinux({source,cpu,broker,nodeDirectory,destination}
  return archive;
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
- const {values}=parseArgs({options:{source:{type:'string'},cpu:{type:'string'},broker:{type:'string'},'node-dir':{type:'string'},destination:{type:'string',default:'artifacts/packages'}}});
- for(const key of ['source','cpu','broker','node-dir'])assert.ok(values[key],`Missing --${key}`);
- await packageLinux({source:values.source,cpu:values.cpu,broker:values.broker,nodeDirectory:values['node-dir'],destination:values.destination});
+ const {values}=parseArgs({options:{source:{type:'string'},output:{type:'string'},cpu:{type:'string'},broker:{type:'string'},'node-dir':{type:'string'},destination:{type:'string',default:'artifacts/packages'}}});
+ for(const key of ['source','output','cpu','broker','node-dir'])assert.ok(values[key],`Missing --${key}`);
+ await packageLinux({source:values.source,outputDirectory:values.output,cpu:values.cpu,broker:values.broker,nodeDirectory:values['node-dir'],destination:values.destination});
 }

@@ -49,6 +49,8 @@ then receive serializer, native browser, and dynamic Broker/Worker Viewer checks
 `ubuntu-24.04-arm` / `ubuntu-24.04` runners. The package artifacts remain
 available if a later smoke test fails; check the complete run result.
 
+The workflow explicitly passes CHROMIUM_OUTPUT=out/RemotePaintLinux to checkout, compilation and packaging so its existing architecture-specific cache is reused intentionally. Local builds should choose their own out/name. prepare.mjs, Linux receipt generation and package-linux.mjs require --output; new format-2 receipts bind that selection, and packaging rejects an unbound legacy receipt. Historical format-1 runtime receipt validation remains available. This plumbing does not qualify the current uncommitted source set as a release or replace any retained local browser.
+
 Both compilation and the final no-pending-work receipt use checksum-pinned
 Ninja 1.13.2. Debian 12's system Ninja 1.11.1 repeatedly schedules unchanged
 generators behind GN phony input groups and cannot reliably finish that check.

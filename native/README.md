@@ -20,10 +20,12 @@ Use a pinned Chromium checkout with `gclient sync` / hooks completed, full Xcode
 ```sh
 npm ci
 npm run native:broker
-npm run native:chromium -- --source /path/to/chromium/src --jobs 6
-export REMOTE_PAINT_CHROMIUM=/path/to/chromium/src/out/RemotePaint/headless_shell
+npm run native:chromium -- --source /path/to/chromium/src --output out/RemotePaintMacBuild --jobs 6
+export REMOTE_PAINT_CHROMIUM=/path/to/chromium/src/out/RemotePaintMacBuild/headless_shell
 npm run demo
 ```
+
+Every Chromium entry point requires an explicit output selector under out/name. GN, Ninja, tests, source inspection and receipt generation use that same directory. Preparation never probes another platform output for patch state. For an already prepared checkout, pass --patch-state-from out/previous to import a matching receipt from a deliberately selected output; keep existing object caches and source receipts intact. Output directories and their out parent must be real directories, so aliases cannot redirect these operations to another retained cache.
 
 The build command applies all checked-in patches in `patches/`, copies `chromium/` into `components/remote_paint`, generates GN, builds the browser and serializer tests, then runs the latter. Preparation checks the exact source revision and patch hashes. Do not use a changed patch over an already patched checkout without reviewing/resetting that patch first.
 

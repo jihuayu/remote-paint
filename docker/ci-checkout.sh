@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+: "${CHROMIUM_OUTPUT:?Set CHROMIUM_OUTPUT to an explicit out/name}"
 cd /chromium
 cat > .gclient <<'EOF'
 solutions = [{
@@ -28,8 +29,9 @@ fi
 gclient sync --no-history --nohooks --jobs=8 --revision src@a49e2e3d4addfd84e765b52afe230bedb81096db
 gclient runhooks
 # Output may be restored without the source tree. Reapply patches to fresh source.
-rm -f src/out/RemotePaintLinux/remote-paint-patches.json
-node /project/native/prepare.mjs /chromium/src "linux-$TARGET_CPU"
+output_dir=$(node /project/native/chromium-output.mjs /chromium/src "$CHROMIUM_OUTPUT")
+rm -f "$output_dir/remote-paint-patches.json"
+node /project/native/prepare.mjs /chromium/src "linux-$TARGET_CPU" --output "$CHROMIUM_OUTPUT"
 # Restored Ninja objects must see unchanged source headers as unchanged even
 # after a fresh shallow sync. Generated output keeps its original timestamps.
 find src -type d \( -name .git -o -path src/out \) -prune -o \

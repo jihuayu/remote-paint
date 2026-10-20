@@ -2069,3 +2069,7 @@ arm_download/info/chunk/release/file 同步捕获完整context和输入，冻结
 ### Native BaseFile 写入前 extent 边界
 
 固定4MiB范围检查在实际写入/稀疏状态/哈希之前，恢复同时检查实际长度和游标；无允许前缀、整数边界、开关快照及非Native回归通过。独立ARM64 ELF完整未过滤45项（35上游+10新增）全部通过、无禁用，当前1135文件候选138根文件1425项JS双平台退出0。只修复构建Go缓存和noexec临时目录，前两次失败与完整第三次构建记录保留；已有对象/Go缓存和固定19文件浏览器保留。最终仅补文档/证据，SDK70输入与源码相同并保留父版本175Node/118Python证据。浏览器capability、全体/非arm准入和完整spool/item/Playwright生命周期待做，K6部分及41项10/17/14不变，见[范围](native-download-write-budget.md)。
+
+### 隔离 Chromium 构建输出与来源收据
+
+所有Chromium准备/构建/收据/打包入口显式选择out/name，删除隐式跨平台补丁收据查找；新format2记录所选目录，包装校验绑定，旧format1仅保留历史校验。符号链接/非目录拒绝、已有缓存保留、明确导入补丁状态和API/CLI缺省拒绝由10个真实临时文件系统合同覆盖；最终139文件1435项JS双平台零失败，11项语法/YAML检查退出0。CI环境、缓存及诊断共用选择器，保留既有缓存布局。没有执行真实源码准备、浏览器/CI或发布打包；C++45与SDK证据仅保留字节相同父版本范围。K6及41项10/17/14不变，见[范围](isolated-chromium-output.md)。

@@ -23,6 +23,7 @@ jobs:
         cpu: [arm64, x64]
     env:
       TARGET_CPU: ${{ matrix.cpu }}
+      CHROMIUM_OUTPUT: out/RemotePaintLinux
     steps:
       - uses: actions/checkout@v4
       - name: Make room on the disposable runner
@@ -36,7 +37,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
-            build/chromium/src/out/RemotePaintLinux
+            build/chromium/src/${{ env.CHROMIUM_OUTPUT }}
             build/chromium/broker-target
           key: chromium-linux-${{ matrix.cpu }}-v2-${{ hashFiles('docker/Dockerfile.build', 'native/*.args.gn', 'native/patches/**') }}-${{ hashFiles('native/chromium/**', 'native/broker/**') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
@@ -49,7 +50,7 @@ jobs:
       - name: Sync pinned Chromium source and dependencies
         timeout-minutes: 65
         run: |
-          docker run --rm --init -e TARGET_CPU \
+          docker run --rm --init -e TARGET_CPU -e CHROMIUM_OUTPUT \
             -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" \
             remote-paint-ci bash /project/docker/ci-checkout.sh
       - name: Compile patched Chromium
@@ -58,7 +59,7 @@ jobs:
         run: |
           set -o pipefail
           docker run --name remote-paint-compile --init \
-            --shm-size=2g -e TARGET_CPU -e BUILD_JOBS=4 \
+            --shm-size=2g -e TARGET_CPU -e CHROMIUM_OUTPUT -e BUILD_JOBS=4 \
             -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" \
             remote-paint-ci sh /project/docker/build-linux.sh 2>&1 | tee chromium-build.log
       - name: Build Broker and create standalone package
@@ -66,7 +67,7 @@ jobs:
         if: success()
         timeout-minutes: 15
         run: |
-          docker run --rm --init -e TARGET_CPU -e BUILD_JOBS=4 \
+          docker run --rm --init -e TARGET_CPU -e CHROMIUM_OUTPUT -e BUILD_JOBS=4 \
             -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" -v "$PWD/packages:/packages" \
             remote-paint-ci bash /project/docker/ci-package.sh
       - name: Save incremental output even after a compile timeout
@@ -79,7 +80,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
-            build/chromium/src/out/RemotePaintLinux
+            build/chromium/src/${{ env.CHROMIUM_OUTPUT }}
             build/chromium/broker-target
           key: ${{ steps.cache.outputs.cache-primary-key }}
       - name: Upload Linux package and checksum
@@ -100,7 +101,7 @@ jobs:
           name: build-log-linux-${{ matrix.cpu }}
           path: |
             chromium-build.log
-            build/chromium/src/out/RemotePaintLinux/remote-paint-build.json
+            build/chromium/src/${{ env.CHROMIUM_OUTPUT }}/remote-paint-build.json
           if-no-files-found: warn
           retention-days: 14
 

@@ -23,4 +23,13 @@ test('runtime refuses stale native sources even when binary, arguments and patch
  await assert.rejects(verifyLinuxReceipt({...hostReceipt,hostCrossCompiler:null},hostExpected));
  await assert.rejects(verifyLinuxReceipt({...hostReceipt,hostCrossCompiler:{...hostReceipt.hostCrossCompiler,target:'x86_64-linux-gnu'}},hostExpected));
  await assert.rejects(verifyLinuxReceipt({...hostReceipt,hostCrossCompiler:{...hostReceipt.hostCrossCompiler,compilerSha256:'unknown'}},hostExpected));
+ // New producers bind an explicit directory. Historical format-1 data remains
+ // verifiable without pretending it proves a newly selected build directory.
+ const selected={...expected,outputDirectory:'out/TaskBuild'};
+ const isolated={...receipt,format:2,outputDirectory:selected.outputDirectory};
+ await verifyLinuxReceipt(isolated,selected);
+ await assert.rejects(verifyLinuxReceipt(receipt,selected),/directory-bound/);
+ await assert.rejects(verifyLinuxReceipt(isolated,{...selected,outputDirectory:'out/OtherBuild'}),/output directory differs/);
+ await assert.rejects(verifyLinuxReceipt({...isolated,outputDirectory:'../retained'},expected),/explicit --output/);
+ await assert.rejects(verifyLinuxReceipt({...isolated,outputDirectory:undefined},expected),/explicit --output/);
 });

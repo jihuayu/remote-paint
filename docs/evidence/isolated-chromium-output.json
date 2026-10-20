@@ -1,0 +1,250 @@
+{
+  "at": "2026-10-20T01:49:45.535348+00:00",
+  "status": "isolated-chromium-output-plumbing-qualified-within-scope",
+  "scope": "Explicit Chromium build output routing, directory-bound receipt and temporary filesystem/CLI contracts. No real checkout preparation, GN/Ninja/browser build, CI execution or release package qualification in this task.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-write-cap-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "3c1633e5eeb75227fbbc37eda78fffa8beaa9717101f164edc24a93f0c373334",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/isolated-chromium-output-candidate-v2/frozen-version.json",
+  "executedManifestSha256": "85fda9d7e67afe05764d52f635900b2a1248f8936b5b2c9bcb20645cc013451a",
+  "executedSourceFiles": 1139,
+  "newTests": [
+    "Chromium output selection is explicit and confined to one out directory",
+    "resolving a new explicit output does not create or modify directories",
+    "reusing a selected output preserves its existing object cache",
+    "source, out parent and output aliases are rejected before following them",
+    "non-directory output components cannot be overwritten",
+    "receipt and packaging APIs cannot fall back when output is omitted",
+    "build entry points reject omitted output before opening a build cache",
+    "Linux input inspection reads and records the explicitly selected output",
+    "preparation imports only the explicitly selected matching patch receipt",
+    "preparation rejects conflicting or unknown imported patch state"
+  ],
+  "newTestsCount": 10,
+  "scopedTestsHistoricalV1": 13,
+  "finalTestsAllIncludedInBothFullSuites": true,
+  "fullJs": {
+    "62": {
+      "manifestSha256": "cbbe0f71027ea9b829f898af24c7c00320b7f75aefd6c9b5904e7779f78f0541",
+      "candidateManifestSha256": "0ba1fe67170954d2747b9959dc89d8b6085fac9482430aaaac16e34c22653498",
+      "roles": {
+        "mac": {
+          "tests": 1435,
+          "passed": 1420,
+          "skipped": 15,
+          "actualExitCode": 0,
+          "logSha256": "d1cccea6afe9ec0e4d1ae3ed5b2ce03aaac94a11b7def3816c28f54bcef714ef",
+          "receiptSha256": "cd6e06a90f7ae0018c0addde52a76730cee2e04b725dfb24844d895264ce006d"
+        },
+        "linux": {
+          "tests": 1435,
+          "passed": 1429,
+          "skipped": 6,
+          "actualExitCode": 0,
+          "logSha256": "6b94552db14bee887227cfc1ec1165d17a379833a7489e92aae2a2c5ea6a921f",
+          "receiptSha256": "29093b6428aeaf466baf1c85f837c596c4a9f7d4f6fdb46ab67bbbcc3c3567c8"
+        }
+      }
+    },
+    "63": {
+      "manifestSha256": "ea49c0ac66cbe94b4d5ae60ebfa9d4f428fced5e355babaae896d94df763fe2f",
+      "candidateManifestSha256": "85fda9d7e67afe05764d52f635900b2a1248f8936b5b2c9bcb20645cc013451a",
+      "roles": {
+        "mac": {
+          "tests": 1435,
+          "passed": 1420,
+          "skipped": 15,
+          "actualExitCode": 0,
+          "logSha256": "92c3201d0926a436f2d6788a236bcbea464e4fb8a3038f36d0b4d14b2711284f",
+          "receiptSha256": "c128b41a8c267cee3d49127abacc5b44a3039f26bc878b7ddf3b702aa7b91777"
+        },
+        "linux": {
+          "tests": 1435,
+          "passed": 1429,
+          "skipped": 6,
+          "actualExitCode": 0,
+          "logSha256": "76bc15d578fa9a5861c8dbbf9af3182080149b358d1166cae2390f7cbc18c077",
+          "receiptSha256": "9875de53e89c3a9151076e851148df847884eecfe76b6503bc1264da448a5c9f"
+        }
+      }
+    }
+  },
+  "syntaxChecks": {
+    "at": "2026-10-20T01:46:19.724859+00:00",
+    "candidateManifestSha256": "85fda9d7e67afe05764d52f635900b2a1248f8936b5b2c9bcb20645cc013451a",
+    "workflowSha256": "ec19bcc7c342cab28f4593ed5c9ca1cc0e88aad49fd0ec88004536fe37974cf5",
+    "checks": [
+      {
+        "command": [
+          "bash",
+          "-n",
+          "docker/build-linux.sh"
+        ],
+        "actualExitCode": 0,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "bash",
+          "-n",
+          "docker/ci-checkout.sh"
+        ],
+        "actualExitCode": 0,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "bash",
+          "-n",
+          "docker/ci-package.sh"
+        ],
+        "actualExitCode": 0,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "node",
+          "--check",
+          "native/chromium-output.mjs"
+        ],
+        "actualExitCode": 0,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "node",
+          "--check",
+          "native/prepare.mjs"
+        ],
+        "actualExitCode": 0,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "node",
+          "--check",
+          "native/build-chromium.mjs"
+        ],
+        "actualExitCode": 0,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "node",
+          "--check",
+          "native/linux-receipt.mjs"
+        ],
+        "actualExitCode": 0,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "node",
+          "--check",
+          "native/package-linux.mjs"
+        ],
+        "actualExitCode": 0,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "node",
+          "--check",
+          "tests/chromium-output.test.mjs"
+        ],
+        "actualExitCode": 0,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "node",
+          "--check",
+          "tests/linux-receipt.test.mjs"
+        ],
+        "actualExitCode": 0,
+        "stderr": ""
+      },
+      {
+        "command": [
+          "ruby",
+          "workflow YAML parse and selector propagation"
+        ],
+        "actualExitCode": 0,
+        "stdout": "{\"explicit_output\":true,\"docker_callers\":3,\"cache_and_diagnostic_paths\":3}\n"
+      }
+    ],
+    "ciActuallyExecuted": false
+  },
+  "fixturesUseFakeGitRevisionOnlyNoChromiumQualification": true,
+  "candidateV1ToV2Delta": [
+    ".github/workflows/linux-packages.yml"
+  ],
+  "v2Reason": "Cache and diagnostic paths must use the same selector as Docker callers; frozen final candidate rerun on both platforms.",
+  "newReceiptFormat": 2,
+  "historicalFormat1VerificationPreserved": true,
+  "nativeCpp45EvidenceInheritedUnchanged": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-write-cap-qualified-v1/frozen-version.json",
+    "manifestSha256": "3c1633e5eeb75227fbbc37eda78fffa8beaa9717101f164edc24a93f0c373334",
+    "gtestSha256": "5a5d5048446ce02af4e334024ec3a943e2d123720381d9cdc18203d6a0d2fa32",
+    "freshCppRerun": false
+  },
+  "sdk70InputsAndAllSdkSourceByteEqual": true,
+  "freshInstalledSdkRerun": false,
+  "retired": [
+    {
+      "version": 62,
+      "containerId": "782941ee80597f9849d3e68b17e3761687ab424d67a802cec2cf46b2f35ab0f9",
+      "stateBeforeRemoval": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-10-20T01:41:53.327758391Z",
+        "FinishedAt": "2026-10-20T01:42:40.657666667Z"
+      },
+      "removed": true
+    },
+    {
+      "version": 63,
+      "containerId": "377011e0aead25d2e3b74c1e7285b60203b6e69af0d0f5f09e5215897739b70b",
+      "stateBeforeRemoval": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-10-20T01:43:44.857829265Z",
+        "FinishedAt": "2026-10-20T01:44:24.0336064Z"
+      },
+      "removed": true
+    }
+  ],
+  "samplerHashAndIdentityUnchanged": true,
+  "canonical19BrowserUnchanged": true,
+  "originalFailedEightHourUnchanged": true,
+  "realBuildAndPackageExecuted": false,
+  "uncommittedSourceReleaseInclusionStillRequiresQualification": true,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "isolatedChromiumOutputPlumbingQualified": true,
+  "nativeDownloadBaseFileWriteCapQualified": true,
+  "browserDownloadSpoolPrewriteHardCapQualified": false,
+  "playwrightDownloadMetadataPhysicalBoundQualified": false,
+  "K6Complete": false,
+  "productionNativeFullyQualified": false,
+  "eightHourPassed": false,
+  "wholeGoalQualified": false,
+  "noCommitPush": true,
+  "noSubagents": true
+}

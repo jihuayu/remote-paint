@@ -1,32 +1,44 @@
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { resolve, join } from 'node:path';
+import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
+import {parseArgs} from 'node:util';
+import {resolveChromiumOutput} from './chromium-output.mjs';
 
-const source = resolve(process.argv[2] ?? '');
-if (!process.argv[2]) throw new Error('Usage: node native/prepare.mjs /path/to/chromium/src');
+const {values,positionals}=parseArgs({allowPositionals:true,options:{output:{type:'string'},'patch-state-from':{type:'string'}}});
+if(!positionals[0]||positionals.length>2)throw new Error('Usage: node native/prepare.mjs SOURCE [PLATFORM] --output out/name [--patch-state-from out/previous]');
+const platform=positionals[1]??'mac-arm64';
+if (!['mac-arm64', 'linux-arm64', 'linux-x64'].includes(platform)) throw new Error('Unknown build platform');
+const selected=await resolveChromiumOutput(positionals[0],values.output);
+const source=selected.source,output=selected.directory;
+const imported=values['patch-state-from']?await resolveChromiumOutput(source,values['patch-state-from']):null;
 const expected = 'a49e2e3d4addfd84e765b52afe230bedb81096db';
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim();
 if (revision !== expected) throw new Error(`Expected Chromium ${expected}, got ${revision}`);
-const platform = process.argv[3] ?? 'mac-arm64';
-if (!['mac-arm64', 'linux-arm64', 'linux-x64'].includes(platform)) throw new Error('Unknown build platform');
-const output = join(source, platform === 'mac-arm64' ? 'out/RemotePaint' : 'out/RemotePaintLinux');
 await mkdir(output, { recursive: true });
 const statePath=join(output,'remote-paint-patches.json');
 async function copyChanged(from,to){
  const bytes=await readFile(from),current=await readFile(to).catch(error=>{if(error.code==='ENOENT')return null;throw error;});
  if(!current||!bytes.equals(current))await writeFile(to,bytes);
 }
-const readState=async path=>JSON.parse(await readFile(path,'utf8').catch(error=>{if(error.code==='ENOENT')return '{}';throw error;}));
-const state=await readState(statePath);
-// Patches modify the source tree, so a cloned, already prepared checkout keeps
-// their receipt even when its toolchain/output switches platforms. Later
-// patches can overlap earlier hunks; reverse-checking each alone is invalid.
-if(!Object.keys(state).length){
- const previous=join(source,platform.startsWith('linux-')?'out/RemotePaint':'out/RemotePaintLinux','remote-paint-patches.json');
- Object.assign(state,await readState(previous));
+const names=(await readdir(new URL('./patches/',import.meta.url))).filter(n=>n.endsWith('.patch')).sort();
+const readState=async(path,optional=false)=>{
+ const value=JSON.parse(await readFile(path,'utf8').catch(error=>{if(optional&&error.code==='ENOENT')return '{}';throw error;}));
+ if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('Invalid patch-state receipt');
+ for(const [name,hash]of Object.entries(value))if(!names.includes(name)||typeof hash!=='string'||!/^[a-f0-9]{64}$/.test(hash))throw new Error(`Invalid patch-state entry: ${name}`);
+ return Object.assign(Object.create(null),value);
+};
+const state=await readState(statePath,true);
+// Overlapping patches need the earlier receipt when a prepared checkout moves
+// to a new output. Import only the explicitly selected receipt, never another
+// platform's implicit default directory.
+if(imported){
+ for(const [name,hash]of Object.entries(await readState(join(imported.directory,'remote-paint-patches.json')))){
+  if(state[name]&&state[name]!==hash)throw new Error(`Conflicting imported patch-state entry: ${name}`);
+  state[name]=hash;
+ }
 }
-for(const name of (await readdir(new URL('./patches/',import.meta.url))).filter(n=>n.endsWith('.patch')).sort()) {
+for(const name of names) {
   const patch=new URL(`./patches/${name}`,import.meta.url);
   const hash=createHash('sha256').update(await readFile(patch)).digest('hex');
   if(state[name]===hash)continue;

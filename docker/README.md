@@ -2,12 +2,12 @@
 
 This build runs Chromium's Linux x86_64 host toolchain in an amd64 Docker builder (OrbStack/Rosetta on this Mac) and produces an ARM64 Linux browser for a native ARM64 runtime container. It never runs the macOS executable inside Linux.
 
-Use an **independent** checkout of Chromium `a49e2e3d4addfd84e765b52afe230bedb81096db`, with its pinned dependencies synced for Linux. The LLVM/Rust packages and sysroots are platform specific: do not mount the active Mac checkout here. The browser and tests use `out/RemotePaintLinux`, separate from `out/RemotePaint`.
+Use an **independent** checkout of Chromium `a49e2e3d4addfd84e765b52afe230bedb81096db`, with its pinned dependencies synced for Linux. The LLVM/Rust packages and sysroots are platform specific: do not mount the active Mac checkout here. The example explicitly selects `CHROMIUM_OUTPUT=out/RemotePaintLinux`. Choose a dedicated output name for a new local build; the scripts require the selector and use it for preparation, GN, Ninja, receipts and packaging. They do not probe another platform output for patch receipts.
 
 ```sh
 docker build --platform linux/amd64 -t remote-paint-build:linux-arm64 -f docker/Dockerfile.build .
 docker run --name remote-paint-linux-build --platform linux/amd64 --init \
-  --shm-size=2g --memory=48g --memory-swap=48g --cpus=9 -e BUILD_JOBS=12 \
+  --shm-size=2g --memory=48g --memory-swap=48g --cpus=9 -e BUILD_JOBS=12 -e CHROMIUM_OUTPUT=out/RemotePaintLinux \
   -v /absolute/independent/chromium:/chromium \
   -v /absolute/remote-paint:/project:ro \
   remote-paint-build:linux-arm64 /project/docker/build-linux.sh

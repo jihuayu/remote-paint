@@ -11,6 +11,8 @@ fi
 project=${PROJECT_ROOT:-/project}
 source=${CHROMIUM_SOURCE:-/chromium/src}
 target=${TARGET_CPU:-arm64}
+: "${CHROMIUM_OUTPUT:?Set CHROMIUM_OUTPUT to an explicit out/name}"
+output_dir=$(node "$project/native/chromium-output.mjs" "$source" "$CHROMIUM_OUTPUT")
 case "$target" in arm64|x64) ;; *) echo "Unsupported TARGET_CPU: $target" >&2; exit 2 ;; esac
 cd "$source"
 python3 tools/clang/scripts/update.py --host-os linux
@@ -64,10 +66,9 @@ if ! printf '%s  %s\n' "$esbuild_sha" "$esbuild_dir/esbuild" | sha256sum --check
   printf '%s  %s\n' "$esbuild_sha" "$esbuild_dir/esbuild" | sha256sum --check
   chmod +x "$esbuild_dir/esbuild"
 fi
-node "$project/native/prepare.mjs" "$source" "linux-$target"
-mkdir -p out/RemotePaintLinux
-buildtools/linux64/gn gen out/RemotePaintLinux \
+node "$project/native/prepare.mjs" "$source" "linux-$target" --output "$CHROMIUM_OUTPUT"
+buildtools/linux64/gn gen "$output_dir" \
   --script-executable="$source/third_party/cpython3/linux-amd64/bin/python3"
-ninja -C out/RemotePaintLinux -j"${BUILD_JOBS:-4}" remote_paint_tools
-ninja -C out/RemotePaintLinux -j"${BUILD_JOBS:-4}" headless_shell
-node "$project/native/linux-receipt.mjs" "$source"
+ninja -C "$output_dir" -j"${BUILD_JOBS:-4}" remote_paint_tools
+ninja -C "$output_dir" -j"${BUILD_JOBS:-4}" headless_shell
+node "$project/native/linux-receipt.mjs" "$source" --output "$CHROMIUM_OUTPUT"
