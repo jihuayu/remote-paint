@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-17T22:07:17.099844+00:00",
+  "status": "passed-all-observed-historical-renderer-identity-retirement-after12crosssites",
+  "scope": "Actual formal Linux native Source/CPUmain Viewer;12 true crosssite replacements,all actually observed renderer PID/start identities pinned before navigation and retained until actual ESRCH/ENOENT after close. No assumption of13 unique renderer PIDs;reuse remains identity-checked. Not physical8h/fullN1.",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-owner-navigation-v1/frozen-version.json",
+    "sha256": "6298e823996b75a1a926b8576879d49756061362cb54bb996d662e7bd7ccd7af"
+  },
+  "elapsedSeconds": 5.611064376,
+  "crosssites": 12,
+  "actualHistoricalRendererIdentities": 13,
+  "actualAllKnownIdentitiesRetired": 19,
+  "navigationFenceOrdinals": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "controllerFds": {
+    "before": 19,
+    "after": 19
+  },
+  "retirementCodes": [
+    "ESRCH"
+  ],
+  "nodeCalls": {
+    "map": 0,
+    "publish": 0,
+    "awaitPromise": 0
+  },
+  "sourceErrors": [],
+  "cleanupErrors": [],
+  "sourceCgroupOnlyInitOutsideController": true,
+  "runtimeImageId": "sha256:ba52f926ae3c951e29dc1625d70537c18db389cf166f4465a1e5b836d802c133",
+  "artifacts": {
+    "report": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-owner-navigation-v1/results/navigation-owner.json",
+      "sha256": "db263a2cdc3744dd1465c8b82140dadbab8d991585c5c44836f49ebacf5a8738"
+    }
+  },
+  "noCommitPush": true,
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}

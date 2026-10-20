@@ -1203,4 +1203,26 @@ v1因基础runtime没有tc在施加损伤前失败，保留原记录；另建run
 
 独立单向Gateway netem pilot209.212秒，同一方法连续配对770次成功提交，2次真实跨站仍在enabled窗口内，缺失0；一次网络配置覆盖全部窗口及转换，实测内核丢包/RTT/输入ACK和每窗口原始帧见独立evidence。协议恢复事件0不表示TCP或Source快照没有丢失。两试跑的算法完全相同，网络副本仅多持久化实际served-module SHA receipt；生产Worker、Source、Broker与浏览器二进制均未改。最新590文件副本另通过三旧式严格窗口实机兼容检查。
 
-所有Source与Viewer实际exit0，最终cohort完整、容器外观测范围只有init PID1，已固定的8个Source身份均退出；中间renderer只做了在世身份/时钟证明，尚未全部持有FD至销毁，因此不宣称完整历史身份退休集合。仍需把连续观测、Source/Gateway/native-rejection有界窗口、精确输入marker/watermark及每次导航前固定身份并入三个主VM/附加Session/默认租约长测，再验收物理门槛和8小时。全部41项仍9/12/20，不提交、不推送。
+所有Source与Viewer实际exit0，最终cohort完整、同一容器cgroup内观测cohort之外只有init PID1，已固定的8个Source身份均退出；中间renderer只做了在世身份/时钟证明，尚未全部持有FD至销毁，因此不宣称完整历史身份退休集合。仍需把连续观测、Source/Gateway/native-rejection有界窗口、精确输入marker/watermark及每次导航前固定身份并入三个主VM/附加Session/默认租约长测，再验收物理门槛和8小时。全部41项仍9/12/20，不提交、不推送。
+
+## 独立30分钟物理增长门槛失败
+
+运行前冻结的579文件副本与49254837…策略完成真实30分钟压力后，Viewer命令按增长断言exit1；Source和容器exit0，清理无错误。3主页面nonce/2Worker IDs全程稳定，31次实际采样、21个附加Session完整生命周期，最终创建/销毁22/22；全cohort PSS完整、同一容器cgroup内观测cohort之外只有init PID1。单次绝对物理门槛均通过，但这不足以验收长期增长。
+
+主VM独占状态13个burst后样本，footprint前5中位数1,638,843,648→后5的2,011,464,600bytes，+372,620,952bytes（约355MiB）；带附加Session状态17个样本，2,108,969,984→2,430,047,376，+321,077,392bytes（约306MiB）。两者均超过事前192MiB允许增长，真实保存为失败；RSS/PSS/anon/node其余8个增长域通过，未调整或重算门槛。8小时不启动。
+
+失败归因尚未完成。逐次像素校验在每次poll创建新临时Canvas/context，可能影响Chrome native footprint；已保存逐PID中位数与逻辑ledger/retiredWasm对照，不能把它直接断言为产品泄漏或唯一观察器原因。下一步只复用测试小画布、保持所有物理策略/工作负载/主VM/采样deadline不变，独立重跑检验假设；不强制GC、不替换主VM、不修改生产代码、不清理缓存。此前连续帧龄/网络适配的短时通过不抵消本次物理失败。
+
+## 单页复用像素校验小画布
+
+针对观察器开销假设，只修改长测driver：每个Viewer页在初始化创建一个4×1验证Canvas/context，PNG/DOM/Session与输入marker检查重复使用同一对象；逐页nonce、创建数1、尺寸与read counter纳入每次采样门槛，主页probe identity全程固定。物理超限时多保存完整Native/heap/ledger/source实测值，不改变原断言或deadline。未改生产文件、未强制GC。
+
+为避免夹带后续Source观察模块变化，新验证完整复制失败run原始579文件、原dependency/browser/runtimeimage，只替换这一份driver；1800秒/400burst/2s/导航40/附加Session40×400及物理policy SHA49254837…完全一致。实现已独立冻结，实际复验尚未通过；不能从代码改动推断原因或验收8小时。
+
+## 每次导航前固定全部已观测Source进程身份
+
+长时Source owner现在在每次实际navigate前完成原有严格Root/proc/PSS采样并固定本次Source cohort所有进程目录FD，明确验证当前producer属于该Source family，再记录navigation ordinal与实际producer PID/start/parent/UID fence。历史FD最多1024、导航最多1024；直到Session close都保留，单次采样与销毁的原5s/15s约束保持。Source测试文件改变，生产Source/C++/Rust/Viewer不变。
+
+独立真实Linux合约5.611秒通过：12次交替localhost/127跨站，每次Source doc token/epoch/PID与最终PNG/DOM/Session像素核验，实际共13个历史renderer身份全部保留至销毁；共19个固定Source身份最后均由ESRCH确认退休（包含6个其他进程），全部端点/Source/Broker状态关闭，cohort PSS完整，cgroup内观测cohort之外只有init PID1。Root控制器FD从19回到19，逐帧Node map/publish/awaitPromise为0。未假定每次导航必然新PID；若复用，仍按真实PID/start身份核验。
+
+这补齐后续多次导航长测的历史身份记录，不追溯修改此前只固定初始/最终cohort的结果，也不把当前复验579旧副本变为新owner版本。8小时与N1完整合并仍待验收。

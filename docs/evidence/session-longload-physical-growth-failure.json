@@ -1,0 +1,394 @@
+{
+  "at": "2026-10-17T22:00:43.545235+00:00",
+  "status": "failed-physical-footprint-median-growth;normal-functional-lifetime-and-cleanup",
+  "scope": "Independent frozen30min policy verification;all sampled absolute caps and8 other median-domain gates pass,but Mac whole-observed-Viewer physicalFootprint grows beyond frozen192MiB allowance in both primary/secondary states. Failure retained;no8haccepted.",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-physical-v1/frozen-version.json",
+    "sha256": "53dd9db0d768e219018b508549b702e293d310041a4f93fe14f8d09daf5d5bfe"
+  },
+  "policySha256": "49254837e00ab4c39afd6b284fb66637988797ab6f781f45f69ccfc7b022bcbf",
+  "requestedSeconds": 1800,
+  "actualPrimaryExerciseSeconds": 1809.667335666,
+  "elapsedSeconds": 1818.6406153750002,
+  "primaryUpdates": 1221,
+  "resizes": 85,
+  "inputs": 66,
+  "crosssites": 20,
+  "samples": 31,
+  "maxSampleGapSeconds": 62.18899999999985,
+  "secondarySessions": 21,
+  "secondaryUpdates": 8400,
+  "sourceImageBytes": 2164621712,
+  "defaultLeasesExpired": 21,
+  "sourceCreatedClosed": {
+    "created": 22,
+    "closed": 22,
+    "crosssite": 20,
+    "leaseExpired": 21
+  },
+  "knownPinnedSourceIdentitiesRetired": 155,
+  "pageNoncesAndWorkerIdsStable": true,
+  "absolutePhysicalCapsPassed": true,
+  "physicalGrowth": {
+    "states": {
+      "primary-only": {
+        "postWarmSamples": 13,
+        "earlyCycles": [
+          434,
+          463,
+          550,
+          635,
+          663
+        ],
+        "lateCycles": [
+          950,
+          1036,
+          1064,
+          1151,
+          1221
+        ],
+        "domains": {
+          "viewerFootprintBytes": {
+            "firstMedianBytes": 1638843648,
+            "lastMedianBytes": 2011464600,
+            "growthBytes": 372620952,
+            "allowedGrowthBytes": 201326592,
+            "passed": false
+          },
+          "viewerRssSumBytes": {
+            "firstMedianBytes": 3219734528,
+            "lastMedianBytes": 2624471040,
+            "growthBytes": -595263488,
+            "allowedGrowthBytes": 268435456,
+            "passed": true
+          },
+          "sourcePssBytes": {
+            "firstMedianBytes": 705640448,
+            "lastMedianBytes": 611730432,
+            "growthBytes": -93910016,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceAnonBytes": {
+            "firstMedianBytes": 475901952,
+            "lastMedianBytes": 482263040,
+            "growthBytes": 6361088,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceNodePssBytes": {
+            "firstMedianBytes": 181112832,
+            "lastMedianBytes": 184315904,
+            "growthBytes": 3203072,
+            "allowedGrowthBytes": 67108864,
+            "passed": true
+          }
+        }
+      },
+      "with-secondary": {
+        "postWarmSamples": 17,
+        "earlyCycles": [
+          405,
+          492,
+          521,
+          578,
+          606
+        ],
+        "lateCycles": [
+          1007,
+          1093,
+          1122,
+          1179,
+          1207
+        ],
+        "domains": {
+          "viewerFootprintBytes": {
+            "firstMedianBytes": 2108969984,
+            "lastMedianBytes": 2430047376,
+            "growthBytes": 321077392,
+            "allowedGrowthBytes": 201326592,
+            "passed": false
+          },
+          "viewerRssSumBytes": {
+            "firstMedianBytes": 3912400896,
+            "lastMedianBytes": 3446505472,
+            "growthBytes": -465895424,
+            "allowedGrowthBytes": 268435456,
+            "passed": true
+          },
+          "sourcePssBytes": {
+            "firstMedianBytes": 1125188608,
+            "lastMedianBytes": 1050646528,
+            "growthBytes": -74542080,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceAnonBytes": {
+            "firstMedianBytes": 793710592,
+            "lastMedianBytes": 757026816,
+            "growthBytes": -36683776,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceNodePssBytes": {
+            "firstMedianBytes": 186431488,
+            "lastMedianBytes": 189302784,
+            "growthBytes": 2871296,
+            "allowedGrowthBytes": 67108864,
+            "passed": true
+          }
+        }
+      }
+    },
+    "passed": false
+  },
+  "diagnosticComparisons": {
+    "primary-only": {
+      "samples": 13,
+      "persistentPidFootprintMedians": [
+        {
+          "pid": 30503,
+          "type": "renderer",
+          "firstMedian": 367544600,
+          "lastMedian": 485607872,
+          "difference": 118063272
+        },
+        {
+          "pid": 30506,
+          "type": "renderer",
+          "firstMedian": 336971864,
+          "lastMedian": 442566888,
+          "difference": 105595024
+        },
+        {
+          "pid": 30500,
+          "type": "renderer",
+          "firstMedian": 382191920,
+          "lastMedian": 480315816,
+          "difference": 98123896
+        },
+        {
+          "pid": 30491,
+          "type": "GPU",
+          "firstMedian": 209044752,
+          "lastMedian": 209683728,
+          "difference": 638976
+        },
+        {
+          "pid": 30492,
+          "type": "network.mojom.NetworkService",
+          "firstMedian": 39584800,
+          "lastMedian": 39945248,
+          "difference": 360448
+        },
+        {
+          "pid": 30504,
+          "type": "renderer",
+          "firstMedian": 72959608,
+          "lastMedian": 73221752,
+          "difference": 262144
+        },
+        {
+          "pid": 30501,
+          "type": "renderer",
+          "firstMedian": 72697344,
+          "lastMedian": 72943104,
+          "difference": 245760
+        },
+        {
+          "pid": 30401,
+          "type": "browser",
+          "firstMedian": 97208000,
+          "lastMedian": 97437376,
+          "difference": 229376
+        },
+        {
+          "pid": 30493,
+          "type": "storage.mojom.StorageService",
+          "firstMedian": 20284352,
+          "lastMedian": 20300736,
+          "difference": 16384
+        },
+        {
+          "pid": 30497,
+          "type": "renderer",
+          "firstMedian": 75335192,
+          "lastMedian": 75335192,
+          "difference": 0
+        }
+      ],
+      "perPidMedianScope": "Do not sum per-PID median differences as if equal to difference of whole-cohort medians.",
+      "ledgers": [
+        {
+          "label": "gpu-worker",
+          "firstResidentMedian": 207440507,
+          "lastResidentMedian": 209199585,
+          "firstRetiredWasmMedian": 0,
+          "lastRetiredWasmMedian": 0
+        },
+        {
+          "label": "cpu-worker",
+          "firstResidentMedian": 186928877,
+          "lastResidentMedian": 203245520,
+          "firstRetiredWasmMedian": 0,
+          "lastRetiredWasmMedian": 0
+        },
+        {
+          "label": "cpu-main",
+          "firstResidentMedian": 186928877,
+          "lastResidentMedian": 203245520,
+          "firstRetiredWasmMedian": 0,
+          "lastRetiredWasmMedian": 0
+        }
+      ]
+    },
+    "with-secondary": {
+      "samples": 17,
+      "persistentPidFootprintMedians": [
+        {
+          "pid": 30506,
+          "type": "renderer",
+          "firstMedian": 337741912,
+          "lastMedian": 437405928,
+          "difference": 99664016
+        },
+        {
+          "pid": 30503,
+          "type": "renderer",
+          "firstMedian": 377899264,
+          "lastMedian": 473041320,
+          "difference": 95142056
+        },
+        {
+          "pid": 30500,
+          "type": "renderer",
+          "firstMedian": 390744344,
+          "lastMedian": 457542056,
+          "difference": 66797712
+        },
+        {
+          "pid": 30504,
+          "type": "renderer",
+          "firstMedian": 72959608,
+          "lastMedian": 73221752,
+          "difference": 262144
+        },
+        {
+          "pid": 30501,
+          "type": "renderer",
+          "firstMedian": 72697344,
+          "lastMedian": 72943104,
+          "difference": 245760
+        },
+        {
+          "pid": 30497,
+          "type": "renderer",
+          "firstMedian": 75335192,
+          "lastMedian": 75335192,
+          "difference": 0
+        },
+        {
+          "pid": 30493,
+          "type": "storage.mojom.StorageService",
+          "firstMedian": 20399040,
+          "lastMedian": 20382656,
+          "difference": -16384
+        },
+        {
+          "pid": 30492,
+          "type": "network.mojom.NetworkService",
+          "firstMedian": 44385312,
+          "lastMedian": 44221472,
+          "difference": -163840
+        },
+        {
+          "pid": 30401,
+          "type": "browser",
+          "firstMedian": 98633432,
+          "lastMedian": 98338520,
+          "difference": -294912
+        },
+        {
+          "pid": 30491,
+          "type": "GPU",
+          "firstMedian": 255706408,
+          "lastMedian": 254788904,
+          "difference": -917504
+        }
+      ],
+      "perPidMedianScope": "Do not sum per-PID median differences as if equal to difference of whole-cohort medians.",
+      "ledgers": [
+        {
+          "label": "gpu-worker",
+          "firstResidentMedian": 215760216,
+          "lastResidentMedian": 201758561,
+          "firstRetiredWasmMedian": 0,
+          "lastRetiredWasmMedian": 0
+        },
+        {
+          "label": "cpu-worker",
+          "firstResidentMedian": 179776788,
+          "lastResidentMedian": 188449376,
+          "firstRetiredWasmMedian": 0,
+          "lastRetiredWasmMedian": 0
+        },
+        {
+          "label": "cpu-main",
+          "firstResidentMedian": 179776788,
+          "lastResidentMedian": 188449376,
+          "firstRetiredWasmMedian": 0,
+          "lastRetiredWasmMedian": 0
+        }
+      ]
+    }
+  },
+  "nativeObserverCleanup": {
+    "pid": 30395,
+    "exited": true,
+    "exitCode": 0,
+    "signal": null
+  },
+  "cleanupErrors": [],
+  "hypothesesNotConclusions": [
+    "Pixel verification currently creates a new scratch canvas/context on every poll in all three persistent primary pages,including each2s update and initial400burst. Those native Canvas objects/backings may influence private footprint even when JS heaps/RSS do not rise in parallel. Isolate by reusing one tiny test-only probe canvas per page,without product changes/forcedGC/budget changes.",
+    "Retired Wasm bytes/native allocator residency remain separate possibilities;existing snapshots do not identify a sole cause. Do not relabel this failure as a proved product leak or waive the frozen gate."
+  ],
+  "artifacts": {
+    "samples.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-physical-v1/results/samples.jsonl",
+      "sha256": "d236f42a33c7ccb3fb6cd05220f2efd437051732eaec38aeb01381b781674925"
+    },
+    "failure.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-physical-v1/results/failure.json",
+      "sha256": "2c4082ae5284e5ba96dfc3f83eff1dc1ae4f22125407317cc960a26d8d68a52a"
+    },
+    "physical-growth.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-physical-v1/results/physical-growth.json",
+      "sha256": "d682b7ef081ae3138f41d9bb8b0f512833eeb8d2b54c3028deb46419fadaf119"
+    },
+    "cleanup.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-physical-v1/results/cleanup.json",
+      "sha256": "805e62279811244b38d93b6c206e40cb1e0d1f6c1a71fa6026857206c7c0bf72"
+    },
+    "source-stopped.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-physical-v1/results/source-stopped.json",
+      "sha256": "906704e84445949b49820ee2aafedddea1d5ed6a96472013f4dd4f5ab478f6a8"
+    },
+    "secondary-results.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-physical-v1/results/secondary-results.jsonl",
+      "sha256": "fab135792da8cae7ac06d7e61961effab3230f2ab563877f5a186c501c7ddc3d"
+    },
+    "native-memory-attempts.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-physical-v1/results/native-memory-attempts.jsonl",
+      "sha256": "bc6db100ac4366709d29e4be3eba257d552e5bb5e6445014b15824619318bd07"
+    }
+  },
+  "noCommitPush": true,
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}
