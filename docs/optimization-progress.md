@@ -1844,3 +1844,10 @@ Frame与DOM公开只读performance/firstFrame、有限回调/订阅；内部信�
 新增固定Engine的完整network ID只读检查，以及持久Ready/见证字节/Engine代次/fullCID/spec与bridge成员绑定的15字段纯投影；没有接入生产解析器，也未证明实际容器路由或Native健康。新增19合同、相关51项通过，完整919项双平台通过（Mac904/15跳过、Linux913/6跳过）。首次Mac既有attach合同1失败及独立对照中的socket路径错误保留；仅补测试失败诊断，原因未证明，生产期限未改。见[元数据范围和原始失败说明](owned-endpoint-metadata.md)。
 
 SDK所有已记录输入字节未变，继承原精确安装/类型收据。下一步生产provider解析与实际Node路由，再实际Native生命周期。41项9/15/17及原8小时失败保持，未自动重跑或提交推送。
+
+
+### 当前Ready的私有Source解析
+
+provider持有当前Native派生密钥，关闭/不可用/存储故障/shutdown同步清除；完整CID/Engine代次/网络/持久见证文件绑定，逐await和最终生命周期栅栏，有限全局并发与整体期限；恢复入口没有能力。真实Viewer ticket撤销取消已接入，实际Engine/attach/内核仍为结构夹具。新增19合同、相关118项及双平台938项完整回归通过；早期引用比较、夹具等待和账本owner测试错误完整保留。见[解析器范围](provider-resolver.md)。
+
+接下来实际自有Node容器HTTP/WS路由，再真实Native健康与生命周期。SDK精确输入未变，继承既有收据；41项9/15/17和原8小时失败保持，未自动重跑或提交推送。

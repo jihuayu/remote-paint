@@ -1,0 +1,17 @@
+# 生产 provider 的私有 Source 解析
+
+DockerSessionProvider 新增后端 resolveSource，请求只接受tenantId/sessionId/region/version和可选AbortSignal；返回冻结的7字段私有DTO，供ViewerAccess使用。示例：`resolveSource: request => provider.resolveSource(request)`。公共Ready仍只返回版本，SDK和公共HTTP不新增Source密钥字段。
+
+provider在向当前Native worker发送认证Start前，从owner和固定身份派生流密钥；只保存在当前入口。普通worker与恢复入口没有这项能力，关闭、worker不可用、存储故障和shutdown同步清除。现有通道负责owner私有控制，流密钥不写入账本、标签、argv、事件或状态。
+
+解析先确认当前持久Ready、版本、入口代次、存活通道和私有能力，再按fullCID检查容器、按完整network ID检查bridge，随后重新检查同一容器。每次await后重新检查生命周期；全部异步检查结束后读取实际见证文件并比较持久字节哈希，再由端点投影核对Engine StartedAt/归属/spec和网络成员。最后仍须通过关闭与取消栅栏才能返回密钥。读取是分时观察，不能当成原子物理健康证明。
+
+全局并发上限不超过元数据客户端实际容量，不限制每Session只能一个Viewer；非协作的未完成Promise仍占名额。默认总期限5000ms，允许20到30000ms，同时检查单调时钟，阻止同步文件操作跨过预算后绕开尚未运行的timer。结束时主动清理操作信号和timer，不中止调用方或worker。其他会话清理未确认造成的recovery-required，不单独撤销当前合法Ready能力，沿用sessionStatus策略。
+
+新增19合同，相关118项通过。合同运行真实provider/Registry、SQLite、部署与源码清单验证、fsync见证文件，以及真实Viewer ticket WebSocket upgrade和撤销取消；Engine、effect、attach退出和内核记录明确为结构夹具。本小步没有实际容器直连或Native运行证明。
+
+初版13项先全部失败。首轮实现把账本快照副本误作入口引用，导致合法请求也失败；第6例等待未到达的网络阶段且夹具缺少自身期限。保存源码和日志后，仅向核对过父子关系与完整命令的自有Node测试子进程发送SIGTERM；根退出1，实际只完成5例（3通过2失败），不当作完整13例。修正引用比较并限制夹具观察等待后，另有1例因夹具未携带活动Registry owner调用store.load失败，改为读取实际私有账本文件字节检查密钥未落盘。上述失败全部保留。补充操作信号清理合同先失败再修复。原13例及补充18例阶段均通过，最终19新合同在相关118项中通过。
+
+相关回归的普通夹具曾使用500ms查找预算；最终冻结前将其对齐生产默认5000ms，30/40ms专门期限合同保留，生产默认从未放宽。最终107文件938项完整回归Mac923通过15平台跳过、Linux932通过6平台跳过，实际均0，无失败取消。此前attach完整回归失败的唯一原因仍未证明；通过本轮不能把它当作已修复。SDK、类型、验证器和全部已记录安装合同输入字节未变，继承双平台77 Node/16 Python、严格TSC及Mac Mypy精确收据，没有虚构新打包或安装。
+
+下一步需要实际拥有容器的HTTP/WS路由验证，再用冻结的合格broker验证生产Native worker、公开SDK像素、健康丢失传播、TTL/取消/EOF/恢复与完整namespace退役。全部Agent/CDP栅栏、N1轻微丢包/物理时延和原8小时增长仍未完成。41项9/15/17、原8小时失败与192MiB门槛不变，未自动重跑8小时、强制浏览器GC、改演示/采样器或暂存提交推送。见[范围收据](evidence/provider-resolver.json)。

@@ -1,0 +1,131 @@
+{
+  "at": "2026-10-19T11:16:13.721221+00:00",
+  "task": "provider-resolver-integration",
+  "status": "provider-resolver-Node-scoped-qualified",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/provider-resolver-v1/frozen-version.json",
+  "executedManifestSha256": "c0eea843b9d64c35c2a4e4e8e44b3b9694712f8f101168e3ff89311733d34023",
+  "sourceFilesExecuted": 922,
+  "fullJs": {
+    "mac": {
+      "tests": 938,
+      "pass": 923,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "0373cce71bf8f3c0b8d62c1a8074c068acb2d5af1f3e7ee2bb1df6af3deeaf1e"
+    },
+    "linux": {
+      "tests": 938,
+      "pass": 932,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "cec428411f61b8b5176e802c6c160aaed86532202d902d62d5d4c7b80d227934"
+    }
+  },
+  "testFiles": 107,
+  "newContracts": 19,
+  "relatedContracts": 118,
+  "initialBeforeFix": {
+    "tests": 13,
+    "pass": 0,
+    "fail": 13,
+    "actualExitCode": 1
+  },
+  "initialAfterFixPartialRun": {
+    "observedTests": 5,
+    "pass": 3,
+    "fail": 2,
+    "rootActualExitCode": 1,
+    "whole13CasesCompleted": false,
+    "ownedChildExplicitlyTerminated": true,
+    "cause": "Wrong identity comparison of ledger snapshot clone against live entry row; fixture waited without deadline for a network phase that was never reached"
+  },
+  "firstCorrection": "Fence returns the current entry row after checking actual durable equality; fixture observation waits are bounded",
+  "secondAfterFix": {
+    "tests": 13,
+    "pass": 12,
+    "fail": 1,
+    "actualExitCode": 1,
+    "failure": "Fixture attempted store.load without the active Registry owner; fixed to inspect actual private ledger file bytes"
+  },
+  "supplementalSignalCleanupBeforeFix": {
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "actualExitCode": 1
+  },
+  "successfulLookupCleanup": "Cancel operation controller and clear its finite timer in finally; caller/worker signals and active capability remain usable",
+  "nativeKeyLifetime": "Derive from current authenticated owner identity only for canonical Native entry; never persist or publish; clear synchronously on close, unavailable, storage fault and shutdown; recovered rows never reconstruct it",
+  "resolverRequest": [
+    "tenantId",
+    "sessionId",
+    "region",
+    "version",
+    "optional signal"
+  ],
+  "resolverPrivateFields": [
+    "tenantId",
+    "sessionId",
+    "region",
+    "version",
+    "origin",
+    "streamOrigin",
+    "key"
+  ],
+  "publicReadyRemainsVersionOnly": true,
+  "publicStatusOrLedgerContainsRawOwnerOrStreamKey": false,
+  "lookupBounds": {
+    "defaultOverallMs": 5000,
+    "minimumMs": 20,
+    "maximumMs": 30000,
+    "defaultConcurrent": "metadata actual request capacity",
+    "maximumConcurrent": 16,
+    "actualPendingPromiseRetainsAdmission": true,
+    "sameSessionMultipleLookupsAllowed": true
+  },
+  "lookupSequence": [
+    "current durable Ready/live channel/ephemeral key fence",
+    "owned fullCID inspect",
+    "fence and ownership validation",
+    "independent full networkID inspect",
+    "fence",
+    "second fullCID inspect",
+    "fence",
+    "actual inspection-bound witness file read",
+    "fence and exact stored hash/Engine/network projection",
+    "final fence then private DTO"
+  ],
+  "timerCallbackDelayCannotBypassMonotonicBudget": true,
+  "unrelatedQuarantinedRuntimeDoesNotAloneRevokeValidReady": true,
+  "actualViewerTicketUpgradeAndRevocationSignalChecked": true,
+  "actualSqliteDeploymentSourceAndFsyncWitnessStores": true,
+  "EngineEffectsAttachExitAndKernelRecordsAreStructuralFixtures": true,
+  "actualNativeWorkerOrContainerRunInThisStep": false,
+  "relatedRegressionBeforeFixtureDefaultAlignmentMs": 500,
+  "finalFixtureMatchesProductionDefaultMs": 5000,
+  "deadlineContractsKeepExplicit30And40Ms": true,
+  "sdkBytesAndAllRecordedInstalledContractInputsUnchanged": true,
+  "inheritedSdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "eba83b1de6afd850d86bbf719673fcf04d6d55fdbe09672874dc8b8cba6a1bda",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "cabbac864439e1e8d66bf644f9b20326e9b3544c20d01746963cae4fb21fd6da"
+  },
+  "sdkInstalled77Node16PythonTscBothMacMypyInherited": true,
+  "providerResolverIntegrated": true,
+  "actualOwnedContainerRouteQualified": false,
+  "productionNativeProviderQualified": false,
+  "nativeHealthLossPropagationQualified": false,
+  "priorMacAttachFailureUniqueCauseStillUnproven": true,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}
