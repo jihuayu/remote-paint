@@ -4,7 +4,7 @@ import {audience} from './viewer-access-harness.mjs';
 
 // Explicit DOM, shadow-root, navigation and MutationObserver scheduler fixture.
 // MessageChannel transfer, saved child entry points and the network are real.
-export function dom(h,{workerMode=false,autoLoad=true,configFetch,realInput=false}={}){
+export function dom(h,{workerMode=false,autoLoad=true,configFetch,realInput=false,drawError,initError}={}){
  const frames=[],runtimes=[],observers=new Set();let mutations=false;
  function target(){const listeners=new Map();return {addEventListener(name,fn){if(!listeners.has(name))listeners.set(name,new Set());listeners.get(name).add(fn);},removeEventListener(name,fn){listeners.get(name)?.delete(fn);},dispatchEvent(event){for(const fn of [...listeners.get(event.type)??[]])fn(event);},listenerCount(){return [...listeners.values()].reduce((n,set)=>n+set.size,0);}};}
  function changed(){if(mutations)return;mutations=true;queueMicrotask(()=>{mutations=false;for(const observer of [...observers])observer.callback();});}
@@ -14,7 +14,7 @@ export function dom(h,{workerMode=false,autoLoad=true,configFetch,realInput=fals
  function retire(frame){if(!frame.runtime)return;frame.runtime.window.dispatchEvent({type:'pagehide',persisted:false});frame.runtime=null;}
  function navigate(frame){
   if(!frame.isConnected)return;retire(frame);
-  const build='b'.repeat(64),r=runtime(workerMode,{publicMode:true,viewerBuild:build,parentWindow:owner,realInput,configFetch:configFetch??(async()=>new Response(JSON.stringify({schema:'public-viewer-v1',gatewayOrigin:h.base,allowedParentOrigins:['https://host.example'],viewerBuild:build}),{headers:{'content-type':'application/json'}}))});
+  const build='b'.repeat(64),r=runtime(workerMode,{publicMode:true,viewerBuild:build,parentWindow:owner,realInput,drawError,initError,configFetch:configFetch??(async()=>new Response(JSON.stringify({schema:'public-viewer-v1',gatewayOrigin:h.base,allowedParentOrigins:['https://host.example'],viewerBuild:build}),{headers:{'content-type':'application/json'}}))});
   runtimes.push(r);frame.runtime=r;frame.contentWindow=r.window;
   r.window.postMessage=(data,targetOrigin,ports)=>{assert.equal(targetOrigin,audience);const transferred=structuredClone({data,ports},{transfer:ports});queueMicrotask(()=>{if(frame.runtime===r)r.window.dispatchEvent({type:'message',...transferred,origin:'https://host.example',source:owner});else for(const port of transferred.ports)port.close();});};
   frame.dispatchEvent({type:'load'});

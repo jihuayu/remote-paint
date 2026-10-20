@@ -32,6 +32,7 @@ test('public module dependency graph resolves every static import to one canonic
  }
  assert.ok(visited.has(assets.prefix+'/embed-bridge.mjs'));assert.ok(visited.has(assets.prefix+'/viewer-control.mjs'));assert.ok(visited.has(assets.prefix+'/viewer-channel.mjs'));assert.ok(visited.get(assets.prefix+'/embed-bridge.mjs').includes(assets.prefix+'/viewer-control.mjs'));assert.ok(visited.get(assets.prefix+'/viewer-control.mjs').every(path=>path===assets.prefix+'/viewer-channel.mjs'));
  assert.ok(visited.get(assets.prefix+'/live.mjs').includes(assets.prefix+'/viewer-telemetry.mjs'));assert.deepEqual(visited.get(assets.prefix+'/viewer-telemetry.mjs'),[assets.prefix+'/viewer-channel.mjs']);
+ assert.ok(visited.get(assets.prefix+'/embed-bridge.mjs').includes(assets.prefix+'/viewer-telemetry.mjs'));
 });
 
 test('public factory requires exact bounded Origins and public prepared assets',async()=>{

@@ -24,7 +24,7 @@ const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$
 let ticketSource=null,publicSettings=null,publicConnection=null;const workerTickets=new Map();
 let streamWorker,renderer,presenter,socket,cleanupSession,cancelInitialization,heartbeat,lastPong,forceMainThread=false,generation=0,retryTimer,stopped=false,retryDelay=250;
 const controlLink=new ControlLink({onMessage:message=>{if(message.type==='CaptureError')status(message.message);else input.message(message);},onError:fail,onClose:peerId=>{input.reset();if(stopped)return;if(streamWorker)streamWorker.postMessage({type:'control-lost',peerId});else socket?.close(1012,'Control connection closed');}});
-function fail(error){telemetry.reset();$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';}
+function fail(error){telemetry.reset();$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';if(publicMode&&publicSettings&&!stopped)connectionState({...window.remotePaintConnection,state:'failed',code:error instanceof ViewerConnectionError?error.code:'VIEWER_PROTOCOL_ERROR'});}
 function connectionState(state){
  if(publicMode){if(['connecting','reconnecting','refreshing'].includes(state.state))telemetry.connecting();else if(state.state!=='connected')telemetry.reset();}
  if(state.state==='failed'&&publicSettings&&!stopped){stopped=true;lifecycle.freeze();fail(new ViewerConnectionError(state.code));}

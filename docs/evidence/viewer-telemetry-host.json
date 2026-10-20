@@ -1,0 +1,91 @@
+{
+  "at": "2026-10-19T09:56:58.096431+00:00",
+  "task": "K2a2b3c3b",
+  "status": "host-telemetry-api-scoped-qualified",
+  "executedManifestSha256": "91aa0a02e7da0e814d7db4beaa23876b1b233524b302fa5c609b416b9fb878a1",
+  "sourceFilesExecuted": 904,
+  "fullJs": {
+    "mac": {
+      "tests": 885,
+      "pass": 870,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "5390d9cff02dd1a74afdc61f16460179be89ac5545ac76d263883b6861f844ea"
+    },
+    "linux": {
+      "tests": 885,
+      "pass": 879,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "9aad563e74b6322c789066a45b518cc2c65251494507e0e43ee8fbba4849b51b"
+    }
+  },
+  "testFiles": 103,
+  "newContracts": 13,
+  "originalBeforeImplementationContracts": {
+    "total": 10,
+    "fail": 10,
+    "actualExitCode": 1
+  },
+  "additionalInitAndReentrantContracts": 3,
+  "relatedContracts": 214,
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "0175dcaf3972dbd7c77a87ad41c20640eb2953f7bb40185c76818ab67d44c93d",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "cabbac864439e1e8d66bf644f9b20326e9b3544c20d01746963cae4fb21fd6da"
+  },
+  "installedSdk": {
+    "nodeMembers": 16,
+    "nodeTestsEachPlatform": 77,
+    "pythonTestsEachPlatform": 16,
+    "strictTypeScriptBothActual0": true,
+    "installedPythonMypyMacActual0": true,
+    "publicTelemetryTypesAndPresenceChecked": true
+  },
+  "publicApi": [
+    "performance",
+    "firstFrame",
+    "onPerformance",
+    "onFirstFrame",
+    "DOM on(performance)",
+    "DOM on(first-frame)"
+  ],
+  "internalEnvelope": [
+    "grantId",
+    "snapshot"
+  ],
+  "hostValidatesActualIssuedGrant": true,
+  "oldGrantOrGenerationOrNamespaceDropped": true,
+  "malformedEnvelopeClosesProtocol": true,
+  "minimumChildSampleIntervalMs": 250,
+  "maximumListenersPerDomEvent": 64,
+  "resetEventsAreUnavailableNotSamples": true,
+  "rendererFailureCode": "VIEWER_PROTOCOL_ERROR",
+  "privateErrorTextNotForwarded": true,
+  "clock": "viewer-ui-receipt",
+  "firstFrameStage": "scene-submitted",
+  "memoryScope": "client-estimate",
+  "fixtures": [
+    "Actual MessageChannel finite envelope adversarial tests",
+    "Actual Node HTTP/WebSocket/SQLite/ControlLease/ViewerInput and saved main/Worker entry points",
+    "Explicit DOM/CanvasKit/renderer/Worker scheduling fixtures",
+    "Injected init/draw failures and reentrant callback destruction"
+  ],
+  "currentPublicApiContractsQualified": true,
+  "actualNativeTelemetryQualified": false,
+  "physicalLatencyClaim": false,
+  "productionNativeProviderQualified": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

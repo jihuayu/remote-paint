@@ -31,6 +31,7 @@ export async function makeStaticAssets(inputs){
     if(logical==='/connection.mjs')source=source.replaceAll(`${quote}../sdk/viewer-connection.mjs${quote}`,`${quote}${prefix}${logical}${quote}`);
     if(logical==='/viewer-channel.mjs')source=source.replaceAll(`${quote}../sdk/viewer-channel.mjs${quote}`,`${quote}${prefix}${logical}${quote}`);
     if(logical==='/viewer-control.mjs')source=source.replaceAll(`${quote}../sdk/viewer-control.mjs${quote}`,`${quote}${prefix}${logical}${quote}`);
+    if(logical==='/viewer-telemetry.mjs')source=source.replaceAll(`${quote}../sdk/viewer-telemetry.mjs${quote}`,`${quote}${prefix}${logical}${quote}`);
    }
    source=source.replaceAll('`/vendor/',`\`${prefix}/vendor/`).replaceAll('__REMOTE_PAINT_VIEWER_BUILD__',build).replaceAll('__REMOTE_PAINT_WASM_SHA__',wasmSha256);
    bytes=Buffer.from(source);

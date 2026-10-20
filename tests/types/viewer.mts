@@ -46,3 +46,14 @@ await viewer.resizeViewport({width:320,height:240,deviceScaleFactor:2});
 await viewer.resizeViewport({width:320,height:240},{execute:'Runtime.evaluate'});
 // @ts-expect-error applied viewport metadata is immutable
 viewport.pageEpoch=100;
+// Telemetry remains finite and immutable on the installed public API.
+viewer.on('performance',snapshot=>{const clock:'viewer-ui-receipt'=snapshot.clock;const bytes:number|null=snapshot.receivedBytes;void[clock,bytes];})();
+viewer.on('first-frame',frame=>{const stage:'scene-submitted'=frame.stage;const elapsed:number=frame.connectToReceiptMs;void[stage,elapsed];})();
+createViewer(document.body,{...config,onPerformance:s=>{const n:number=s.framesSubmitted;void n;},onFirstFrame:f=>{const w:boolean=f.worker;void w;}});
+const currentFirst=viewer.firstFrame;const currentClock:'viewer-ui-receipt'|undefined=currentFirst?.clock;void currentClock;
+// @ts-expect-error public performance is readonly
+viewer.performance.framesSubmitted=0;
+// @ts-expect-error no Source private identity in first-frame data
+currentFirst?.sessionId;
+// @ts-expect-error finite telemetry subscription names
+viewer.on('source-performance',()=>{});

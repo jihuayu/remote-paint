@@ -13,7 +13,7 @@ export function viewerNonce(){const bytes=new Uint8Array(32);globalThis.crypto.g
 export const validNonce=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
 const plain=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const exact=(value,names)=>plain(value)&&Object.keys(value).length===names.length&&names.every(k=>Object.hasOwn(value,k));
-const methods=new Set(['connect','disconnect','state','ticket','take-control','release-control','resize-viewport']),events=new Set(['ready','state','control']);
+const methods=new Set(['connect','disconnect','state','ticket','take-control','release-control','resize-viewport']),events=new Set(['ready','state','control','performance','first-frame']);
 const bytes=text=>new TextEncoder().encode(text).byteLength;
 function encode(value){let text;try{text=JSON.stringify(value);}catch{fail('CHANNEL_PROTOCOL');}if(typeof text!=='string'||text.length>16384||bytes(text)>16384)fail('CHANNEL_PROTOCOL');return text;}
 function parse(text){if(typeof text!=='string'||text.length>16384||bytes(text)>16384)fail('CHANNEL_PROTOCOL');try{return JSON.parse(text);}catch{fail('CHANNEL_PROTOCOL');}}

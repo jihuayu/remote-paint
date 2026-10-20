@@ -24,3 +24,10 @@ viewport.width=640;
 await frame.resizeViewport({width:320,height:240,deviceScaleFactor:2});
 // @ts-expect-error source viewport dimensions are required
 await frame.resizeViewport();
+const performanceStage:'unavailable'|'scene-submitted'=frame.performance.stage;void performanceStage;
+const firstClock:'viewer-ui-receipt'|undefined=frame.firstFrame?.clock;void firstClock;
+new ViewerFrameConnection({...options,onPerformance:s=>{const n:number=s.framesSubmitted;void n;},onFirstFrame:f=>{const n:number=f.connectToReceiptMs;void n;}});
+// @ts-expect-error public snapshots are readonly
+frame.performance.receivedBytes=0;
+// @ts-expect-error transport identity is not public telemetry
+frame.firstFrame?.grantId;

@@ -1,12 +1,13 @@
 import {ViewerTicketSource} from './viewer-connection.mjs';
 import {emptyViewerControl,viewerControlState,viewerControlOptions,viewerViewportSize,viewerViewportResult} from './viewer-control.mjs';
+import {emptyViewerPerformance,viewerTelemetryEnvelope} from './viewer-telemetry.mjs';
 import {ViewerPort,ViewerChannelError,ViewerViewportError,viewerOrigin,viewerNonce,viewerHello,channelCode} from './viewer-channel.mjs';
 export {ViewerChannelError,ViewerViewportError} from './viewer-channel.mjs';
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const fail=code=>{throw new ViewerChannelError(code);};
 const states=new Set(['waiting','paused','connecting','connected','refreshing','reconnecting','failed','closed']);
 function options(value){
- const names=['frameWindow','frameOrigin','gatewayOrigin','sessionId','role','version','getTicket','requestTimeoutMs','readyTimeoutMs','connectTimeoutMs','onState','onError','onControl'];
+ const names=['frameWindow','frameOrigin','gatewayOrigin','sessionId','role','version','getTicket','requestTimeoutMs','readyTimeoutMs','connectTimeoutMs','onState','onError','onControl','onPerformance','onFirstFrame'];
  if(!value||typeof value!=='object'||Reflect.ownKeys(value).some(k=>!names.includes(k)||!Object.hasOwn(Object.getOwnPropertyDescriptor(value,k),'value')))fail('VIEWER_INVALID_CONFIG');
  return Object.fromEntries(Reflect.ownKeys(value).map(k=>[k,value[k]]));
 }
@@ -25,6 +26,7 @@ function state(value,settings){
 // Host-side connection to an existing trusted iframe Window. The DOM component
 // owns iframe creation/removal; this class owns only this authenticated port.
 export class ViewerFrameConnection {
+ #performance=emptyViewerPerformance();#firstFrame=null;#onPerformance;#onFirstFrame;#issuedGrantId=null;#telemetryGeneration=0;#highestTelemetryGeneration=0;#latestFrame=null;
  #control=emptyViewerControl();#onControl;#terminalControlCode=null;
  #viewportRequest=null;
  #tickets;#settings;#port;#readyResolve;#readyReject;#readyTimer;#readyDone=false;#closed=false;#ownClose=false;#closedError=null;#active=false;#issued=false;#abort=null;#connectPromise=null;#connectWaiter=null;#onState;#onError;#timeout;#state=Object.freeze({state:'waiting'});
@@ -33,6 +35,8 @@ export class ViewerFrameConnection {
   if(!config.frameWindow||typeof config.frameWindow.postMessage!=='function'||config.onState!==undefined&&typeof config.onState!=='function'||config.onError!==undefined&&typeof config.onError!=='function'||!integer(config.readyTimeoutMs??10000,50,30000)||!integer(config.connectTimeoutMs??30000,50,60000))fail('VIEWER_INVALID_CONFIG');
   this.#tickets=new ViewerTicketSource({gatewayOrigin:config.gatewayOrigin,audience:frameOrigin,sessionId:config.sessionId,role:config.role,getTicket:config.getTicket,...(config.version===undefined?{}:{version:config.version}),...(config.requestTimeoutMs===undefined?{}:{requestTimeoutMs:config.requestTimeoutMs})});
   if(config.onControl!==undefined&&typeof config.onControl!=='function')fail('VIEWER_INVALID_CONFIG');
+  for(const key of ['onPerformance','onFirstFrame'])if(config[key]!==undefined&&typeof config[key]!=='function')fail('VIEWER_INVALID_CONFIG');
+  this.#onPerformance=config.onPerformance;this.#onFirstFrame=config.onFirstFrame;
   this.#settings=this.#tickets.settings;this.#onState=config.onState;this.#onError=config.onError;this.#onControl=config.onControl;this.#timeout=config.connectTimeoutMs??30000;
   this.ready=new Promise((resolve,reject)=>{this.#readyResolve=resolve;this.#readyReject=reject;});void this.ready.catch(()=>{});
   const channel=viewerNonce(),pair=new MessageChannel();
@@ -41,16 +45,30 @@ export class ViewerFrameConnection {
    if(!data||typeof data!=='object'||Array.isArray(data)||Object.keys(data).length!==2||!Object.hasOwn(data,'reason')||!Object.hasOwn(data,'previousGrantId')||!['connect','reconnect','refresh'].includes(data.reason)||data.previousGrantId!==null&&(typeof data.previousGrantId!=='string'||!/^vgr_[a-f0-9-]{36}$/.test(data.previousGrantId)))fail('CHANNEL_PROTOCOL');
    // The host source owns previousGrantId/version history. A child cannot
    // select another grant; a response lost after cancellation can be refreshed.
-   const joined=combined(signal,this.#abort.signal);try{const ticket=await this.#tickets.getTicket({signal:joined.signal,reason:data.reason});if(joined.signal.aborted||!this.#active)fail('CHANNEL_ABORTED');this.#issued=true;return ticket;}finally{joined.dispose();}
+   const joined=combined(signal,this.#abort.signal);try{const ticket=await this.#tickets.getTicket({signal:joined.signal,reason:data.reason});if(joined.signal.aborted||!this.#active)fail('CHANNEL_ABORTED');this.#resetTelemetry();if(joined.signal.aborted||!this.#active||this.#closed)fail('CHANNEL_ABORTED');this.#issued=true;this.#issuedGrantId=ticket.grantId;return ticket;}finally{joined.dispose();}
   },notify:(name,data)=>this.#notification(name,data),onClose:error=>this.#ended(error)});
   this.#readyTimer=setTimeout(()=>this.#port.close('CHANNEL_TIMEOUT'),config.readyTimeoutMs??10000);this.#readyTimer.unref?.();
   try{config.frameWindow.postMessage(viewerHello(channel),frameOrigin,[pair.port2]);}catch{pair.port2.close();this.#port.close('CHANNEL_CLOSED');}
  }
  get state(){return this.#state;}
  get control(){return this.#control;}
+ get performance(){return this.#performance;}
+ get firstFrame(){return this.#firstFrame;}
+ #resetTelemetry(){const changed=this.#performance.stage!=='unavailable';this.#performance=emptyViewerPerformance();this.#firstFrame=null;this.#latestFrame=null;this.#telemetryGeneration=0;if(changed)try{this.#onPerformance?.(this.#performance);}catch{}}
+ #telemetry(name,data){
+  const {grantId,snapshot}=viewerTelemetryEnvelope(name,data);if(!this.#readyDone)fail('CHANNEL_PROTOCOL');
+  if(this.#closed||!this.#active||!this.#issued||grantId!==this.#issuedGrantId||this.#state.state!=='connected')return;
+  const generation=snapshot.connectionGeneration;if(generation<this.#highestTelemetryGeneration||!this.#telemetryGeneration&&generation<=this.#highestTelemetryGeneration)return;
+  if(generation!==this.#telemetryGeneration){this.#resetTelemetry();if(this.#closed||!this.#active||grantId!==this.#issuedGrantId)return;this.#telemetryGeneration=this.#highestTelemetryGeneration=generation;}
+  const prior=this.#latestFrame;if(prior&&(snapshot.pageEpoch<prior.pageEpoch||snapshot.pageEpoch===prior.pageEpoch&&(snapshot.viewportVersion<prior.viewportVersion||snapshot.viewportVersion===prior.viewportVersion&&snapshot.frameId<prior.frameId)))return;
+  if(name==='first-frame'){if(this.#firstFrame)return;this.#firstFrame=snapshot;this.#latestFrame={pageEpoch:snapshot.pageEpoch,viewportVersion:snapshot.viewportVersion,frameId:snapshot.frameId};try{this.#onFirstFrame?.(snapshot);}catch{}return;}
+  if(snapshot.framesSubmitted<this.#performance.framesSubmitted)return;
+  this.#performance=snapshot;this.#latestFrame={pageEpoch:snapshot.pageEpoch,viewportVersion:snapshot.viewportVersion,frameId:snapshot.frameId};try{this.#onPerformance?.(snapshot);}catch{}
+ }
  #publishControl(value){if(JSON.stringify(value)===JSON.stringify(this.#control))return;this.#control=value;try{this.#onControl?.(value);}catch{}}
- #publish(value){this.#state=value;try{this.#onState?.(value);}catch{}}
+ #publish(value){this.#state=value;if(value.state!=='connected')this.#resetTelemetry();if(this.#state===value)try{this.#onState?.(value);}catch{}}
  #notification(name,data){
+  if(name==='performance'||name==='first-frame'){this.#telemetry(name,data);return;}
   if(name==='ready'){
    if(this.#readyDone||!data||typeof data!=='object'||Object.keys(data).length!==2||data.gatewayOrigin!==this.#settings.gatewayOrigin||typeof data.viewerBuild!=='string'||!/^[a-f0-9]{64}$/.test(data.viewerBuild))fail('VIEWER_INVALID_CONFIG');
    this.#readyDone=true;clearTimeout(this.#readyTimer);this.#readyResolve(Object.freeze({...data}));return;
@@ -68,14 +86,14 @@ export class ViewerFrameConnection {
   }
  }
  #ended(error){
-  if(this.#closed)return;this.#closed=true;this.#closedError=error;clearTimeout(this.#readyTimer);this.#active=false;this.#abort?.abort();this.#tickets.destroy();
+  if(this.#closed)return;this.#closed=true;this.#closedError=error;clearTimeout(this.#readyTimer);this.#active=false;this.#issued=false;this.#issuedGrantId=null;this.#abort?.abort();this.#tickets.destroy();this.#resetTelemetry();
   this.#publishControl(emptyViewerControl());if(!this.#readyDone)this.#readyReject(error);this.#connectWaiter?.reject(error);this.#publish(Object.freeze({state:'closed',code:error.code}));if(!this.#ownClose)try{this.#onError?.(error);}catch{}
  }
  connect({signal}={}){
   if(signal!==undefined&&!(signal instanceof AbortSignal))return Promise.reject(new ViewerChannelError('VIEWER_INVALID_CONFIG'));
   if(this.#closed)return Promise.reject(new ViewerChannelError('CHANNEL_CLOSED'));if(this.#connectPromise)return wait(this.#connectPromise,signal);
   if(this.#active&&this.#state.state==='connected')return wait(Promise.resolve(this.#state),signal);
-  const controller=this.#abort=new AbortController();this.#active=true;this.#issued=false;const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
+  const controller=this.#abort=new AbortController();this.#active=true;this.#issued=false;this.#issuedGrantId=null;this.#resetTelemetry();const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
   const work=(async()=>{
    let timer;
    try{
@@ -90,7 +108,7 @@ export class ViewerFrameConnection {
   this.#connectPromise=work;void work.finally(()=>{if(this.#connectPromise===work)this.#connectPromise=null;}).catch(()=>{});return work;
  }
  async disconnect(){
-  this.#active=false;this.#abort?.abort();this.#publishControl(emptyViewerControl());if(this.#closed)return;
+  this.#active=false;this.#issued=false;this.#issuedGrantId=null;this.#abort?.abort();this.#resetTelemetry();this.#publishControl(emptyViewerControl());if(this.#closed)return;
   await this.#port.request('disconnect',null);this.#publish(Object.freeze({...this.#state,state:'paused'}));
  }
  async getState(){if(this.#closed)fail('CHANNEL_CLOSED');const value=state(await this.#port.request('state',null),this.#tickets.settings);this.#publish(value);return value;}

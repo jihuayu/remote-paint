@@ -20,3 +20,5 @@ export type ViewerPerformanceSnapshot=Readonly<{
 export function emptyViewerPerformance():ViewerPerformanceSnapshot;
 export function viewerPerformanceSnapshot(value:unknown):ViewerPerformanceSnapshot;
 export function viewerFirstFrame(value:unknown):ViewerFirstFrame;
+/** Internal authenticated transport only; public API snapshots omit grantId. */
+export function viewerTelemetryEnvelope(name:'performance'|'first-frame',value:unknown):Readonly<{grantId:string;snapshot:ViewerPerformanceSnapshot|ViewerFirstFrame}>;

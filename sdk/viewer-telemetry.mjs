@@ -20,6 +20,12 @@ export function viewerPerformanceSnapshot(value){
 export function viewerFirstFrame(value){
  if(!exact(value,firstKeys)||value.scope!=='viewer'||value.stage!=='scene-submitted'||value.clock!=='viewer-ui-receipt'||!validCore(value)||!['renderer-init','connection-attempt'].includes(value.startPhase)||!finite(value.connectToReceiptMs))fail();return Object.freeze(Object.fromEntries(firstKeys.map(k=>[k,value[k]])));
 }
+// Only the authenticated bridge transports the private grant alongside a
+// finite projection. Public snapshots never acquire that transport field.
+export function viewerTelemetryEnvelope(name,value){
+ if(!['performance','first-frame'].includes(name)||!exact(value,['grantId','snapshot'])||typeof value.grantId!=='string'||!/^vgr_[a-f0-9-]{36}$/.test(value.grantId))fail();
+ const snapshot=name==='performance'?viewerPerformanceSnapshot(value.snapshot):viewerFirstFrame(value.snapshot);if(snapshot.stage!=='scene-submitted')fail();return Object.freeze({grantId:value.grantId,snapshot});
+}
 const bytes=v=>integer(v,0,2**40)?v:null,ms=v=>finite(v)?v:null;
 function measurements(value){
  const memory=own(value,'memory'),observed=own(memory,'observed'),domains=own(memory,'domains'),gpu=bytes(own(domains,'gpu')),cache=bytes(own(observed,'gpuCacheBytes'));

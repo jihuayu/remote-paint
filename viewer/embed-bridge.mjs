@@ -1,5 +1,6 @@
 import {ViewerPort,ViewerChannelError,ViewerViewportError,readViewerHello,viewerOrigin,viewerPort} from '../sdk/viewer-channel.mjs';
 import {viewerViewportSize} from '../sdk/viewer-control.mjs';
+import {viewerTelemetryEnvelope} from '../sdk/viewer-telemetry.mjs';
 import {ViewerConnectionError} from '../sdk/viewer-connection.mjs';
 const fail=code=>{throw new ViewerChannelError(code);};
 function fields(value,names){if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!names.includes(k)))fail('VIEWER_INVALID_CONFIG');}
@@ -39,6 +40,7 @@ export function attachViewerChild({targetWindow=globalThis.window,ready,api}={})
    fail('CHANNEL_PROTOCOL');
   },onClose:()=>{if(endpoint===current){endpoint=null;api.disconnect();}}});
   endpoint=current;current.notify('ready',{gatewayOrigin:config.gatewayOrigin,viewerBuild:config.viewerBuild});current.notify('state',state(api.state));if(api.control!==undefined)current.notify('control',api.control);
+  for(const [name,key] of [['first-frame','firstFrameEnvelope'],['performance','performanceEnvelope']])if(api[key])current.notify(name,viewerTelemetryEnvelope(name,api[key]));
  };
  const hello=event=>{
   const channel=readViewerHello(event.data);if(!channel)return;
@@ -50,8 +52,9 @@ export function attachViewerChild({targetWindow=globalThis.window,ready,api}={})
  };
  const notify=event=>{if(endpoint&&!endpoint.closed){try{endpoint.notify('state',state(event.detail));}catch{endpoint.close('CHANNEL_PROTOCOL');}}};
  const control=event=>{if(endpoint&&!endpoint.closed){try{endpoint.notify('control',event.detail);}catch{endpoint.close('CHANNEL_PROTOCOL');}}};
- const dispose=()=>{if(closed)return;closed=true;targetWindow.removeEventListener('message',hello);targetWindow.removeEventListener('remote-paint-connection',notify);targetWindow.removeEventListener('remote-paint-control',control);targetWindow.removeEventListener('pagehide',dispose);clearPending();endpoint?.close();endpoint=null;};
- targetWindow.addEventListener('message',hello);targetWindow.addEventListener('remote-paint-connection',notify);targetWindow.addEventListener('remote-paint-control',control);targetWindow.addEventListener('pagehide',dispose);
+ const telemetry=name=>event=>{if(endpoint&&!endpoint.closed){try{endpoint.notify(name,viewerTelemetryEnvelope(name,event.detail));}catch{endpoint.close('CHANNEL_PROTOCOL');}}},performance=telemetry('performance'),firstFrame=telemetry('first-frame');
+ const dispose=()=>{if(closed)return;closed=true;targetWindow.removeEventListener('message',hello);targetWindow.removeEventListener('remote-paint-connection',notify);targetWindow.removeEventListener('remote-paint-control',control);targetWindow.removeEventListener('remote-paint-performance',performance);targetWindow.removeEventListener('remote-paint-first-frame',firstFrame);targetWindow.removeEventListener('pagehide',dispose);clearPending();endpoint?.close();endpoint=null;};
+ targetWindow.addEventListener('message',hello);targetWindow.addEventListener('remote-paint-connection',notify);targetWindow.addEventListener('remote-paint-control',control);targetWindow.addEventListener('remote-paint-performance',performance);targetWindow.addEventListener('remote-paint-first-frame',firstFrame);targetWindow.addEventListener('pagehide',dispose);
  void Promise.resolve(ready).then(value=>{
   if(closed)return;
   if(!value||value.schema!=='public-viewer-v1'||!Array.isArray(value.allowedParentOrigins)||value.allowedParentOrigins.length>32||typeof value.viewerBuild!=='string'||!/^[a-f0-9]{64}$/.test(value.viewerBuild))fail('VIEWER_CONFIG_INVALID');

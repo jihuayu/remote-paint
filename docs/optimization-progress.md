@@ -1803,3 +1803,12 @@ Window/Worker 保存入口接入有限采集器：首个 scene-submitted 结果�
 新增13项先失败后通过，相关199项回归通过。首次双平台完整回归各两项失败，发现帧龄观察器复制资源清单漏新模块；补齐清单与字节相等断言并保留失败后，101文件/872项最终Mac857通过15平台跳过、Linux866通过6平台跳过，实际均0。16文件私有SDK双平台离线安装各77 Node/16 Python、严格TSC及Mac Mypy通过；观察器修复未改包或验证器字节。见[子页面采集合同和局限](viewer-telemetry-child.md)。
 
 本小步未完成宿主性能/首帧API或实际Native遥测；后续桥接与三模式浏览器验证仍必需。41项9/15/17，原8小时失败与192MiB门槛保持，未自动重跑、强制浏览器GC、改演示/采样器或暂存提交推送。
+
+
+### K2a2b3c3b：宿主有限性能/首帧 API
+
+Frame与DOM公开只读performance/firstFrame、有限回调/订阅；内部信封严格匹配实际签发授权并过滤旧代次/命名空间。重连/换角色/重载/销毁清空，64监听器上限与重入销毁守卫；ready/connect不冒充首帧，scene-submitted/UI receipt时钟不冒充物理显示。保存入口初始化/重放失败即时回传固定VIEWER_PROTOCOL_ERROR，原始异常不外传。
+
+新增13项（最初10项实现前全失败，另补3项初始化/重入边界）与相关214项通过。103文件885项Mac870/15平台跳过、Linux879/6平台跳过，无失败取消；新16文件私有包双平台离线安装77 Node/16 Python、严格TSC及Mac Mypy实际0。实际MessageChannel/NodeSource与保存Window/Worker验收，DOM/CanvasKit/故障为明确夹具。见[公开性能和首帧合同](viewer-telemetry-host.md)。
+
+下一步新API实际Native三渲染路径；此前视口短周期证据不冒充本次遥测。41项9/15/17，生产Native/所有Agent栅栏/N1轻微丢包/原8小时仍未完成；失败门槛、演示/采样器不变，未暂存提交推送。
