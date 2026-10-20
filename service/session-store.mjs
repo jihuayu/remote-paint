@@ -4,6 +4,7 @@ import {openSync,closeSync,lstatSync} from 'node:fs';
 import {isAbsolute} from 'node:path';
 import {createSessionRuntimeJournal,runtimeSchemaSql} from './session-runtime-journal.mjs';
 import {createSessionAgentJournal,agentSchemaSql} from './session-agent-journal.mjs';
+import {AGENT_EVENT_FORMAT,agentEventSchemaSql,createAgentEventJournal} from './agent-event-journal.mjs';
 
 let DatabaseSync;
 try{({DatabaseSync}=createRequire(import.meta.url)('node:sqlite'));}catch{}
@@ -80,13 +81,16 @@ export class SqliteSessionStore {
    const file=lstatSync(path,{bigint:true});this.#fileIdentity=Object.freeze({device:String(file.dev),inode:String(file.ino)});this.#checkFileIdentity();
    const db=this.#db=new DatabaseSync(path);
    db.exec('PRAGMA busy_timeout=0; PRAGMA trusted_schema=OFF; PRAGMA foreign_keys=ON; PRAGMA locking_mode=EXCLUSIVE; BEGIN EXCLUSIVE');
-   const names=db.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name LIMIT 10").all().map(x=>x.name);
+   const names=db.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name LIMIT 11").all().map(x=>x.name);
    const empty=names.length===0;
    const version=db.prepare('PRAGMA user_version').get().user_version;
    if(empty&&!created)fail('STATE_SCHEMA','Existing ledger has no valid Session schema');
    if(db.prepare("SELECT 1 FROM sqlite_schema WHERE type IN ('trigger','view') LIMIT 1").get())fail('STATE_SCHEMA','Unexpected Session ledger schema objects');
    const legacy=!empty&&version===1&&JSON.stringify(names)===JSON.stringify(['bindings','metadata','operations','sessions']);
-   const expectedTables=version===4?['agent_invocations','agent_runs','bindings','metadata','operations','runtime_providers','runtimes','sessions']:['bindings','metadata','operations','runtime_providers','runtimes','sessions'];
+   if(!empty&&!names.includes('metadata'))fail('STATE_SCHEMA','Session ledger metadata table is unavailable');
+   const eventFormat=!empty?db.prepare("SELECT value FROM metadata WHERE name='agent_event_format'").get()?.value:undefined;
+   if(eventFormat!==undefined&&(version!==4||eventFormat!==AGENT_EVENT_FORMAT))fail('STATE_SCHEMA','Unsupported Agent event journal extension');
+   const expectedTables=version===4?[...(eventFormat?['agent_event_heads','agent_events']:[]),'agent_invocations','agent_runs','bindings','metadata','operations','runtime_providers','runtimes','sessions']:['bindings','metadata','operations','runtime_providers','runtimes','sessions'];
    if(!empty&&(legacy?db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==legacyFormat:![2,3,4].includes(version)||JSON.stringify(names)!==JSON.stringify(expectedTables)||db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==({2:previousFormat,3:stableFormat,4:format})[version]))fail('STATE_SCHEMA','Unsupported Session ledger schema');
    const priorInstance=!empty&&!legacy?db.prepare("SELECT value FROM metadata WHERE name='instance_id'").get():null;
    if(priorInstance&&!instance(priorInstance.value))fail('STATE_IDENTITY','Invalid stored Session ledger instance');
@@ -135,6 +139,14 @@ export class SqliteSessionStore {
     db.prepare('INSERT INTO metadata VALUES(?,?)').run('agent_revision','0');db.prepare("UPDATE metadata SET value=? WHERE name='format'").run(format);db.exec('PRAGMA user_version=4;COMMIT');
    }
    this.#agents=createSessionAgentJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,validateSession:sessionRecord,maxAgentRuns,maxAgentInvocations});
+   const events=createAgentEventJournal(db,{fail});
+   if(eventFormat===undefined){
+    // Validate the original rows before atomically extending the v4 ledger.
+    // Existing rows become explicit snapshots, never invented past events.
+    this.#agents.validate();db.exec('BEGIN IMMEDIATE');db.exec(agentEventSchemaSql);events.seedSnapshots();
+    db.prepare('INSERT INTO metadata VALUES(?,?)').run('agent_event_format',AGENT_EVENT_FORMAT);db.exec('COMMIT');
+   }
+   this.#agents=createSessionAgentJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,validateSession:sessionRecord,maxAgentRuns,maxAgentInvocations,events});
    this.#instanceId=db.prepare("SELECT value FROM metadata WHERE name='instance_id'").get()?.value;
    if(!instance(this.#instanceId))fail('STATE_IDENTITY','Session ledger instance is unavailable');this.#checkFileIdentity();
   }catch(error){
@@ -169,6 +181,7 @@ export class SqliteSessionStore {
  getAgentInvocation(id,{owner}={}){this.#open();return this.#agents.getInvocation(id,owner);}
  findAgentInvocation(agentRunId,tenant,keyHash,{owner}={}){this.#open();return this.#agents.findInvocation(agentRunId,tenant,keyHash,owner);}
  listAgentRecords(kind,options,{owner}={}){this.#open();return this.#agents.list(kind,options,owner);}
+ listAgentEvents(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.events(agentRunId,tenant,options,owner);}
  commitAgentRun(row,{owner}={}){this.#open();return this.#agents.commitRun(row,owner);}
  commitAgentInvocation(row,{owner}={}){this.#open();return this.#agents.commitInvocation(row,owner);}
  reconcileAgentRun(agentRunId,{owner}={}){this.#open();return this.#agents.reconcileRun(agentRunId,owner);}

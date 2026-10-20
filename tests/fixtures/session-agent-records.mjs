@@ -23,5 +23,5 @@ export function activate(store,owner,row=runIntent()){
  for(const value of [row,starting(row),active(row)])store.commitAgentRun(value,{owner});return active(row);
 }
 export function legacyV3(db){
- db.exec("DROP TABLE agent_invocations;DROP TABLE agent_runs;DELETE FROM metadata WHERE name='agent_revision';UPDATE metadata SET value='remote-paint-session-ledger-v3' WHERE name='format';PRAGMA user_version=3");
+ db.exec("DROP TABLE IF EXISTS agent_events;DROP TABLE IF EXISTS agent_event_heads;DELETE FROM metadata WHERE name='agent_event_format';DROP TABLE agent_invocations;DROP TABLE agent_runs;DELETE FROM metadata WHERE name='agent_revision';UPDATE metadata SET value='remote-paint-session-ledger-v3' WHERE name='format';PRAGMA user_version=3");
 }

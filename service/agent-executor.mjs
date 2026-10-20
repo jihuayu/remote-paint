@@ -3,10 +3,11 @@ import {publicScreenshot,captureScreenshotDownload,checkScreenshotDownloadChunk}
 import {createHash,createHmac,randomUUID} from 'node:crypto';
 import {SqliteSessionStore} from './session-store.mjs';
 import {agentNeverDispatchedDigest} from './session-agent-journal.mjs';
+import {AGENT_EVENT_LIMITS} from './agent-event-journal.mjs';
 import {sourceObservationContext,publicObservationContext,publicObservation,publicAccessibility} from './agent-observation-access.mjs';
 import {captureAgentRequest,captureAgentResult,agentReplyExpectation,AgentRpcError,agentFailure} from './agent-rpc.mjs';
 
-const codes=new Set(['AGENT_IDEMPOTENCY_CONFLICT','AGENT_INVOCATION_NOT_FOUND','AGENT_EXECUTOR_CLOSED','AGENT_EXECUTOR_CAPACITY','AGENT_EXECUTOR_BUSY','AGENT_RECOVERY_REQUIRED','AGENT_STORAGE_UNAVAILABLE']);
+const codes=new Set(['AGENT_IDEMPOTENCY_CONFLICT','AGENT_INVOCATION_NOT_FOUND','AGENT_EXECUTOR_CLOSED','AGENT_EXECUTOR_CAPACITY','AGENT_EXECUTOR_BUSY','AGENT_RECOVERY_REQUIRED','AGENT_STORAGE_UNAVAILABLE','AGENT_EVENT_CURSOR_INVALID']);
 export class AgentExecutionError extends Error {
  constructor(code,outcome='not-dispatched'){super('Agent execution is unavailable');this.name='AgentExecutionError';this.code=codes.has(code)||new AgentRpcError(code).code===code?code:'AGENT_INPUT_FAILED';this.outcome=outcome==='unknown'?'unknown':'not-dispatched';}
 }
@@ -87,6 +88,11 @@ export class DurableAgentExecutor {
  }
  getRun(value){return runView(this.#run(runRequest(value)));}
  getInvocation(value){const v=data(value,['tenantId','invocationId']);if(!tenant(v.tenantId)||!id(v.invocationId,'ainv'))fail('AGENT_INVALID_REQUEST');const row=this.#read('getAgentInvocation',v.invocationId);if(!row||row.tenant!==v.tenantId)fail('AGENT_INVOCATION_NOT_FOUND');return invocationView(row);}
+ events(value){
+  const v=data(value,['tenantId','agentRunId','after','limit'],['tenantId','agentRunId']),ref=runRequest({tenantId:v.tenantId,agentRunId:v.agentRunId}),after=Object.hasOwn(v,'after')?v.after:0,limit=Object.hasOwn(v,'limit')?v.limit:AGENT_EVENT_LIMITS.pageEvents;
+  if(!Number.isSafeInteger(after)||after<0||!Number.isInteger(limit)||limit<1||limit>AGENT_EVENT_LIMITS.pageEvents)fail('AGENT_INVALID_REQUEST');const row=this.#run(ref);
+  try{return this.#store.listAgentEvents(row.agentRunId,row.tenant,{after,limit},{owner:this.#owner});}catch(error){if(error?.code==='STATE_AGENT_EVENT_CURSOR')fail('AGENT_EVENT_CURSOR_INVALID');this.#fault=true;fail('AGENT_STORAGE_UNAVAILABLE');}
+ }
  context(value,callOptions){
   const v=runRequest(value),opts=options(callOptions);this.#admit();const row=this.#run(v);this.#active(row);this.#capacity(this.#ordinary,row.agentRunId);
   const task=this.#track(this.#ordinary,row.agentRunId,async()=>{try{const current=this.#run(v);this.#active(current);const result=await this.#rpc(current,Object.freeze({op:'context',runId:current.binding.workerRunId}),opts);if(!same(result.binding,{tenantId:row.tenant,sessionId:row.sessionId,targetId:row.binding.targetId,runId:row.binding.workerRunId})||result.fence.controlSessionId!==row.binding.controlSessionId)throw new AgentRpcError('AGENT_INVALID_REPLY','unknown');this.#active(this.#run(v));return result;}catch(error){let e=error instanceof AgentExecutionError?error:agentFailure(error);try{if(e.outcome==='unknown')this.#uncertainRun(row.agentRunId,e);}catch{e=new AgentExecutionError('AGENT_STORAGE_UNAVAILABLE','unknown');}throw new AgentExecutionError(e.code,e.outcome);}},true);return task.promise.then(result=>{if(!result.ok)throw result.error;return result.value;});

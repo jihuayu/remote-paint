@@ -1,5 +1,7 @@
 # Remote Paint 优化实施进度
 
+2026-10-20 K8a新增实际Run/Invocation状态事务内的持久事件日志及受信后端分页读取；稳定event ID、每Run序号、64条窗口和明确游标缺口，不保存动作/页面内容，不把input-injected当业务成功。17新增实际SQLite/执行器合同及5个真实自有SIGKILL通过，扩展113项通过，最终双平台完整1513项原时限零失败（macOS1498通过/15跳过、Linux1507通过/6跳过），完整双平台结果见[持久事件内核](agent-event-journal.md)。HTTP流、心跳/缺口恢复、SDK、取消与签名Webhook仍待，K8仅改列部分，41项10完成/18部分/13待办；原8小时失败及Native物理门槛保持。
+
 2026-10-20 原Source Native下载接线增加仅后端布尔opt-in、原Page模式注册和初始化后原capture/CDP/token绑定；默认关闭，发现未就绪明确失败。Source占位必须等整个observer及实际对象组退休，Native end全阶段30秒失败保留未知状态，迟到回复不返占位。17项真实Run/observer及Source关闭编排夹具与两平台各1496项完整JS通过（macOS1481通过/15跳过、Linux1490通过/6跳过，原时限零失败），完整双平台结果与未完成真实浏览器验收见[范围](source-native-download-wiring.md)。独立完整浏览器v2仍构建，预算/readiness未激活，41项10/17/14及原8小时失败保持。
 
 2026-10-20 Source Native下载owner增加独立适配器：一份原ticket、一个实际普通CDP请求及独立退休通道，未知arm/30秒观察失败均保留状态；复用原SDK DTO/文件名/chunk验证，不保存整文件Node Buffer。新增23项异步边界夹具及两平台各1479项完整JS通过（macOS1464通过/15跳过、Linux1473通过/6跳过，零失败），完整双平台结果见[独立范围](native-download-source-owner.md)。尚未接入原Source/capture选路，Native开关与readiness保持关闭；真实浏览器构建在原32GiB门槛处停止143，容器移除、缓存保留，不能算通过。41项10/17/14及原失败8小时不变。
@@ -63,7 +65,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
 | K6 | 结构化观察与结果 | 部分实现 | 原观察/SDK范围保留。Native请求创建时arm ID、4个可复用窗口及实际准入前unarmed/旧窗口拒绝已接；原item无RFH续传见证与弱lease引用，旧事件隔离保留。436项（21新+139既有Native+276上游）及4子进程、双平台专项各13、实际依赖五TU/GN通过。Source私有目录/桥接、真实RFH/PW/cookies/整浏览器仍待，transfersReady=false；见[范围](native-download-arm-window.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
-| K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
+| K8 | 取消与长任务事件 | 部分实现 | 实际状态写入与事件/游标/64条保留同事务，受信后端分页独立于Source普通请求，旧账本明确快照而不补造历史。17项SQLite/执行器及5个真实SIGKILL通过；HTTP流/心跳/缺口恢复、Node/Python SDK、公开取消及签名Webhook仍待，见[范围](agent-event-journal.md)。 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
 | K10 | Agent 与文件集成 | 待实现 | 按原清单验收，记录实际证据 |
 | B1 | 原生持续采集与按需订阅 | 已完成（Linux ARM64 受管 Source） | 浏览器原生订阅/真实document与frame token、输入水位及credit交给Rust自主Mapper/Gateway；正式浏览器与双平台Broker已更新并保存旧产物。[正式路径验收](evidence/native-source-default-acceptance.json)含76项C++、Mac/Linux各221项JS、当前57MiB/2MiB压力/45MiB旧RPC/423回滚、完整直播/Node回退/WebGL文字占位/真实9MiB及200ms Gateway关闭、12 Source/48进程身份清理；24次跨站导航、重置/实际Retry/64MiB压力/六消费与完整内核矩阵保留精确版本证据。Linux BeginFrame页面时钟仍由Node驱动，取消逐帧捕获登记/map/publish/Runtime.awaitPromise。标准构建图/双架构发布、其他平台兼容、完整Session/PSS及长时N1分别继续。 |
@@ -85,7 +87,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | B17 | 更快且更稳的 Session 首帧 | 已完成（本地原生链路） | 导航 commit 后建立捕获，导航/捕获/首场景分开。实际持续加载 HTML、慢图和 SSE 均未结束时可显示首帧；资产准备与浏览器并行，3 对冷进程诊断串行/并行中位约 296/196 ms（不是 SLA）。 |
 | B18 | 减少服务器重复绘制 | 待实现 | 按原清单验收，记录实际证据 |
 
-当前 9 项在列明范围内完成，14 项部分实现，18 项待实现；N1 的真实大资源14组及小资源两轮完整13组同帧帧龄矩阵已通过；真实大资源同帧帧龄14组及3组试跑已通过，千次输入扩展版的两个完整14组独立运行已通过，分层丢弃与恢复指标已通过当次用例验收，长时负载继续。
+当前 10 项在列明范围内完成，18 项部分实现，13 项待实现；N1 的真实大资源14组及小资源两轮完整13组同帧帧龄矩阵已通过；真实大资源同帧帧龄14组及3组试跑已通过，千次输入扩展版的两个完整14组独立运行已通过，分层丢弃与恢复指标已通过当次用例验收，长时负载继续。
 
 ## 本轮可复查证据
 

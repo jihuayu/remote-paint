@@ -27,7 +27,7 @@ const terminalInvocation=new Set(['injected','rejected','unknown']);
 const terminalSession=new Set(['closed','expired']);
 const tools=new Set(['click','move','drag','scroll','press','insertText','composition']);
 const dispatch=new Set(['not-requested','requested','confirmed']);
-export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,maxAgentRuns,maxAgentInvocations}){
+export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,maxAgentRuns,maxAgentInvocations,events:eventJournal=null}){
  let owner=null,recoveryRuns=new Set(),recoveryParents=new Set();
  const reject=(code,message)=>fail('STATE_AGENT_'+code,message);
  const encode=row=>{const body=JSON.stringify(row);if(Buffer.byteLength(body)>8192)reject('LIMIT','Agent metadata exceeds 8192 bytes');return body;};
@@ -68,7 +68,7 @@ export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,
  function readInvocation(id){const row=invocation(id);if(row)invocationReference(row);return row;}
  function uniqueRun(sql,...args){const values=db.prepare(sql).all(...args);if(values.length>1)fail('STATE_CORRUPT','Agent lookup has multiple identities');return values.length?readRun(values[0].agent_run_id):null;}
  function transaction(action){try{db.exec('BEGIN IMMEDIATE');const value=action();counts();const next=revision()+1;if(!Number.isSafeInteger(next))reject('LIMIT','Agent revision exhausted');db.prepare("UPDATE metadata SET value=? WHERE name='agent_revision'").run(String(next));db.exec('COMMIT');return structuredClone({revision:next,...value});}catch(error){try{db.exec('ROLLBACK');}catch{}if(isStoreError(error))throw error;fail('STATE_AGENT_WRITE','Agent metadata transaction failed',error);}}
- function validate(){counts();revision();for(const value of db.prepare('SELECT agent_run_id FROM agent_runs').iterate())runReference(run(value.agent_run_id));for(const value of db.prepare('SELECT invocation_id FROM agent_invocations').iterate())invocationReference(invocation(value.invocation_id));if(db.prepare('SELECT session_id FROM agent_runs WHERE reserved=1 GROUP BY session_id HAVING count(*)>1 LIMIT 1').get())fail('STATE_CORRUPT','Multiple Agent writers reserve the same Session');}
+ function validate(){counts();revision();for(const value of db.prepare('SELECT agent_run_id FROM agent_runs').iterate())runReference(run(value.agent_run_id));for(const value of db.prepare('SELECT invocation_id FROM agent_invocations').iterate())invocationReference(invocation(value.invocation_id));if(db.prepare('SELECT session_id FROM agent_runs WHERE reserved=1 GROUP BY session_id HAVING count(*)>1 LIMIT 1').get())fail('STATE_CORRUPT','Multiple Agent writers reserve the same Session');eventJournal?.validate();}
  return {
   get claimed(){return owner!==null;},validate,
   claim(value,{compact=false}={}){if(typeof value!=='symbol')throw TypeError('Expected an opaque Agent controller owner');if(owner!==null&&owner!==value)reject('OWNER','Agent controller already has an owner');validate();if(owner===null){recoveryRuns.clear();recoveryParents.clear();for(const row of db.prepare('SELECT agent_run_id,reserved FROM agent_runs').iterate()){recoveryParents.add(row.agent_run_id);if(row.reserved)recoveryRuns.add(row.agent_run_id);}owner=value;}return compact?{revision:revision(),recoveryRequired:[...recoveryRuns].sort()}:this.snapshot(value);},
@@ -78,6 +78,7 @@ export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,
   findRun(tenant,keyHash,value){authorize(value);return uniqueRun('SELECT agent_run_id FROM agent_runs WHERE tenant=? AND key_hash=? LIMIT 2',tenant,keyHash);},
   writer(sessionId,value){authorize(value);return uniqueRun('SELECT agent_run_id FROM agent_runs WHERE session_id=? AND reserved=1 LIMIT 2',sessionId);},
   getInvocation(id,value){authorize(value);return readInvocation(id);},
+  events(id,tenant,options,value){authorize(value);const row=readRun(id);if(!row||row.tenant!==tenant)reject('REFERENCE','Agent run is unavailable');if(!eventJournal)reject('INVALID','Agent event journal is unavailable');return eventJournal.read(row,options);},
   findInvocation(agentRunId,tenant,keyHash,value){authorize(value);const rows=db.prepare('SELECT invocation_id FROM agent_invocations WHERE agent_run_id=? AND tenant=? AND key_hash=? LIMIT 2').all(agentRunId,tenant,keyHash);if(rows.length>1)fail('STATE_CORRUPT','Invocation lookup has multiple identities');return rows.length?readInvocation(rows[0].invocation_id):null;},
   list(kind,{afterId='',limit=64,reservedOnly=false,unfinishedOnly=false}={},value){
    authorize(value);if(!['runs','invocations'].includes(kind)||typeof afterId!=='string'||afterId.length>128||!Number.isInteger(limit)||limit<1||limit>256||typeof reservedOnly!=='boolean'||typeof unfinishedOnly!=='boolean'||kind==='runs'&&unfinishedOnly||kind==='invocations'&&reservedOnly)reject('INVALID','Invalid bounded Agent history cursor');
@@ -117,7 +118,7 @@ export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,
      if(row.closeEvidence?.kind==='worker-run-closed'&&old.endDispatch!=='requested'||row.closeEvidence?.kind==='begin-rejected'&&(old.beginDispatch!=='requested'||recovered))reject('CONFLICT','Closure evidence lacks a matching current-owner dispatch');
     }
     const writer=db.prepare('SELECT agent_run_id FROM agent_runs WHERE session_id=? AND reserved=1 AND agent_run_id<>?').get(row.sessionId,row.agentRunId);if(row.reserved&&writer)reject('CONFLICT','Session already has a reserved Agent writer');
-    db.prepare('INSERT INTO agent_runs VALUES(?,?,?,?,?,?) ON CONFLICT(agent_run_id) DO UPDATE SET reserved=excluded.reserved,body=excluded.body').run(row.agentRunId,row.sessionId,row.tenant,row.createKeyHash,Number(row.reserved),encode(row));return {run:row};
+    db.prepare('INSERT INTO agent_runs VALUES(?,?,?,?,?,?) ON CONFLICT(agent_run_id) DO UPDATE SET reserved=excluded.reserved,body=excluded.body').run(row.agentRunId,row.sessionId,row.tenant,row.createKeyHash,Number(row.reserved),encode(row));eventJournal?.run(row,old);return {run:row};
    });
   },
   commitInvocation(value,token){
@@ -136,7 +137,7 @@ export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,
      else if(old.state==='requested'&&terminalInvocation.has(row.state)&&row.dispatchStarted){}
      else reject('CONFLICT','Invocation dispatch marker is one-use; no repeat or reversal');
     }
-    db.prepare('INSERT INTO agent_invocations VALUES(?,?,?,?,?,?) ON CONFLICT(invocation_id) DO UPDATE SET body=excluded.body').run(row.invocationId,row.agentRunId,row.tenant,row.sessionId,row.keyHash,encode(row));return {invocation:row};
+    db.prepare('INSERT INTO agent_invocations VALUES(?,?,?,?,?,?) ON CONFLICT(invocation_id) DO UPDATE SET body=excluded.body').run(row.invocationId,row.agentRunId,row.tenant,row.sessionId,row.keyHash,encode(row));eventJournal?.invocation(row,parent,old);return {invocation:row};
    });
   }
  };
