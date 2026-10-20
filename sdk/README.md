@@ -69,6 +69,27 @@ Both `prepareCreate` methods capture body, context and key once. Reusing `send()
 Every response has exact schema, request correlation, phase/status, ID/Session and immutable receipt checks. Prepared mutations also require the exact relative Location and original tool/fence. `rpcTimeoutMs` is the server's private-RPC observer deadline (50–120000ms); backend `timeoutMs` bounds each local HTTP attempt (50–60000ms). Neither deadline proves that input was not delivered. Python 3.11+ also provides the managed Agent API with snake_case parameters and frozen models; see `sdk/python/README.md` in the repository for installation, cancellation and close semantics. Qualification is scoped by the corresponding SDK evidence.
 
 
+### DOM observations (Node backend)
+
+An independent `agents:observe` key may use `agents.observations.context(run)` and `agents.observations.read(context, input)`. The reference must include the logical `agentRunId`, `sessionId` and pinned `version` (an `AgentRun` has these fields). Observation keys cannot fetch the input fence, create or end a Run, inject, release a Session or mint a Viewer ticket. A separate write/end credential may manage the same Run.
+
+```js
+const reader = new AgentClient({baseUrl, apiKey: observationKey});
+const readContext = (await reader.observations.context(run)).data;
+const result = (await reader.observations.read(readContext, {
+  query: {kind: 'locate', by: 'id', value: 'status'},
+  limits: {maxVisited: 128, maxNodes: 8, maxChars: 1024},
+  rpcTimeoutMs: 5000,
+}, {signal})).data;
+// result.nodes contain bounded DOM attributes/direct text; result.truncated is explicit.
+```
+
+Queries are `snapshot`, `locate` by `id`/`tag`/`testId`, or `element` with an opaque handle from a prior observation. Scope is main-document light DOM: role/name are limited attributes, not computed accessibility data. Password/hidden values are redacted. Contexts include document generation, viewport, version and Source binding but no writer fence/controlVersion. Returned data is deeply frozen. Every successful response must match the original logical IDs, version, binding, document, query and limits; status is 200 with no Location. UTF-16 text, node/visit and UTF-8 Source/public byte bounds are checked independently.
+
+Each call captures its input before awaiting and makes exactly one HTTP attempt, even if the client config enables mutation retries. Observation options accept only `signal`; no idempotency key or `retries`. Cancellation/deadline ends the local wait while actual fetch/body/cancellation work retains bounded ordinary admission until settled. Independently scoped end has its own transport pool. This does not cancel or undo an admitted Source operation.
+
+Read context is fetched only when the caller asks. Stale document/element errors do not fetch a new fence, rebind a selector or replay input. A known, confirmed same-owner input Run in `recovery-required` can be inspected, but observing actual DOM never upgrades an unknown invocation or clears writer quarantine. Each fresh snapshot replaces the bounded handle registry; GC and selected metadata/document changes can also expire handles. Observations carry a snapshot revision and time, not a global DOM mutation counter. AX, screenshots/downloads, cross-frame/full locators and write-by-handle remain pending; Python observation methods follow in a separate checkpoint.
+
 ## Browser connection module (experimental)
 
 Import `ViewerTicketSource`, `ViewerConnection` and `ViewerConnectionError` from `@remote-paint/session-client/viewer-connection`. This entry imports no backend code or management credentials. Configure a fixed gateway Origin, Viewer Origin, Session ID and role, and provide `getTicket({signal, reason, role, previousGrantId, previousRole})`. Your application backend mints or refreshes the grant; the browser callback receives only that short grant. An API key option is rejected.

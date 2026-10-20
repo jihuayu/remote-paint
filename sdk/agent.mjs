@@ -1,3 +1,4 @@
+import {captureObservationReference,captureObservationContext,captureObservationRequest,captureObservationOptions,validateObservationReply} from './agent-observation.mjs';
 import {SessionClientError,createBackendTransport,freezeBackendData} from './backend-transport.mjs';
 export class AgentClientError extends SessionClientError {constructor(code,options){super(code,options);this.name='AgentClientError';this.message=code==='CLIENT_INVALID_REQUEST'?'Invalid Agent client request':'Agent API request failed';}}
 const invalid=()=>{throw new AgentClientError('CLIENT_INVALID_REQUEST',{outcome:'not-dispatched'});};
@@ -33,6 +34,7 @@ function invocation(v){
  return v.receipt===null&&error(v.error)&&(v.state==='unknown'?v.dispatchStarted&&v.error.outcome==='unknown':v.error.outcome==='not-dispatched');
 }
 function validate(status,value,expect,headers){
+ if(['agent-observation-context','agent-observation'].includes(expect.kind))return validateObservationReply(status,value,expect,headers);
  if(expect.kind==='agent-context')return status===200&&exact(value,['binding','fence'])&&isBinding(value.binding)&&isFence(value.fence)&&value.binding.sessionId===expect.sessionId;
  if(expect.kind.startsWith('agent-invocation')){
   if(!invocation(value)||expect.id&&value.invocationId!==expect.id)return false;
@@ -73,6 +75,10 @@ export class AgentClient {
    get:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return call('GET','/v1/agent-runs/'+agentRunId,null,null,{kind:'agent-run-get',id:agentRunId},requestOptions(options));},
    context:async(run,options={})=>{const r=reference(run),result=await call('GET','/v1/agent-runs/'+r.agentRunId+'/context',null,null,{kind:'agent-context',sessionId:r.sessionId},requestOptions(options));return freezeBackendData({data:{agentRunId:r.agentRunId,...result.data},requestId:result.requestId});},
    end:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return call('POST','/v1/agent-runs/'+agentRunId+'/end',null,null,{kind:'agent-end',id:agentRunId},requestOptions(options));}
+  })});
+  Object.defineProperty(this,'observations',{enumerable:true,value:Object.freeze({
+   context:(run,options={})=>{const reference=captureObservationReference(run,invalid),opts=captureObservationOptions(options,invalid);return call('GET','/v1/agent-runs/'+reference.agentRunId+'/observation-context',null,null,{kind:'agent-observation-context',reference},opts);},
+   read:(supplied,input,options={})=>{const ctx=captureObservationContext(supplied,invalid),request=captureObservationRequest(input,invalid),opts=captureObservationOptions(options,invalid);return call('POST','/v1/agent-runs/'+ctx.agentRunId+'/observations',body({context:ctx,...request}),null,{kind:'agent-observation',context:ctx,request},opts);}
   })});
   Object.defineProperty(this,'invocations',{enumerable:true,value:Object.freeze({
    prepareCreate:prepareInvocation,

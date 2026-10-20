@@ -22,7 +22,7 @@ def sha(path: Path) -> str:
 
 
 def inspect_archives(project: Path, node: Path, wheel: Path) -> dict:
-    node_names={'package/package.json','package/backend.mjs','package/backend.d.mts','package/backend-transport.mjs','package/agent.mjs','package/agent.d.mts','package/viewer-connection.mjs','package/viewer-connection.d.mts','package/viewer-frame.mjs','package/viewer-frame.d.mts','package/viewer-channel.mjs','package/viewer-channel.d.mts','package/viewer-control.mjs','package/viewer-control.d.mts','package/viewer-telemetry.mjs','package/viewer-telemetry.d.mts','package/viewer.mjs','package/viewer.d.mts','package/README.md'}
+    node_names={'package/package.json','package/backend.mjs','package/backend.d.mts','package/backend-transport.mjs','package/agent.mjs','package/agent-observation.mjs','package/agent.d.mts','package/viewer-connection.mjs','package/viewer-connection.d.mts','package/viewer-frame.mjs','package/viewer-frame.d.mts','package/viewer-channel.mjs','package/viewer-channel.d.mts','package/viewer-control.mjs','package/viewer-control.d.mts','package/viewer-telemetry.mjs','package/viewer-telemetry.d.mts','package/viewer.mjs','package/viewer.d.mts','package/README.md'}
     with tarfile.open(node,'r:gz') as archive:
         members=archive.getmembers()
         assert {x.name for x in members}==node_names and len(members)==len(node_names)
@@ -85,7 +85,7 @@ def main() -> None:
         (out/'archives.json').write_text(json.dumps(archives,indent=2)+'\n')
         consumer=out/'consumer';consumer.mkdir()
         (consumer/'package.json').write_text(json.dumps({'name':'sdk-installed-consumer','version':'0.0.0','private':True,'type':'module'})+'\n')
-        files=['service/agent-observation-access.mjs','live/agent-observation.mjs','live/agent-observation-realm.mjs','service/agent-http.mjs','service/agent-executor.mjs','service/agent-rpc.mjs','live/input.mjs','live/feedback.mjs','live/managed-agent-run.mjs','service/session-registry.mjs','service/session-store.mjs','service/session-http.mjs',
+        files=['tests/node-agent-observation-client.test.mjs','tests/fixtures/public-observation-fixture.mjs','tests/fixtures/agent-http-client.mjs','service/agent-observation-access.mjs','live/agent-observation.mjs','live/agent-observation-realm.mjs','service/agent-http.mjs','service/agent-executor.mjs','service/agent-rpc.mjs','live/input.mjs','live/feedback.mjs','live/managed-agent-run.mjs','service/session-registry.mjs','service/session-store.mjs','service/session-http.mjs',
                'service/session-runtime-journal.mjs','service/session-agent-journal.mjs','service/runtime-witness-binding.mjs','service/viewer-access.mjs',
                'protocol/live-wire.mjs','protocol/wire.mjs','protocol/client-memory.mjs','protocol/resource-memory.mjs',
                'tests/types/agent-client.mts','tests/node-agent-client.test.mjs','tests/fixtures/node-agent-sdk-records.mjs','tests/fixtures/agent-executor-fixture.mjs',
@@ -101,7 +101,7 @@ def main() -> None:
             text=source.read_text();before=sha(source)
             if name=='tests/session-client.test.mjs':
                 token="from '../sdk/backend.mjs'";assert text.count(token)==1;text=text.replace(token,"from '@remote-paint/session-client'")
-            elif name=='tests/node-agent-client.test.mjs':
+            elif name in ['tests/node-agent-client.test.mjs','tests/node-agent-observation-client.test.mjs']:
                 for source,installed in [("from '../sdk/agent.mjs'","from '@remote-paint/session-client/agent'"),("from '../sdk/backend.mjs'","from '@remote-paint/session-client'")]:
                     assert text.count(source)==1;text=text.replace(source,installed)
             elif name=='tests/types/agent-client.mts':
@@ -126,7 +126,7 @@ def main() -> None:
                    NPM_CONFIG_GLOBALCONFIG=str(out/'empty-global.npmrc'))
         run('npm-install',[args.npm,'install','--offline','--ignore-scripts','--no-audit','--no-fund','--package-lock=false',str(args.node_archive)],cwd=consumer,env=env)
         expected=consumer/'node_modules/@remote-paint/session-client'
-        for name in ['backend.mjs','backend.d.mts','backend-transport.mjs','agent.mjs','agent.d.mts','viewer-connection.mjs','viewer-connection.d.mts','viewer-frame.mjs','viewer-frame.d.mts','viewer-channel.mjs','viewer-channel.d.mts','viewer-control.mjs','viewer-control.d.mts','viewer-telemetry.mjs','viewer-telemetry.d.mts','viewer.mjs','viewer.d.mts','README.md','package.json']:assert sha(expected/name)==sha(args.project/'sdk'/name)
+        for name in ['backend.mjs','backend.d.mts','backend-transport.mjs','agent.mjs','agent-observation.mjs','agent.d.mts','viewer-connection.mjs','viewer-connection.d.mts','viewer-frame.mjs','viewer-frame.d.mts','viewer-channel.mjs','viewer-channel.d.mts','viewer-control.mjs','viewer-control.d.mts','viewer-telemetry.mjs','viewer-telemetry.d.mts','viewer.mjs','viewer.d.mts','README.md','package.json']:assert sha(expected/name)==sha(args.project/'sdk'/name)
         # ws is a private control-service fixture dependency, not an SDK
         # dependency. Copy its frozen bytes explicitly, with no source symlink.
         fixture_dependencies={}
@@ -172,14 +172,15 @@ test('installed DOM component owns and destroys its pending iframe without backe
  assert.ok(fileURLToPath(import.meta.resolve('@remote-paint/session-client/viewer')).includes('/node_modules/@remote-paint/session-client/viewer.mjs'));
 });
 test('unsupported internal and CommonJS exports are predictably refused',async()=>{
+ await assert.rejects(import('@remote-paint/session-client/agent-observation.mjs'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
  await assert.rejects(import('@remote-paint/session-client/backend-transport.mjs'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
  await assert.rejects(import('@remote-paint/session-client/backend.mjs'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
  assert.throws(()=>createRequire(import.meta.url)('@remote-paint/session-client'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
 });
 """)
-        names=['node-agent-client.test.mjs','session-client.test.mjs','session-http.test.mjs','session-registry.test.mjs','session-registry-lifecycle.test.mjs','session-registry-durable.test.mjs','session-store.test.mjs','package-exports.test.mjs']
+        names=['node-agent-observation-client.test.mjs','node-agent-client.test.mjs','session-client.test.mjs','session-http.test.mjs','session-registry.test.mjs','session-registry-lifecycle.test.mjs','session-registry-durable.test.mjs','session-store.test.mjs','package-exports.test.mjs']
         raw=run('node-unit',[args.node,'--test','--test-concurrency=4',*[str(consumer/'tests'/n)for n in names]],cwd=consumer,env=env)
-        for label,value in [('tests',97),('pass',97),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
+        for label,value in [('tests',115),('pass',115),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
         run('typescript',[args.node,str(args.tsc),'--noEmit','--strict','--exactOptionalPropertyTypes','--module','NodeNext','--moduleResolution','NodeNext','--target','ES2022','--lib','ES2022,DOM',str(consumer/'tests/types/agent-client.mts'),str(consumer/'tests/types/session-client.mts'),str(consumer/'tests/types/viewer-connection.mts'),str(consumer/'tests/types/viewer-frame.mts'),str(consumer/'tests/types/viewer.mts')],cwd=consumer,env=env)
         python=out/'venv/bin/python';venv.EnvBuilder(with_pip=False,symlinks=True).create(out/'venv')
         purelib=Path(subprocess.check_output([str(python),'-c',"import sysconfig;print(sysconfig.get_path('purelib'))"],env=env,text=True).strip())
@@ -197,7 +198,7 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
             source_types=run('python-source-types',[str(python),'-m','mypy','--strict','--python-version','3.11','--no-incremental','--cache-dir=/dev/null','--python-executable',str(python),'-p','remote_paint_session'],cwd=consumer,env=typed)
             assert 'Success: no issues found in 4 source files' in source_types
         runtime=run('runtime',[sys.executable,'-c',"import sys,platform,json,subprocess;print(json.dumps({'python':platform.python_version(),'platform':sys.platform,'arch':platform.machine(),'node':subprocess.check_output([sys.argv[1],'--version'],text=True).strip(),'npm':subprocess.check_output([sys.argv[2],'--version'],text=True).strip()}))",args.node,args.npm],env=env)
-        result={'status':'passed','nodeTests':97,'nodeSkips':0,'pythonTests':37,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
+        result={'status':'passed','nodeTests':115,'nodeSkips':0,'pythonTests':37,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
                 'archives':archives,'runtime':json.loads(runtime),'stages':stages,'sourceFallbackUnavailable':True,'publicPublishing':False}
         (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps({k:result[k]for k in ['status','nodeTests','pythonTests','typescriptActual0','pythonInstalledTypeCheckActual0']}))

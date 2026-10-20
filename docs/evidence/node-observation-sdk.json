@@ -1,0 +1,204 @@
+{
+  "at": "2026-10-19T18:45:45.399296+00:00",
+  "task": "Node Agent observation SDK runtime/types/installed Native checkpoint",
+  "status": "Node-observation-SDK-qualified-within-scope",
+  "scope": "Installed Node backend AgentClient observations.context/read with immutable exact logical Run/Session/version/binding/document/query/budget capture, bounded sanitized result validation and one HTTP attempt, existing actual fetch/body/cancellation and independent end admission. Actual public HTTP-to-canonical-Native unknown-input inspection preserves writer quarantine and invocation history. Python observation SDK/computed AX/screenshot/download/full locator/write-by-handle/business-postcondition/full-CDP/fault qualification remain pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/public-agent-observation-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "0818d48786975b03f45f8906cb1de187c35d6187b9b56be9144abc7b4b4c9710",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-observation-sdk-candidate-v3/frozen-version.json",
+  "executedManifestSha256": "18290ff67b3e2edc9840678a35be832c7ba759891d980ea5ff166df91b4bdebd",
+  "newNodeContracts": 18,
+  "testNames": [
+    "Node observation context captures expected logical IDs/version before await and freezes read authority without a fence",
+    "Node observation reads capture immutable context/query/budgets/private timeout and return deeply frozen exact data",
+    "Node observation snapshot/id/tag/testId/opaque element schemas accept bounded metadata and defaults",
+    "Node observation invalid identities, document/fence substitution and getters reject before any HTTP call",
+    "Node observation rejects arbitrary code, CSS, invalid limits/options and accessor query fields without fetch",
+    "Node observation context response requires exact parent/version/document, HTTP 200 and no Location",
+    "Node observation replies must match captured Run/Session/version/worker/target/document/query/limits",
+    "Node observation node metadata, redaction, counts, time, opaque handles and UTF-16 text budget are validated",
+    "Node observation enforces Source/public UTF-8 byte caps independently of outer transport limit",
+    "Node observation always sends once despite configured retries and never refreshes fence/locator after error",
+    "Node observation response correlation, phase and content type remain enforced by the shared transport",
+    "Node observation pre-abort sends nothing; mid-read cancellation retains actual capacity and independent end",
+    "Node observation local timeout keeps noncooperative fetch admission and never enters mutation retry loop",
+    "Node observation response-body cancellation retains its slot until actual cancellation settles",
+    "Node observation installed-contract real HTTP uses independent read scope, exact metadata and no DOM/query persistence",
+    "Node observation real HTTP read failures preserve writer while stale errors remain typed and redacted",
+    "Node observation real HTTP can inspect a known unknown-input Run without upgrading history or replaying",
+    "Node observation real HTTP deadline releases only HTTP wait while executor work/end remain independently tracked"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v41/manifest.json",
+  "fullJsManifestSha256": "072a46136b4917150eb02ea36f50bfcd7546a117f25c908f1648c60e01259f99",
+  "fullJs": {
+    "mac": {
+      "tests": 1205,
+      "pass": 1190,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "b6b6043e2965b9e94cd0942c4abcbb0296064f201c2fa3eee1c1e6bf7f68f140"
+    },
+    "linux": {
+      "tests": 1205,
+      "pass": 1199,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "9b0a2a7fe983118b44bc73d4306e6e6a053387aec5ef3c50fd8ac5f6629d7e0b"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 115,
+      "pythonTests": 37,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 47,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "pythonWheelBytesUnchanged": true,
+      "newNodeObservationArchive": true
+    },
+    "linux": {
+      "nodeTests": 115,
+      "pythonTests": 37,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 47,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "pythonWheelBytesUnchanged": true,
+      "newNodeObservationArchive": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "aa43bbae32e82eb1d13ba47115550a8fb03f229f26e2aac80be712ac1d41003f",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "9b5dc998594ebeb64ba4779236457d9f3e88051b89588aff1a6a21fb6d3a3902"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-observation-sdk-native-v1/manifest.json",
+  "nativeManifestSha256": "efcf94aab4b8a1171daf51d0bd9882e9ac2b3a031b5c9a49279bec12a255fc1c",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "authorization": {
+      "independentObserveScope": true,
+      "tenantIsolation": true,
+      "noWriterFenceOrMutationOrEndOrSessionReleaseOrViewerMint": true,
+      "forgedLogicalContextRejectedBeforeSource": true
+    },
+    "metadata": {
+      "actualDOM": true,
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "targetId": "target_dc8f766d-1998-40a7-bf9f-7fbf42c635cc",
+      "epoch": 1,
+      "observedAt": "2026-10-19T18:43:42.477Z",
+      "passwordRedacted": true,
+      "mainDocumentLightDomOnly": true,
+      "readDoesNotRefreshWriterFence": true
+    },
+    "unicode": {
+      "sourceChars": 4000,
+      "returnedChars": 1024,
+      "truncated": true,
+      "handleStillResolvable": true
+    },
+    "elements": {
+      "replacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "selectedMetadataChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLocatorGetsDistinctHandle": true,
+      "noAutomaticSelectorRebind": true
+    },
+    "human": {
+      "readDuringHumanLease": true,
+      "writeStillPaused": true,
+      "readAndAgentEndPreservedOriginalHumanGrant": true,
+      "fieldValue": "OBSHF"
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "oldReadContextRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "oldHandleRejectedInNewDocument": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "oldWriteFenceRejected": true,
+      "samePageTarget": true
+    },
+    "bounds": {
+      "largeFixtureNodes": 3000,
+      "visitedCap": 32,
+      "truncated": true,
+      "maxSerializedBytes": 8192,
+      "actualSnapshotBytes": 4813,
+      "noScriptOrArbitraryCdp": true
+    },
+    "unknown": {
+      "actualSlowClickOnce": true,
+      "observedActualDOMAfterUnknown": true,
+      "historyRemainedUnknown": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "httpTimeout": {
+      "http408": true,
+      "actualExecutorSlotRetained": true,
+      "writerRemainedActive": true,
+      "inputAfterActualSettlement": true
+    },
+    "disconnect": {
+      "actualExecutorSlotRetained": true,
+      "priorityEndWithIndependentScope": true,
+      "lateReadCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativeJournal": {
+    "logicalRunsClosed": 4,
+    "injected": 7,
+    "unknown": 1,
+    "rejected": 2
+  },
+  "publicObservationResultByteCap": 8192,
+  "privateReadResultByteCap": 6144,
+  "standardProviderFrameByteCap": 8192,
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-observation-sdk-cleanup-v1.json",
+  "cleanupAuditSha256": "dc3472ceac2be87b273edf9789bbcef93d248497ef80a72816431743a4f1b726",
+  "trustedNativeObservationCoreQualified": true,
+  "publicObservationQualified": true,
+  "nodeObservationSdkQualified": true,
+  "pythonObservationSdkQualified": false,
+  "observationSdkQualified": false,
+  "K6Complete": false,
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": true,
+  "publicAgentSdkQualified": true,
+  "agentSdkScope": "Node seven managed input tools and DOM observation runtime/types/native qualified within scope; Python seven input tools only. New Node archive has20files; unchanged Python wheel.47 current dependency/contract inputs reinstalled.",
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true
+}

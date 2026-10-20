@@ -32,6 +32,22 @@ export type AgentAction=(
  {readonly tool:'composition';readonly params:{readonly text:string;readonly selectionStart:number;readonly selectionEnd:number}}
 )&{readonly rpcTimeoutMs?:number};
 export interface CreateAgentRunInput {readonly region:string;readonly version:string;readonly rpcTimeoutMs?:number;}
+/** Read authority is distinct from the input fence; version is required. */
+export interface AgentObservationReference extends AgentRunReference {readonly version:string;}
+export interface AgentObservationDocument {readonly controlSessionId:string;readonly pageEpoch:number;readonly viewportVersion:number;}
+export interface AgentObservationContext extends AgentObservationReference {readonly binding:AgentBinding;readonly document:AgentObservationDocument;}
+export type AgentElementId=`elh_${string}`;
+export type AgentObservationId=`obs_${string}`;
+export type AgentObservationQuery={readonly kind:'snapshot'}|{readonly kind:'locate';readonly by:'id'|'tag'|'testId';readonly value:string}|{readonly kind:'element';readonly elementId:AgentElementId};
+export interface AgentObservationLimits {readonly maxNodes?:number;readonly maxChars?:number;readonly maxVisited?:number;}
+export interface AgentObservationInput {readonly query:AgentObservationQuery;readonly limits?:AgentObservationLimits;readonly rpcTimeoutMs?:number;}
+/** Every observation is one HTTP attempt, independent of configured retries. */
+export interface AgentObservationOptions {readonly signal?:AbortSignal;}
+export interface AgentObservationNode {readonly elementId:AgentElementId;readonly tag:string;readonly id:string;readonly role:string;readonly name:string;readonly text:string;readonly value:string|null;readonly redacted:boolean;}
+export interface AgentObservation extends AgentObservationContext {
+ readonly stage:'observed';readonly observationId:AgentObservationId;readonly revision:number;readonly observedAt:string;readonly scope:'main-document-light-dom';
+ readonly query:AgentObservationQuery;readonly limits:Required<AgentObservationLimits>;readonly url:string;readonly title:string;readonly nodes:readonly AgentObservationNode[];readonly visited:number;readonly truncated:boolean;
+}
 export interface AgentCreateOptions extends RequestOptions {readonly idempotencyKey:string;}
 export interface PreparedAgentRun {send(options?:RequestOptions):Promise<ApiResult<AgentRun>>;}
 export interface PreparedAgentInvocation {send(options?:RequestOptions):Promise<ApiResult<AgentInvocation>>;}
@@ -45,6 +61,10 @@ export class AgentClient {
   readonly get:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentRun>>;
   readonly context:(run:AgentRunReference,options?:RequestOptions)=>Promise<ApiResult<AgentContext>>;
   readonly end:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentRun>>;
+ };
+ readonly observations:{
+  readonly context:(run:AgentObservationReference,options?:AgentObservationOptions)=>Promise<ApiResult<AgentObservationContext>>;
+  readonly read:(context:AgentObservationContext,input:AgentObservationInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentObservation>>;
  };
  readonly invocations:{
   readonly prepareCreate:(context:AgentContext,action:AgentAction,options:{readonly idempotencyKey:string})=>PreparedAgentInvocation;
