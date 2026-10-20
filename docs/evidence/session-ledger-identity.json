@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-18T19:47:57.938055+00:00",
+  "task": "B1c1b2a1",
+  "scope": "Stable SQLite instance UUID plus private file identity for deployment binding;not proof that Engine inventory/allocation is empty or production ownership is retired.",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-ledger-identity-checkpoint-v1.json",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-ledger-identity-v1/frozen-version.json",
+  "contract": {
+    "schema": "session-ledger-instance-v1",
+    "newAndV1MigrationUUIDAtomic": true,
+    "olderValidV2BackfillWithoutRevisionChanges": true,
+    "corruptOlderV2NotBackfilled": true,
+    "losslessDeviceAndInodeStrings": true,
+    "fileIdentityFaultLatchedUntilClose": true,
+    "ownerReleaseAndOriginalHandleCloseAfterFault": true,
+    "copiedLedgerSameUUIDDifferentFile": true,
+    "recreatedLedgerFreshUUID": true
+  },
+  "qualification": "Checkpoint records per-platform Node-only outcomes and durable actual Node/SQLite probes;whole-source full regression remains pending isolation from live8h.",
+  "boundaries": [
+    "A copied DB or missingUUIDbackfill is a different composite identity even if some metadata survives.",
+    "Instance/file identity is not rollback or malicious in-place tampering proof;it must be consumed by immutable deployment bootstrap/resume binding plus inventory/recovery fences.",
+    "Production controller and explicit-new bootstrap/resume binding remain pending."
+  ],
+  "activeEightHourSourceFiles": 783,
+  "eightHourPassed": false,
+  "nativeProductionProviderComplete": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "noCommitPush": true
+}
