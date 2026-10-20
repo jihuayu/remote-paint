@@ -87,3 +87,6 @@ Native入口固定提供实际收集器，读取失败会在资源工厂前退�
 下一步需要把已验证的持久运行时意图接到真实分配，补真实容器或等效内核集合的创建与退役证明、Registry取消/TTL/恢复/健康变化接入，以及Native Gateway真实read/control显示角色和单次票据。Native集成及浏览器负载在当前独立8小时长测结束后执行。没有把本轮进程夹具或Native入口语法检查当作这些验收。
 
 最新长测状态（2026-10-19）：独立720文件8小时v3已在第3200周期失败，Source/Viewer/Docker均退出1，最后完成样本约8632.77秒。失败断言是Source PSS完整性，不代表本轮新服务层或Native浏览器验收。失败的逐进程PSS指标未被原measure/RPC路径保存，根因仍未证明；未放宽采样条件、未沿用前缀时长、未直接重启。实际helper退出0，最后完成Mac cohort的12个PID现均不存在；Source最终cgroup仅余Node且完整，但primary关闭回执因前置PSS pin失败仍标failed。详见[原始失败检查点](evidence/session-coupled-eight-hour-v3-failure.json)。下一步先补失败指标诊断和定位。
+
+
+Source 长测的 PSS 失败现在会在原三项断言之前保存完整有界诊断，并经私有 RPC 保留到 Viewer；关闭阶段采样失败也先落盘。实际受控 Native 权限拒绝、真实 Linux 僵尸对照及双平台回归见[诊断证据](evidence/source-memory-diagnostic.json)。它们只验证观察路径：原 v3 缺失逐进程指标的历史事实不变，唯一原因仍未知，未改写失败回执或放宽 PSS 完整性。

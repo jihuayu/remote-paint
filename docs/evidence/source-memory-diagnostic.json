@@ -1,0 +1,97 @@
+{
+  "at": "2026-10-18T16:32:49.175472+00:00",
+  "task": "PSS-D1",
+  "scope": "Retain bounded full failed metrics before unchanged Source memory assertions,private RPC revival and append-only fsynced evidence including closing measurements. No sampler/runtime/growth/duration gate relaxed.",
+  "implementation": {
+    "helper": "tests/source-memory-diagnostic.mjs",
+    "metricBytes": 2097152,
+    "maximumRecords": 8,
+    "gatesUnchanged": [
+      "processSampling.status=observed-stable",
+      "pss.completeObservedCohort=true",
+      "cgroup.provenance.processMembershipConfirmed=true"
+    ],
+    "preserved": [
+      "full observed process rows and identities",
+      "unavailable code/field",
+      "partial availability and null incomplete total",
+      "sampling attempts and cgroup provenance",
+      "phase and session context",
+      "metric-byte digest"
+    ],
+    "limits": [
+      "oversize/nonserializable evidence explicitly incomplete;original assertion remains fatal",
+      "disk failure never accepts original sample",
+      "no replacement cohort or PSS retry",
+      "no URLs/owner credentials copied into context"
+    ]
+  },
+  "initialSnapshot": {
+    "sourceFiles": 772,
+    "manifestSha256": "fbfe06afbc2575d89d5e1c9a29609470147a24deb25321c180812e812a1327f6",
+    "testsEach": 526,
+    "mac": {
+      "pass": 515,
+      "skip": 11,
+      "actualExitCode": 0
+    },
+    "linux": {
+      "pass": 522,
+      "skip": 4,
+      "actualExitCode": 0
+    },
+    "scopedEach": 32,
+    "linuxActualDenialAndZombie": "both passed without skip",
+    "rawResults": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-source-memory-diagnostic-v1/results"
+  },
+  "initialActualNativeRpc": {
+    "at": "2026-10-18T16:30:26.352Z",
+    "status": "passed",
+    "scope": "Actual Native Source/privatefileRPC expected PSS denial with an added controlled undumpable child;full bad-row diagnostic retained on Source/disk/revivedcaller and real cleanup after child reaped. NOT original8hv3 root cause,shortpilot,8h orall41 acceptance.",
+    "runId": "0fa80850-859f-4612-bb46-83d194298167",
+    "sourcePid": 19,
+    "badPid": 101,
+    "badCode": "EACCES",
+    "diagnosticId": "ecfdf129-cd74-4f1d-887a-86de894694f8",
+    "metricBytes": 6904,
+    "metricsSha256": "240635ff222fc46bbb51d501578b9f0813f81aff33f570653cc4024365704566",
+    "sourceExit": {
+      "code": 0,
+      "signal": null
+    },
+    "reaped": {
+      "pid": 101,
+      "code": 0,
+      "signal": null
+    },
+    "cleanup": {
+      "status": "closed",
+      "activeSessions": 0,
+      "stats": {
+        "created": 1,
+        "closed": 1,
+        "crosssite": 0,
+        "leaseExpired": 0
+      },
+      "sourcePssComplete": true,
+      "remainingKinds": [
+        "node"
+      ]
+    }
+  },
+  "finalQualificationManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-source-memory-diagnostic-v2/frozen-version.json",
+  "finalQualificationCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-source-memory-diagnostic-checkpoint-v1.json",
+  "finalQualificationRequires": [
+    "original4-concurrency scoped/full Mac+Linux",
+    "controlled actual Native RPC denial with original fatal assertion",
+    "controlled actual Native closing denial retained in disk while receipt remains failed"
+  ],
+  "originalEightHourV3Cause": "Unknown: original failed process rows were not retained. Two distinct actual Linux kernel cases demonstrate that stable identity/incomplete PSS alone cannot identify the cause.",
+  "eightHourPassed": false,
+  "noCommitPush": true,
+  "all41Counts": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  }
+}
