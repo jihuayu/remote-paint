@@ -1696,3 +1696,12 @@ K2仍部分实现，41项仍9/15/17。后续继续真实父子消息桥与宿主
 真实MessageChannel测试与保存入口脚本通过实际Node数据链路覆盖帧/刷新/撤销/迟到票据。也实际复现底层失败后online/resume会第二次索票：保留主线程/Worker各1条失败后修正为公共失败冻结，必须显式connect。详情及双平台/安装包结果见[桥检查点](evidence/viewer-frame-bridge.json)。DOM/CanvasKit/realm调度为夹具，不等同真实浏览器iframe/CSP/Native验收。
 
 完整createViewer宿主DOM组件、公开租约/接管/resize/性能API、实际Native私有端点和Agent/CDP栅栏仍待实现/验收；41项仍9/15/17。原8小时冻结源不变，未额外启动Native浏览器，未暂存、提交或推送。
+
+
+### K2a2b2：createViewer DOM 宿主组件
+
+原生 JS 组件在独立 ShadowRoot 中创建公开 iframe，管理 load/reload、显式 connect/disconnect、宿主卸载和幂等有界 destroy。中心票据来源跨 iframe/端口代次保留版本、grant 历史和实际回调额度；旧端口/迟到状态不能更新新代次，公开失败移除 iframe 后等待显式 connect。保留容器已有节点和原渲染/输入流水线。
+
+12 条组件合同以真实 MessageChannel 转移和 Node HTTP/WebSocket/SQLite/FrameGate 验证刷新/重载/撤销/取消/超时及 8 次重复挂载卸载。共享提取的保存入口夹具保留原 14 条合同；DOM/ShadowRoot/MutationObserver/CanvasKit/呈现器/realm 调度仍为明确夹具。新增 /viewer 安装包导出与严格声明检查，双平台范围结果见[组件检查点](evidence/viewer-dom-component.json)。
+
+公开租约/接管/角色切换/resize/性能 API、Native 端点、Agent/CDP 写栅栏和真实浏览器资源验收仍待完成；41 项仍 9/15/17。原始 783 文件 8 小时副本未动，未额外启动 Native 浏览器，未暂存、提交或推送。

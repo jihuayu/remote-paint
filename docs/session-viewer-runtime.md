@@ -29,7 +29,7 @@ window.remotePaintViewer.connect({
 
 公开入口必须先 await ready 加载无凭据的同源配置；gatewayOrigin 还必须与资源服务配置完全一致。原本地入口的 ready 返回 null，保留原行为。
 
-浏览器中不配置管理 API key。应用后端负责认证自己的用户、核对目标 Session/角色，并通过[票据接口](session-viewer-access.md)签发或刷新；不能信任浏览器自行提供的租户或权限。当前 Window API 将 audience 固定为 Viewer frame 的 `location.origin`。跨域宿主页面通过 ViewerFrameConnection 和已绑定端口接入，不能直接调用另一个 Origin 的 Window。
+浏览器中不配置管理 API key。应用后端负责认证自己的用户、核对目标 Session/角色，并通过[票据接口](session-viewer-access.md)签发或刷新；不能信任浏览器自行提供的租户或权限。当前 Window API 将 audience 固定为 Viewer frame 的 `location.origin`。跨域宿主页面通过 [createViewer 组件](session-viewer-component.md)或底层 ViewerFrameConnection 和已绑定端口接入，不能直接调用另一个 Origin 的 Window。
 
 `gatewayOrigin` 必须是规范化的 HTTPS Origin；HTTP 仅允许 loopback 开发。回调不能改换网关、Session、角色或 audience；首份票据的版本随后固定。可配置 `version` 进一步预先固定版本，票据回调期限默认 5 秒，可设 50ms 到 10 秒。未知配置字段、管理 key、getter 或继承的配置字段会被拒绝；支持来自普通跨 realm 数据对象的配置。
 

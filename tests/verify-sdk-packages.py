@@ -22,7 +22,7 @@ def sha(path: Path) -> str:
 
 
 def inspect_archives(project: Path, node: Path, wheel: Path) -> dict:
-    node_names={'package/package.json','package/backend.mjs','package/backend.d.mts','package/viewer-connection.mjs','package/viewer-connection.d.mts','package/viewer-frame.mjs','package/viewer-frame.d.mts','package/viewer-channel.mjs','package/viewer-channel.d.mts','package/README.md'}
+    node_names={'package/package.json','package/backend.mjs','package/backend.d.mts','package/viewer-connection.mjs','package/viewer-connection.d.mts','package/viewer-frame.mjs','package/viewer-frame.d.mts','package/viewer-channel.mjs','package/viewer-channel.d.mts','package/viewer.mjs','package/viewer.d.mts','package/README.md'}
     with tarfile.open(node,'r:gz') as archive:
         members=archive.getmembers()
         assert {x.name for x in members}==node_names and len(members)==len(node_names)
@@ -88,7 +88,7 @@ def main() -> None:
         files=['service/session-registry.mjs','service/session-store.mjs','service/session-http.mjs',
                'service/session-runtime-journal.mjs','service/runtime-witness-binding.mjs','service/viewer-access.mjs',
                'protocol/live-wire.mjs','protocol/wire.mjs','protocol/client-memory.mjs','protocol/resource-memory.mjs',
-               'tests/types/viewer-connection.mts','tests/types/viewer-frame.mts',
+               'tests/types/viewer-connection.mts','tests/types/viewer-frame.mts','tests/types/viewer.mts',
                'tests/session-client.test.mjs','tests/session-http.test.mjs','tests/session-registry.test.mjs',
                'tests/session-registry-lifecycle.test.mjs','tests/session-registry-durable.test.mjs','tests/session-store.test.mjs',
                'tests/owned-test-child.mjs','tests/fixtures/session-store-child.mjs','tests/fixtures/session-store-records.mjs',
@@ -100,6 +100,8 @@ def main() -> None:
             text=source.read_text();before=sha(source)
             if name=='tests/session-client.test.mjs':
                 token="from '../sdk/backend.mjs'";assert text.count(token)==1;text=text.replace(token,"from '@remote-paint/session-client'")
+            elif name=='tests/types/viewer.mts':
+                token="from '../../sdk/viewer.mjs'";assert text.count(token)==1;text=text.replace(token,"from '@remote-paint/session-client/viewer'")
             elif name=='tests/types/viewer-frame.mts':
                 token="from '../../sdk/viewer-frame.mjs'";assert text.count(token)==1;text=text.replace(token,"from '@remote-paint/session-client/viewer-frame'")
             elif name=='tests/types/viewer-connection.mts':
@@ -117,7 +119,7 @@ def main() -> None:
                    NPM_CONFIG_GLOBALCONFIG=str(out/'empty-global.npmrc'))
         run('npm-install',[args.npm,'install','--offline','--ignore-scripts','--no-audit','--no-fund','--package-lock=false',str(args.node_archive)],cwd=consumer,env=env)
         expected=consumer/'node_modules/@remote-paint/session-client'
-        for name in ['backend.mjs','backend.d.mts','viewer-connection.mjs','viewer-connection.d.mts','viewer-frame.mjs','viewer-frame.d.mts','viewer-channel.mjs','viewer-channel.d.mts','README.md','package.json']:assert sha(expected/name)==sha(args.project/'sdk'/name)
+        for name in ['backend.mjs','backend.d.mts','viewer-connection.mjs','viewer-connection.d.mts','viewer-frame.mjs','viewer-frame.d.mts','viewer-channel.mjs','viewer-channel.d.mts','viewer.mjs','viewer.d.mts','README.md','package.json']:assert sha(expected/name)==sha(args.project/'sdk'/name)
         # ws is a private control-service fixture dependency, not an SDK
         # dependency. Copy its frozen bytes explicitly, with no source symlink.
         fixture_dependencies={}
@@ -138,6 +140,7 @@ import * as main from '@remote-paint/session-client';
 import * as backend from '@remote-paint/session-client/backend';
 import {ViewerTicketSource,ViewerConnection} from '@remote-paint/session-client/viewer-connection';
 import {ViewerFrameConnection} from '@remote-paint/session-client/viewer-frame';
+import {createViewer} from '@remote-paint/session-client/viewer';
 test('installed root/backend exports share implementation and declarations are adjacent',()=>{
  assert.equal(main.SessionClient,backend.SessionClient);assert.equal(main.SessionClientError,backend.SessionClientError);
  const path=fileURLToPath(import.meta.resolve('@remote-paint/session-client'));
@@ -151,6 +154,15 @@ test('installed browser connection export validates short grants without a manag
  const frame=new ViewerFrameConnection({frameWindow:{postMessage(){throw new Error('deliberate unavailable frame');}},frameOrigin:'https://viewer.example',gatewayOrigin:'https://gateway.example',sessionId:'ses_fixture',role:'readonly',getTicket:()=>{throw new Error('must not request');}});await assert.rejects(frame.ready,e=>e.code==='CHANNEL_CLOSED');frame.close();
  assert.ok(fileURLToPath(import.meta.resolve('@remote-paint/session-client/viewer-connection')).includes('/node_modules/@remote-paint/session-client/viewer-connection.mjs'));
 });
+test('installed DOM component owns and destroys its pending iframe without backend code',async()=>{
+ let tickets=0;const listeners=new Set(),owner={addEventListener:(name,fn)=>listeners.add(fn),removeEventListener:(name,fn)=>listeners.delete(fn)};
+ const document={defaultView:owner,createElement(){return {ownerDocument:document,style:{},isConnected:true,setAttribute(){},addEventListener(){},removeEventListener(){},attachShadow(){return {appendChild(){}};},remove(){}};}};
+ const children=[],container={ownerDocument:document,appendChild(child){children.push(child);}};
+ const config={viewerOrigin:'https://viewer.example',gatewayOrigin:'https://gateway.example',sessionId:'ses_fixture',getTicket(){tickets++;throw new Error('No ticket before connect');}};
+ assert.throws(()=>createViewer(container,{...config,apiKey:'backend-secret'}),e=>e.code==='VIEWER_INVALID_CONFIG');assert.equal(children.length,0);
+ const viewer=createViewer(container,config),rejected=assert.rejects(viewer.ready,e=>e.code==='VIEWER_CLOSED');assert.equal(viewer.state.state,'loading');assert.equal(children.length,1);await viewer.destroy();await rejected;assert.equal(viewer.state.state,'destroyed');assert.equal(tickets,0);assert.equal(listeners.size,0);assert.equal(main.createViewer,undefined);
+ assert.ok(fileURLToPath(import.meta.resolve('@remote-paint/session-client/viewer')).includes('/node_modules/@remote-paint/session-client/viewer.mjs'));
+});
 test('unsupported internal and CommonJS exports are predictably refused',async()=>{
  await assert.rejects(import('@remote-paint/session-client/backend.mjs'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
  assert.throws(()=>createRequire(import.meta.url)('@remote-paint/session-client'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
@@ -158,8 +170,8 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
 """)
         names=['session-client.test.mjs','session-http.test.mjs','session-registry.test.mjs','session-registry-lifecycle.test.mjs','session-registry-durable.test.mjs','session-store.test.mjs','package-exports.test.mjs']
         raw=run('node-unit',[args.node,'--test','--test-concurrency=4',*[str(consumer/'tests'/n)for n in names]],cwd=consumer,env=env)
-        for label,value in [('tests',76),('pass',76),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
-        run('typescript',[args.node,str(args.tsc),'--noEmit','--strict','--exactOptionalPropertyTypes','--module','NodeNext','--moduleResolution','NodeNext','--target','ES2022','--lib','ES2022,DOM',str(consumer/'tests/types/session-client.mts'),str(consumer/'tests/types/viewer-connection.mts'),str(consumer/'tests/types/viewer-frame.mts')],cwd=consumer,env=env)
+        for label,value in [('tests',77),('pass',77),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
+        run('typescript',[args.node,str(args.tsc),'--noEmit','--strict','--exactOptionalPropertyTypes','--module','NodeNext','--moduleResolution','NodeNext','--target','ES2022','--lib','ES2022,DOM',str(consumer/'tests/types/session-client.mts'),str(consumer/'tests/types/viewer-connection.mts'),str(consumer/'tests/types/viewer-frame.mts'),str(consumer/'tests/types/viewer.mts')],cwd=consumer,env=env)
         python=out/'venv/bin/python';venv.EnvBuilder(with_pip=False,symlinks=True).create(out/'venv')
         purelib=Path(subprocess.check_output([str(python),'-c',"import sysconfig;print(sysconfig.get_path('purelib'))"],env=env,text=True).strip())
         assert purelib.is_relative_to(out/'venv')
@@ -174,7 +186,7 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
             raw=run('python-types',[str(python),'-m','mypy','--strict','--python-version','3.11','--no-incremental','--cache-dir=/dev/null','--python-executable',str(python),str(consumer/'tests/types/session_client.py')],cwd=consumer,env=typed)
             assert 'Success: no issues found in 1 source file' in raw
         runtime=run('runtime',[sys.executable,'-c',"import sys,platform,json,subprocess;print(json.dumps({'python':platform.python_version(),'platform':sys.platform,'arch':platform.machine(),'node':subprocess.check_output([sys.argv[1],'--version'],text=True).strip(),'npm':subprocess.check_output([sys.argv[2],'--version'],text=True).strip()}))",args.node,args.npm],env=env)
-        result={'status':'passed','nodeTests':76,'nodeSkips':0,'pythonTests':16,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
+        result={'status':'passed','nodeTests':77,'nodeSkips':0,'pythonTests':16,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
                 'archives':archives,'runtime':json.loads(runtime),'stages':stages,'sourceFallbackUnavailable':True,'publicPublishing':False}
         (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps({k:result[k]for k in ['status','nodeTests','pythonTests','typescriptActual0','pythonInstalledTypeCheckActual0']}))

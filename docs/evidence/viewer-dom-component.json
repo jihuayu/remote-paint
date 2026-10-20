@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-18T23:55:34.545949+00:00",
+  "task": "K2a2b2",
+  "scope": "Browser-safe createViewer DOM owner using existing authenticated frame bridge and saved Viewer renderers;actual browser acceptance pending.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-dom-component-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-dom-component-checkpoint-v1.json",
+  "contract": {
+    "DOM": "Owned closed shadow host+iframe at exact trusted Origin root,no ticket/key/query;preserves unrelated container children.",
+    "authorization": "One central ViewerTicketSource survives reload and keeps version/grant history and actual unsettled callback admission.",
+    "lifecycle": "Generation-bound load/reload;actual connected separate from first paint;terminal failure requires explicitconnect;bounded load/connect/disconnect/destroy;hostremoval/pagehide;idempotent destroy.",
+    "events": "Frozen fixed-field state,error codes,finite subscription set;listener exceptions do not prevent cleanup."
+  },
+  "tests": {
+    "componentCases": 12,
+    "savedEntryCasesPreserved": 14,
+    "initialActualExitCode": 0,
+    "initialCases": 24,
+    "initialLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-dom-initial.log",
+    "boundsActualExitCode": 0,
+    "boundsCases": 12,
+    "boundsLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-dom-bounds.log",
+    "actual": "RealMessageChannel transfer,NodeHTTP/WebSocket/SQLite/Source/FrameGate.",
+    "fixtures": "DOM/ShadowRoot/MutationObserver/CanvasKit/presenter/realm scheduler;Sessionprovider/CDP fixtures."
+  },
+  "remaining": [
+    "Readonly/role transition and fresh grants,publictakeover/lease/fencing,explicitresize and performance/error API.",
+    "Actualcrossoriginbrowser/CSP/sandbox/allowlist and repeatmount/unmount with physicalresource accounting afteroriginal8hterminal.",
+    "Nativeworkerownedendpointbridge and independentAgent/CDPpermissions/managedwritefences.",
+    "Original8hterminal physicalgates,wholecandidatefullregression and all41/N1finalrequirementaudit."
+  ],
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "wholeFullJsQualified": false,
+  "nativeProductionProviderComplete": false,
+  "eightHourPassed": false,
+  "noCommitPush": true
+}

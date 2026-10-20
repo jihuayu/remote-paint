@@ -1,6 +1,6 @@
 # iframe 父子连接桥（开发中）
 
-公开 Viewer 入口已安装子窗口桥。实验性 `@remote-paint/session-client/viewer-frame` 导出 `ViewerFrameConnection`，可将现有 iframe 接入既有主线程/Worker 渲染器。这个检查点完成通道和连接授权，创建/移除 DOM 的完整宿主组件、接管/租约/resize/性能 API 仍在后续阶段；真实 iframe/CSP/资源验收尚未完成。
+公开 Viewer 入口已安装子窗口桥。实验性 `@remote-paint/session-client/viewer-frame` 导出 `ViewerFrameConnection`，可将现有 iframe 接入既有主线程/Worker 渲染器。这个检查点完成通道和连接授权；后续的 [createViewer 组件](session-viewer-component.md)已接入 DOM 生命周期，接管/租约/resize/性能 API 仍在后续阶段；真实 iframe/CSP/资源验收尚未完成。
 
 ## 接入现有 iframe
 
@@ -31,7 +31,7 @@ iframe 的 src 使用公开资源入口，不含票据、管理 key 或通道参
 
 `ready` 等待已授权的端口及公开 gateway/build 元数据，默认总期限 10 秒，可设 50ms 到 30 秒。`connect()` 等待实际网络 Welcome 所触发的 connected 状态，默认 30 秒，可设 50ms 到 60 秒；它不表示远端业务动作完成，也不表示首帧已呈现。并发 connect 共用进行中的连接，后续调用者取消其等待不取消最初调用者的连接。
 
-`disconnect()` 终止当前显示连接并保留通道、版本及回调额度；再次 connect 仍通过原票据来源。`close()` 结束端口并中止回调，远端 Session 继续由后端释放或 TTL 管理。若端口因超时/导航而关闭，需为当前 iframe 创建新的连接对象。完整宿主组件将负责 iframe load/reload 和本地 DOM 生命周期。
+`disconnect()` 终止当前显示连接并保留通道、版本及回调额度；再次 connect 仍通过原票据来源。`close()` 结束端口并中止回调，远端 Session 继续由后端释放或 TTL 管理。若端口因超时/导航而关闭，需为当前 iframe 创建新的连接对象。[createViewer 组件](session-viewer-component.md)负责 iframe load/reload 和本地 DOM 生命周期，并跨重载保留中心回调额度。
 
 ## 通道约束
 
