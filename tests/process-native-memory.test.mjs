@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn,fork} from 'node:child_process';
 import {once} from 'node:events';
+import {EventEmitter} from 'node:events';
+import {PassThrough} from 'node:stream';
 import {withOwnedTestChild,stopOwnedTestChild as stop} from './owned-test-child.mjs';
 import {fileURLToPath} from 'node:url';
 import {createNativeProcessMemorySampler,decodeNativeMemoryReply,NATIVE_MEMORY_LIMITS} from './process-native-memory.mjs';
@@ -47,6 +49,19 @@ test('real unresponsive helper times out at2s, is reaped, never automatically re
  }finally{const owner=await s.close();assert.equal(owner.exited,true);}
 });
 test('actual helper protocol errors and row-count overflow fail with owned process cleanup',async()=>{
- await assert.rejects(createNativeProcessMemorySampler({spawnProcess:launch('malformed-ready'),executable:'explicit-fault-fixture'}),e=>e.code==='NATIVE_MEMORY_PROTOCOL'&&e.owner.exited);
+ await assert.rejects(createNativeProcessMemorySampler({spawnProcess:launch('malformed-ready'),executable:'explicit-fault-fixture'}),e=>{assert.equal(e.code,'NATIVE_MEMORY_PROTOCOL');assert.ok(e.owner.exited&&e.nativeStartup.closeObserved);assert.equal(e.nativeStartup.ready,false);assert.equal(Buffer.from(e.nativeStartup.stdoutPrefixHex,'hex').toString('ascii',0,4),'BAD1');return true;});
  const s=await createNativeProcessMemorySampler({spawnProcess:launch('oversize-count'),executable:'explicit-fault-fixture'});try{await assert.rejects(s.sample(own),e=>e.code==='NATIVE_MEMORY_OUTPUT_LIMIT'&&e.owner.exited);}finally{assert.equal((await s.close()).exited,true);}
+});
+test('fragmented actual child handshake preserves first bytes and one observed close without supplying fake memory rows',async()=>{
+ const s=await createNativeProcessMemorySampler({spawnProcess:launch('fragmented-ready'),executable:'explicit-startup-fixture'});const start=s.startupSnapshot();assert.equal(start.ready,true);assert.equal(start.closeObserved,false);assert.equal(start.stdoutBytes,32);assert.equal(start.stdoutPrefixHex.length,64);assert.ok(start.firstStdoutMs<=start.handshakeMs);assert.ok(start.timerScheduledMs>=start.spawnReturnMs);assert.equal(start.startupDeadlineMs,2000);assert.ok(Object.isFrozen(start.events));const closed=await s.close(),end=s.startupSnapshot();assert.equal(closed.exitCode,0);assert.equal(end.closeObserved,true);assert.equal(end.elapsedMs,start.elapsedMs);assert.deepEqual(end.observedExit,closed);
+});
+test('actual silent startup keeps original2s rejection and saves PID,SIGKILL and real close on the thrown factory error',async()=>{
+ let starts=0,child;await assert.rejects(createNativeProcessMemorySampler({executable:'explicit-startup-fixture',spawnProcess:(...args)=>{starts++;return child=launch('startup-silent')(...args);}}),e=>{assert.equal(e.code,'NATIVE_MEMORY_READY_TIMEOUT');const d=e.nativeStartup;assert.equal(d.captureStatus,'complete');assert.equal(d.ready,false);assert.equal(d.stdoutBytes,0);assert.equal(d.stdoutPrefixHex,'');assert.equal(d.firstStdoutMs,null);assert.equal(d.helperPid,child.pid);assert.equal(d.closeObserved,true);assert.deepEqual(d.failure.owner,e.owner);assert.deepEqual(d.observedExit,e.owner);assert.equal(d.observedExit.signal,'SIGKILL');assert.equal(child.signalCode,'SIGKILL');assert.ok(d.events.some(v=>v.event==='ready-timeout'));assert.ok(d.factoryElapsedMs<5000);assert.ok(Buffer.byteLength(JSON.stringify(d))<=8192);return true;});assert.equal(starts,1);
+});
+test('synchronous spawn rejection records no child or observed close and never exposes the supplied exception text',async()=>{
+ await assert.rejects(createNativeProcessMemorySampler({executable:'private-input-omitted',spawnProcess:()=>{throw Error('secret');}}),e=>{assert.equal(e.code,'NATIVE_MEMORY_SPAWN');assert.equal(e.nativeStartup.childCreated,false);assert.equal(e.nativeStartup.helperPid,null);assert.equal(e.nativeStartup.closeObserved,false);assert.equal(e.nativeStartup.observedExit,null);assert.ok(!JSON.stringify(e.nativeStartup).includes('secret'));return true;});
+});
+test('synthetic child that never emits close remains unconfirmed after the original2s/250ms limits',async()=>{
+ const child=new EventEmitter();child.pid=999999;child.stdin=new PassThrough();child.stdout=new PassThrough();child.stderr=new PassThrough();child.kill=()=>true;child.unref=()=>{};
+ await assert.rejects(createNativeProcessMemorySampler({executable:'explicit-unreaped-fixture',spawnProcess:()=>child}),e=>{assert.equal(e.code,'NATIVE_MEMORY_NOT_REAPED');assert.equal(e.owner.exited,false);assert.equal(e.nativeStartup.closeObserved,false);assert.equal(e.nativeStartup.observedExit,null);assert.equal(e.nativeStartup.failure.owner.exited,false);assert.equal(e.nativeStartup.failure.cleanupFailureCode,'NATIVE_MEMORY_NOT_REAPED');return true;});
 });

@@ -1,0 +1,135 @@
+{
+  "at": "2026-10-18T17:44:39.943593+00:00",
+  "task": "PSS-D3b",
+  "status": "failed-before-first-sample-native-helper-original2s-startup-timeout",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v4/frozen-version.json",
+  "manifestSha256": "cb39cabd46eba8643a7598d56b1bbc171ce2d4a41763b8c4e10a61dfe4e6e6a6",
+  "sourceFiles": 776,
+  "requestedSeconds": 28800,
+  "acceptedElapsedSeconds": 0,
+  "completedSamples": 0,
+  "failureAt": "2026-10-18T17:36:49.414Z",
+  "failureError": "Error: Native memory helper startup exceeded2s\n    at fail (file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v4/project/tests/process-native-memory.mjs:8:52)\n    at Timeout.<anonymous> (file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v4/project/tests/process-native-memory.mjs:42:50)\n    at listOnTimeout (node:internal/timers:605:17)\n    at process.processTimers (node:internal/timers:541:7)",
+  "actualExits": {
+    "source": {
+      "at": "2026-10-18T17:36:49.715721+00:00",
+      "exitCode": 0,
+      "containerId": "67095acd90d0b943eb736f69c0a1cc2547048743f8297d3a16b153418e0744e2",
+      "dockerRunning": false,
+      "dockerExitCode": 0
+    },
+    "viewer": {
+      "at": "2026-10-18T17:36:49.620571+00:00",
+      "exitCode": 1
+    }
+  },
+  "freshDockerStoppedPid0Exit0": true,
+  "sourceCleanup": {
+    "status": "closed",
+    "activeSessions": 0,
+    "stats": {
+      "created": 1,
+      "closed": 1,
+      "crosssite": 0,
+      "leaseExpired": 0
+    },
+    "remainingKinds": [
+      "node"
+    ],
+    "completePss": true,
+    "controllerFds": {
+      "baseline": 20,
+      "after": 19,
+      "allowedOverBaseline": 8,
+      "scope": "This Source controller after allSource/fixture/network/observer cleanup;baseline already included fixture. Counts actualFDs after ownership probes closed,not earlier metrics taken while history FDs were intentionally held."
+    }
+  },
+  "helperReadOnlyAudit": {
+    "at": "2026-10-18T17:40:03.599965+00:00",
+    "binaries": [
+      {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v4/project/native/bin/process-memory-sampler-arm64-darwin",
+        "sha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+        "size": 33976,
+        "mode": "0o755",
+        "inode": 142163821,
+        "xattrNames": [],
+        "codesignExit": 0,
+        "codesignDetail": "Executable=/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v4/project/native/bin/process-memory-sampler-arm64-darwin\nIdentifier=.process-memory-sampler-arm64-darwin-42248\nFormat=Mach-O thin (arm64)\nCodeDirectory v=20400 size=419 flags=0x20002(adhoc,linker-signed) hashes=9+0 location=embedded\nSignature=adhoc\nInfo.plist=not bound\nTeamIdentifier=not set\nSealed Resources=none\nInternal requirements=none\n"
+      },
+      {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-process-retirement-fence-v2/project/native/bin/process-memory-sampler-arm64-darwin",
+        "sha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+        "size": 33976,
+        "mode": "0o755",
+        "inode": 142076417,
+        "xattrNames": [],
+        "codesignExit": 0,
+        "codesignDetail": "Executable=/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-process-retirement-fence-v2/project/native/bin/process-memory-sampler-arm64-darwin\nIdentifier=.process-memory-sampler-arm64-darwin-42248\nFormat=Mach-O thin (arm64)\nCodeDirectory v=20400 size=419 flags=0x20002(adhoc,linker-signed) hashes=9+0 location=embedded\nSignature=adhoc\nInfo.plist=not bound\nTeamIdentifier=not set\nSealed Resources=none\nInternal requirements=none\n"
+      }
+    ],
+    "currentExactExecutableCommMatches": [],
+    "scope": "Readonly hashes/metadata and fresh exact executable-path process census. No startup retry or security/cache changes."
+  },
+  "helperStartupOwnerReceiptPersisted": false,
+  "helperPidRecorded": false,
+  "currentExactHelperExecutableMatches": [],
+  "helperSoleCauseProven": false,
+  "systemLogQuery": {
+    "exitCode": 0,
+    "at": "2026-10-18T17:41:08.311544+00:00",
+    "stdoutBytes": 1168,
+    "stderrBytes": 0,
+    "scope": "Read-only bounded system-log query for owned helper file/name;no logging/security/cache settings changed",
+    "records": 1,
+    "processes": [
+      "syspolicyd"
+    ]
+  },
+  "systemLogRecords": [
+    {
+      "timezoneName": "",
+      "messageType": "Default",
+      "eventType": "logEvent",
+      "source": null,
+      "formatString": "GK evaluateScanResult: %lu, %@, %d, %d, %d, %d, %lu, %lu, %d",
+      "userID": 0,
+      "activityIdentifier": 0,
+      "subsystem": "com.apple.syspolicy.exec",
+      "category": "default",
+      "threadID": 224627839,
+      "senderImageUUID": "1AC0826F-40A6-3835-918D-F6EB52B211BC",
+      "backtrace": {
+        "frames": [
+          {
+            "imageOffset": 378744,
+            "imageUUID": "1AC0826F-40A6-3835-918D-F6EB52B211BC"
+          }
+        ]
+      },
+      "bootUUID": "84B53766-9280-469A-B974-060928A026A7",
+      "processImagePath": "/usr/libexec/syspolicyd",
+      "senderImagePath": "/usr/libexec/syspolicyd",
+      "timestamp": "2026-10-19 01:36:50.066999+0800",
+      "machTimestamp": 133871075503265,
+      "eventMessage": "GK evaluateScanResult: 2, PST: (path: 1dbe681999235363), (team: (null)), (id: .process-memory-sampler-arm64-darwin-42248), (bundle_id: NOT_A_BUNDLE), 0, 0, 1, 0, 0, 0, 0",
+      "processImageUUID": "1AC0826F-40A6-3835-918D-F6EB52B211BC",
+      "traceID": 4333720819597316,
+      "processID": 954,
+      "senderProgramCounter": 378744,
+      "parentActivityIdentifier": 0
+    }
+  ],
+  "systemLogInterpretation": "One matching helper signing identifier Gatekeeper evaluation after saved timeout timestamp;path/PID correlation and pre-main/stdio timing absent. Suggestive,not proof of sole cause. No security/quarantine/cache settings changed.",
+  "original2sRequest5sPhase250msReapLimitsUnchanged": true,
+  "noStartupRetry": true,
+  "noCommitPush": true,
+  "eightHourActive": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "next": "Native helper startup telemetry and owner/provenance retention before any new8h;fixed finite diagnosis rather than startup deadline relaxation."
+}

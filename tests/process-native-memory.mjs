@@ -2,8 +2,9 @@
 // footprint remain distinct; physical footprint is not Linux PSS.
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {readFile} from 'node:fs/promises';
+import {readFile,stat} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
+import {NativeMemoryStartupTrace} from './native-memory-startup.mjs';
 export const NATIVE_MEMORY_LIMITS=Object.freeze({requestMs:2000,reapMs:250,phaseMs:5000,stdoutBytes:65536,stderrBytes:8192,processes:1024,headerBytes:32,rowBytes:56});
 const fail=(code,message,fields={})=>Object.assign(new Error(message),{code,...fields});
 const safe64=(bytes,offset)=>{const n=bytes.readBigUInt64BE(offset);if(n>BigInt(Number.MAX_SAFE_INTEGER))throw fail('NATIVE_MEMORY_PRECISION','Unsafe native memory integer');return Number(n);};
@@ -31,34 +32,40 @@ export class NativeProcessMemorySampler{
  constructor({executable=fileURLToPath(new URL(`../native/bin/process-memory-sampler-${process.arch}-darwin`,import.meta.url)),spawnProcess=spawn}={}){
   if(process.platform!=='darwin'&&spawnProcess===spawn)throw fail('NATIVE_MEMORY_PLATFORM','Darwin libproc sampler requires macOS');
   this.executable=executable;this.buffer=Buffer.allocUnsafeSlow(NATIVE_MEMORY_LIMITS.stdoutBytes);this.buffered=0;this.stderrBytes=0;this.sequence=0;this.pending=null;this.stopped=false;this.readyDone=false;this.exit=null;
+  this.startupTrace=new NativeMemoryStartupTrace();
   this.ready=new Promise((resolve,reject)=>{this.readyResolve=resolve;this.readyReject=reject;});this.ready.catch(()=>{});
   this.exited=new Promise(resolve=>{this.exitedResolve=resolve;});
-  try{this.child=spawnProcess(executable,[],{stdio:['pipe','pipe','pipe']});}
-  catch(error){this.readyReject(fail('NATIVE_MEMORY_SPAWN','Native memory helper did not start'));this.stopped=true;this.exit={code:null,signal:null};this.exitedResolve(this.exit);return;}
-  this.child.once('close',(code,signal)=>{this.exit={code,signal};this.exitedResolve(this.exit);if(!this.stopped)this._fail(fail('NATIVE_MEMORY_EXIT','Native memory helper exited unexpectedly'));});
-  this.child.once('error',()=>void this._fail(fail('NATIVE_MEMORY_SPAWN','Native memory helper did not start')));this.child.stdin.on('error',()=>void this._fail(fail('NATIVE_MEMORY_PIPE','Native memory helper input failed')));
+  this.startupTrace.event('spawn-call');
+  try{this.child=spawnProcess(executable,[],{stdio:['pipe','pipe','pipe']});this.startupTrace.event('spawn-return',{pid:this.child.pid});}
+  catch(error){this.startupTrace.event('spawn-error');this.startupTrace.settle();this.readyReject(fail('NATIVE_MEMORY_SPAWN','Native memory helper did not start'));this.stopped=true;this.exit={code:null,signal:null};this.exitedResolve(this.exit);return;}
+  this.child.once('spawn',()=>this.startupTrace.event('spawn-event',{pid:this.child.pid}));
+  this.child.once('exit',(code,signal)=>this.startupTrace.event('helper-exit',{code,signal}));
+  this.child.once('close',(code,signal)=>{this.startupTrace.event('helper-close',{code,signal});this.exit={code,signal};this.exitedResolve(this.exit);if(!this.stopped)this._fail(fail('NATIVE_MEMORY_EXIT','Native memory helper exited unexpectedly'));});
+  this.child.once('error',()=>{this.startupTrace.event('spawn-error');void this._fail(fail('NATIVE_MEMORY_SPAWN','Native memory helper did not start'));});this.child.stdin.on('error',()=>{this.startupTrace.event('pipe-error');void this._fail(fail('NATIVE_MEMORY_PIPE','Native memory helper input failed'));});
   this.child.stderr.on('data',bytes=>{this.stderrBytes+=bytes.length;if(this.stderrBytes>NATIVE_MEMORY_LIMITS.stderrBytes)void this._fail(fail('NATIVE_MEMORY_OUTPUT_LIMIT','Native memory helper stderr budget exceeded'));});
   this.child.stdout.on('data',bytes=>this._data(bytes));
-  this.readyTimer=setTimeout(()=>void this._fail(fail('NATIVE_MEMORY_READY_TIMEOUT','Native memory helper startup exceeded2s')),NATIVE_MEMORY_LIMITS.requestMs);
+  this.startupTimerScheduledMs=this.startupTrace.elapsedMs();this.readyTimer=setTimeout(()=>{this.startupTrace.event('ready-timeout');void this._fail(fail('NATIVE_MEMORY_READY_TIMEOUT','Native memory helper startup exceeded2s'));},NATIVE_MEMORY_LIMITS.requestMs);
  }
+ startupSnapshot(error=this.failure??null,cleanupFailureCode=null){return this.startupTrace.snapshot({helperPid:this.child?.pid,childCreated:!!this.child,readyDone:this.readyDone,timerScheduledMs:this.startupTimerScheduledMs,exit:this.exit,error,provenance:this.provenance,binaryFile:this.startupBinaryFile,factoryElapsedMs:this.factoryElapsedMs,stderrBytes:this.stderrBytes,cleanupFailureCode});}
  async _waitExit(ms){if(this.exit)return true;let timer;try{return await Promise.race([this.exited.then(()=>true),new Promise(resolve=>{timer=setTimeout(()=>resolve(false),ms);})]);}finally{clearTimeout(timer);}}
  _stop(force=false){
-  if(this.stopPromise)return this.stopPromise;this.stopped=true;clearTimeout(this.readyTimer);if(this.pending)clearTimeout(this.pending.timer);
+  if(this.stopPromise)return this.stopPromise;this.startupTrace.event('stop',{force});this.startupTrace.settle();this.stopped=true;clearTimeout(this.readyTimer);if(this.pending)clearTimeout(this.pending.timer);
   this.stopPromise=(async()=>{
-   if(this.child&&!this.exit){if(force){try{this.child.kill('SIGKILL');}catch{}}else this.child.stdin.end();
-    if(!await this._waitExit(NATIVE_MEMORY_LIMITS.reapMs)){if(!force){try{this.child.kill('SIGKILL');}catch{}await this._waitExit(NATIVE_MEMORY_LIMITS.reapMs);}}
+   if(this.child&&!this.exit){if(force){try{this.startupTrace.event('sigkill');this.child.kill('SIGKILL');}catch{}}else this.child.stdin.end();
+    if(!await this._waitExit(NATIVE_MEMORY_LIMITS.reapMs)){if(!force){try{this.startupTrace.event('sigkill');this.child.kill('SIGKILL');}catch{}await this._waitExit(NATIVE_MEMORY_LIMITS.reapMs);}}
    }
    this.child?.stdin?.destroy();this.child?.stdout?.destroy();this.child?.stderr?.destroy();if(!this.exit)this.child?.unref();this.buffer=null;this.buffered=0;
    return {pid:this.child?.pid??null,exited:!!this.exit,exitCode:this.exit?.code??null,signal:this.exit?.signal??null};
   })();return this.stopPromise;
  }
  async _fail(error){
-  if(this.failure)return;this.failure=error;const pending=this.pending;this.pending=null;clearTimeout(pending?.timer);const owner=await this._stop(true);
+  if(this.failure)return;this.failure=error;this.startupTrace.settle();const pending=this.pending;this.pending=null;clearTimeout(pending?.timer);const owner=await this._stop(true);
   if(!owner.exited)error=fail('NATIVE_MEMORY_NOT_REAPED','Native memory helper did not close after SIGKILL',{cause:error});error.owner=owner;
+  Object.defineProperty(error,'nativeStartup',{value:this.startupSnapshot(error),configurable:true});
   this.readyReject(error);pending?.reject(error);
  }
  _data(bytes){
-  if(this.stopped)return;
+  if(!this.readyDone)this.startupTrace.output(bytes);if(this.stopped)return;
   if(this.buffered+bytes.length>NATIVE_MEMORY_LIMITS.stdoutBytes){void this._fail(fail('NATIVE_MEMORY_OUTPUT_LIMIT','Native memory response budget exceeded'));return;}
   bytes.copy(this.buffer,this.buffered);this.buffered+=bytes.length;
   try{
@@ -67,7 +74,7 @@ export class NativeProcessMemorySampler{
     const id=safe64(this.buffer,8),count=this.buffer.readUInt32BE(16);if(count>NATIVE_MEMORY_LIMITS.processes)throw fail('NATIVE_MEMORY_OUTPUT_LIMIT','Native memory response process limit');const size=32+56*count;if(this.buffered<size)return;
     if(!this.readyDone){
      if(id!==0||count!==0||this.buffer.readUInt32BE(20)!==0||this.buffer.readUInt32BE(24)!==this.child.pid||this.buffer.readUInt32BE(28)!==NATIVE_MEMORY_LIMITS.processes)throw fail('NATIVE_MEMORY_PROTOCOL','Native memory helper handshake identity mismatch');
-     this.readyDone=true;clearTimeout(this.readyTimer);this.readyResolve({provider:'darwin-libproc-v1',pid:this.child.pid,maxProcesses:NATIVE_MEMORY_LIMITS.processes});
+     this.startupTrace.event('handshake',{pid:this.child.pid});this.startupTrace.settle();this.readyDone=true;clearTimeout(this.readyTimer);this.readyResolve({provider:'darwin-libproc-v1',pid:this.child.pid,maxProcesses:NATIVE_MEMORY_LIMITS.processes});
     }else{
      const pending=this.pending;if(!pending||pending.id!==id)throw fail('NATIVE_MEMORY_PROTOCOL','Unsolicited native memory response');let value,error;
      try{value=decodeNativeMemoryReply(this.buffer.subarray(0,size),pending.rows,id);}catch(e){if(!e.nativeBatch&&e.code!=='NATIVE_MEMORY_IDENTITY_CHANGED')throw e;error=e;}
@@ -91,13 +98,19 @@ export class NativeProcessMemorySampler{
  async close(){const pending=this.pending;this.pending=null;clearTimeout(pending?.timer);pending?.reject(fail('NATIVE_MEMORY_CLOSED','Native memory sampler closed'));const owner=await this._stop();this.readyReject(fail('NATIVE_MEMORY_CLOSED','Native memory sampler closed'));if(!owner.exited)throw fail('NATIVE_MEMORY_NOT_REAPED','Native memory helper cleanup did not reap',{owner});return owner;}
 }
 export async function createNativeProcessMemorySampler(options){
- const native=!options?.spawnProcess||options.spawnProcess===spawn;let provenance;
+ const factoryStarted=performance.now(),beforeSpawn=new NativeMemoryStartupTrace(),native=!options?.spawnProcess||options.spawnProcess===spawn;let provenance,sampler,binaryFile;
+ try{
  if(native){
   if(process.platform!=='darwin')throw fail('NATIVE_MEMORY_PLATFORM','Darwin libproc sampler requires macOS');
   const executable=options?.executable??fileURLToPath(new URL(`../native/bin/process-memory-sampler-${process.arch}-darwin`,import.meta.url)),receipt=JSON.parse(await readFile(executable+'.json','utf8')),hash=b=>createHash('sha256').update(b).digest('hex');
   const binarySha256=hash(await readFile(executable)),sourceSha256=hash(await readFile(new URL('../native/process-memory-darwin.c',import.meta.url)));
   if(receipt.binarySha256!==binarySha256||receipt.sourceSha256!==sourceSha256||receipt.platform!=='darwin'||receipt.arch!==process.arch)throw fail('NATIVE_MEMORY_PROVENANCE','Native memory helper source/build receipt mismatch');
   provenance={executable,binarySha256,sourceSha256,buildReceipt:receipt};
+  binaryFile=await stat(executable).catch(()=>null);
  }
- const sampler=new NativeProcessMemorySampler(options);sampler.provenance=provenance;try{await sampler.ready;return sampler;}catch(error){await sampler.close().catch(()=>{});throw error;}
+ sampler=new NativeProcessMemorySampler(options);sampler.provenance=provenance;sampler.startupBinaryFile=binaryFile;await sampler.ready;sampler.factoryElapsedMs=performance.now()-factoryStarted;return sampler;
+ }catch(error){let cleanup,cleanupError;try{cleanup=await sampler?.close();}catch(e){cleanupError=e;cleanup=e.owner;}if(!error.owner&&cleanup)error.owner=cleanup;
+  if(sampler)sampler.factoryElapsedMs=performance.now()-factoryStarted;else beforeSpawn.settle();
+  const snapshot=sampler?sampler.startupSnapshot(error,cleanupError?.code):beforeSpawn.snapshot({error,provenance,binaryFile,factoryElapsedMs:performance.now()-factoryStarted,cleanupFailureCode:cleanupError?.code});Object.defineProperty(error,'nativeStartup',{value:snapshot,configurable:true});throw error;
+ }
 }
