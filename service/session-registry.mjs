@@ -167,7 +167,8 @@ export class SessionRegistry {
   // Assign the shared promise before invoking a potentially reentrant provider.
   session.closeInFlight=Promise.resolve().then(async()=>{
    try{
-    const closed=(await provider.close({sessionId:session.sessionId,tenantId:session.tenant,region:session.region,reason:session.closeReason??'startup-failed'}))?.status==='closed';
+    const close=session.closeAttempts>1&&typeof provider.retryClose==='function'?provider.retryClose:provider.close;
+    const closed=(await close.call(provider,{sessionId:session.sessionId,tenantId:session.tenant,region:session.region,reason:session.closeReason??'startup-failed'}))?.status==='closed';
     if(closed)this.#unreserve(session);
     return closed;
    }catch{return false;}

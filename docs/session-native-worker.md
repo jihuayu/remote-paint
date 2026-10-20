@@ -1,6 +1,6 @@
 # Session Native worker 边界（开发中）
 
-`service/session-worker.mjs` 实现一进程、一Session的私有控制通道，`native-session-resource.mjs` 持有异步Native启动结果并清理，`native-session-worker.mjs` 是待接入受管Linux容器的入口。同库运行时身份/分配意图账本已通过独立合同，但尚未接通SessionRegistry的实际Native provider与容器驱动，真实Chromium/Browser进程集合及Viewer票据验收继续待做。
+`service/session-worker.mjs` 实现一进程、一Session的私有控制通道，`native-session-resource.mjs` 持有异步Native启动结果并清理，`native-session-worker.mjs` 是待接入受管Linux容器的入口。同库运行时身份/分配意图账本与 DockerSessionProvider 已接通持久 SessionRegistry，并通过真实 Node 容器生命周期/崩溃恢复验证；实际 Native Chromium/Browser 进程集合及 Viewer 票据验收仍待原8小时隔离后进行，不能用 Node 夹具代替。
 
 ## 启动与通道
 
@@ -20,9 +20,9 @@ owner EOF、控制流错误、进程disconnect、SIGTERM/SIGINT与owner租约到
 
 ## 持久运行时意图
 
-`SqliteSessionStore` 现使用同一私有SQLite文件保存运行时记录，schema为v2。打开合法v1账本时先验证全部Session、操作、幂等绑定与引用，再事务迁移，保留原Session修订号；空、外来或损坏账本不会被重建。运行时有独立修订号，避免破坏Registry对逐次写入确认的要求，排他锁、0600文件、外键及FULL同步保持。
+`SqliteSessionStore` 现使用同一私有SQLite文件保存运行时记录，schema现为v3。合法v1先验证全部Session、操作、幂等绑定与引用再迁移；v2先验证全部运行时/索引/引用后原子升级，旧 Start 历史标为 legacy-unknown，保留原UUID/文件身份和两类修订号。原Session修订号不因迁移改变；空、外来或损坏账本不会被重建。运行时有独立修订号，避免破坏Registry对逐次写入确认的要求，排他锁、0600文件、外键及FULL同步保持。
 
-内部接口为 `claimRuntimeProvider`、`loadRuntime`、`commitRuntime`、`releaseRuntimeProvider`。每区域先固定deployment和daemon身份，以私有Symbol令牌排他持有；已有活动Session却没有原运行时绑定时拒绝直接接管。每Session只保留一个运行时身份，记录owner key哈希、配置哈希、固定镜像ID及不可改绑的容器名/ID，不保存初始URL或原始key。
+内部接口为 `claimRuntimeProvider`、`loadRuntime`、`commitRuntime`、`bindRuntimeClosingWitness`、`releaseRuntimeProvider`。新增关闭专用确认只在 closing/完整CID/保留配额的记录上一次性补齐有效见证，不允许重放 Start/Ready。每区域先固定deployment和daemon身份，以私有Symbol令牌排他持有；已有活动Session却没有原运行时绑定时拒绝直接接管。每Session只保留一个运行时身份，记录owner key哈希、配置哈希、固定镜像ID及不可改绑的容器名/ID，不保存初始URL或原始key。
 
 普通阶段为 `intent → requested → created → ready → closing → retired`。派发意图只能确认一次，必须早于真实创建；重获所有权后的原记录只能向关闭/退役推进，不能重新派发或发布Ready。关闭开始后拒绝晚到的派发与Ready，允许把恢复查明的原容器ID绑定到关闭中的记录。已派发却没有已知ID的分配，不能仅凭暂时查无对象或“没有效果”的猜测写成退役。Native Session的Ready和配额归还受对应账本状态约束。
 

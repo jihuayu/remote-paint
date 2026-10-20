@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-18T21:55:21.342649+00:00",
+  "task": "B1c1b2c3b",
+  "scope": "Explicit bounded cleanup retry and actual admission refresh after unknownCID/name reconciliation;K1 release/idempotency semantics,not complete Native or ticket authorization.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/runtime-cleanup-retry-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/runtime-cleanup-retry-checkpoint-v1.json",
+  "contract": {
+    "normalClose": "Memoized first/outstanding result;normal duplicates do not start another attempt.",
+    "explicitRetry": "retryClose may replace only a settled unconfirmed promise;concurrent retries shareoneattempt,closed terminal staysmemoized. Default4includinginitial,configurable1..16. No new attempt aftershutdown.",
+    "registry": "Later attempts use optionalretryClose;legacyproviders useclose. Persisted closeAttempts/maxCloseAttempts govern afterrestart,oldoperation outcomes remainqueryable and quota staysuntilclosed.",
+    "admission": "Afterretirement duringrecovery,refreshactual scopedallstateinventory. Failure fencesadmission while preservingprovenretirement. A latercreate may repeatboundedreadonlyrefresh whenalloldresourcesretired;stopping/closed cannotresurrect.",
+    "knownName": "Unknown requestedCID may beboundonlyafterdeterministicname/fullownership verification;neverretirefromname404. Successfulretirement clearsstaleorphancandidatewithoutreinitializingprovider."
+  },
+  "actualNewCases": {
+    "retry-proof": "Hide originalvalidnamespacefile;firstclose removescontainer but retainsquota. Restoreoriginalbytes;defaultclose stillmemoized,concurrentexplicitretry and Registryrelease shareone404retirement,oldfailurequeryable.",
+    "retry-limit": "Bothlimits2;twofailedattempts,restoredfile doesnotbypasslimit. Quotaheld withactualcontainerabsent.",
+    "allocated": "ActualproviderSIGKILL afterCreate201/fullCIDresponse beforeCIDjournalack;originalrequested/nullCID sees1ownedorphan. Recoverbyname/unstarted204/fresh404,clearinventorycache and createadifferentSessionon sameprovider. Oldidempotencykey returnsoldfailedoperation;newSessionactuallyReadythenretired."
+  },
+  "qualification": "FinaldualplatformNodecontracts includeHTTP/durableRegistry retry and limits;original19Enginecases plus3new cases. Five expectedquarantines are not complete recovery or Native qualification.",
+  "backlogAudit": {
+    "K1": "Requires stablecreate/release/TTL/quota/region/version,idempotency and operationstatus;thisfix repairs explicitrelease retry described in servicecontract.",
+    "K3": "Backend APIkey versus short Viewer tickets/read/control/Agent authorization remains separate requiredwork.",
+    "uncertainty": "Authoritative servicecontract explicitly retainsquota forunconfirmedcleanup and forbidsCreate/TTLreplay afterrestart;do not invent unbounded extra kernel prerequisites or count thoseguards as complete Native acceptance."
+  },
+  "remaining": [
+    "ActualNativeprovider/whole-candidatefullregression after original8hisolation.",
+    "Viewerreadonly/controlroles,tickets/audience/revoke/refresh and renderer integration(K2/K3/K5).",
+    "Broaderremaining41items/N1 requirement-by-requirementfinalaudit.",
+    "Missing/unboundwitness/unknowncreated histories remainexplicitquarantine,withfurtherfaultwindows assessedagainstactualcontract."
+  ],
+  "nativeProductionProviderComplete": false,
+  "wholeFullJsQualified": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "noCommitPush": true
+}
