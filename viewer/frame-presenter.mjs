@@ -37,7 +37,7 @@ export class FramePresenter {
   this.context=this.gr||output==='bitmap'?context('bitmaprenderer'):null;this.bitmap=!!this.context;
   if(!this.bitmap&&this.gr){this.presentation.fallbackReason='ImageBitmap presentation unavailable';this.releaseGpu();}
   if(!this.context)this.context=context('2d');
-  if(!this.context){this.releaseGpu();throw new Error('Cannot allocate Viewer canvas');}
+  if(!this.context){this.releaseGpu();this.runtimeBinary?.();this.runtimeBinary=null;throw new Error('Cannot allocate Viewer canvas');}
   this.presentation.mode=this.gr?'webgl2-bitmap':this.bitmap?'cpu-bitmap':'cpu-2d';
   this.createRenderer();
   try{

@@ -7,6 +7,7 @@ import {MemoryLimitError} from '../protocol/client-memory.mjs';
 export class RendererRuntime{
  constructor(ck,canvas,{factory,wasmBinary,locateFile,memory,gpu='auto'}={}){
   this.canvas=canvas;this.factory=factory;this.wasmBinary=wasmBinary;this.locateFile=locateFile;this.memory=memory;this.gpu=gpu;this.generation=0;this.recycles=0;this.disposed=false;
+  this.initialArenaBytes=ck.HEAPU8.buffer.byteLength;
   this.binaryPin=memory.buffer('wasmBinary',wasmBinary);this.presenter=new FramePresenter(ck,canvas,{memory,gpu});
  }
  get ck(){return this.presenter?.ck;}
@@ -22,11 +23,17 @@ export class RendererRuntime{
  }
  async rebuild(){
   if(this.presenter){this.displayCarry=this.presenter.dispose({preserveDisplay:true});this.memory.retire(this.presenter.ck);this.presenter=null;}
+  // Retired backings can survive several normal GC cycles. Admit at least
+  // the measured initial heap before calling the factory,then reconcile its
+  // actual size before creating presentation resources. No GC is requested.
+  const admission=this.memory.reserve('wasmInitialization',this.initialArenaBytes,'wasm');let ck;
   try{
-   const ck=await this.factory({wasmBinary:this.wasmBinary,locateFile:this.locateFile});
+   ck=await this.factory({wasmBinary:this.wasmBinary,locateFile:this.locateFile});
+   admission.resize(ck.HEAPU8.buffer.byteLength);
+   if(this.disposed)throw new Error('Renderer runtime disposed during recycle');
    this.presenter=new FramePresenter(ck,this.canvas,{memory:this.memory,gpu:this.gpu,displayCharge:this.displayCarry});this.displayCarry=null;this.recycles++;
-   if(this.disposed){this.presenter.dispose();this.memory.retire(this.presenter.ck);this.presenter=null;throw new Error('Renderer runtime disposed during recycle');}
-  }catch(error){throw error;}
+   ck=null;
+  }catch(error){if(ck)this.memory.retire(ck);throw error;}finally{admission();}
  }
  async draw(frame,resources){
   if(this.disposed)throw new Error('Renderer runtime is disposed');
