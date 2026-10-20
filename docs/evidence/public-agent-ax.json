@@ -1,0 +1,245 @@
+{
+  "at": "2026-10-19T19:30:39.211556+00:00",
+  "task": "Public computed AX executor HTTP and Native checkpoint",
+  "status": "Public-computed-AX-qualified-within-scope",
+  "scope": "Public computed exact-element AX executor/HTTP endpoint under agents:observe with trusted tenant/Registry/logical Run/original worker/target/controlSession/version/document/opaque-element binding. Shared actual ordinary admission includes read observation until provider settlement, separate end, no read-induced writer/history mutation or payload persistence. Actual public HTTP-to-canonical-Native computed semantics and known unknown input AX without recovery/replay. AX SDK/full-tree/frame/raw-transport-preallocation/browser AX physical/postcondition qualification remains pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-computed-ax-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "e3c07a25005400798f83b9cb3155fb0f49e45f70ebce56899cd2c4ecbfb961a2",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/public-agent-ax-candidate-v2/frozen-version.json",
+  "executedManifestSha256": "534bfddb2b187822c3fca381ae04704fd168d8458a62a892c9e3b99f43b1b7e4",
+  "newNodeContracts": 21,
+  "testNames": [
+    "public AX route is an explicit POST with the existing independent observe scope",
+    "public AX executor binds logical IDs/version/Source/context/element and returns immutable data without ledger writes",
+    "public AX executor rejects foreign logical identities, version/worker/context spoofing and getters before dispatch",
+    "public AX malformed or failing replies never quarantine the writer or fault the executor",
+    "public AX actual executor admission survives caller cancellation and shares DOM/input capacity while end stays available",
+    "public AX unknown begin without binding and cold executor recovery cannot adopt the old worker",
+    "public AX late result after end, Ready loss or shutdown is rejected and shutdown owns actual work",
+    "public AX pre-abort sends nothing and Source timeout is captured once without retry",
+    "observe-only HTTP key can read computed AX without acquiring writer/end/Session/Viewer authority",
+    "legacy HTTP read/write/end/Session scopes do not imply AX access and foreign tenant sees no logical run",
+    "public AX HTTP uses exact 200/no-Location/no-store/correlation and persists no AX or element payload",
+    "public AX HTTP rejects forged logical context, raw identifiers/scripts/fields and invalid budgets before Source",
+    "public AX stable stale/limit/unavailable/timeout errors and untyped failures do not change writer or expose internals",
+    "public AX can observe known unknown input while history, quarantine and same-key no-replay remain intact",
+    "public AX HTTP timeout retains actual executor slot, active writer and independently scoped priority end",
+    "public AX HTTP disconnect cannot cancel Source work or release actual admission before end",
+    "public AX private RPC timeout remains an explicit single-attempt read parameter",
+    "public AX reads after end or Session release cannot adopt a Source and do not dispatch",
+    "public AX method, management Origin, size, encoding and missing-body schema gates hold before execution",
+    "public AX unsettled authentication stays bounded after deadline while end keeps its independent capacity",
+    "public AX incomplete JSON body has a bounded deadline and cannot reach Source"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v44/manifest.json",
+  "fullJsManifestSha256": "e770c33c0c24e6c11bf53c630743f26e1d677b56737f31e84576b46af0ec2bd0",
+  "fullJs": {
+    "mac": {
+      "tests": 1248,
+      "pass": 1233,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "f2c949992206433910cc307fc67128aa3114572f0baf321e4bd10fbee594c179"
+    },
+    "linux": {
+      "tests": 1248,
+      "pass": 1242,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "aa20dcf47845fc1efbc91a21d40a604d22e1f36ebbf3b4b6d638ab33a8e5a632"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 115,
+      "pythonTests": 56,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 50,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "archiveBytesUnchanged": true
+    },
+    "linux": {
+      "nodeTests": 115,
+      "pythonTests": 56,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 50,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "archiveBytesUnchanged": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "0810b04ea371205396cc585cde8eb5937fcc6c693218a03c0c4f7f6f8cc9e92e",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "165f7944bc3b49e677d7f2597f60cdfee0d3e36aee187290d750554cf3f53b39"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/public-agent-ax-native-v1/manifest.json",
+  "nativeManifestSha256": "fbbf7d5b2c22832cb3ae697a0a61635c4b2ec5fe7d51aaca19941afec52667e7",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "authorization": {
+      "independentObserveScope": true,
+      "tenantIsolation": true,
+      "noWriterFenceOrMutationOrEndOrSessionReleaseOrViewerMint": true,
+      "forgedLogicalContextRejectedBeforeSource": true
+    },
+    "metadata": {
+      "actualDOM": true,
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "targetId": "target_603fb744-3ea0-404f-a86d-dce610978585",
+      "epoch": 1,
+      "observedAt": "2026-10-19T19:28:13.938Z",
+      "passwordRedacted": true,
+      "mainDocumentLightDomOnly": true,
+      "readDoesNotRefreshWriterFence": true
+    },
+    "accessibility": {
+      "browserComputedRoleNameDescriptionValue": true,
+      "readonlyRequiredChecked": true,
+      "nestedTextAndExternalLabelSemantics": true,
+      "sameHandleDifferentBudgets": true,
+      "originalElementReplacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "computedLabelChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLabel": "Shipping changed",
+      "unicodeNameChars": 512,
+      "truncated": true,
+      "oversizedBrowserReplyRejected": {
+        "code": "AGENT_OBSERVATION_LIMIT",
+        "outcome": "not-dispatched"
+      },
+      "passwordFullyRedacted": true,
+      "explicitDomainAndObjectCleanupConfirmedByCompletedSourceRead": true,
+      "noPhysicalPreallocationClaim": true,
+      "publicHttp": true,
+      "sourcePrivateCapabilityRequired": true,
+      "readDuringHumanLease": true,
+      "oldDocumentRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "knownUnknownInputAXObservedWithoutRecovery": true
+    },
+    "unicode": {
+      "sourceChars": 4000,
+      "returnedChars": 1024,
+      "truncated": true,
+      "handleStillResolvable": true
+    },
+    "elements": {
+      "replacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "selectedMetadataChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLocatorGetsDistinctHandle": true,
+      "noAutomaticSelectorRebind": true
+    },
+    "human": {
+      "readDuringHumanLease": true,
+      "writeStillPaused": true,
+      "readAndAgentEndPreservedOriginalHumanGrant": true,
+      "fieldValue": "OBSHF"
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "oldReadContextRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "oldHandleRejectedInNewDocument": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "oldWriteFenceRejected": true,
+      "samePageTarget": true
+    },
+    "bounds": {
+      "largeFixtureNodes": 3000,
+      "visitedCap": 32,
+      "truncated": true,
+      "maxSerializedBytes": 8192,
+      "actualSnapshotBytes": 3316,
+      "noScriptOrArbitraryCdp": true
+    },
+    "unknown": {
+      "actualSlowClickOnce": true,
+      "observedActualDOMAfterUnknown": true,
+      "historyRemainedUnknown": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "httpTimeout": {
+      "http408": true,
+      "actualExecutorSlotRetained": true,
+      "writerRemainedActive": true,
+      "inputAfterActualSettlement": true
+    },
+    "disconnect": {
+      "actualExecutorSlotRetained": true,
+      "priorityEndWithIndependentScope": true,
+      "lateReadCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativeJournal": {
+    "logicalRunsClosed": 4,
+    "injected": 10,
+    "unknown": 1,
+    "rejected": 2
+  },
+  "decodedAxCdpReplyByteCap": 32768,
+  "rawCdpReceiverPreallocationQualified": false,
+  "browserAxPhysicalMemoryQualified": false,
+  "privateAxResultByteCap": 6144,
+  "maxAxTextUnits": 512,
+  "publicObservationResultByteCap": 8192,
+  "privateReadResultByteCap": 6144,
+  "standardProviderFrameByteCap": 8192,
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/public-agent-ax-cleanup-v1.json",
+  "cleanupAuditSha256": "c86fb0474f3198eb7c0ebc895c2e65da5c9b2d2226f5460d96391f47cc6a17d5",
+  "trustedNativeObservationCoreQualified": true,
+  "publicObservationQualified": true,
+  "nodeObservationSdkQualified": true,
+  "pythonObservationSdkQualified": true,
+  "observationSdkQualified": true,
+  "computedAxPrivateQualified": true,
+  "computedAxPublicQualified": true,
+  "computedAxSdkQualified": false,
+  "K6Complete": false,
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": true,
+  "publicAgentSdkQualified": true,
+  "agentSdkScope": "Previously qualified Node/Python seven input tools and main-light-DOM observations retained; computed AX SDK not yet implemented. Both archives byte-identical,50 current dependency/contract inputs reinstalled.",
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true
+}

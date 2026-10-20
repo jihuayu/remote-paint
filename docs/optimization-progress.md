@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | DOM/public/Node/Python观察核心保留；Source新增原节点computed AX私有op/capability，绑定Native document/WeakRef/原节点引用与有界AX指纹，含role/name/description/value/状态、密码遮蔽、真实任务覆盖enable/disable及对象清理。22新合同、128文件1227项双平台零失败；旧包50输入离线115Node/56Python/类型通过。真实Native外部label/嵌套文本/readonly/required/checked、替换/label变化拒绝、512中文截断/超限/人控/导航及4Run/namespace退役通过。公共AX/SDK、raw接收前分配/物理、截图下载/完整定位/业务条件仍待做，见[Source computed AX范围](agent-computed-ax.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | Source computed AX已接公共accessibility-observations端点与agents:observe，固定逻辑Run/Registry/原worker/版本/document/元素，实际AX名额与DOM/input共享、end独立；unknown输入可观察但不清隔离或重放，读数据不落账本。21新合同、129文件1248项双平台零失败；旧SDK50输入重装115Node/56Python/类型通过。真实HTTP→Native字段/句柄/导航/人控/512中文/超限/密码、unknown后AX仍隔离、HTTP408/断开槽与end、4Run/namespace退役通过。AX SDK、raw接收前分配/物理、截图下载/完整定位/业务条件仍待做，见[公共AX范围](public-agent-ax.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -2000,3 +2000,8 @@ Python新增受管七工具、冻结模型、判别类型、不可变prepare与u
 ### Source computed AX 与私有 RPC
 
 新增按已有原DOM句柄取浏览器computed role/name/description/value/有限状态，前后Native/Element/投影身份检查；单actual任务含AX域与临时对象清理，失败读poison而不改写fence或人控grant。22新合同，双平台128文件1227项零失败；旧SDK50输入重装115Node/56Python/类型通过。真实Native外部label/嵌套文本/状态、替换和标签变化拒绝、中文512截断/大回复拒绝、密码/人控/导航和namespace退役通过。raw CDP预算只在Playwright解码后验证，不冒充传输前分配或物理AX预算。K6仍部分、41项10/17/14；公共AX/SDK及完整目标待做，见[范围证据](agent-computed-ax.md)。
+
+
+### 公共 computed AX API
+
+新增agents:observe的accessibility-observations端点、严格逻辑Run/Session/版本/原Source/document/element/budget关联和Source/公共记录预算；无读幂等账本或写fence。21新合同首轮通过，双平台129文件1248项零失败；SDK字节保持、50输入离线115Node/56Python/类型通过。真实公开HTTP到Native验证computed字段、旧句柄/导航/人控、未知动作后AX可读但历史/隔离保持、HTTP408/断开实际槽与独立end，4closed Run与namespace退役。K6部分、41项10/17/14；Node/Python AX SDK及全部剩余目标仍待做，见[范围证据](public-agent-ax.md)。

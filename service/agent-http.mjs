@@ -1,6 +1,6 @@
 import {DurableAgentExecutor,AgentExecutionError} from './agent-executor.mjs';
 import {AgentRpcError,captureAgentContext} from './agent-rpc.mjs';
-import {capturePublicObservationContext,capturePublicObservation} from './agent-observation-access.mjs';
+import {capturePublicObservationContext,capturePublicObservation,capturePublicAccessibility} from './agent-observation-access.mjs';
 import {InputError} from '../live/input.mjs';
 
 export const AGENT_HTTP_SCOPES=Object.freeze(['agents:read','agents:write','agents:end','agents:observe']);
@@ -23,18 +23,18 @@ export function agentHttpError(error){
  const code=Object.hasOwn(errors,error.code)?error.code:'AGENT_INPUT_FAILED',[status,message]=errors[code];return {code,status,message,outcome:error.outcome==='unknown'?'unknown':'not-dispatched'};
 }
 const uuid='[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
-const runPath=new RegExp('^/v1/agent-runs/(arun_'+uuid+')(?:/(context|invocations|end|observation-context|observations))?$');
+const runPath=new RegExp('^/v1/agent-runs/(arun_'+uuid+')(?:/(context|invocations|end|observation-context|observations|accessibility-observations))?$');
 const invocationPath=new RegExp('^/v1/agent-invocations/(ainv_'+uuid+')$');
 const createPath=new RegExp('^/v1/sessions/(ses_'+uuid+')/agent-runs$');
 export function agentHttpRoute(path){
  let match;if((match=createPath.exec(path)))return {agent:true,method:'POST',scope:'agents:write',kind:'agent-create',id:match[1],needsBody:true};
  if((match=invocationPath.exec(path)))return {agent:true,method:'GET',scope:'agents:read',kind:'agent-invocation',id:match[1]};
- if((match=runPath.exec(path))){const suffix=match[2],observation=['observations','observation-context'].includes(suffix);return {agent:true,method:['invocations','end','observations'].includes(suffix)?'POST':'GET',scope:observation?'agents:observe':suffix==='invocations'?'agents:write':suffix==='end'?'agents:end':'agents:read',kind:'agent-'+(suffix??'run'),id:match[1],needsBody:['invocations','observations'].includes(suffix)};}
+ if((match=runPath.exec(path))){const suffix=match[2],observation=['observations','observation-context','accessibility-observations'].includes(suffix);return {agent:true,method:['invocations','end','observations','accessibility-observations'].includes(suffix)?'POST':'GET',scope:observation?'agents:observe':suffix==='invocations'?'agents:write':suffix==='end'?'agents:end':'agents:read',kind:'agent-'+(suffix??'run'),id:match[1],needsBody:['invocations','observations','accessibility-observations'].includes(suffix)};}
  return null;
 }
 export function createAgentHttpAccess(executor,registry){
  if(executor===null)return null;if(!(executor instanceof DurableAgentExecutor)||!executor.usesRegistry(registry))throw TypeError('Agent executor must use the exact HTTP Registry');
- return Object.freeze(Object.fromEntries(['create','getRun','getInvocation','context','observationContext','observe','perform','end'].map(name=>[name,executor[name].bind(executor)])));
+ return Object.freeze(Object.fromEntries(['create','getRun','getInvocation','context','observationContext','observe','observeAccessibility','perform','end'].map(name=>[name,executor[name].bind(executor)])));
 }
 function data(value,allowed,required=allowed){
  if(!value||![Object.prototype,null].includes(Object.getPrototypeOf(value)))throw new AgentExecutionError('AGENT_INVALID_REQUEST');
@@ -54,6 +54,8 @@ export async function handleAgentHttp({selected,principal,input,idempotencyKey,a
   result=capturePublicObservationContext(await wait(access.observationContext(reference),signal),{tenantId,agentRunId:selected.id},'AGENT_INVALID_REPLY');
  }else if(selected.kind==='agent-observations'){
   const body=data(input,['context','query','limits','rpcTimeoutMs'],['context','query']);result=capturePublicObservation(await wait(access.observe({...reference,context:body.context,query:body.query,...(Object.hasOwn(body,'limits')?{limits:body.limits}:{})},rpcOptions(body)),signal),{tenantId,agentRunId:selected.id});
+ }else if(selected.kind==='agent-accessibility-observations'){
+  const body=data(input,['context','elementId','limits','rpcTimeoutMs'],['context','elementId']);result=capturePublicAccessibility(await wait(access.observeAccessibility({...reference,context:body.context,elementId:body.elementId,...(Object.hasOwn(body,'limits')?{limits:body.limits}:{})},rpcOptions(body)),signal),{tenantId,agentRunId:selected.id});
  }else if(selected.kind==='agent-run')result=run(access.getRun(reference));
  else if(selected.kind==='agent-invocation')result=invocation(access.getInvocation({tenantId,invocationId:selected.id}));
  else if(selected.kind==='agent-context'){

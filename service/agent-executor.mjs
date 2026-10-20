@@ -1,7 +1,7 @@
 import {createHash,createHmac,randomUUID} from 'node:crypto';
 import {SqliteSessionStore} from './session-store.mjs';
 import {agentNeverDispatchedDigest} from './session-agent-journal.mjs';
-import {sourceObservationContext,publicObservationContext,publicObservation} from './agent-observation-access.mjs';
+import {sourceObservationContext,publicObservationContext,publicObservation,publicAccessibility} from './agent-observation-access.mjs';
 import {captureAgentRequest,captureAgentResult,agentReplyExpectation,AgentRpcError,agentFailure} from './agent-rpc.mjs';
 
 const codes=new Set(['AGENT_IDEMPOTENCY_CONFLICT','AGENT_INVOCATION_NOT_FOUND','AGENT_EXECUTOR_CLOSED','AGENT_EXECUTOR_CAPACITY','AGENT_EXECUTOR_BUSY','AGENT_RECOVERY_REQUIRED','AGENT_STORAGE_UNAVAILABLE']);
@@ -59,10 +59,10 @@ export class DurableAgentExecutor {
  }
  #uncertainRun(id,error){if(this.#fault||!this.#claimed)return;const existing=this.#read('getAgentRun',id);if(!existing)return;const row=this.#run({tenantId:existing.tenant,agentRunId:id});if(row.state==='closed')return;if(row.state==='intent')return;this.#writeRun({...row,state:'recovery-required',error:row.error??{code:error.code,outcome:'unknown'},updatedAt:stamp(row)});}
  async #rpc(row,command,opts){
-  this.#ready(row);const current=this.#run({tenantId:row.tenant,agentRunId:row.agentRunId});if(['observe','observation-context'].includes(command.op))this.#readable(current);if(this.#recovered.has(row.agentRunId)||command.op==='begin'&&current.state!=='starting'||['perform','context'].includes(command.op)&&current.state!=='active'||command.op==='end'&&(current.state!=='closing'||current.endDispatch!=='requested'))throw new AgentRpcError('AGENT_RUN_CLOSED','not-dispatched');if(opts.signal?.aborted)throw new AgentRpcError('AGENT_RPC_CANCELLED','not-dispatched');const call=this.#providers.get(row.region);if(!call)throw new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched');
+  this.#ready(row);const current=this.#run({tenantId:row.tenant,agentRunId:row.agentRunId});if(['observe','observation-context','observe-ax'].includes(command.op))this.#readable(current);if(this.#recovered.has(row.agentRunId)||command.op==='begin'&&current.state!=='starting'||['perform','context'].includes(command.op)&&current.state!=='active'||command.op==='end'&&(current.state!=='closing'||current.endDispatch!=='requested'))throw new AgentRpcError('AGENT_RUN_CLOSED','not-dispatched');if(opts.signal?.aborted)throw new AgentRpcError('AGENT_RPC_CANCELLED','not-dispatched');const call=this.#providers.get(row.region);if(!call)throw new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched');
   let result;try{result=await call({tenantId:row.tenant,sessionId:row.sessionId,region:row.region,version:row.version,command,timeoutMs:opts.timeoutMs??this.#timeout,...(opts.signal?{signal:opts.signal}:{})});}catch(error){throw agentFailure(error,'unknown');}
   // Validation and loss of Ready after a possible send are always unknown.
-  try{this.#ready(row);return captureAgentResult(result,agentReplyExpectation(command),{tenantId:row.tenant,sessionId:row.sessionId});}catch{throw new AgentRpcError('AGENT_INVALID_REPLY','unknown');}
+  try{this.#ready(row);return captureAgentResult(result,agentReplyExpectation(command),{tenantId:row.tenant,sessionId:row.sessionId,version:row.version});}catch{throw new AgentRpcError('AGENT_INVALID_REPLY','unknown');}
  }
  create(value,callOptions){
   const v=data(value,['tenantId','sessionId','region','version','idempotencyKey']),opts=options(callOptions);if(!tenant(v.tenantId)||!id(v.sessionId,'ses')||!bounded(v.region,64)||!bounded(v.version,256)||!key(v.idempotencyKey))fail('AGENT_INVALID_REQUEST');
@@ -95,6 +95,9 @@ export class DurableAgentExecutor {
  observe(value,callOptions){
   const v=data(value,['tenantId','agentRunId','context','query','limits'],['tenantId','agentRunId','context','query']),opts=options(callOptions),ref=runRequest({tenantId:v.tenantId,agentRunId:v.agentRunId});this.#admit();const row=this.#run(ref);this.#readable(row);const context=sourceObservationContext(v.context,row),command=captureAgentRequest({op:'observe',runId:row.binding.workerRunId,context,query:v.query,limits:Object.hasOwn(v,'limits')?v.limits:{}});return this.#observationRead(row,command,opts);
  }
+ observeAccessibility(value,callOptions){
+  const v=data(value,['tenantId','agentRunId','context','elementId','limits'],['tenantId','agentRunId','context','elementId']),opts=options(callOptions),ref=runRequest({tenantId:v.tenantId,agentRunId:v.agentRunId});this.#admit();const row=this.#run(ref);this.#readable(row);const context=sourceObservationContext(v.context,row),command=captureAgentRequest({op:'observe-ax',runId:row.binding.workerRunId,context,elementId:v.elementId,limits:Object.hasOwn(v,'limits')?v.limits:{}});return this.#observationRead(row,command,opts);
+ }
  #observationRead(row,command,opts){
   if(opts.signal?.aborted)fail('AGENT_RPC_CANCELLED');this.#capacity(this.#ordinary,row.agentRunId);let task;
   task=this.#track(this.#ordinary,row.agentRunId,async()=>{
@@ -103,7 +106,7 @@ export class DurableAgentExecutor {
     if(opts.signal?.aborted)throw new AgentRpcError('AGENT_RPC_CANCELLED','not-dispatched');const current=this.#run({tenantId:row.tenant,agentRunId:row.agentRunId});this.#readable(current);if(this.#stopping)fail('AGENT_EXECUTOR_CLOSED');task.started=true;
     // Caller cancellation observes only this read. Never pass it into Source
     // or change durable writer state because a read result is unavailable.
-    const result=await this.#rpc(current,command,{...(opts.timeoutMs===undefined?{}:{timeoutMs:opts.timeoutMs})});replied=true;const after=this.#run({tenantId:row.tenant,agentRunId:row.agentRunId});this.#readable(after);if(this.#stopping)fail('AGENT_EXECUTOR_CLOSED');return command.op==='observation-context'?publicObservationContext(after,result):publicObservation(after,result);
+    const result=await this.#rpc(current,command,{...(opts.timeoutMs===undefined?{}:{timeoutMs:opts.timeoutMs})});replied=true;const after=this.#run({tenantId:row.tenant,agentRunId:row.agentRunId});this.#readable(after);if(this.#stopping)fail('AGENT_EXECUTOR_CLOSED');return command.op==='observation-context'?publicObservationContext(after,result):command.op==='observe-ax'?publicAccessibility(after,result):publicObservation(after,result);
    }catch(error){const e=error instanceof AgentExecutionError?error:agentFailure(error);throw new AgentExecutionError(e.code,replied&&error instanceof AgentExecutionError?'unknown':e.outcome);}
   },true);task.kind='observation';task.started=false;
   return new Promise((resolve,reject)=>{

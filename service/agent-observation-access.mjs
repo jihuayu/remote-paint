@@ -1,3 +1,4 @@
+import {captureAgentAccessibilityResult} from '../live/agent-accessibility.mjs';
 import {AgentRpcError} from './agent-rpc.mjs';
 import {captureAgentObservationContext,captureAgentObservationResult} from '../live/agent-observation.mjs';
 const uuid='[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}',id=(v,p)=>typeof v==='string'&&new RegExp('^'+p+'_'+uuid+'$').test(v);
@@ -19,3 +20,8 @@ export function capturePublicObservation(value,expected={}){
  const fields=['agentRunId','sessionId','stage','binding','document','observationId','revision','observedAt','version','scope','query','limits','url','title','nodes','visited','truncated'],v=data(value,fields,'AGENT_INVALID_REPLY'),{agentRunId,sessionId,...source}=v;if(!id(agentRunId,'arun')||!id(sessionId,'ses'))fail('AGENT_INVALID_REPLY','unknown');let captured;try{captured=captureAgentObservationResult(source);}catch{fail('AGENT_INVALID_REPLY','unknown');}if(captured.binding.sessionId!==sessionId)fail('AGENT_INVALID_REPLY','unknown');const result=Object.freeze({agentRunId,sessionId,...captured});matches(result,expected,'AGENT_INVALID_REPLY');if(Buffer.byteLength(JSON.stringify(result))>8192)fail('AGENT_OBSERVATION_LIMIT','unknown');return result;
 }
 export function publicObservation(row,value){return capturePublicObservation({agentRunId:row.agentRunId,sessionId:row.sessionId,...value},observationRunExpectation(row));}
+
+export function capturePublicAccessibility(value,expected={}){
+ const fields=['agentRunId','sessionId','stage','binding','document','observationId','revision','observedAt','version','scope','elementId','limits','url','title','ax','redacted','truncated'],v=data(value,fields,'AGENT_INVALID_REPLY'),{agentRunId,sessionId,...source}=v;if(!id(agentRunId,'arun')||!id(sessionId,'ses'))fail('AGENT_INVALID_REPLY','unknown');let captured;try{captured=captureAgentAccessibilityResult(source);}catch{fail('AGENT_INVALID_REPLY','unknown');}if(captured.binding.sessionId!==sessionId)fail('AGENT_INVALID_REPLY','unknown');const result=Object.freeze({agentRunId,sessionId,...captured});matches(result,expected,'AGENT_INVALID_REPLY');if(Buffer.byteLength(JSON.stringify(result))>8192)fail('AGENT_OBSERVATION_LIMIT','unknown');return result;
+}
+export function publicAccessibility(row,value){return capturePublicAccessibility({agentRunId:row.agentRunId,sessionId:row.sessionId,...value},observationRunExpectation(row));}
