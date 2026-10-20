@@ -209,8 +209,8 @@ flags remain false regardless of HTTP200 or closed state.
 These methods validate and capture identifiers/cursors/retry counts before returning a
 coroutine. Cancel the calling asyncio Task to stop waiting. Actual unfinished send/read/
 close work remains counted under the existing transport rules, including after a local
-deadline. This checkpoint covers finite JSON methods; the bounded Python SSE iterator,
-signed Webhooks and original Native end-to-end event/cancel acceptance remain pending.
+deadline. The SSE iterator below uses an independent pool. Signed Webhooks and original
+Native end-to-end event/cancel acceptance remain separate gates.
 
 
 ### SSE message models and parser checkpoint
@@ -226,6 +226,40 @@ one pending message, with at most8192 scanned bytes per pull. It captures the or
 cursor/eventId and advances only after acknowledgement of that exact pending object.
 Discarding an undelivered message preserves the prior cursor. Byte/event/identity budgets
 span windows; malformed input and gaps remain terminal. Logical decoder-window completion
-is not an HTTP close or Source retirement receipt. This parser checkpoint does not add
-`runs.events`: independent HTTPX pool ownership, absolute timers, reconnect authentication
-and noncooperative read/close cleanup remain the next separate implementation task.
+is not an HTTP close or Source retirement receipt. The HTTPX stream lifecycle below owns the actual send, read and close tasks for each window.
+
+
+### Bounded SSE iterator
+
+```python
+async with client.runs.events(run_id, after=last_processed_cursor, reconnects=3) as stream:
+    async for message in stream:
+        if message.kind == "event":
+            await process_event(message.event)
+            last_processed_cursor = message.cursor
+```
+
+`runs.events` validates inputs immediately and sends nothing until the first iteration.
+Use the async context manager (or explicitly `await stream.aclose()`) when breaking early.
+Every new connection authenticates again and resumes from the last event actually delivered
+by this iterator. Persist your own cursor after processing; delivery does not confirm business
+success. Ready, heartbeat and checkpoint messages do not advance that cursor. A gap is terminal
+and requires explicit application reconciliation. Reconnects are bounded to 0..3 (default3),
+with a 50ms delay after actual prior cleanup. Exhausting windows ends this finite iterator;
+applications choose whether to create another iterator with their persisted cursor.
+
+`max_concurrent_event_streams` defaults to8 (1..64), independent of ordinary and end pools.
+`event_stream_timeout_seconds` defaults to60 (0.1..120) and starts on first iteration; it covers
+paused consumers, retries, headers and body. `max_event_stream_bytes` defaults to262144
+(4096..1048576), counting raw SSE and JSON error bodies across all attempts. At most one raw
+chunk, one4096-byte frame and one message are retained by the decoder; event delivery is
+limited to64 per connection and256 per iterator. No background message queue is created.
+
+`client.event_transport_status().streams` counts started readers until their original
+send/read/close tasks and iterator cleanup actually settle. Timeout, Task cancellation or
+HTTPX's `is_closed` flag cannot release that admission early. Cleanup failure retains the
+uncertain slot. `aclose` can return `CLIENT_CLOSE_PENDING` while cleanup continues; call it
+again to join the same cleanup. Global client close includes all stream cleanup and remains
+single-flight. Concurrent `anext` calls are rejected. Reader close does not end the Run;
+`runs.cancel` remains separately available. Errors (including cancellation) expose the last
+delivered `cursor`, where known, without credentials or private transport text.

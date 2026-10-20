@@ -156,10 +156,15 @@ class _AgentSseDecoder:
             raise self._make('CLIENT_EVENT_STREAM_BUSY',outcome='not-dispatched') from None
         if type(data) is not bytes or not data:
             self._fault()
-        self._bytes+=len(data)
+        self.account_external_bytes(len(data))
+        self._chunk=data;self._offset=0
+    def account_external_bytes(self,count: int) -> None:
+        self._check(active=False)
+        if not _integer(count,0,2**53-1):
+            _invalid()
+        self._bytes+=count
         if self._bytes>self._max_bytes:
             self._fault('CLIENT_EVENT_STREAM_LIMIT')
-        self._chunk=data;self._offset=0
     def pull(self) -> AgentEventMessage | None:
         self._check()
         if self._pending is not None:

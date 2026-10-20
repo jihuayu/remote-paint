@@ -89,3 +89,5 @@ from ._event_stream_parser import (AgentEventReady,AgentEventHeartbeat,AgentEven
     AgentEventItem,AgentReadyMessage,AgentHeartbeatMessage,AgentCheckpointMessage,AgentEventMessage)
 __all__ += ['AgentEventReady','AgentEventHeartbeat','AgentEventCheckpoint','AgentEventItem',
     'AgentReadyMessage','AgentHeartbeatMessage','AgentCheckpointMessage','AgentEventMessage']
+from ._event_stream import AgentEventStream,AgentEventTransportStatus
+__all__ += ['AgentEventStream','AgentEventTransportStatus']

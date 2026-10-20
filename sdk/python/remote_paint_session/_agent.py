@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from ._observation import ObservationExpected, AccessibilityExpected, ScreenshotExpected
     from ._download import DownloadExpected
     from ._events import EventExpected, AgentEventGap, AgentEventPage, AgentEventCursor, AgentCancellationCursor, AgentCancellation
+    from ._event_stream import _AgentEventStreams,AgentEventStream,AgentEventTransportStatus
 
 AgentRunId = NewType('AgentRunId', str)
 AgentInvocationId = NewType('AgentInvocationId', str)
@@ -28,8 +29,9 @@ class AgentClientError(SessionClientError):
         self.cursor = cursor
         self.args = ('Invalid Agent client request' if code == 'CLIENT_INVALID_REQUEST' else 'Agent API request failed',)
 class AgentClientCancelledError(SessionClientCancelledError):
-    def __init__(self, outcome: Outcome) -> None:
+    def __init__(self, outcome: Outcome, *, cursor: AgentEventCursor | None = None) -> None:
         super().__init__(outcome)
+        self.cursor = cursor
         self.args = ('Agent API request cancelled',)
 
 @dataclass(frozen=True, slots=True)
@@ -355,8 +357,11 @@ PreparedAgentRun = PreparedAgentRequest[AgentRun]
 PreparedAgentInvocation = PreparedAgentRequest[AgentInvocation]
 
 class _Runs:
-    def __init__(self, transport: BackendTransport) -> None:
+    def __init__(self, transport: BackendTransport, streams: _AgentEventStreams) -> None:
         self._transport = transport
+        self._streams = streams
+    def events(self,agent_run_id: AgentRunId,*,after: AgentEventCursor | None=None,reconnects: RetryCount=3) -> AgentEventStream:
+        return self._streams.create(agent_run_id,after=after,reconnects=reconnects)
     def prepare_create(self, session_id: SessionId, value: CreateAgentRunInput, *, idempotency_key: str) -> PreparedAgentRun:
         if not _id(session_id,'ses_') or type(value) is not CreateAgentRunInput or not _text(value.region,64) or not _text(value.version,256):
             _invalid()
@@ -404,15 +409,18 @@ class _Invocations:
 class AgentClient:
     def __init__(self, *, base_url: str, api_key: str, timeout_seconds: float = 10, retries: RetryCount = 0,
                  max_response_bytes: int = 65536, max_concurrent_requests: int = 64, max_concurrent_end_requests: int = 8, max_screenshot_bytes: int = 1048576, max_download_bytes: int = 1048576,
-                 transport: httpx.AsyncBaseTransport | None = None) -> None:
-        if not _integer(max_concurrent_end_requests,1,64) or not _integer(max_screenshot_bytes,57,4194304) or not _integer(max_download_bytes,1,4194304):
+                 transport: httpx.AsyncBaseTransport | None = None,max_concurrent_event_streams: int=8,event_stream_timeout_seconds: float=60,max_event_stream_bytes: int=262144) -> None:
+        if not _integer(max_concurrent_end_requests,1,64) or not _integer(max_screenshot_bytes,57,4194304) or not _integer(max_download_bytes,1,4194304) or not _integer(max_concurrent_event_streams,1,64) or type(event_stream_timeout_seconds) not in (int,float) or not .1<=event_stream_timeout_seconds<=120 or not _integer(max_event_stream_bytes,4096,1048576):
             _invalid()
         from ._download import is_download_file,read_download_binary
         from ._observation import is_screenshot_download, read_screenshot_binary
         from ._events import capture_event_error_details
         self._transport = BackendTransport(base_url=base_url,api_key=api_key,timeout_seconds=timeout_seconds,retries=retries,max_response_bytes=max_response_bytes,max_concurrent_requests=max_concurrent_requests,max_concurrent_end_requests=max_concurrent_end_requests,transport=transport,validate=_validate,error_type=AgentClientError,cancelled_type=AgentClientCancelledError,agent_errors=True,max_screenshot_bytes=max_screenshot_bytes,binary_expected=is_screenshot_download,read_binary=read_screenshot_binary,max_download_bytes=max_download_bytes,download_expected=is_download_file,read_download=read_download_binary,error_details=capture_event_error_details)
         from ._observation import _Observations
-        self.runs,self.invocations,self.observations = _Runs(self._transport),_Invocations(self._transport),_Observations(self._transport)
+        from ._event_stream import _AgentEventStreams
+        self._streams=_AgentEventStreams(self._transport,http_transport=transport,max_streams=max_concurrent_event_streams,timeout_seconds=event_stream_timeout_seconds,max_bytes=max_event_stream_bytes)
+        self._transport._stream_close=self._streams.shutdown
+        self.runs,self.invocations,self.observations = _Runs(self._transport,self._streams),_Invocations(self._transport),_Observations(self._transport)
     async def __aenter__(self) -> AgentClient:
         self._transport.ensure_open()
         return self
@@ -422,3 +430,5 @@ class AgentClient:
         await self._transport.aclose()
     def transport_status(self) -> TransportStatus:
         return self._transport.status()
+    def event_transport_status(self) -> AgentEventTransportStatus:
+        return self._streams.status()

@@ -4,7 +4,7 @@ import asyncio
 import json
 import re
 from dataclasses import dataclass
-from typing import Any, AsyncIterator, Awaitable, Callable, Generic, Literal, NewType, NoReturn, TypeVar, cast
+from typing import Any, AsyncIterator, Awaitable, Callable, Coroutine, Generic, Literal, NewType, NoReturn, TypeVar, cast
 from urllib.parse import urlsplit
 import httpx
 
@@ -98,6 +98,7 @@ class BackendTransport:
         self._ending: set[asyncio.Task[ApiResult[Any]]] = set()
         self._closed = False
         self._close_task: asyncio.Task[None] | None = None
+        self._stream_close: Callable[[],Coroutine[Any,Any,None]] | None = None
 
     def fail(self, code: str, **options: Any) -> NoReturn:
         raise self._error(code, **options) from None
@@ -120,7 +121,13 @@ class BackendTransport:
                 tasks = tuple(self.tasks)
                 for task in tasks:
                     task.cancel()
+                stream_close=asyncio.create_task(self._stream_close()) if self._stream_close is not None else None
                 await asyncio.gather(*tasks, return_exceptions=True)
+                if stream_close is not None:
+                    try:
+                        await stream_close
+                    except Exception:
+                        self.fail('CLIENT_CLOSE_FAILED',outcome='not-dispatched')
                 try:
                     # Closing a shared injected transport twice is its trusted
                     # configuration responsibility, just like HTTPX clients.
@@ -186,6 +193,44 @@ class BackendTransport:
             task.cancel()
             raise self._cancelled('unknown' if dispatch.sent else 'not-dispatched') from None
 
+    async def decode_json_response(self,response: httpx.Response,expect: Any,*,raw_chunks: AsyncIterator[bytes] | None=None) -> ApiResult[Any]:
+        status=response.status_code;retryable=status in (408,429) or status>=500
+        if response.headers.get('content-encoding', 'identity').lower() != 'identity' or re.fullmatch(r'application/json(?:\s*;\s*charset=utf-8)?', response.headers.get('content-type',''), re.I) is None:
+            self.fail('CLIENT_HTTP_ERROR' if status >= 400 else 'CLIENT_INVALID_RESPONSE', status=status, retryable=status >= 400 and retryable)
+        length = response.headers.get('content-length')
+        if length is not None and (re.fullmatch(r'0|[1-9][0-9]*',length) is None or len(length) > 16 or int(length) > self._max_bytes):
+            self.fail('CLIENT_INVALID_RESPONSE', status=status)
+        chunks: list[bytes] = []; size = 0
+        if raw_chunks is None and response.is_stream_consumed:
+            if len(response.content) > self._max_bytes:
+                self.fail('CLIENT_INVALID_RESPONSE', status=status)
+            chunks.append(response.content)
+        else:
+            async for chunk in (response.aiter_raw() if raw_chunks is None else raw_chunks):
+                size += len(chunk)
+                if size > self._max_bytes:
+                    self.fail('CLIENT_INVALID_RESPONSE', status=status)
+                chunks.append(chunk)
+        try:
+            value = json.loads(b''.join(chunks).decode('utf-8'))
+        except (ValueError, UnicodeError, RecursionError):
+            self.fail('CLIENT_HTTP_ERROR' if status >= 400 else 'CLIENT_INVALID_RESPONSE', status=status, retryable=status >= 400 and retryable)
+        request_id = value.get('requestId') if type(value) is dict else None
+        if type(request_id) is not str or re.fullmatch(r'req_[A-Za-z0-9_-]{1,124}', request_id) is None or response.headers.get('x-request-id') != request_id:
+            self.fail('CLIENT_INVALID_RESPONSE', status=status)
+        if status >= 400:
+            error = value.get('error'); has_outcome = self._agent_errors and type(error) is dict and 'outcome' in error
+            has_details = self._agent_errors and type(error) is dict and 'details' in error
+            if set(value) != {'error','requestId'} or type(error) is not dict or set(error) != ({'code','message'}|({'outcome'} if has_outcome else set())|({'details'} if has_details else set())) or type(error['code']) is not str or re.fullmatch(r'[A-Z][A-Z0-9_]{0,63}',error['code']) is None or error['code'].startswith('CLIENT_') or type(error['message']) is not str or not 1 <= len(error['message']) <= 512 or has_outcome and error['outcome'] not in ('not-dispatched','unknown'):
+                self.fail('CLIENT_INVALID_RESPONSE', status=status, request_id=request_id)
+            details = self._error_details(error,expect,status) if has_details and self._error_details is not None else None
+            if has_details and details is None:
+                self.fail('CLIENT_INVALID_RESPONSE', status=status, request_id=request_id)
+            self.fail(error['code'], status=status, request_id=request_id, retryable=retryable, outcome=error['outcome'] if has_outcome else 'rejected' if status < 500 and status != 408 else 'unknown',**({'details':details} if details is not None else {}))
+        if status not in (200,202) or set(value) != {'data','requestId'}:
+            self.fail('CLIENT_INVALID_RESPONSE', status=status)
+        return ApiResult(self._validate(status,value['data'],expect,response.headers), RequestId(request_id))
+
     async def _work(self, method: str, path: str, body: bytes | None, key: str | None, expect: Any, dispatch: _Dispatch, ending: bool) -> ApiResult[Any]:
         response: httpx.Response | None = None
         tracked: _TrackedStream | None = None
@@ -210,41 +255,7 @@ class BackendTransport:
                 return await self._read_binary(response,expect,self.screenshot_max_bytes)
             if self._read_download is not None and self._download_expected is not None and self._download_expected(expect) and status < 300:
                 return await self._read_download(response,expect,self.download_max_bytes)
-            if response.headers.get('content-encoding', 'identity').lower() != 'identity' or re.fullmatch(r'application/json(?:\s*;\s*charset=utf-8)?', response.headers.get('content-type',''), re.I) is None:
-                self.fail('CLIENT_HTTP_ERROR' if status >= 400 else 'CLIENT_INVALID_RESPONSE', status=status, retryable=status >= 400 and retryable)
-            length = response.headers.get('content-length')
-            if length is not None and (re.fullmatch(r'0|[1-9][0-9]*',length) is None or len(length) > 16 or int(length) > self._max_bytes):
-                self.fail('CLIENT_INVALID_RESPONSE', status=status)
-            chunks: list[bytes] = []; size = 0
-            if response.is_stream_consumed:
-                if len(response.content) > self._max_bytes:
-                    self.fail('CLIENT_INVALID_RESPONSE', status=status)
-                chunks.append(response.content)
-            else:
-                async for chunk in response.aiter_raw():
-                    size += len(chunk)
-                    if size > self._max_bytes:
-                        self.fail('CLIENT_INVALID_RESPONSE', status=status)
-                    chunks.append(chunk)
-            try:
-                value = json.loads(b''.join(chunks).decode('utf-8'))
-            except (ValueError, UnicodeError, RecursionError):
-                self.fail('CLIENT_HTTP_ERROR' if status >= 400 else 'CLIENT_INVALID_RESPONSE', status=status, retryable=status >= 400 and retryable)
-            request_id = value.get('requestId') if type(value) is dict else None
-            if type(request_id) is not str or re.fullmatch(r'req_[A-Za-z0-9_-]{1,124}', request_id) is None or response.headers.get('x-request-id') != request_id:
-                self.fail('CLIENT_INVALID_RESPONSE', status=status)
-            if status >= 400:
-                error = value.get('error'); has_outcome = self._agent_errors and type(error) is dict and 'outcome' in error
-                has_details = self._agent_errors and type(error) is dict and 'details' in error
-                if set(value) != {'error','requestId'} or type(error) is not dict or set(error) != ({'code','message'}|({'outcome'} if has_outcome else set())|({'details'} if has_details else set())) or type(error['code']) is not str or re.fullmatch(r'[A-Z][A-Z0-9_]{0,63}',error['code']) is None or error['code'].startswith('CLIENT_') or type(error['message']) is not str or not 1 <= len(error['message']) <= 512 or has_outcome and error['outcome'] not in ('not-dispatched','unknown'):
-                    self.fail('CLIENT_INVALID_RESPONSE', status=status, request_id=request_id)
-                details = self._error_details(error,expect,status) if has_details and self._error_details is not None else None
-                if has_details and details is None:
-                    self.fail('CLIENT_INVALID_RESPONSE', status=status, request_id=request_id)
-                self.fail(error['code'], status=status, request_id=request_id, retryable=retryable, outcome=error['outcome'] if has_outcome else 'rejected' if status < 500 and status != 408 else 'unknown',**({'details':details} if details is not None else {}))
-            if status not in (200,202) or set(value) != {'data','requestId'}:
-                self.fail('CLIENT_INVALID_RESPONSE', status=status)
-            return ApiResult(self._validate(status,value['data'],expect,response.headers), RequestId(request_id))
+            return await self.decode_json_response(response,expect)
         except (TimeoutError, httpx.TimeoutException):
             self.fail('CLIENT_TIMEOUT', outcome='unknown' if dispatch.sent else 'not-dispatched', retryable=True)
         except SessionClientError:

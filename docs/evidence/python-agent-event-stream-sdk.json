@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-20T15:37:36.808642+00:00",
+  "task": "K8c2b2 actual bounded Python HTTPX SSE lifecycle",
+  "scope": "K8c2b2 independent bounded HTTPX SSE lifecycle with actual cleanup ownership",
+  "candidateNotQualified": true,
+  "pythonSseParserQualified": true,
+  "pythonSseTransportImplemented": true,
+  "pythonSseTransportQualified": false,
+  "freshWholeJsBoth": false,
+  "freshInstalledPackagesBoth": false,
+  "expectedFullJsEach": 1584,
+  "expectedInstalledNodeEach": 202,
+  "expectedInstalledPythonEach": 194,
+  "newPythonTests": 32,
+  "actualHttpSqliteCases": 8,
+  "pureFixtureNotOriginalNative": true,
+  "contract": {
+    "maxConcurrentDefault": 8,
+    "maxConcurrentHard": 64,
+    "streamTimeoutSecondsDefault": 60,
+    "streamTimeoutSecondsRange": [
+      0.1,
+      120
+    ],
+    "maxRawBytesDefault": 262144,
+    "maxRawBytesRange": [
+      4096,
+      1048576
+    ],
+    "reconnectsDefault": 3,
+    "reconnectsRange": [
+      0,
+      3
+    ],
+    "delaySeconds": 0.05,
+    "frameBytes": 4096,
+    "eventsPerConnection": 64,
+    "eventsPerIterator": 256,
+    "absoluteDeadlineIncludesPausedConsumerAndReconnects": true,
+    "rawBudgetIncludesJsonErrorBodies": true,
+    "oneCurrentReadAndOnePendingMessage": true,
+    "noBackgroundMessageQueue": true,
+    "noReadOrSendCancellationCredit": "Stop observation promptly, start one actual close and wait original send/read/close/iterator settlement. is_closed never substitutes for the original close Task. Cleanup failure holds uncertain admission; ordinary/end stay independent.",
+    "aclose": "Async context normal exit uses bounded observer; exceptional exit preserves original exception while cleanup continues. Global client aclose is single-flight, starts all cleanup before awaiting noncooperative requests and includes stream pool closure.",
+    "reconnect": "Only after actual prior cleanup; fresh authentication; exact last delivered cursor, no history/identity rebind, no implicit Source end or input retry"
+  },
+  "failureEvidence": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-event-stream-failure-source-v1/receipt.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-event-stream-drop-failure-source-v1/manifest.json"
+  ],
+  "signedWebhookQualified": false,
+  "originalNativeEventCancelRuntimeQualified": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 18,
+    "pending": 13
+  },
+  "eightHourPassed": false,
+  "K8Complete": false,
+  "wholeGoalQualified": false
+}

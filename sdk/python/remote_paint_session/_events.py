@@ -133,7 +133,7 @@ _CLOSURES=('never-dispatched','begin-rejected','worker-run-closed','session-term
 
 @dataclass(frozen=True,slots=True)
 class EventExpected:
-    kind: Literal['event-page','cancellation','cancel']
+    kind: Literal['event-page','cancellation','cancel','event-stream']
     id: AgentRunId
     after: str | None = None
 
@@ -213,7 +213,7 @@ def decode_event_gap(v: Any,run: AgentRunId,after_cursor: AgentEventCursor) -> A
     return AgentEventGap(run,v['historyOrigin'],AgentEventCursor(v['after']),AgentEventCursor(v['oldestCursor']),AgentEventCursor(v['latestCursor']))
 
 def capture_event_error_details(error: dict[str,Any],expected: Any,status: int) -> AgentEventGap | None:
-    if not isinstance(expected,EventExpected) or expected.kind!='event-page' or status!=409 or error['code']!='AGENT_EVENT_GAP' or error.get('outcome')!='not-dispatched':
+    if not isinstance(expected,EventExpected) or expected.kind not in ('event-page','event-stream') or status!=409 or error['code']!='AGENT_EVENT_GAP' or error.get('outcome')!='not-dispatched':
         return None
     v=error.get('details')
     if type(v) is not dict:
@@ -224,6 +224,8 @@ def capture_event_error_details(error: dict[str,Any],expected: Any,status: int) 
         return None
 
 def validate_event_reply(status: int,v: Any,e: EventExpected,headers: httpx.Headers) -> AgentEventPage | AgentCancellation:
+    if e.kind=='event-stream':
+        _fail()
     if e.kind=='event-page':
         if status!=200 or not _exact(v,['schema','agentRunId','sessionId','region','version','historyOrigin','after','oldestSequence','latestSequence','gap','events','nextCursor','hasMore','oldestCursor','latestCursor']) or v['schema']!='agent-event-http-page-v1' or not _id(v['sessionId'],'ses_') or not _text(v['region'],64) or not _text(v['version'],256) or v['gap'] is not False or type(v['events']) is not list or len(v['events'])>4 or type(v['hasMore']) is not bool or _size(v)>16384:
             _fail()
