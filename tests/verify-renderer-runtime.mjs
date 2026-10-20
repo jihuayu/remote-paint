@@ -6,6 +6,12 @@ import {launchCaptureBrowser} from '../capture/browser.mjs';
 const assets=await prepareViewerAssets(),server=createServer((request,response)=>{const path=new URL(request.url,'http://localhost').pathname;if(path==='/'){response.end('<!doctype html><meta charset="utf-8">');return;}const asset=assets.get(path);if(!asset?.bytes){response.writeHead(404);response.end();return;}response.setHeader('Content-Type',asset.type);response.end(asset.bytes);});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin=`http://127.0.0.1:${server.address().port}`;
 async function probe(origin){
  const {default:init}=await import(`${origin}/canvaskit-worker.mjs`),{RendererRuntime}=await import(`${origin}/renderer-runtime.mjs`),{ClientMemory,memoryPolicy}=await import(`${origin}/protocol/client-memory.mjs`),{LiveFrameGate}=await import(`${origin}/protocol/live-wire.mjs`),wasm=await fetch(`${origin}/vendor/canvaskit.wasm`).then(r=>r.arrayBuffer()),locateFile=file=>`${origin}/vendor/${file}`;
+ const originalFetch=globalThis.fetch;let unexpectedWasmFetches=0;
+ globalThis.fetch=(input,...args)=>{if(String(input?.url??input).includes('canvaskit.wasm'))unexpectedWasmFetches++;return originalFetch(input,...args);};
+ let invalidProvidedBytesRejected=false;const expectedRejection=event=>{if(event.reason instanceof WebAssembly.CompileError)event.preventDefault();};globalThis.addEventListener('unhandledrejection',expectedRejection);
+ try{await init({wasmBinary:Uint8Array.of(0,1,2,3),locateFile});}catch(error){invalidProvidedBytesRejected=error instanceof WebAssembly.CompileError;}
+ await new Promise(resolve=>setTimeout(resolve,0));globalThis.removeEventListener('unhandledrejection',expectedRejection);
+ if(!invalidProvidedBytesRejected||unexpectedWasmFetches)throw new Error('Invalid provided Wasm was ignored or replaced by an HTTP fallback');
  const check=(value,message)=>{if(!value)throw new Error(message);},frame=(color,frameId=1)=>({protocol:4,pageEpoch:1,frameId,baseFrameId:null,viewportVersion:1,requiredResources:[],lastProcessedInputSeq:0,viewport:{cssWidth:64,cssHeight:64,deviceScaleFactor:1},scene:{rootPass:'root',passes:[{id:'root',output:[0,0,64,64],quads:[{kind:'solid',color,rect:[0,0,64,64],visible:[0,0,64,64],matrix:[1,0,0,0,1,0,0,0,1],clip:null,opacity:1}]}]}});
  const memory=new ClientMemory(memoryPolicy({profile:'compact'})),canvas=new OffscreenCanvas(64,64),initial=await init({wasmBinary:wasm,locateFile});let finish;
  const runtime=new RendererRuntime(initial,canvas,{memory,wasmBinary:wasm,locateFile,gpu:false,factory:options=>new Promise(resolve=>{finish=()=>init(options).then(resolve);})});
@@ -16,7 +22,8 @@ async function probe(origin){
  const memory2=new ClientMemory(memoryPolicy({profile:'compact'})),canvas2=new OffscreenCanvas(64,64),initial2=await init({wasmBinary:wasm,locateFile});let finish2;
  const disposed=new RendererRuntime(initial2,canvas2,{memory:memory2,wasmBinary:wasm,locateFile,gpu:false,factory:options=>new Promise(resolve=>{finish2=()=>init(options).then(resolve);})});
  const rotating=disposed.recycle().then(()=>null,error=>error.message);disposed.dispose();await finish2();check((await rotating)?.includes('disposed'),'Disposal during rotation was ignored');check(memory2.snapshot().owners===0&&canvas2.width===0,'Late initialization recreated disposed output resources');
- return {pixel,staleGenerationSuppressed:true,staleCommitSuppressed:true,gateClearHeldMetadata:true,sceneMetadataAfterClear:memory.snapshot().categories.sceneMetadata??0,disposeDuringInitialization:true,ownedEntriesAfterDispose:memory.snapshot().owners,activeAndRetired:restored};
+ check(unexpectedWasmFetches===0,'Initialization/recycle refetched Wasm instead of using verified bytes');globalThis.fetch=originalFetch;
+ return {pixel,invalidProvidedBytesRejected,unexpectedWasmFetches,staleGenerationSuppressed:true,staleCommitSuppressed:true,gateClearHeldMetadata:true,sceneMetadataAfterClear:memory.snapshot().categories.sceneMetadata??0,disposeDuringInitialization:true,ownedEntriesAfterDispose:memory.snapshot().owners,activeAndRetired:restored};
 }
 let browser;try{
  browser=await launchCaptureBrowser();const page=await browser.newPage();await page.goto(origin);const main=await page.evaluate(probe,origin);

@@ -1,5 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {makeStaticAssets} from './static-assets.mjs';
+import {adaptCanvasKitGlue} from './canvaskit-glue.mjs';
 const root=new URL('../',import.meta.url);
 export async function prepareViewerAssets(){
  const files=new Map([
@@ -21,6 +22,7 @@ export async function prepareViewerAssets(){
   ['/vendor/canvaskit.wasm',['node_modules/canvaskit-wasm/bin/full/canvaskit.wasm','application/wasm']],
  ]);
  const inputs=new Map(await Promise.all([...files].map(async([path,[file,type]])=>[path,{type,bytes:await readFile(new URL(file,root))}])));
+ inputs.get('/vendor/canvaskit.js').bytes=adaptCanvasKitGlue(inputs.get('/vendor/canvaskit.js').bytes);
  inputs.set('/canvaskit-worker.mjs',{type:'text/javascript',bytes:Buffer.concat([inputs.get('/vendor/canvaskit.js').bytes,Buffer.from('\nexport default CanvasKitInit;')])});
  return makeStaticAssets(inputs);
 }

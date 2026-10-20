@@ -7,6 +7,7 @@ import { parseArgs } from 'node:util';
 import { WebSocketServer } from 'ws';
 import { encodeResource, validateFrame, LIMITS } from './protocol/wire.mjs';
 import { sha256 } from './capture/capture.mjs';
+import { adaptCanvasKitGlue } from './live/canvaskit-glue.mjs';
 
 export async function startServer({ directory = 'artifacts/capture', port = 4173 } = {}) {
   const root = resolve(directory);
@@ -21,6 +22,7 @@ export async function startServer({ directory = 'artifacts/capture', port = 4173
   const wasm = await readFile(new URL('./node_modules/canvaskit-wasm/bin/full/canvaskit.wasm', import.meta.url));
   if (manifest.renderer?.canvaskit !== '0.42.0' || manifest.renderer.wasmSha256 !== sha256(wasm))
     throw new Error('Capture renderer build does not match local CanvasKit');
+  const canvasKitGlue = adaptCanvasKitGlue(await readFile(new URL('./node_modules/canvaskit-wasm/bin/full/canvaskit.js', import.meta.url)));
   const key = randomBytes(24).toString('hex');
   const allowed = new Map([
     ['/', ['./viewer/index.html', 'text/html; charset=utf-8']],
@@ -38,7 +40,7 @@ export async function startServer({ directory = 'artifacts/capture', port = 4173
       res.setHeader('Referrer-Policy', 'no-referrer');
       res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' ws://127.0.0.1:*; style-src 'self'; img-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
       if (req.method !== 'GET' || !file) { res.writeHead(404); res.end(); return; }
-      res.writeHead(200, { 'Content-Type': file[1] }); res.end(await readFile(new URL(file[0], import.meta.url)));
+      res.writeHead(200, { 'Content-Type': file[1] }); res.end(file[0].endsWith('/canvaskit.js') ? canvasKitGlue : await readFile(new URL(file[0], import.meta.url)));
     } catch { res.writeHead(500); res.end('Internal error'); }
   });
   const wss = new WebSocketServer({ noServer: true, maxPayload: LIMITS.jsonBytes, perMessageDeflate: false });
