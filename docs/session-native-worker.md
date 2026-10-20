@@ -76,7 +76,7 @@ HTTP升级head也进入同一有界解码器，socket用read(n)逐次取最多64
 
 Native入口固定提供实际收集器，读取失败会在资源工厂前退出；本轮Native入口仍只作语法检查，真实浏览器负载继续等当前8小时结束。通用worker可保留旧无见证合同，新私有WorkerHello带runtimeWitness时父端必须显式配置requireRuntimeWitness、已核对的daemon/CID/spec绑定和证据处理器。原Hello总期限覆盖异步元数据核对及落盘，处理器回执绑定Session、daemon、CID、spec及见证/文件hash，通过后才发送Start。关闭先安装同一等待点再abort处理器；晚到回执不再启动，异常与坏回执不回显原始错误。
 
-`RuntimeWitnessStore` 把见证、租户/Session/区域/deployment、完整CID、镜像/来源/owner哈希及Engine StartedAt代次写入私有文件。目录0700、文件0600，临时文件先fsync，再以不覆盖的link发布并fsync目录；同一文件不能重新持久化。读取限8KiB并拒绝符号链接、宽权限、损坏hash和不匹配的启动代次。已退出的原代次可读，重新启动的同CID不能借用旧见证。恢复读取无需原始owner key，不会重放Start。文件hash与回执本身仍由可信运行时控制器使用，不能单独充当资源已退役的证明；缺失或损坏时保留不确定状态。
+`RuntimeWitnessStore` 把见证、租户/Session/区域/deployment、完整CID、镜像/来源/owner哈希及Engine StartedAt代次写入私有文件。目录0700、文件0600，目录首次创建时同步父目录，临时文件先fsync，再以不覆盖的link发布并fsync目录；同一文件不能重新持久化。读取限8KiB并拒绝符号链接、宽权限、损坏hash和不匹配的启动代次。已退出的原代次可读，重新启动的同CID不能借用旧见证。恢复读取无需原始owner key，不会重放Start。文件hash与回执本身仍由可信运行时控制器使用，不能单独充当资源已退役的证明；缺失或损坏时保留不确定状态。
 
 结构、存储与私有通道的56项合同通过，包括实际文件写入进程SIGKILL后重读及关闭重入/晚写入/原期限；结构夹具没有被当作真实内核见证。实际Docker Node夹具通过同一收集器和私有代理，在Start前核对固定配置、落盘见证，叶子初次出现时要求证据已存在，之后交叉核对独立/proc见证并无需owner key重新打开文件。冻结版本、三条真实关闭路径及双平台结果见[见证检查点](evidence/session-runtime-witness.json)。生产provider、未知创建恢复、Registry生命周期和实际Native整组回收仍待下一步实现。
 
@@ -85,3 +85,5 @@ Native入口固定提供实际收集器，读取失败会在资源工厂前退�
 轻量合同运行真实Node worker与叶子子进程，验证认证前无分配、重复启动、同批Start/Close、父端EOF与租约失效、心跳、晚启动收尾、提前关闭假回执、abort同步重入、失败脱敏、UTF-8分片/限长和期限。stdout在释放中关闭的失败已保留：此前移除了错误处理器，资源虽关闭仍因EPIPE退出1；修复后正常完成关闭。测试夹具自身在setup失败时回收worker，叶子同时在继承stdin失联后结束，避免重复历史上的测试进程泄漏。
 
 下一步需要把已验证的持久运行时意图接到真实分配，补真实容器或等效内核集合的创建与退役证明、Registry取消/TTL/恢复/健康变化接入，以及Native Gateway真实read/control显示角色和单次票据。Native集成及浏览器负载在当前独立8小时长测结束后执行。没有把本轮进程夹具或Native入口语法检查当作这些验收。
+
+最新长测状态（2026-10-19）：独立720文件8小时v3已在第3200周期失败，Source/Viewer/Docker均退出1，最后完成样本约8632.77秒。失败断言是Source PSS完整性，不代表本轮新服务层或Native浏览器验收。失败的逐进程PSS指标未被原measure/RPC路径保存，根因仍未证明；未放宽采样条件、未沿用前缀时长、未直接重启。实际helper退出0，最后完成Mac cohort的12个PID现均不存在；Source最终cgroup仅余Node且完整，但primary关闭回执因前置PSS pin失败仍标failed。详见[原始失败检查点](evidence/session-coupled-eight-hour-v3-failure.json)。下一步先补失败指标诊断和定位。

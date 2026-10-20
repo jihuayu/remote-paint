@@ -1,0 +1,90 @@
+{
+  "at": "2026-10-18T16:00:52.996426+00:00",
+  "status": "failed-not-eight-hour-accepted",
+  "attempt": "v3",
+  "sourceSession": 71679,
+  "sourceActualExitCode": 1,
+  "viewerSession": 16586,
+  "viewerActualExitCode": 1,
+  "dockerExitCode": 1,
+  "dockerRunning": false,
+  "dockerOOMKilled": false,
+  "containerId": "d2e8650b2d46a86b13dfca1c10b45d0063a1de05e5a3e78f86de736c9db5b0ff",
+  "startedAt": "2026-10-18T13:06:24.341280481Z",
+  "finishedAt": "2026-10-18T15:30:47.8968256Z",
+  "failureCycle": 3200,
+  "requestedSeconds": 28800,
+  "lastCompletedSampleElapsedSeconds": 8632.769862625,
+  "sampleCount": 211,
+  "failedGate": "Source metrics.pss.completeObservedCohort === true;observed-stable processSampling passed before the PSS assertion.",
+  "rawFailedSourceMetricsRetained": false,
+  "diagnosticLimitation": "Current measure asserts before saving metrics and RPC forwards only error.stack;failure.source has only error. Actual incomplete row/PSS reason is not retained,so root cause is unproven.",
+  "macHelperPid": 49733,
+  "macHelperCurrentlyAbsent": true,
+  "closedSessionReceiptCount": 70,
+  "closedSessionReceiptsAllClosed": true,
+  "linuxPrivateContainerStopped": true,
+  "hostBrowserCleanupAuditComplete": false,
+  "frozenManifestSha256": "2ccec8079ff04a962d53051538c6e4f23058a3d3ccd16f78bf845b096783b03e",
+  "physicalPolicyUnchanged": true,
+  "eightHourPassed": false,
+  "noElapsedReuseForNextAttempt": true,
+  "noAutomaticRestartPerformed": true,
+  "rawEvidence": {
+    "failure.json": "4f5bfee0b0a37d50c7fdcb4b6506253975b45b1ed6f51eb39ef051666b8c36ae",
+    "status.json": "7a018beba4db304aa4d3459f9cd1ad21ced3a2ef79260cc1003d013b8efe356d",
+    "samples.jsonl": "c05c7a3c647a9488e126c0df9e430d37ac4e818d047078a181a781feb35eb15f",
+    "closed-sessions.jsonl": "4b70690b817ef7b4ea935a236d31f8e188bf8501e88e1e98cb52a5f43a060792",
+    "native-memory-attempts.jsonl": "1a725a0f0da23f3ebf7a8c766648a1d4db073cae8e8e10fb0f339d9382330adb",
+    "cleanup.json": "68065bc634a756812a686ecb7ef42e1ea9c688063ee8d9070af2df58bdfda163",
+    "source-stopped.json": "2e4ac7401af1adb06b4a74df880635624ce48cb7db81d4838320ea3c0f8c5ad7"
+  },
+  "next": "Preserve failed source metrics as bounded diagnostics,identify actual incomplete-PSS cause and reproduce/fix without weakening cohort/physical/5s gates;finish cleanup audit before new actual workloads.",
+  "lastObservedMacCohortPidsAbsent": true,
+  "lastObservedMacCohortPidCount": 12,
+  "hostCleanupScope": "Helper49733 and all12PIDs in final completed before/measured/after browser cohort are currently absent;exact cleanup receipts still audited separately,not a host-wide census.",
+  "nativeObserverActualCleanup": {
+    "pid": 49733,
+    "exited": true,
+    "exitCode": 0,
+    "signal": null
+  },
+  "viewerCleanupErrors": [
+    {
+      "step": "source",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'failed' !== 'closed'\n\n    at file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v3/project/tests/verify-session-longload.mjs:110:344"
+    }
+  ],
+  "sourceFinalCleanup": {
+    "status": "failed",
+    "fixtureListening": false,
+    "activeSessions": 0,
+    "stats": {
+      "created": 71,
+      "closed": 70,
+      "crosssite": 70,
+      "leaseExpired": 70
+    },
+    "primary": {
+      "status": "failed",
+      "sourceClosed": true,
+      "brokerExited": true,
+      "browserConnected": false,
+      "cleanupErrors": [
+        {
+          "step": "pin",
+          "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n\n    at measure (file:///project/tests/session-memory-owner.mjs:25:154)\n    at async pin (file:///project/tests/session-memory-owner.mjs:26:35)\n    at async file:///project/tests/session-memory-owner.mjs:33:66\n    at async file:///project/tests/serve-session-longload.mjs:37:47\n    at async poll (file:///project/tests/serve-session-longload.mjs:86:136)"
+        }
+      ],
+      "retiredCount": 76
+    },
+    "remainingKinds": [
+      "node"
+    ],
+    "pssCompleteObservedCohort": true,
+    "cgroupMembershipConfirmed": true,
+    "outsideObservedPids": [
+      1
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 import {mkdirSync,lstatSync,openSync,fstatSync,writeFileSync,readSync,fsyncSync,closeSync,linkSync,unlinkSync,constants} from 'node:fs';
-import {isAbsolute,join} from 'node:path';
+import {isAbsolute,join,dirname} from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
 import {validateLinuxRuntimeWitness,runtimeWitnessSha256} from './linux-runtime-witness.mjs';
 import {verifyDockerRuntime,dockerRuntimeCreateBody} from './docker-runtime-spec.mjs';
@@ -13,8 +13,8 @@ const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 export class RuntimeWitnessStore {
  #directory;
  constructor({directory}={}){
-  if(typeof directory!=='string'||!isAbsolute(directory)||directory.length>2048||/[\x00-\x1f\x7f]/.test(directory))throw new TypeError('Configure a private absolute witness directory');try{mkdirSync(directory,{mode:0o700});}catch(e){if(e.code!=='EEXIST')throw fail('WITNESS_DIRECTORY');}
-  let stat;try{stat=lstatSync(directory);}catch{throw fail('WITNESS_DIRECTORY');}if(!stat.isDirectory()||stat.isSymbolicLink()||(stat.mode&0o777)!==0o700||typeof process.getuid==='function'&&stat.uid!==process.getuid())throw fail('WITNESS_DIRECTORY');this.#directory=directory;Object.freeze(this);
+  if(typeof directory!=='string'||!isAbsolute(directory)||directory.length>2048||/[\x00-\x1f\x7f]/.test(directory))throw new TypeError('Configure a private absolute witness directory');let created=false;try{mkdirSync(directory,{mode:0o700});created=true;}catch(e){if(e.code!=='EEXIST')throw fail('WITNESS_DIRECTORY');}
+  let stat;try{stat=lstatSync(directory);}catch{throw fail('WITNESS_DIRECTORY');}if(!stat.isDirectory()||stat.isSymbolicLink()||(stat.mode&0o777)!==0o700||typeof process.getuid==='function'&&stat.uid!==process.getuid())throw fail('WITNESS_DIRECTORY');if(created){let parent;try{parent=openSync(dirname(directory),constants.O_RDONLY|constants.O_DIRECTORY|constants.O_NOFOLLOW);fsyncSync(parent);}catch{throw fail('WITNESS_DIRECTORY');}finally{if(parent!==undefined)closeSync(parent);}}this.#directory=directory;Object.freeze(this);
  }
  #path(binding){return join(this.#directory,binding.sessionId+'-'+binding.containerId+'.namespace.json');}
  #sync(){const fd=openSync(this.#directory,constants.O_RDONLY|constants.O_DIRECTORY|constants.O_NOFOLLOW);try{fsyncSync(fd);}finally{closeSync(fd);}}

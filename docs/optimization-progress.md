@@ -1543,3 +1543,7 @@ Linux全量JS回归先因夹具缺少可写产物挂载失败，修正后又复�
 ### Session 启动前内核见证（B1c0）
 
 固定Linux内核见证接入私有WorkerHello和Native入口，父端在同一Hello期限内核对容器启动代次并持久化后才发Start。私有不可覆盖文件绑定CID/来源/owner哈希及StartedAt，支持不持有原key的关闭恢复核对；异步处理晚到、关闭重入和损坏证据均不能启动资源。结果见[见证检查点](evidence/session-runtime-witness.json)。实际Node夹具与Native浏览器验收分开；生产控制器及41项9/14/18未完成计数保持，独立720文件8小时副本不变。
+
+### 独立8小时v3失败（2026-10-19）
+
+第3200周期Source PSS completeObservedCohort断言失败，Source/Viewer/Docker均实际退出1；最后完整样本8632.77秒、211份样本不能替代28800秒。原RPC只保留异常栈，失败逐进程数据缺失，唯一原因未证明。完整保存[失败证据](evidence/session-coupled-eight-hour-v3-failure.json)，保持原物理/群组/期限门槛且未重启；先补诊断和定位。新服务层765文件首版已独立通过Node合同，随后补齐证据目录创建的父目录fsync边界并重新冻结；Native浏览器集成及41项仍待最终验收。
