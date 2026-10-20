@@ -105,3 +105,8 @@ Native资源要求实际Browser/Page/Broker的on/off接口，在Ready之前绑�
 ## 已安装公开SDK的生产Native像素
 
 真正生产provider/端点解析已完成三种SDK绘制路径的实际像素、WebGL中文黑框、输入与视口对照及显式Session释放；没有Source CDP测试接口或Node替身。完整崩溃/TTL/取消/恢复与物理/丢包/8小时仍待验收。见[生产Native像素范围](production-native-viewer.md)。
+
+
+## 真实TTL与启动取消
+
+canonical Native执行了2秒自动TTL与7个取消窗口，包括实际关闭专用见证、文件见证采用和真实晚到导航后的关闭；8项持久退役与配额释放确认。冷恢复/外部丢失及Page崩溃仍待验收。见[TTL与取消范围](production-native-lifecycle.md)。

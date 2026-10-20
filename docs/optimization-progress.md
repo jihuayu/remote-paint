@@ -1883,3 +1883,10 @@ Native资源绑定四个终止事件并在Ready前重查，worker先建立停止
 根实际0，完整namespace退役、精确CID消失、14个已知宿主PID回收及服务器关闭确认。释放时SDK观察为reconnecting后显式destroy，自动终止策略未验收。旧952项/SDK精确输入不变，继承原收据，不伪造重跑。见[生产Native像素范围](production-native-viewer.md)。
 
 下一步Native实际崩溃/TTL/取消/恢复及终止策略；41项9/15/17和原8小时失败保持，未自动重跑或提交推送。
+
+
+### 生产Native的2秒TTL和7个取消窗口
+
+真实canonical Native/provider/Registry及完整内核见证/持久journal完成8项，根实际0：自动TTL，以及intent/created/Engine启动/文件落盘/见证绑定/私有Ready/真实晚到导航提交的取消。关闭专用见证不重放Start，文件见证被采用，晚到资源实际关闭且无迟到Ready，原创建均Cancelled。8项直到retired事件仍持有配额，随后释放；7容器/1未分配intent全部退役，7宿主PID回收。见[TTL/取消范围](production-native-lifecycle.md)。
+
+旧952项和SDK输入未变，继承精确收据，不伪造新重跑。Native代理/外部删除/冷恢复、Page实际崩溃与SDK终止策略继续；41项9/15/17及原8小时失败保持，未自动重跑或提交推送。
