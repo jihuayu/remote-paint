@@ -10,15 +10,15 @@ const fault=(code,fields)=>new DockerMetadataError(code,fields);
 // Read-only local Engine API client. No proxy, redirect, implicit retry or
 // endpoint discovery. Neither socket closure nor metadata proves retirement.
 export class DockerMetadataClient {
- #socket;#daemon;#arch;#api;#timeout;#limit;#concurrency;#active=new Set();#closed=false;#closePromise=null;#drainResolve;#drained;
- constructor({socketPath,daemonId,architecture='arm64',apiVersion='1.45',timeoutMs=5000,maxResponseBytes=128*1024,maxConcurrent=4}={}){
-  if(typeof socketPath!=='string'||!isAbsolute(socketPath)||socketPath.length>1024||socketPath.includes('\0')||!identity(daemonId)||!['arm64','amd64'].includes(architecture)||typeof apiVersion!=='string'||!/^1\.[0-9]{2,3}$/.test(apiVersion)||!integer(timeoutMs,20,30000)||!integer(maxResponseBytes,1024,1024*1024)||!integer(maxConcurrent,1,16))throw new TypeError('Configure a pinned local Docker socket,identity and finite metadata limits');
-  this.#socket=socketPath;this.#daemon=daemonId;this.#arch=architecture;this.#api='/v'+apiVersion;this.#timeout=timeoutMs;this.#limit=maxResponseBytes;this.#concurrency=maxConcurrent;this.#drained=new Promise(resolve=>{this.#drainResolve=resolve;});
+ #socket;#daemon;#arch;#api;#timeout;#limit;#concurrency;#runtimeLimit;#active=new Set();#closed=false;#closePromise=null;#drainResolve;#drained;
+ constructor({socketPath,daemonId,architecture='arm64',apiVersion='1.45',timeoutMs=5000,maxResponseBytes=128*1024,maxConcurrent=4,maxRuntimeRecords=128}={}){
+  if(typeof socketPath!=='string'||!isAbsolute(socketPath)||socketPath.length>1024||socketPath.includes('\0')||!identity(daemonId)||!['arm64','amd64'].includes(architecture)||typeof apiVersion!=='string'||!/^1\.[0-9]{2,3}$/.test(apiVersion)||!integer(timeoutMs,20,30000)||!integer(maxResponseBytes,1024,1024*1024)||!integer(maxConcurrent,1,16)||!integer(maxRuntimeRecords,1,4096))throw new TypeError('Configure a pinned local Docker socket,identity and finite metadata limits');
+  this.#socket=socketPath;this.#daemon=daemonId;this.#arch=architecture;this.#api='/v'+apiVersion;this.#timeout=timeoutMs;this.#limit=maxResponseBytes;this.#concurrency=maxConcurrent;this.#runtimeLimit=maxRuntimeRecords;this.#drained=new Promise(resolve=>{this.#drainResolve=resolve;});
  }
- status(){return Object.freeze({closed:this.#closed,activeRequests:this.#active.size,maxConcurrent:this.#concurrency,maxResponseBytes:this.#limit,operationDeadlineMs:this.#timeout});}
+ status(){return Object.freeze({closed:this.#closed,activeRequests:this.#active.size,maxConcurrent:this.#concurrency,maxResponseBytes:this.#limit,operationDeadlineMs:this.#timeout,maxRuntimeRecords:this.#runtimeLimit});}
  #context(signal){if(this.#closed)throw fault('ENGINE_CLIENT_CLOSED');if(signal!==undefined&&!(signal instanceof AbortSignal))throw new TypeError('Expected AbortSignal');return {signal,end:performance.now()+this.#timeout};}
  #check(context){if(this.#closed)throw fault('ENGINE_CLIENT_CLOSED');if(context.signal?.aborted)throw fault('ENGINE_ABORTED');if(performance.now()>=context.end)throw fault('ENGINE_DEADLINE');}
- #json(path,context,{absent=false}={}){
+ #json(path,context,{absent=false,array=false}={}){
   this.#check(context);if(this.#active.size>=this.#concurrency)throw fault('ENGINE_BUSY');
   return new Promise((resolve,reject)=>{
    let req,res,buffer=null,used=0,settled=false,delivered=false,pendingValue,timer,abort;
@@ -45,7 +45,7 @@ export class DockerMetadataClient {
      response.on('end',()=>{
       if(settled)return;try{
        this.#check(context);if(!response.complete)throw fault('ENGINE_INCOMPLETE',{status,bytes:used});const value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(buffer.subarray(0,used)));
-       if(!value||typeof value!=='object'||Array.isArray(value))throw fault('ENGINE_RESPONSE_INVALID');finish(null,{status,value});
+       if(!value||typeof value!=='object'||Array.isArray(value)!==array)throw fault('ENGINE_RESPONSE_INVALID');finish(null,{status,value});
       }catch(e){finish(e instanceof DockerMetadataError?e:fault('ENGINE_RESPONSE_INVALID'));}
      });
     });
@@ -67,6 +67,20 @@ export class DockerMetadataClient {
   if(typeof imageId!=='string'||!/^sha256:[a-f0-9]{64}$/.test(imageId))throw new TypeError('A pinned image digest is required');
   const context=this.#context(signal);await this.#assertDaemon(context);const {value}=await this.#json('/images/'+encodeURIComponent(imageId)+'/json',context);const daemon=await this.#assertDaemon(context);
   if(value.Id!==imageId||value.Os!=='linux'||arch(value.Architecture)!==this.#arch)throw fault('ENGINE_IMAGE_CHANGED');return {daemon,document:value};
+ }
+ // Candidate IDs require full inspection before any ownership or effect decision.
+ // No server-side limit: a truncated inventory must never look complete.
+ async listRuntimeCandidates({deploymentId,region,signal}={}){
+  if(!identity(deploymentId)||typeof region!=='string'||!region.length||region.length>64||/[\x00-\x1f\x7f]/.test(region))throw new TypeError('Expected a fixed deployment and region');
+  const prefix='org.remote-paint.runtime.',context=this.#context(signal),labels={[prefix+'deployment']:deploymentId,[prefix+'region']:region};
+  await this.#assertDaemon(context);const filters={label:Object.entries(labels).map(([k,v])=>k+'='+v)};
+  const {value}=await this.#json('/containers/json?all=1&filters='+encodeURIComponent(JSON.stringify(filters)),context,{array:true});const daemon=await this.#assertDaemon(context);
+  if(value.length>this.#runtimeLimit)throw fault('ENGINE_INVENTORY_LIMIT');const ids=new Set();
+  for(const row of value){
+   if(!row||typeof row!=='object'||typeof row.Id!=='string'||!/^[a-f0-9]{64}$/.test(row.Id)||ids.has(row.Id)||!row.Labels||typeof row.Labels!=='object'||Array.isArray(row.Labels)||Object.entries({...labels,[prefix+'schema']:'session-runtime-v1',[prefix+'daemon']:this.#daemon}).some(([k,v])=>row.Labels[k]!==v))throw fault('ENGINE_INVENTORY_CONFLICT');
+   ids.add(row.Id);
+  }
+  this.#check(context);return Object.freeze({daemon,deploymentId,region,containerIds:Object.freeze([...ids].sort()),scope:'Complete bounded label-filtered metadata snapshot only;not ownership,effect authorization,allocation absence or namespace retirement proof.'});
  }
  close(){
   if(this.#closePromise)return this.#closePromise;this.#closed=true;for(const state of this.#active)state.cancel('ENGINE_CLIENT_CLOSED');if(!this.#active.size)this.#drainResolve();

@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-18T19:15:17.622272+00:00",
+  "task": "B1c1a",
+  "scope": "Bounded read-only all-state Engine inventory for stable deployment+region;candidate IDs only,not ownership/effect authorization orretirement/admission proof.",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-inventory-checkpoint-v1.json",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-inventory-v1/frozen-version.json",
+  "nodeOnlyScopedResults": "Checkpoint records actual per-platform outcomes;whole-source full regression remains pending isolation from active8h.",
+  "actualEngine": {
+    "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-inventory-v1/actual-engine/report.json",
+    "status": "passed",
+    "containerId": "4c29f77f8427d11c90fa0f23eb08f2dc2ad810450e48a5bbe9c8dd9c33143df0",
+    "recreatedJournal": {
+      "sessions": 0,
+      "runtimes": 0
+    },
+    "unstartedObjectVisible": true,
+    "fixtureNeverRequestedStart": true,
+    "ownedRemove204Fresh404AndEmptyInventory": true
+  },
+  "rules": {
+    "fixedDeploymentAndRegionLabelFilters": true,
+    "allStates": true,
+    "noServerSideLimitOrPrefixSelection": true,
+    "originalSharedDeadlineByteCapAndDaemonWitnesses": true,
+    "maxRuntimeRecordsDefault": 128,
+    "maxRuntimeRecordsMaximum": 4096,
+    "unsupportedSchemaOrWrongEngineLabel": "conflict;notexcluded",
+    "metadataCredentialsAndCommandsReturned": false
+  },
+  "activeEightHour": {
+    "snapshotSourceFiles": 783,
+    "manifestSha256": "9a8206ae007941ec9753fc52921f3879fd6d05e4d1c9fc59cccd72c0e2f2cf62",
+    "sourceSession": 79326,
+    "viewerSession": 5676,
+    "eightHourPassed": false
+  },
+  "reference": "https://docs.docker.com/reference/api/engine/version/v1.45/",
+  "nativeProductionProviderComplete": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "noCommitPush": true
+}

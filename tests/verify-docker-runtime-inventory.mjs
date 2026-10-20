@@ -1,0 +1,41 @@
+// Opt-in Engine metadata fixture. The container is created, never started.
+import assert from 'node:assert/strict';
+import {randomUUID,randomBytes,createHash} from 'node:crypto';
+import {mkdir,open,readFile,writeFile} from 'node:fs/promises';
+import {join,resolve} from 'node:path';
+import {DockerMetadataClient} from '../service/docker-metadata-client.mjs';
+import {DockerEffectClient} from '../service/docker-effect-session.mjs';
+import {planDockerRuntime,verifyDockerRuntime,verifyDockerRuntimeOwnership} from '../service/docker-runtime-spec.mjs';
+import {SqliteSessionStore} from '../service/session-store.mjs';
+import {records} from './fixtures/session-store-records.mjs';
+const socketPath=process.env.REMOTE_PAINT_DOCKER_SOCKET,daemonId=process.env.REMOTE_PAINT_DOCKER_DAEMON,imageId=process.env.REMOTE_PAINT_DOCKER_IMAGE;
+assert.ok(socketPath&&daemonId&&imageId&&process.env.REMOTE_PAINT_DOCKER_INVENTORY_OUTPUT);
+const output=resolve(process.env.REMOTE_PAINT_DOCKER_INVENTORY_OUTPUT);await mkdir(output,{mode:0o700});
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex'),suffix=randomUUID(),deploymentId='inventory-'+suffix,region='inventory-fixture',tenantId='inventory-fixture',at=new Date().toISOString();
+async function save(name,value){const path=join(output,name),file=await open(path,'wx',0o600);try{await file.writeFile(JSON.stringify(value,null,2)+'\n');await file.sync();}finally{await file.close();}const directory=await open(output,'r');try{await directory.sync();}finally{await directory.close();}return sha(await readFile(path));}
+const metadata=new DockerMetadataClient({socketPath,daemonId,maxRuntimeRecords:1}),effects=new DockerEffectClient({socketPath,daemonId}),store=new SqliteSessionStore({path:join(output,'journal.sqlite')}),emptyStore=new SqliteSessionStore({path:join(output,'recreated-empty-journal.sqlite')}),owner=Symbol('inventory-fixture'),emptyOwner=Symbol('empty-fixture');
+let plan,row,containerId=null,createdResult,beforeInventory,liveInventory,afterInventory,emptyLedger,inspection,error=null,cleanup={status:'unconfirmed'};
+async function perform(kind,authorize){const session=await effects.open({kind,plan,...(kind==='create'?{}:{containerId})});try{return await session.perform(authorize);}finally{assert.equal((await session.close()).status,'closed');}}
+try{
+ const image=await metadata.inspectImage(imageId);await mkdir(join(output,'project'),{mode:0o700});await mkdir(join(output,'browser'),{mode:0o700});const worker=Buffer.from('throw new Error("Inventory fixture must never be started");\n');await writeFile(join(output,'project/worker.mjs'),worker,{mode:0o600,flag:'wx'});
+ const projectManifestSha256=await save('project-manifest.json',{'worker.mjs':sha(worker)}),browserManifestSha256=await save('browser-manifest.json',{files:{},scope:'empty Node-only fixture browser directory'});
+ plan=planDockerRuntime({sessionId:'ses_'+suffix,tenantId,region,ownerKeyHash:sha(randomBytes(32))},{deploymentId,daemonId,imageId,projectPath:join(output,'project'),browserPath:join(output,'browser'),projectManifestSha256,browserManifestSha256,imageEnvironment:image.document.Config.Env??[],workerEntry:'worker.mjs'});await save('plan.json',plan);
+ store.claimRuntimeProvider(owner,{region,deploymentId,daemonId,createdAt:at});const batch=records(suffix,tenantId);batch.sessions[0].region=region;batch.bindings[0].defaults.region=region;store.commit(batch);
+ row={sessionId:plan.sessionId,tenant:tenantId,region,deploymentId,daemonId,ownerKeyHash:plan.ownerKeyHash,specDigest:plan.specDigest,imageId,containerName:plan.containerName,containerId:null,state:'intent',requestStarted:false,version:null,closeReason:null,retirement:null,createdAt:at,updatedAt:at};store.commitRuntime(row,{owner});
+ beforeInventory=await metadata.listRuntimeCandidates({deploymentId,region});assert.deepEqual(beforeInventory.containerIds,[]);
+ createdResult=await perform('create',()=>{row={...row,state:'requested',requestStarted:true};return store.commitRuntime(row,{owner});});containerId=createdResult.containerId;row={...row,state:'created',containerId};store.commitRuntime(row,{owner});
+ inspection=await metadata.inspectContainer(containerId);const profile=verifyDockerRuntime(plan,inspection,{containerId});assert.equal(profile.state,'created');assert.equal(profile.pid,0);assert.equal(inspection.document.State.StartedAt,'0001-01-01T00:00:00Z');
+ emptyStore.claimRuntimeProvider(emptyOwner,{region,deploymentId,daemonId,createdAt:at});emptyLedger={sessions:emptyStore.load().sessions.length,runtimes:emptyStore.loadRuntime({owner:emptyOwner}).allocations.length};assert.deepEqual(emptyLedger,{sessions:0,runtimes:0});
+ liveInventory=await metadata.listRuntimeCandidates({deploymentId,region});assert.deepEqual(liveInventory.containerIds,[containerId]);assert.deepEqual((await metadata.listRuntimeCandidates({deploymentId:'other-'+suffix,region})).containerIds,[]);
+ await save('inventory-with-empty-ledger.json',{emptyLedger,inspection,profile,beforeInventory,liveInventory,createdResult,scope:'Actual unstarted Engine object remains visible despite an independently recreated empty journal. Inventory alone authorizes no effects.'});
+}catch(e){error={name:e.name,code:e.code??null,message:e.message};}
+finally{
+ try{
+  if(row?.requestStarted){const current=await metadata.inspectContainer(containerId??plan.containerName);if(!current.found)throw new Error('Unknown requested allocation cannot retire from an empty inventory or404');containerId=verifyDockerRuntimeOwnership(plan,current,{containerId}).containerId;const profile=verifyDockerRuntime(plan,current,{containerId});assert.equal(profile.state,'created');assert.equal(profile.pid,0);assert.equal(current.document.State.StartedAt,'0001-01-01T00:00:00Z');row={...row,state:'closing',closeReason:'released',containerId};store.commitRuntime(row,{owner});
+   const removed=await perform('remove',()=>{const snapshot=store.loadRuntime({owner});return {revision:snapshot.revision,allocation:snapshot.allocations.find(v=>v.sessionId===plan.sessionId)};});assert.equal(removed.httpStatus,204);assert.equal(removed.alreadyAbsent,false);const absent=await metadata.inspectContainer(containerId);assert.equal(absent.found,false);afterInventory=await metadata.listRuntimeCandidates({deploymentId,region});assert.deepEqual(afterInventory.containerIds,[]);
+   const evidenceSha256=await save('removal.json',{containerId,daemonId,removed,absent,afterInventory,beforeRemoval:current,fixtureNeverRequestedStart:true,scope:'Owned fullID removal after observed created/PID0/never-started Engine state;no Native process or namespace was launched.'});row={...row,state:'retired',retirement:{kind:'container-removed',evidenceSha256}};store.commitRuntime(row,{owner});const state=store.load(),session=state.sessions[0],operation=state.operations[0];operation.operation.status='failed';operation.operation.error={code:'INVENTORY_FIXTURE_COMPLETE',message:'Unstarted metadata fixture completed'};store.commit({sessions:[{...session,state:'failed',reserved:false,closeReason:'released'}],operations:[operation]});cleanup={status:'closed',containerId,removed204:true,fresh404:true,inventoryEmpty:true,journalRetired:true,quotaReleased:store.load().sessions[0].reserved===false,fixtureNeverRequestedStart:true};
+  }else cleanup={status:'closed',neverDispatched:true};
+ }catch(e){cleanup={status:'unconfirmed',containerId,name:e.name,code:e.code??null,message:e.message};}
+ await effects.close();await metadata.close();try{store.releaseRuntimeProvider(owner);}catch{}try{emptyStore.releaseRuntimeProvider(emptyOwner);}catch{}store.close();emptyStore.close();
+}
+const report={at:new Date().toISOString(),status:!error&&cleanup.status==='closed'?'passed':'failed',scope:'Actual pinned Engine v1.45 all-state bounded candidate inventory with an unstarted owned object and independently recreated empty ledger;not production admission/reconciliation,Native,TTL,Viewer,8h orall41 acceptance.',daemonId,imageId,deploymentId,region,containerId,beforeInventory,liveInventory,afterInventory,emptyLedger,error,cleanup};await save('report.json',report);console.log(JSON.stringify({status:report.status,containerId,emptyLedger,cleanup,error}));assert.equal(report.status,'passed');
