@@ -1915,3 +1915,8 @@ canonical Native先Ready及公共Welcome/FrameCommit，在完整自有CID中按�
 ### 后端SDK接受真实worker失效关闭原因
 
 修复Node/Python SDK和TS/Python Literal漏掉worker-unavailable导致合法Session HTTP200被误拒的问题。真实Registry HTTP的closing持配额/closed释放因果测试两种SDK均before1/after0，未知值继续拒绝。新双平台完整953项通过，新tgz/wheel全新离线安装各78Node/17Python、严格TSC两边及Mac Mypy通过；新安装Node SDK在真实canonical Native浏览器故障后读到closing/closed正确原因，退役和精确CID/2宿主PID清理通过。见[范围](backend-worker-reason.md)。Viewer终止重试策略仍待验收；未知启动隔离、Agent/N1/设备/原8小时继续，41项9/15/17不变。
+
+
+### 安装后Viewer在实际Session释放后自动终止
+
+CPU主线程controller与实际CPU Worker readonly同时显示真实Native Session，释放后均自动failed，iframe/实际Worker及首帧/遥测/控制清空，终态后无自动票据。可信后端当前状态映射VIEWER_ACCESS_ENDED后，各1次票据直接终止、无新增Source解析。应用主动connect按设计可新建有限尝试，错误的首轮禁止主动重试预期保留；后两轮实际0。三显示路径真实像素再次通过，WebGL精确黑框保持。见[终止策略范围](production-native-sdk-end.md)。原SDK/生产/108单测输入未改，继承本轮953/78Node/17Python及类型收据；未知启动隔离、Agent/N1/设备/原8小时继续，41项9/15/17不变。

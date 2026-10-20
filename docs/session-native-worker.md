@@ -135,3 +135,8 @@ canonical Native实际Ready后完成自有attach代理SIGKILL和完整容器外�
 ## 后端SDK的worker失效兼容
 
 Node/Python SDK现接受worker-unavailable关闭原因，包括配额尚保留的closing和退役后的closed。真实Native故障用新安装Node SDK再次核对，双平台新包合同与类型检查通过。见[范围](backend-worker-reason.md)。Viewer终止重试策略另行验收。
+
+
+## 安装后Viewer的Session终止策略
+
+实际Native Session释放后，CPU主线程与实际Worker自动终止并清空显示所有者；可信应用后端识别会话结束，类型化VIEWER_ACCESS_ENDED每条路径仅取票一次。显式应用connect仍可开启有界尝试。见[范围](production-native-sdk-end.md)，不代表全浏览器/设备验收。
