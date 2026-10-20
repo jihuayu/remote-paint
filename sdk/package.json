@@ -1,7 +1,7 @@
 {
   "name": "@remote-paint/session-client",
   "version": "0.0.0-dev.0",
-  "description": "Experimental backend Session control client",
+  "description": "Experimental backend Session and managed Agent clients",
   "private": true,
   "license": "UNLICENSED",
   "type": "module",
@@ -9,10 +9,11 @@
   "exports": {
     ".": {"types": "./backend.d.mts", "import": "./backend.mjs"},
     "./backend": {"types": "./backend.d.mts", "import": "./backend.mjs"},
+    "./agent": {"types": "./agent.d.mts", "import": "./agent.mjs"},
     "./viewer-connection": {"types": "./viewer-connection.d.mts", "import": "./viewer-connection.mjs"},
     "./viewer-frame": {"types": "./viewer-frame.d.mts", "import": "./viewer-frame.mjs"},
     "./viewer": {"types": "./viewer.d.mts", "import": "./viewer.mjs"}
   },
-  "files": ["backend.mjs", "backend.d.mts", "viewer-connection.mjs", "viewer-connection.d.mts", "viewer-frame.mjs", "viewer-frame.d.mts", "viewer-channel.mjs", "viewer-channel.d.mts", "viewer-control.mjs", "viewer-control.d.mts", "viewer-telemetry.mjs", "viewer-telemetry.d.mts", "viewer.mjs", "viewer.d.mts", "README.md"],
+  "files": ["backend.mjs", "backend.d.mts", "backend-transport.mjs", "agent.mjs", "agent.d.mts", "viewer-connection.mjs", "viewer-connection.d.mts", "viewer-frame.mjs", "viewer-frame.d.mts", "viewer-channel.mjs", "viewer-channel.d.mts", "viewer-control.mjs", "viewer-control.d.mts", "viewer-telemetry.mjs", "viewer-telemetry.d.mts", "viewer.mjs", "viewer.d.mts", "README.md"],
   "sideEffects": false
 }

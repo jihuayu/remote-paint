@@ -1,0 +1,224 @@
+{
+  "at": "2026-10-19T17:17:28.009488+00:00",
+  "task": "independent Node Agent SDK checkpoint",
+  "status": "public-Node-Agent-SDK-qualified-within-scope",
+  "scope": "Installed Node backend managed seven-tool AgentClient over public authenticated HTTP, durable executor and canonical Native worker; per-attempt HTTP capacity and independent end admission, immutable prepared inputs, explicit fence and uncertain outcomes. Python Agent SDK, business postconditions, general CDP and resumable task recovery are excluded.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/public-agent-http-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "de5e2346c04da772e46d985ce62fa804c1d683448bd5e43a1d9bbdf9675c8058",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-agent-sdk-candidate-v2/frozen-version.json",
+  "executedManifestSha256": "a842130a06aa4eea861ff0dc977e82a2d79533716c71f34e291ee0c6327d820a",
+  "newNodeContracts": 19,
+  "testNames": [
+    "Node Agent SDK validates backend configuration, refuses browser execution and shares root exports without credentials in JSON",
+    "prepared Node Agent run captures initial request and key, pins operation identity and keeps explicit retries immutable",
+    "Node Agent context requires expected logical run and Session, rejects wrong Session and returns a frozen SDK binding",
+    "prepared Node Agent input captures body, key and original context without refreshing fence or sending its SDK-only logical tag",
+    "Node Agent validation accepts semantic fence equality across caller property ordering and rejects getters before fetch",
+    "Node Agent runtime tool schemas enforce bounded primitives and never offer arbitrary CDP or Javascript",
+    "Node Agent responses reject wrong IDs, parent, tool, fence, status, receipt, dates and unexpected fields",
+    "Node Agent run and read responses require requested identity and valid phase metadata",
+    "unknown Node Agent invocation is immutable result data and never triggers retry or business-success inference",
+    "Node Agent errors preserve authenticated outcome but never proxy message, URL, credential or CLIENT code spoof",
+    "Node Agent explicit transient retry retains original action and key while later rejection cannot erase an unknown attempt",
+    "Node Agent pre-abort sends nothing and in-flight AbortSignal stops only waiting without replay",
+    "Node Agent noncooperative fetch retains actual bounded capacity after timeout with separate end admission",
+    "Node Agent body cancellation retains its real slot until the underlying cancellation actually settles",
+    "Node Agent enforces response/request byte budgets, request correlation and frozen typed data",
+    "Node Agent real fetch blocks redirects without forwarding the backend credential",
+    "Node Agent installed-contract HTTP path creates, binds, injects, queries and ends through actual SQLite/Registry/executor",
+    "Node Agent actual lost HTTP response is recovered by the same prepared operation without another effect",
+    "Node Agent real HTTP exposes denied scope as rejected and remote unknown as data without automatic replay"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v31/manifest.json",
+  "fullJsManifestSha256": "fbc53cafe49c35b9471129e326e11064d6058f3023079d6007606b609c996845",
+  "fullJs": {
+    "mac": {
+      "tests": 1139,
+      "pass": 1124,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "003b4e41adbf4d632b2a44390bb7243a1158d238d17d04653972ee0df011f0b4"
+    },
+    "linux": {
+      "tests": 1139,
+      "pass": 1133,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "acf5afba131bb72f34692c8f094bec015f1cbc05e5c1395c63afd5f45e534755"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 97,
+      "pythonTests": 17,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 38,
+      "sourceFallbackUnavailable": true,
+      "archiveMembers": 19,
+      "freshOfflineInstall": true
+    },
+    "linux": {
+      "nodeTests": 97,
+      "pythonTests": 17,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 38,
+      "sourceFallbackUnavailable": true,
+      "archiveMembers": 19,
+      "freshOfflineInstall": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "f156fe84e626708c23923d827eeb7c1ad108e057fdb16c30ec02dbb2cc41e5aa",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "d21a3f6d707ba6f778ad2c4c1a0372e01f710d3a6d7ab123790487b26513a669"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-agent-sdk-native-v1/manifest.json",
+  "nativeManifestSha256": "0b0951fbad359cec3157bf9aefd46e5cc170a8ae62c814f03e0d2081cffda725",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "deniedBeforeAgent": [
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 404,
+        "code": "SESSION_NOT_FOUND"
+      }
+    ],
+    "deniedOnRun": [
+      {
+        "status": 404,
+        "code": "AGENT_RUN_NOT_FOUND"
+      },
+      {
+        "status": 404,
+        "code": "AGENT_RUN_NOT_FOUND"
+      },
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 400,
+        "code": "AGENT_INVALID_REQUEST"
+      },
+      {
+        "status": 403,
+        "code": "AGENT_ACTION_FORBIDDEN"
+      }
+    ],
+    "tools": {
+      "sevenManagedTools": true,
+      "noViewerScroll": 80,
+      "oneNormalClick": true,
+      "drag": {
+        "x": 430,
+        "y": 130
+      },
+      "composition": "B拼",
+      "sameKeySameInvocationId": true,
+      "changedRequestRejected": true
+    },
+    "explicitFence": {
+      "staleInvocationRejected": true,
+      "code": "STALE_AGENT_FENCE"
+    },
+    "lostReply": {
+      "actualHttpResponseDropped": true,
+      "acceptedWorkContinued": true,
+      "retrySameInvocationId": true,
+      "onePageEffect": true,
+      "preparedBodyCapturedBeforeCallerMutation": true
+    },
+    "timeout": {
+      "unknown": true,
+      "sameKeyNoReplay": true,
+      "newActionRejected": true,
+      "oneActualMouseDown": true,
+      "noOrdinaryClick": true,
+      "endConfirmed": true,
+      "busyFixtureMs": 400,
+      "physicalLatencyClaim": false
+    },
+    "human": {
+      "actualPublicController": true,
+      "agentPausedInvocationRejected": true,
+      "originalGrantSurvivedHttpAgentEnd": true,
+      "finalPageValue": "B拼LHFZ"
+    },
+    "viewerAuthority": {
+      "backendKeyNotSentToViewer": true,
+      "readOnlyFrameReceived": true,
+      "readOnlyControlAttemptClosed1008": true,
+      "controllerIssueNeedsIndependentControlScope": true,
+      "crossTenantIssueAndRefreshRejected": true,
+      "wrongAudienceAndTamperedTicketRejected": true,
+      "refreshPreservedRoleAudienceAndClosedOldSocket": true,
+      "oldTicketRejectedAfterRefresh": true,
+      "explicitRevokeClosedActiveSocket": true,
+      "revokedTicketRejected": true,
+      "expiryClosedActiveSocketWhileSessionReady": true,
+      "expiredTicketRejected": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    },
+    "nodeSdk": {
+      "installedPackage": true,
+      "managedWritesUseAgentClient": true,
+      "runContextCarriesLocalId": true,
+      "localIdStrippedFromWire": true,
+      "preparedRetryBodyIdentical": true,
+      "unknownReturnedAsData": true,
+      "defaultAutomaticRetriesZero": true
+    }
+  },
+  "reopenedAgentStates": {
+    "closedRuns": 3,
+    "injected": 13,
+    "rejected": 2,
+    "unknown": 1
+  },
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-agent-sdk-cleanup-v1.json",
+  "cleanupAuditSha256": "5a7d48df08cd86c8e8722fcb023443aaa485ceea0fd4ccaab581ef866b250789",
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": false,
+  "publicAgentSdkQualified": false,
+  "publicTenantAgentAuthorizationQualified": true,
+  "k3SecurityAuthorizationCompleteWithinScope": true,
+  "managedPlaywrightCdpFacadeQualified": false,
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 16,
+    "pending": 15
+  },
+  "noCommitPush": true
+}

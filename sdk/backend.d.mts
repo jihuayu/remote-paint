@@ -24,8 +24,10 @@ export interface CreateRequestOptions extends RequestOptions { readonly idempote
 export interface PreparedCreation { send(options?:RequestOptions):Promise<ApiResult<Operation<'create-session'>>>; }
 export interface SessionClientConfig {
  readonly baseUrl:string; readonly apiKey:string; readonly fetch?:typeof globalThis.fetch;
- readonly timeoutMs?:number; readonly retries?:0|1|2|3; readonly maxResponseBytes?:number;
+ readonly timeoutMs?:number; readonly retries?:0|1|2|3; readonly maxResponseBytes?:number; readonly maxConcurrentRequests?:number;
 }
+export {AgentClient,AgentClientError} from './agent.mjs';
+export type {AgentRunId,AgentInvocationId,AgentTool,AgentFence,AgentBinding,AgentContext,AgentRunReference,AgentFailure,AgentRun,AgentInvocation,AgentAction,CreateAgentRunInput,AgentCreateOptions,PreparedAgentRun,PreparedAgentInvocation,AgentClientConfig} from './agent.mjs';
 export class SessionClientError extends Error {
  readonly code:string; readonly status:number|null; readonly requestId:RequestId|null;
  readonly outcome:RequestOutcome; readonly retryable:boolean;

@@ -1,6 +1,6 @@
 # Remote Paint Session client — experimental
 
-Node.js 22+ ESM backend client, with TypeScript declarations. This private package is a local development artifact; it has not been published. It contains the backend management client and a separate browser-safe short-ticket connection module. A configured Session control service is required. Native provider integration, rendered Viewer roles/tickets, Agent tools and rolling-version acceptance remain pending.
+Node.js 22+ ESM backend client, with TypeScript declarations. This private package is a local development artifact; it has not been published. It contains the backend management client and a separate browser-safe short-ticket connection module. A configured Session control service is required. The managed Agent client is available through the Node backend exports. Qualification is scoped by the repository evidence; Python Agent support, general CDP access, rolling-version acceptance and production-wide Native qualification remain pending.
 
 Install the local `.tgz` produced by `npm pack`, then import from `@remote-paint/session-client` or `@remote-paint/session-client/backend`. Both exports use the same implementation and declarations. CommonJS and direct access to internal files are unsupported.
 
@@ -32,7 +32,41 @@ When the owned worker becomes unavailable, the current Session reports `closeRea
 
 `SessionClientError` exposes `code`, `status`, `requestId`, `outcome` and `retryable`. Outcomes are `not-dispatched`, `rejected` or `unknown`. The error message does not include raw HTTP/transport exceptions or credentials. Responses are bounded and checked for schema, identity, operation kind/status and request ID. Each attempt has a default 10-second deadline covering fetch/body streaming; default response cap is 64 KiB. Returned data is frozen and typed readonly.
 
-Keep the management key on your Node backend. The client refuses browser execution and redirects. Use an HTTPS API origin; local HTTP is allowed only for localhost, 127.0.0.1 or ::1. No cookies/referrer are sent. Injected fetch is trusted backend configuration and must respect AbortSignal and redirect options. Viewer embedding is a separate, unfinished integration.
+Keep the management key on your Node backend. The client refuses browser execution and redirects. Use an HTTPS API origin; local HTTP is allowed only for localhost, 127.0.0.1 or ::1. No cookies/referrer are sent. Injected fetch is trusted backend configuration and must respect AbortSignal and redirect options. Viewer embedding uses the separate browser entries below; their individual contract and Native acceptance boundaries are documented in the repository.
+
+
+## Managed Agent client (Node backend, experimental)
+
+`AgentClient` and `AgentClientError` are exported from the package root, `/backend`, and `/agent`. A Session must be ready on its current worker. Authorize the independent `agents:write`, `agents:read` and `agents:end` scopes on your backend; Session/Viewer scopes do not grant Agent access. The API key determines Tenant identity.
+
+```js
+import { AgentClient } from '@remote-paint/session-client/agent';
+const agents = new AgentClient({ baseUrl: 'https://your-session-control.example', apiKey });
+const creation = agents.runs.prepareCreate(
+  session.sessionId, { region: session.region, version: session.version },
+  { idempotencyKey: 'the-persisted-run-key' },
+);
+let run = (await creation.send()).data;
+// Poll runs.get(run.agentRunId) until active; handle closed/recovery-required explicitly.
+run = (await agents.runs.get(run.agentRunId)).data;
+if (run.state !== 'active') throw new Error('Agent run is not active');
+const context = (await agents.runs.context(run)).data;
+const input = agents.invocations.prepareCreate(
+  context, { tool: 'insertText', params: { text: 'Hello' } },
+  { idempotencyKey: 'the-persisted-action-key' },
+);
+const invocation = (await input.send()).data;
+// Poll invocations.get(invocation.invocationId) while intent/requested.
+await agents.runs.end(run.agentRunId);
+```
+
+The seven discriminated tools are `move`, `click`, `drag`, `scroll`, `press`, `insertText` and `composition`. Runtime schemas reject unknown properties, getters, arbitrary CDP/JavaScript and out-of-range inputs before fetch. Run creation requires explicit region and version. `runs.context({agentRunId,sessionId})` requires the caller's expected Session; the SDK validates it and adds a local logical run ID to the returned binding/fence. That local tag is stripped from the HTTP body. The original Source fence is captured with the action; the SDK never fetches a replacement fence or rebases a rejected action.
+
+Both `prepareCreate` methods capture body, context and key once. Reusing `send()` pins the returned operation ID and creation time. Persist original job inputs/keys before dispatch and reuse them after lost replies. No retries run by default. An explicit `retries:0|1|2|3` uses the captured payload; an earlier unknown transport outcome cannot become a definite rejection merely because a later attempt is refused. A remote invocation in state `unknown` is returned as data and does not cause automatic replay. `injected` confirms only the bounded `input-injected` primitive receipt; it does not establish business completion. `rejected` is not-dispatched; `unknown` requires explicit reconciliation/end rather than generating a new action key.
+
+`AgentClientError` extends `SessionClientError` and uses the same redacted code/status/requestId/outcome/retryable fields. The shared transport retains actual fetch/body/cancellation admission after the observer times out or aborts, including a non-cooperative injected fetch. `maxConcurrentRequests` defaults to 64 (1–256) for both backend clients. Agent `end` uses an independent pool, `maxConcurrentEndRequests` default 8 (1–64). `transportStatus()` reports actual unsettled ordinary/end attempts; capacity failures are immediate. End still depends on its independent server scope and Source completion. HTTP cancellation stops waiting and does not undo an admitted action.
+
+Every response has exact schema, request correlation, phase/status, ID/Session and immutable receipt checks. Prepared mutations also require the exact relative Location and original tool/fence. `rpcTimeoutMs` is the server's private-RPC observer deadline (50–120000ms); backend `timeoutMs` bounds each local HTTP attempt (50–60000ms). Neither deadline proves that input was not delivered. Python currently provides the Session lifecycle client only; the aggregate public Agent SDK qualification remains incomplete until its own checkpoint.
 
 
 ## Browser connection module (experimental)
