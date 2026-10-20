@@ -1118,3 +1118,12 @@ RSS、虚拟地址空间与physical footprint分别报告，physical footprint�
 Mac首次全量运行有一项NATIVE_MEMORY_READY_TIMEOUT：实际helper未在原2秒内就绪，SIGKILL后已回收，233项通过、八项Linux专用检查跳过，失败日志完整保留。签名校验正常、无扩展属性；后续20个新可执行路径副本的实际采样/清理均通过，最慢就绪844.107ms，但操作系统缓存未清除，未复现原条件，根因未确认，也不宣称修复。未修改源码、产物或期限的独立全量重跑234项通过、八项平台跳过；这不抹去首次失败，更不是采样器自动重试或对旧值放行。
 
 此处完成列明的PSS/cgroup基础设施和短负载门禁，捕获、映射、传输及正式Chromium/Broker未改。完整Session创建销毁/跨站/物理内存增长、N1长期和独立八小时继续；当前没有八小时进程，也没有八小时通过。41项仍9完成/12部分/20待做，无关修改、旧失败与缓存保留，没有提交或推送。
+
+
+## 实际 Session 创建销毁与跨站内存试跑
+
+[三Session试跑](evidence/session-memory-lifecycle-pilot.json)使用正式B1 Linux ARM64 Source/Cpp/Rust Gateway及真实CanvasKit CPU主线程Viewer，每个Session消费400次独立噪声PNG/字体更新、超过64MiB工作集、25次resize、13次实际输入和一次跨站document token/renderer PID更换。共1200次更新、75次resize、39次输入，图像270,718,131字节；实际原生image cache均发生淘汰，默认路径Node map/publish/捕获awaitPromise为0。
+
+Source浏览器后代及Broker在启动、工作集加热和跨站后通过已打开的proc目录FD绑定身份；每个Session八个身份均在关闭后返回ESRCH/ENOENT，合计24个，父进程或UID变化不会被当作退出。Source最新帧/生产者/需求、Broker缓冲与RPC所有者、Gateway peers及HTTP/流端口均核对关闭，夹具仅保留活动Session的标量统计。Source家族加热PSS约670至675MiB；关闭Source及该Session Viewer上下文后，整个观测后代组PSS分别下降约964/795/806MiB。该下降包含Viewer上下文，未冒称全部归于Source。控制器还包含PNG夹具和观察器；三轮关闭后的控制Node PSS约207.5/209.0/161.6MiB，分配器驻留按实记录，不要求瞬间归零。
+
+此处为可复用Session所有者与真实生命周期的独立试跑。三个样本不证明大量Session增长平台；Viewer浏览器虽持续存活，各Session页面上下文明确重建，不能替代三个主Viewer VM持续八小时。接下来先按本试跑数据冻结多Session物理增长门槛，再接入长存活主Viewer的跨站/附加Session负载。完整B10/C5/N1长期和八小时继续；41项仍9完成/12部分/20待做，无提交或推送。

@@ -1,0 +1,80 @@
+{
+  "at": "2026-10-17T20:38:20.730631+00:00",
+  "status": "passed-3-actual-Linux-Session-lifecycles-pilot-not-growth8h",
+  "scope": "Actual Linux default B1 NativeSource/Cpp capture/Rust Broker+Gateway/FrameGate/CanvasKit CPU-main Viewer;each Session consumes400+ realPNG/font updates exceeding64MiB with25+resizes/12+textinputs/crosssite document+renderer replacement. Entire Source/Broker/browser descendant identities pinned via proc FDs and proven retired after close;actual cohortPSS/cgroup are temporal separate observations,not unique physical attribution. Linux CPU lifecycle test,notMac/8h/growth plateau/allB10 orfullSessionSDK acceptance.",
+  "report": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/session-memory-pilot-v1/artifacts/session-memory/report.json",
+    "sha256": "157829e5de2a151c046ab85498f0866fbdd8069853b59400f1f7f2e086898372"
+  },
+  "sessions": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/session-memory-pilot-v1/artifacts/session-memory/sessions.jsonl",
+    "sha256": "8a951a89203dcd79a06d1c65bbaf1e5d37e18a87b32e4943433849b262a82b32"
+  },
+  "log": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-pilot-v1.log",
+    "sha256": "e24e0a43ebf91fa79bd2b0ba467362e315c13faf24e6588ee7743f6032a683f1"
+  },
+  "iterations": 3,
+  "updates": 1200,
+  "resizes": 75,
+  "inputs": 39,
+  "crosssiteDocumentAndRendererReplacements": 3,
+  "imageBytes": 270718131,
+  "retiredSourceProcessIdentities": 24,
+  "sourceWarmPssBytes": [
+    702446592,
+    708195328,
+    703283200
+  ],
+  "cohortPssDropBytes": [
+    1010613248,
+    833666048,
+    844612608
+  ],
+  "postPss": [
+    {
+      "iteration": 1,
+      "cohortBytes": 402057216,
+      "nodeBytes": 217579520,
+      "cgroupAnon": 226758656,
+      "cgroupFile": 381083648
+    },
+    {
+      "iteration": 2,
+      "cohortBytes": 403596288,
+      "nodeBytes": 219176960,
+      "cgroupAnon": 241532928,
+      "cgroupFile": 313786368
+    },
+    {
+      "iteration": 3,
+      "cohortBytes": 354039808,
+      "nodeBytes": 169499648,
+      "cgroupAnon": 207519744,
+      "cgroupFile": 325971968
+    }
+  ],
+  "ownership": "All observed Source browser descendants plus Broker pinned by open proc directory FDs before/warm/after crosssite;only ESRCH/ENOENT proves retirement,not parent/UID change. FullSourceCPUViewer consumes actual frames;zero Node map/publish/captureawaitPromise. Owner clears its Source reference after close;HTTPfixture maps onlyactive scalar Session counters.",
+  "caveats": [
+    "CohortPSSdropincludesCPUViewer contextcloseaswellasSourceclose;sourcefamilyPSSseparatelyrecorded.",
+    "ControllercontainsPNGfixtureanddiagnostics;allocatorresidency remainsobserved,notpromisedtoreturnimmediately. PSSproportional/cgroupseparate/livewitnessesnotatomic.",
+    "ThreeSessionsareapilot,notmanySessionplateau/fullB10/MacclientVMlongevity/8h. CPUViewerBrowserpersists,butper-Sessioncontextsareexplicitlyrecreated."
+  ],
+  "sourceFiles": {
+    "tests/session-memory-fixture.mjs": "7a4d30ae9dc652bf741c39a0042885d3358e3ae39aef371ab8d59e52c02d62f6",
+    "tests/session-memory-owner.mjs": "072f39af23c6d3542438b425fde1c0482fa0454f7e40c276dbe5f5c5e7718df1",
+    "tests/verify-session-memory.mjs": "59e61f06072276d13857e1b4b7c9ea398e60554c51a455755ce4660795e5f104"
+  },
+  "versions": {
+    "browserSha256": "c5d29a3b5a22ff27ee3914c68650feea3e342dd1c4d2dc502e9ff0e596ae1b4e",
+    "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c"
+  },
+  "noCommitPush": true,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  },
+  "noEightHourActive": true,
+  "eightHourPassed": false
+}
