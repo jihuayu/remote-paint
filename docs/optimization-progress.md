@@ -1900,3 +1900,8 @@ Native资源绑定四个终止事件并在Ready前重查，worker先建立停止
 ### 生产Native Ready后控制器死亡与冷恢复
 
 两个实际Native拥有控制器在Ready及端点解析后SIGKILL，死亡后首次Engine检查仍running；分别保留和外部移除原容器，使用同一原SQLite identity与部署绑定执行关闭专用恢复。旧Ready/端点拒绝，无新attach/Start/Ready，配额保留至retired后释放，幂等创建仍绑定原Session。独立重开退役验证及外层2容器/5宿主PID回收通过，根实际0。见[冷恢复范围](production-native-cold-recovery.md)。仅限定Ready后，不宣称全部阶段恢复；旧952/SDK输入保持，41项9/15/17及原8小时失败保持。
+
+
+### 生产Native启动阶段死亡的7项退役与1项隔离
+
+8个精确生产事件处同步fsync并SIGKILL自有控制器；原SQLite/binding冷恢复，7项有效退役，engine-start-dispatch无有效见证项保留closing/retirement=null和配额1，不能宣称成功恢复。关闭专用真实见证不发Start、文件见证采用、私有Native Ready早于公共Ready的死亡均确认；物理7容器和13宿主PID清理不替代隔离记录退役。根实际0为声明的安全断言通过，未知启动恢复仍未完成。见[启动死亡范围](production-native-startup-recovery.md)。旧952/SDK输入保持，41项9/15/17及原8小时失败保持。

@@ -1,0 +1,13 @@
+# 生产 Native 的启动阶段控制器死亡
+
+固定Engine、canonical Native worker与生产provider/Registry，在8个精确生产事件处同步保存并fsync标记，然后控制器自行SIGKILL：intent、allocation-observed、created、engine-start-dispatch、engine-started、witness-file-published、witness-persisted、ready。真实父进程等待每个退出，核对SIGKILL和原SQLite identity/部署绑定；恢复不重新bootstrap、不发布旧Ready或私有端点、不重放Start。
+
+7项取得有效退役凭据：intent为not-dispatched，另6项为container-removed。allocation-observed项在原ledger尚未记录CID时找回本项原分配并清理，未创建替代会话。engine-started项在冷恢复的关闭专用attach中采集真实Linux内核见证，closeOnly为true、startSent为false；文件落盘但journal尚未绑定时采用原文件见证。ready事件项确实已初始化Native浏览器，但公共Session仍creating，死亡后创建操作保持恢复失败，不成为迟到成功。其余启动前窗口不宣称Native页面已分配。
+
+engine-start-dispatch项仍未完成恢复：原journal为requested，Engine检查显示created、StartedAt为零，尚无有效启动见证。生产关闭路径虽使实际容器消失，却没有把删除回执当作有效退役；原运行记录保持closing、retirement为null，Session为cleanup-failed并保留配额1，provider为recovery-required。该项验证的是保守隔离行为，绝不计作成功恢复，未知启动的修复/重试策略仍待解决。
+
+成功7项直到retired事件仍保留配额1，随后才释放。每份SQLite在关闭后重新打开，identity与绑定不变；7项retired、1项closing且无退役凭据，隔离项配额仍保留。相同幂等创建均绑定原失败操作和原Session，无新intent。外层精确查询7个完整CID均消失，8个原控制器、4个旧/关闭见证代理及根测试共13个宿主PID均ESRCH，检查错误为空；不把物理对象清理完成等同于隔离记录退役。
+
+根测试实际0表示8项符合已声明的退役/隔离断言。原949文件与253依赖保持，新增2个opt-in脚本，最终953文件含2份新增文档；双平台952项JS与已安装77 Node/16 Python、严格TSC和Mac Mypy按精确输入继承，不宣称新完整回归或安装。没有Source CDP接口、Node资源替身、容器公开端口、公共演示或采样器改动。
+
+尚待未知启动的恢复收敛、真实Page/renderer崩溃、SDK会话终止策略、全部Agent/CDP栅栏、N1/物理时延、更多设备及原8小时增长。41项9/15/17与原8小时失败/192MiB门槛不变，未强制浏览器GC、自动重跑8小时、暂存提交推送。见[范围收据](evidence/production-native-startup-recovery.json)。

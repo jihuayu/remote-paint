@@ -120,3 +120,8 @@ canonical Native实际Ready后完成自有attach代理SIGKILL和完整容器外�
 ## 真实Ready后的控制器死亡与冷恢复
 
 两个自有控制器在真实Native Ready后SIGKILL；新控制器用原SQLite/binding执行关闭专用恢复，拒绝旧授权，不重建私有key或重放Start，原容器保留/消失两条退役路径和配额释放均确认。见[范围](production-native-cold-recovery.md)。全部启动阶段恢复和Page崩溃仍待验收。
+
+
+## 启动阶段死亡边界
+
+8个生产事件处控制器实际SIGKILL；7项冷恢复退役，无有效见证的engine-start-dispatch保留隔离与配额。关闭专用采集不重放Start，原文件见证采用、公共Ready之前死亡均有实际收据。见[范围](production-native-startup-recovery.md)。未知启动恢复收敛与真实Page崩溃仍未完成。
