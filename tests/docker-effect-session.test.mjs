@@ -65,7 +65,15 @@ test('request byte cap rejects the profile before any mutation byte',async t=>{
  const f=await fixture(t,normal,{maxRequestBytes:1024}),s=await f.client.open({kind:'create',plan:f.p});await assert.rejects(s.perform(()=>ack(f.p)),e=>code('EFFECT_REQUEST_LIMIT')(e)&&!e.uncertain);assert.equal(mutations(f.seen).length,0);await s.close();
 });
 test('one original deadline covers info,inspection and Start together',async t=>{
- const f=await fixture(t,(req,res,seen,p)=>{setTimeout(()=>normal(req,res,seen,p),30);},{timeoutMs:80});const start=performance.now(),s=await f.client.open({kind:'start',plan:f.p,containerId:cid});await assert.rejects(s.perform(()=>ack(f.p,'start')),e=>code('EFFECT_DEADLINE')(e)&&e.uncertain);assert.ok(performance.now()-start<350);assert.equal((await s.close()).status,'closed');
+ // Real sockets validate the request chain;controlled elapsed time puts
+ // expiration in Start even when the test host is busy before initialization.
+ // A fresh deadline per request would incorrectly accept the90ms response.
+ let elapsed=0;t.mock.method(performance,'now',()=>elapsed);
+ const f=await fixture(t,(req,res,seen,p)=>{elapsed+=30;normal(req,res,seen,p);},{timeoutMs:80});
+ const s=await f.client.open({kind:'start',plan:f.p,containerId:cid});assert.equal(elapsed,60);
+ await assert.rejects(s.perform(()=>ack(f.p,'start')),e=>code('EFFECT_DEADLINE')(e)&&e.uncertain);
+ assert.equal(elapsed,90);assert.deepEqual(f.seen.map(r=>r.method),['GET','GET','POST']);
+ assert.equal((await s.close()).status,'closed');
 });
 test('idle sessions expire and release capacity without dispatch or an explicit caller close',async t=>{
  const f=await fixture(t,normal,{timeoutMs:60,maxConcurrent:1}),s=await f.client.open({kind:'create',plan:f.p});await assert.rejects(f.client.open({kind:'create',plan:f.p}),code('EFFECT_BUSY'));await new Promise(resolve=>setTimeout(resolve,90));assert.equal(f.client.status().activeSessions,0);await assert.rejects(s.perform(()=>ack(f.p)),code('EFFECT_DEADLINE'));assert.equal(mutations(f.seen).length,0);

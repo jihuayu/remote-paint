@@ -1,0 +1,38 @@
+{
+  "task": "full-js-fixture-repair",
+  "scope": "Testclock and artifact-only writable overlay;no productiondeadline or API change",
+  "originalFailures": "work/current-candidate-full-js-v1/failure-audit.json",
+  "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/full-js-fixture-repair-v1/frozen-version.json",
+  "fullQualificationCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v2/checkpoint.json",
+  "clockContract": {
+    "originalDeadlineMs": 80,
+    "infoElapsedMs": 30,
+    "inspectionAccumulatedMs": 60,
+    "startResponseAccumulatedMs": 90,
+    "actualUnixHttpRequests": [
+      "GET",
+      "GET",
+      "POST"
+    ],
+    "expectedError": "EFFECT_DEADLINE",
+    "expectedUncertain": true,
+    "isolatedMacNode": {
+      "tests": 22,
+      "pass": 22,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "actualExitCode": 0
+  },
+  "linuxFixture": "Source bind staysreadonly;only /project/artifacts overlay writable",
+  "productionImplementationChanged": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "fullJsQualificationAuthority": "External frozen checkpoint after actualbothplatform runs;not asserted by this pre-run source",
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  }
+}
