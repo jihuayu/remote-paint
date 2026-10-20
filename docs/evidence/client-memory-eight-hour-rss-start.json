@@ -1,0 +1,100 @@
+{
+  "at": "2026-10-17T10:31:57.082154+00:00",
+  "status": "running-NOT-passed",
+  "runId": "729a8b0f-6084-4284-a04b-5b5d5f158c86",
+  "startedAt": "2026-10-17T10:29:56.357Z",
+  "sourceExecSession": 65708,
+  "viewerExecSession": 60867,
+  "containerObserverExecSession": 79341,
+  "container": "remote-paint-memory-rss-eight-hours-20261017",
+  "results": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-rss-v2",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-rss-v2/frozen-version.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rss-sampler-calibration-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/recording-index-checkpoint-browser-v2",
+  "brokerSha256": "2385f69da5c8dd7ac4496d32292275766454ff9cbd3716a3fce6d0b4244b8e4c",
+  "browserSha256": "ecb176300cf9b11a2042b6a224c72b79653f8e026e467226dd0a408fd0191886",
+  "clientLedgerSha256": "b46ed2b28677e4a7db943e4a43b071c2eefe6c6255f799c319200a5869c3cb5e",
+  "viewerBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+  "ports": [
+    39546,
+    39547
+  ],
+  "workload": {
+    "seconds": 28800,
+    "burst": 400,
+    "intervalMs": 2000,
+    "navigationEvery": 40
+  },
+  "sampler": "phase-deadline-background-rss-retry-v2",
+  "strictRssPhaseMs": 5000,
+  "strictMaximumSampleGapSeconds": 90,
+  "faultPreload": false,
+  "noElapsedTimeCarried": true,
+  "knownFailedHistoricalRunIds": [
+    "2585828c-e3d1-4175-98f9-8a8c656dcd7c",
+    "6aac0cc8-d1fb-42de-a2ef-f18696129f81",
+    "3319f9fa-46ee-4f62-9871-766fcf2f8125"
+  ],
+  "currentSample": {
+    "at": "2026-10-17T10:31:06.718Z",
+    "elapsedSeconds": 63.348041875,
+    "cycle": 367,
+    "navigations": 0,
+    "resizes": 33,
+    "inputs": 22
+  },
+  "sourceHealth": {
+    "pageCrashed": false,
+    "browserDisconnected": false,
+    "brokerExited": false
+  },
+  "sourceCaptures": 858,
+  "rssAttemptsAtStart": [
+    {
+      "at": "2026-10-17T10:30:06.486Z",
+      "cycle": 0,
+      "attempt": 1,
+      "startedAt": "2026-10-17T10:30:06.452Z",
+      "elapsedMs": 33.374916999999186,
+      "childPid": 40310,
+      "closed": true,
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "timeoutMs": 2000,
+      "reapGraceMs": 250,
+      "stdoutBytes": 143,
+      "stderrBytes": 0
+    },
+    {
+      "at": "2026-10-17T10:31:06.717Z",
+      "cycle": 367,
+      "attempt": 1,
+      "startedAt": "2026-10-17T10:31:06.691Z",
+      "elapsedMs": 26.25608399999328,
+      "childPid": 41145,
+      "closed": true,
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "timeoutMs": 2000,
+      "reapGraceMs": 250,
+      "stdoutBytes": 143,
+      "stderrBytes": 0
+    }
+  ],
+  "evidence": "docs/evidence/client-memory-eight-hour-rss-start.json",
+  "scope": "Fresh independent8h currentB2Source/Rust238/Chromiumecb/clientb46 with bounded RSS sampler v2. Actual Mac hardwareGPUWorker/CPUWorker/CPUmain andLinuxSource continuous PNG/font/nav/resize/input pixels. No fault preload. Strict5sRSSphase,90scontinuous sampling,28800s workload,budgets,health andcleanup retained. Every failedrun contributes0elapsed. Start only;fullVM/Source/finalreport auditstillrequired;futureB1changesexcluded.",
+  "observerStartupCorrection": {
+    "firstObserverTerminal": true,
+    "firstLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rss-eight-hours-observer-v2.log",
+    "reason": "Observer was launched before Docker published the new container name andits initial inspect exited1. Source andViewer remained running;only the observer was relaunched for the same inspected live container,with events since its creation. No Source/Viewer restart or elapsed carry.",
+    "activeLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rss-eight-hours-observer-v2b.log"
+  },
+  "terminalResult": {
+    "status": "failed",
+    "at": "2026-10-17T10:34:18.661Z",
+    "evidence": "docs/evidence/client-memory-eight-hour-rss-failure.json",
+    "contributesElapsedSeconds": 0
+  }
+}

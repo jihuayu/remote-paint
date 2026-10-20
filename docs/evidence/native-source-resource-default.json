@@ -1,0 +1,129 @@
+{
+  "at": "2026-10-17T14:29:30.736464+00:00",
+  "status": "accepted-defaultSource-large-inputpressure-NOT-fullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-resource-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-resource-checkpoint-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-checkpoint-browser-v1",
+  "browserSha256": "14bce326d2c4c8627c49926fb6a78aa003a0dc6a67f130c922b48da3c2663efa",
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "scope": "ActualdefaultSource57.8MB non-tiled nativeRaw/SKP/Gateway/CanvasKit andexplicit2MiBnativeinputpressure/recovery. Verifier changes only;productionunchanged fromaccepteddefault-controls.",
+  "changed": [
+    "tests/verify-large-native-cache.mjs",
+    "tests/verify-source-input-pressure.mjs"
+  ],
+  "reports": {
+    "large": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-resource-frozen-large-v1.json",
+      "sha256": "d72f9fe46f0b6ed95f9fee8d58e33b52aedff0ccb10bbec3b1c17f9246937275"
+    },
+    "input": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-resource-frozen-input-v1.json",
+      "sha256": "8f69e9e805b94d78a83b6a9bd3050bce87628862eba3ab6451a878028e2bea93"
+    }
+  },
+  "large": {
+    "rawBytes": 57802256,
+    "resources": 4,
+    "actualPixels": [
+      {
+        "x": 2,
+        "y": 2,
+        "rgba": [
+          20,
+          37,
+          199,
+          255
+        ]
+      },
+      {
+        "x": 2050,
+        "y": 2,
+        "rgba": [
+          70,
+          37,
+          199,
+          255
+        ]
+      },
+      {
+        "x": 2,
+        "y": 2050,
+        "rgba": [
+          120,
+          37,
+          199,
+          255
+        ]
+      },
+      {
+        "x": 2050,
+        "y": 2050,
+        "rgba": [
+          170,
+          37,
+          199,
+          255
+        ]
+      }
+    ],
+    "hashOnlyOrdinal": 2,
+    "resourceRecoveries": 0,
+    "tiled": false,
+    "nodeCalls": {
+      "evaluate": 3,
+      "awaitPromise": 0,
+      "map": 0,
+      "publish": 0
+    }
+  },
+  "inputPressure": {
+    "inputLimit": 2097152,
+    "denied": 1,
+    "peak": 570584,
+    "nativeDrained": true,
+    "clockProgress": [
+      19,
+      23
+    ],
+    "pixel": [
+      29,
+      83,
+      197,
+      255
+    ],
+    "nodeCalls": {
+      "evaluate": 12,
+      "awaitPromise": 0,
+      "map": 0,
+      "publish": 0
+    },
+    "sourceErrors": 0,
+    "recoveredFrame": {
+      "captureId": "09ddf3256dbd2c021382e13628212965:3",
+      "frameId": 1,
+      "resources": 1
+    }
+  },
+  "proved": [
+    "LargepageusesdefaultNativeSource/productionBroker/privateIPC/Gateway/realCanvasKitreplay,notexplicitone-shotcaptureharness;allfour2048x2048noisyimagelayerspresent.",
+    "Exactly57,802,256requiredSKPbytes/fourresources/fouractualpixels;subsequentactualnativeframe haszero rawresourcebytes andallfour scene references;zeroHashRecovery.",
+    "NoNode map/publish/Runtime.awaitPromise inbothflows;Runtime.evaluate counts includeactualboundedlifecycle/fresh controls,notclaimedzero globally.",
+    "SourceNode scene/payloads properties absent;fixedscalar rawResourceCount/sceneResourceCount semantics preserved.",
+    "Explicit2MiBinputquota rejectstheactualoversizednativepacket;no partialframepublished,Source.capture.viewers0 whiledisplaydemand1 andclockprogresses.",
+    "Demand0 joinsactualC++inflightfalse/disabled beforemutatingpagescene;smalleractualimage recovers fullresources/correctpixel withoutchangingepoch/viewport/input.",
+    "Existinghardboundsanddeadlinesunchanged. ProductionC++/Rust/JS/dependencies unchanged;parent208JSeach/156Ruste/73Cpp evidence reusedattheirexactversions."
+  ],
+  "remaining": [
+    "45MiBBase64working-set/423rollback legacyBrokercontracts remainseparate;rawNative57.8MB isnotproof ofBase64RPCallocation.",
+    "64MiB/two7.5MiBunacked/thirdtypeddenial/14frameACKrecovery and100to1000mspressure;9MiBnetwork/control/ACK/close;4display+2automation;WebGL/Canvas/removalrestore/fullclose/crash/Nodefallback.",
+    "Canonicalpromotion andfullB1/all41/N1/fullSession/VM/PSS/8h/B4CPU stillpending."
+  ],
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "productionUnchanged": true,
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  }
+}

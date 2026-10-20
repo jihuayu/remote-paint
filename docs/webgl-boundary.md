@@ -1,8 +1,12 @@
 # WebGL 页面当前的兼容性边界
 
-当前链路不能保证 WebGL 页面可用。2026 年 10 月 16 日使用完整 Linux ARM64 浏览器、原生 Rust 数据面和独立 Viewer 实测，源页面 WebGL2 正常，但 Broker 报 `Missing native layer`，没有向 Viewer 提交首帧。这一情况会影响整个场景提交，不能假设只是 WebGL 区域为空白。
+当前按用户要求对 WebGL 使用黑框和“WebGL 无法显示”占位，页面其余内容继续显示。2026 年 10 月 16 日的 [真实原生验收](evidence/webgl-placeholder-live.json)覆盖 Linux ARM64 Chromium → Rust → CanvasKit Worker：源 WebGL2 可运行，占位黑色像素正确，文字可见；其他 DOM 颜色更新正确，移除 WebGL canvas 后正常恢复。
 
-## 实际验证
+Chromium 仅将 `TextureLayerImpl` 中 `ResourceSource::kDrawingBuffer` 标识为 WebGL，随同一捕获传递稳定 layer ID。Broker 在同一 namespace 内将对应 Viz quad 替换成占位，保留矩阵、可见区域、裁剪、圆角、透明度和层级。没有被明确标识的缺失资源依然拒绝提交，避免把图片丢失误报成 WebGL。
+
+`node tests/verify-webgl-live.mjs` 验证真实像素与生命周期；`node tests/verify-webgl-placeholder.mjs` 验证 Broker 几何和严格的资源失败隔离；`npm test` 覆盖叠加、裁剪与透明度。这些结果不表示已经传输了 WebGL 内容，也不覆盖 iframe、视频、复杂滤镜或所有浏览器。
+
+## 占位实现前的诊断
 
 探针创建一个 320×240 WebGL canvas，清屏为绿色，并分别读取 WebGL 像素和源浏览器截图；随后通过当前 `startLive()` 启动真实 Viewer，等待首帧。
 
@@ -11,7 +15,7 @@
 | 当前默认启动参数 | WebGL2 可用，ANGLE 与 SwiftShader | RGBA 26 191 64 255 | 12 秒内无首帧，Missing native layer |
 | 额外启用 SwiftShader 诊断参数 | WebGL2 可用，ANGLE 与 SwiftShader | RGBA 26 191 64 255 | 12 秒内无首帧，Missing native layer |
 
-这证明当前测试中的失败发生在捕获与资源映射阶段。即使服务器软件执行 WebGL，其输出仍然以纹理或 Surface 参与合成，不会自动变成现有的 SKP 录制层。单纯改一个 GPU 启动参数不能补齐资源映射。
+这证明当时的失败发生在捕获与资源映射阶段。即使服务器软件执行 WebGL，其输出仍然以纹理或 Surface 参与合成，不会自动变成现有的 SKP 录制层。单纯改一个 GPU 启动参数不能补齐资源映射。
 
 [原始诊断报告](evidence/webgl-boundary.json)保存探针 hash、完整浏览器 hash、两组参数、源像素与捕获错误。报告来自同一容器中的源浏览器与 Viewer，未验证物理 GPU、Mac Viewer 或任意复杂 WebGL 页面。
 
@@ -42,3 +46,7 @@ node tests/probe-webgl.mjs > webgl-report.json
 将任意 WebGL 指令搬到客户端重放，意味着还要同步 GPU 资源、shader、扩展、同步点及上下文生命周期，并处理不同设备差异。它是另一项较大的工程，当前更适合先把位图和视频回退做正确。
 
 上线前应增加静态与动态 WebGL、resize、滚动、iframe、遮挡、透明合成、context lost 和设备差异的验收。当前普通网页的 1–8 项验收不能推导出这些路径已通过。
+
+## 普通 Canvas 2D
+
+ResourceSource::kCanvas使用同帧像素副本和既有SKP资源，软件与ANGLE SwiftShader GPU API路径均通过。透明、intrinsic/CSS缩放、变换、圆角、混合DOM、动画配对、导航/resize及预算恢复见[Canvas证据](evidence/canvas-native-capture.json)。副本池不覆盖原始Canvas/驱动/完整Session；物理GPU/Mac原生待验。DrawingBuffer WebGL保持原占位规则，未知纹理继续明确拒绝。

@@ -1,0 +1,237 @@
+{
+  "at": "2026-10-17T09:00:18.556250+00:00",
+  "status": "failed-not-accepted",
+  "criterion": "Every adjacent memory-sample wall interval must be<90seconds throughout continuous8h. Preserve original gate;instrument phases and test shorter calibration before a fresh independent run.",
+  "runs": [
+    {
+      "runId": "2585828c-e3d1-4175-98f9-8a8c656dcd7c",
+      "name": "current-b10",
+      "status": "failed-continuous-coverage-gate",
+      "testTerminalStatus": "failed",
+      "reason": "Recorded sample interval exceeded original strict90-second gate;no allowance widened and no hours stitched.",
+      "failure": "AssertionError [ERR_ASSERTION]: Sleep/stall interrupted continuous memory coverage\n    at file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-b10-project/tests/verify-memory-soak.mjs:66:204",
+      "continuity": {
+        "name": "current-b10",
+        "samples": 468,
+        "first": "2026-10-17T00:50:09.917Z",
+        "last": "2026-10-17T08:50:11.509Z",
+        "elapsedCoveredSeconds": 28801.291916416998,
+        "maxWallGapSeconds": 118.79200000000128,
+        "gapsOver90Seconds": [
+          {
+            "from": "2026-10-17T00:57:28.102Z",
+            "to": "2026-10-17T00:58:59.427Z",
+            "wallGapSeconds": 91.32499999999999,
+            "monotonicGapSeconds": 91.32475854100005,
+            "cycles": [
+              574,
+              603
+            ]
+          },
+          {
+            "from": "2026-10-17T07:34:05.945Z",
+            "to": "2026-10-17T07:36:04.737Z",
+            "wallGapSeconds": 118.79200000000128,
+            "monotonicGapSeconds": 118.79282158299975,
+            "cycles": [
+              11542,
+              11570
+            ]
+          }
+        ]
+      },
+      "runDirectory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-b10",
+      "frozenVersion": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-b10/frozen-version.json",
+      "frozenVersionSha256": "1d4aacc50c86ea1c1f6f894fc52741265e54cb898bc90ad05d7d1eb9d7da3d5a",
+      "cleanup": {
+        "errors": [],
+        "sourceStatus": "closed",
+        "sourceClosed": true,
+        "brokerClosed": true,
+        "fixtureListening": false,
+        "remainingKinds": [
+          "node"
+        ]
+      },
+      "lastRecordedSourceHealth": {
+        "pageCrashed": false,
+        "browserDisconnected": false,
+        "brokerExited": false
+      },
+      "containerEvents": [
+        {
+          "action": "exec_create: true ",
+          "time": 1792198305,
+          "timeNano": 1792198305642708931,
+          "id": "1e9f7ed2f61597227f47705d49c7b86010b244535110c5b086dba9b907c7a927"
+        },
+        {
+          "action": "exec_start: true ",
+          "time": 1792198305,
+          "timeNano": 1792198305644845250,
+          "id": "1e9f7ed2f61597227f47705d49c7b86010b244535110c5b086dba9b907c7a927"
+        },
+        {
+          "action": "exec_die",
+          "time": 1792198305,
+          "timeNano": 1792198305669156355,
+          "id": "1e9f7ed2f61597227f47705d49c7b86010b244535110c5b086dba9b907c7a927"
+        },
+        {
+          "action": "top",
+          "time": 1792226172,
+          "timeNano": 1792226172628886463,
+          "id": "1e9f7ed2f61597227f47705d49c7b86010b244535110c5b086dba9b907c7a927"
+        },
+        {
+          "action": "die",
+          "time": 1792227013,
+          "timeNano": 1792227013174414583,
+          "id": "1e9f7ed2f61597227f47705d49c7b86010b244535110c5b086dba9b907c7a927"
+        },
+        {
+          "action": "destroy",
+          "time": 1792227013,
+          "timeNano": 1792227013283520222,
+          "id": "1e9f7ed2f61597227f47705d49c7b86010b244535110c5b086dba9b907c7a927"
+        }
+      ],
+      "operatorStop": null,
+      "sampledLogicalFailures": [
+        0,
+        0,
+        0
+      ],
+      "scope": "Only sampled observations are retained;not a continuous8h pass or fullVM/Session proof. New current-client run stopped by verified dedicated browser SIGTERM after its own115.838second gap was known;harness then closed Source normally. Older run completed requested workload but failed final continuity assertion. Cause of gaps not yet established."
+    },
+    {
+      "runId": "6aac0cc8-d1fb-42de-a2ef-f18696129f81",
+      "name": "current-client",
+      "status": "failed-continuous-coverage-gate",
+      "testTerminalStatus": "failed",
+      "reason": "Recorded sample interval exceeded original strict90-second gate;no allowance widened and no hours stitched.",
+      "failure": "page.waitForFunction: Target page, context or browser has been closed\n    at pixels (/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-client-project/tests/verify-memory-soak.mjs:26:13)\n    at /Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-client-project/tests/verify-memory-soak.mjs:54:37\n    at /Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-client-project/tests/verify-memory-soak.mjs:54:27",
+      "continuity": {
+        "name": "current-client",
+        "samples": 46,
+        "first": "2026-10-17T08:06:01.129Z",
+        "last": "2026-10-17T08:53:09.259Z",
+        "elapsedCoveredSeconds": 2828.0492995,
+        "maxWallGapSeconds": 115.83799999999974,
+        "gapsOver90Seconds": [
+          {
+            "from": "2026-10-17T08:42:55.309Z",
+            "to": "2026-10-17T08:44:51.147Z",
+            "wallGapSeconds": 115.83799999999974,
+            "monotonicGapSeconds": 115.83703191700033,
+            "cycles": [
+              1408,
+              1436
+            ]
+          }
+        ]
+      },
+      "runDirectory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-client",
+      "frozenVersion": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-client/frozen-version.json",
+      "frozenVersionSha256": "afee54c2bef2a57099c1fe79333b882255f7cb28f1b169c3ca8fcc32c05d077d",
+      "cleanup": {
+        "errors": [],
+        "sourceStatus": "closed",
+        "sourceClosed": true,
+        "brokerClosed": true,
+        "fixtureListening": false,
+        "remainingKinds": [
+          "node"
+        ]
+      },
+      "lastRecordedSourceHealth": {
+        "pageCrashed": false,
+        "browserDisconnected": false,
+        "brokerExited": false
+      },
+      "containerEvents": [
+        {
+          "action": "create",
+          "time": 1792224357,
+          "timeNano": 1792224357842751766,
+          "id": "34fa898e352935b934890b1dd619dbc380bf702832fd29ffda2b3c709296ae21"
+        },
+        {
+          "action": "attach",
+          "time": 1792224357,
+          "timeNano": 1792224357846031693,
+          "id": "34fa898e352935b934890b1dd619dbc380bf702832fd29ffda2b3c709296ae21"
+        },
+        {
+          "action": "start",
+          "time": 1792224357,
+          "timeNano": 1792224357966503862,
+          "id": "34fa898e352935b934890b1dd619dbc380bf702832fd29ffda2b3c709296ae21"
+        },
+        {
+          "action": "top",
+          "time": 1792226172,
+          "timeNano": 1792226172659482988,
+          "id": "34fa898e352935b934890b1dd619dbc380bf702832fd29ffda2b3c709296ae21"
+        },
+        {
+          "action": "die",
+          "time": 1792227452,
+          "timeNano": 1792227452182228565,
+          "id": "34fa898e352935b934890b1dd619dbc380bf702832fd29ffda2b3c709296ae21"
+        },
+        {
+          "action": "destroy",
+          "time": 1792227452,
+          "timeNano": 1792227452278092084,
+          "id": "34fa898e352935b934890b1dd619dbc380bf702832fd29ffda2b3c709296ae21"
+        }
+      ],
+      "operatorStop": {
+        "at": "2026-10-17T08:57:30.862145+00:00",
+        "runId": "6aac0cc8-d1fb-42de-a2ef-f18696129f81",
+        "action": "SIGTERM only the verified disposable Viewer browser root;existing harness should catch closure and clean Source normally",
+        "reason": "Existing115.838second sample gap violates unchanged<90second continuous-coverage gate;continuing cannot pass this run. Not an observation timeout,not a restart of this identity.",
+        "continuityAudit": {
+          "name": "current-client",
+          "samples": 46,
+          "first": "2026-10-17T08:06:01.129Z",
+          "last": "2026-10-17T08:53:09.259Z",
+          "elapsedCoveredSeconds": 2828.0492995,
+          "maxWallGapSeconds": 115.83799999999974,
+          "gapsOver90Seconds": [
+            {
+              "from": "2026-10-17T08:42:55.309Z",
+              "to": "2026-10-17T08:44:51.147Z",
+              "wallGapSeconds": 115.83799999999974,
+              "monotonicGapSeconds": 115.83703191700033,
+              "cycles": [
+                1408,
+                1436
+              ]
+            }
+          ]
+        },
+        "browserPid": 96753,
+        "viewerParentPid": 96750,
+        "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "parentMatchedExactOwnedHarness": true,
+        "sourceContainer": "remote-paint-memory-eight-hours-current-client-20261017",
+        "startedFromLatestClient": true,
+        "containsTimingCheckpoint": false
+      },
+      "sampledLogicalFailures": [
+        0,
+        0,
+        0
+      ],
+      "scope": "Only sampled observations are retained;not a continuous8h pass or fullVM/Session proof. New current-client run stopped by verified dedicated browser SIGTERM after its own115.838second gap was known;harness then closed Source normally. Older run completed requested workload but failed final continuity assertion. Cause of gaps not yet established."
+    }
+  ],
+  "notChanged": [
+    "No quota,90s gate,8h duration or pixel validation was relaxed.",
+    "All frozen roots/logs and prior failure evidence retained.",
+    "Current production client remains b46;acceptedNative timingBroker48dfe9/Chromiumecb unchanged."
+  ],
+  "next": "Measure timing of source diagnostics,page/worker heaps,SystemInfo/ps and observer event-loop delay. Bound slow sampling,avoid blocking workload,dispose temporary browser handles;calibrate before independent8h."
+}

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "components/remote_paint/font_subset.h"
+#include "components/remote_paint/asset_cache.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
@@ -177,47 +178,76 @@ class PortableTextCanvas final : public SkNWayCanvas {
   }
 };
 
-// Independent immutable asset caches survive changes to surrounding text and
-// tile recordings. Locks cover map operations only; font/image encoding remains
-// parallel across worker tasks. Both entry count and retained bytes are bounded.
+// Font and image pressure have separate budgets. Charges conservatively include
+// retained source faces/pixels and key metadata, rather than only PNG/subset
+// bytes. These are ownership estimates, not measurements of Skia/driver memory.
+constexpr size_t kFontCacheBytes = 32 * 1024 * 1024;
+constexpr size_t kImageCacheBytes = 32 * 1024 * 1024;
+using FontKey = std::pair<SkTypefaceID, std::set<SkGlyphID>>;
 struct FontAsset {
   sk_sp<SkTypeface> face;
-  std::set<SkGlyphID> glyphs;
   sk_sp<const SkData> bytes;
   FontStats stats;
+  std::string error;
 };
 struct ImageAsset { sk_sp<SkImage> image; sk_sp<const SkData> bytes; };
 struct AssetCache {
-  std::mutex mutex;
-  std::vector<FontAsset> fonts;
-  std::map<uint32_t,ImageAsset> images;
-  size_t retained_bytes = 0;
+  AssetMemo<FontKey, FontAsset> fonts{kFontCacheBytes, 128};
+  AssetMemo<uint32_t, ImageAsset> images{kImageCacheBytes, 128};
 };
 AssetCache& Assets(){static auto* cache=new AssetCache;return *cache;}
-sk_sp<const SkData> LookupFont(SkTypeface* face,const std::set<SkGlyphID>& glyphs,FontStats* stats){
-  auto& cache=Assets();std::lock_guard lock(cache.mutex);
-  for(const auto& entry:cache.fonts)if(entry.face->uniqueID()==face->uniqueID()&&std::includes(entry.glyphs.begin(),entry.glyphs.end(),glyphs.begin(),glyphs.end())){*stats=entry.stats;return entry.bytes;}
-  return nullptr;
+AssetMemo<FontKey, FontAsset>::Result FontEncoding(
+    SkTypeface* face, const std::set<SkGlyphID>& glyphs) {
+  return Assets().fonts.Get(FontKey{face->uniqueID(), glyphs},
+      [&](const FontKey& key, const FontAsset&) {
+        return key.first == face->uniqueID() &&
+          std::includes(key.second.begin(), key.second.end(), glyphs.begin(), glyphs.end());
+      }, [&] {
+        auto asset = std::make_shared<FontAsset>(); asset->face = sk_ref_sp(face);
+        SkString family; face->getFamilyName(&family);
+        asset->stats.family = family.c_str(); asset->stats.glyphs = glyphs.size();
+        size_t slots = 0; std::string error;
+        asset->bytes = SubsetTypeface(face, glyphs, &error, &slots);
+        if (!asset->bytes) {
+          asset->error = std::string("Typeface ") + family.c_str() + ": " + error;
+          return asset;
+        }
+        int collection_index = 0; auto original = face->openStream(&collection_index);
+        asset->stats.original_bytes = original ? original->getLength() : 0;
+        asset->stats.subset_bytes = asset->bytes->size(); asset->stats.glyph_slots = slots;
+        return asset;
+      }, [](const FontAsset& asset) -> std::optional<size_t> {
+        if (!asset.bytes || asset.bytes->size() > kFontCacheBytes ||
+            asset.stats.original_bytes > kFontCacheBytes) return std::nullopt;
+        // Both LRU and map own a glyph-set key; charge node/storage overhead.
+        return asset.bytes->size() + asset.stats.original_bytes +
+          asset.stats.glyphs * 96 + asset.stats.family.size() * 2 + sizeof(FontAsset) + 256;
+      });
 }
-void CacheFont(SkTypeface* face,const std::set<SkGlyphID>& glyphs,sk_sp<const SkData> bytes,const FontStats& stats){
-  auto& cache=Assets();std::lock_guard lock(cache.mutex);const size_t retained=bytes->size()+stats.original_bytes;
-  if(retained>64*1024*1024)return;
-  if(cache.retained_bytes+retained>64*1024*1024||cache.fonts.size()>=128){cache.fonts.clear();cache.images.clear();cache.retained_bytes=0;}
-  cache.fonts.push_back({sk_ref_sp(face),glyphs,std::move(bytes),stats});cache.retained_bytes+=retained;
-}
-sk_sp<const SkData> LookupImage(SkImage* image){auto& cache=Assets();std::lock_guard lock(cache.mutex);auto found=cache.images.find(image->uniqueID());return found==cache.images.end()?nullptr:found->second.bytes;}
-void CacheImage(SkImage* image,sk_sp<const SkData> bytes){
-  auto& cache=Assets();std::lock_guard lock(cache.mutex);if(cache.images.contains(image->uniqueID()))return;
-  const size_t retained=bytes->size()+image->imageInfo().computeMinByteSize();if(retained>64*1024*1024)return;
-  if(cache.retained_bytes+retained>64*1024*1024||cache.images.size()>=128){cache.images.clear();cache.fonts.clear();cache.retained_bytes=0;}
-  cache.images.emplace(image->uniqueID(),ImageAsset{sk_ref_sp(image),std::move(bytes)});cache.retained_bytes+=retained;
+AssetMemo<uint32_t, ImageAsset>::Result ImageEncoding(SkImage* image, bool retain_new_images) {
+  return Assets().images.Get(image->uniqueID(),
+      [](uint32_t, const ImageAsset&) { return false; }, [&] {
+        auto asset = std::make_shared<ImageAsset>(); asset->image = sk_ref_sp(image);
+#if defined(REMOTE_PAINT_CHROMIUM)
+        asset->bytes = SkPngRustEncoder::Encode(nullptr, image, {});
+#else
+        asset->bytes = SkPngEncoder::Encode(nullptr, image, {});
+#endif
+        return asset;
+      }, [retain_new_images](const ImageAsset& asset) -> std::optional<size_t> {
+        if (!retain_new_images) return std::nullopt;
+        if (!asset.bytes || asset.bytes->size() > kImageCacheBytes) return std::nullopt;
+        return asset.bytes->size() + asset.image->imageInfo().computeMinByteSize() + sizeof(ImageAsset) + 256;
+      });
 }
 
 struct Context {
   GlyphCollector collector;
-  std::vector<std::pair<std::string,sk_sp<const SkData>>> assets;
+  struct Asset { std::string kind; sk_sp<const SkData> bytes; size_t glyph_slots=0; };
+  std::vector<Asset> assets;
   SerializedPicture result;
   size_t budget;
+  bool retain_new_images = true;
   std::map<SkTypefaceID, sk_sp<const SkData>> fonts;
 };
 
@@ -235,34 +265,24 @@ SkSerialReturnType SerializeTypeface(SkTypeface* typeface, void* opaque) {
     ctx.result.font_ms += (NowMs() - started);
     return SkData::MakeEmpty();
   }
-  FontStats cached_stats;
-  if(auto cached=LookupFont(typeface,found->second,&cached_stats)){
-    if(cached->size()>ctx.budget){ctx.result.error="Cached font exceeds byte budget";return SkData::MakeEmpty();}
-    cached_stats.glyphs=found->second.size();cached_stats.missing_glyphs=ctx.collector.missing_glyphs[typeface->uniqueID()];
-    ctx.assets.emplace_back("font",cached);
-    ctx.result.fonts.push_back(cached_stats);ctx.fonts.emplace(typeface->uniqueID(),cached);ctx.result.font_cache_hits++;
-    ctx.result.font_ms+=(NowMs()-started);return cached;
-  }
   // Retain the source glyph IDs and the source variation coordinates.
   // Failure is explicit: never silently omit a font or use a client fallback.
-  std::string subset_error;
-  auto subset = SubsetTypeface(typeface, found->second, &subset_error);
+  const auto encoding = FontEncoding(typeface, found->second);
+  auto subset = encoding.value->bytes;
   if (!subset || subset->size() > ctx.budget) {
-    SkString family; typeface->getFamilyName(&family);
-    ctx.result.error = std::string("Typeface ") + family.c_str() + ": " +
-      (subset ? "subset exceeds byte budget" : subset_error);
+    ctx.result.error = subset ? "Font subset exceeds byte budget" : encoding.value->error;
     ctx.result.font_ms += (NowMs() - started);
     return SkData::MakeEmpty();
   }
-  SkString name;
-  typeface->getFamilyName(&name);
-  int collection_index = 0;
-  auto original = typeface->openStream(&collection_index);
-  ctx.result.fonts.push_back({name.c_str(), found->second.size(),
-                             original ? original->getLength() : 0,
-                             subset->size(), ctx.collector.missing_glyphs[typeface->uniqueID()]});
-  ctx.assets.emplace_back("font",subset);
-  CacheFont(typeface,found->second,subset,ctx.result.fonts.back());
+  auto stats = encoding.value->stats;
+  stats.glyphs = found->second.size();
+  stats.missing_glyphs = ctx.collector.missing_glyphs[typeface->uniqueID()];
+  ctx.result.fonts.push_back(std::move(stats));
+  // RETAIN_GIDS leaves holes below the largest selected glyph. The slot
+  // bound must describe the cached subset, not the number of glyphs used now.
+  ctx.assets.push_back({"font",subset,ctx.result.fonts.back().glyph_slots});
+  ctx.result.font_cache_hits += encoding.cache_hit;
+  ctx.result.font_encoding_shares += encoding.shared_encoding;
   ctx.fonts.emplace(typeface->uniqueID(), subset);
   ctx.result.font_ms += (NowMs() - started);
   return subset;
@@ -281,25 +301,18 @@ SkSerialReturnType SerializeImage(SkImage* image, void* opaque) {
     finish();
     return SkData::MakeEmpty();
   }
-  if(auto cached=LookupImage(image)){
-    if(cached->size()>ctx.budget-ctx.result.image_bytes){ctx.result.error="Cached image exceeds byte budget";finish();return SkData::MakeEmpty();}
-    ctx.assets.emplace_back("image",cached);
-    ctx.result.image_bytes+=cached->size();ctx.result.image_count++;ctx.result.image_cache_hits++;finish();return cached;
-  }
   // Read pixels already fetched by the browser, including authenticated/blob
   // images. The Viewer never receives a URL and never refetches source assets.
-#if defined(REMOTE_PAINT_CHROMIUM)
-  auto encoded = SkPngRustEncoder::Encode(nullptr, image, {});
-#else
-  auto encoded = SkPngEncoder::Encode(nullptr, image, {});
-#endif
+  const auto encoding = ImageEncoding(image, ctx.retain_new_images);
+  auto encoded = encoding.value->bytes;
   if (!encoded || encoded->size() > ctx.budget - ctx.result.image_bytes) {
     ctx.result.error = "Image encoding failed or exceeded byte budget";
     finish();
     return SkData::MakeEmpty();
   }
-  ctx.assets.emplace_back("image",encoded);
-  CacheImage(image,encoded);
+  ctx.assets.push_back({"image",encoded,0});
+  ctx.result.image_cache_hits += encoding.cache_hit;
+  ctx.result.image_encoding_shares += encoding.shared_encoding;
   ctx.result.image_bytes += encoded->size();
   ctx.result.image_count++;
   finish();
@@ -308,9 +321,23 @@ SkSerialReturnType SerializeImage(SkImage* image, void* opaque) {
 
 }  // namespace
 
-SerializedPicture SerializePicture(const SkPicture& picture, size_t byte_budget) {
+bool ClearSerializerAssetCachesForTesting() {
+  return Assets().fonts.ClearForTesting() && Assets().images.ClearForTesting();
+}
+
+SerializerAssetCacheStats GetSerializerAssetCacheStats() {
+  const auto fonts = Assets().fonts.stats();
+  const auto images = Assets().images.stats();
+  return {fonts.bytes, images.bytes, fonts.entries, images.entries,
+          fonts.evictions, images.evictions, fonts.pending, images.pending,
+          fonts.encodes, images.encodes, fonts.shares, images.shares,
+          fonts.bypasses, images.bypasses};
+}
+
+SerializedPicture SerializePicture(const SkPicture& picture, size_t byte_budget, bool retain_new_images) {
   Context ctx;
   ctx.budget = byte_budget;
+  ctx.retain_new_images = retain_new_images;
   SkPictureRecorder recorder;
   const auto bounds=picture.cullRect();
   const auto portable_started = NowMs();
@@ -338,20 +365,26 @@ SerializedPicture SerializePicture(const SkPicture& picture, size_t byte_budget)
   if (!data || data->size() > byte_budget) ctx.result.error = "Picture exceeds byte budget";
   if (ctx.result.error.empty()) {
     const auto bytes=UNSAFE_BUFFERS(std::span(static_cast<const uint8_t*>(data->data()),data->size()));
-    for(const auto& [kind,asset]:ctx.assets){
+    std::map<size_t,AssetRange> indexed;
+    for(const auto& [kind,asset,glyph_slots]:ctx.assets){
       const auto pattern=UNSAFE_BUFFERS(std::span(static_cast<const uint8_t*>(asset->data()),asset->size()));
-      if(pattern.size()<16)continue;
-      auto begin=bytes.begin();
-      while(ctx.result.asset_ranges.size()<256){
+      if(pattern.size()<16){ctx.result.error="Asset too small for complete index";return std::move(ctx.result);}
+      auto begin=bytes.begin();bool located=false;
+      while(true){
         auto found=std::search(begin,bytes.end(),pattern.begin(),pattern.begin()+16);
         if(found==bytes.end())break;
         const size_t offset=found-bytes.begin();
-        if(offset+pattern.size()<=bytes.size()&&std::equal(pattern.begin(),pattern.end(),found))ctx.result.asset_ranges.push_back({offset,pattern.size(),kind});
+        if(offset+pattern.size()<=bytes.size()&&std::equal(pattern.begin(),pattern.end(),found)){
+          located=true;auto [entry,inserted]=indexed.emplace(offset,AssetRange{offset,pattern.size(),kind,glyph_slots});
+          if(!inserted&&(entry->second.bytes!=pattern.size()||entry->second.kind!=kind||entry->second.glyph_slots!=glyph_slots)){ctx.result.error="Conflicting serialized asset index";return std::move(ctx.result);}
+          if(indexed.size()>256){ctx.result.error="Complete asset index exceeds range budget";return std::move(ctx.result);}
+        }
         begin=found+1;
       }
+      if(!located){ctx.result.error="Serialized asset missing from picture index";return std::move(ctx.result);}
     }
-    std::sort(ctx.result.asset_ranges.begin(),ctx.result.asset_ranges.end(),[](const auto& a,const auto& b){return a.offset<b.offset;});
-    ctx.result.asset_ranges.erase(std::unique(ctx.result.asset_ranges.begin(),ctx.result.asset_ranges.end(),[](const auto& a,const auto& b){return a.offset==b.offset;}),ctx.result.asset_ranges.end());
+    size_t end=0;for(const auto& [offset,range]:indexed){if(offset<end){ctx.result.error="Overlapping complete asset index";return std::move(ctx.result);}ctx.result.asset_ranges.push_back(range);end=offset+range.bytes;}
+    ctx.result.asset_ranges_complete=true;
     ctx.result.bytes=std::move(data);
   }
   return std::move(ctx.result);

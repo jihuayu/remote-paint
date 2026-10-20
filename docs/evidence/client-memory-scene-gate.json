@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-16T17:49:22.219954+00:00",
+  "scope": "C5 retained FrameGate JSON metadata, raw pin lifetime across async display and bounded ViewerInput display stamp. Does not validate physical memory/decoding admission or the still-running frozen8h version.",
+  "uncommitted": true,
+  "sha256": {
+    "protocol/client-memory.mjs": "e5094953a2d91fcccd743abc999b237ded06cccdb7a8b9855861b7953e57e03b",
+    "protocol/live-wire.mjs": "11c6c2a8418fdfb0a3965fef5f18edba0fb45eb432247fc343a88a8ea0520ce0",
+    "viewer/input.mjs": "d134fe9b4739a6e23428bc730e85ae896a269b04a8a339fc9633927f3a6e1ad7",
+    "tests/scene-memory.test.mjs": "1edefa54cc2e695a1533987f05f7906914d94044edd23d08e5269f0b0e1f1bbd",
+    "tests/viewer-input.test.mjs": "ed9f968a693b8518bc2a8813b2f796385b3547c418a74f826bd0fb6a5747387c",
+    "tests/verify-renderer-runtime.mjs": "a8cef6a9f050695ac6d3318662c11cd4653fa5467dbfbb38893ead57da539616"
+  },
+  "nodeTests": 103,
+  "checks": [
+    "Bounded JSON-like metadata estimates including unknown retained fields",
+    "Admission refusal leaves old committed frame and owners unchanged",
+    "Clear/recover retains active display scene and deduplicated raw buffer pins until display ends",
+    "Canceled async completion cannot restore old baseline or replace a new committed frame",
+    "ViewerInput keeps bounded viewport/native stamp rather than scene graph",
+    "Actual Chrome main+Worker blocked CanvasKit rotation and FrameGate stale generation/commit checks passed"
+  ]
+}

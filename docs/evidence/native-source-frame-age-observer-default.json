@@ -1,0 +1,914 @@
+{
+  "at": "2026-10-17T17:52:31.147240+00:00",
+  "status": "accepted-bounded-exactWorkerPixelclock-observer-twoProfiles-NOT-fullN1matrix",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-frame-age-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-frame-age-checkpoint-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-clock-checkpoint-browser-v1",
+  "browserSha256": "c5d29a3b5a22ff27ee3914c68650feea3e342dd1c4d2dc502e9ff0e596ae1b4e",
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-clock-checkpoint-v1.json",
+  "changed": [
+    "tests/frame-age-observer.mjs",
+    "tests/frame-age-clock.test.mjs",
+    "tests/verify-native-source-frame-age.mjs"
+  ],
+  "productionUnchanged": true,
+  "sourceFiles": 535,
+  "clockMathTestsLinux": {
+    "count": 7,
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-frame-age-unit-linux-v1.log",
+    "sha256": "0cfb1fc2e2102fa17c13b92613d3b37d13335201badcdeb551fe3c7631ec8e4b"
+  },
+  "runs": [
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/frame-age-pilot-v2/loss.json",
+      "sha256": "2fc0335ec47409fd6efd66b514a500b3db0316f85dff2e407b2f8c40abd64003",
+      "status": "passed",
+      "inputs": 2000,
+      "rows": [
+        {
+          "configuredRttMs": 0,
+          "lossPercent": 0,
+          "inputs": 1000,
+          "inputP50Ms": 37.099999994039536,
+          "inputP95Ms": 58.80000001192093,
+          "inputP99Ms": 64.89999997615814,
+          "inputMaxMs": 133.69999998807907,
+          "frameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "a47f4e85982718c4f3109bda256cf4f5108dbe51b47b1bcdd27ce7d10683dc08",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "d5af09a7809983bc287de960255e6b27ba0d22e28f91904dd40099f12afe029e",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  412,
+                  72
+                ],
+                [
+                  610,
+                  190
+                ],
+                [
+                  690,
+                  190
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "5ebd6b384f3e152d85942535ac0dfaba6cb6ae7a54e4b6e4cc35b17fece68e44",
+                  "instrumentationBytes": 2075
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "5ebd6b384f3e152d85942535ac0dfaba6cb6ae7a54e4b6e4cc35b17fece68e44"
+                }
+              ]
+            },
+            "coverage": {
+              "successfulCommits": 1093,
+              "pixelSamples": 1093,
+              "normalFrameEvents": 1093,
+              "paired": 1093,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 1093,
+              "p50Ms": 8.057423427700996,
+              "p95Ms": 10.975149929523468,
+              "p99Ms": 42.002830892801285,
+              "maxMs": 423.5212311446667,
+              "minMs": 3.239885836839676
+            },
+            "ageLower": {
+              "count": 1093,
+              "p50Ms": 7.072846358060837,
+              "p95Ms": 9.981236492633819,
+              "p99Ms": 41.00420409941673,
+              "maxMs": 422.52200434112547,
+              "minMs": 2.2626560082435607
+            },
+            "ageUpper": {
+              "count": 1093,
+              "p50Ms": 9.0409897813797,
+              "p95Ms": 11.971807206630707,
+              "p99Ms": 43.00145768618584,
+              "maxMs": 424.5204579482079,
+              "minMs": 4.217115665435791
+            },
+            "clockUncertainty": {
+              "count": 1093,
+              "p50Ms": 0.9841287384033204,
+              "p95Ms": 0.9971374521255494,
+              "p99Ms": 0.9988609502315526,
+              "maxMs": 0.9992422411441808,
+              "minMs": 0.9701641747951504
+            },
+            "pixelObserverCost": {
+              "count": 1093,
+              "p50Ms": 0,
+              "p95Ms": 0.10000002384185791,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 0.7999999821186066,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 28676.379000008106,
+                "midpointOffsetChangeMs": 0.02203996479511261,
+                "estimatedPpm": 0.7685755860287096,
+                "lowerPpm": -13.065387444087524,
+                "upperPpm": 14.602539655408735
+              },
+              "worker": {
+                "domainDurationMs": 28667.40000000596,
+                "midpointOffsetChangeMs": -0.150307005961281,
+                "estimatedPpm": -5.243133523139515,
+                "lowerPpm": -46.075647109981496,
+                "upperPpm": 35.589380063702464
+              }
+            }
+          },
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 428.6164570000001,
+            "reconnectMs": 314.2268379999987,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "dropMetrics": {
+            "sourcePublished": 1132,
+            "sourceSupersessions": 0,
+            "sourceResourceRecoveries": 0,
+            "nativeRejections": [],
+            "inputPeers": [
+              {
+                "id": "native-0",
+                "stats": {
+                  "bytes": 16746351,
+                  "coalesced": 0,
+                  "delta": 1060,
+                  "full": 1,
+                  "maxInflight": 5,
+                  "maxInflightBytes": 47260,
+                  "maxPendingBytes": 22340,
+                  "pendingBytes": 0,
+                  "resources": 2002,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 4.7083710000000005
+                }
+              },
+              {
+                "id": "native-1",
+                "stats": {
+                  "bytes": 23785196,
+                  "coalesced": 0,
+                  "delta": 1053,
+                  "full": 1,
+                  "maxInflight": 1,
+                  "maxInflightBytes": 29528,
+                  "maxPendingBytes": 29528,
+                  "pendingBytes": 0,
+                  "resources": 2000,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 2.04629
+                }
+              }
+            ],
+            "finalPeers": [
+              {
+                "id": "native-1",
+                "stats": {
+                  "bytes": 24402302,
+                  "coalesced": 26,
+                  "delta": 1097,
+                  "full": 1,
+                  "maxInflight": 1,
+                  "maxInflightBytes": 31282,
+                  "maxPendingBytes": 31282,
+                  "pendingBytes": 0,
+                  "resources": 2031,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 8.83016
+                }
+              },
+              {
+                "id": "native-2",
+                "stats": {
+                  "bytes": 74075,
+                  "coalesced": 0,
+                  "delta": 6,
+                  "full": 1,
+                  "maxInflight": 2,
+                  "maxInflightBytes": 35817,
+                  "maxPendingBytes": 28169,
+                  "pendingBytes": 0,
+                  "resources": 4,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 7.661411
+                }
+              }
+            ],
+            "inputKernelPacketDrops": 0,
+            "scope": "Source counters,Gateway snapshot coalescing andkernel packet loss have different sampling boundaries andsemantics. Native rejected outcomes areexplicit;ordinal gaps are notassigned invented dropcauses. Viewer successfulcommits/100%pairedpixel samples are recorded bytheobserver."
+          },
+          "nodeCalls": {
+            "evaluate": 1060,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/frame-age-pilot-v2/case-0-0.json",
+          "sha256": "cbef44f84aa6cde56bd4926d44ab0abbe9bfeea2432f3d6da50b9c4ca450f35d"
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 2,
+          "inputs": 1000,
+          "inputP50Ms": 408,
+          "inputP95Ms": 921.8999999761581,
+          "inputP99Ms": 1550.199999988079,
+          "inputMaxMs": 1813.2999999821186,
+          "frameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "a47f4e85982718c4f3109bda256cf4f5108dbe51b47b1bcdd27ce7d10683dc08",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "d5af09a7809983bc287de960255e6b27ba0d22e28f91904dd40099f12afe029e",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  412,
+                  72
+                ],
+                [
+                  610,
+                  190
+                ],
+                [
+                  690,
+                  190
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "5ebd6b384f3e152d85942535ac0dfaba6cb6ae7a54e4b6e4cc35b17fece68e44",
+                  "instrumentationBytes": 2075
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "5ebd6b384f3e152d85942535ac0dfaba6cb6ae7a54e4b6e4cc35b17fece68e44"
+                }
+              ]
+            },
+            "coverage": {
+              "successfulCommits": 495,
+              "pixelSamples": 495,
+              "normalFrameEvents": 495,
+              "paired": 495,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 495,
+              "p50Ms": 209.92468720674515,
+              "p95Ms": 464.63211150467396,
+              "p99Ms": 698.6546923667192,
+              "maxMs": 985.1838155388832,
+              "minMs": 75.45238056778908
+            },
+            "ageLower": {
+              "count": 495,
+              "p50Ms": 209.01754037046433,
+              "p95Ms": 463.7190045764446,
+              "p99Ms": 697.7365798106193,
+              "maxMs": 984.2648116400242,
+              "minMs": 74.55240032577515
+            },
+            "ageUpper": {
+              "count": 495,
+              "p50Ms": 210.83183404302596,
+              "p95Ms": 465.5452184329033,
+              "p99Ms": 699.5728049228192,
+              "maxMs": 986.1028194377423,
+              "minMs": 76.352360809803
+            },
+            "clockUncertainty": {
+              "count": 495,
+              "p50Ms": 0.9106118777990275,
+              "p95Ms": 0.9270728329420024,
+              "p99Ms": 0.929855594992631,
+              "maxMs": 0.9299521545171672,
+              "minMs": 0.8984942982196742
+            },
+            "pixelObserverCost": {
+              "count": 495,
+              "p50Ms": 0,
+              "p95Ms": 0.10000002384185791,
+              "p99Ms": 0.19999998807907104,
+              "maxMs": 0.7000000178813934,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 31816.435000002384,
+                "midpointOffsetChangeMs": 0.021345004439353943,
+                "estimatedPpm": 0.6708798279679148,
+                "lowerPpm": -11.34511017303342,
+                "upperPpm": 12.686869828969249
+              },
+              "worker": {
+                "domainDurationMs": 31807.90000000596,
+                "midpointOffsetChangeMs": 0.048510494038055185,
+                "estimatedPpm": 1.5251083547812365,
+                "lowerPpm": -31.298482639910645,
+                "upperPpm": 34.348699349473115
+              }
+            }
+          },
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 676.100096999995,
+            "reconnectMs": 1667.413714000002,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "dropMetrics": {
+            "sourcePublished": 1294,
+            "sourceSupersessions": 0,
+            "sourceResourceRecoveries": 0,
+            "nativeRejections": [],
+            "inputPeers": [
+              {
+                "id": "native-0",
+                "stats": {
+                  "bytes": 6420948,
+                  "coalesced": 688,
+                  "delta": 479,
+                  "full": 1,
+                  "maxInflight": 6,
+                  "maxInflightBytes": 128401,
+                  "maxPendingBytes": 22329,
+                  "pendingBytes": 0,
+                  "resources": 724,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 162.031351
+                }
+              },
+              {
+                "id": "native-1",
+                "stats": {
+                  "bytes": 2847404,
+                  "coalesced": 1024,
+                  "delta": 133,
+                  "full": 1,
+                  "maxInflight": 1,
+                  "maxInflightBytes": 29460,
+                  "maxPendingBytes": 29460,
+                  "pendingBytes": 0,
+                  "resources": 230,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 161.357913
+                }
+              }
+            ],
+            "finalPeers": [
+              {
+                "id": "native-1",
+                "stats": {
+                  "bytes": 3037550,
+                  "coalesced": 1136,
+                  "delta": 147,
+                  "full": 1,
+                  "maxInflight": 1,
+                  "maxInflightBytes": 31223,
+                  "maxPendingBytes": 31223,
+                  "pendingBytes": 0,
+                  "resources": 240,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 161.100342
+                }
+              },
+              {
+                "id": "native-2",
+                "stats": {
+                  "bytes": 81800,
+                  "coalesced": 6,
+                  "delta": 7,
+                  "full": 1,
+                  "maxInflight": 6,
+                  "maxInflightBytes": 66518,
+                  "maxPendingBytes": 28187,
+                  "pendingBytes": 0,
+                  "resources": 4,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 255.60028400000002
+                }
+              }
+            ],
+            "inputKernelPacketDrops": 106,
+            "scope": "Source counters,Gateway snapshot coalescing andkernel packet loss have different sampling boundaries andsemantics. Native rejected outcomes areexplicit;ordinal gaps are notassigned invented dropcauses. Viewer successfulcommits/100%pairedpixel samples are recorded bytheobserver."
+          },
+          "nodeCalls": {
+            "evaluate": 1051,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/frame-age-pilot-v2/case-150-2.json",
+          "sha256": "9385a0f821bb68220dcef148b17161b8067a6f3245667951d46880edf48f6e69"
+        }
+      ],
+      "versionNote": "Workingpilot precedes only stdio suppression for expected noqueue cleanup;helper/math/production identical. Frozenrun pins all535files."
+    },
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/frame-age-frozen-v1/loss.json",
+      "sha256": "5687b3c8ec791f383bccf97fa95822b72eb491770255c42dac80c0b189085cd6",
+      "status": "passed",
+      "inputs": 2000,
+      "rows": [
+        {
+          "configuredRttMs": 0,
+          "lossPercent": 0,
+          "inputs": 1000,
+          "inputP50Ms": 47.79999998211861,
+          "inputP95Ms": 59.29999998211861,
+          "inputP99Ms": 62.69999998807907,
+          "inputMaxMs": 125.10000002384186,
+          "frameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "a47f4e85982718c4f3109bda256cf4f5108dbe51b47b1bcdd27ce7d10683dc08",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "d5af09a7809983bc287de960255e6b27ba0d22e28f91904dd40099f12afe029e",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  412,
+                  72
+                ],
+                [
+                  610,
+                  190
+                ],
+                [
+                  690,
+                  190
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "5ebd6b384f3e152d85942535ac0dfaba6cb6ae7a54e4b6e4cc35b17fece68e44",
+                  "instrumentationBytes": 2075
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "5ebd6b384f3e152d85942535ac0dfaba6cb6ae7a54e4b6e4cc35b17fece68e44"
+                }
+              ]
+            },
+            "coverage": {
+              "successfulCommits": 1089,
+              "pixelSamples": 1089,
+              "normalFrameEvents": 1089,
+              "paired": 1089,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 1089,
+              "p50Ms": 8.055230274796486,
+              "p95Ms": 11.574911326169968,
+              "p99Ms": 38.80088613927364,
+              "maxMs": 619.7190196812153,
+              "minMs": 3.148740842938423
+            },
+            "ageLower": {
+              "count": 1089,
+              "p50Ms": 7.100894158124924,
+              "p95Ms": 10.623555903673171,
+              "p99Ms": 37.8442855527401,
+              "maxMs": 618.763294463396,
+              "minMs": 2.19564551615715
+            },
+            "ageUpper": {
+              "count": 1089,
+              "p50Ms": 9.01107245182991,
+              "p95Ms": 12.526266748666764,
+              "p99Ms": 39.75748672580719,
+              "maxMs": 620.6747448990345,
+              "minMs": 4.101836169719696
+            },
+            "clockUncertainty": {
+              "count": 1089,
+              "p50Ms": 0.9535263428688046,
+              "p95Ms": 0.9562037984132767,
+              "p99Ms": 0.9564601281881329,
+              "maxMs": 0.9567166516780854,
+              "minMs": 0.9504568079709941
+            },
+            "pixelObserverCost": {
+              "count": 1089,
+              "p50Ms": 0,
+              "p95Ms": 0.10000002384185791,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 1.5999999940395355,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 28553.662000000477,
+                "midpointOffsetChangeMs": 0.012084022164344788,
+                "estimatedPpm": 0.4232039366559913,
+                "lowerPpm": -14.427500724854964,
+                "upperPpm": 15.27390755443664
+              },
+              "worker": {
+                "domainDurationMs": 28544.59999999404,
+                "midpointOffsetChangeMs": 0.04027050595959736,
+                "estimatedPpm": 1.4107924426898877,
+                "lowerPpm": -36.46546085919651,
+                "upperPpm": 39.28704574457628
+              }
+            }
+          },
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 435.79344299999866,
+            "reconnectMs": 317.8031540000011,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "dropMetrics": {
+            "sourcePublished": 1141,
+            "sourceSupersessions": 0,
+            "sourceResourceRecoveries": 0,
+            "nativeRejections": [],
+            "inputPeers": [
+              {
+                "id": "native-0",
+                "stats": {
+                  "bytes": 16807069,
+                  "coalesced": 0,
+                  "delta": 1068,
+                  "full": 1,
+                  "maxInflight": 6,
+                  "maxInflightBytes": 41247,
+                  "maxPendingBytes": 22328,
+                  "pendingBytes": 0,
+                  "resources": 2006,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 2.9365390000000002
+                }
+              },
+              {
+                "id": "native-1",
+                "stats": {
+                  "bytes": 23832143,
+                  "coalesced": 0,
+                  "delta": 1057,
+                  "full": 1,
+                  "maxInflight": 1,
+                  "maxInflightBytes": 29516,
+                  "maxPendingBytes": 29516,
+                  "pendingBytes": 0,
+                  "resources": 2004,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 3.1890389999999997
+                }
+              }
+            ],
+            "finalPeers": [
+              {
+                "id": "native-1",
+                "stats": {
+                  "bytes": 24526862,
+                  "coalesced": 17,
+                  "delta": 1112,
+                  "full": 1,
+                  "maxInflight": 1,
+                  "maxInflightBytes": 31285,
+                  "maxPendingBytes": 31285,
+                  "pendingBytes": 0,
+                  "resources": 2036,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 8.224105
+                }
+              },
+              {
+                "id": "native-2",
+                "stats": {
+                  "bytes": 66406,
+                  "coalesced": 0,
+                  "delta": 5,
+                  "full": 1,
+                  "maxInflight": 1,
+                  "maxInflightBytes": 28167,
+                  "maxPendingBytes": 28167,
+                  "pendingBytes": 0,
+                  "resources": 4,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 7.506678
+                }
+              }
+            ],
+            "inputKernelPacketDrops": 0,
+            "scope": "Source counters,Gateway snapshot coalescing andkernel packet loss have different sampling boundaries andsemantics. Native rejected outcomes areexplicit;ordinal gaps are notassigned invented dropcauses. Viewer successfulcommits/100%pairedpixel samples are recorded bytheobserver."
+          },
+          "nodeCalls": {
+            "evaluate": 1059,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/frame-age-frozen-v1/case-0-0.json",
+          "sha256": "b7daf004608477ba7291d57b67a149b343f2743e94d8b07251a85eb0cf8a655f"
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 2,
+          "inputs": 1000,
+          "inputP50Ms": 462.59999999403954,
+          "inputP95Ms": 698.9000000059605,
+          "inputP99Ms": 806.2999999821186,
+          "inputMaxMs": 964,
+          "frameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "a47f4e85982718c4f3109bda256cf4f5108dbe51b47b1bcdd27ce7d10683dc08",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "d5af09a7809983bc287de960255e6b27ba0d22e28f91904dd40099f12afe029e",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  412,
+                  72
+                ],
+                [
+                  610,
+                  190
+                ],
+                [
+                  690,
+                  190
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "5ebd6b384f3e152d85942535ac0dfaba6cb6ae7a54e4b6e4cc35b17fece68e44",
+                  "instrumentationBytes": 2075
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "5ebd6b384f3e152d85942535ac0dfaba6cb6ae7a54e4b6e4cc35b17fece68e44"
+                }
+              ]
+            },
+            "coverage": {
+              "successfulCommits": 489,
+              "pixelSamples": 489,
+              "normalFrameEvents": 489,
+              "paired": 489,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 489,
+              "p50Ms": 230.84646160900593,
+              "p95Ms": 425.48682917654514,
+              "p99Ms": 601.9635626673698,
+              "maxMs": 726.8465795516968,
+              "minMs": 75.64809852838516
+            },
+            "ageLower": {
+              "count": 489,
+              "p50Ms": 229.83711052441598,
+              "p95Ms": 424.4154251863956,
+              "p99Ms": 600.8816116204262,
+              "maxMs": 725.7649061729908,
+              "minMs": 74.70085648202897
+            },
+            "ageUpper": {
+              "count": 489,
+              "p50Ms": 231.85581269359588,
+              "p95Ms": 426.55823316669466,
+              "p99Ms": 603.0455137143135,
+              "maxMs": 727.9282529304028,
+              "minMs": 76.59534057474136
+            },
+            "clockUncertainty": {
+              "count": 489,
+              "p50Ms": 1.0022516051531056,
+              "p95Ms": 1.0783568719625407,
+              "p99Ms": 1.0927139023542338,
+              "maxMs": 1.093009481787675,
+              "minMs": 0.944178635835641
+            },
+            "pixelObserverCost": {
+              "count": 489,
+              "p50Ms": 0,
+              "p95Ms": 0.10000002384185791,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 0.800000011920929,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 32336.009000003338,
+                "midpointOffsetChangeMs": 0.0041479915380477905,
+                "estimatedPpm": 0.12827778276680224,
+                "lowerPpm": -13.250552525620934,
+                "upperPpm": 13.50710901279958
+              },
+              "worker": {
+                "domainDurationMs": 32329.20000001788,
+                "midpointOffsetChangeMs": 0.00016348211829608772,
+                "estimatedPpm": 0.005056794424111865,
+                "lowerPpm": -37.17558794773825,
+                "upperPpm": 37.18570153658647
+              }
+            }
+          },
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 843.3274840000013,
+            "reconnectMs": 1666.3489259999988,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "dropMetrics": {
+            "sourcePublished": 1301,
+            "sourceSupersessions": 0,
+            "sourceResourceRecoveries": 0,
+            "nativeRejections": [],
+            "inputPeers": [
+              {
+                "id": "native-0",
+                "stats": {
+                  "bytes": 6048309,
+                  "coalesced": 691,
+                  "delta": 475,
+                  "full": 1,
+                  "maxInflight": 6,
+                  "maxInflightBytes": 123722,
+                  "maxPendingBytes": 22304,
+                  "pendingBytes": 0,
+                  "resources": 598,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 161.3406
+                }
+              },
+              {
+                "id": "native-1",
+                "stats": {
+                  "bytes": 2921208,
+                  "coalesced": 1014,
+                  "delta": 139,
+                  "full": 1,
+                  "maxInflight": 1,
+                  "maxInflightBytes": 29459,
+                  "maxPendingBytes": 29459,
+                  "pendingBytes": 0,
+                  "resources": 240,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 690.8444860000001
+                }
+              }
+            ],
+            "finalPeers": [
+              {
+                "id": "native-1",
+                "stats": {
+                  "bytes": 3061940,
+                  "coalesced": 1121,
+                  "delta": 149,
+                  "full": 1,
+                  "maxInflight": 1,
+                  "maxInflightBytes": 31222,
+                  "maxPendingBytes": 31222,
+                  "pendingBytes": 0,
+                  "resources": 248,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 148.41518000000002
+                }
+              },
+              {
+                "id": "native-2",
+                "stats": {
+                  "bytes": 81702,
+                  "coalesced": 4,
+                  "delta": 7,
+                  "full": 1,
+                  "maxInflight": 6,
+                  "maxInflightBytes": 66410,
+                  "maxPendingBytes": 28186,
+                  "pendingBytes": 0,
+                  "resources": 4,
+                  "slowDisconnects": 0,
+                  "ackRttMs": 187.783809
+                }
+              }
+            ],
+            "inputKernelPacketDrops": 119,
+            "scope": "Source counters,Gateway snapshot coalescing andkernel packet loss have different sampling boundaries andsemantics. Native rejected outcomes areexplicit;ordinal gaps are notassigned invented dropcauses. Viewer successfulcommits/100%pairedpixel samples are recorded bytheobserver."
+          },
+          "nodeCalls": {
+            "evaluate": 1043,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/frame-age-frozen-v1/case-150-2.json",
+          "sha256": "1aa75cfae1fe7c1021be61f0dffd4a32b3fac559cda6d8858ca34fa87333e194"
+        }
+      ],
+      "versionNote": "Exactfrozen535fileversion;7Linuxclockmathtests pass."
+    }
+  ],
+  "totalInputs": 4000,
+  "totalPairedFrames": 3166,
+  "proved": [
+    "Tests-only observer runs synchronously after actualproductionWorker gate.commitAsync/draw,before nextcommit;counter,pixels,normalframeevent/nativejob identity paired for100%successfulcommitsinthewindow. Not mainRAFmetadata approximation.",
+    "No browserrouting: test input-map must reproduce productionbundle fingerprint before adding instrumentation,then uses normalmakeStaticAssets/preparedAssets/Source/Control/Transport/versionhandshake. Actualservedmodule SHA matches registeredinstrumentedSHA;productionWorker untouched.",
+    "Before/after12probespernative/Workerdomain:request-responsebounds/minRTT/rendererPID andclocklabels;affineclockdriftassumption explicit;timerquantization200usWorker/1usnative atprobes/endpoints included. Ages havep50/p95/p99/max anduncertaintyintervals;pixelobservercostwithtimerallowance.",
+    "Baselineand150ms2%kernelprofiles each1000actualCDPinputs complete twice,plusactualanimation/22movedrag/300msblackhole/input1001pixel/reconnect/lease revocation;coverageincludesnewconnection andSourceinputcounterneverregresses.",
+    "7Linuxmath testscoverdifferentorigins/affinedrift/asymmetry/quantization/outofbracket/PID-domainchanges/impossiblenegativeage/longorigins;badclocksfailwithoutclamping.",
+    "NativeSourceerrors0,map/publish/awaitPromise0;kernel packetdrops,Gatewaycoalescing andproducer rejectionoutcomes separatelyrecorded,notinventedfromordinalgaps. ACK-onlyRTTpeerisnotasecondpixelViewer."
+  ],
+  "failedStartupProbe": {
+    "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-frame-age-failed-v1",
+    "audit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-frame-age-startup-audit-v1.json",
+    "finding": "Browserrequestinterceptionevenunalteredmodule preventsconnectioninthisenvironment;controlandwrapper-onlyloadnormally. Replacedinterceptionwithnormalproductionstaticbuilder,withoutlooseningOrigin/auth checks. Originalfailure preserved."
+  },
+  "remaining": [
+    "Full13profile*1000input matrix andindependentrepetition onthisexactC5d observercandidate;>=9MiBlargeframeage stillpending.",
+    "EndpointactualCPUOffscreenCanvaspixelread,notphysicalscanout/GPU/allbrowsers. Calibrationintervalsassumeaffinedriftbetweenprobes,notarbitrarynonlineardriftproof.",
+    "CompleteN1/longtermstress/fullB1canonicalpromotion/all41/SDK/physicaldevices/fullSessionPSS/8h notachieved."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "observerOverheadLimits": "pixelObserverCost measures synchronous pixel reads only;its declared timerallowance is0.4ms. Serialization/postMessage/mainlistener/probe impact is notseparately measured. Instrumentedmeasurements are scoped to thisobserver workload,not claimedasuninstrumentedperformance improvement/SLA."
+}

@@ -1,0 +1,302 @@
+{
+  "at": "2026-10-17T16:31:07.649833+00:00",
+  "status": "accepted-actualnative-9MiB-local-contracts-NOT-kernelnetwork-orfullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-checkpoint-project-v1",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-full-live-checkpoint-v1.json",
+  "changed": [
+    "tests/verify-native-source-bulk-contract.mjs"
+  ],
+  "productionUnchanged": true,
+  "scope": "ActualdefaultSource/defaulttiled1792Canvas>=9MiBrealSKPs:separateraw16MiBwindow/15s/ACK1.5scaseandoriginalpaired32KiBchunk/default5sACK/800msreadpause/control3s/200mscleanGatewayclosecase;2realnativeSessions/pixels/CDP. Socket32KiBsendbufferandallproductioncapsunchanged. Localonly;kernelimpairment/N1next.",
+  "checks": 4,
+  "diagnostics": {
+    "byteWindow": {
+      "firstBytes": 11054972,
+      "secondBytes": 11054944,
+      "windowBytes": 16777216,
+      "firstMs": 6713.004711,
+      "afterAckMs": 6069.365584000001,
+      "first": {
+        "phase": "byte-window",
+        "at": 7616.855227,
+        "pageEpoch": 1,
+        "frameId": 2,
+        "ordinal": 2,
+        "sourceFrame": 6,
+        "inputSeq": 0,
+        "tag": 1,
+        "pixels": [
+          [
+            43,
+            161,
+            89,
+            255
+          ],
+          [
+            43,
+            161,
+            89,
+            255
+          ],
+          [
+            43,
+            161,
+            89,
+            255
+          ]
+        ],
+        "marker": [
+          0,
+          0,
+          42,
+          255
+        ],
+        "requiredBytes": 11054972
+      },
+      "second": {
+        "phase": "byte-window",
+        "at": 14965.738696,
+        "pageEpoch": 1,
+        "frameId": 5,
+        "ordinal": 9,
+        "sourceFrame": 152,
+        "inputSeq": 0,
+        "tag": 2,
+        "pixels": [
+          [
+            191,
+            61,
+            107,
+            255
+          ],
+          [
+            191,
+            61,
+            107,
+            255
+          ],
+          [
+            191,
+            61,
+            107,
+            255
+          ]
+        ],
+        "marker": [
+          0,
+          0,
+          42,
+          255
+        ],
+        "requiredBytes": 11054944
+      },
+      "ackTimeoutMs": 1500
+    },
+    "ackDeadline": {
+      "configuredMs": 1500,
+      "closeCode": 1013,
+      "afterCommitMs": 1506.1395420000008
+    },
+    "control": {
+      "ackTimeoutMs": 5000,
+      "readPauseMinimumMs": 800,
+      "actualPauseMs": 1678.4901069999978,
+      "pressure": {
+        "peakBytes": 65632,
+        "heldMs": 51.72304499999882,
+        "nativeMaxPendingBytes": 11108119,
+        "configuredSendBufferBytes": 32768
+      },
+      "inputAcks": [
+        {
+          "seq": 3,
+          "ms": 7.305048000001989
+        },
+        {
+          "seq": 4,
+          "ms": 6.173118999999133
+        },
+        {
+          "seq": 5,
+          "ms": 4.12329999999929
+        },
+        {
+          "seq": 6,
+          "ms": 2.61911599999803
+        },
+        {
+          "seq": 7,
+          "ms": 3.108596000001853
+        },
+        {
+          "seq": 8,
+          "ms": 2.55400500000178
+        },
+        {
+          "seq": 9,
+          "ms": 5.546626000003016
+        },
+        {
+          "seq": 10,
+          "ms": 6.702633000000787
+        },
+        {
+          "seq": 11,
+          "ms": 10.573861000000761
+        },
+        {
+          "seq": 12,
+          "ms": 6.556038999999146
+        },
+        {
+          "seq": 13,
+          "ms": 6.7742010000001756
+        },
+        {
+          "seq": 14,
+          "ms": 5.913340999999491
+        },
+        {
+          "seq": 15,
+          "ms": 2.521469999999681
+        },
+        {
+          "seq": 16,
+          "ms": 2.982582000000548
+        },
+        {
+          "seq": 17,
+          "ms": 6.3533730000017385
+        },
+        {
+          "seq": 18,
+          "ms": 2.533092999998189
+        }
+      ],
+      "inputSeq": 18,
+      "chunkPackets": 353,
+      "maxChunkBytes": 32768,
+      "complete": {
+        "phase": "paired-control",
+        "at": 19815.371495,
+        "pageEpoch": 1,
+        "frameId": 6,
+        "ordinal": 7,
+        "sourceFrame": 102,
+        "inputSeq": 18,
+        "tag": 1,
+        "pixels": [
+          [
+            43,
+            161,
+            89,
+            255
+          ],
+          [
+            43,
+            161,
+            89,
+            255
+          ],
+          [
+            43,
+            161,
+            89,
+            255
+          ]
+        ],
+        "marker": [
+          0,
+          16,
+          42,
+          255
+        ],
+        "requiredBytes": 11060160
+      }
+    },
+    "close": {
+      "pressure": {
+        "peakBytes": 65483,
+        "heldMs": 50.95733100000143,
+        "nativeMaxPendingBytes": 11108129,
+        "configuredSendBufferBytes": 32768
+      },
+      "finalInput": {
+        "seq": 19,
+        "ms": 4.124465999997483
+      },
+      "readerResumeMs": 20,
+      "ms": 24.123263000001316,
+      "originalDeadlineMs": 200,
+      "dataCode": 1001,
+      "controlCode": 1001,
+      "peerOwners": 0,
+      "routeOwners": 0
+    }
+  },
+  "nodeCalls": [
+    {
+      "evaluate": 30,
+      "awaitPromise": 0,
+      "map": 0,
+      "publish": 0
+    },
+    {
+      "evaluate": 92,
+      "awaitPromise": 0,
+      "map": 0,
+      "publish": 0
+    }
+  ],
+  "cleanup": [
+    {
+      "brokerExited": true,
+      "pending": 0,
+      "requestOwners": 0,
+      "responseOwners": 0,
+      "browserConnected": false,
+      "cleanupErrors": []
+    },
+    {
+      "brokerExited": true,
+      "pending": 0,
+      "requestOwners": 0,
+      "responseOwners": 0,
+      "browserConnected": false,
+      "cleanupErrors": []
+    }
+  ],
+  "report": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/frozen-local-v1/contract.json",
+    "sha256": "735e51d7af66bb18ce826add6eedb0af4fc9c96a25fdc2277ae07fe58bad6ee1"
+  },
+  "proved": [
+    "Defaulttiledcapturestaysenabled;actual1792squareCanvastexturesserializeintogenuine>9MiBSKPs,notappendedpadding. RealGateway/FrameGate/CanvasKitshow3specifiedactualpixels.",
+    "Originalrawbyte-windowcaseusesACK1500ms,16MiBcreditand15sresourcewaits;secondchangedactual11MBsceneisblockeduntilorderedACK,thenrenders;unacknowledgedcommitcloses1013afterconfigured1.5s.",
+    "Originalpairedcontrolcasekeepsasset-chunks-v1/max32KiB,default5sACKand800msreadpause. Realnativepending-framebytes>9MiBandpositivekernelTXpersist50mswhile16actualCDPtextInputACKskeep3sgatebeforeimagecompletion;clockadvances.",
+    "Sourceinputvaluex16andinput18/marker16+largeCanvaspixelsmatchafterresume;anotherrealbulkqueueallowsactual19thinput.",
+    "Readerresumes20msintoclose;bothactualdata/controlsocketssendclean1001withinoriginal200msGatewayboundary,thenallpeer/routeowners0. WholeSource/browsercloseisdifferentunclaimedgate.",
+    "BothSessionsfinishwith0Sourceerrors,zeromap/publish/awaitPromise,andBroker/request/responseowners0/browserdisconnected."
+  ],
+  "failedProbe": {
+    "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-failed-v1.json",
+    "verifier": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-failed-v1.mjs",
+    "corrections": [
+      "Probeinvented512KiBkernelTXfloorcontradictedproduction32KiBSO_SNDBUF;restoreoriginalnonzeroTXfor50msandseparatelyrequireactual>=9MiBpendingframe,withoutchangingproductionbuffer.",
+      "Initialpairedcaseomittedoriginalasset-chunks-v1capability;restoreoriginal32KiBpacketnegotiationratherthanconfusingrawbyte-windowandchunked-controlcontracts.",
+      "MarkclientclosingbeforeclearingGate/renderer/resumingSocketduringcleanup,soabandonedlateprotocolcallbacks cannotcommitaftertestGateclear. v1Unmatchedcommitoccurredinthefailedrunandiskept;notattributedtoaproductionfix."
+    ]
+  },
+  "remaining": [
+    "KernelRTT/loss/jitter/bandwidth9MiB+actualinput/pixels,fullN1matrixandshortblackhole/reconnect/drag/animationstillpending.",
+    "Canonicalpromotion/fullB1/all41/fullSession/VM/PSS/8h/B4CPU notcomplete."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true
+}

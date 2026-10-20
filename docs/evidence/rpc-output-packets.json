@@ -1,0 +1,606 @@
+{
+  "at": "2026-10-17T02:57:24.618700+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Borrowed RPC map/envelope serialization,move-owned request ID,and shared exact serialized output packets for main/Viz/Gateway emitters through actual stdout write. Existing control/Gateway builder Values,handler/asset scratch,Gateway WebSocket copies,index backing,Node streams/app graphs and whole Session remain separate. All41+N1 stay7complete/12partial/22pending.",
+  "baseline": {
+    "metadataBytes": 2097152,
+    "serializedBytes": 2097826,
+    "vecCapacity": 4194768,
+    "requestedPeak": 8396923,
+    "snapshotChargeUnchanged": 4574204,
+    "at": "2026-10-17T02:35:15.880410+00:00",
+    "status": "gap-reproduced-not-output-budget-accepted",
+    "brokerBaselineSha256": "968bb447e2b2e3c76fcc84091617c2990a338a78c1b5a8a191ad476b339e6d59",
+    "scope": "Actual production map_reply/rpc_success/output_bytes extracted without behavior change. Snapshot/input allocation excluded from requested-layout measurement;RPC result/envelope/serializer allocations overlap without an output owner. Not allocator usable-size/RSS.",
+    "mainSourceSha256": "d0e660d06f46c59e50b7a6aaa3541406de72d896f127bc3d5e6f04454eff8dba"
+  },
+  "implementation": {
+    "limits": {
+      "dataBytes": 134217728,
+      "controlBytes": 8388608,
+      "framingBytes": 8192,
+      "perPacketSizing": 4096,
+      "maximumDataBody": 94371840,
+      "maximumControlBody": 262144,
+      "configuration": "REMOTE_PAINT_RPC_OUTPUT_BYTES1MiB..2GiB;REMOTE_PAINT_RPC_OUTPUT_CONTROL_BYTES256KiB..16MiB. Small explicit quotas may reject supported default work."
+    },
+    "borrowing": "Move id out of admitted request instead of cloning it. Hold input admissions and an actual Arc<Snapshot> through borrowed reply serialization/write. Custom Serialize walks immutable scene/metadata/resource summaries without allocating the old result/envelope Value graphs or resource-summary Vec. Generic small result Values are also borrowed into the outer envelope.",
+    "packet": "Reserve sizing allowance before bounded serialization counting. Admit exact body+4-byte header capacity plus128-byte buffer owner before allocation. Serialize into one no-growth OwnedVec;verify second pass exact length before writing any bytes. Changed length/over-limit cannot corrupt framing. Data backing drops before its credit.",
+    "write": "Packet stays owned while stdout lock/write_all/flush block or fail. Independent data/control quotas are shared across emitters. Fixed8KiB framing/stdio allowance remains reserved for emitter lifetime;per-call sizing and packet leases overlap it. This is exact packet capacity plus conservative slack,not kernel/allocator/RSS accounting.",
+    "failures": "Data admission/counting failure is pre-write and can use reserved control to send a small correlated error. Mapper may already have committed;the error is delivery pressure,not rollback. A transport error may follow partial bytes,so the process exits2 and does not send another frame. Undeliverable critical control events likewise fail the process rather than silently losing a waiter. Stderr failure is ignored while exiting.",
+    "fifo": "Reservations do not bypass stdout FIFO or the serial main RPC loop. An actual following resourceBudget waits behind a blocked data reply;after drain both succeed.",
+    "readiness": "resourceBudget.output exposes shared data/control packet reservations,peaks and readiness. Prebuilt event/control Values and handler-generated result/error graphs are not retroactively covered by packet credit."
+  },
+  "tests": {
+    "rustRelease": 60,
+    "rustLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-rust-final.log",
+    "js": 177,
+    "jsLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-js-tests.log",
+    "requestedLayouts": [
+      {
+        "serializedBytes": 2097826,
+        "packetCapacity": 2097830,
+        "requestedPeak": 2097830,
+        "reservation": 2102054,
+        "case": "borrowed-map"
+      },
+      {
+        "packetCapacity": 94371844,
+        "requestedPeak": 94371844,
+        "reservation": 94376068,
+        "case": "exact90MiB"
+      }
+    ],
+    "layoutScope": "Requested-layout allocation peaks only,not allocator usable-size,RSS or complete Source footprint. Same2MiB metadata fixture and actual production factories were measured before replacement;new borrowed encoder allocates only its exact packet.",
+    "ownership": "Blocking Rust writer keeps full data quota while another data encoding is denied and control admission succeeds on a separate sink. Partial transport error retains credit until owned packet drops. These unit tests do not claim real stdout priority.",
+    "framing": "Full exact90MiB body works under default128MiB data budget;over-limit is rejected before a large allocation. Changing serializers growing or shrinking between count/write are rejected before IO. Mapped/metadata-only values,Unicode and actual resource summaries preserve JSON semantics.",
+    "actualLinux": {
+      "at": "2026-10-17T02:54:48.182Z",
+      "status": "passed",
+      "brokerSha256": "066698a35df17f72c3fb926ed355a0bd613af84ee26d701ea663e7a8a38d87f5",
+      "scope": "Actual Linux Rust borrowed RPC replies and shared serialized output packet owners. Explicit1MiB data quota rejects2MiB delivery after Mapper commit,with a small correlated reserved-control error;prior Gateway-published SKP hash recovers on the same process. Default reply,actual blocked stdout drain/FIFO and transport-close exit are separate variants. Not denied-scene pixels,RSS,Node returned graphs or prebuilt Gateway/control Values.",
+      "quota": {
+        "quotaBytes": 1048576,
+        "before": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 12452,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 5428,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "denied": {
+          "code": "RESOURCE_BUDGET_PRESSURE",
+          "message": "RPC output allocation budget exceeded"
+        },
+        "backendCommittedSerial": 2,
+        "oldPublishedSerial": 1,
+        "recoveredSerial": 3,
+        "sameProcess": true,
+        "publishedBaselineIntact": true,
+        "after": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 13699,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 1,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 5428,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "cleared": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 13704,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 1,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 5428,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "remoteRollback": false
+      },
+      "defaultReply": {
+        "metadataBytes": 2097152,
+        "status": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 8192,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 2102578,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        }
+      },
+      "blockedDrain": {
+        "mode": "drain-blocked-stdout",
+        "waitChannel": "sock_alloc_send_pskb",
+        "transport": "unix-socket",
+        "readableBytesAtBlock": 65536,
+        "controlWaitsBehindData": true,
+        "returnedMetadataBytes": 4194304,
+        "afterDrain": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 13674,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 4199208,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "scope": "Actual Linux stdout write blocks while parent pauses reading. Main RPC control remains behind it;after drain,full reply and following control succeed,and output data credit is0. In-block credit ownership is independently checked with the blocking Rust writer unit."
+      },
+      "blockedClose": {
+        "mode": "close-blocked-stdout",
+        "waitChannel": "sock_alloc_send_pskb",
+        "transport": "unix-socket",
+        "childExitCode": 2,
+        "oldProcessIdentityExited": true,
+        "parentReadableBytesAfterClose": 65536,
+        "scope": "Actual blocked stdout loses its reader;child exits2 instead of continuing a partial frame. Logical Rust counters are not queried after process exit;OS/process cleanup and separate unit write-owner checks are distinct evidence."
+      }
+    },
+    "linuxFrozen": {
+      "at": "2026-10-17T02:50:56.174837+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-webgl-live.log"
+        },
+        {
+          "name": "verify-broker-cache-lru",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-broker-cache-lru.log"
+        },
+        {
+          "name": "verify-broker-mapper-transaction",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-broker-mapper-transaction.log"
+        },
+        {
+          "name": "verify-large-native-cache",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-large-native-cache.log"
+        },
+        {
+          "name": "verify-resource-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-resource-pool.log"
+        },
+        {
+          "name": "verify-source-resource-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-source-resource-pressure.log"
+        },
+        {
+          "name": "verify-viz-input-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-viz-input-pool.log"
+        },
+        {
+          "name": "verify-source-input-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-source-input-pressure.log"
+        },
+        {
+          "name": "verify-node-request-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-node-request-budget.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-control-channel.log"
+        },
+        {
+          "name": "verify-control-priority",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-control-priority.log"
+        },
+        {
+          "name": "verify-input-feedback",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-input-feedback.log"
+        },
+        {
+          "name": "verify-worker-control",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-worker-control.log"
+        },
+        {
+          "name": "verify-streaming-startup",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-streaming-startup.log"
+        },
+        {
+          "name": "verify-page-activity",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-page-activity.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-node-response-contract",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-node-response-contract.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-snapshot-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-snapshot-budget.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-verify-rpc-output.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-checkpoint-version-v2.json",
+      "status": "passed"
+    },
+    "canonical": {
+      "at": "2026-10-17T02:56:10.860426+00:00",
+      "source": "Live /project JS/new canonical066698a3 Linux Rust;isolated artifacts",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-canonical-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-canonical-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-canonical-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-canonical-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-snapshot-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-canonical-verify-snapshot-budget.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-canonical-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-canonical-verify-rpc-output.log"
+        }
+      ],
+      "status": "passed"
+    },
+    "largeNative": {
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "mapperRollbackRejections": 423
+  },
+  "prototype": {
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-actual-linux-v1.log",
+    "probe": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-blocking-probe.json",
+    "result": "First OS-backpressure fixture waited only for pipe_write and failed its existing5s matcher. Independent probe showed Unix socket stdout blocked in sock_alloc_send_pskb with65536 queued bytes/high-water,then successful4MiB drain. v2 recognizes observed socket writer waits plus queue/paused state;runtime binary unchanged and deadline not extended."
+  },
+  "remainingStreamEvidence": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-next-audit.json",
+    "unreadBytesAfterClose": 65536,
+    "status": "reproduced-not-fixed",
+    "scope": "Rust child exits/reaps and current packet/request/response scopes release,but a retained Node closed stdout Readable still holds64KiB. Node stream internals were outside previous accepted transient ledger. This is the next cleanup task,not a pass claim.",
+    "resolution": {
+      "evidence": "docs/evidence/node-readable-close.json",
+      "scope": "Already buffered child stdout/stderr references at NativeBroker teardown. No active native-stream admission,application graph/VM,natural GC timing,allocator/RSS/PSS or whole Session completion claim. All41+N1 remain7complete/12partial/22pending.",
+      "historicalUnreadBytes": 65536
+    }
+  },
+  "version": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-checkpoint-version-v2.json",
+    "frozenProject": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-checkpoint-project-v2",
+    "rustSources": {
+      "native/broker/src/allocation_probe.rs": "ddec052782fb29d8ad7a27d2c2332a70ad9f94226ad230c7fe0923e1cea97ffb",
+      "native/broker/src/assets.rs": "dd638429baa9e8e892623a2c2ca54631b43b27abf53dc4d51b5b1bf7c6626251",
+      "native/broker/src/budget.rs": "41bef43441a10f02c23ad0c0d6eb04bbd48436ad6d2dac0e2ed5cdf5758941e8",
+      "native/broker/src/control.rs": "020a7bc8befd37850a746a602698d8972bd2df03343534559e3cfdfed12c52eb",
+      "native/broker/src/gateway.rs": "fd3e77664463e83dcad24104ba97b36332097979e7a04739c0d823a44bab7126",
+      "native/broker/src/history.rs": "4b64273428615445d9ceb99bfd38a5004e66b2eead2d6aaf7dfadfa686578e2a",
+      "native/broker/src/input.rs": "9e56c120a1bc534fc9b9696314335af3c9ae79e16bebd4c93f9b3eb54820f42b",
+      "native/broker/src/main.rs": "58e144d7b4c98d53fc33f74d7c99688b6cde820ad2f1d2813121151cd0b9af69",
+      "native/broker/src/output.rs": "fffa7af19dcbd0ba0655261101ccf44a109d679403f6bce7534bf2c46d3d1ad4",
+      "native/broker/src/rpc.rs": "e277cc24c016dc73a9199cd4dc4375f978a1efa1ad19e5d30ab4e171790533dd",
+      "native/broker/src/scene.rs": "93a5a13ae0d5b1a86fac41b8d92723d3f290d09fed7d3a32f862c5d400ea0570",
+      "native/broker/src/snapshot_memory.rs": "dacd32697849b66b54089a259b93189c3c643522be81c55046a1c52400f82143",
+      "native/broker/src/viz.rs": "2392f0e14a5a38d46f28f94f396e9281fc37a7b9ba1c4b5309c414c91e1084cb",
+      "native/broker/src/writer.rs": "26fef581106539a5dc43ba9dc9324c4f6e4850863e65d7ecce8ce40f18ebbb61"
+    },
+    "brokerSha256": "066698a35df17f72c3fb926ed355a0bd613af84ee26d701ea663e7a8a38d87f5",
+    "previousBrokerSha256": "968bb447e2b2e3c76fcc84091617c2990a338a78c1b5a8a191ad476b339e6d59",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "browserUnchanged": true,
+    "serde": "Adds direct serde dependency at existing lock version1.0.229;other package versions unchanged.",
+    "cpp": "Unchanged browser reuses prior34 C++ tests;no new native rebuild/test claim.",
+    "artifactReports": {
+      "output-contract.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-artifacts/output-contract.json",
+        "sha256": "70760ef14ac541e4d062389abc2bc5b32f098c8f944fd3803f68b35e82169810"
+      },
+      "large-native.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-artifacts/large-native.json",
+        "sha256": "fd017dd40b2226fba9a186353b4e8d1212b0f094cba44872af17ef0f5d2d86bc"
+      },
+      "rollback.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-artifacts/rollback.json",
+        "sha256": "02a6bc5a17dc094371a918efbed4ff13ab7cc09f2aa9eea6caf6a26c9c907aa6"
+      },
+      "cache-contract.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-artifacts/cache-contract.json",
+        "sha256": "33d326060c4c5113586b1165e155b86f0f2a0669fa9e9a95a727e3966833e0bd"
+      },
+      "source-resource.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-artifacts/source-resource.json",
+        "sha256": "4e9f5b77c51dddb8c56f931f96cabc2d7bc1437613b0d8de84f44f345354a53e"
+      },
+      "source-input.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-artifacts/source-input.json",
+        "sha256": "2dfad8bdbdcb276a3a85ad09a48659cedfd5729e41bc2cc36c0531034014e561"
+      },
+      "snapshot-contract.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-v2-artifacts/snapshot-contract.json",
+        "sha256": "e5c092b602e6abe0af977459e0aaadd8de93429ad92d12519e1cf2ec3378eb82"
+      }
+    }
+  },
+  "publication": {
+    "at": "2026-10-17T02:56:10.736162+00:00",
+    "status": "accepted-in-stated-scope",
+    "oldSha256": "968bb447e2b2e3c76fcc84091617c2990a338a78c1b5a8a191ad476b339e6d59",
+    "newSha256": "066698a35df17f72c3fb926ed355a0bd613af84ee26d701ea663e7a8a38d87f5",
+    "previousBinary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-previous-canonical-968",
+    "previousReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-previous-build-receipt.json",
+    "binary": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/broker-build.json",
+    "scope": "Atomic local Linuxarm64 replacement only;do not restart old proof/8h processes or modify caches;no commit/push.",
+    "canonicalSmoke": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rpc-output-canonical-smoke.json",
+    "evidence": "docs/evidence/rpc-output-packets.json"
+  },
+  "remaining": [
+    "Node unread stream backing on retained close and application/VM graphs.",
+    "Prebuilt control/Gateway builder Values and other handler result/error scratch.",
+    "Asset section/manifest/upgrade parsing and serialization scratch,Gateway scene/delta/message/Tungstenite copies,Mapper persistent resource/weak-index backing.",
+    "Native recordings/uncached work/tiled duplication/epoch/actual cancellation,full Session/many-process PSS/cgroup and B4 comparable baseline.",
+    "Independent8h and all other41-row/N1 requirements."
+  ],
+  "eightHours": "Immutable2585828c usesa296/earlier JS,excluding RPC-input,RVE-pairing,Node-response,Snapshot and this output checkpoint;keep processes and elapsed time separate.",
+  "preserve": "No commit/push. HEAD3ff9512c/live peer1+/1-,all proof processes/compiler6713 and Chromium/Cargo caches preserved;previous968 binary/receipt backed up."
+}

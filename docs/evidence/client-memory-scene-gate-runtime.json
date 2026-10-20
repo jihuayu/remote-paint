@@ -1,0 +1,148 @@
+{
+  "at": "2026-10-16T17:48:26.437Z",
+  "scope": "Actual CanvasKit runtime rotation in Chrome main and Worker, blocked initialization, FrameGate metadata/pin lifetime, canceled commit and reconnect-style generation clear/disposal; no physical presentation claim",
+  "main": {
+    "pixel": [
+      0,
+      0,
+      255,
+      255
+    ],
+    "staleGenerationSuppressed": true,
+    "staleCommitSuppressed": true,
+    "gateClearHeldMetadata": true,
+    "sceneMetadataAfterClear": 0,
+    "disposeDuringInitialization": true,
+    "ownedEntriesAfterDispose": 0,
+    "activeAndRetired": {
+      "profile": "compact",
+      "limits": {
+        "profile": "compact",
+        "total": 671088640,
+        "js": 201326592,
+        "wasm": 268435456,
+        "gpu": 134217728,
+        "render": 100663296,
+        "pictures": 16777216,
+        "rasters": 16777216,
+        "chunks": 67108864,
+        "raw": 67108864,
+        "receive": 33554432,
+        "decodeCache": 8388608,
+        "gpuCache": 67108864
+      },
+      "categories": {
+        "wasmBinary": 16485822,
+        "presentation": 32768,
+        "passes": 32768,
+        "jsIndexEstimate": 2400
+      },
+      "domains": {
+        "js": 8245311,
+        "wasm": 32768,
+        "gpu": 0,
+        "browser": 32768
+      },
+      "jsBufferBytes": 8242911,
+      "referencedJsBytes": 16485822,
+      "jsIndexEstimateBytes": 2400,
+      "ledgerIndexEstimateBytes": 2400,
+      "ownerMetadataBytes": 0,
+      "renderBytes": 32768,
+      "residentEstimate": 276713535,
+      "retiredWasmBytes": 134217728,
+      "retiredArenaCount": 1,
+      "owners": 4,
+      "buffers": 1,
+      "observed": {
+        "wasmHeapBytes": 134217728,
+        "decodeCacheBytes": 0,
+        "gpuCacheBytes": null,
+        "gpuUsageSource": "unavailable"
+      },
+      "stats": {
+        "pressureEvents": 0,
+        "failures": 0,
+        "trims": 0,
+        "peakResidentEstimate": 276737519,
+        "peakJsBufferBytes": 8242911,
+        "peakJsIndexEstimateBytes": 4448,
+        "retiredArenas": 1,
+        "collectedArenas": 0
+      },
+      "accounting": "ArrayBuffers exact/deduplicated; cache/ledger JS indexes estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process and arbitrary retained scene metadata not fully covered"
+    }
+  },
+  "worker": {
+    "pixel": [
+      0,
+      0,
+      255,
+      255
+    ],
+    "staleGenerationSuppressed": true,
+    "staleCommitSuppressed": true,
+    "gateClearHeldMetadata": true,
+    "sceneMetadataAfterClear": 0,
+    "disposeDuringInitialization": true,
+    "ownedEntriesAfterDispose": 0,
+    "activeAndRetired": {
+      "profile": "compact",
+      "limits": {
+        "profile": "compact",
+        "total": 671088640,
+        "js": 201326592,
+        "wasm": 268435456,
+        "gpu": 134217728,
+        "render": 100663296,
+        "pictures": 16777216,
+        "rasters": 16777216,
+        "chunks": 67108864,
+        "raw": 67108864,
+        "receive": 33554432,
+        "decodeCache": 8388608,
+        "gpuCache": 67108864
+      },
+      "categories": {
+        "wasmBinary": 16485822,
+        "presentation": 32768,
+        "passes": 32768,
+        "jsIndexEstimate": 2400
+      },
+      "domains": {
+        "js": 8245311,
+        "wasm": 32768,
+        "gpu": 0,
+        "browser": 32768
+      },
+      "jsBufferBytes": 8242911,
+      "referencedJsBytes": 16485822,
+      "jsIndexEstimateBytes": 2400,
+      "ledgerIndexEstimateBytes": 2400,
+      "ownerMetadataBytes": 0,
+      "renderBytes": 32768,
+      "residentEstimate": 276713535,
+      "retiredWasmBytes": 134217728,
+      "retiredArenaCount": 1,
+      "owners": 4,
+      "buffers": 1,
+      "observed": {
+        "wasmHeapBytes": 134217728,
+        "decodeCacheBytes": 0,
+        "gpuCacheBytes": null,
+        "gpuUsageSource": "unavailable"
+      },
+      "stats": {
+        "pressureEvents": 0,
+        "failures": 0,
+        "trims": 0,
+        "peakResidentEstimate": 276737519,
+        "peakJsBufferBytes": 8242911,
+        "peakJsIndexEstimateBytes": 4448,
+        "retiredArenas": 1,
+        "collectedArenas": 0
+      },
+      "accounting": "ArrayBuffers exact/deduplicated; cache/ledger JS indexes estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process and arbitrary retained scene metadata not fully covered"
+    }
+  }
+}

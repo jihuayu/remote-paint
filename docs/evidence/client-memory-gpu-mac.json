@@ -1,0 +1,540 @@
+{
+  "at": "2026-10-16T15:57:26.625Z",
+  "scope": "Real browser CanvasKit WebGL2 + CPU in main thread and Worker; direct presentation alpha/text/picture cache/resize/context loss, local 960x640 timing probe (not an end-to-end performance claim)",
+  "browser": "155.0.8059.84",
+  "build": "023e2d71f4945b0ed77b41d25c09ef0badd749dce49bf59a1ab556b396b926d3",
+  "main": {
+    "device": {
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+    },
+    "automaticMode": "webgl2-bitmap",
+    "webgpuCompiled": false,
+    "allocation": {
+      "gpuTargets": 3,
+      "cpuTargets": 0,
+      "ckReadbacks": 0,
+      "glReadbacks": 0
+    },
+    "damage": {
+      "maxDamagePixels": 7812,
+      "viewportPixels": 614400,
+      "maxTwoDReadbackBytes": 31248,
+      "passSurfaceAllocations": 3,
+      "partialPassRenders": 59,
+      "unchangedPresentationSkipped": true
+    },
+    "ownership": {
+      "beforeTrim": {
+        "profile": "standard",
+        "limits": {
+          "profile": "standard",
+          "total": 1073741824,
+          "js": 268435456,
+          "wasm": 536870912,
+          "gpu": 268435456,
+          "render": 268435456,
+          "pictures": 67108864,
+          "rasters": 33554432,
+          "chunks": 134217728,
+          "raw": 134217728,
+          "receive": 67108864,
+          "decodeCache": 33554432,
+          "gpuCache": 134217728
+        },
+        "categories": {
+          "wasmBinary": 8242911,
+          "presentation": 4915200,
+          "passes": 9830400,
+          "pictures": 28668,
+          "rasters": 24000
+        },
+        "domains": {
+          "js": 8242911,
+          "wasm": 28668,
+          "gpu": 9854400,
+          "browser": 4915200
+        },
+        "jsBufferBytes": 8242911,
+        "referencedJsBytes": 8242911,
+        "renderBytes": 9854400,
+        "residentEstimate": 165841939,
+        "owners": 6,
+        "buffers": 1,
+        "observed": {
+          "wasmHeapBytes": 134217728,
+          "decodeCacheBytes": 0,
+          "gpuCacheBytes": 18466100,
+          "gpuUsageSource": "canvaskit-0.42-binding"
+        },
+        "stats": {
+          "pressureEvents": 0,
+          "failures": 0,
+          "trims": 0,
+          "peakResidentEstimate": 165841939,
+          "peakJsBufferBytes": 8242911
+        },
+        "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+      },
+      "afterTrim": {
+        "profile": "standard",
+        "limits": {
+          "profile": "standard",
+          "total": 1073741824,
+          "js": 268435456,
+          "wasm": 536870912,
+          "gpu": 268435456,
+          "render": 268435456,
+          "pictures": 67108864,
+          "rasters": 33554432,
+          "chunks": 134217728,
+          "raw": 134217728,
+          "receive": 67108864,
+          "decodeCache": 33554432,
+          "gpuCache": 134217728
+        },
+        "categories": {
+          "wasmBinary": 8242911,
+          "presentation": 4915200
+        },
+        "domains": {
+          "js": 8242911,
+          "wasm": 0,
+          "gpu": 0,
+          "browser": 4915200
+        },
+        "jsBufferBytes": 8242911,
+        "referencedJsBytes": 8242911,
+        "renderBytes": 0,
+        "residentEstimate": 151619295,
+        "owners": 2,
+        "buffers": 1,
+        "observed": {
+          "wasmHeapBytes": 134217728,
+          "decodeCacheBytes": 0,
+          "gpuCacheBytes": 4243456,
+          "gpuUsageSource": "canvaskit-0.42-binding"
+        },
+        "stats": {
+          "pressureEvents": 0,
+          "failures": 0,
+          "trims": 1,
+          "peakResidentEstimate": 165841939,
+          "peakJsBufferBytes": 8242911
+        },
+        "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+      },
+      "afterRestore": {
+        "profile": "standard",
+        "limits": {
+          "profile": "standard",
+          "total": 1073741824,
+          "js": 268435456,
+          "wasm": 536870912,
+          "gpu": 268435456,
+          "render": 268435456,
+          "pictures": 67108864,
+          "rasters": 33554432,
+          "chunks": 134217728,
+          "raw": 134217728,
+          "receive": 67108864,
+          "decodeCache": 33554432,
+          "gpuCache": 134217728
+        },
+        "categories": {
+          "wasmBinary": 8242911,
+          "presentation": 4915200,
+          "passes": 9830400,
+          "pictures": 28668,
+          "rasters": 24000
+        },
+        "domains": {
+          "js": 8242911,
+          "wasm": 28668,
+          "gpu": 9854400,
+          "browser": 4915200
+        },
+        "jsBufferBytes": 8242911,
+        "referencedJsBytes": 8242911,
+        "renderBytes": 9854400,
+        "residentEstimate": 162499603,
+        "owners": 6,
+        "buffers": 1,
+        "observed": {
+          "wasmHeapBytes": 134217728,
+          "decodeCacheBytes": 0,
+          "gpuCacheBytes": 15123764,
+          "gpuUsageSource": "canvaskit-0.42-binding"
+        },
+        "stats": {
+          "pressureEvents": 0,
+          "failures": 0,
+          "trims": 1,
+          "peakResidentEstimate": 165841939,
+          "peakJsBufferBytes": 8242911
+        },
+        "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+      },
+      "pixelsRestored": true
+    },
+    "alphaSample": [
+      255,
+      128,
+      0,
+      64
+    ],
+    "textInk": {
+      "pixels": 198,
+      "missing": 0
+    },
+    "comparison": {
+      "differentChannelsOver2": 149,
+      "channels": 2457600,
+      "maxError": 255
+    },
+    "frames": 60,
+    "gpu": {
+      "renderMs": {
+        "p50": 0.10000038146972656,
+        "p95": 0.3000001907348633
+      },
+      "readbackMs": {
+        "p50": 0,
+        "p95": 0
+      },
+      "bitmapMs": {
+        "p50": 0,
+        "p95": 0.10000038146972656
+      },
+      "submitMs": {
+        "p50": 0,
+        "p95": 0.10000038146972656
+      },
+      "totalMs": {
+        "p50": 0.19999980926513672,
+        "p95": 0.40000057220458984
+      }
+    },
+    "cpu": {
+      "renderMs": {
+        "p50": 0.39999961853027344,
+        "p95": 0.5
+      },
+      "readbackMs": {
+        "p50": 0.3000001907348633,
+        "p95": 0.5
+      },
+      "bitmapMs": {
+        "p50": 1,
+        "p95": 1.1000003814697266
+      },
+      "submitMs": {
+        "p50": 1,
+        "p95": 1.1999998092651367
+      },
+      "totalMs": {
+        "p50": 1.7000007629394531,
+        "p95": 2
+      }
+    },
+    "gpuReadbackBytes": 0,
+    "contextLoss": {
+      "mode": "cpu-bitmap",
+      "frames": 65,
+      "gpuFrames": 64,
+      "cpuFrames": 1,
+      "readbackBytes": 1920000,
+      "totalReadbackBytes": 1920000,
+      "fallbacks": 1,
+      "gpuCacheBytes": 134217728,
+      "device": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+      },
+      "damage": [
+        0,
+        0,
+        800,
+        600
+      ],
+      "skipped": false,
+      "renderMs": 3.5,
+      "readbackMs": 0.39999961853027344,
+      "bitmapMs": 0.8000001907348633,
+      "submitMs": 0.8000001907348633,
+      "totalMs": 4.699999809265137,
+      "fallbackReason": "WebGL2 context lost"
+    },
+    "unavailableFallback": "cpu-2d",
+    "twoDFallback": "cpu-2d",
+    "resize": true,
+    "staleBitmapSuppressed": true
+  },
+  "worker": {
+    "device": {
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+    },
+    "automaticMode": "webgl2-bitmap",
+    "webgpuCompiled": false,
+    "allocation": {
+      "gpuTargets": 3,
+      "cpuTargets": 0,
+      "ckReadbacks": 0,
+      "glReadbacks": 0
+    },
+    "damage": {
+      "maxDamagePixels": 7812,
+      "viewportPixels": 614400,
+      "maxTwoDReadbackBytes": 31248,
+      "passSurfaceAllocations": 3,
+      "partialPassRenders": 59,
+      "unchangedPresentationSkipped": true
+    },
+    "ownership": {
+      "beforeTrim": {
+        "profile": "standard",
+        "limits": {
+          "profile": "standard",
+          "total": 1073741824,
+          "js": 268435456,
+          "wasm": 536870912,
+          "gpu": 268435456,
+          "render": 268435456,
+          "pictures": 67108864,
+          "rasters": 33554432,
+          "chunks": 134217728,
+          "raw": 134217728,
+          "receive": 67108864,
+          "decodeCache": 33554432,
+          "gpuCache": 134217728
+        },
+        "categories": {
+          "wasmBinary": 8242911,
+          "presentation": 4915200,
+          "passes": 9830400,
+          "pictures": 28668,
+          "rasters": 24000
+        },
+        "domains": {
+          "js": 8242911,
+          "wasm": 28668,
+          "gpu": 9854400,
+          "browser": 4915200
+        },
+        "jsBufferBytes": 8242911,
+        "referencedJsBytes": 8242911,
+        "renderBytes": 9854400,
+        "residentEstimate": 165841939,
+        "owners": 6,
+        "buffers": 1,
+        "observed": {
+          "wasmHeapBytes": 134217728,
+          "decodeCacheBytes": 0,
+          "gpuCacheBytes": 18466100,
+          "gpuUsageSource": "canvaskit-0.42-binding"
+        },
+        "stats": {
+          "pressureEvents": 0,
+          "failures": 0,
+          "trims": 0,
+          "peakResidentEstimate": 165841939,
+          "peakJsBufferBytes": 8242911
+        },
+        "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+      },
+      "afterTrim": {
+        "profile": "standard",
+        "limits": {
+          "profile": "standard",
+          "total": 1073741824,
+          "js": 268435456,
+          "wasm": 536870912,
+          "gpu": 268435456,
+          "render": 268435456,
+          "pictures": 67108864,
+          "rasters": 33554432,
+          "chunks": 134217728,
+          "raw": 134217728,
+          "receive": 67108864,
+          "decodeCache": 33554432,
+          "gpuCache": 134217728
+        },
+        "categories": {
+          "wasmBinary": 8242911,
+          "presentation": 4915200
+        },
+        "domains": {
+          "js": 8242911,
+          "wasm": 0,
+          "gpu": 0,
+          "browser": 4915200
+        },
+        "jsBufferBytes": 8242911,
+        "referencedJsBytes": 8242911,
+        "renderBytes": 0,
+        "residentEstimate": 151619295,
+        "owners": 2,
+        "buffers": 1,
+        "observed": {
+          "wasmHeapBytes": 134217728,
+          "decodeCacheBytes": 0,
+          "gpuCacheBytes": 4243456,
+          "gpuUsageSource": "canvaskit-0.42-binding"
+        },
+        "stats": {
+          "pressureEvents": 0,
+          "failures": 0,
+          "trims": 1,
+          "peakResidentEstimate": 165841939,
+          "peakJsBufferBytes": 8242911
+        },
+        "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+      },
+      "afterRestore": {
+        "profile": "standard",
+        "limits": {
+          "profile": "standard",
+          "total": 1073741824,
+          "js": 268435456,
+          "wasm": 536870912,
+          "gpu": 268435456,
+          "render": 268435456,
+          "pictures": 67108864,
+          "rasters": 33554432,
+          "chunks": 134217728,
+          "raw": 134217728,
+          "receive": 67108864,
+          "decodeCache": 33554432,
+          "gpuCache": 134217728
+        },
+        "categories": {
+          "wasmBinary": 8242911,
+          "presentation": 4915200,
+          "passes": 9830400,
+          "pictures": 28668,
+          "rasters": 24000
+        },
+        "domains": {
+          "js": 8242911,
+          "wasm": 28668,
+          "gpu": 9854400,
+          "browser": 4915200
+        },
+        "jsBufferBytes": 8242911,
+        "referencedJsBytes": 8242911,
+        "renderBytes": 9854400,
+        "residentEstimate": 162499603,
+        "owners": 6,
+        "buffers": 1,
+        "observed": {
+          "wasmHeapBytes": 134217728,
+          "decodeCacheBytes": 0,
+          "gpuCacheBytes": 15123764,
+          "gpuUsageSource": "canvaskit-0.42-binding"
+        },
+        "stats": {
+          "pressureEvents": 0,
+          "failures": 0,
+          "trims": 1,
+          "peakResidentEstimate": 165841939,
+          "peakJsBufferBytes": 8242911
+        },
+        "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+      },
+      "pixelsRestored": true
+    },
+    "alphaSample": [
+      255,
+      128,
+      0,
+      64
+    ],
+    "textInk": {
+      "pixels": 198,
+      "missing": 0
+    },
+    "comparison": {
+      "differentChannelsOver2": 149,
+      "channels": 2457600,
+      "maxError": 255
+    },
+    "frames": 60,
+    "gpu": {
+      "renderMs": {
+        "p50": 0.19999980926513672,
+        "p95": 0.5999994277954102
+      },
+      "readbackMs": {
+        "p50": 0,
+        "p95": 0
+      },
+      "bitmapMs": {
+        "p50": 0,
+        "p95": 0.09999942779541016
+      },
+      "submitMs": {
+        "p50": 0,
+        "p95": 0.19999980926513672
+      },
+      "totalMs": {
+        "p50": 0.20000076293945312,
+        "p95": 0.8000001907348633
+      }
+    },
+    "cpu": {
+      "renderMs": {
+        "p50": 0.40000057220458984,
+        "p95": 1.1000003814697266
+      },
+      "readbackMs": {
+        "p50": 0.39999961853027344,
+        "p95": 0.5
+      },
+      "bitmapMs": {
+        "p50": 1,
+        "p95": 1.1000003814697266
+      },
+      "submitMs": {
+        "p50": 1.0999994277954102,
+        "p95": 1.3000001907348633
+      },
+      "totalMs": {
+        "p50": 1.8999996185302734,
+        "p95": 3.3000001907348633
+      }
+    },
+    "gpuReadbackBytes": 0,
+    "contextLoss": {
+      "mode": "cpu-bitmap",
+      "frames": 65,
+      "gpuFrames": 64,
+      "cpuFrames": 1,
+      "readbackBytes": 1920000,
+      "totalReadbackBytes": 1920000,
+      "fallbacks": 1,
+      "gpuCacheBytes": 134217728,
+      "device": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+      },
+      "damage": [
+        0,
+        0,
+        800,
+        600
+      ],
+      "skipped": false,
+      "renderMs": 3.59999942779541,
+      "readbackMs": 0.5,
+      "bitmapMs": 1,
+      "submitMs": 1,
+      "totalMs": 5.09999942779541,
+      "fallbackReason": "WebGL2 context lost"
+    },
+    "unavailableFallback": "cpu-2d",
+    "twoDFallback": "cpu-2d",
+    "resize": true,
+    "staleBitmapSuppressed": true
+  }
+}

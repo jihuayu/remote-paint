@@ -1,0 +1,463 @@
+{
+  "at": "2026-10-17T02:08:45.445442+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Node NativeBroker received/private buffers and JSON preflight/parse/delivery transients only. Returned application graphs and decoded strings after delivery,Snapshot/output,VM and full Session remain incomplete;B10 and all41+N1 are not complete.",
+  "implementation": {
+    "limits": {
+      "dataBytes": 805306368,
+      "controlBytes": 8388608,
+      "receivedBackingBytes": 2097152,
+      "maximumDataPacket": 94371840,
+      "maximumKnownControlPacket": 262144,
+      "nodes": 1000000,
+      "depth": 128,
+      "configuration": "REMOTE_PAINT_NODE_RESPONSE_BYTES1MiB..2GiB;REMOTE_PAINT_NODE_RESPONSE_CONTROL_BYTES256KiB..16MiB. Smaller explicit quotas may reject otherwise supported work."
+    },
+    "receive": "Pause stdout;retain one arrived chunk and one exact unpooled body backing. Charge full arrived ArrayBuffer capacity plus256,8KiB framing slack and packet size+1024. Each body byte is written once into the final backing,plus an extra fixed at-most512-byte prefix staging copy;no growing Buffer.concat accumulator. Native Readable internal buffers before delivery are a separate scope.",
+    "parse": "Bounded byte scanner locates root id/event including escaped keys and late headers,and counts all scalar/key/container nodes. Reserve8192+6*packetBytes+256*nodes+64*maxDepth before full UTF8 decode or JSON.parse. This is conservative logical pricing,not exact V8 allocation/GC/RSS. Reject duplicate headers,invalid UTF8 and invalid JSON.",
+    "delivery": "At most one complete frame per turn;clear packet/text/message locals and defer lease retirement until callback/microtask stacks unwind. Reader continuations retain no local packet. Application results may remain alive after the transient credit retires. Diagnostic outputBuffer exposes sizes only.",
+    "pressure": "A quota-denied RPC is correlated/rejected,its declared body is drained,and subsequent frames/control remain usable. Unidentified late headers can stage into control then transfer credit to data without copying;unknown small packets may fall back to data if staging control is tight. Undeliverable events or malformed packets close the pipe instead of silently losing waiters. Reserved control credit does not overtake stdout FIFO bytes.",
+    "close": "Close discards reader aliases,waits for received/packet/parse leases to retire,and combines response cleanup with subprocess and outbound request cleanup. resourceBudget includes nodeResponses readiness."
+  },
+  "measurements": {
+    "baseline8MiB": {
+      "at": "2026-10-17T01:35:41.873Z",
+      "scope": "Parent-side Buffer.concat requested lengths during one real8MiB JSON reply from a child writing32KiB chunks. Sum is repeated allocation/copy work,not simultaneous heap/RSS or allocator usable size.",
+      "payloadBytes": 8388608,
+      "concatCalls": 133,
+      "concatRequestedBytes": 545882664,
+      "maxConcatBytes": 8388632,
+      "ratio": 65.07428455352783,
+      "elapsedMs": 746.25575
+    },
+    "new8MiB": "JS assertion observed exactly one large allocation with byteLength equal to declared packet,copiedBodyBytes equal to packet size,plus at-most512 bytes of prefix staging,and zero parent Buffer.concat calls.",
+    "exact90MiB": {
+      "packetBytes": 94371840,
+      "payloadBytes": 94371820,
+      "concatCalls": 0,
+      "allocations": [
+        {
+          "bytes": 94371840,
+          "backingBytes": 94371840
+        }
+      ],
+      "elapsedMs": 1131.81613,
+      "budgetStatus": {
+        "scope": "node-broker-response-transients",
+        "dataBytes": 0,
+        "controlBytes": 11977,
+        "dataLimit": 805306368,
+        "controlLimit": 8388608,
+        "peakDataBytes": 660613440,
+        "peakControlBytes": 11977,
+        "owners": 1,
+        "packetReservedBytes": 47,
+        "privatePacketBackingBytes": 47,
+        "parseDeliveryEstimate": 10906,
+        "receivedBackingBytes": 8499,
+        "peakReceivedBackingBytes": 73984,
+        "receivedBackingLimit": 2097152,
+        "denied": 0,
+        "ready": true,
+        "applicationGraph": "outside this transient owner after delivery",
+        "nativeStreamAndVm": "not covered",
+        "packets": 3,
+        "deniedPackets": 0,
+        "privateAllocations": 3,
+        "copiedBodyBytes": 94371911,
+        "receivedChunks": 1444,
+        "frameBytesRemaining": 0,
+        "draining": false
+      }
+    },
+    "realRustQuota": {
+      "denied": {
+        "count": 128,
+        "code": "INPUT_BUDGET_PRESSURE",
+        "budget": "node-response",
+        "phase": "admission"
+      },
+      "acceptedBeforeDenial": [
+        {
+          "count": 64,
+          "serial": 2,
+          "published": true
+        }
+      ],
+      "lastDeliveredSerial": 2,
+      "lastPublishedSerial": 2,
+      "backendAcceptedSerial": 3,
+      "recoveredSerial": 4,
+      "processUnchanged": true,
+      "oldCallerSnapshotIntact": true,
+      "budgetStatus": {
+        "scope": "node-broker-response-transients",
+        "dataBytes": 0,
+        "controlBytes": 37324,
+        "dataLimit": 1048576,
+        "controlLimit": 8388608,
+        "peakDataBytes": 705711,
+        "peakControlBytes": 37324,
+        "owners": 1,
+        "packetReservedBytes": 724,
+        "privatePacketBackingBytes": 724,
+        "parseDeliveryEstimate": 35576,
+        "receivedBackingBytes": 9176,
+        "peakReceivedBackingBytes": 27402,
+        "receivedBackingLimit": 2097152,
+        "denied": 1,
+        "ready": true,
+        "applicationGraph": "outside this transient owner after delivery",
+        "nativeStreamAndVm": "not covered",
+        "packets": 8,
+        "deniedPackets": 1,
+        "privateAllocations": 8,
+        "copiedBodyBytes": 31557,
+        "receivedChunks": 9,
+        "frameBytesRemaining": 0,
+        "draining": false
+      }
+    },
+    "remoteCommitBoundary": "Local response rejection occurs after the Rust Mapper commits. The test publishes each successful calibration frame as Source does;the last published resource pin survives,and old hash-only reuse recovers. It does not claim remote rollback of a denied reply.",
+    "forcedGc": {
+      "status": "passed",
+      "consumedCollectible": true,
+      "partialRetainedUntilClose": true,
+      "retainedClosedBrokerCollectible": true,
+      "returnedStringStillRetained": true,
+      "scope": "Forced-GC reachability of private Buffer+ArrayBuffer only. Application result/decoded strings remain outside the receive/parse transient ledger;not natural GC timing,VM heap or physical RSS return."
+    },
+    "largeNative": {
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "mapperRollbackRejections": 423
+  },
+  "validation": {
+    "js": {
+      "passed": 177,
+      "failed": 0,
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-js-tests-v2.log"
+    },
+    "rust": "Source and Linux b5e binary unchanged;reuse previously accepted49 release tests in viz-fault-pairing.json. No new Rust test/rebuild claim.",
+    "linuxFrozen": {
+      "at": "2026-10-17T02:03:47.322881+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-webgl-live.log"
+        },
+        {
+          "name": "verify-broker-cache-lru",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-broker-cache-lru.log"
+        },
+        {
+          "name": "verify-broker-mapper-transaction",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-broker-mapper-transaction.log"
+        },
+        {
+          "name": "verify-large-native-cache",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-large-native-cache.log"
+        },
+        {
+          "name": "verify-resource-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-resource-pool.log"
+        },
+        {
+          "name": "verify-source-resource-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-source-resource-pressure.log"
+        },
+        {
+          "name": "verify-viz-input-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-viz-input-pool.log"
+        },
+        {
+          "name": "verify-source-input-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-source-input-pressure.log"
+        },
+        {
+          "name": "verify-node-request-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-node-request-budget.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-control-channel.log"
+        },
+        {
+          "name": "verify-control-priority",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-control-priority.log"
+        },
+        {
+          "name": "verify-input-feedback",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-input-feedback.log"
+        },
+        {
+          "name": "verify-worker-control",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-worker-control.log"
+        },
+        {
+          "name": "verify-streaming-startup",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-streaming-startup.log"
+        },
+        {
+          "name": "verify-page-activity",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-page-activity.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-node-response-contract",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-node-response-contract.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-verify-node-response-lifetime.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-checkpoint-version-v2.json",
+      "status": "passed"
+    },
+    "canonicalLiveJs": {
+      "at": "2026-10-17T02:08:12.601590+00:00",
+      "source": "/project live JS and unchanged canonical b5e Linux Rust;independent artifact cwd",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-canonical-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-canonical-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-canonical-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-node-response-contract",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-canonical-verify-node-response-contract.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-canonical-verify-node-response-lifetime.log"
+        }
+      ],
+      "status": "passed"
+    },
+    "fixtures": "Includes300 seeded real-pipe structured/UTF16 replies,dense scalar/depth admission,24 batched controls,valid dense32KiB Gateway event,late/escaped headers,invalid UTF8,event failure,partial-frame close,and forced-GC private Buffer/ArrayBuffer reachability."
+  },
+  "prototypes": [
+    {
+      "evidence": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-checkpoint-version.json",
+      "receipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-regressions-final.json",
+      "status": "not accepted",
+      "reason": "4MiB default control passed176JS/34Linux but valid dense32KiB Gateway event exceeded conservative parse credit and closed Broker. New fixture exposed it;v2 preserves pricing and increases default control to8MiB,then reruns177JS/34Linux."
+    },
+    {
+      "evidence": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-focused-v2.log",
+      "reason": "Fixture null fallback changed returned null into a string;fixed fixture uses own-property presence. Runtime was not weakened."
+    },
+    {
+      "evidence": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-unpublished-baseline-prototype.json",
+      "reason": "A retained JS map result is not a native resource pin. Final actual-Rust test publishes successful baselines through Gateway."
+    }
+  ],
+  "version": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-checkpoint-version-v2.json",
+    "frozenProject": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-checkpoint-project-v2",
+    "runtimeSha256": {
+      "native/broker.mjs": "b4607ddbb9221642c050a9086b8c8f5b4a7f5ca0e5baded6a0ab058bb96a2dec",
+      "native/response-reader.mjs": "0a01fd333695c3d09b94bd6ee4b754491fc8bc4b1ed1bc08f3327edc343012be",
+      "native/response-memory.mjs": "e6fcb3c48e8ea82b2ffa306d592e835aa510a03ab45765c0676b58084cd4dce7",
+      "native/response-envelope.mjs": "c79e21ea95c970574e5de7f20f665ff12ece04102690d008e21da41a68f1768a"
+    },
+    "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "binariesUnchanged": true,
+    "artifactReports": {
+      "quota.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-artifacts/quota.json",
+        "sha256": "708699910df6c0ab4d9989765123f15d2b68c904989a1660f7061f8c892c09f6"
+      },
+      "maximum.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-artifacts/maximum.json",
+        "sha256": "0faea8defeef9cec30064b5fde127db789132282bdf582ff7031e64f10fa04bc"
+      },
+      "large-native.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-artifacts/large-native.json",
+        "sha256": "c0257d65bfff0cde2d36384562f220d96427a2373415b7776fd16ca1e991e8ce"
+      },
+      "mapper-rollback.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-artifacts/mapper-rollback.json",
+        "sha256": "7a5879e0ffc387f9bfccae7019483467841736ad80b4c45de83c9dfc9a91eace"
+      },
+      "source-resource.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-artifacts/source-resource.json",
+        "sha256": "4eb87601ed611f573bfd345207de3bdbc1c29abe8acdea1721e669e83d7a6665"
+      },
+      "source-input.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-response-v2-artifacts/source-input.json",
+        "sha256": "9ddadad92c9adb2ce65bf666cb3bb541dc9759c3190f10fecb09c5fa5b8895c4"
+      }
+    }
+  },
+  "remaining": [
+    "Returned application graphs/decoded strings and Node VM enumeration/GC physical representation.",
+    "Rust Snapshot Value/String/map owners,asset/manifest parsing and serialization scratch,RPC emit and Gateway/Tungstenite copies.",
+    "Native recording/RasterSource/SkPicture,uncached encoding/IPC,tiled duplication,page epoch and actual pending-native cancellation.",
+    "Full Session/many-renderer budgets,physical PSS/cgroup/allocator/driver return,B4 comparable baseline and independent full8h.",
+    "All41 rows plus N1 remain7 complete in stated scope/12 partial/22 pending."
+  ],
+  "eightHours": "Run2585828c stays frozen on a296 and earlier JS. It excludes this Node response checkpoint,RPC input and RVE pairing. Do not replace its files,restart or stitch elapsed time.",
+  "preserve": "No commit/push. HEAD3ff9512c and live/peer.mjs1+/1- unchanged;all proof containers,frozen projects,compiler6713 and Chromium/Cargo caches preserved."
+}

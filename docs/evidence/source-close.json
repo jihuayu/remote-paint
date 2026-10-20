@@ -1,0 +1,389 @@
+{
+  "at": "2026-10-16T22:14:51.557827+00:00",
+  "status": "partial",
+  "scope": "B10 explicit retained Source/Mapper ownership and Session teardown checkpoint; not complete Session byte/RSS/PSS or Mapper failed-scene rollback acceptance.",
+  "implementation": [
+    "Source.close immediately clears latest, producer, readiness, activity leases and Node Mapper resources/memory descriptors/revisions. Repeated callers await one close promise.",
+    "Closed Sources reject queued/new resize and activity work; late navigation/capture/map results cannot repopulate caches or publish frames. Expected errors after intentional close do not become active capture errors.",
+    "Source startup/close and outer Live close attempt each owned cleanup step and aggregate errors instead of skipping later owners.",
+    "Native peer cleanup removes event listeners/leases even when Gateway stop fails. Transport always disposes peers and HTTP/WebSocket servers, including active HTTP connections, before propagating errors."
+  ],
+  "tests": {
+    "node": 144,
+    "nativeCppUnchangedFromEncodingCheckpoint": 34,
+    "actualOwnership": {
+      "at": "2026-10-16T22:13:53.683Z",
+      "status": "passed",
+      "scope": "Actual Linux native Chromium with Rust and Node data planes: ten retained closed Sources plus two Live control-cleanup failures. Retained raw Mapper caches/latest reset, late work cannot republish, idempotent close, injected cleanup errors propagate while all owned browser processes/Broker/fixture still exit. /proc start identities avoid PID-reuse false positives. This is explicit ownership/process-exit evidence, not an allocator/RSS/PSS or whole-Session byte-budget result.",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "retainedSources": 12,
+      "variants": [
+        {
+          "dataPlane": "rust",
+          "iteration": 0,
+          "injected": false,
+          "deferredMap": false,
+          "queuedResize": false,
+          "processes": [
+            {
+              "pid": 27133,
+              "start": "11343832"
+            },
+            {
+              "pid": 27187,
+              "start": "11343835"
+            },
+            {
+              "pid": 27151,
+              "start": "11343834"
+            },
+            {
+              "pid": 27153,
+              "start": "11343834"
+            }
+          ],
+          "reapedProcesses": 4,
+          "errors": []
+        },
+        {
+          "dataPlane": "rust",
+          "iteration": 1,
+          "injected": false,
+          "deferredMap": true,
+          "queuedResize": false,
+          "processes": [
+            {
+              "pid": 27209,
+              "start": "11343849"
+            },
+            {
+              "pid": 27263,
+              "start": "11343853"
+            },
+            {
+              "pid": 27226,
+              "start": "11343851"
+            },
+            {
+              "pid": 27229,
+              "start": "11343851"
+            }
+          ],
+          "reapedProcesses": 4,
+          "errors": []
+        },
+        {
+          "dataPlane": "rust",
+          "iteration": 2,
+          "injected": true,
+          "deferredMap": false,
+          "queuedResize": false,
+          "processes": [
+            {
+              "pid": 27285,
+              "start": "11343869"
+            },
+            {
+              "pid": 27339,
+              "start": "11343872"
+            },
+            {
+              "pid": 27302,
+              "start": "11343871"
+            },
+            {
+              "pid": 27305,
+              "start": "11343871"
+            }
+          ],
+          "reapedProcesses": 4,
+          "errors": []
+        },
+        {
+          "dataPlane": "rust",
+          "iteration": 3,
+          "injected": false,
+          "deferredMap": false,
+          "queuedResize": true,
+          "processes": [
+            {
+              "pid": 27360,
+              "start": "11343886"
+            },
+            {
+              "pid": 27414,
+              "start": "11343889"
+            },
+            {
+              "pid": 27378,
+              "start": "11343887"
+            },
+            {
+              "pid": 27380,
+              "start": "11343887"
+            }
+          ],
+          "reapedProcesses": 4,
+          "errors": []
+        },
+        {
+          "dataPlane": "rust",
+          "iteration": 4,
+          "injected": false,
+          "deferredMap": false,
+          "queuedResize": false,
+          "processes": [
+            {
+              "pid": 27436,
+              "start": "11343904"
+            },
+            {
+              "pid": 27490,
+              "start": "11343907"
+            },
+            {
+              "pid": 27454,
+              "start": "11343906"
+            },
+            {
+              "pid": 27460,
+              "start": "11343906"
+            }
+          ],
+          "reapedProcesses": 4,
+          "errors": []
+        },
+        {
+          "dataPlane": "rust",
+          "outerControlFailure": true,
+          "gatewayStopFailure": true,
+          "reapedProcesses": 4,
+          "ownedFixtureClosed": true,
+          "viewerServerClosed": true,
+          "viewerSocketClosed": true,
+          "errors": []
+        },
+        {
+          "dataPlane": "node",
+          "iteration": 0,
+          "injected": false,
+          "deferredMap": false,
+          "queuedResize": false,
+          "processes": [
+            {
+              "pid": 27588,
+              "start": "11343962"
+            },
+            {
+              "pid": 27642,
+              "start": "11343965"
+            },
+            {
+              "pid": 27612,
+              "start": "11343964"
+            },
+            {
+              "pid": 27613,
+              "start": "11343964"
+            }
+          ],
+          "reapedProcesses": 4,
+          "errors": []
+        },
+        {
+          "dataPlane": "node",
+          "iteration": 1,
+          "injected": false,
+          "deferredMap": false,
+          "queuedResize": false,
+          "processes": [
+            {
+              "pid": 27654,
+              "start": "11343978"
+            },
+            {
+              "pid": 27709,
+              "start": "11343981"
+            },
+            {
+              "pid": 27670,
+              "start": "11343980"
+            },
+            {
+              "pid": 27681,
+              "start": "11343980"
+            }
+          ],
+          "reapedProcesses": 4,
+          "errors": []
+        },
+        {
+          "dataPlane": "node",
+          "iteration": 2,
+          "injected": true,
+          "deferredMap": false,
+          "queuedResize": false,
+          "processes": [
+            {
+              "pid": 27721,
+              "start": "11343994"
+            },
+            {
+              "pid": 27776,
+              "start": "11343997"
+            },
+            {
+              "pid": 27739,
+              "start": "11343995"
+            },
+            {
+              "pid": 27740,
+              "start": "11343995"
+            }
+          ],
+          "reapedProcesses": 4,
+          "errors": []
+        },
+        {
+          "dataPlane": "node",
+          "iteration": 3,
+          "injected": false,
+          "deferredMap": false,
+          "queuedResize": true,
+          "processes": [
+            {
+              "pid": 27788,
+              "start": "11344009"
+            },
+            {
+              "pid": 27843,
+              "start": "11344012"
+            },
+            {
+              "pid": 27805,
+              "start": "11344011"
+            },
+            {
+              "pid": 27806,
+              "start": "11344011"
+            }
+          ],
+          "reapedProcesses": 4,
+          "errors": []
+        },
+        {
+          "dataPlane": "node",
+          "iteration": 4,
+          "injected": false,
+          "deferredMap": false,
+          "queuedResize": false,
+          "processes": [
+            {
+              "pid": 27855,
+              "start": "11344024"
+            },
+            {
+              "pid": 27911,
+              "start": "11344027"
+            },
+            {
+              "pid": 27872,
+              "start": "11344026"
+            },
+            {
+              "pid": 27876,
+              "start": "11344026"
+            }
+          ],
+          "reapedProcesses": 4,
+          "errors": []
+        },
+        {
+          "dataPlane": "node",
+          "outerControlFailure": true,
+          "gatewayStopFailure": false,
+          "reapedProcesses": 4,
+          "ownedFixtureClosed": true,
+          "viewerServerClosed": true,
+          "viewerSocketClosed": true,
+          "errors": []
+        }
+      ]
+    },
+    "regressions": {
+      "at": "2026-10-16T22:12:16.889930+00:00",
+      "tests": [
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/source-close-v3-verify-source-close.log",
+          "note": "Final specific probe rerun after clearing helper timeout handles and removing its own native sample listener before retaining closed Sources; production code unchanged from the six-test v2 suite."
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/source-close-v2-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/source-close-v2-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-page-activity",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/source-close-v2-verify-page-activity.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/source-close-v2-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/source-close-v2-verify-webgl-live.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "status": "passed"
+    },
+    "specific": [
+      "Ten retained closed Sources, five per data plane, plus two retained Live failure cases",
+      "Actual native mapping held across close then resumed without publication",
+      "Two queued resize/close races",
+      "Two capture-cleanup errors still close browser/Viz/Broker",
+      "Two control-cleanup errors and one Gateway-stop error still close owned fixture, Viewer server/socket and browser processes",
+      "Late frames/errors/invalidation/demand cannot revive closed Source",
+      "/proc process start identity verification avoids PID-reuse false positives"
+    ]
+  },
+  "observedProcessIdentitiesExited": 48,
+  "sourceHashes": {
+    "live/source.mjs": "f6946dc6421c6436b4948e7333a6e3710739f5ff9700e41220b4f2b9d2a76204",
+    "live.mjs": "f0ec7cf565b63a1ad1cc95baa2673cc028b29e0050d13fd64f4d22d54133abb6",
+    "live/transport.mjs": "82421106cea11f208589fe31cb2750b8aa6407d2eec77bf38c3a4b9fccda3079",
+    "live/native-peers.mjs": "9bb4fd6387db12a37a6201499d5ae28c9bdc50ed9d79252254c1d7434a6557fb",
+    "tests/verify-source-close.mjs": "93cab5da155ce74aaa65df5f9bb33010644fcddae70388477114c655fe9f0c11"
+  },
+  "priorNativeEvidence": "native-encoding-budget.json",
+  "priorBrokerEvidence": "broker-close.json",
+  "remaining": [
+    "Rust/Node transactional Mapper resource admission and rejected-scene rollback",
+    "Uncached native work and recording/SkPicture/RasterSource byte admission",
+    "Page-epoch retirement before physical host destruction and actual pending-capture cancellation",
+    "Whole Session/cross-renderer budgets and complete allocator/process/driver RSS/PSS release"
+  ],
+  "eightHour": {
+    "runId": "8c8f0d4c-1c2f-44f4-918b-926c5e555be8",
+    "containsThisCheckpoint": false,
+    "status": "running-not-accepted"
+  },
+  "preserved": {
+    "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "committed": false,
+    "pushed": false,
+    "unrelatedPeerDiff": "1 insertion/1 deletion preserved",
+    "oldProofContainerPreserved": true
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "at": "2026-10-16T18:00:22.655Z",
+  "scope": "Actual Linux kernel netem on Gateway TCP only; real source CDP input, native capture and CanvasKit pixel counter; synthetic beforeinput to latest rendered state including each input, excludes physical input/display scanout; intermediate states may coalesce",
+  "samplesPerCase": 1000,
+  "results": [
+    {
+      "publicTextFeedback": true,
+      "publicFeedbackCount": 237,
+      "configuredRttMs": 80,
+      "lossPercent": 1,
+      "measuredRttMs": [
+        80.55421899999988,
+        86.24012100000004,
+        78.48420899999996,
+        83.08264699999995,
+        85.11940800000002,
+        95.15116399999988,
+        84.27257000000009,
+        79.61017200000015,
+        81.36651399999982,
+        85.68049299999984
+      ],
+      "samples": 1000,
+      "p50Ms": 182.09999999403954,
+      "p95Ms": 318.1000000089407,
+      "p99Ms": 369,
+      "maxMs": 431.80000001192093,
+      "maxProgressGapMs": 268.40000000596046,
+      "maxOutstanding": 16,
+      "frames": 593,
+      "lifecycle": {
+        "dragMoves": 22,
+        "dragFinalLeft": 320,
+        "dragPixelsCorrect": true,
+        "blackholeMs": 300,
+        "blackholeRecoveryMs": 390.6206579999998,
+        "reconnectMs": 1028.9249170000003,
+        "reconnectFullBaseline": true,
+        "leaseRevoked": true
+      },
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 18693870,
+          "packets": 10567,
+          "drops": 114,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 209,
+          "qlen": 2
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.04,
+              "jitter": 0.004,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.01,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 18690758,
+          "packets": 10534,
+          "drops": 114,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 209,
+          "qlen": 2
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 5449892,
+          "coalesced": 796,
+          "delta": 257,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 28427,
+          "maxPendingBytes": 28427,
+          "pendingBytes": 0,
+          "resources": 505,
+          "slowDisconnects": 0,
+          "ackRttMs": 84.459778
+        },
+        {
+          "bytes": 27356,
+          "coalesced": 0,
+          "delta": 1,
+          "full": 1,
+          "maxInflight": 2,
+          "maxInflightBytes": 27356,
+          "maxPendingBytes": 26115,
+          "pendingBytes": 0,
+          "resources": 4,
+          "slowDisconnects": 0
+        }
+      ],
+      "sourceErrors": 0
+    }
+  ],
+  "sourceVersion": {
+    "at": "2026-10-16T17:59:49.534459+00:00",
+    "scope": "Frozen C5 scene/pass metadata + inflight pin lifetime; current C7 public text feedback; actual80ms/1% netem1000-input lifecycle regression",
+    "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "sha256": {
+      "protocol/client-memory.mjs": "f351d402da3c578eb99dfd8c8163544a5d2bb36671b8042e1bd71bcdb96fdeb7",
+      "protocol/live-wire.mjs": "11c6c2a8418fdfb0a3965fef5f18edba0fb45eb432247fc343a88a8ea0520ce0",
+      "protocol/asset-wire.mjs": "d17fbe4b51657061504ec5d974b08b56438b5827933435236c0d5d05de8e9f4d",
+      "viewer/scene-renderer.mjs": "ef9fe290f36d862863a2a55a548608cc8d33e28299af9e452bc1aa5f48999f5c",
+      "viewer/input.mjs": "d134fe9b4739a6e23428bc730e85ae896a269b04a8a339fc9633927f3a6e1ad7",
+      "viewer/live.mjs": "a5dabc7ff5c70d975bc585c4d287c50b5653248fc1e275d39113ace838022ac4",
+      "viewer/stream-worker.mjs": "eb756826599bebd68599c199bfe9e41d807dc515814a157d26bc2c51b680601c",
+      "viewer/renderer-runtime.mjs": "56ff3cd2df3a59a2a9bc647bb85eb472ef7861f332f6800c2e1d85ac25388c8a",
+      "viewer/frame-presenter.mjs": "8800652544b0991a1cdd75f392f1973c36f78fe216f981e469d30230f2c91266",
+      "live/input.mjs": "65d3e30e9f0b19de5166e728dbfcfd9b099dc0259d1eade2ec3393344dfb3090",
+      "live/feedback.mjs": "556807b09b93d1dac46487a2670fc58d92974bcb604c90fd22dfd4863ba228f8",
+      "tests/verify-loss.mjs": "871549febd80ba19b54724e2383b26d8fa47649857c5ae65aaa57a03d512500a",
+      "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": "22fe01eb7025652adda0af6f174cb1a8f4785d08fde38eff2310ca616996bcf6"
+    }
+  },
+  "note": "Single current-version regression with unseeded random loss, not a controlled A/B or public WAN/physical scanout claim."
+}

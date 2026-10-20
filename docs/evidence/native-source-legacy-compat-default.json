@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-17T15:37:42.699962+00:00",
+  "status": "accepted-frozen-legacyRPC-45MiB-and423rollback-NOT-fullB1",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-hash-retry-checkpoint-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-hash-retry-checkpoint-project-v1",
+  "tests": {
+    "tests/verify-broker-cache-lru.mjs": "aedce678cb6342c685f164dfe8b272a56de5403203a2bb1a509a26286176d2eb",
+    "tests/verify-broker-mapper-transaction.mjs": "14871556179d8e7ee1f82f394ef7224ac7840ff5e818be058e81556991476043",
+    "native/broker.mjs": "79724d142bd32ca0de606886e4d32accc85af209936d75d2785ca99736b84c5f"
+  },
+  "productionUnchanged": true,
+  "sourceUnchanged": true,
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "scope": "ActualLinuxcandidateBroker/RPC+privateRPAcompatibility;three15MiBBase64syntheticSKPheaderfixtures/45MiBfull+hash-only,520smallscenes/512strongentries;423exacttransactionrollbacksandserial/revisionrecovery. NotactualSourcepixels;noCpp/Rust/JSchanges.",
+  "cache": {
+    "fullResourceBytes": 47185920,
+    "fullResourceCount": 3,
+    "hashOnlySerial": 2,
+    "smallScenes": 520,
+    "strongEntries": 512,
+    "cacheByteLimit": 134217728,
+    "initialCacheCharge": 94893566,
+    "resetResourceBytes": 0
+  },
+  "rollback": {
+    "rejections": 423,
+    "base64Bytes": 146800640,
+    "rawBytes": 146800640,
+    "recovered": {
+      "serial": 2,
+      "revision": 1
+    },
+    "changed": {
+      "serial": 3,
+      "revision": 2
+    },
+    "exactStatsPreserved": true
+  },
+  "reports": {
+    "cache": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-legacy-frozen-cache-v1.json",
+      "sha256": "17b2bb2cfb9ec535cfe287ec3f5215efd2b649111883203b76d46c592bfe3efd"
+    },
+    "rollback": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-legacy-frozen-rollback-v1.json",
+      "sha256": "c92a51c674103865f9792960b40a641ec4d6adee17d181698fc4dfddfbdce321"
+    }
+  },
+  "notClaimed": [
+    "SyntheticSKPheaderfixturesarenotactualCanvasKitpixels.",
+    "Maccompatibilitynotrerunhere;actualMac+Linux211JSand156Ruste remainattheirrecordedversions.",
+    "FullB1/4display+2automation/WebGL/network/close/crash/Nodefallback/all41/N1/8h/fullphysicalmemory incomplete."
+  ],
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  }
+}

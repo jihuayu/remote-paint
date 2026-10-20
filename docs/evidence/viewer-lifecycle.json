@@ -1,0 +1,78 @@
+{
+  "at": "2026-10-16T19:29:03.826185+00:00",
+  "version": {
+    "at": "2026-10-16T19:29:03.826185+00:00",
+    "uncommitted": true,
+    "sha256": {
+      "viewer/lifecycle.mjs": "51ec43f38ed2f9b7da398622c8d605721653890c4ccfc70cf8af3dffb8c7c553",
+      "viewer/live.mjs": "fb05af25ea982ff137483a5c16b697018cd94cfa7739377df4f8316d73dff2b1",
+      "viewer/input.mjs": "c488ad11d274e55bb9263fed62f9390dc38647413b4e76f77828f0e1e326a8a6",
+      "viewer/stream-worker.mjs": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+      "live/viewer-assets.mjs": "2bd454ed3f1b41dc7a7096c47b6d2fcb44db5c37e43d461eb8e32cfc5f98b16b",
+      "live/source.mjs": "279e71e0ae2b0a514a740da4df4629b91111a465e72182668d0674b100fb176d",
+      "tests/lifecycle.test.mjs": "d436681ebe03df93864decce53aa4c26cfe298b1638a458d750881e8d2cc0f7b",
+      "tests/verify-viewer-lifecycle.mjs": "c55d1b2c90dceb1048afce1c96377f8ec6cedf6967e2127b8d10ae89046366f3"
+    }
+  },
+  "scope": "Chrome visibility/freeze/Worker lifecycle, display/Agent separation; no physical OS sleep/device matrix claim",
+  "native": {
+    "at": "2026-10-16T19:27:42.210Z",
+    "scope": "Actual custom Linux source → Rust → CanvasKit main/Worker; actual Chrome minimized/normal visibility, valid hidden→frozen→active events and actual uncaught Worker exception. Independent Agent activity, hidden navigation and fresh baseline, new canvas pixels/input. Does not claim physical OS sleep or mobile lifecycle acceptance.",
+    "variants": [
+      {
+        "workerInitially": true,
+        "hiddenVisibility": "actual Chrome Browser.setWindowBounds minimized/normal; document.hidden verified",
+        "chromeNativeFreezeResume": true,
+        "agentRafContinued": true,
+        "hiddenDisplayCapturesStopped": true,
+        "noOldEpochAfterResume": true,
+        "restoredPixels": [
+          200,
+          100,
+          20,
+          255
+        ],
+        "oldControlLeaseRevoked": true,
+        "workerExceptionFallback": true,
+        "silentWorkerExitHeartbeatFallback": true,
+        "syntheticClockGapRecovery": true,
+        "oldCanvasEventsIgnored": true,
+        "newCanvasInputOnce": true
+      },
+      {
+        "workerInitially": false,
+        "hiddenVisibility": "actual Chrome Browser.setWindowBounds minimized/normal; document.hidden verified",
+        "chromeNativeFreezeResume": true,
+        "agentRafContinued": true,
+        "hiddenDisplayCapturesStopped": true,
+        "noOldEpochAfterResume": true,
+        "restoredPixels": [
+          200,
+          100,
+          20,
+          255
+        ],
+        "oldControlLeaseRevoked": true,
+        "workerExceptionFallback": null,
+        "silentWorkerExitHeartbeatFallback": null,
+        "syntheticClockGapRecovery": true,
+        "oldCanvasEventsIgnored": true,
+        "newCanvasInputOnce": true
+      }
+    ],
+    "status": "passed"
+  },
+  "checks": {
+    "nodeTests": 128,
+    "nativeFullReplay": "passed after preserving monotonic connection generation across Worker replacement; one expected navigation invalidation",
+    "inputFeedback": "passed Worker/main",
+    "assetCacheIntegrity": "passed Worker/main",
+    "independentWorkerControl": "passed",
+    "webglBlackLabel": "passed"
+  },
+  "limits": [
+    "Physical sleep/wake and mobile/BFCache target-device lifecycle not yet accepted",
+    "Worker exception or heartbeat failure selects main-thread compatibility path; synchronous main replay can still affect responsiveness",
+    "Raw browser/driver memory release timing remains outside ledger guarantees"
+  ]
+}

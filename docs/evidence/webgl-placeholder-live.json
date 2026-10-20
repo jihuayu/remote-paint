@@ -1,0 +1,96 @@
+{
+  "at": "2026-10-16T13:31:11.156Z",
+  "scope": "Actual custom Linux Chromium capture, native Rust mapping/Gateway, CanvasKit Worker pixels",
+  "browserSha256": "fa2cedec0bf2f3cd7d8d40e9de344a7a103fd66e7efb36b7afa9f377d8fb6c19",
+  "webgl2": true,
+  "placeholderPixel": [
+    0,
+    0,
+    0,
+    255
+  ],
+  "labelPixels": 446,
+  "ordinaryDomPixel": [
+    18,
+    52,
+    86,
+    255
+  ],
+  "updatedDomPixel": [
+    170,
+    51,
+    51,
+    255
+  ],
+  "removedCanvasRecovered": true,
+  "captureErrors": [],
+  "result": {
+    "protocol": 4,
+    "connectionGeneration": 1,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 3,
+    "native": {
+      "bitmapGlyphs": 0,
+      "captureId": "e9aa07ea-81bb-4276-9905-eb68666bf57a",
+      "frameToken": 4,
+      "namespace": [
+        4,
+        10
+      ],
+      "producer": "1135:2",
+      "sourceFrame": 3,
+      "timing": {
+        "base64Ms": 0,
+        "cachedLayers": 10,
+        "captureRoundTripMs": 4.7969670000002225,
+        "cdpReplyMs": 4.376060000000052,
+        "encodeTotalMs": 1.010000005364418,
+        "encodingThreads": 4,
+        "fontCacheHits": 2,
+        "fontMs": 0.4816559851169586,
+        "glyphCollectionMs": 0.002875015139579773,
+        "imageCacheHits": 0,
+        "imageMs": 0,
+        "parallelLayers": 12,
+        "portableMs": 0.03483201563358307,
+        "recordingCacheHits": 10,
+        "recordingCacheMisses": 2,
+        "recordingMs": 0.023,
+        "resultAssemblyMs": 0.055,
+        "serializeMs": 0.7820219993591309,
+        "vizWaitMs": 0.008624999999938154
+      }
+    },
+    "lastProcessedInputSeq": 0,
+    "resourceBytes": 708193,
+    "resources": 3,
+    "resourcesReceived": 5,
+    "receivedBytes": 823328,
+    "fullFrames": 1,
+    "deltaFrames": 2,
+    "renderMs": 2.2000000029802322,
+    "requiredResources": [
+      "017fad3962556036f0338d504de8b3c32eb2b212201744c7188c6a08e17eda15",
+      "464ff756046229254c37c34a6d64bc91d0809011230f63cde0ccab2bfdf3e8f7",
+      "8f309711296a3bbc03a751ff61856e5d125cb32df860dcebca12f1954b4de384"
+    ],
+    "rendererStats": {
+      "pictureDecodes": 5,
+      "pictureRasters": 5,
+      "pictureRasterHits": 7,
+      "passRenders": 3,
+      "passHits": 0,
+      "isolatedDraws": 0
+    },
+    "assetStats": {
+      "receivedChunks": 10,
+      "receivedBytes": 805093,
+      "fontBytes": 1157041,
+      "imageBytes": 0,
+      "reusedBytes": 353781,
+      "cacheBytes": 805093
+    },
+    "worker": true
+  }
+}

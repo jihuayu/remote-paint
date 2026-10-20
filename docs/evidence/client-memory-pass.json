@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-16T17:59:00.506765+00:00",
+  "scope": "C5 retained pass copies/signatures and pre-serialization work reservation; shared aliases expanded for copy sizing; physical VM/driver and decode allocations remain incomplete",
+  "sha256": {
+    "viewer/scene-renderer.mjs": "ef9fe290f36d862863a2a55a548608cc8d33e28299af9e452bc1aa5f48999f5c",
+    "protocol/client-memory.mjs": "f351d402da3c578eb99dfd8c8163544a5d2bb36671b8042e1bd71bcdb96fdeb7",
+    "tests/scene-renderer.test.mjs": "cdbb5c2addcf907d6dc7983ae9eec8940d5158f93905fff878d1e98083207bff",
+    "tests/scene-memory.test.mjs": "5228019b394fc61c4085faaaecda8ab814cd319843d9bbfae3a834465be84635",
+    "tests/verify-presentation.mjs": "dd52938f3bc45f196502672937b30be4aa782b44ee23eafa3e5157f8ec7b6882"
+  },
+  "uncommitted": true,
+  "nodeTests": 109,
+  "checks": [
+    "Identical signatures reuse the existing pass copy and metadata owner",
+    "Changed and metadata-only scenes replace accounted copies without leaking",
+    "Over-budget signature work refuses before allocating a pixel surface, preserving prior valid cache",
+    "Removed/failed/reused/device-error passes release their own metadata and surfaces",
+    "Actual Mac Metal and Linux SwiftShader main/Worker GPU+CPU pixel/alpha/text/resize/context-loss probes passed",
+    "Actual main/Worker runtime/FrameGate stale-commit tests passed",
+    "Native WebGL black/text placeholder and other page content passed"
+  ]
+}

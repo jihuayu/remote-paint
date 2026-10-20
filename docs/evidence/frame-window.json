@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-16T13:46:16.388Z",
+  "scope": "Native Rust WebSocket + fixture capture + validating LiveFrameGate; no pixels or kernel packet loss",
+  "window": 6,
+  "orderedDeltaBases": true,
+  "unsentSnapshotsCoalesced": 14,
+  "resourceLifetime": true,
+  "recoveryWithLateAck": true,
+  "epochBarrier": true,
+  "legacyWindow": 1,
+  "byteCreditMiB": 16,
+  "resourceCountCredit": 512,
+  "invalidAckClose": 1008
+}

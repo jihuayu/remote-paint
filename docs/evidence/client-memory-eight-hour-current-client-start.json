@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-17T08:09:03.633283+00:00",
+  "status": "running-NOT-passed",
+  "sourceExecSession": 45518,
+  "viewerExecSession": 57179,
+  "containerObserverExecSession": 1092,
+  "container": "remote-paint-memory-eight-hours-current-client-20261017",
+  "results": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-client",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-client/frozen-version.json",
+  "brokerSha256": "48dc75f349c8ce1d98981efda54aa20b7c958300504d7742a5c99a6c9cb2b14c",
+  "browserSha256": "1ebdeefcca8f7fe3524a4596da188d621bc37fc83123db0cb61e4b7a0d9467a9",
+  "clientLedgerSha256": "b46ed2b28677e4a7db943e4a43b071c2eefe6c6255f799c319200a5869c3cb5e",
+  "ports": [
+    39506,
+    39507
+  ],
+  "noElapsedTimeCarriedFromOldRun": true,
+  "containsFutureRecordingIndex": false,
+  "runId": "6aac0cc8-d1fb-42de-a2ef-f18696129f81",
+  "startedAt": "2026-10-17T08:05:58.768Z",
+  "evidence": "docs/evidence/client-memory-eight-hour-current-client-start.json",
+  "currentSample": {
+    "at": "2026-10-17T08:10:08.185Z",
+    "elapsedSeconds": 248.30417208300003,
+    "cycle": 493,
+    "navigations": 2,
+    "resizes": 44,
+    "inputs": 30
+  },
+  "sourceHealth": {
+    "pageCrashed": false,
+    "browserDisconnected": false,
+    "brokerExited": false
+  },
+  "workload": {
+    "seconds": 28800,
+    "burst": 400,
+    "intervalMs": 2000,
+    "navigationEvery": 40
+  },
+  "initialViewerSetupSeconds": 1.302851375,
+  "macGpu": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+  },
+  "sourceFiles": 712,
+  "dependenciesFrozen": true,
+  "manifestSha256": "afee54c2bef2a57099c1fe79333b882255f7cb28f1b169c3ca8fcc32c05d077d",
+  "viewerBudgetFailures": [
+    0,
+    0,
+    0
+  ],
+  "contains": [
+    "current b46 incremental ledger/released callback cleanup",
+    "current188JS client admission/metadata/GPU/rotation policies",
+    "sourceRust48dc pre-map owner and Chromium1eb Canvas2D"
+  ],
+  "excludes": [
+    "future recording-index/raw-reference changes",
+    "later server/SDK revisions",
+    "wholeVM/OS/Session or physical GPU exact allocation acceptance"
+  ],
+  "oldIndependentRun": {
+    "runId": "2585828c-e3d1-4175-98f9-8a8c656dcd7c",
+    "unchanged": true,
+    "elapsedTimeCarried": false
+  },
+  "scope": "Frozen currentClient independent8h under same navigation/resize/image/update/input workload on actual Mac MetalGPU Worker,CPU Worker,CPU mainThread and separate LinuxSource cgroup. Start receipt only;not8h acceptance;require final duration/memory/health/workload/cleanup evidence."
+}

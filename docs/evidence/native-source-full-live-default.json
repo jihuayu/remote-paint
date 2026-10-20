@@ -1,0 +1,224 @@
+{
+  "at": "2026-10-17T16:10:54.050320+00:00",
+  "status": "accepted-fullLive-defaultnative-andNodefallback-NOT-fullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-full-live-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-full-live-checkpoint-project-v1",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-crash-checkpoint-v1.json",
+  "changed": [
+    "tests/verify-live.mjs"
+  ],
+  "productionUnchanged": true,
+  "scope": "CompleteoriginaldynamicLiveverifieradaptationforcompactnativeidentityandcontrolledreset;allprivateimage/font/stream/animationreuse/input/slow/reconnect/dropresource/navigation/3resize/exactcachedrain/noViewer/sourcefetchgatesretained. ActualdefaultnativeandexplicitNodefallbackplusseparaterealnativehashretry. No9MiBweaknetwork/fullB1/physicalmemoryclaim.",
+  "cases": [
+    {
+      "tag": "native",
+      "dataPlane": "native-autonomous",
+      "captures": 543,
+      "sourceErrors": 0,
+      "captureFailures": [],
+      "nodeCalls": {
+        "evaluate": 71,
+        "awaitPromise": 0,
+        "map": 0,
+        "publish": 0
+      },
+      "cacheAfterDrain": {
+        "resources": 17,
+        "required": 17
+      },
+      "pixelFractionOver24": 0.0097216796875,
+      "imagePixels": [
+        {
+          "selector": "#private-image",
+          "pixelsCompared": 10320,
+          "maxChannelError": 0
+        },
+        {
+          "selector": "#blob-image",
+          "pixelsCompared": 10320,
+          "maxChannelError": 0
+        }
+      ],
+      "textInk": [
+        {
+          "selector": "header h1",
+          "ink": 1939,
+          "uncovered": 0,
+          "uncoveredFraction": 0,
+          "sourceMinContrast": 176.25,
+          "replayMinContrast": 58.75,
+          "neighborhoodPixels": 1
+        },
+        {
+          "selector": "header p",
+          "ink": 471,
+          "uncovered": 0,
+          "uncoveredFraction": 0,
+          "sourceMinContrast": 126.75,
+          "replayMinContrast": 42.25,
+          "neighborhoodPixels": 1
+        }
+      ],
+      "streamTextInk": [
+        {
+          "selector": "#stream",
+          "ink": 2392,
+          "uncovered": 0,
+          "uncoveredFraction": 0,
+          "sourceMinContrast": 170.25,
+          "replayMinContrast": 56.75,
+          "neighborhoodPixels": 1
+        }
+      ],
+      "slowClientClose": 1013,
+      "resizeRecovery": [
+        {
+          "width": 800,
+          "viewportVersion": 2,
+          "frameId": 25
+        },
+        {
+          "width": 960,
+          "viewportVersion": 3,
+          "frameId": 29
+        },
+        {
+          "width": 800,
+          "viewportVersion": 4,
+          "frameId": 33
+        }
+      ],
+      "nativeBrokerResetRecovery": {
+        "completedResets": 1,
+        "sameEpoch": true,
+        "inputSeq": 3,
+        "fullResourceBytes": 21365988,
+        "captureOrdinal": 4294967297,
+        "previousOrdinalLimit": 4294967295,
+        "hashMissRetries": 0,
+        "resumed": true
+      }
+    },
+    {
+      "tag": "node",
+      "dataPlane": "node-fallback",
+      "captures": 557,
+      "sourceErrors": 0,
+      "captureFailures": [],
+      "nodeCalls": {
+        "evaluate": 559,
+        "awaitPromise": 559,
+        "map": 0,
+        "publish": 0
+      },
+      "cacheAfterDrain": {
+        "resources": 3,
+        "required": 3
+      },
+      "pixelFractionOver24": 0.009737955729166666,
+      "imagePixels": [
+        {
+          "selector": "#private-image",
+          "pixelsCompared": 10320,
+          "maxChannelError": 0
+        },
+        {
+          "selector": "#blob-image",
+          "pixelsCompared": 10320,
+          "maxChannelError": 0
+        }
+      ],
+      "textInk": [
+        {
+          "selector": "header h1",
+          "ink": 1937,
+          "uncovered": 0,
+          "uncoveredFraction": 0,
+          "sourceMinContrast": 176.25,
+          "replayMinContrast": 58.75,
+          "neighborhoodPixels": 1
+        },
+        {
+          "selector": "header p",
+          "ink": 471,
+          "uncovered": 0,
+          "uncoveredFraction": 0,
+          "sourceMinContrast": 126.75,
+          "replayMinContrast": 42.25,
+          "neighborhoodPixels": 1
+        }
+      ],
+      "streamTextInk": [
+        {
+          "selector": "#stream",
+          "ink": 2392,
+          "uncovered": 0,
+          "uncoveredFraction": 0,
+          "sourceMinContrast": 170.25,
+          "replayMinContrast": 56.75,
+          "neighborhoodPixels": 1
+        }
+      ],
+      "slowClientClose": 1013,
+      "resizeRecovery": [
+        {
+          "width": 800,
+          "viewportVersion": 2,
+          "frameId": 20
+        },
+        {
+          "width": 960,
+          "viewportVersion": 3,
+          "frameId": 23
+        },
+        {
+          "width": 800,
+          "viewportVersion": 4,
+          "frameId": 26
+        }
+      ],
+      "nativeBrokerResetRecovery": null
+    }
+  ],
+  "reports": {
+    "native": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-full-live-frozen-native-v1.json",
+      "sha256": "d35782f5d2e5088b31f2c010a202eeecbc068fb3c5350611ccb92a14024b17ca"
+    },
+    "node": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-full-live-frozen-node-v1.json",
+      "sha256": "1a5b6e07c6f5a172a87923f400d542d222fa4dc91bc23e0403e74dd9e1b3ef4d"
+    },
+    "hashretry": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-full-live-frozen-hashretry-v1.json",
+      "sha256": "c15ec443b9f7d1efa027294476e80d3b9368933d106bb6cbe7b6ec14dab60924"
+    }
+  },
+  "actualHashMissRetry": {
+    "separateVerifier": "tests/verify-native-source-hash-retry.mjs",
+    "recoveries": 1,
+    "autonomousControlCalls": 0,
+    "explicitDiagnosticMaps": 5,
+    "sameFrozenVersion": true
+  },
+  "proved": [
+    "AlloriginalfullLivegatesretainedforbothactualdefaultnativeandexplicitNodefallback:privateimages/source+blobURLs exactpixels,noViewerrefetch,header/streamtextinkandnegativeerasedtextcheck.",
+    "Compositor-onlyanimationreusespaintbytes;humaninputACKandstreamingtextreachactualViewer;slowpeer1013doesnotstallnormalViewer;reconnectfullbaseline.",
+    "NativecontrolledBrokerresetreservesnewordinalrange/fullresourcesandkeepssameepoch/input3;hash-misscounterdoesnotincrementforreset. Actualhashmiss/Retry/fullresendstillrequiredandrerunseparatelywithsamefrozenproduction.",
+    "Actualnavigationand3resize transitionsrecovercorrectprivateimagepixels/version;droppedresourcecausesexactly1keyframerequestandvalidfullbaseline;inflightcachepinsstaybounded.",
+    "Afterwindowdrainnative17/17andNode3/3requiredresources;0captureswithoutViewersbefore/afterdisconnect,0sourceURLrequests/iframes/Viewererrors.",
+    "FrozennativeandNodeSourceerrors0;workingNodeinitialrunhad1originalallowednavigationinvalidation,preservedinitsreport. Nativezeromap/publish/awaitPromise;Nodefallbackretainsexplicitperframeevaluate/awaitPromise ratherthanclaimingnativebehavior."
+  ],
+  "notClaimed": [
+    "Source/Viewerbrowserboth14bceandBrokered9dexplicitcandidates;canonicalbinariesunchanged.",
+    "9MiBactualnativeweaknetwork/progress15s/control3s/ACK1.5s/close200msandN1matrixstillpending.",
+    "FullB1/canonicalpromotion/all41/fullSession/VM/PSS/8h/B4CPU incomplete."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true
+}

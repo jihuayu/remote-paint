@@ -1,0 +1,234 @@
+{
+  "at": "2026-10-16T15:35:12.757Z",
+  "scope": "Real browser CanvasKit WebGL2 + CPU in main thread and Worker; direct presentation alpha/text/picture cache/resize/context loss, local 960x640 timing probe (not an end-to-end performance claim)",
+  "browser": "155.0.8059.79",
+  "build": "a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8",
+  "main": {
+    "device": {
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+    },
+    "automaticMode": "cpu-2d",
+    "webgpuCompiled": false,
+    "allocation": {
+      "gpuTargets": 3,
+      "cpuTargets": 0,
+      "ckReadbacks": 0,
+      "glReadbacks": 0
+    },
+    "damage": {
+      "maxDamagePixels": 7812,
+      "viewportPixels": 614400,
+      "maxTwoDReadbackBytes": 31248,
+      "passSurfaceAllocations": 3,
+      "partialPassRenders": 59,
+      "unchangedPresentationSkipped": true
+    },
+    "alphaSample": [
+      255,
+      128,
+      0,
+      64
+    ],
+    "textInk": {
+      "pixels": 198,
+      "missing": 0
+    },
+    "comparison": {
+      "differentChannelsOver2": 149,
+      "channels": 2457600,
+      "maxError": 255
+    },
+    "frames": 60,
+    "gpu": {
+      "renderMs": {
+        "p50": 0.30000001192092896,
+        "p95": 1.7999999970197678
+      },
+      "readbackMs": {
+        "p50": 0,
+        "p95": 0
+      },
+      "bitmapMs": {
+        "p50": 4,
+        "p95": 5.5
+      },
+      "submitMs": {
+        "p50": 4.200000002980232,
+        "p95": 5.600000008940697
+      },
+      "totalMs": {
+        "p50": 4.5,
+        "p95": 11.599999994039536
+      }
+    },
+    "cpu": {
+      "renderMs": {
+        "p50": 0.5,
+        "p95": 1.2999999970197678
+      },
+      "readbackMs": {
+        "p50": 0.29999999701976776,
+        "p95": 0.5999999940395355
+      },
+      "bitmapMs": {
+        "p50": 1.0999999940395355,
+        "p95": 1.2999999970197678
+      },
+      "submitMs": {
+        "p50": 1.1000000089406967,
+        "p95": 1.300000011920929
+      },
+      "totalMs": {
+        "p50": 2,
+        "p95": 4.200000002980232
+      }
+    },
+    "gpuReadbackBytes": 0,
+    "contextLoss": {
+      "mode": "cpu-bitmap",
+      "frames": 64,
+      "gpuFrames": 63,
+      "cpuFrames": 1,
+      "readbackBytes": 1920000,
+      "totalReadbackBytes": 1920000,
+      "fallbacks": 1,
+      "gpuCacheBytes": 134217728,
+      "device": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "damage": [
+        0,
+        0,
+        800,
+        600
+      ],
+      "skipped": false,
+      "renderMs": 3.6000000089406967,
+      "readbackMs": 0.3999999910593033,
+      "bitmapMs": 0.800000011920929,
+      "submitMs": 0.800000011920929,
+      "totalMs": 4.800000011920929,
+      "fallbackReason": "WebGL2 context lost"
+    },
+    "unavailableFallback": "cpu-2d",
+    "twoDFallback": "cpu-2d",
+    "resize": true,
+    "staleBitmapSuppressed": true
+  },
+  "worker": {
+    "device": {
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+    },
+    "automaticMode": "cpu-2d",
+    "webgpuCompiled": false,
+    "allocation": {
+      "gpuTargets": 3,
+      "cpuTargets": 0,
+      "ckReadbacks": 0,
+      "glReadbacks": 0
+    },
+    "damage": {
+      "maxDamagePixels": 7812,
+      "viewportPixels": 614400,
+      "maxTwoDReadbackBytes": 31248,
+      "passSurfaceAllocations": 3,
+      "partialPassRenders": 59,
+      "unchangedPresentationSkipped": true
+    },
+    "alphaSample": [
+      255,
+      128,
+      0,
+      64
+    ],
+    "textInk": {
+      "pixels": 198,
+      "missing": 0
+    },
+    "comparison": {
+      "differentChannelsOver2": 149,
+      "channels": 2457600,
+      "maxError": 255
+    },
+    "frames": 60,
+    "gpu": {
+      "renderMs": {
+        "p50": 0.30000001192092896,
+        "p95": 1
+      },
+      "readbackMs": {
+        "p50": 0,
+        "p95": 0
+      },
+      "bitmapMs": {
+        "p50": 4.4000000059604645,
+        "p95": 6
+      },
+      "submitMs": {
+        "p50": 4.5999999940395355,
+        "p95": 6.100000008940697
+      },
+      "totalMs": {
+        "p50": 4.9000000059604645,
+        "p95": 8.599999994039536
+      }
+    },
+    "cpu": {
+      "renderMs": {
+        "p50": 0.5999999940395355,
+        "p95": 2
+      },
+      "readbackMs": {
+        "p50": 0.29999999701976776,
+        "p95": 0.7000000029802322
+      },
+      "bitmapMs": {
+        "p50": 1,
+        "p95": 2.0999999940395355
+      },
+      "submitMs": {
+        "p50": 1.1000000089406967,
+        "p95": 2.0999999940395355
+      },
+      "totalMs": {
+        "p50": 2,
+        "p95": 3.9000000059604645
+      }
+    },
+    "gpuReadbackBytes": 0,
+    "contextLoss": {
+      "mode": "cpu-bitmap",
+      "frames": 64,
+      "gpuFrames": 63,
+      "cpuFrames": 1,
+      "readbackBytes": 1920000,
+      "totalReadbackBytes": 1920000,
+      "fallbacks": 1,
+      "gpuCacheBytes": 134217728,
+      "device": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "damage": [
+        0,
+        0,
+        800,
+        600
+      ],
+      "skipped": false,
+      "renderMs": 3.7000000029802322,
+      "readbackMs": 0.29999999701976776,
+      "bitmapMs": 0.7000000029802322,
+      "submitMs": 0.7999999970197678,
+      "totalMs": 4.799999997019768,
+      "fallbackReason": "WebGL2 context lost"
+    },
+    "unavailableFallback": "cpu-2d",
+    "twoDFallback": "cpu-2d",
+    "resize": true,
+    "staleBitmapSuppressed": true
+  }
+}

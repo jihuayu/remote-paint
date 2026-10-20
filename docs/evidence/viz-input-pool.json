@@ -1,0 +1,872 @@
+{
+  "at": "2026-10-16T23:48:05.323091+00:00",
+  "status": "partial",
+  "scope": "B10 Linux arm64 Viz/RPA packet and parsed-metadata input admission,raw SKP reservation before copy,and owned/bounded tile expansion; complete Broker/Session budgets remain unfinished.",
+  "implementation": {
+    "inputPool": {
+      "defaultBytes": 268435456,
+      "configuration": "REMOTE_PAINT_INPUT_POOL_BYTES,1MiB..1GiB",
+      "packet": "One global pool shared by up to4 private readers;reserve declared packet Vec capacity+owner overhead before allocation/read. Existing72MiB message,64MiB raw total,16MiB/resource limits remain. Slow partial packets keep full capacity charged; EOF/read failure returns it. Fixed stack prefix/scratch drains a rejected message without allocating its body."
+    },
+    "metadata": "Before serde_json parsing,reserve4x input UTF-8 bytes +768 per structural scalar/container/string token including keys +64KiB. Raw block index gets512 bytes/declared block. This is conservative headroom,not actual allocator usable-size/RSS. Parsed Value/index leases survive queueing and map,then release after original owned data. A bounded128-byte capture ID and error/reader fixed bookkeeping are not a full process quota.",
+    "rawPayload": "After checksums,raw SKP reserves resource pool capacity before copy and arrives at Mapper as owned Payload/Bytes. Resource construction transfers the same owner without a second payload copy or charge. Base64 also reserves output capacity before decode_slice;final payload capacity/slices keep its original reservation.",
+    "tileExpansion": "Move capture and resource records rather than cloning full Base64 payloads repeatedly. Tile groups retain geometry only;expanded quads stop at2048 before unbounded cloning. Pointer identity is tested for ordinary and tiled owned resource strings.",
+    "failure": "Identify native RPA/RVB capture ID from bounded prefix. Reject only unfinished paired scene/resources;completed captures survive. A bounded failure receipt wakes an already waiting scene-first map with INPUT_BUDGET_PRESSURE/RESOURCE_BUDGET_PRESSURE. Ordinary malformed/transport errors keep their failure path;no guessed ID from truncated legacy JSON.",
+    "source": "Drain original native/CDP callback before surfacing budget failure. Source handles either typed admission code,pauses display while preserving demand/page clock,and forces resource resend. Consecutive unsuccessful retries back off100/200/400/800ms to1s and reset after a valid frame;idle demand/close stop polls. resourceBudget readiness includes Viz input readiness."
+  },
+  "parserAllocationObservation": {
+    "scope": "Test-only global allocator requested Layout sizes on the parsing thread,with conservative old+new realloc overlap. Independent from admission counter;not allocator usable-size or physical RSS. Test-only allocator is excluded from release binary.",
+    "samples": [
+      {
+        "case": 0,
+        "inputBytes": 2100004,
+        "reserved": 8466320,
+        "requestedLayoutPeak": 6300001
+      },
+      {
+        "case": 1,
+        "inputBytes": 2100002,
+        "reserved": 8466312,
+        "requestedLayoutPeak": 2100000
+      },
+      {
+        "case": 2,
+        "inputBytes": 16001,
+        "reserved": 4738308,
+        "requestedLayoutPeak": 1331536
+      },
+      {
+        "case": 3,
+        "inputBytes": 8001,
+        "reserved": 3170308,
+        "requestedLayoutPeak": 321536
+      },
+      {
+        "case": 4,
+        "inputBytes": 36891,
+        "reserved": 3285868,
+        "requestedLayoutPeak": 221578
+      }
+    ],
+    "initialViolation": {
+      "status": "observed-violation-not-published",
+      "brokerSha256": "3799e2a1b891fe58ec4be2247205103fce0b5fb4287a096e3ce041d9fb405044",
+      "inputBytes": 2100004,
+      "reserved": 4266312,
+      "requestedLayoutPeak": 6300001,
+      "scope": "Test-only global allocator requests with conservative realloc overlap for escaped-string serde_json parsing; not allocator usable-size/RSS",
+      "log": "viz-input-parser-allocation-probe-initial.log",
+      "resolution": "Increase textual headroom from2x to4x input, keep per-node768 and64KiB overhead, rerun observed-layout probe and all acceptance checks."
+    },
+    "initialFailureLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-parser-allocation-probe-initial.log",
+    "finalLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-parser-allocation-probe-final.log",
+    "correction": "2x text reserved4,266,312 bytes but escaped-string parse requested peak6,300,001.4x text now reserves8,466,320 and all5 probes pass. Prototype3799... was never published."
+  },
+  "tests": {
+    "rustRelease": 34,
+    "node": 154,
+    "regressions": {
+      "at": "2026-10-16T23:42:05.746604+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-webgl-live.log"
+        },
+        {
+          "name": "verify-broker-cache-lru",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-broker-cache-lru.log"
+        },
+        {
+          "name": "verify-broker-mapper-transaction",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-broker-mapper-transaction.log"
+        },
+        {
+          "name": "verify-large-native-cache",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-large-native-cache.log"
+        },
+        {
+          "name": "verify-resource-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-resource-pool.log"
+        },
+        {
+          "name": "verify-source-resource-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-source-resource-pressure.log"
+        },
+        {
+          "name": "verify-viz-input-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-viz-input-pool.log"
+        },
+        {
+          "name": "verify-source-input-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-verify-source-input-pressure.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "brokerStagedBuild": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-staged-build.json",
+      "status": "passed"
+    },
+    "input": {
+      "at": "2026-10-16T23:45:14.693Z",
+      "status": "passed",
+      "scope": "Actual Rust private Unix RPA2/Viz protocol with16MiB input quota: two7MiB declared partial packets are charged before reads,third3MiB packet is drained with fixed scratch and rejected by exact capture ID. Completed pair survives on that stream and both maps succeed. Closing partial streams returns all input credits. A later metadata preflight failure wakes a scene-first waiting map with typed pressure rather than pairing timeout. Packet capacities are exact; JSON/index headroom is a conservative estimate. No process-memory or Viewer pixel claim.",
+      "brokerSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+      "held": {
+        "allocations": 4,
+        "bytes": 14762636,
+        "denied": 0,
+        "headroom": 8388608,
+        "limit": 16777216,
+        "peak": 14762636,
+        "ready": false,
+        "scope": "viz-input-pool"
+      },
+      "denied": {
+        "allocations": 4,
+        "bytes": 14762636,
+        "denied": 1,
+        "headroom": 8388608,
+        "limit": 16777216,
+        "peak": 14762636,
+        "ready": false,
+        "scope": "viz-input-pool"
+      },
+      "released": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 1,
+        "headroom": 8388608,
+        "limit": 16777216,
+        "peak": 14796660,
+        "ready": true,
+        "scope": "viz-input-pool"
+      },
+      "final": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 2,
+        "headroom": 8388608,
+        "limit": 16777216,
+        "peak": 14796660,
+        "ready": true,
+        "scope": "viz-input-pool"
+      },
+      "lateFailureMs": 0.44521600000000205,
+      "firstSerial": 1,
+      "retrySerial": 2,
+      "lateMapCode": "INPUT_BUDGET_PRESSURE"
+    },
+    "sourceInput": {
+      "at": "2026-10-16T23:45:16.619Z",
+      "status": "passed",
+      "scope": "Actual Linux non-tiled1536² noisy PNG native RPA packet rejected before full allocation under explicit2MiB input quota. Typed input pressure reaches Source,display capture pauses without stopping page clock or publishing a partial frame. A smaller actual page scene then recovers on the private connection,forces resources and matches CPU CanvasKit pixel. This does not claim the original noisy scene fits2MiB; default-quota57.8MB native support is a separate regression. Packet capacity/metadata estimates only,no full process-memory or GPU claim.",
+      "brokerSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 8069807,
+      "smallImageBytes": 2701,
+      "inputBefore": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 1,
+        "headroom": 1048576,
+        "limit": 2097152,
+        "peak": 10810,
+        "ready": true,
+        "scope": "viz-input-pool"
+      },
+      "inputAfter": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 2,
+        "headroom": 1048576,
+        "limit": 2097152,
+        "peak": 202305,
+        "ready": true,
+        "scope": "viz-input-pool"
+      },
+      "ticks": 22,
+      "afterTicks": 25,
+      "pixel": [
+        29,
+        83,
+        197,
+        255
+      ],
+      "pressureEvents": [
+        "RESOURCE_BUDGET_PRESSURE",
+        "RESOURCE_BUDGET_PRESSURE"
+      ],
+      "statuses": [
+        "绘制资源正在回收，正在重试",
+        "绘制资源正在回收，正在重试"
+      ],
+      "sourceStats": {
+        "captures": 1,
+        "errors": 0,
+        "captureSupersessions": 0,
+        "resourceRecoveries": 0,
+        "resourcePressureEvents": 2,
+        "resourcePressureResumes": 2,
+        "lastError": null,
+        "recentErrors": [],
+        "lastPressureCode": "INPUT_BUDGET_PRESSURE",
+        "resourcePool": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 335544320,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 2,
+            "headroom": 1048576,
+            "limit": 2097152,
+            "peak": 10810,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 805306368,
+          "peak": 0,
+          "ready": true,
+          "retiredSnapshots": 0,
+          "scope": "resource-allocation-pool"
+        },
+        "lastCaptureMs": 4.074108000000024,
+        "lastMapMs": 0.7100109999998949,
+        "registrationRetries": 0
+      },
+      "recoveredFrame": {
+        "captureId": "863553d1-c151-4c29-83b3-d53ba31bc0be",
+        "frameId": 1,
+        "resources": 1
+      },
+      "errors": []
+    },
+    "resource": {
+      "at": "2026-10-16T23:45:00.383Z",
+      "status": "passed",
+      "scope": "64MiB Rust resource allocation pool; actual RPC/Gateway raw-resource WebSocket with two valid unacknowledged 7.5MiB synthetic SKP-header frames inside the existing16MiB wire window. Third transaction fails with typed pressure and exact resource-credit rollback; ordered ACKs release old pins and allow serial3. Fourteen changed frames stay within the cap; reset preserves live peer credit and close returns all credits. Synthetic resource integrity/scene-gate contract, not CanvasKit pixels or process RSS. Input/parser, Snapshot JSON/indexes and WebSocket output copies are outside this pool.",
+      "brokerSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+      "before": {
+        "allocations": 970,
+        "bytes": 47470200,
+        "denied": 0,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 0,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "peak": 47470200,
+        "ready": false,
+        "retiredSnapshots": 1,
+        "scope": "resource-allocation-pool"
+      },
+      "denied": {
+        "allocations": 970,
+        "bytes": 47470200,
+        "denied": 1,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 0,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "peak": 63307912,
+        "ready": false,
+        "retiredSnapshots": 0,
+        "scope": "resource-allocation-pool"
+      },
+      "returned": {
+        "allocations": 485,
+        "bytes": 23735100,
+        "denied": 1,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 0,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "peak": 63307912,
+        "ready": true,
+        "retiredSnapshots": 0,
+        "scope": "resource-allocation-pool"
+      },
+      "peerPinned": {
+        "allocations": 485,
+        "bytes": 23735100,
+        "denied": 1,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 0,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "peak": 63307912,
+        "ready": true,
+        "retiredSnapshots": 0,
+        "scope": "resource-allocation-pool"
+      },
+      "released": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 1,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 0,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "peak": 63307912,
+        "ready": true,
+        "retiredSnapshots": 0,
+        "scope": "resource-allocation-pool"
+      },
+      "frames": 14,
+      "recoveredSerial": 3,
+      "errors": []
+    },
+    "sourceResource": {
+      "at": "2026-10-16T23:45:13.838Z",
+      "status": "passed",
+      "scope": "Actual Linux non-tiled native capture of1536² noisy PNG while two7.5MiB synthetic protocol fixtures are held by an unacknowledged peer.64MiB resource admission triggers typed Source backpressure; display capture pauses, page clock advances, latest/epoch/viewport/input fences remain intact, ACK frees old owners, native force-resource retry resumes, and actual recovered CanvasKit CPU pixel matches. Not an all-native slow-peer workload, Viewer GPU test, parser/output-copy or process-memory budget.",
+      "brokerSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 8069750,
+      "tickBefore": 25,
+      "tickAfter": 26,
+      "pressured": {
+        "allocations": 970,
+        "bytes": 47470200,
+        "denied": 1,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 8330614,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "peak": 63841878,
+        "ready": false,
+        "retiredSnapshots": 0,
+        "scope": "resource-allocation-pool"
+      },
+      "after": {
+        "allocations": 992,
+        "bytes": 48268663,
+        "denied": 1,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 8330614,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "peak": 63841878,
+        "ready": false,
+        "retiredSnapshots": 1,
+        "scope": "resource-allocation-pool"
+      },
+      "pixel": [
+        37,
+        91,
+        199,
+        255
+      ],
+      "pressureEvents": [
+        "RESOURCE_BUDGET_PRESSURE"
+      ],
+      "sourceStats": {
+        "captures": 7,
+        "errors": 0,
+        "captureSupersessions": 0,
+        "resourceRecoveries": 0,
+        "resourcePressureEvents": 1,
+        "resourcePressureResumes": 1,
+        "lastError": null,
+        "recentErrors": [],
+        "lastPressureCode": "RESOURCE_BUDGET_PRESSURE",
+        "resourcePool": {
+          "allocations": 485,
+          "bytes": 23735100,
+          "denied": 1,
+          "headroom": 33554432,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 83886080,
+            "limit": 268435456,
+            "peak": 8330614,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 67108864,
+          "peak": 63841878,
+          "ready": true,
+          "retiredSnapshots": 0,
+          "scope": "resource-allocation-pool"
+        },
+        "lastCaptureMs": 2.834004999998797,
+        "lastMapMs": 0.5425920000016049,
+        "registrationRetries": 0
+      },
+      "latestBrokerSerialAtReport": 6,
+      "recoveredFrame": {
+        "captureId": "14fb9a38-376e-41d4-af84-8d1fdddcd540",
+        "frameId": 3,
+        "resources": 1
+      },
+      "errors": []
+    },
+    "largeNative": {
+      "at": "2026-10-16T23:44:03.312Z",
+      "status": "passed",
+      "scope": "Actual Linux Chromium non-tiled native RPA capture of four2048² noisy PNG layers → Rust Gateway raw-resource path → validating FrameGate → CanvasKit CPU scene replay and four actual pixels. Genuine SKPs plus three-copy working set exceed128MiB; strong cache and weak indexes remain bounded, snapshots still deliver every resource and hash-only follow-up recovers without a false resource miss. This does not certify all snapshot/transport allocation reservations or process/RSS budgets.",
+      "brokerSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 57380806,
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "replayMs": 603.6350710000006,
+      "before": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 130858013,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 999,
+        "cacheOwnedChunkBytes": 43410649,
+        "chunkIndexEntries": 1772,
+        "chunkIndexEstimateBytes": 283520,
+        "chunkIndexLimit": 8192,
+        "entries": 4,
+        "epoch": 1,
+        "liveChunkIndexEntries": 1772,
+        "manifestBytes": 118898,
+        "payloadBytes": 43352179,
+        "referenceIndexEntries": 4,
+        "referenceIndexEstimateBytes": 1024,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 174473426,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 43352311,
+        "resources": 3,
+        "revision": 4,
+        "scope": "mapper-retained-cache",
+        "serial": 998
+      },
+      "after": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 130858013,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 1001,
+        "cacheOwnedChunkBytes": 43410649,
+        "chunkIndexEntries": 1772,
+        "chunkIndexEstimateBytes": 283520,
+        "chunkIndexLimit": 8192,
+        "entries": 4,
+        "epoch": 1,
+        "liveChunkIndexEntries": 1772,
+        "manifestBytes": 118898,
+        "payloadBytes": 43352179,
+        "referenceIndexEntries": 4,
+        "referenceIndexEstimateBytes": 1024,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 174473426,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 43352311,
+        "resources": 3,
+        "revision": 4,
+        "scope": "mapper-retained-cache",
+        "serial": 1000
+      },
+      "followUpCaptures": 1,
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "rollback": {
+      "at": "2026-10-16T23:43:30.598Z",
+      "status": "passed",
+      "scope": "Actual Linux arm64 Rust Broker RPC and private Unix RPA2/Viz path. 140 Base64 and140 raw1MiB scene failures,140 follow-up rejected-hash misses, pre-map tile expansion and late metadata/profile failures preserve exact retained-resource/chunk byte counters, entries, epoch, revision and serial. Old native hash-only recovery succeeds at serial2, then a new valid capture commits serial3/revision2. Cache counters cover Mapper-retained ownership only; no complete Session/RSS budget or rendered pixels claimed here.",
+      "brokerSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+      "before": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 103306,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 33682,
+        "chunkIndexEntries": 2,
+        "chunkIndexEstimateBytes": 320,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 2,
+        "manifestBytes": 318,
+        "payloadBytes": 33594,
+        "referenceIndexEntries": 1,
+        "referenceIndexEstimateBytes": 256,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 102962,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 33638,
+        "resources": 1,
+        "revision": 1,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "base64Bytes": 146800640,
+      "rawBytes": 146800640,
+      "rejections": 423,
+      "afterRejected": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 103306,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 33682,
+        "chunkIndexEntries": 2,
+        "chunkIndexEstimateBytes": 320,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 2,
+        "manifestBytes": 318,
+        "payloadBytes": 33594,
+        "referenceIndexEntries": 1,
+        "referenceIndexEstimateBytes": 256,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 102962,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 33638,
+        "resources": 1,
+        "revision": 1,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "last": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 206657,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 34567,
+        "chunkIndexEntries": 3,
+        "chunkIndexEstimateBytes": 480,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 3,
+        "manifestBytes": 636,
+        "payloadBytes": 67203,
+        "referenceIndexEntries": 2,
+        "referenceIndexEstimateBytes": 512,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 172757,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 67291,
+        "resources": 2,
+        "revision": 2,
+        "scope": "mapper-retained-cache",
+        "serial": 3
+      },
+      "recovered": {
+        "serial": 2,
+        "revision": 1
+      },
+      "changed": {
+        "serial": 3,
+        "revision": 2
+      }
+    },
+    "cache": {
+      "at": "2026-10-16T23:43:26.795Z",
+      "status": "passed",
+      "scope": "Actual Rust RPC with three15MiB synthetic header fixtures, not CanvasKit/pixel fixtures. Full45MiB frame still succeeds while strong cache stays below128MiB; uncached snapshot pins retain hash-only reuse. 520 successful small scenes keep512 strong entries and bounded weak indexes; reset releases all retained indexes, and rejected misses preserve state. Does not certify a global snapshot/queued-wire allocation budget.",
+      "brokerSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+      "pressure": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 94939304,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 1,
+        "cacheOwnedChunkBytes": 31499520,
+        "chunkIndexEntries": 1440,
+        "chunkIndexEstimateBytes": 230400,
+        "chunkIndexLimit": 8192,
+        "entries": 3,
+        "epoch": 1,
+        "liveChunkIndexEntries": 1440,
+        "manifestBytes": 83814,
+        "payloadBytes": 31457280,
+        "referenceIndexEntries": 3,
+        "referenceIndexEstimateBytes": 768,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 142407924,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 31457368,
+        "resources": 2,
+        "revision": 3,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "reset": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 0,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 2,
+        "cacheOwnedChunkBytes": 0,
+        "chunkIndexEntries": 0,
+        "chunkIndexEstimateBytes": 0,
+        "chunkIndexLimit": 8192,
+        "entries": 0,
+        "epoch": 0,
+        "liveChunkIndexEntries": 0,
+        "manifestBytes": 0,
+        "payloadBytes": 0,
+        "referenceIndexEntries": 0,
+        "referenceIndexEstimateBytes": 0,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 0,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 0,
+        "resources": 0,
+        "revision": 0,
+        "scope": "mapper-retained-cache",
+        "serial": 2
+      },
+      "indexed": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 1104384,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 10,
+        "cacheOwnedChunkBytes": 38912,
+        "chunkIndexEntries": 512,
+        "chunkIndexEstimateBytes": 81920,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 512,
+        "manifestBytes": 116736,
+        "payloadBytes": 16384,
+        "referenceIndexEntries": 512,
+        "referenceIndexEstimateBytes": 131072,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 928256,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 38912,
+        "resources": 512,
+        "revision": 520,
+        "scope": "mapper-retained-cache",
+        "serial": 522
+      },
+      "fullFrameResources": 3,
+      "hashOnlySerial": 2
+    },
+    "canonicalSmoke": {
+      "status": "passed",
+      "exitCode": 0,
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-canonical-smoke.log",
+      "scope": "Native RPA2/Viz IPC through canonical Linux arm64 broker"
+    }
+  },
+  "supersededProbe": {
+    "file": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/source-input-pressure-solid-probe.json",
+    "scope": "Initial recovery produced a valid solid quad with0 SKP resources. Final fixture uses a real smaller PNG and requires a delivered resource plus actual CanvasKit pixel; do not use the initial probe as resource-resend evidence."
+  },
+  "build": {
+    "brokerSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+    "previousBrokerSha256": "88028fe85c9d31bd77521cbfc8ea16ab0299402edd0c621540de852ba26f35e8",
+    "staged": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viz-input-pool-broker-final",
+    "canonicalAccepted": false,
+    "rustSources": {
+      "native/broker/src/allocation_probe.rs": "ddec052782fb29d8ad7a27d2c2332a70ad9f94226ad230c7fe0923e1cea97ffb",
+      "native/broker/src/assets.rs": "dd638429baa9e8e892623a2c2ca54631b43b27abf53dc4d51b5b1bf7c6626251",
+      "native/broker/src/budget.rs": "0e4ba017cb19dda83fdb0bcc5d8ea7c99ba16993e9da15dd695a4ab7a542436d",
+      "native/broker/src/control.rs": "020a7bc8befd37850a746a602698d8972bd2df03343534559e3cfdfed12c52eb",
+      "native/broker/src/gateway.rs": "fc79103551dc2415f84166a216ab914ebba5b2ab94306aeab327b70720b9cbe2",
+      "native/broker/src/history.rs": "b7b0063bf0a2902e8e2dbac2358b64e543a0c8a94f0e9f9daac5a5667175d6be",
+      "native/broker/src/input.rs": "37c4148f1b64a1a3653b4f7001ad8a4107fb30be7695627d80b8a25eaa563a25",
+      "native/broker/src/main.rs": "c907f6e47f64173f887b1998490c1b5b7e5941a77f27430a361c413755669970",
+      "native/broker/src/scene.rs": "786db11b9b31c86a8332eea82dc7c0c9f66fc52ced9c495f059ab2704b4798f3",
+      "native/broker/src/viz.rs": "36f26eceae1cf6dc48ce779c8bf0834cbe1b83d993b372c23cbc96df3c1a2bc6",
+      "native/broker/src/writer.rs": "26fef581106539a5dc43ba9dc9324c4f6e4850863e65d7ecce8ce40f18ebbb61"
+    },
+    "lockSha256": "4370a93e1dc4f4ea61d0df6094cbc51862c190d0838e60c2fa10f28ebd432c86"
+  },
+  "publication": {
+    "at": "2026-10-16T23:48:05.323091+00:00",
+    "status": "passed",
+    "previousBrokerSha256": "88028fe85c9d31bd77521cbfc8ea16ab0299402edd0c621540de852ba26f35e8",
+    "brokerSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+    "atomicBinaryReplacement": true,
+    "atomicReceiptReplacement": true,
+    "sourceHashesVerified": true,
+    "oldProofContainerAndEightHourPreserved": true,
+    "scope": "Linux arm64 Viz/RPA input and early payload admission; no other architecture or whole-process claim"
+  },
+  "remaining": [
+    "Main stdin packet/JSON parsing and Node NativeBroker serialized queue/backing buffers",
+    "Snapshot scene/metadata/full_json and weak-index backing allocations;asset sections/entries/manifest construction and descriptor-upgrade JSON scratch",
+    "Gateway scene/delta/header/packet metadata and Tungstenite write-buffer copies",
+    "Native recording/RasterSource/SkPicture,uncached encoding/tiled duplication,epoch retirement and actual pending cancellation",
+    "Node fallback Snapshot/peer/wire totals,other architectures and cross-renderer/Session/cgroup/PSS budgets"
+  ],
+  "longRun": {
+    "eightHourRunId": "8c8f0d4c-1c2f-44f4-918b-926c5e555be8",
+    "containsThisCheckpoint": false,
+    "status": "running-not-accepted",
+    "currentValidation": "No new180s/8h claim;34 Rust,154 JS,20 regressions,aggregate input/late pairing quotas and real native PNG recovery only."
+  },
+  "preserved": {
+    "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "committed": false,
+    "pushed": false,
+    "unrelatedPeerDiff": "1 insertion/1 deletion",
+    "oldProofContainerAndCaches": true
+  }
+}

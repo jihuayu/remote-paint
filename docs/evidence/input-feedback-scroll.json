@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-16T17:38:03.821150+00:00",
+  "scope": "C7 long, horizontally scrolled public editor; generated local input; neither physical IME nor display scanout",
+  "sha256": {
+    "live/feedback.mjs": "556807b09b93d1dac46487a2670fc58d92974bcb604c90fd22dfd4863ba228f8",
+    "viewer/input.mjs": "b0eb858ab79b1148b8d14ff1e13ab99f2fe097c4e45aeb96232b911a449d9cb9",
+    "tests/verify-input-feedback.mjs": "8e6d62da8630777a446421a4bc91c82c4fbebbbddea8b97c9d36feac711866cc"
+  },
+  "before": "Caret x4878 exceeded editor right354 because preview scrollLeft remained0; assertion failure retained in work/feedback-scroll-before.log",
+  "after": {
+    "native": {
+      "at": "2026-10-16T17:37:00.281Z",
+      "dataPlane": "native",
+      "scope": "Real custom Chromium native capture → Gateway → CanvasKit Viewer, generated form fixtures and local input events; composition validation is synthetic, no physical OS IME claim",
+      "variants": [
+        {
+          "worker": true,
+          "privacyCases": 8,
+          "sensitiveGetterReads": 0,
+          "sourceCorrection": true,
+          "focusRaceMasked": true,
+          "ackWhileFeedbackBlocked": true,
+          "compositionMasked": true,
+          "compositionCancelPreviewCorrected": true,
+          "remoteSelectionRestoration": false,
+          "compositionCommit": true,
+          "tabInvalidation": true,
+          "scrolledCaretVisible": true,
+          "pointerCleanup": true,
+          "feedback": 16,
+          "acks": 11,
+          "ackBodies": false
+        },
+        {
+          "worker": false,
+          "privacyCases": 8,
+          "sensitiveGetterReads": 0,
+          "sourceCorrection": true,
+          "focusRaceMasked": true,
+          "ackWhileFeedbackBlocked": true,
+          "compositionMasked": true,
+          "compositionCancelPreviewCorrected": true,
+          "remoteSelectionRestoration": false,
+          "compositionCommit": true,
+          "tabInvalidation": true,
+          "scrolledCaretVisible": true,
+          "pointerCleanup": true,
+          "feedback": 15,
+          "acks": 11,
+          "ackBodies": false
+        }
+      ],
+      "sourceErrors": 0,
+      "status": "passed"
+    },
+    "node": {
+      "at": "2026-10-16T17:37:06.182Z",
+      "dataPlane": "node",
+      "scope": "Real custom Chromium native capture → Gateway → CanvasKit Viewer, generated form fixtures and local input events; composition validation is synthetic, no physical OS IME claim",
+      "variants": [
+        {
+          "worker": true,
+          "privacyCases": 8,
+          "sensitiveGetterReads": 0,
+          "sourceCorrection": true,
+          "focusRaceMasked": true,
+          "ackWhileFeedbackBlocked": true,
+          "compositionMasked": true,
+          "compositionCancelPreviewCorrected": true,
+          "remoteSelectionRestoration": false,
+          "compositionCommit": true,
+          "tabInvalidation": true,
+          "scrolledCaretVisible": true,
+          "pointerCleanup": true,
+          "feedback": 15,
+          "acks": 11,
+          "ackBodies": false
+        },
+        {
+          "worker": false,
+          "privacyCases": 8,
+          "sensitiveGetterReads": 0,
+          "sourceCorrection": true,
+          "focusRaceMasked": true,
+          "ackWhileFeedbackBlocked": true,
+          "compositionMasked": true,
+          "compositionCancelPreviewCorrected": true,
+          "remoteSelectionRestoration": false,
+          "compositionCommit": true,
+          "tabInvalidation": true,
+          "scrolledCaretVisible": true,
+          "pointerCleanup": true,
+          "feedback": 15,
+          "acks": 11,
+          "ackBodies": false
+        }
+      ],
+      "sourceErrors": 0,
+      "status": "passed"
+    }
+  },
+  "nodeTests": 96
+}

@@ -1,0 +1,1785 @@
+{
+  "at": "2026-10-16T16:33:44.719Z",
+  "runId": "abd195c8-dbbf-43f2-9f39-58cf7a22de88",
+  "status": "passed",
+  "scope": "Actual Linux native Chromium/Rust source to three Mac/Chrome CanvasKit Viewers: hardware GPU Worker + CPU Worker + CPU main; continuous PNG/font updates, resize, navigation and real input pixels. JS VM heaps, Wasm arena and Skia GPU cache sampled separately; summed process RSS includes shared pages, driver/process overhead is outside ledger.",
+  "requestedSeconds": 120,
+  "elapsedSeconds": 120.385790708,
+  "cycles": 589,
+  "navigations": 4,
+  "resizes": 53,
+  "inputs": 36,
+  "viewerBrowser": "155.0.8059.84",
+  "source": {
+    "runId": "abd195c8-dbbf-43f2-9f39-58cf7a22de88",
+    "url": "<ephemeral-test-url-redacted>",
+    "startedAt": "2026-10-16T16:31:39.363Z",
+    "platform": "linux",
+    "architecture": "arm64",
+    "browser": "155.0.8059.79",
+    "state": {
+      "at": "2026-10-16T16:31:39.363Z",
+      "pageEpoch": 1,
+      "viewportVersion": 1,
+      "viewport": {
+        "cssWidth": 960,
+        "cssHeight": 640,
+        "deviceScaleFactor": 1
+      },
+      "captures": 0,
+      "inputSeq": 0,
+      "cycle": 0,
+      "inputLength": 0,
+      "control": "agent",
+      "stats": {
+        "captures": 0,
+        "errors": 0,
+        "resourceRecoveries": 0,
+        "lastError": null,
+        "recentErrors": []
+      },
+      "transitionInvalidations": 0,
+      "unexpectedErrors": [],
+      "imageBytes": 224499,
+      "imageRequests": 1,
+      "peers": []
+    }
+  },
+  "first": {
+    "at": "2026-10-16T16:31:45.953Z",
+    "elapsedSeconds": 1.614202166,
+    "cycle": 0,
+    "navigations": 0,
+    "resizes": 0,
+    "inputs": 0,
+    "state": {
+      "at": "2026-10-16T16:31:45.865Z",
+      "pageEpoch": 1,
+      "viewportVersion": 1,
+      "viewport": {
+        "cssWidth": 960,
+        "cssHeight": 640,
+        "deviceScaleFactor": 1
+      },
+      "captures": 3,
+      "inputSeq": 0,
+      "cycle": 0,
+      "inputLength": 0,
+      "control": "agent",
+      "stats": {
+        "captures": 3,
+        "errors": 0,
+        "resourceRecoveries": 0,
+        "lastError": null,
+        "recentErrors": [],
+        "lastCaptureMs": 7.428020000000288,
+        "lastMapMs": 1.4281399999999849,
+        "registrationRetries": 0
+      },
+      "transitionInvalidations": 0,
+      "unexpectedErrors": [],
+      "imageBytes": 224499,
+      "imageRequests": 1,
+      "peers": [
+        {
+          "id": "native-0",
+          "stats": {
+            "bytes": 1334705,
+            "coalesced": 0,
+            "delta": 2,
+            "full": 1,
+            "maxInflight": 1,
+            "maxPendingBytes": 1332220,
+            "pendingBytes": 0,
+            "resources": 5,
+            "slowDisconnects": 0,
+            "maxInflightBytes": 1332220,
+            "ackRttMs": 2.707704
+          }
+        },
+        {
+          "id": "native-1",
+          "stats": {
+            "bytes": 1333376,
+            "coalesced": 0,
+            "delta": 1,
+            "full": 1,
+            "maxInflight": 1,
+            "maxPendingBytes": 1332134,
+            "pendingBytes": 0,
+            "resources": 5,
+            "slowDisconnects": 0,
+            "maxInflightBytes": 1332134,
+            "ackRttMs": 46.096965
+          }
+        },
+        {
+          "id": "native-2",
+          "stats": {
+            "bytes": 1332133,
+            "coalesced": 0,
+            "delta": 0,
+            "full": 1,
+            "maxInflight": 1,
+            "maxPendingBytes": 1332133,
+            "pendingBytes": 0,
+            "resources": 5,
+            "slowDisconnects": 0,
+            "maxInflightBytes": 1332133
+          }
+        }
+      ]
+    },
+    "metrics": {
+      "atMs": 7479.759629,
+      "clockTicksPerSecond": 100,
+      "captures": 3,
+      "byKind": {
+        "node": {
+          "cpuMs": 1070,
+          "rssBytes": 185004032,
+          "processes": 1
+        },
+        "broker": {
+          "cpuMs": 220,
+          "rssBytes": 10141696,
+          "processes": 1
+        },
+        "chromium": {
+          "cpuMs": 1150,
+          "rssBytes": 563257344,
+          "processes": 6
+        }
+      }
+    },
+    "results": [
+      {
+        "result": {
+          "protocol": 4,
+          "connectionGeneration": 1,
+          "pageEpoch": 1,
+          "viewportVersion": 1,
+          "frameId": 3,
+          "native": {
+            "bitmapGlyphs": 0,
+            "captureId": "39fa7979-bac8-4e75-bd54-7493b46e79d5",
+            "frameToken": 5,
+            "namespace": [
+              6,
+              10
+            ],
+            "producer": "74:2",
+            "sourceFrame": 5,
+            "timing": {
+              "base64Ms": 0,
+              "cachedLayers": 12,
+              "captureRoundTripMs": 7.428020000000288,
+              "cdpReplyMs": 6.831048999999439,
+              "encodeTotalMs": 0.39800000190734863,
+              "encodingThreads": 4,
+              "fontCacheHits": 0,
+              "fontMs": 0,
+              "glyphCollectionMs": 0,
+              "imageCacheHits": 0,
+              "imageMs": 0,
+              "parallelLayers": 12,
+              "portableMs": 0,
+              "recordingCacheHits": 12,
+              "recordingCacheMisses": 0,
+              "recordingMs": 0.017,
+              "resultAssemblyMs": 0.097,
+              "serializeMs": 0,
+              "vizWaitMs": 0.3917310000006182
+            }
+          },
+          "lastProcessedInputSeq": 0,
+          "resourceBytes": 2228135,
+          "resources": 5,
+          "resourcesReceived": 5,
+          "receivedBytes": 1335205,
+          "fullFrames": 1,
+          "deltaFrames": 2,
+          "renderMs": 0.3000001907348633,
+          "requiredResources": [
+            "212e429159b66982e9a9226a7f80a32b6bdf7410d737bfea9cdbcb23600954e3",
+            "6afef0d5548fc6e62a7adf2c2bfe00a759da8a88e151b2af8c3060245894d187",
+            "a7e463a30550f03230909fbb44681bfe3667cb8d9f34a6b9b6533fd198271197",
+            "cc669804aeddcb6694635ce4eecdc2a145501c176d25b37537d3b6b6831e8f2d",
+            "f691fc1faa1f374c983b9c72c2887214669af46dd5504c1e4482018cc8805f19"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 5,
+            "pictureRasters": 5,
+            "pictureRasterHits": 6,
+            "passRenders": 1,
+            "passHits": 2,
+            "isolatedDraws": 0,
+            "passSurfaceAllocations": 1,
+            "damagedPixels": 614400,
+            "partialPassRenders": 0,
+            "quadsDrawn": 18,
+            "quadsCulled": 0,
+            "pictureEvictions": 0,
+            "rasterEvictions": 0,
+            "arenaRecycles": 0
+          },
+          "presentation": {
+            "mode": "webgl2-bitmap",
+            "frames": 3,
+            "gpuFrames": 3,
+            "cpuFrames": 0,
+            "readbackBytes": 0,
+            "totalReadbackBytes": 0,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "device": {
+              "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+              "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+            },
+            "damage": null,
+            "skipped": true,
+            "renderMs": 0.20000076293945312,
+            "readbackMs": 0,
+            "bitmapMs": 0,
+            "submitMs": 0,
+            "totalMs": 0.20000076293945312
+          },
+          "assetStats": {
+            "receivedChunks": 49,
+            "receivedBytes": 1314509,
+            "fontBytes": 1319674,
+            "imageBytes": 905284,
+            "reusedBytes": 913626,
+            "evictions": 0,
+            "missingManifests": 0,
+            "cacheBytes": 1314509
+          },
+          "worker": true,
+          "memory": {
+            "profile": "compact",
+            "limits": {
+              "profile": "compact",
+              "total": 671088640,
+              "js": 201326592,
+              "wasm": 268435456,
+              "gpu": 134217728,
+              "render": 100663296,
+              "pictures": 16777216,
+              "rasters": 16777216,
+              "chunks": 67108864,
+              "raw": 67108864,
+              "receive": 33554432,
+              "decodeCache": 8388608,
+              "gpuCache": 67108864
+            },
+            "categories": {
+              "wasmBinary": 16485822,
+              "presentation": 4915200,
+              "chunks": 1316665,
+              "raw": 2228135,
+              "passes": 4915200,
+              "pictures": 2228135,
+              "rasters": 1310720,
+              "receive": 192
+            },
+            "domains": {
+              "js": 11787903,
+              "wasm": 2228135,
+              "gpu": 6225920,
+              "browser": 4915200
+            },
+            "jsBufferBytes": 11787711,
+            "referencedJsBytes": 20030622,
+            "renderBytes": 6225920,
+            "residentEstimate": 161272156,
+            "retiredWasmBytes": 0,
+            "retiredArenaCount": 0,
+            "owners": 69,
+            "buffers": 55,
+            "observed": {
+              "wasmHeapBytes": 134217728,
+              "decodeCacheBytes": 0,
+              "gpuCacheBytes": 10351325,
+              "gpuUsageSource": "canvaskit-0.42-binding"
+            },
+            "stats": {
+              "pressureEvents": 0,
+              "failures": 0,
+              "trims": 0,
+              "peakResidentEstimate": 163729756,
+              "peakJsBufferBytes": 11787711,
+              "retiredArenas": 0,
+              "collectedArenas": 0
+            },
+            "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+          }
+        },
+        "memory": {
+          "profile": "compact",
+          "limits": {
+            "profile": "compact",
+            "total": 671088640,
+            "js": 201326592,
+            "wasm": 268435456,
+            "gpu": 134217728,
+            "render": 100663296,
+            "pictures": 16777216,
+            "rasters": 16777216,
+            "chunks": 67108864,
+            "raw": 67108864,
+            "receive": 33554432,
+            "decodeCache": 8388608,
+            "gpuCache": 67108864
+          },
+          "categories": {
+            "wasmBinary": 16485822,
+            "presentation": 4915200,
+            "chunks": 1316665,
+            "raw": 2228135,
+            "passes": 4915200,
+            "pictures": 2228135,
+            "rasters": 1310720,
+            "receive": 192
+          },
+          "domains": {
+            "js": 11787903,
+            "wasm": 2228135,
+            "gpu": 6225920,
+            "browser": 4915200
+          },
+          "jsBufferBytes": 11787711,
+          "referencedJsBytes": 20030622,
+          "renderBytes": 6225920,
+          "residentEstimate": 161272156,
+          "retiredWasmBytes": 0,
+          "retiredArenaCount": 0,
+          "owners": 69,
+          "buffers": 55,
+          "observed": {
+            "wasmHeapBytes": 134217728,
+            "decodeCacheBytes": 0,
+            "gpuCacheBytes": 10351325,
+            "gpuUsageSource": "canvaskit-0.42-binding"
+          },
+          "stats": {
+            "pressureEvents": 0,
+            "failures": 0,
+            "trims": 0,
+            "peakResidentEstimate": 163729756,
+            "peakJsBufferBytes": 11787711,
+            "retiredArenas": 0,
+            "collectedArenas": 0
+          },
+          "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+        },
+        "error": null
+      },
+      {
+        "result": {
+          "protocol": 4,
+          "connectionGeneration": 1,
+          "pageEpoch": 1,
+          "viewportVersion": 1,
+          "frameId": 2,
+          "native": {
+            "bitmapGlyphs": 0,
+            "captureId": "39fa7979-bac8-4e75-bd54-7493b46e79d5",
+            "frameToken": 5,
+            "namespace": [
+              6,
+              10
+            ],
+            "producer": "74:2",
+            "sourceFrame": 5,
+            "timing": {
+              "base64Ms": 0,
+              "cachedLayers": 12,
+              "captureRoundTripMs": 7.428020000000288,
+              "cdpReplyMs": 6.831048999999439,
+              "encodeTotalMs": 0.39800000190734863,
+              "encodingThreads": 4,
+              "fontCacheHits": 0,
+              "fontMs": 0,
+              "glyphCollectionMs": 0,
+              "imageCacheHits": 0,
+              "imageMs": 0,
+              "parallelLayers": 12,
+              "portableMs": 0,
+              "recordingCacheHits": 12,
+              "recordingCacheMisses": 0,
+              "recordingMs": 0.017,
+              "resultAssemblyMs": 0.097,
+              "serializeMs": 0,
+              "vizWaitMs": 0.3917310000006182
+            }
+          },
+          "lastProcessedInputSeq": 0,
+          "resourceBytes": 2228135,
+          "resources": 5,
+          "resourcesReceived": 5,
+          "receivedBytes": 1333876,
+          "fullFrames": 1,
+          "deltaFrames": 1,
+          "renderMs": 0.19999980926513672,
+          "requiredResources": [
+            "212e429159b66982e9a9226a7f80a32b6bdf7410d737bfea9cdbcb23600954e3",
+            "6afef0d5548fc6e62a7adf2c2bfe00a759da8a88e151b2af8c3060245894d187",
+            "a7e463a30550f03230909fbb44681bfe3667cb8d9f34a6b9b6533fd198271197",
+            "cc669804aeddcb6694635ce4eecdc2a145501c176d25b37537d3b6b6831e8f2d",
+            "f691fc1faa1f374c983b9c72c2887214669af46dd5504c1e4482018cc8805f19"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 5,
+            "pictureRasters": 5,
+            "pictureRasterHits": 6,
+            "passRenders": 1,
+            "passHits": 1,
+            "isolatedDraws": 0,
+            "passSurfaceAllocations": 1,
+            "damagedPixels": 614400,
+            "partialPassRenders": 0,
+            "quadsDrawn": 18,
+            "quadsCulled": 0,
+            "pictureEvictions": 0,
+            "rasterEvictions": 0,
+            "arenaRecycles": 0
+          },
+          "presentation": {
+            "mode": "cpu-2d",
+            "frames": 2,
+            "gpuFrames": 0,
+            "cpuFrames": 2,
+            "readbackBytes": 0,
+            "totalReadbackBytes": 2457600,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "damage": null,
+            "skipped": true,
+            "renderMs": 0.09999942779541016,
+            "readbackMs": 0,
+            "bitmapMs": 0,
+            "submitMs": 0,
+            "totalMs": 0.09999942779541016
+          },
+          "assetStats": {
+            "receivedChunks": 49,
+            "receivedBytes": 1314509,
+            "fontBytes": 1319674,
+            "imageBytes": 905284,
+            "reusedBytes": 913626,
+            "evictions": 0,
+            "missingManifests": 0,
+            "cacheBytes": 1314509
+          },
+          "worker": true,
+          "memory": {
+            "profile": "compact",
+            "limits": {
+              "profile": "compact",
+              "total": 671088640,
+              "js": 201326592,
+              "wasm": 268435456,
+              "gpu": 134217728,
+              "render": 100663296,
+              "pictures": 16777216,
+              "rasters": 16777216,
+              "chunks": 67108864,
+              "raw": 67108864,
+              "receive": 33554432,
+              "decodeCache": 8388608,
+              "gpuCache": 67108864
+            },
+            "categories": {
+              "wasmBinary": 16485822,
+              "presentation": 4915200,
+              "chunks": 1316665,
+              "raw": 2228135,
+              "passes": 4915200,
+              "pictures": 2228135,
+              "rasters": 1310720,
+              "receive": 192
+            },
+            "domains": {
+              "js": 11787903,
+              "wasm": 8454055,
+              "gpu": 0,
+              "browser": 4915200
+            },
+            "jsBufferBytes": 11787711,
+            "referencedJsBytes": 20030622,
+            "renderBytes": 6225920,
+            "residentEstimate": 150920831,
+            "retiredWasmBytes": 0,
+            "retiredArenaCount": 0,
+            "owners": 69,
+            "buffers": 55,
+            "observed": {
+              "wasmHeapBytes": 134217728,
+              "decodeCacheBytes": 0,
+              "gpuCacheBytes": null,
+              "gpuUsageSource": "unavailable"
+            },
+            "stats": {
+              "pressureEvents": 0,
+              "failures": 0,
+              "trims": 0,
+              "peakResidentEstimate": 153378431,
+              "peakJsBufferBytes": 11787711,
+              "retiredArenas": 0,
+              "collectedArenas": 0
+            },
+            "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+          }
+        },
+        "memory": {
+          "profile": "compact",
+          "limits": {
+            "profile": "compact",
+            "total": 671088640,
+            "js": 201326592,
+            "wasm": 268435456,
+            "gpu": 134217728,
+            "render": 100663296,
+            "pictures": 16777216,
+            "rasters": 16777216,
+            "chunks": 67108864,
+            "raw": 67108864,
+            "receive": 33554432,
+            "decodeCache": 8388608,
+            "gpuCache": 67108864
+          },
+          "categories": {
+            "wasmBinary": 16485822,
+            "presentation": 4915200,
+            "chunks": 1316665,
+            "raw": 2228135,
+            "passes": 4915200,
+            "pictures": 2228135,
+            "rasters": 1310720,
+            "receive": 192
+          },
+          "domains": {
+            "js": 11787903,
+            "wasm": 8454055,
+            "gpu": 0,
+            "browser": 4915200
+          },
+          "jsBufferBytes": 11787711,
+          "referencedJsBytes": 20030622,
+          "renderBytes": 6225920,
+          "residentEstimate": 150920831,
+          "retiredWasmBytes": 0,
+          "retiredArenaCount": 0,
+          "owners": 69,
+          "buffers": 55,
+          "observed": {
+            "wasmHeapBytes": 134217728,
+            "decodeCacheBytes": 0,
+            "gpuCacheBytes": null,
+            "gpuUsageSource": "unavailable"
+          },
+          "stats": {
+            "pressureEvents": 0,
+            "failures": 0,
+            "trims": 0,
+            "peakResidentEstimate": 153378431,
+            "peakJsBufferBytes": 11787711,
+            "retiredArenas": 0,
+            "collectedArenas": 0
+          },
+          "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+        },
+        "error": null
+      },
+      {
+        "result": {
+          "protocol": 4,
+          "connectionGeneration": 1,
+          "pageEpoch": 1,
+          "viewportVersion": 1,
+          "frameId": 1,
+          "native": {
+            "bitmapGlyphs": 0,
+            "captureId": "39fa7979-bac8-4e75-bd54-7493b46e79d5",
+            "frameToken": 5,
+            "namespace": [
+              6,
+              10
+            ],
+            "producer": "74:2",
+            "sourceFrame": 5,
+            "timing": {
+              "base64Ms": 0,
+              "cachedLayers": 12,
+              "captureRoundTripMs": 7.428020000000288,
+              "cdpReplyMs": 6.831048999999439,
+              "encodeTotalMs": 0.39800000190734863,
+              "encodingThreads": 4,
+              "fontCacheHits": 0,
+              "fontMs": 0,
+              "glyphCollectionMs": 0,
+              "imageCacheHits": 0,
+              "imageMs": 0,
+              "parallelLayers": 12,
+              "portableMs": 0,
+              "recordingCacheHits": 12,
+              "recordingCacheMisses": 0,
+              "recordingMs": 0.017,
+              "resultAssemblyMs": 0.097,
+              "serializeMs": 0,
+              "vizWaitMs": 0.3917310000006182
+            }
+          },
+          "lastProcessedInputSeq": 0,
+          "resourceBytes": 2228135,
+          "resources": 5,
+          "resourcesReceived": 5,
+          "receivedBytes": 1332633,
+          "fullFrames": 1,
+          "deltaFrames": 0,
+          "renderMs": 35.60000038146973,
+          "requiredResources": [
+            "212e429159b66982e9a9226a7f80a32b6bdf7410d737bfea9cdbcb23600954e3",
+            "6afef0d5548fc6e62a7adf2c2bfe00a759da8a88e151b2af8c3060245894d187",
+            "a7e463a30550f03230909fbb44681bfe3667cb8d9f34a6b9b6533fd198271197",
+            "cc669804aeddcb6694635ce4eecdc2a145501c176d25b37537d3b6b6831e8f2d",
+            "f691fc1faa1f374c983b9c72c2887214669af46dd5504c1e4482018cc8805f19"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 5,
+            "pictureRasters": 5,
+            "pictureRasterHits": 6,
+            "passRenders": 1,
+            "passHits": 0,
+            "isolatedDraws": 0,
+            "passSurfaceAllocations": 1,
+            "damagedPixels": 614400,
+            "partialPassRenders": 0,
+            "quadsDrawn": 18,
+            "quadsCulled": 0,
+            "pictureEvictions": 0,
+            "rasterEvictions": 0,
+            "arenaRecycles": 0
+          },
+          "presentation": {
+            "mode": "cpu-2d",
+            "frames": 1,
+            "gpuFrames": 0,
+            "cpuFrames": 1,
+            "readbackBytes": 2457600,
+            "totalReadbackBytes": 2457600,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "damage": [
+              0,
+              0,
+              960,
+              640
+            ],
+            "skipped": false,
+            "renderMs": 33.69999980926514,
+            "readbackMs": 0.8000001907348633,
+            "bitmapMs": 0,
+            "submitMs": 0.5999994277954102,
+            "totalMs": 35.09999942779541
+          },
+          "memory": {
+            "profile": "compact",
+            "limits": {
+              "profile": "compact",
+              "total": 671088640,
+              "js": 201326592,
+              "wasm": 268435456,
+              "gpu": 134217728,
+              "render": 100663296,
+              "pictures": 16777216,
+              "rasters": 16777216,
+              "chunks": 67108864,
+              "raw": 67108864,
+              "receive": 33554432,
+              "decodeCache": 8388608,
+              "gpuCache": 67108864
+            },
+            "categories": {
+              "wasmBinary": 16485822,
+              "presentation": 4915200,
+              "chunks": 1316665,
+              "raw": 2228135,
+              "receive": 192,
+              "passes": 4915200,
+              "pictures": 2228135,
+              "rasters": 1310720
+            },
+            "domains": {
+              "js": 11787903,
+              "wasm": 8454055,
+              "gpu": 0,
+              "browser": 4915200
+            },
+            "jsBufferBytes": 11787711,
+            "referencedJsBytes": 20030622,
+            "renderBytes": 6225920,
+            "residentEstimate": 150920831,
+            "retiredWasmBytes": 0,
+            "retiredArenaCount": 0,
+            "owners": 69,
+            "buffers": 55,
+            "observed": {
+              "wasmHeapBytes": 134217728,
+              "decodeCacheBytes": 0,
+              "gpuCacheBytes": null,
+              "gpuUsageSource": "unavailable"
+            },
+            "stats": {
+              "pressureEvents": 0,
+              "failures": 0,
+              "trims": 0,
+              "peakResidentEstimate": 153378431,
+              "peakJsBufferBytes": 11787711,
+              "retiredArenas": 0,
+              "collectedArenas": 0
+            },
+            "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+          }
+        },
+        "memory": {
+          "profile": "compact",
+          "limits": {
+            "profile": "compact",
+            "total": 671088640,
+            "js": 201326592,
+            "wasm": 268435456,
+            "gpu": 134217728,
+            "render": 100663296,
+            "pictures": 16777216,
+            "rasters": 16777216,
+            "chunks": 67108864,
+            "raw": 67108864,
+            "receive": 33554432,
+            "decodeCache": 8388608,
+            "gpuCache": 67108864
+          },
+          "categories": {
+            "wasmBinary": 16485822,
+            "presentation": 4915200,
+            "chunks": 1316665,
+            "raw": 2228135,
+            "receive": 192,
+            "passes": 4915200,
+            "pictures": 2228135,
+            "rasters": 1310720
+          },
+          "domains": {
+            "js": 11787903,
+            "wasm": 8454055,
+            "gpu": 0,
+            "browser": 4915200
+          },
+          "jsBufferBytes": 11787711,
+          "referencedJsBytes": 20030622,
+          "renderBytes": 6225920,
+          "residentEstimate": 150920831,
+          "retiredWasmBytes": 0,
+          "retiredArenaCount": 0,
+          "owners": 69,
+          "buffers": 55,
+          "observed": {
+            "wasmHeapBytes": 134217728,
+            "decodeCacheBytes": 0,
+            "gpuCacheBytes": null,
+            "gpuUsageSource": "unavailable"
+          },
+          "stats": {
+            "pressureEvents": 0,
+            "failures": 0,
+            "trims": 0,
+            "peakResidentEstimate": 153378431,
+            "peakJsBufferBytes": 11787711,
+            "retiredArenas": 0,
+            "collectedArenas": 0
+          },
+          "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+        },
+        "error": null
+      }
+    ],
+    "heaps": [
+      {
+        "label": "gpu-worker",
+        "scope": "page",
+        "usedSize": 1651560,
+        "totalSize": 3489792,
+        "embedderHeapUsedSize": 9392248,
+        "backingStorageSize": 206254
+      },
+      {
+        "label": "cpu-worker",
+        "scope": "page",
+        "usedSize": 1644024,
+        "totalSize": 3227648,
+        "embedderHeapUsedSize": 8885856,
+        "backingStorageSize": 206251
+      },
+      {
+        "label": "cpu-main",
+        "scope": "page",
+        "usedSize": 3899616,
+        "totalSize": 6373376,
+        "embedderHeapUsedSize": 1696448,
+        "backingStorageSize": 16716468
+      },
+      {
+        "scope": "worker",
+        "targetId": "5F22654FF6C05395882B83644BA2F1BE",
+        "usedSize": 2704484,
+        "totalSize": 6029312,
+        "embedderHeapUsedSize": 406176,
+        "backingStorageSize": 11982697
+      },
+      {
+        "scope": "worker",
+        "targetId": "AF00C3924E0D7A3BBF40CB003358498C",
+        "usedSize": 2957936,
+        "totalSize": 5767168,
+        "embedderHeapUsedSize": 615800,
+        "backingStorageSize": 16699297
+      }
+    ],
+    "processRss": [
+      {
+        "pid": 50629,
+        "bytes": 262488064,
+        "kind": "browser"
+      },
+      {
+        "pid": 50767,
+        "bytes": 151715840,
+        "kind": "GPU"
+      },
+      {
+        "pid": 50768,
+        "bytes": 120274944,
+        "kind": "network.mojom.NetworkService"
+      },
+      {
+        "pid": 50769,
+        "bytes": 80674816,
+        "kind": "storage.mojom.StorageService"
+      },
+      {
+        "pid": 50775,
+        "bytes": 225771520,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50777,
+        "bytes": 335544320,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50779,
+        "bytes": 224198656,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50781,
+        "bytes": 317227008,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50788,
+        "bytes": 223641600,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50789,
+        "bytes": 100155392,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50790,
+        "bytes": 285016064,
+        "kind": "renderer"
+      }
+    ]
+  },
+  "last": {
+    "at": "2026-10-16T16:33:44.718Z",
+    "elapsedSeconds": 120.385790708,
+    "cycle": 589,
+    "navigations": 4,
+    "resizes": 53,
+    "inputs": 36,
+    "state": {
+      "at": "2026-10-16T16:33:44.641Z",
+      "pageEpoch": 9,
+      "viewportVersion": 54,
+      "viewport": {
+        "cssWidth": 720,
+        "cssHeight": 480,
+        "deviceScaleFactor": 1
+      },
+      "captures": 1084,
+      "inputSeq": 144,
+      "cycle": 589,
+      "inputLength": 2,
+      "control": "agent",
+      "stats": {
+        "captures": 1084,
+        "errors": 0,
+        "resourceRecoveries": 0,
+        "lastError": null,
+        "recentErrors": [],
+        "lastCaptureMs": 3.1650829999998678,
+        "lastMapMs": 0.6120669999945676,
+        "registrationRetries": 3
+      },
+      "transitionInvalidations": 0,
+      "unexpectedErrors": [],
+      "imageBytes": 132439503,
+      "imageRequests": 590,
+      "peers": [
+        {
+          "id": "native-0",
+          "stats": {
+            "bytes": 153698069,
+            "coalesced": 16,
+            "delta": 1008,
+            "full": 60,
+            "maxInflight": 3,
+            "maxPendingBytes": 1338548,
+            "pendingBytes": 0,
+            "resources": 3981,
+            "slowDisconnects": 0,
+            "maxInflightBytes": 1338548,
+            "ackRttMs": 16.707352
+          }
+        },
+        {
+          "id": "native-1",
+          "stats": {
+            "bytes": 153691118,
+            "coalesced": 20,
+            "delta": 1005,
+            "full": 60,
+            "maxInflight": 3,
+            "maxPendingBytes": 1338548,
+            "pendingBytes": 0,
+            "resources": 3980,
+            "slowDisconnects": 0,
+            "maxInflightBytes": 1338548,
+            "ackRttMs": 15.579381999999999
+          }
+        },
+        {
+          "id": "native-2",
+          "stats": {
+            "bytes": 153696961,
+            "coalesced": 18,
+            "delta": 1005,
+            "full": 60,
+            "maxInflight": 3,
+            "maxPendingBytes": 1338548,
+            "pendingBytes": 0,
+            "resources": 3982,
+            "slowDisconnects": 0,
+            "maxInflightBytes": 1338548,
+            "ackRttMs": 15.456468
+          }
+        }
+      ]
+    },
+    "metrics": {
+      "atMs": 126242.461577,
+      "clockTicksPerSecond": 100,
+      "captures": 1084,
+      "byKind": {
+        "node": {
+          "cpuMs": 14890,
+          "rssBytes": 169766912,
+          "processes": 1
+        },
+        "broker": {
+          "cpuMs": 16920,
+          "rssBytes": 114167808,
+          "processes": 1
+        },
+        "chromium": {
+          "cpuMs": 48140,
+          "rssBytes": 1009270784,
+          "processes": 6
+        }
+      }
+    },
+    "results": [
+      {
+        "result": {
+          "protocol": 4,
+          "connectionGeneration": 1,
+          "pageEpoch": 9,
+          "viewportVersion": 54,
+          "frameId": 1068,
+          "native": {
+            "bitmapGlyphs": 0,
+            "captureId": "56eea508-d4a4-4c7f-ae3d-5ad3332ce249",
+            "frameToken": 88,
+            "namespace": [
+              6,
+              22
+            ],
+            "producer": "74:6",
+            "sourceFrame": 89,
+            "timing": {
+              "base64Ms": 0,
+              "cachedLayers": 8,
+              "captureRoundTripMs": 3.165082999999868,
+              "cdpReplyMs": 3.0800860000017565,
+              "encodeTotalMs": 0.19600000977516177,
+              "encodingThreads": 3,
+              "fontCacheHits": 0,
+              "fontMs": 0,
+              "glyphCollectionMs": 0,
+              "imageCacheHits": 0,
+              "imageMs": 0,
+              "parallelLayers": 8,
+              "portableMs": 0,
+              "recordingCacheHits": 8,
+              "recordingCacheMisses": 0,
+              "recordingMs": 0.014,
+              "resultAssemblyMs": 0.047,
+              "serializeMs": 0,
+              "vizWaitMs": 0.004500000010011718
+            }
+          },
+          "lastProcessedInputSeq": 144,
+          "resourceBytes": 4467961,
+          "resources": 13,
+          "resourcesReceived": 3971,
+          "receivedBytes": 153987769,
+          "fullFrames": 60,
+          "deltaFrames": 1004,
+          "renderMs": 0.6000003814697266,
+          "requiredResources": [
+            "04d2d7df059850d8a9939842ca0109b17c66a2e9c66b90d1d5d4fb6cdc9423e1",
+            "1f58927e95f4e0f1e419bc35ee38ae7ce0948064b2c60d832fc65a121874a589",
+            "256ed2fbb00538be7a3ab8a5251994bfecc1dbfa2e4c374d5c807f4c648f4375",
+            "287dfc4be74d8530a4dd8c5f92ed5547d5cd344a8306bc0ebe6325c05f0eab29",
+            "819376789bf479381b4144276d5cb67a3fba6bcacce7ab8a206a7ffc2e66a98b",
+            "91d12b73b21d0ec83f75c19b2a0a7333d62e6de8f23ac4b716aef9d62913d113",
+            "b15a2551bc30678825f34cf36630daf666047f6419e5dad86dc8a0da0c2f71ff"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 390,
+            "pictureRasters": 390,
+            "pictureRasterHits": 593,
+            "passRenders": 103,
+            "passHits": 8,
+            "isolatedDraws": 0,
+            "passSurfaceAllocations": 7,
+            "damagedPixels": 19996539,
+            "partialPassRenders": 41,
+            "quadsDrawn": 1155,
+            "quadsCulled": 387,
+            "pictureEvictions": 7,
+            "rasterEvictions": 7,
+            "arenaRecycles": 7
+          },
+          "presentation": {
+            "mode": "webgl2-bitmap",
+            "frames": 111,
+            "gpuFrames": 111,
+            "cpuFrames": 0,
+            "readbackBytes": 0,
+            "totalReadbackBytes": 0,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "device": {
+              "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+              "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+            },
+            "damage": [
+              38,
+              32,
+              43,
+              51
+            ],
+            "skipped": false,
+            "renderMs": 0.3000001907348633,
+            "readbackMs": 0,
+            "bitmapMs": 0,
+            "submitMs": 0.09999942779541016,
+            "totalMs": 0.39999961853027344
+          },
+          "assetStats": {
+            "receivedChunks": 7929,
+            "receivedBytes": 140564962,
+            "fontBytes": 906914671,
+            "imageBytes": 616452996,
+            "reusedBytes": 1385867183,
+            "evictions": 2,
+            "missingManifests": 10,
+            "cacheBytes": 6444653
+          },
+          "worker": true,
+          "memory": {
+            "profile": "compact",
+            "limits": {
+              "profile": "compact",
+              "total": 671088640,
+              "js": 201326592,
+              "wasm": 268435456,
+              "gpu": 134217728,
+              "render": 100663296,
+              "pictures": 16777216,
+              "rasters": 16777216,
+              "chunks": 67108864,
+              "raw": 67108864,
+              "receive": 33554432,
+              "decodeCache": 8388608,
+              "gpuCache": 67108864
+            },
+            "categories": {
+              "wasmBinary": 16485822,
+              "presentation": 2764800,
+              "raw": 4467961,
+              "chunks": 6460845,
+              "pictures": 2233721,
+              "rasters": 1267312,
+              "passes": 2764800,
+              "receive": 204
+            },
+            "domains": {
+              "js": 19171921,
+              "wasm": 2233721,
+              "gpu": 4032112,
+              "browser": 2764800
+            },
+            "jsBufferBytes": 19171717,
+            "referencedJsBytes": 27414628,
+            "renderBytes": 4032112,
+            "residentEstimate": 363819944,
+            "retiredWasmBytes": 193331200,
+            "retiredArenaCount": 1,
+            "owners": 400,
+            "buffers": 382,
+            "observed": {
+              "wasmHeapBytes": 134217728,
+              "decodeCacheBytes": 0,
+              "gpuCacheBytes": 14334295,
+              "gpuUsageSource": "canvaskit-0.42-binding"
+            },
+            "stats": {
+              "pressureEvents": 2,
+              "failures": 0,
+              "trims": 2,
+              "peakResidentEstimate": 428362801,
+              "peakJsBufferBytes": 81982649,
+              "retiredArenas": 7,
+              "collectedArenas": 6
+            },
+            "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+          }
+        },
+        "memory": {
+          "profile": "compact",
+          "limits": {
+            "profile": "compact",
+            "total": 671088640,
+            "js": 201326592,
+            "wasm": 268435456,
+            "gpu": 134217728,
+            "render": 100663296,
+            "pictures": 16777216,
+            "rasters": 16777216,
+            "chunks": 67108864,
+            "raw": 67108864,
+            "receive": 33554432,
+            "decodeCache": 8388608,
+            "gpuCache": 67108864
+          },
+          "categories": {
+            "wasmBinary": 16485822,
+            "presentation": 2764800,
+            "raw": 4467961,
+            "chunks": 6460845,
+            "pictures": 2233721,
+            "rasters": 1267312,
+            "passes": 2764800,
+            "receive": 204
+          },
+          "domains": {
+            "js": 19171921,
+            "wasm": 2233721,
+            "gpu": 4032112,
+            "browser": 2764800
+          },
+          "jsBufferBytes": 19171717,
+          "referencedJsBytes": 27414628,
+          "renderBytes": 4032112,
+          "residentEstimate": 363819944,
+          "retiredWasmBytes": 193331200,
+          "retiredArenaCount": 1,
+          "owners": 400,
+          "buffers": 382,
+          "observed": {
+            "wasmHeapBytes": 134217728,
+            "decodeCacheBytes": 0,
+            "gpuCacheBytes": 14334295,
+            "gpuUsageSource": "canvaskit-0.42-binding"
+          },
+          "stats": {
+            "pressureEvents": 2,
+            "failures": 0,
+            "trims": 2,
+            "peakResidentEstimate": 428362801,
+            "peakJsBufferBytes": 81982649,
+            "retiredArenas": 7,
+            "collectedArenas": 6
+          },
+          "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+        },
+        "error": null
+      },
+      {
+        "result": {
+          "protocol": 4,
+          "connectionGeneration": 1,
+          "pageEpoch": 9,
+          "viewportVersion": 54,
+          "frameId": 1065,
+          "native": {
+            "bitmapGlyphs": 0,
+            "captureId": "56eea508-d4a4-4c7f-ae3d-5ad3332ce249",
+            "frameToken": 88,
+            "namespace": [
+              6,
+              22
+            ],
+            "producer": "74:6",
+            "sourceFrame": 89,
+            "timing": {
+              "base64Ms": 0,
+              "cachedLayers": 8,
+              "captureRoundTripMs": 3.165082999999868,
+              "cdpReplyMs": 3.0800860000017565,
+              "encodeTotalMs": 0.19600000977516177,
+              "encodingThreads": 3,
+              "fontCacheHits": 0,
+              "fontMs": 0,
+              "glyphCollectionMs": 0,
+              "imageCacheHits": 0,
+              "imageMs": 0,
+              "parallelLayers": 8,
+              "portableMs": 0,
+              "recordingCacheHits": 8,
+              "recordingCacheMisses": 0,
+              "recordingMs": 0.014,
+              "resultAssemblyMs": 0.047,
+              "serializeMs": 0,
+              "vizWaitMs": 0.004500000010011718
+            }
+          },
+          "lastProcessedInputSeq": 144,
+          "resourceBytes": 4467961,
+          "resources": 13,
+          "resourcesReceived": 3970,
+          "receivedBytes": 153980751,
+          "fullFrames": 60,
+          "deltaFrames": 1001,
+          "renderMs": 0.5,
+          "requiredResources": [
+            "04d2d7df059850d8a9939842ca0109b17c66a2e9c66b90d1d5d4fb6cdc9423e1",
+            "1f58927e95f4e0f1e419bc35ee38ae7ce0948064b2c60d832fc65a121874a589",
+            "256ed2fbb00538be7a3ab8a5251994bfecc1dbfa2e4c374d5c807f4c648f4375",
+            "287dfc4be74d8530a4dd8c5f92ed5547d5cd344a8306bc0ebe6325c05f0eab29",
+            "819376789bf479381b4144276d5cb67a3fba6bcacce7ab8a206a7ffc2e66a98b",
+            "91d12b73b21d0ec83f75c19b2a0a7333d62e6de8f23ac4b716aef9d62913d113",
+            "b15a2551bc30678825f34cf36630daf666047f6419e5dad86dc8a0da0c2f71ff"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 48,
+            "pictureRasters": 48,
+            "pictureRasterHits": 66,
+            "passRenders": 13,
+            "passHits": 1,
+            "isolatedDraws": 0,
+            "passSurfaceAllocations": 2,
+            "damagedPixels": 2675675,
+            "partialPassRenders": 5,
+            "quadsDrawn": 135,
+            "quadsCulled": 60,
+            "pictureEvictions": 0,
+            "rasterEvictions": 0,
+            "arenaRecycles": 8
+          },
+          "presentation": {
+            "mode": "cpu-2d",
+            "frames": 14,
+            "gpuFrames": 0,
+            "cpuFrames": 14,
+            "readbackBytes": 380,
+            "totalReadbackBytes": 10702700,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "damage": [
+              38,
+              32,
+              43,
+              51
+            ],
+            "skipped": false,
+            "renderMs": 0.3000001907348633,
+            "readbackMs": 0,
+            "bitmapMs": 0,
+            "submitMs": 0,
+            "totalMs": 0.3000001907348633
+          },
+          "assetStats": {
+            "receivedChunks": 7929,
+            "receivedBytes": 140564962,
+            "fontBytes": 906254012,
+            "imageBytes": 616226826,
+            "reusedBytes": 1384979259,
+            "evictions": 2,
+            "missingManifests": 10,
+            "cacheBytes": 6444653
+          },
+          "worker": true,
+          "memory": {
+            "profile": "compact",
+            "limits": {
+              "profile": "compact",
+              "total": 671088640,
+              "js": 201326592,
+              "wasm": 268435456,
+              "gpu": 134217728,
+              "render": 100663296,
+              "pictures": 16777216,
+              "rasters": 16777216,
+              "chunks": 67108864,
+              "raw": 67108864,
+              "receive": 33554432,
+              "decodeCache": 8388608,
+              "gpuCache": 67108864
+            },
+            "categories": {
+              "wasmBinary": 16485822,
+              "presentation": 2764800,
+              "raw": 4467961,
+              "chunks": 6460845,
+              "pictures": 2233721,
+              "rasters": 1267312,
+              "passes": 2764800,
+              "receive": 204
+            },
+            "domains": {
+              "js": 19171921,
+              "wasm": 6265833,
+              "gpu": 0,
+              "browser": 2764800
+            },
+            "jsBufferBytes": 19171717,
+            "referencedJsBytes": 27414628,
+            "renderBytes": 4032112,
+            "residentEstimate": 349485649,
+            "retiredWasmBytes": 193331200,
+            "retiredArenaCount": 1,
+            "owners": 400,
+            "buffers": 382,
+            "observed": {
+              "wasmHeapBytes": 134217728,
+              "decodeCacheBytes": 0,
+              "gpuCacheBytes": null,
+              "gpuUsageSource": "unavailable"
+            },
+            "stats": {
+              "pressureEvents": 2,
+              "failures": 0,
+              "trims": 2,
+              "peakResidentEstimate": 410013238,
+              "peakJsBufferBytes": 81982649,
+              "retiredArenas": 8,
+              "collectedArenas": 7
+            },
+            "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+          }
+        },
+        "memory": {
+          "profile": "compact",
+          "limits": {
+            "profile": "compact",
+            "total": 671088640,
+            "js": 201326592,
+            "wasm": 268435456,
+            "gpu": 134217728,
+            "render": 100663296,
+            "pictures": 16777216,
+            "rasters": 16777216,
+            "chunks": 67108864,
+            "raw": 67108864,
+            "receive": 33554432,
+            "decodeCache": 8388608,
+            "gpuCache": 67108864
+          },
+          "categories": {
+            "wasmBinary": 16485822,
+            "presentation": 2764800,
+            "raw": 4467961,
+            "chunks": 6460845,
+            "pictures": 2233721,
+            "rasters": 1267312,
+            "passes": 2764800,
+            "receive": 204
+          },
+          "domains": {
+            "js": 19171921,
+            "wasm": 6265833,
+            "gpu": 0,
+            "browser": 2764800
+          },
+          "jsBufferBytes": 19171717,
+          "referencedJsBytes": 27414628,
+          "renderBytes": 4032112,
+          "residentEstimate": 349485649,
+          "retiredWasmBytes": 193331200,
+          "retiredArenaCount": 1,
+          "owners": 400,
+          "buffers": 382,
+          "observed": {
+            "wasmHeapBytes": 134217728,
+            "decodeCacheBytes": 0,
+            "gpuCacheBytes": null,
+            "gpuUsageSource": "unavailable"
+          },
+          "stats": {
+            "pressureEvents": 2,
+            "failures": 0,
+            "trims": 2,
+            "peakResidentEstimate": 410013238,
+            "peakJsBufferBytes": 81982649,
+            "retiredArenas": 8,
+            "collectedArenas": 7
+          },
+          "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+        },
+        "error": null
+      },
+      {
+        "result": {
+          "protocol": 4,
+          "connectionGeneration": 1,
+          "pageEpoch": 9,
+          "viewportVersion": 54,
+          "frameId": 1065,
+          "native": {
+            "bitmapGlyphs": 0,
+            "captureId": "56eea508-d4a4-4c7f-ae3d-5ad3332ce249",
+            "frameToken": 88,
+            "namespace": [
+              6,
+              22
+            ],
+            "producer": "74:6",
+            "sourceFrame": 89,
+            "timing": {
+              "base64Ms": 0,
+              "cachedLayers": 8,
+              "captureRoundTripMs": 3.165082999999868,
+              "cdpReplyMs": 3.0800860000017565,
+              "encodeTotalMs": 0.19600000977516177,
+              "encodingThreads": 3,
+              "fontCacheHits": 0,
+              "fontMs": 0,
+              "glyphCollectionMs": 0,
+              "imageCacheHits": 0,
+              "imageMs": 0,
+              "parallelLayers": 8,
+              "portableMs": 0,
+              "recordingCacheHits": 8,
+              "recordingCacheMisses": 0,
+              "recordingMs": 0.014,
+              "resultAssemblyMs": 0.047,
+              "serializeMs": 0,
+              "vizWaitMs": 0.004500000010011718
+            }
+          },
+          "lastProcessedInputSeq": 144,
+          "resourceBytes": 4467961,
+          "resources": 13,
+          "resourcesReceived": 3972,
+          "receivedBytes": 153986728,
+          "fullFrames": 60,
+          "deltaFrames": 1001,
+          "renderMs": 0.39999961853027344,
+          "requiredResources": [
+            "04d2d7df059850d8a9939842ca0109b17c66a2e9c66b90d1d5d4fb6cdc9423e1",
+            "1f58927e95f4e0f1e419bc35ee38ae7ce0948064b2c60d832fc65a121874a589",
+            "256ed2fbb00538be7a3ab8a5251994bfecc1dbfa2e4c374d5c807f4c648f4375",
+            "287dfc4be74d8530a4dd8c5f92ed5547d5cd344a8306bc0ebe6325c05f0eab29",
+            "819376789bf479381b4144276d5cb67a3fba6bcacce7ab8a206a7ffc2e66a98b",
+            "91d12b73b21d0ec83f75c19b2a0a7333d62e6de8f23ac4b716aef9d62913d113",
+            "b15a2551bc30678825f34cf36630daf666047f6419e5dad86dc8a0da0c2f71ff"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 48,
+            "pictureRasters": 48,
+            "pictureRasterHits": 66,
+            "passRenders": 13,
+            "passHits": 1,
+            "isolatedDraws": 0,
+            "passSurfaceAllocations": 2,
+            "damagedPixels": 2675675,
+            "partialPassRenders": 5,
+            "quadsDrawn": 135,
+            "quadsCulled": 60,
+            "pictureEvictions": 0,
+            "rasterEvictions": 0,
+            "arenaRecycles": 8
+          },
+          "presentation": {
+            "mode": "cpu-2d",
+            "frames": 14,
+            "gpuFrames": 0,
+            "cpuFrames": 14,
+            "readbackBytes": 380,
+            "totalReadbackBytes": 10702700,
+            "fallbacks": 0,
+            "gpuCacheBytes": 67108864,
+            "damage": [
+              38,
+              32,
+              43,
+              51
+            ],
+            "skipped": false,
+            "renderMs": 0.2999992370605469,
+            "readbackMs": 0,
+            "bitmapMs": 0,
+            "submitMs": 0,
+            "totalMs": 0.2999992370605469
+          },
+          "memory": {
+            "profile": "compact",
+            "limits": {
+              "profile": "compact",
+              "total": 671088640,
+              "js": 201326592,
+              "wasm": 268435456,
+              "gpu": 134217728,
+              "render": 100663296,
+              "pictures": 16777216,
+              "rasters": 16777216,
+              "chunks": 67108864,
+              "raw": 67108864,
+              "receive": 33554432,
+              "decodeCache": 8388608,
+              "gpuCache": 67108864
+            },
+            "categories": {
+              "wasmBinary": 16485822,
+              "presentation": 2764800,
+              "raw": 4467961,
+              "chunks": 6460845,
+              "pictures": 2233721,
+              "rasters": 1267312,
+              "passes": 2764800,
+              "receive": 204
+            },
+            "domains": {
+              "js": 19171921,
+              "wasm": 6265833,
+              "gpu": 0,
+              "browser": 2764800
+            },
+            "jsBufferBytes": 19171717,
+            "referencedJsBytes": 27414628,
+            "renderBytes": 4032112,
+            "residentEstimate": 349485649,
+            "retiredWasmBytes": 193331200,
+            "retiredArenaCount": 1,
+            "owners": 400,
+            "buffers": 382,
+            "observed": {
+              "wasmHeapBytes": 134217728,
+              "decodeCacheBytes": 0,
+              "gpuCacheBytes": null,
+              "gpuUsageSource": "unavailable"
+            },
+            "stats": {
+              "pressureEvents": 2,
+              "failures": 0,
+              "trims": 2,
+              "peakResidentEstimate": 405731351,
+              "peakJsBufferBytes": 81982649,
+              "retiredArenas": 8,
+              "collectedArenas": 7
+            },
+            "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+          }
+        },
+        "memory": {
+          "profile": "compact",
+          "limits": {
+            "profile": "compact",
+            "total": 671088640,
+            "js": 201326592,
+            "wasm": 268435456,
+            "gpu": 134217728,
+            "render": 100663296,
+            "pictures": 16777216,
+            "rasters": 16777216,
+            "chunks": 67108864,
+            "raw": 67108864,
+            "receive": 33554432,
+            "decodeCache": 8388608,
+            "gpuCache": 67108864
+          },
+          "categories": {
+            "wasmBinary": 16485822,
+            "presentation": 2764800,
+            "raw": 4467961,
+            "chunks": 6460845,
+            "pictures": 2233721,
+            "rasters": 1267312,
+            "passes": 2764800,
+            "receive": 204
+          },
+          "domains": {
+            "js": 19171921,
+            "wasm": 6265833,
+            "gpu": 0,
+            "browser": 2764800
+          },
+          "jsBufferBytes": 19171717,
+          "referencedJsBytes": 27414628,
+          "renderBytes": 4032112,
+          "residentEstimate": 349485649,
+          "retiredWasmBytes": 193331200,
+          "retiredArenaCount": 1,
+          "owners": 400,
+          "buffers": 382,
+          "observed": {
+            "wasmHeapBytes": 134217728,
+            "decodeCacheBytes": 0,
+            "gpuCacheBytes": null,
+            "gpuUsageSource": "unavailable"
+          },
+          "stats": {
+            "pressureEvents": 2,
+            "failures": 0,
+            "trims": 2,
+            "peakResidentEstimate": 405731351,
+            "peakJsBufferBytes": 81982649,
+            "retiredArenas": 8,
+            "collectedArenas": 7
+          },
+          "accounting": "ArrayBuffers exact/deduplicated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; driver/process overhead not included"
+        },
+        "error": null
+      }
+    ],
+    "heaps": [
+      {
+        "label": "gpu-worker",
+        "scope": "page",
+        "usedSize": 4504940,
+        "totalSize": 5406720,
+        "embedderHeapUsedSize": 15831616,
+        "backingStorageSize": 233293
+      },
+      {
+        "label": "cpu-worker",
+        "scope": "page",
+        "usedSize": 2900936,
+        "totalSize": 4538368,
+        "embedderHeapUsedSize": 11358480,
+        "backingStorageSize": 208517
+      },
+      {
+        "label": "cpu-main",
+        "scope": "page",
+        "usedSize": 6211380,
+        "totalSize": 16859136,
+        "embedderHeapUsedSize": 1632208,
+        "backingStorageSize": 25296521
+      },
+      {
+        "scope": "worker",
+        "targetId": "5F22654FF6C05395882B83644BA2F1BE",
+        "usedSize": 6509436,
+        "totalSize": 17563648,
+        "embedderHeapUsedSize": 395488,
+        "backingStorageSize": 46442852
+      },
+      {
+        "scope": "worker",
+        "targetId": "AF00C3924E0D7A3BBF40CB003358498C",
+        "usedSize": 6895944,
+        "totalSize": 14942208,
+        "embedderHeapUsedSize": 538264,
+        "backingStorageSize": 66115660
+      }
+    ],
+    "processRss": [
+      {
+        "pid": 50629,
+        "bytes": 272334848,
+        "kind": "browser"
+      },
+      {
+        "pid": 50767,
+        "bytes": 180797440,
+        "kind": "GPU"
+      },
+      {
+        "pid": 50768,
+        "bytes": 122519552,
+        "kind": "network.mojom.NetworkService"
+      },
+      {
+        "pid": 50769,
+        "bytes": 81002496,
+        "kind": "storage.mojom.StorageService"
+      },
+      {
+        "pid": 50775,
+        "bytes": 235274240,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50777,
+        "bytes": 921354240,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50779,
+        "bytes": 232849408,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50781,
+        "bytes": 807567360,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50788,
+        "bytes": 231260160,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50789,
+        "bytes": 100319232,
+        "kind": "renderer"
+      },
+      {
+        "pid": 50790,
+        "bytes": 756826112,
+        "kind": "renderer"
+      }
+    ]
+  },
+  "sampleCount": 3,
+  "versionNotes": [
+    "Production files unchanged between this test and the frozen eight-hour snapshot; source hash manifest was captured after the short test. Driver wall-clock/coverage accounting was subsequently tightened for the eight-hour run."
+  ]
+}

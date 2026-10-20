@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-16T15:36:55.730351+00:00",
+  "scope": "C2 persistent pass/damage checkpoint, uncommitted local revision. Final full ImageBitmap/root presentation and CPU raster snapshot copies remain.",
+  "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+  "sha256": {
+    "viewer/frame-presenter.mjs": "2793c48de1b9662a4578c5d90865d6ec97a7968bd912043d096e70c57c337903",
+    "viewer/scene-renderer.mjs": "21bc5ac81b59c68dfc311778b1757325cf07dbced61fbd9209ce7e0085dad50b",
+    "viewer/damage.mjs": "f5671175ef576bc76917b076a1abfad54bbc792e481afe7d5ca60cc350829869",
+    "viewer/live.mjs": "16392c1e10300face11404a0a76703e57ec7f978a10668a89343167c352dd4f8",
+    "viewer/stream-worker.mjs": "4d189f31ac7a2dd6e95aee9604a52c51909d7c1075df9e9f9888839776b476c2",
+    "live/viewer-assets.mjs": "1d4f8c2ac893a553bd5374250b2f3632a149f41d351d0381c4ae29013b74949c",
+    "tests/verify-presentation.mjs": "972f39dbf56aaed80c2a90039b88370e2826399dac3e8dd15b543b0925a187b5",
+    "tests/scene-renderer.test.mjs": "6caef1ebcd760c88d73e385b7cd9dfcc2b797bd98f13d079e19cf5c40dde54b7",
+    "tests/damage.test.mjs": "268425f354715744085707d45bf4eb42cebd4eaf292dd6a08a8d9c78301704d9",
+    "tests/verify-live.mjs": "47ef423f2592816944d6cb30020b7d2adc1ea741bff92e4c242aca862dd26be6",
+    "tests/verify-webgl-live.mjs": "b6901a3975d56c24755ccae2b353ee41a550e34d1f07bf7fe70e59551dc0c5c0"
+  },
+  "tests": {
+    "node": 74,
+    "native": "actual full live verified separately in forced GPU and automatic CPU2D; input, WebGL placeholder and cache integrity/mismatch gates",
+    "browser": "Mac Metal and Linux SwiftShader, main + Worker + CPU bitmap/2D",
+    "network": "Final default CPU2D frozen revision:1000 inputs80ms/1%,drag22 moves,blackhole300ms and reconnect; separate intermediate bitmap receipt retained."
+  }
+}

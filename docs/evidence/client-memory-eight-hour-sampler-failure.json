@@ -1,0 +1,128 @@
+{
+  "at": "2026-10-17T09:44:55.065734+00:00",
+  "status": "failed-NOT-eight-hour-passed",
+  "runId": "3319f9fa-46ee-4f62-9871-766fcf2f8125",
+  "frozenVersion": {
+    "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-sampler-calibration-project-v1",
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-sampler-v1/frozen-version.json",
+    "brokerSha256": "48dfe9acc4b77437a3326855b96132803e96a685b6fbdba9ca4604be03684af7",
+    "browserSha256": "ecb176300cf9b11a2042b6a224c72b79653f8e026e467226dd0a408fd0191886",
+    "clientLedgerSha256": "b46ed2b28677e4a7db943e4a43b071c2eefe6c6255f799c319200a5869c3cb5e",
+    "viewerBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10"
+  },
+  "endedAt": "2026-10-17T09:31:11.604Z",
+  "cycle": 933,
+  "error": "Memory sample phase timed out: viewer-process-rss after5000ms",
+  "sampleCount": 20,
+  "firstSampleAt": "2026-10-17T09:10:49.630Z",
+  "lastSampleAt": "2026-10-17T09:30:04.314Z",
+  "lastSampleElapsedSeconds": 1158.5294649169998,
+  "maxSuccessfulSampleGapSeconds": 62.159000000000106,
+  "failedSamplingPhases": [
+    {
+      "at": "2026-10-17T09:31:08.882Z",
+      "event": "failed",
+      "id": 336,
+      "label": "viewer-process-rss",
+      "cycle": 933,
+      "elapsedMs": 5001.386708999984,
+      "error": "Memory sample phase timed out: viewer-process-rss after5000ms"
+    }
+  ],
+  "sourceStopped": {
+    "at": "2026-10-17T09:31:11.590Z",
+    "runId": "3319f9fa-46ee-4f62-9871-766fcf2f8125",
+    "status": "closed",
+    "steps": [
+      {
+        "name": "live",
+        "status": "closed"
+      },
+      {
+        "name": "fixture",
+        "status": "closed"
+      },
+      {
+        "name": "diagnostics",
+        "status": "closed"
+      }
+    ],
+    "fixtureListening": false,
+    "sourceClosed": true,
+    "brokerClosed": true,
+    "remainingProcesses": [
+      {
+        "pid": 7,
+        "kind": "node",
+        "cpuMs": 118960,
+        "rssBytes": 165638144,
+        "startTicks": 15284588,
+        "state": "S",
+        "pssBytes": 164428800,
+        "privateCleanBytes": 12689408,
+        "privateDirtyBytes": 150691840,
+        "swapPssBytes": 0
+      }
+    ]
+  },
+  "cleanup": {
+    "at": "2026-10-17T09:31:11.604Z",
+    "runId": "3319f9fa-46ee-4f62-9871-766fcf2f8125",
+    "errors": [],
+    "source": {
+      "at": "2026-10-17T09:31:11.590Z",
+      "runId": "3319f9fa-46ee-4f62-9871-766fcf2f8125",
+      "status": "closed",
+      "steps": [
+        {
+          "name": "live",
+          "status": "closed"
+        },
+        {
+          "name": "fixture",
+          "status": "closed"
+        },
+        {
+          "name": "diagnostics",
+          "status": "closed"
+        }
+      ],
+      "fixtureListening": false,
+      "sourceClosed": true,
+      "brokerClosed": true,
+      "remainingProcesses": [
+        {
+          "pid": 7,
+          "kind": "node",
+          "cpuMs": 118960,
+          "rssBytes": 165638144,
+          "startTicks": 15284588,
+          "state": "S",
+          "pssBytes": 164428800,
+          "privateCleanBytes": 12689408,
+          "privateDirtyBytes": 150691840,
+          "swapPssBytes": 0
+        }
+      ]
+    }
+  },
+  "terminalContainer": {
+    "at": "2026-10-17T09:31:11.825172+00:00",
+    "dockerInspectSucceeded": true,
+    "state": {
+      "Status": "removing",
+      "Running": false,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": true,
+      "Pid": 0,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-17T09:10:38.825039712Z",
+      "FinishedAt": "2026-10-17T09:31:11.603358045Z"
+    }
+  },
+  "rawResults": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-sampler-v1",
+  "scope": "Sampling phase failed while obtaining macOS Viewer process RSS; this run is terminal and contributes no elapsed time to any future run. Failed ps deadline is observed; specific OS scheduling/process cause is unproven. Final browserDisconnected/brokerExited are cleanup state. No 8h acceptance. Source/Broker/fixture normal cleanup receipt preserved; logical budgets/VM/source physical scope remain independently incomplete."
+}

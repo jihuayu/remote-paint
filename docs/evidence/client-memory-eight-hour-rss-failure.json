@@ -1,0 +1,123 @@
+{
+  "at": "2026-10-17T10:35:59.167530+00:00",
+  "status": "failed-NOT-eight-hour-passed",
+  "runId": "729a8b0f-6084-4284-a04b-5b5d5f158c86",
+  "endedAt": "2026-10-17T10:34:18.661Z",
+  "cycle": 482,
+  "error": "RSS subprocess did not close after SIGKILL",
+  "sampleCount": 4,
+  "lastSampleAt": "2026-10-17T10:33:09.462Z",
+  "lastSampleElapsedSeconds": 186.090997166,
+  "lastRssAttempt": {
+    "at": "2026-10-17T10:34:12.847Z",
+    "cycle": 482,
+    "attempt": 1,
+    "startedAt": "2026-10-17T10:34:10.594Z",
+    "elapsedMs": 2252.8126249999914,
+    "childPid": 44069,
+    "closed": false,
+    "exitCode": null,
+    "signal": null,
+    "status": "RSS_PROCESS_NOT_REAPED",
+    "timeoutMs": 2000,
+    "reapGraceMs": 250,
+    "stdoutBytes": 0,
+    "stderrBytes": 0
+  },
+  "cleanup": {
+    "at": "2026-10-17T10:34:18.660Z",
+    "runId": "729a8b0f-6084-4284-a04b-5b5d5f158c86",
+    "errors": [],
+    "source": {
+      "at": "2026-10-17T10:34:18.718Z",
+      "runId": "729a8b0f-6084-4284-a04b-5b5d5f158c86",
+      "status": "closed",
+      "steps": [
+        {
+          "name": "live",
+          "status": "closed"
+        },
+        {
+          "name": "fixture",
+          "status": "closed"
+        },
+        {
+          "name": "diagnostics",
+          "status": "closed"
+        }
+      ],
+      "fixtureListening": false,
+      "sourceClosed": true,
+      "brokerClosed": true,
+      "remainingProcesses": [
+        {
+          "pid": 7,
+          "kind": "node",
+          "cpuMs": 38600,
+          "rssBytes": 166879232,
+          "startTicks": 15760162,
+          "state": "S",
+          "pssBytes": 165721088,
+          "privateCleanBytes": 17817600,
+          "privateDirtyBytes": 146894848,
+          "swapPssBytes": 0
+        }
+      ]
+    }
+  },
+  "sourceStopped": {
+    "at": "2026-10-17T10:34:18.718Z",
+    "runId": "729a8b0f-6084-4284-a04b-5b5d5f158c86",
+    "status": "closed",
+    "steps": [
+      {
+        "name": "live",
+        "status": "closed"
+      },
+      {
+        "name": "fixture",
+        "status": "closed"
+      },
+      {
+        "name": "diagnostics",
+        "status": "closed"
+      }
+    ],
+    "fixtureListening": false,
+    "sourceClosed": true,
+    "brokerClosed": true,
+    "remainingProcesses": [
+      {
+        "pid": 7,
+        "kind": "node",
+        "cpuMs": 38600,
+        "rssBytes": 166879232,
+        "startTicks": 15760162,
+        "state": "S",
+        "pssBytes": 165721088,
+        "privateCleanBytes": 17817600,
+        "privateDirtyBytes": 146894848,
+        "swapPssBytes": 0
+      }
+    ]
+  },
+  "containerTerminal": {
+    "at": "2026-10-17T10:34:18.932246+00:00",
+    "dockerInspectSucceeded": true,
+    "state": {
+      "Status": "removing",
+      "Running": false,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": true,
+      "Pid": 0,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-17T10:29:54.518120005Z",
+      "FinishedAt": "2026-10-17T10:34:18.74358499Z"
+    }
+  },
+  "rawResults": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-rss-v2",
+  "scope": "Actual /bin/ps produced no output,exceeded2s,thenno close event before250ms SIGKILL grace. This is an observed unreaped deadline,notproof of processstillrunningafterlatercleanup orspecific kernel cause. No8hpass or elapsedcarry;stated phasegate remained strict. Further owned-process investigation required."
+}

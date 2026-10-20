@@ -1,0 +1,144 @@
+{
+  "at": "2026-10-17T19:53:33.931687+00:00",
+  "status": "passed-in-stated-observer-scope",
+  "scope": "Test-only persistent Darwin libproc observer;actual Mac processes. Separate RSS,virtual and physical-footprint bytes;not Linux PSS,not unique session memory,not an atomic cohort. No soak integrated or eight-hour run started.",
+  "tests": {
+    "passed": 7,
+    "failed": 0,
+    "cancelled": 0,
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-process-memory-tests-v2.log",
+    "sha256": "b3f05d412a5c04864150dcc81a92afcc4c59e1a0d15d9a9a5dd39ee504d3cde1",
+    "diagnostics": [
+      {
+        "scope": "ActualDarwinlibproc",
+        "helper": 47246,
+        "sample": {
+          "pid": 47245,
+          "kind": "test-node",
+          "identity": {
+            "provider": "darwin-bsd-start-v1",
+            "startSeconds": 1792266652,
+            "startMicroseconds": 540252,
+            "ppid": 47236,
+            "uid": 501
+          },
+          "bytes": 63422464,
+          "rssBytes": 63422464,
+          "virtualBytes": 446660460544,
+          "physicalFootprintBytes": 19106288
+        }
+      },
+      {
+        "scope": "Actual64MiBdirtyallocation;releaseRSSnotpromised",
+        "before": {
+          "pid": 47247,
+          "kind": "allocation-child",
+          "identity": {
+            "provider": "darwin-bsd-start-v1",
+            "startSeconds": 1792266652,
+            "startMicroseconds": 587600,
+            "ppid": 47245,
+            "uid": 501
+          },
+          "bytes": 56115200,
+          "rssBytes": 56115200,
+          "virtualBytes": 446619402240,
+          "physicalFootprintBytes": 14370856
+        },
+        "after": {
+          "pid": 47247,
+          "kind": "allocation-child",
+          "identity": {
+            "provider": "darwin-bsd-start-v1",
+            "startSeconds": 1792266652,
+            "startMicroseconds": 587600,
+            "ppid": 47245,
+            "uid": 501
+          },
+          "bytes": 123846656,
+          "rssBytes": 123846656,
+          "virtualBytes": 446687035392,
+          "physicalFootprintBytes": 81856696
+        },
+        "final": {
+          "pid": 47247,
+          "kind": "allocation-child",
+          "identity": {
+            "provider": "darwin-bsd-start-v1",
+            "startSeconds": 1792266652,
+            "startMicroseconds": 587600,
+            "ppid": 47245,
+            "uid": 501
+          },
+          "bytes": 124223488,
+          "rssBytes": 124223488,
+          "virtualBytes": 446686248960,
+          "physicalFootprintBytes": 81971336
+        },
+        "rssGrowth": 67731456,
+        "footprintGrowth": 67485840
+      },
+      {
+        "scope": "Actualfaultchild/2sdeadline/ownedSIGKILLreap",
+        "starts": 1,
+        "elapsedMs": 2006.1434999999997,
+        "limits": {
+          "requestMs": 2000,
+          "reapMs": 250,
+          "phaseMs": 5000,
+          "stdoutBytes": 65536,
+          "stderrBytes": 8192,
+          "processes": 1024,
+          "headerBytes": 32,
+          "rowBytes": 56
+        }
+      }
+    ]
+  },
+  "limits": {
+    "requestMs": 2000,
+    "reapMs": 250,
+    "phaseMs": 5000,
+    "stdoutBytes": 65536,
+    "stderrBytes": 8192,
+    "processes": 1024
+  },
+  "identity": "UID restriction;BSD PID/startSeconds/startMicroseconds/parent before and after actual task/rusage reads;caller expected-start identities rejected on mismatch. Fresh batch failure has no zero-fill/cached success.",
+  "lifecycle": "One persistent owned helper;fixed bounded binary protocol;one pending request;no automatic restart/fallback. Timeout test sent SIGKILL to its own fault helper and observed close within bound.",
+  "provenance": {
+    "at": "2026-10-17T19:45:04.289Z",
+    "purpose": "Test-only persistent Darwin libproc memory observer;not Source/browser production code",
+    "platform": "darwin",
+    "arch": "arm64",
+    "sourceSha256": "0cb30b76e3eafd67e68cbf1d32693224a61c46812c3ab7dc8a3fd0390f8bc167",
+    "binarySha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+    "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "sdk": "26.5",
+    "protocol": {
+      "requestMagic": "RPQ1",
+      "responseMagic": "RPM1",
+      "headerBytes": 32,
+      "rowBytes": 56,
+      "maxPids": 1024,
+      "maxOutputBytes": 65536
+    }
+  },
+  "sourceFiles": {
+    "native/process-memory-darwin.c": "0cb30b76e3eafd67e68cbf1d32693224a61c46812c3ab7dc8a3fd0390f8bc167",
+    "native/build-process-memory.mjs": "c4ec2f41c9e4234cca9a4a8780002cc54c8f280435dac3087ae1ce3c5c7ed739",
+    "tests/process-native-memory.mjs": "d766f3ea28e027a5e4d97d66ae77c7a7b9d501ed9a5f7c9db68e8d61538f70df",
+    "tests/process-native-memory.test.mjs": "89fe7c5adae00ff6e3d1262039ffd09465425d94886be97a6171954ccd0c495e",
+    "tests/fixtures/native-memory-child.mjs": "e722bf1f7d0726a5ee976ccd386a7b88820271f3641a46559f29015b2e856c94",
+    "native/bin/process-memory-sampler-arm64-darwin": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+    "native/bin/process-memory-sampler-arm64-darwin.json": "ea5951fd50f6ef62955f772b9692049fd984a82b63c2c1cfbffd90370165b15a"
+  },
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-checkpoint-v1.json",
+  "productionB1FilesUnchanged": true,
+  "noCommitPush": true,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  },
+  "eightHourPassed": false
+}

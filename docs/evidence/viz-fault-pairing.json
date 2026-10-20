@@ -1,0 +1,1632 @@
+{
+  "at": "2026-10-17T01:28:46.721436+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Generic RVE2 private writer failure and unfinished scene/raw pairing. B10/Session and all41+N1 stay partial.",
+  "implementation": {
+    "membership": "Hold scene and raw membership locks through union retirement,matching accept_scene/accept_resources publication order. IDs absent from both sets are complete and survive. Remove unfinished scene/raw allocations under locks,then drop retained owner Values/resources outside registry locks.",
+    "receipts": "Only raw still expected after scene delivery/take needs a retained failure and condition-variable wake. Pending-scene callbacks get the existing typed VizReady error without an extra failure owner pinning registration slots. Map response preserves VIZ_OUTPUT_OVERLOAD or VIZ_OUTPUT_TRANSPORT.",
+    "fullPool": "Strict fixed7-byte RVE is read on the stack before allocating from the Viz data pool;malformed short receipts reject without retiring work. This bounded control/bookkeeping path is not a zero-allocation or whole-process quota claim. A reader already holding its declared packet reservation keeps it until actual EOF/read failure,even after its logical request is retired.",
+    "limits": "Existing3s resource pairing,15s pixel/Node RPC and private partial-read deadlines,600ms control and native slot limits unchanged. Extra receipts are bounded by existing scene/raw membership limits;no bigger queue or timeout was introduced.",
+    "diagnostics": "A fault for a scene already delivered has no Node Viz callback waiter;the native proxy can count its extra VizReady error as unexpected-ready diagnostics. Map still gets the stored typed reason;this checkpoint does not call every proxy diagnostic zero."
+  },
+  "tests": {
+    "rustRelease": 49,
+    "js": 165,
+    "linuxFrozen": {
+      "at": "2026-10-17T01:24:47.045123+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-webgl-live.log"
+        },
+        {
+          "name": "verify-broker-cache-lru",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-broker-cache-lru.log"
+        },
+        {
+          "name": "verify-broker-mapper-transaction",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-broker-mapper-transaction.log"
+        },
+        {
+          "name": "verify-large-native-cache",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-large-native-cache.log"
+        },
+        {
+          "name": "verify-resource-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-resource-pool.log"
+        },
+        {
+          "name": "verify-source-resource-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-source-resource-pressure.log"
+        },
+        {
+          "name": "verify-viz-input-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-viz-input-pool.log"
+        },
+        {
+          "name": "verify-source-input-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-source-input-pressure.log"
+        },
+        {
+          "name": "verify-node-request-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-node-request-budget.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-control-channel.log"
+        },
+        {
+          "name": "verify-control-priority",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-control-priority.log"
+        },
+        {
+          "name": "verify-input-feedback",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-input-feedback.log"
+        },
+        {
+          "name": "verify-worker-control",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-worker-control.log"
+        },
+        {
+          "name": "verify-streaming-startup",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-streaming-startup.log"
+        },
+        {
+          "name": "verify-page-activity",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-page-activity.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-v2-verify-viz-fault-pairing.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-checkpoint-version-v2.json",
+      "status": "passed"
+    },
+    "fault": {
+      "at": "2026-10-17T01:28:37.200Z",
+      "status": "passed",
+      "scope": "Actual Linux private RPA2+Viz protocol,overload and transport receipts,normal and fully occupied1MiB Viz input pool. Scene-first map already requested,raw-first and both-unfinished requests reject with precise typed reason under2s;complete pair survives and maps serial1,then a fresh capture maps serial2 on the same stream. Fixed7-byte fault bypasses data admission,while an incomplete packet keeps its actual full reservation until EOF. Malformed/late/repeated messages do not resurrect or retire completed state. No claim that Chromium itself emitted this injected receipt or that actual pending native capture cancellation was observed.",
+      "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+      "variants": [
+        {
+          "reason": 1,
+          "code": "VIZ_OUTPUT_OVERLOAD",
+          "fullPool": false,
+          "fragmentedFault": false,
+          "failureMs": 0.4586269999999928,
+          "base": {
+            "allocations": 2,
+            "bytes": 82312,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 116359,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "beforeHold": {
+            "allocations": 4,
+            "bytes": 164624,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 198671,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "heldBytes": 0,
+          "afterFault": {
+            "allocations": 2,
+            "bytes": 82312,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 198671,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "releasedRead": {
+            "allocations": 2,
+            "bytes": 82312,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 198671,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "final": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 198671,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "completedSerial": 1,
+          "recoveredSerial": 2,
+          "typedFaultIds": [
+            "both",
+            "partial",
+            "raw-first"
+          ],
+          "rejections": [
+            {
+              "event": "VizRejected",
+              "reason": "Invalid Viz fault receipt"
+            },
+            {
+              "captureId": "raw-first",
+              "event": "VizRejected",
+              "reason": "unexpected-resources"
+            },
+            {
+              "captureId": "both",
+              "event": "VizRejected",
+              "reason": "unexpected-scene"
+            }
+          ],
+          "vizProxyDiagnostics": {
+            "received": 5,
+            "rejected": 4,
+            "maxBufferedBytes": 0,
+            "rejections": [
+              {
+                "reason": "Invalid Viz fault receipt"
+              },
+              {
+                "reason": "unexpected-ready",
+                "captureId": "partial"
+              },
+              {
+                "reason": "unexpected-resources",
+                "captureId": "raw-first"
+              },
+              {
+                "reason": "unexpected-scene",
+                "captureId": "both"
+              }
+            ]
+          }
+        },
+        {
+          "reason": 1,
+          "code": "VIZ_OUTPUT_OVERLOAD",
+          "fullPool": true,
+          "fragmentedFault": true,
+          "failureMs": 0.40008399999999256,
+          "base": {
+            "allocations": 2,
+            "bytes": 82312,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 116359,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "beforeHold": {
+            "allocations": 4,
+            "bytes": 164624,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 198671,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "heldBudget": {
+            "allocations": 5,
+            "bytes": 1048576,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 1048576,
+            "ready": false,
+            "scope": "viz-input-pool"
+          },
+          "heldBytes": 883952,
+          "afterFault": {
+            "allocations": 3,
+            "bytes": 966264,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 1048576,
+            "ready": false,
+            "scope": "viz-input-pool"
+          },
+          "releasedRead": {
+            "allocations": 2,
+            "bytes": 82312,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 1048576,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "final": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 1048576,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "completedSerial": 1,
+          "recoveredSerial": 2,
+          "typedFaultIds": [
+            "both",
+            "partial",
+            "raw-first"
+          ],
+          "rejections": [
+            {
+              "event": "VizRejected",
+              "reason": "Invalid Viz fault receipt"
+            },
+            {
+              "captureId": "raw-first",
+              "event": "VizRejected",
+              "reason": "unexpected-resources"
+            },
+            {
+              "captureId": "both",
+              "event": "VizRejected",
+              "reason": "unexpected-scene"
+            }
+          ],
+          "vizProxyDiagnostics": {
+            "received": 5,
+            "rejected": 4,
+            "maxBufferedBytes": 0,
+            "rejections": [
+              {
+                "reason": "Invalid Viz fault receipt"
+              },
+              {
+                "reason": "unexpected-ready",
+                "captureId": "partial"
+              },
+              {
+                "reason": "unexpected-resources",
+                "captureId": "raw-first"
+              },
+              {
+                "reason": "unexpected-scene",
+                "captureId": "both"
+              }
+            ]
+          }
+        },
+        {
+          "reason": 2,
+          "code": "VIZ_OUTPUT_TRANSPORT",
+          "fullPool": false,
+          "fragmentedFault": false,
+          "failureMs": 0.30112600000001066,
+          "base": {
+            "allocations": 2,
+            "bytes": 82312,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 116359,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "beforeHold": {
+            "allocations": 4,
+            "bytes": 164624,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 198671,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "heldBytes": 0,
+          "afterFault": {
+            "allocations": 2,
+            "bytes": 82312,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 198671,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "releasedRead": {
+            "allocations": 2,
+            "bytes": 82312,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 198671,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "final": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 198671,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "completedSerial": 1,
+          "recoveredSerial": 2,
+          "typedFaultIds": [
+            "both",
+            "partial",
+            "raw-first"
+          ],
+          "rejections": [
+            {
+              "event": "VizRejected",
+              "reason": "Invalid Viz fault receipt"
+            },
+            {
+              "captureId": "raw-first",
+              "event": "VizRejected",
+              "reason": "unexpected-resources"
+            },
+            {
+              "captureId": "both",
+              "event": "VizRejected",
+              "reason": "unexpected-scene"
+            }
+          ],
+          "vizProxyDiagnostics": {
+            "received": 5,
+            "rejected": 4,
+            "maxBufferedBytes": 0,
+            "rejections": [
+              {
+                "reason": "Invalid Viz fault receipt"
+              },
+              {
+                "reason": "unexpected-ready",
+                "captureId": "partial"
+              },
+              {
+                "reason": "unexpected-resources",
+                "captureId": "raw-first"
+              },
+              {
+                "reason": "unexpected-scene",
+                "captureId": "both"
+              }
+            ]
+          }
+        },
+        {
+          "reason": 2,
+          "code": "VIZ_OUTPUT_TRANSPORT",
+          "fullPool": true,
+          "fragmentedFault": false,
+          "failureMs": 0.33091799999999694,
+          "base": {
+            "allocations": 2,
+            "bytes": 82312,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 116359,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "beforeHold": {
+            "allocations": 4,
+            "bytes": 164624,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 198671,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "heldBudget": {
+            "allocations": 5,
+            "bytes": 1048576,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 1048576,
+            "ready": false,
+            "scope": "viz-input-pool"
+          },
+          "heldBytes": 883952,
+          "afterFault": {
+            "allocations": 3,
+            "bytes": 966264,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 1048576,
+            "ready": false,
+            "scope": "viz-input-pool"
+          },
+          "releasedRead": {
+            "allocations": 2,
+            "bytes": 82312,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 1048576,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "final": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 1048576,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "completedSerial": 1,
+          "recoveredSerial": 2,
+          "typedFaultIds": [
+            "both",
+            "partial",
+            "raw-first"
+          ],
+          "rejections": [
+            {
+              "event": "VizRejected",
+              "reason": "Invalid Viz fault receipt"
+            },
+            {
+              "captureId": "raw-first",
+              "event": "VizRejected",
+              "reason": "unexpected-resources"
+            },
+            {
+              "captureId": "both",
+              "event": "VizRejected",
+              "reason": "unexpected-scene"
+            }
+          ],
+          "vizProxyDiagnostics": {
+            "received": 5,
+            "rejected": 4,
+            "maxBufferedBytes": 0,
+            "rejections": [
+              {
+                "reason": "Invalid Viz fault receipt"
+              },
+              {
+                "reason": "unexpected-ready",
+                "captureId": "partial"
+              },
+              {
+                "reason": "unexpected-resources",
+                "captureId": "raw-first"
+              },
+              {
+                "reason": "unexpected-scene",
+                "captureId": "both"
+              }
+            ]
+          }
+        }
+      ],
+      "cleanup": [
+        {
+          "reason": 1,
+          "fullPool": false,
+          "errors": [],
+          "brokerExited": true,
+          "nodeRequestOwners": 0
+        },
+        {
+          "reason": 1,
+          "fullPool": true,
+          "errors": [],
+          "brokerExited": true,
+          "nodeRequestOwners": 0
+        },
+        {
+          "reason": 2,
+          "fullPool": false,
+          "errors": [],
+          "brokerExited": true,
+          "nodeRequestOwners": 0
+        },
+        {
+          "reason": 2,
+          "fullPool": true,
+          "errors": [],
+          "brokerExited": true,
+          "nodeRequestOwners": 0
+        }
+      ]
+    },
+    "rpc": {
+      "at": "2026-10-17T01:28:36.680Z",
+      "status": "passed",
+      "scope": "Actual Linux Rust stdin RPC with explicit1MiB data quota. Packet/parser pressure,malformed UTF-8/JSON/UTF-16,duplicate envelope fields and depth errors preserve request correlation and exact Mapper state;valid next frames remain usable.90MiB+1 is streamed from fixed64KiB chunks with late id,not allocated as a whole in the verifier. Reserved minimal256KiB control status survives a rejected wide control graph.300 independent Node-generated nested/escaped header-order cases pass. A real small SKP maps,larger requests are denied before Mapper mutation,and old hash-only reuse maps serial2 on the same NativeBroker process. Denied enlarged fixture has no pixel claim;default45MiB/57.8MB and423rollback gates are separate.",
+      "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+      "rejected": [
+        {
+          "label": "parser-quota",
+          "bytes": 256032,
+          "code": "INPUT_BUDGET_PRESSURE"
+        },
+        {
+          "label": "packet-quota",
+          "bytes": 1228832,
+          "code": "INPUT_BUDGET_PRESSURE"
+        },
+        {
+          "label": "JS-JSON.stringify-lone-high",
+          "code": "INVALID_REQUEST"
+        },
+        {
+          "label": "JS-JSON.stringify-lone-low",
+          "code": "INVALID_REQUEST"
+        },
+        {
+          "label": "malformed-json",
+          "code": "INVALID_REQUEST"
+        },
+        {
+          "label": "duplicate-op",
+          "code": "INVALID_REQUEST"
+        },
+        {
+          "label": "invalid-utf8",
+          "code": "INVALID_REQUEST"
+        },
+        {
+          "label": "depth-limit",
+          "code": "INVALID_REQUEST"
+        },
+        {
+          "label": "90MiB+1-streamed-late-id",
+          "code": "INVALID_REQUEST"
+        }
+      ],
+      "rawProcessUnchanged": true,
+      "corpus": {
+        "packets": 300,
+        "minBytes": 600,
+        "maxBytes": 672
+      },
+      "rpcStatus": {
+        "control": {
+          "allocations": 2,
+          "bytes": 135040,
+          "denied": 0,
+          "headroom": 2097152,
+          "limit": 4194304,
+          "peak": 321696,
+          "ready": true,
+          "scope": "rpc-control-input"
+        },
+        "data": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 2,
+          "headroom": 524288,
+          "limit": 1048576,
+          "peak": 256160,
+          "ready": true,
+          "scope": "rpc-data-input"
+        },
+        "framingBytes": 65536,
+        "maximumControlPacket": 262144,
+        "maximumPacket": 94371840,
+        "ready": true,
+        "scope": "rpc-input-pool"
+      },
+      "minimalControlStatus": {
+        "control": {
+          "allocations": 2,
+          "bytes": 135032,
+          "denied": 1,
+          "headroom": 131072,
+          "limit": 262144,
+          "peak": 135190,
+          "ready": false,
+          "scope": "rpc-control-input"
+        },
+        "data": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 524288,
+          "limit": 1048576,
+          "peak": 0,
+          "ready": true,
+          "scope": "rpc-data-input"
+        },
+        "framingBytes": 65536,
+        "maximumControlPacket": 262144,
+        "maximumPacket": 94371840,
+        "ready": true,
+        "scope": "rpc-input-pool"
+      },
+      "lateDataFallbackStatus": {
+        "control": {
+          "allocations": 2,
+          "bytes": 135032,
+          "denied": 1,
+          "headroom": 131072,
+          "limit": 262144,
+          "peak": 135190,
+          "ready": false,
+          "scope": "rpc-control-input"
+        },
+        "data": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 2097152,
+          "limit": 4194304,
+          "peak": 1095275,
+          "ready": true,
+          "scope": "rpc-data-input"
+        },
+        "framingBytes": 65536,
+        "maximumControlPacket": 262144,
+        "maximumPacket": 94371840,
+        "ready": true,
+        "scope": "rpc-input-pool"
+      },
+      "before": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 103306,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 33682,
+        "chunkIndexEntries": 2,
+        "chunkIndexEstimateBytes": 320,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 2,
+        "manifestBytes": 318,
+        "payloadBytes": 33594,
+        "referenceIndexEntries": 1,
+        "referenceIndexEstimateBytes": 256,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 102962,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 33638,
+        "resources": 1,
+        "revision": 1,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "after": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 103306,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 33682,
+        "chunkIndexEntries": 2,
+        "chunkIndexEstimateBytes": 320,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 2,
+        "manifestBytes": 318,
+        "payloadBytes": 33594,
+        "referenceIndexEntries": 1,
+        "referenceIndexEstimateBytes": 256,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 102962,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 33638,
+        "resources": 1,
+        "revision": 1,
+        "scope": "mapper-retained-cache",
+        "serial": 2
+      },
+      "firstSerial": 1,
+      "reusedSerial": 2
+    },
+    "cache": {
+      "at": "2026-10-17T01:26:10.351Z",
+      "status": "passed",
+      "scope": "Actual Rust RPC with three15MiB synthetic header fixtures, not CanvasKit/pixel fixtures. Full45MiB frame still succeeds while strong cache stays below128MiB; uncached snapshot pins retain hash-only reuse. 520 successful small scenes keep512 strong entries and bounded weak indexes; reset releases all retained indexes, and rejected misses preserve state. Does not certify a global snapshot/queued-wire allocation budget.",
+      "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+      "pressure": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 94939304,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 1,
+        "cacheOwnedChunkBytes": 31499520,
+        "chunkIndexEntries": 1440,
+        "chunkIndexEstimateBytes": 230400,
+        "chunkIndexLimit": 8192,
+        "entries": 3,
+        "epoch": 1,
+        "liveChunkIndexEntries": 1440,
+        "manifestBytes": 83814,
+        "payloadBytes": 31457280,
+        "referenceIndexEntries": 3,
+        "referenceIndexEstimateBytes": 768,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 142407924,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 31457368,
+        "resources": 2,
+        "revision": 3,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "reset": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 0,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 2,
+        "cacheOwnedChunkBytes": 0,
+        "chunkIndexEntries": 0,
+        "chunkIndexEstimateBytes": 0,
+        "chunkIndexLimit": 8192,
+        "entries": 0,
+        "epoch": 0,
+        "liveChunkIndexEntries": 0,
+        "manifestBytes": 0,
+        "payloadBytes": 0,
+        "referenceIndexEntries": 0,
+        "referenceIndexEstimateBytes": 0,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 0,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 0,
+        "resources": 0,
+        "revision": 0,
+        "scope": "mapper-retained-cache",
+        "serial": 2
+      },
+      "indexed": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 1104384,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 10,
+        "cacheOwnedChunkBytes": 38912,
+        "chunkIndexEntries": 512,
+        "chunkIndexEstimateBytes": 81920,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 512,
+        "manifestBytes": 116736,
+        "payloadBytes": 16384,
+        "referenceIndexEntries": 512,
+        "referenceIndexEstimateBytes": 131072,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 928256,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 38912,
+        "resources": 512,
+        "revision": 520,
+        "scope": "mapper-retained-cache",
+        "serial": 522
+      },
+      "fullFrameResources": 3,
+      "hashOnlySerial": 2
+    },
+    "largeNative": {
+      "at": "2026-10-17T01:26:48.097Z",
+      "status": "passed",
+      "scope": "Actual Linux Chromium non-tiled native RPA capture of four2048² noisy PNG layers → Rust Gateway raw-resource path → validating FrameGate → CanvasKit CPU scene replay and four actual pixels. Genuine SKPs plus three-copy working set exceed128MiB; strong cache and weak indexes remain bounded, snapshots still deliver every resource and hash-only follow-up recovers without a false resource miss. This does not certify all snapshot/transport allocation reservations or process/RSS budgets.",
+      "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 57380806,
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "replayMs": 627.3639129999974,
+      "before": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 130858013,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 836,
+        "cacheOwnedChunkBytes": 43410649,
+        "chunkIndexEntries": 1772,
+        "chunkIndexEstimateBytes": 283520,
+        "chunkIndexLimit": 8192,
+        "entries": 4,
+        "epoch": 1,
+        "liveChunkIndexEntries": 1772,
+        "manifestBytes": 118898,
+        "payloadBytes": 43352179,
+        "referenceIndexEntries": 4,
+        "referenceIndexEstimateBytes": 1024,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 174473426,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 43352311,
+        "resources": 3,
+        "revision": 4,
+        "scope": "mapper-retained-cache",
+        "serial": 835
+      },
+      "after": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 130858013,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 837,
+        "cacheOwnedChunkBytes": 43410649,
+        "chunkIndexEntries": 1772,
+        "chunkIndexEstimateBytes": 283520,
+        "chunkIndexLimit": 8192,
+        "entries": 4,
+        "epoch": 1,
+        "liveChunkIndexEntries": 1772,
+        "manifestBytes": 118898,
+        "payloadBytes": 43352179,
+        "referenceIndexEntries": 4,
+        "referenceIndexEstimateBytes": 1024,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 174473426,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 43352311,
+        "resources": 3,
+        "revision": 4,
+        "scope": "mapper-retained-cache",
+        "serial": 836
+      },
+      "followUpCaptures": 1,
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "rollback": {
+      "at": "2026-10-17T01:26:15.919Z",
+      "status": "passed",
+      "scope": "Actual Linux arm64 Rust Broker RPC and private Unix RPA2/Viz path. 140 Base64 and140 raw1MiB scene failures,140 follow-up rejected-hash misses, pre-map tile expansion and late metadata/profile failures preserve exact retained-resource/chunk byte counters, entries, epoch, revision and serial. Old native hash-only recovery succeeds at serial2, then a new valid capture commits serial3/revision2. Cache counters cover Mapper-retained ownership only; no complete Session/RSS budget or rendered pixels claimed here.",
+      "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+      "before": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 103306,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 33682,
+        "chunkIndexEntries": 2,
+        "chunkIndexEstimateBytes": 320,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 2,
+        "manifestBytes": 318,
+        "payloadBytes": 33594,
+        "referenceIndexEntries": 1,
+        "referenceIndexEstimateBytes": 256,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 102962,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 33638,
+        "resources": 1,
+        "revision": 1,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "base64Bytes": 146800640,
+      "rawBytes": 146800640,
+      "rejections": 423,
+      "afterRejected": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 103306,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 33682,
+        "chunkIndexEntries": 2,
+        "chunkIndexEstimateBytes": 320,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 2,
+        "manifestBytes": 318,
+        "payloadBytes": 33594,
+        "referenceIndexEntries": 1,
+        "referenceIndexEstimateBytes": 256,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 102962,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 33638,
+        "resources": 1,
+        "revision": 1,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "last": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 206657,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 34567,
+        "chunkIndexEntries": 3,
+        "chunkIndexEstimateBytes": 480,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 3,
+        "manifestBytes": 636,
+        "payloadBytes": 67203,
+        "referenceIndexEntries": 2,
+        "referenceIndexEstimateBytes": 512,
+        "referenceIndexLimit": 512,
+        "resourcePoolBytes": 172757,
+        "resourcePoolLimit": 805306368,
+        "resourceWireBytes": 67291,
+        "resources": 2,
+        "revision": 2,
+        "scope": "mapper-retained-cache",
+        "serial": 3
+      },
+      "recovered": {
+        "serial": 2,
+        "revision": 1
+      },
+      "changed": {
+        "serial": 3,
+        "revision": 2
+      }
+    },
+    "sourceResource": {
+      "at": "2026-10-17T01:28:04.242Z",
+      "status": "passed",
+      "scope": "Actual Linux non-tiled native capture of1536² noisy PNG while two7.5MiB synthetic protocol fixtures are held by an unacknowledged peer.64MiB resource admission triggers typed Source backpressure; display capture pauses, page clock advances, latest/epoch/viewport/input fences remain intact, ACK frees old owners, native force-resource retry resumes, and actual recovered CanvasKit CPU pixel matches. Not an all-native slow-peer workload, Viewer GPU test, parser/output-copy or process-memory budget.",
+      "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 8069750,
+      "tickBefore": 27,
+      "tickAfter": 28,
+      "pressured": {
+        "allocations": 970,
+        "bytes": 47470200,
+        "denied": 1,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 8330599,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "peak": 63841878,
+        "ready": false,
+        "retiredSnapshots": 0,
+        "rpcInput": {
+          "control": {
+            "allocations": 2,
+            "bytes": 135036,
+            "denied": 0,
+            "headroom": 2097152,
+            "limit": 4194304,
+            "peak": 162201,
+            "ready": true,
+            "scope": "rpc-control-input"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 268435456,
+            "limit": 536870912,
+            "peak": 52573321,
+            "ready": true,
+            "scope": "rpc-data-input"
+          },
+          "framingBytes": 65536,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-input-pool"
+        },
+        "scope": "resource-allocation-pool",
+        "nodeRequests": {
+          "scope": "node-broker-requests",
+          "dataBytes": 0,
+          "controlBytes": 6123,
+          "dataLimit": 536870912,
+          "controlLimit": 4194304,
+          "peakDataBytes": 52472653,
+          "peakControlBytes": 20441,
+          "owners": 1,
+          "dataOwners": 0,
+          "ownerLimit": 64,
+          "dataOwnerLimit": 48,
+          "denied": 0,
+          "ready": true,
+          "retainedEstimate": 5092,
+          "serializationEstimate": 996,
+          "packetBackingBytes": 35
+        }
+      },
+      "after": {
+        "allocations": 992,
+        "bytes": 48268663,
+        "denied": 1,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 8330599,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "peak": 63841878,
+        "ready": false,
+        "retiredSnapshots": 1,
+        "rpcInput": {
+          "control": {
+            "allocations": 2,
+            "bytes": 135036,
+            "denied": 0,
+            "headroom": 2097152,
+            "limit": 4194304,
+            "peak": 162201,
+            "ready": true,
+            "scope": "rpc-control-input"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 268435456,
+            "limit": 536870912,
+            "peak": 52573321,
+            "ready": true,
+            "scope": "rpc-data-input"
+          },
+          "framingBytes": 65536,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-input-pool"
+        },
+        "scope": "resource-allocation-pool",
+        "nodeRequests": {
+          "scope": "node-broker-requests",
+          "dataBytes": 0,
+          "controlBytes": 5092,
+          "dataLimit": 536870912,
+          "controlLimit": 4194304,
+          "peakDataBytes": 52472653,
+          "peakControlBytes": 20441,
+          "owners": 1,
+          "dataOwners": 0,
+          "ownerLimit": 64,
+          "dataOwnerLimit": 48,
+          "denied": 0,
+          "ready": true,
+          "retainedEstimate": 5092,
+          "serializationEstimate": 0,
+          "packetBackingBytes": 0
+        }
+      },
+      "pixel": [
+        37,
+        91,
+        199,
+        255
+      ],
+      "pressureEvents": [
+        "RESOURCE_BUDGET_PRESSURE"
+      ],
+      "sourceStats": {
+        "captures": 5,
+        "errors": 0,
+        "captureSupersessions": 0,
+        "resourceRecoveries": 0,
+        "resourcePressureEvents": 1,
+        "resourcePressureResumes": 1,
+        "lastError": null,
+        "recentErrors": [],
+        "lastPressureCode": "RESOURCE_BUDGET_PRESSURE",
+        "resourcePool": {
+          "allocations": 485,
+          "bytes": 23735100,
+          "denied": 1,
+          "headroom": 33554432,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 83886080,
+            "limit": 268435456,
+            "peak": 8330599,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 67108864,
+          "peak": 63841878,
+          "ready": true,
+          "retiredSnapshots": 0,
+          "rpcInput": {
+            "control": {
+              "allocations": 2,
+              "bytes": 135036,
+              "denied": 0,
+              "headroom": 2097152,
+              "limit": 4194304,
+              "peak": 162201,
+              "ready": true,
+              "scope": "rpc-control-input"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 268435456,
+              "limit": 536870912,
+              "peak": 52573321,
+              "ready": true,
+              "scope": "rpc-data-input"
+            },
+            "framingBytes": 65536,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-input-pool"
+          },
+          "scope": "resource-allocation-pool",
+          "nodeRequests": {
+            "scope": "node-broker-requests",
+            "dataBytes": 0,
+            "controlBytes": 6123,
+            "dataLimit": 536870912,
+            "controlLimit": 4194304,
+            "peakDataBytes": 52472653,
+            "peakControlBytes": 20441,
+            "owners": 1,
+            "dataOwners": 0,
+            "ownerLimit": 64,
+            "dataOwnerLimit": 48,
+            "denied": 0,
+            "ready": true,
+            "retainedEstimate": 5092,
+            "serializationEstimate": 996,
+            "packetBackingBytes": 35
+          }
+        },
+        "lastCaptureMs": 6.382900000000518,
+        "lastMapMs": 1.7015489999994315,
+        "registrationRetries": 0
+      },
+      "latestBrokerSerialAtReport": 7,
+      "recoveredFrame": {
+        "captureId": "6172937f-ef32-4325-b2d5-bcb4d6d5c350",
+        "frameId": 3,
+        "resources": 1
+      },
+      "errors": []
+    },
+    "sourceInput": {
+      "at": "2026-10-17T01:28:07.174Z",
+      "status": "passed",
+      "scope": "Actual Linux non-tiled1536² noisy PNG native RPA packet rejected before full allocation under explicit2MiB input quota. Typed input pressure reaches Source,display capture pauses without stopping page clock or publishing a partial frame. A smaller actual page scene then recovers on the private connection,forces resources and matches CPU CanvasKit pixel. This does not claim the original noisy scene fits2MiB; default-quota57.8MB native support is a separate regression. Packet capacity/metadata estimates only,no full process-memory or GPU claim.",
+      "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 8069807,
+      "smallImageBytes": 2701,
+      "inputBefore": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 1,
+        "headroom": 1048576,
+        "limit": 2097152,
+        "peak": 10810,
+        "ready": true,
+        "scope": "viz-input-pool"
+      },
+      "inputAfter": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 2,
+        "headroom": 1048576,
+        "limit": 2097152,
+        "peak": 202310,
+        "ready": true,
+        "scope": "viz-input-pool"
+      },
+      "ticks": 24,
+      "afterTicks": 27,
+      "pixel": [
+        29,
+        83,
+        197,
+        255
+      ],
+      "pressureEvents": [
+        "RESOURCE_BUDGET_PRESSURE",
+        "RESOURCE_BUDGET_PRESSURE"
+      ],
+      "statuses": [
+        "绘制资源正在回收，正在重试",
+        "绘制资源正在回收，正在重试"
+      ],
+      "sourceStats": {
+        "captures": 1,
+        "errors": 0,
+        "captureSupersessions": 0,
+        "resourceRecoveries": 0,
+        "resourcePressureEvents": 2,
+        "resourcePressureResumes": 2,
+        "lastError": null,
+        "recentErrors": [],
+        "lastPressureCode": "INPUT_BUDGET_PRESSURE",
+        "resourcePool": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 335544320,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 2,
+            "headroom": 1048576,
+            "limit": 2097152,
+            "peak": 10810,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 805306368,
+          "peak": 0,
+          "ready": true,
+          "retiredSnapshots": 0,
+          "rpcInput": {
+            "control": {
+              "allocations": 2,
+              "bytes": 135036,
+              "denied": 0,
+              "headroom": 2097152,
+              "limit": 4194304,
+              "peak": 162201,
+              "ready": true,
+              "scope": "rpc-control-input"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 268435456,
+              "limit": 536870912,
+              "peak": 207373,
+              "ready": true,
+              "scope": "rpc-data-input"
+            },
+            "framingBytes": 65536,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-input-pool"
+          },
+          "scope": "resource-allocation-pool",
+          "nodeRequests": {
+            "scope": "node-broker-requests",
+            "dataBytes": 0,
+            "controlBytes": 6123,
+            "dataLimit": 536870912,
+            "controlLimit": 4194304,
+            "peakDataBytes": 76761,
+            "peakControlBytes": 20441,
+            "owners": 1,
+            "dataOwners": 0,
+            "ownerLimit": 64,
+            "dataOwnerLimit": 48,
+            "denied": 0,
+            "ready": true,
+            "retainedEstimate": 5092,
+            "serializationEstimate": 996,
+            "packetBackingBytes": 35
+          }
+        },
+        "lastCaptureMs": 3.335221000000047,
+        "lastMapMs": 0.8072950000000674,
+        "registrationRetries": 0
+      },
+      "recoveredFrame": {
+        "captureId": "53353e30-ae79-4dc8-a540-64901379d972",
+        "frameId": 1,
+        "resources": 1
+      },
+      "errors": []
+    }
+  },
+  "baseline": {
+    "sceneReady": {
+      "at": "2026-10-17T01:15:34.072Z",
+      "status": "baseline-defect-confirmed",
+      "brokerSha256": "54c6aaf5037d7decde8adf632b0380633746cdf548b985e604d33719dd681904",
+      "scope": "Actual private RPA2+Viz protocol. A fully completed pair is accepted through valid resource/scene paths;another id has scene ready but raw outstanding,and its map already waits. Generic RVE2 overload fails to wake/reject it;the map falls through to3s pairing timeout,without a typed receipt. Completed pair survives and maps serial1. No fix or actual native writer cancellation claim.",
+      "failure": {
+        "message": "Native resource pairing unavailable"
+      },
+      "elapsedMs": 2974.4182840000003,
+      "partialFaultEvents": [],
+      "completedSerial": 1
+    },
+    "fullPool": {
+      "at": "2026-10-17T01:20:44.284Z",
+      "status": "baseline-defect-confirmed",
+      "brokerSha256": "54c6aaf5037d7decde8adf632b0380633746cdf548b985e604d33719dd681904",
+      "scope": "Actual private RPA2+Viz protocol. A fully completed pair is accepted through valid resource/scene paths;another id has scene ready but raw outstanding,and its map already waits. Generic RVE2 overload fails to wake/reject it;the map falls through to3s pairing timeout,without a typed receipt. Completed pair survives and maps serial1. No fix or actual native writer cancellation claim.",
+      "failure": {
+        "message": "Native resource pairing unavailable"
+      },
+      "elapsedMs": 2974.3454300000003,
+      "fullPoolBudget": {
+        "allocations": 3,
+        "bytes": 1048576,
+        "denied": 0,
+        "headroom": 524288,
+        "limit": 1048576,
+        "peak": 1048576,
+        "ready": false,
+        "scope": "viz-input-pool"
+      },
+      "inputAfterFault": {
+        "allocations": 3,
+        "bytes": 1048576,
+        "denied": 1,
+        "headroom": 524288,
+        "limit": 1048576,
+        "peak": 1048576,
+        "ready": false,
+        "scope": "viz-input-pool"
+      },
+      "partialFaultEvents": [],
+      "completedSerial": 1
+    },
+    "validMembershipUnitFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-valid-membership-violation.log"
+  },
+  "supersededPrototype": {
+    "brokerSha256": "e526c520cb2c94fdf82576a3bfd282748278a1903cafbd43c8fdb94cced3636f",
+    "newFourCasePassed": true,
+    "legacyFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-final-verify-broker-viz.log",
+    "reason": "Retaining a receipt for every pending scene used up legacy registration slots. Fixed to retain only delivered-scene/raw-waiter receipts;added100 repeated-fault rounds and reran unchanged legacy test. Never published."
+  },
+  "build": {
+    "at": "2026-10-17T01:24:29.992129+00:00",
+    "status": "candidate-v2-not-published",
+    "staged": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-broker-staged-v2",
+    "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+    "previousBrokerSha256": "54c6aaf5037d7decde8adf632b0380633746cdf548b985e604d33719dd681904",
+    "rustSources": {
+      "native/broker/src/allocation_probe.rs": "ddec052782fb29d8ad7a27d2c2332a70ad9f94226ad230c7fe0923e1cea97ffb",
+      "native/broker/src/assets.rs": "dd638429baa9e8e892623a2c2ca54631b43b27abf53dc4d51b5b1bf7c6626251",
+      "native/broker/src/budget.rs": "41bef43441a10f02c23ad0c0d6eb04bbd48436ad6d2dac0e2ed5cdf5758941e8",
+      "native/broker/src/control.rs": "020a7bc8befd37850a746a602698d8972bd2df03343534559e3cfdfed12c52eb",
+      "native/broker/src/gateway.rs": "fc79103551dc2415f84166a216ab914ebba5b2ab94306aeab327b70720b9cbe2",
+      "native/broker/src/history.rs": "b7b0063bf0a2902e8e2dbac2358b64e543a0c8a94f0e9f9daac5a5667175d6be",
+      "native/broker/src/input.rs": "9e56c120a1bc534fc9b9696314335af3c9ae79e16bebd4c93f9b3eb54820f42b",
+      "native/broker/src/main.rs": "53fb53e795ba6af2beec9850b242ee3b8904cd212a8780214f18e4251da858d8",
+      "native/broker/src/rpc.rs": "e277cc24c016dc73a9199cd4dc4375f978a1efa1ad19e5d30ab4e171790533dd",
+      "native/broker/src/scene.rs": "786db11b9b31c86a8332eea82dc7c0c9f66fc52ced9c495f059ab2704b4798f3",
+      "native/broker/src/viz.rs": "2392f0e14a5a38d46f28f94f396e9281fc37a7b9ba1c4b5309c414c91e1084cb",
+      "native/broker/src/writer.rs": "26fef581106539a5dc43ba9dc9324c4f6e4850863e65d7ecce8ce40f18ebbb61"
+    },
+    "lockSha256": "4370a93e1dc4f4ea61d0df6094cbc51862c190d0838e60c2fa10f28ebd432c86",
+    "cargoManifestSha256": "0e4ca986b5c2b81b9c66a06729cbfab2a2c5b75cb86ee4493c29afafc8d0d43b",
+    "rustReleaseTests": 49,
+    "browserUnchanged": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "supersededPrototype": "e526 native4cases passed but legacy private-Viz slot gate failed;never published. v2 retains a failure only for delivered/taken scene awaiting raw. 100round unit preserves legacy callbacks without extra cancel.",
+    "scope": "Generic RVE partial-pair cleanup/typed map error/fixed7-byte control under fullViz input quota;not wholeSession or actual native writer emission."
+  },
+  "publication": {
+    "at": "2026-10-17T01:28:46.721436+00:00",
+    "status": "passed",
+    "previousBrokerSha256": "54c6aaf5037d7decde8adf632b0380633746cdf548b985e604d33719dd681904",
+    "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+    "atomicBinaryAndReceipt": true,
+    "previousBinaryAndReceiptSaved": true,
+    "oldProofFrozenEightHourAndCachesPreserved": true,
+    "completedAt": "2026-10-17T01:30:50.934111+00:00",
+    "canonicalSmoke": {
+      "tests": [
+        "verify-broker",
+        "verify-broker-viz",
+        "verify-rpc-input",
+        "verify-viz-fault-pairing"
+      ],
+      "allExitCode": 0,
+      "contract": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rve-pairing-canonical-contract.json",
+      "cleanup": [
+        {
+          "reason": 1,
+          "fullPool": false,
+          "errors": [],
+          "brokerExited": true,
+          "nodeRequestOwners": 0
+        },
+        {
+          "reason": 1,
+          "fullPool": true,
+          "errors": [],
+          "brokerExited": true,
+          "nodeRequestOwners": 0
+        },
+        {
+          "reason": 2,
+          "fullPool": false,
+          "errors": [],
+          "brokerExited": true,
+          "nodeRequestOwners": 0
+        },
+        {
+          "reason": 2,
+          "fullPool": true,
+          "errors": [],
+          "brokerExited": true,
+          "nodeRequestOwners": 0
+        }
+      ]
+    }
+  },
+  "longRun": {
+    "runId": "2585828c-e3d1-4175-98f9-8a8c656dcd7c",
+    "containsThisCheckpoint": false,
+    "frozenRustSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+    "status": "running-NOT-passed;keep frozen version and independent elapsed time"
+  },
+  "remaining": [
+    "This verifier injects a real protocol receipt;actual Chromium writer emission and pending native capture cancellation are not proven here",
+    "Node stdout/JSON/VM and returned graph;Rust Snapshot/asset scratch/manifest/index/output/Gateway copies",
+    "Native recording/uncached encoding/epoch/full Session/cross-renderer/PSS and other architectures",
+    "All41+N1 remain7complete/12partial/22pending"
+  ],
+  "preserved": {
+    "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "committed": false,
+    "pushed": false,
+    "peerDiff": "1insertion/1deletion"
+  }
+}

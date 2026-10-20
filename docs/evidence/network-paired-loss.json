@@ -1,0 +1,1568 @@
+{
+  "at": "2026-10-16T14:33:32.999Z",
+  "scope": "Actual Linux kernel netem on Gateway TCP only; real source CDP input, native capture and CanvasKit pixel counter; synthetic beforeinput to latest rendered state including each input, excludes physical input/display scanout; intermediate states may coalesce",
+  "samplesPerCase": 1000,
+  "results": [
+    {
+      "configuredRttMs": 0,
+      "lossPercent": 0,
+      "measuredRttMs": [
+        0.5536990000000515,
+        3.261355999999978,
+        2.6929079999999885,
+        2.6277430000000095,
+        2.364289000000099,
+        2.769574000000148,
+        0.10083099999997103,
+        2.1487939999999526,
+        3.1547750000001997,
+        3.484226999999919
+      ],
+      "samples": 1000,
+      "p50Ms": 46.6000000089407,
+      "p95Ms": 60.099999994039536,
+      "p99Ms": 86.5,
+      "maxMs": 537.4000000059605,
+      "maxProgressGapMs": 535.3000000119209,
+      "maxOutstanding": 6,
+      "frames": 995,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "noqueue",
+          "handle": "0:",
+          "root": true,
+          "refcnt": 2,
+          "options": {},
+          "bytes": 0,
+          "packets": 0,
+          "drops": 0,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 14289086,
+          "coalesced": 0,
+          "delta": 1008,
+          "full": 1,
+          "maxInflight": 4,
+          "maxInflightBytes": 33288,
+          "maxPendingBytes": 20326,
+          "pendingBytes": 0,
+          "resources": 2000,
+          "slowDisconnects": 0,
+          "ackRttMs": 5.461274
+        },
+        {
+          "bytes": 21444747,
+          "coalesced": 0,
+          "delta": 1006,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27614,
+          "maxPendingBytes": 27614,
+          "pendingBytes": 0,
+          "resources": 1996,
+          "slowDisconnects": 0,
+          "ackRttMs": 2.677992
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 20,
+      "lossPercent": 0.5,
+      "measuredRttMs": [
+        22.19292100000166,
+        21.672389999999723,
+        23.02448899999945,
+        23.533395999998902,
+        21.508934000001318,
+        21.93659299999854,
+        19.670218999999634,
+        24.25617499999862,
+        21.130066000001534,
+        20.986526999997295
+      ],
+      "samples": 1000,
+      "p50Ms": 80.90000000596046,
+      "p95Ms": 104,
+      "p99Ms": 122.3999999910593,
+      "maxMs": 154,
+      "maxProgressGapMs": 132.20000000298023,
+      "maxOutstanding": 6,
+      "frames": 942,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 33109799,
+          "packets": 19975,
+          "drops": 83,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.01,
+              "jitter": 0.001,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.005,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 33108875,
+          "packets": 19961,
+          "drops": 83,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 14303768,
+          "coalesced": 0,
+          "delta": 1035,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 82051,
+          "maxPendingBytes": 20328,
+          "pendingBytes": 0,
+          "resources": 2000,
+          "slowDisconnects": 0,
+          "ackRttMs": 66.324812
+        },
+        {
+          "bytes": 15815762,
+          "coalesced": 286,
+          "delta": 747,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27613,
+          "maxPendingBytes": 27613,
+          "pendingBytes": 0,
+          "resources": 1494,
+          "slowDisconnects": 0,
+          "ackRttMs": 34.744896999999995
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 20,
+      "lossPercent": 1,
+      "measuredRttMs": [
+        24.011513000004925,
+        21.923885000003793,
+        23.361649999998917,
+        23.03482200000144,
+        22.917574999999488,
+        24.768582000004244,
+        21.865802000000258,
+        22.114007000003767,
+        21.91317600000184,
+        22.93819999999687
+      ],
+      "samples": 1000,
+      "p50Ms": 80.90000000596046,
+      "p95Ms": 110.40000000596046,
+      "p99Ms": 138.09999999403954,
+      "maxMs": 588.2000000029802,
+      "maxProgressGapMs": 533.2000000029802,
+      "maxOutstanding": 7,
+      "frames": 924,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 31289476,
+          "packets": 18215,
+          "drops": 175,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.01,
+              "jitter": 0.001,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.01,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 31288552,
+          "packets": 18201,
+          "drops": 175,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 14131495,
+          "coalesced": 1,
+          "delta": 1026,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 84975,
+          "maxPendingBytes": 20326,
+          "pendingBytes": 0,
+          "resources": 1980,
+          "slowDisconnects": 0,
+          "ackRttMs": 54.862232
+        },
+        {
+          "bytes": 14294393,
+          "coalesced": 346,
+          "delta": 679,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27611,
+          "maxPendingBytes": 27611,
+          "pendingBytes": 0,
+          "resources": 1356,
+          "slowDisconnects": 0,
+          "ackRttMs": 35.264429
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 20,
+      "lossPercent": 2,
+      "measuredRttMs": [
+        22.818367999992915,
+        23.49514800000179,
+        23.89305699999386,
+        22.286461000010604,
+        22.923658999992767,
+        21.470435000010184,
+        21.30531300000439,
+        22.405041999998502,
+        21.938427000000956,
+        22.234505000000354
+      ],
+      "samples": 1000,
+      "p50Ms": 81.70000000298023,
+      "p95Ms": 120.1000000089407,
+      "p99Ms": 150.09999999403954,
+      "maxMs": 559.3999999910593,
+      "maxProgressGapMs": 499.8999999910593,
+      "maxOutstanding": 9,
+      "frames": 893,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 27013764,
+          "packets": 14959,
+          "drops": 295,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.01,
+              "jitter": 0.001,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.02,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 27012972,
+          "packets": 14947,
+          "drops": 295,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 13970085,
+          "coalesced": 0,
+          "delta": 1020,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 98461,
+          "maxPendingBytes": 20324,
+          "pendingBytes": 0,
+          "resources": 1958,
+          "slowDisconnects": 0,
+          "ackRttMs": 33.611602
+        },
+        {
+          "bytes": 10445831,
+          "coalesced": 521,
+          "delta": 497,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27609,
+          "maxPendingBytes": 27609,
+          "pendingBytes": 0,
+          "resources": 986,
+          "slowDisconnects": 0,
+          "ackRttMs": 47.685875
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 40,
+      "lossPercent": 0.5,
+      "measuredRttMs": [
+        45.500184999997145,
+        44.79841400000441,
+        41.61333599999489,
+        38.97495099999651,
+        39.56260200000543,
+        42.10898900000029,
+        43.432202000010875,
+        41.33834400000342,
+        41.2009309999994,
+        40.9198550000001
+      ],
+      "samples": 1000,
+      "p50Ms": 99.29999999701977,
+      "p95Ms": 146.70000000298023,
+      "p99Ms": 241.29999999701977,
+      "maxMs": 429.79999999701977,
+      "maxProgressGapMs": 364.40000000596046,
+      "maxOutstanding": 17,
+      "frames": 876,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 26067170,
+          "packets": 15703,
+          "drops": 87,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.02,
+              "jitter": 0.002,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.005,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 26066246,
+          "packets": 15689,
+          "drops": 87,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 14059634,
+          "coalesced": 13,
+          "delta": 1004,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 118820,
+          "maxPendingBytes": 20327,
+          "pendingBytes": 0,
+          "resources": 1974,
+          "slowDisconnects": 0,
+          "ackRttMs": 72.17919
+        },
+        {
+          "bytes": 9364636,
+          "coalesced": 572,
+          "delta": 443,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27612,
+          "maxPendingBytes": 27612,
+          "pendingBytes": 0,
+          "resources": 884,
+          "slowDisconnects": 0,
+          "ackRttMs": 53.402257
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 40,
+      "lossPercent": 1,
+      "measuredRttMs": [
+        50.25626200000988,
+        45.9088000000047,
+        42.08711399999447,
+        46.423618000000715,
+        50.10518199999933,
+        40.20916699999361,
+        40.02588000000105,
+        43.65627899998799,
+        44.77470700000413,
+        45.77209499999299
+      ],
+      "samples": 1000,
+      "p50Ms": 101.59999999403954,
+      "p95Ms": 152.20000000298023,
+      "p99Ms": 196.20000000298023,
+      "maxMs": 228.20000000298023,
+      "maxProgressGapMs": 151,
+      "maxOutstanding": 9,
+      "frames": 815,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 25144748,
+          "packets": 13299,
+          "drops": 151,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 66,
+          "qlen": 1
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.02,
+              "jitter": 0.002,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.01,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 25143956,
+          "packets": 13287,
+          "drops": 151,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 66,
+          "qlen": 1
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 14007403,
+          "coalesced": 5,
+          "delta": 1008,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 113208,
+          "maxPendingBytes": 20327,
+          "pendingBytes": 0,
+          "resources": 1960,
+          "slowDisconnects": 0,
+          "ackRttMs": 59.308258
+        },
+        {
+          "bytes": 8672459,
+          "coalesced": 608,
+          "delta": 402,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27612,
+          "maxPendingBytes": 27612,
+          "pendingBytes": 0,
+          "resources": 804,
+          "slowDisconnects": 0,
+          "ackRttMs": 55.042378
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 40,
+      "lossPercent": 2,
+      "measuredRttMs": [
+        43.75898500002222,
+        42.98479800001951,
+        42.0606989999942,
+        48.24435999998241,
+        41.66687600000296,
+        39.88825899999938,
+        46.09133599998313,
+        42.9335490000085,
+        43.520908000005875,
+        44.226095999998506
+      ],
+      "samples": 1000,
+      "p50Ms": 109.5,
+      "p95Ms": 186.19999998807907,
+      "p99Ms": 258.29999999701977,
+      "maxMs": 595.4000000059605,
+      "maxProgressGapMs": 533.2000000029802,
+      "maxOutstanding": 16,
+      "frames": 745,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 23307164,
+          "packets": 10566,
+          "drops": 220,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.02,
+              "jitter": 0.002,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.02,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 23306372,
+          "packets": 10554,
+          "drops": 220,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 0,
+          "qlen": 0
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 13712339,
+          "coalesced": 24,
+          "delta": 988,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 114496,
+          "maxPendingBytes": 20327,
+          "pendingBytes": 0,
+          "resources": 1924,
+          "slowDisconnects": 0,
+          "ackRttMs": 60.921046
+        },
+        {
+          "bytes": 7327757,
+          "coalesced": 658,
+          "delta": 352,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27615,
+          "maxPendingBytes": 27615,
+          "pendingBytes": 0,
+          "resources": 702,
+          "slowDisconnects": 0,
+          "ackRttMs": 89.481248
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 80,
+      "lossPercent": 0.5,
+      "measuredRttMs": [
+        82.31315599998925,
+        83.06855200001155,
+        78.20589599999948,
+        84.01739999998244,
+        79.27690799999982,
+        79.60243999998784,
+        81.52097099999082,
+        82.22603400002117,
+        80.33683699998073,
+        82.76222800000687
+      ],
+      "samples": 1000,
+      "p50Ms": 172.70000000298023,
+      "p95Ms": 315.70000000298023,
+      "p99Ms": 396.1000000089407,
+      "maxMs": 477.6000000089407,
+      "maxProgressGapMs": 334,
+      "maxOutstanding": 19,
+      "frames": 593,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 18937359,
+          "packets": 10481,
+          "drops": 54,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 198,
+          "qlen": 3
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.04,
+              "jitter": 0.004,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.005,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 18936567,
+          "packets": 10469,
+          "drops": 54,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 198,
+          "qlen": 3
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 11199367,
+          "coalesced": 188,
+          "delta": 831,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 113366,
+          "maxPendingBytes": 20327,
+          "pendingBytes": 0,
+          "resources": 1632,
+          "slowDisconnects": 0,
+          "ackRttMs": 171.094799
+        },
+        {
+          "bytes": 5544830,
+          "coalesced": 757,
+          "delta": 260,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27615,
+          "maxPendingBytes": 27615,
+          "pendingBytes": 0,
+          "resources": 520,
+          "slowDisconnects": 0,
+          "ackRttMs": 99.025023
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 80,
+      "lossPercent": 1,
+      "measuredRttMs": [
+        82.67177200000151,
+        88.32536299998173,
+        83.67761899999459,
+        89.20742200000677,
+        81.70133999999962,
+        83.54387200000929,
+        82.47385999999824,
+        80.59162199997809,
+        89.9928989999753,
+        84.00098399998387
+      ],
+      "samples": 1000,
+      "p50Ms": 185,
+      "p95Ms": 307.90000000596046,
+      "p99Ms": 360.29999999701977,
+      "maxMs": 421.29999999701977,
+      "maxProgressGapMs": 285.8999999910593,
+      "maxOutstanding": 15,
+      "frames": 514,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 17723762,
+          "packets": 9352,
+          "drops": 94,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 304,
+          "qlen": 2
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.04,
+              "jitter": 0.004,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.01,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 17722838,
+          "packets": 9338,
+          "drops": 94,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 304,
+          "qlen": 2
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 10926001,
+          "coalesced": 202,
+          "delta": 815,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 115121,
+          "maxPendingBytes": 20329,
+          "pendingBytes": 0,
+          "resources": 1584,
+          "slowDisconnects": 0,
+          "ackRttMs": 187.25038999999998
+        },
+        {
+          "bytes": 4694146,
+          "coalesced": 788,
+          "delta": 226,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27617,
+          "maxPendingBytes": 27617,
+          "pendingBytes": 0,
+          "resources": 452,
+          "slowDisconnects": 0,
+          "ackRttMs": 98.12736199999999
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 80,
+      "lossPercent": 2,
+      "measuredRttMs": [
+        87.16602000000421,
+        81.93604199998663,
+        84.72704099997645,
+        82.13994600001024,
+        86.26199100000667,
+        88.60222500000964,
+        81.00405600000522,
+        88.90245699998923,
+        74.15500800000154,
+        77.76633399998536
+      ],
+      "samples": 1000,
+      "p50Ms": 220.79999999701977,
+      "p95Ms": 365.5,
+      "p99Ms": 446.5,
+      "maxMs": 554.8000000119209,
+      "maxProgressGapMs": 449.90000000596046,
+      "maxOutstanding": 21,
+      "frames": 382,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 15324680,
+          "packets": 6875,
+          "drops": 158,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 714,
+          "qlen": 3
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.04,
+              "jitter": 0.004,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.02,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 15323756,
+          "packets": 6861,
+          "drops": 158,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 714,
+          "qlen": 3
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 9202377,
+          "coalesced": 295,
+          "delta": 700,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 110199,
+          "maxPendingBytes": 20335,
+          "pendingBytes": 0,
+          "resources": 1328,
+          "slowDisconnects": 0,
+          "ackRttMs": 163.05750799999998
+        },
+        {
+          "bytes": 4222382,
+          "coalesced": 793,
+          "delta": 199,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27623,
+          "maxPendingBytes": 27623,
+          "pendingBytes": 0,
+          "resources": 396,
+          "slowDisconnects": 0,
+          "ackRttMs": 100.187321
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 150,
+      "lossPercent": 0.5,
+      "measuredRttMs": [
+        154.44356599997263,
+        152.14699600002496,
+        146.74456999998074,
+        145.52276800002437,
+        159.36743699997896,
+        156.27008099999512,
+        157.07499200000893,
+        152.54163799999515,
+        152.5870940000168,
+        154.10004600003595
+      ],
+      "samples": 1000,
+      "p50Ms": 337.40000000596046,
+      "p95Ms": 520.7999999970198,
+      "p99Ms": 579.5999999940395,
+      "maxMs": 659.7000000029802,
+      "maxProgressGapMs": 449.29999999701977,
+      "maxOutstanding": 25,
+      "frames": 310,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 11880845,
+          "packets": 7610,
+          "drops": 24,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 832,
+          "qlen": 8
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.075,
+              "jitter": 0.007499,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.005,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 11880053,
+          "packets": 7598,
+          "drops": 24,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 832,
+          "qlen": 8
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 6666878,
+          "coalesced": 541,
+          "delta": 494,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 114837,
+          "maxPendingBytes": 20331,
+          "pendingBytes": 0,
+          "resources": 964,
+          "slowDisconnects": 0,
+          "ackRttMs": 166.975981
+        },
+        {
+          "bytes": 3329396,
+          "coalesced": 873,
+          "delta": 159,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27619,
+          "maxPendingBytes": 27619,
+          "pendingBytes": 0,
+          "resources": 314,
+          "slowDisconnects": 0,
+          "ackRttMs": 172.475984
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 150,
+      "lossPercent": 1,
+      "measuredRttMs": [
+        154.09629499999573,
+        144.63248800003203,
+        157.01387000002433,
+        156.03201199998148,
+        158.51782200002344,
+        409.844282999984,
+        162.55349600000773,
+        156.0060560000129,
+        152.9205330000259,
+        153.12889499997254
+      ],
+      "samples": 1000,
+      "p50Ms": 387.40000000596046,
+      "p95Ms": 729.9000000059605,
+      "p99Ms": 993.7000000029802,
+      "maxMs": 1137,
+      "maxProgressGapMs": 683.8999999910593,
+      "maxOutstanding": 42,
+      "frames": 276,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 11036162,
+          "packets": 6425,
+          "drops": 60,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 542,
+          "qlen": 3
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.075,
+              "jitter": 0.007499,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.01,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 11035370,
+          "packets": 6413,
+          "drops": 60,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 542,
+          "qlen": 3
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 6131298,
+          "coalesced": 554,
+          "delta": 477,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 121611,
+          "maxPendingBytes": 20330,
+          "pendingBytes": 0,
+          "resources": 908,
+          "slowDisconnects": 0,
+          "ackRttMs": 318.342731
+        },
+        {
+          "bytes": 3114115,
+          "coalesced": 879,
+          "delta": 149,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27618,
+          "maxPendingBytes": 27618,
+          "pendingBytes": 0,
+          "resources": 294,
+          "slowDisconnects": 0,
+          "ackRttMs": 165.652935
+        }
+      ],
+      "sourceErrors": 0
+    },
+    {
+      "configuredRttMs": 150,
+      "lossPercent": 2,
+      "measuredRttMs": [
+        149.6214799999725,
+        149.62443900003564,
+        146.37863300001482,
+        153.23355499998434,
+        163.38969600002747,
+        150.42243299999973,
+        153.12431199999992,
+        156.67318199999863,
+        155.78319400001783,
+        168.14807799999835
+      ],
+      "samples": 1000,
+      "p50Ms": 420.70000000298023,
+      "p95Ms": 789.0999999940395,
+      "p99Ms": 1249,
+      "maxMs": 1531.2000000029802,
+      "maxProgressGapMs": 707.9000000059605,
+      "maxOutstanding": 49,
+      "frames": 250,
+      "lifecycle": null,
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 10371832,
+          "packets": 5661,
+          "drops": 122,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 608,
+          "qlen": 4
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.075,
+              "jitter": 0.007499,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.02,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 10371040,
+          "packets": 5649,
+          "drops": 122,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 608,
+          "qlen": 4
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 5842451,
+          "coalesced": 554,
+          "delta": 460,
+          "full": 1,
+          "maxInflight": 6,
+          "maxInflightBytes": 121010,
+          "maxPendingBytes": 20318,
+          "pendingBytes": 0,
+          "resources": 856,
+          "slowDisconnects": 0,
+          "ackRttMs": 351.500834
+        },
+        {
+          "bytes": 2774205,
+          "coalesced": 878,
+          "delta": 133,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 27606,
+          "maxPendingBytes": 27606,
+          "pendingBytes": 0,
+          "resources": 262,
+          "slowDisconnects": 0,
+          "ackRttMs": 683.786121
+        }
+      ],
+      "sourceErrors": 0
+    }
+  ],
+  "fileSha256": {
+    "tests/verify-loss.mjs": "c233887ed654992e2b636f8d8549ab4f7b07ebcf69c580b32437a8350dcf0df3",
+    "viewer/input.mjs": "2fddcce2dbab7f1503e55ca2bc8660800c7a6bf9f4d99c5d938d60d09d0d7275",
+    "viewer/live.mjs": "e460153f58d0cfe0cb9cc210627e7056c9467152242412e360cdc13f9518c31c",
+    "viewer/control-channel.mjs": "f8a66418b949354959614dd18195a0165dd2de2f65fb2a3ec70331a8eae78828",
+    "viewer/stream-worker.mjs": "bd179f8a72b2b758e0f11c2277e9cbeced8a1798c84aa12df94565dd627eea5f",
+    "native/broker/src/gateway.rs": "d41965c8252a0c09285c2735834762339a5bd706b2127f6fce6360e1eb7b1cda",
+    "native/broker/src/control.rs": "dbcf7f455c007b2c2efcd93ddc8bcf8720192ae2e25d71df7a3940bd2483d890",
+    "native/broker/src/writer.rs": "411edf392702d5e785550fe814e73433aa6502643d70af250b0591dda8fbb6b3",
+    "native/broker/src/assets.rs": "f20d97d726a563822cc99fa61d78681a2b82cfe1034c6a665100c91eaac493de",
+    "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": "0639294df494783ae0bbf1dc4fea4e66bb58ecee1962b0872a6381fb28943b77",
+    "live/source.mjs": "f4cc29ab896d61dace3e7c54ccf49119a347464657ac524004601bdd85d5c4fb",
+    "live/input.mjs": "c0ba3c9f0a827295bb4c28198efa3e7ecce90704284ebe93f94d90ad54a03da5"
+  },
+  "versionNote": "Frozen paired-transport source and binary before the static asset fingerprint/cache change. Same transport behavior as that revision; do not attribute cache timing to these data."
+}

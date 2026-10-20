@@ -1,0 +1,152 @@
+{
+  "at": "2026-10-17T15:54:47.903878+00:00",
+  "status": "accepted-actualdefaultSource-4display2automation-NOT-fullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-six-consumers-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-six-consumers-checkpoint-project-v1",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-webgl-checkpoint-v1.json",
+  "changed": [
+    "tests/verify-native-source-six-consumers.mjs"
+  ],
+  "productionUnchanged": true,
+  "cases": [
+    {
+      "tag": "a",
+      "checks": 7,
+      "sixPeerOwners": 6,
+      "initialDisplayClients": 4,
+      "initialObservationClients": 1,
+      "initialRecordingClients": 1,
+      "inputSeq": 2,
+      "slow": {
+        "ackTimeoutMs": 5000,
+        "closeCode": 1013,
+        "elapsedMs": 5013.017936,
+        "displayFrames": [
+          117,
+          117,
+          117,
+          117
+        ],
+        "updates": 117
+      },
+      "finalDemand": {
+        "display": 0,
+        "observation": 0,
+        "recording": 0,
+        "pageRun": 0,
+        "encoding": 0,
+        "clock": 0,
+        "closed": false,
+        "maxPageRuns": 128
+      },
+      "finalPeerOwners": 0,
+      "finalRouteOwners": 0,
+      "nodeCalls": {
+        "evaluate": 45,
+        "awaitPromise": 0,
+        "map": 0,
+        "publish": 0
+      },
+      "sourceErrors": 0,
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "sourceLatest": null,
+        "cleanupErrors": []
+      }
+    },
+    {
+      "tag": "b",
+      "checks": 7,
+      "sixPeerOwners": 6,
+      "initialDisplayClients": 4,
+      "initialObservationClients": 1,
+      "initialRecordingClients": 1,
+      "inputSeq": 2,
+      "slow": {
+        "ackTimeoutMs": 5000,
+        "closeCode": 1013,
+        "elapsedMs": 5034.354105,
+        "displayFrames": [
+          118,
+          118,
+          118,
+          118
+        ],
+        "updates": 118
+      },
+      "finalDemand": {
+        "display": 0,
+        "observation": 0,
+        "recording": 0,
+        "pageRun": 0,
+        "encoding": 0,
+        "clock": 0,
+        "closed": false,
+        "maxPageRuns": 128
+      },
+      "finalPeerOwners": 0,
+      "finalRouteOwners": 0,
+      "nodeCalls": {
+        "evaluate": 45,
+        "awaitPromise": 0,
+        "map": 0,
+        "publish": 0
+      },
+      "sourceErrors": 0,
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "sourceLatest": null,
+        "cleanupErrors": []
+      }
+    }
+  ],
+  "reports": {
+    "a": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-six-consumers-frozen-a-v1.json",
+      "sha256": "ccd9ecdea77352544c13850deb8ffbfdc5d45afd4a87c340f6282713e330508c"
+    },
+    "b": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-six-consumers-frozen-b-v1.json",
+      "sha256": "17ea50ea41f121f090c6f668a146ef767e927b3f63b37b3151a238d185f61414"
+    },
+    "fixtureProtocol": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-six-consumers-frozen-protocol-v1.json",
+      "sha256": "7d87f68ba4a13337e44535f236af979553e0832e69e60cd7ae8f9bb8506294b2"
+    }
+  },
+  "scope": "ActualdefaultSource4displays+2read-onlyautomation/Gateway/FrameGate/CanvasKitPNG+DOMpixels,input2,actualordinal+targetfences,navigation/resize,unchanged5sACKslowrecordisolation,allpeer/control/Broker/browserdrain;predecodedimagesareatomicallyreplaced. Separateexistingticketprotocolfixturetest. No fullB1/tenantauth/processmemoryclaim.",
+  "proved": [
+    "TwoindependentactualdefaultSourceSessions with4display+1observation+1recordingrealWebSockets/FrameGates/CanvasKitrenderers. SixpeersandSourceencodingdemand6;4controlpeersonly.",
+    "All6receiveinitialandchangedPNG/DOMpixels;eachreadonlyfirstframeisafteractualnativeordinalfence.Fifthdisplay/thirdautomationHTTP403.",
+    "RealCDPkeyACKsinput2reachall6withactualnativeSourceFrameactivationfloor;observerAcquireControlcloses1008withoutrevokinghumanleaseorinputsequence.",
+    "Fourdisplays+continuousrecording surviveactualnavigationepoch2andresizeviewport2/384px;target-fencedobserversclose1012.",
+    "SlowsecondrecordingwithholdsACKunderunchangeddefault5sdeadline;close1013whileeachof4displaysadvances>100actualframesinbothruns.",
+    "After4displaysclose,onlyrecordercontinuesencoding/clock;lastcloseactualCppdrainstopsclock.AllGatewaypeer/route/controlowners0;Broker/RPCowners0andbrowserdisconnected;nocleanupErrors.",
+    "Separateexistingfixtureprotocolrerunconfirms4+2/Origin/sourcebinding/oneuse10sexpiry/kind/capability rejection,freshnessandtargetfences;fixtureSKPscopekeptdistinctfromactualSourcepixels."
+  ],
+  "fixtureCorrection": {
+    "failedReport": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-six-consumers-failed-v1.json",
+    "failedVerifier": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-six-consumers-failed-v1.mjs",
+    "reason": "Originalfixturechangedimg.src beforeawaitdecodeandonlythenchangedDOMcolor,soJSdidnotpromiseatomiclogicalupdates. Rapidloopsobservedblueimage/greenDOM. Newfixturepredecodesall3PNGsandthenreplacesimage+DOMcolorsynchronously;strictimage/DOMeveryframeassertionretained. Productionunchanged;notproofofaSourcebug."
+  },
+  "notClaimed": [
+    "SixclientsareverifierWebSocket+FrameGate+CanvasKitrenderers,not6fullbrowserprocesses.",
+    "DefaultnativeSource9MiBresourceprogress/control/ACK/close,Sourceclose/crash/Nodefallbackandcanonicalpromotionstillpending.",
+    "All41/N1/fullSession/VM/PSS/8h/B4CPU incomplete."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true
+}

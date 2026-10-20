@@ -1,0 +1,820 @@
+{
+  "at": "2026-10-17T04:18:48.882369+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Borrow original admitted RPC message and encode once into exact owned UTF8,independent normal/close byte budgets and admitted bounded mailbox backing. All outgoing queued Values/main clone/repeated size-check/stringification removed. Priority close slot bypasses normal byte/count saturation,not already written TCP/Tungstenite bytes. Library framing/HTTP/read/write copies,other builders,index/VM/native/fullSession remain separate. All41+N1 stay7complete/12partial/22pending.",
+  "baseline": {
+    "at": "2026-10-17T04:01:13.765772+00:00",
+    "status": "measured",
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-baseline-layout.log",
+    "enqueue": {
+      "wireBytes": 8028,
+      "requestedPeak": 140936,
+      "closedRetainedArrayNodes": 4000
+    },
+    "fullQueue": {
+      "normalMessages": 64,
+      "closeDelivered": false,
+      "error": "Native control queue full"
+    },
+    "scope": "Actual Channel.send called with representative main request.message.clone. Probe includes cloned graph and existing size-check serialization;caller source remains alive. Closing retained Channel left original receiver able to return the queued4000-node graph. A64-message full queue refused $close. Requested-layout and functional queue evidence,not RSS or all Gateway cost."
+  },
+  "actualBefore": {
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-actual-before-v1.log",
+    "report": {
+      "at": "2026-10-17T04:06:11.571Z",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: Missing expected rejection.\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async run (file:///project/tests/verify-command-queue.mjs:25:4)\n    at async file:///project/tests/verify-command-queue.mjs:51:67",
+      "progress": {
+        "mode": "paired-byte",
+        "stage": "expect-byte-pressure",
+        "accepted": 1,
+        "paired": true,
+        "normalBytes": null
+      },
+      "variants": [],
+      "cleanup": [
+        {
+          "mode": "paired-byte",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      ]
+    },
+    "interpretation": "Oldf52 ignored newly requested64KiB command quota and accepted both valid32KiB bodies;typed pressure expectation failed. Baseline is absence of this quota,not a measurement of RSS leakage."
+  },
+  "implementation": {
+    "limits": {
+      "normalBytes": 33554432,
+      "closeBytes": 1048576,
+      "maximumMessage": 32768,
+      "normalSlots": 64,
+      "mailboxBytes": 8192,
+      "normalConfiguration": "REMOTE_PAINT_COMMAND_QUEUE_BYTES64KiB..256MiB",
+      "closeConfiguration": "REMOTE_PAINT_COMMAND_CLOSE_BYTES64KiB..16MiB"
+    },
+    "borrowedPacket": "Gateway.send borrows request.message under original RPC input admission. Bounded serde counting enforces existing32KiB before allocation;admit exact body+128owner,serialize without growth,and transfer same backing into Utf8Bytes. No main Value clone,no whole temporary string for size checks,no queued graph,no receiver reserialization. Existing normal JSON/unknown fields/Unicode preserve exact bytes;missing/closed peers still return no-op true before packet admission.",
+    "close": "Size-check entire original $close first;retain only code/reason that receivers already used. Default1000/Closed and u16 conversion match prior behavior. Typed immutable reason backing and Closure metadata have separate reserved close quota;Arc shares them across data/control routes. Same pending slot keeps its first close. A dedicated slot is polled before normal queues,including when data notifications reach64. It discards unsent queued suffix on shutdown,but cannot bypass bytes already copied/written into socket FIFO.",
+    "mailbox": "Admit8KiB fixed queue/state allowance before allocating64slot sync_channel. State is shared by sender/receiver;data/receiver fields drop before final metadata credit. Closing unattached Channel drains pending packets/reason. Active receiver and escaped payload aliases retain their actual credit until final drop;fixed owner remains until both queue ends/state drop. Active control shutdown can still consume its explicit close reason.",
+    "pressure": "Normal byte denial returns RESOURCE_BUDGET_PRESSURE without using close reserve;existing count-full errors remain. Normal pool readiness has8MiB headroom capped at half its configured limit and is included in resourceBudget.ready. resourceBudget.commands reports both lanes/fixed allowance. New peer mailbox admission failure uses HTTP503;four-peer auth/count403 behavior remains. Gateway stop also uses priority close and independent stop flags.",
+    "boundary": "Actual Tungstenite0.28 write_buffer_size0 test proves original packet credit can return after library frame copy while blocked bytes remain. This is explicitly the next backing scope,not evidence that all send memory is free or all socket write completed."
+  },
+  "tests": {
+    "rustReleaseMac": 82,
+    "rustMacLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-rust-final.log",
+    "rustReleaseLinux": {
+      "at": "2026-10-17T04:07:47.041319+00:00",
+      "status": "passed",
+      "tests": 82,
+      "target": "aarch64-unknown-linux-gnu",
+      "binary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-linux-tests-v1",
+      "sha256": "f8ea9a39518c7d45f0392d1150756e4e530885b9aac4620e496f47a458bd20b1",
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-rust-linux-v1.log",
+      "exitCode": 0
+    },
+    "newRustTests": 8,
+    "js": 178,
+    "jsLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-js-tests.log",
+    "requestedLayouts": [
+      {
+        "wireBytes": 8028,
+        "requestedPeak": 8076,
+        "reservation": 8156,
+        "case": "packet",
+        "platform": "mac-host"
+      },
+      {
+        "requestedPeak": 3264,
+        "reservation": 8192,
+        "case": "mailbox",
+        "platform": "mac-host"
+      },
+      {
+        "wireBytes": 8028,
+        "requestedPeak": 8076,
+        "reservation": 8156,
+        "case": "packet",
+        "platform": "linux-arm64"
+      },
+      {
+        "requestedPeak": 3256,
+        "reservation": 8192,
+        "case": "mailbox",
+        "platform": "linux-arm64"
+      }
+    ],
+    "layoutScope": "Requested allocation layouts,not usable allocator size/RSS. Old actual Channel.send baseline includes a representative main request.message.clone and size-check serialization with source retained. New actual encoder only allocates exact final packet/owner;fixed mailbox was separately measured on Mac and Linux.",
+    "unitCases": [
+      "Exact UTF8/Unicode/numeric/unknown JSON and one final packet backing;source graph unchanged and final alias pins credit.",
+      "32KiB limit and one-byte-short quota denial before large allocation;old close code/reason defaults.",
+      "64 normal slots reject65th body but first priority close still delivers;normal byte saturation cannot use close reserve.",
+      "Retained closed unattached mailbox discards payloads,active receiver retains until drop,and shared dual-close/UTF8 aliases return credit only at final owner.",
+      "8KiB metadata admission before channel allocation,concurrent packet limit,and actual library-copy boundary."
+    ],
+    "linuxFrozen": {
+      "at": "2026-10-17T04:11:05.763354+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-webgl-live.log"
+        },
+        {
+          "name": "verify-broker-cache-lru",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-broker-cache-lru.log"
+        },
+        {
+          "name": "verify-broker-mapper-transaction",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-broker-mapper-transaction.log"
+        },
+        {
+          "name": "verify-large-native-cache",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-large-native-cache.log"
+        },
+        {
+          "name": "verify-resource-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-resource-pool.log"
+        },
+        {
+          "name": "verify-source-resource-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-source-resource-pressure.log"
+        },
+        {
+          "name": "verify-viz-input-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-viz-input-pool.log"
+        },
+        {
+          "name": "verify-source-input-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-source-input-pressure.log"
+        },
+        {
+          "name": "verify-node-request-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-node-request-budget.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-control-channel.log"
+        },
+        {
+          "name": "verify-control-priority",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-control-priority.log"
+        },
+        {
+          "name": "verify-input-feedback",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-input-feedback.log"
+        },
+        {
+          "name": "verify-worker-control",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-worker-control.log"
+        },
+        {
+          "name": "verify-streaming-startup",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-streaming-startup.log"
+        },
+        {
+          "name": "verify-page-activity",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-page-activity.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-node-response-contract",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-node-response-contract.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-snapshot-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-snapshot-budget.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-rpc-output.log"
+        },
+        {
+          "name": "verify-node-stream-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-node-stream-close.log"
+        },
+        {
+          "name": "verify-websocket-json-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-websocket-json-budget.log"
+        },
+        {
+          "name": "verify-command-queue",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-verify-command-queue.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-checkpoint-version-v1.json",
+      "status": "passed"
+    },
+    "canonical": {
+      "at": "2026-10-17T04:15:34.380647+00:00",
+      "source": "Live /project accepted f52 graph/event/asset/Node scopes,new admitted command packets/mailboxes and priority close LinuxRust candidate;isolated artifacts",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-control-channel.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-source-close.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-rpc-output.log"
+        },
+        {
+          "name": "verify-node-stream-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-node-stream-close.log"
+        },
+        {
+          "name": "verify-control-events-dense",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-control-events-dense.log"
+        },
+        {
+          "name": "verify-websocket-json-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-websocket-json-budget.log"
+        },
+        {
+          "name": "verify-command-queue",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-v1-verify-command-queue.log"
+        }
+      ],
+      "status": "passed"
+    },
+    "actualLinux": {
+      "at": "2026-10-17T04:15:13.617Z",
+      "status": "passed",
+      "scope": "Actual Linux Rust outgoing command packet/mailbox ownership. Unattached paired control under explicit64KiB quota retains exactly owned text and rejects another body;paused real fallback socket eventually fills byte credit;64-slot paired queue rejects its65th normal packet. Independent priority close succeeds in every case,data receives requested1001/reason,all packet/close/mailbox owners release and same Broker control remains usable. Missing peer remains a no-op. No CDP/pixel,OS buffer/Tungstenite copy or RSS claim.",
+      "brokerSha256": "8f55ba4469331cca0c243486b889d806eeac6e62e482c6241dafdc689715432f",
+      "variants": [
+        {
+          "mode": "paired-byte",
+          "paired": true,
+          "accepted": 1,
+          "receivedBeforeClose": 0,
+          "closeCode": 1001,
+          "closeReason": "queue contract close",
+          "closeDeliveredAfterNormalPressure": true,
+          "transportPressure": null,
+          "held": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 3,
+              "bytes": 48548,
+              "denied": 1,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48548,
+              "ready": false,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": false,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "released": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 332,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 1,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48548,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "brokerPidUnchanged": true,
+          "stalePeerNoop": true
+        },
+        {
+          "mode": "fallback-byte",
+          "paired": false,
+          "accepted": 12,
+          "receivedBeforeClose": 11,
+          "closeCode": 1001,
+          "closeReason": "queue contract close",
+          "closeDeliveredAfterNormalPressure": true,
+          "transportPressure": {
+            "before": {
+              "sendBytes": 142848,
+              "state": "01"
+            },
+            "after": {
+              "sendBytes": 142848,
+              "state": "01"
+            },
+            "observationMs": 50,
+            "queuedCommandBytes": 32165,
+            "parentPaused": true,
+            "parentReadableBytes": 96120
+          },
+          "held": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 3,
+              "bytes": 48549,
+              "denied": 3,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48549,
+              "ready": false,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": false,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "released": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 332,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 3,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48549,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "brokerPidUnchanged": true,
+          "stalePeerNoop": true
+        },
+        {
+          "mode": "paired-count",
+          "paired": true,
+          "accepted": 64,
+          "receivedBeforeClose": 0,
+          "closeCode": 1001,
+          "closeReason": "queue contract close",
+          "closeDeliveredAfterNormalPressure": true,
+          "transportPressure": null,
+          "held": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 66,
+              "bytes": 33334,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 33599,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "released": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 332,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 33599,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "brokerPidUnchanged": true,
+          "stalePeerNoop": true
+        }
+      ],
+      "cleanup": [
+        {
+          "mode": "paired-byte",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "fallback-byte",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "paired-count",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      ]
+    },
+    "prototype": {
+      "unit": {
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-focused-v1.log",
+        "cause": "Tungstenite default128KiB write buffer accepted8KiB frame without calling blocked writer. Fixture now uses actual runtime zero write-buffer configuration;no runtime change or threshold relaxation."
+      },
+      "actual": {
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-actual-linux-v1.log",
+        "testSource": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/verify-command-queue-prototype-v1.mjs",
+        "limitation": "Fallback rejected second packet before first dispatch (accepted1/received0). Pause flag alone did not prove real transport backpressure. New fixture waits between sends and requires native/procTCP TX>0 over50ms plus held command credit;runtime unchanged and5s bound retained."
+      },
+      "interpretation": "First copy-boundary unit fixture used library default128KiB write buffer;corrected to actual zero-write-buffer configuration. First paused-socket fixture accepted only1 packet before pressure,so its pause flag alone was insufficient. Improved fixture observes native TCP TX>0 across50ms and retained command owner;runtime/timeouts unchanged. Original logs/scripts preserved."
+    },
+    "largeNative": {
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "mapperRollbackRejections": 423,
+    "resourcePoolFrames": 14,
+    "readableClose": {
+      "mode": "close-blocked-stdout",
+      "waitChannel": "sock_alloc_send_pskb",
+      "transport": "unix-socket",
+      "childExitCode": 2,
+      "oldProcessIdentityExited": true,
+      "parentReadableBytesAfterClose": 0,
+      "scope": "Actual blocked stdout loses its reader;child exits2 instead of continuing a partial frame. Logical Rust counters are not queried after process exit;OS/process cleanup and separate unit write-owner checks are distinct evidence."
+    }
+  },
+  "version": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-checkpoint-version-v1.json",
+    "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-checkpoint-project-v1",
+    "rustSources": {
+      "native/broker/src/allocation_probe.rs": "ddec052782fb29d8ad7a27d2c2332a70ad9f94226ad230c7fe0923e1cea97ffb",
+      "native/broker/src/assets.rs": "c799737cd3b1577312201461b36972baa682e4201acaea040f7749de9b1a5c00",
+      "native/broker/src/budget.rs": "41bef43441a10f02c23ad0c0d6eb04bbd48436ad6d2dac0e2ed5cdf5758941e8",
+      "native/broker/src/command.rs": "3e337e214e74ffac0a29a37cd8c6d23f555ad4cc18cea3e013417c8cb8a2e001",
+      "native/broker/src/control.rs": "e2de44d64a66f39a4c12a2d045714f7f706bc0fad6eb5bfd7d4d2b9e86580178",
+      "native/broker/src/gateway.rs": "efe6f1c56997601c4fccc9e3e46e0166780fac63fa7d9625f42ae341277837f2",
+      "native/broker/src/history.rs": "4b64273428615445d9ceb99bfd38a5004e66b2eead2d6aaf7dfadfa686578e2a",
+      "native/broker/src/input.rs": "9e56c120a1bc534fc9b9696314335af3c9ae79e16bebd4c93f9b3eb54820f42b",
+      "native/broker/src/main.rs": "5744c4a2712f4715c3aa3fc63a652f41405a1b86b964bd8d575635ce3ace25f8",
+      "native/broker/src/output.rs": "fd175957f5948349edb37515848d9db621ed0f8a1a40251c92ced56376c30f9f",
+      "native/broker/src/rpc.rs": "e277cc24c016dc73a9199cd4dc4375f978a1efa1ad19e5d30ab4e171790533dd",
+      "native/broker/src/scene.rs": "6246d0aed40a3840efc0c20cc384c62bc0e419bd15c76b8b04d8e2111238bc86",
+      "native/broker/src/snapshot_memory.rs": "dacd32697849b66b54089a259b93189c3c643522be81c55046a1c52400f82143",
+      "native/broker/src/viz.rs": "44c436fa135da6f59a382b4b3a1f7dd8fe05df199f746e54b06be95a59f8a4d9",
+      "native/broker/src/writer.rs": "26fef581106539a5dc43ba9dc9324c4f6e4850863e65d7ecce8ce40f18ebbb61",
+      "native/broker/src/ws_json.rs": "7d3838d27d942a72c8c9a1b232a0ac489ea42b8452f4568b0d2f459e75de74f7"
+    },
+    "brokerSha256": "8f55ba4469331cca0c243486b889d806eeac6e62e482c6241dafdc689715432f",
+    "previousBrokerSha256": "f52c0364b140ebca0a6a26a93edde43868fce93f461517e841387521a48c54ae",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "browserUnchanged": true,
+    "cpp": "Unchanged browser reuses prior34 C++ tests.",
+    "artifacts": {
+      "large-native.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-artifacts/large-native.json",
+        "sha256": "ed98a094f8268e2fd9cce2c27c5618f80ee2963b33385213979f334f497002d2"
+      },
+      "rollback.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-artifacts/rollback.json",
+        "sha256": "09aba4e33d18f5420f8476a1293d8d985c77deb89d23ba4e4b850d65eefdd73e"
+      },
+      "resource-pool.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-artifacts/resource-pool.json",
+        "sha256": "cb7cab2a1634b17cde39e8e597191739017378c54056bef7acb4b8a14c99add8"
+      },
+      "source-resource.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-artifacts/source-resource.json",
+        "sha256": "9ab2020f38488b42a43a0c68aba8b9cab2d160caf5dab76e1097f7244b36ed60"
+      },
+      "source-input.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-artifacts/source-input.json",
+        "sha256": "137673b05c5af4272288b8e98c6fffebd0338c6ae9a661ca1e6f5e7d3c03f8f0"
+      },
+      "output-contract.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-artifacts/output-contract.json",
+        "sha256": "4d7c590531288051990a565a8ebab0ecec32a15fa365212f33aa8593a699fd86"
+      },
+      "node-stream-close.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-artifacts/node-stream-close.json",
+        "sha256": "26cd926a7c88409d31ee21fa5a27580a19da41b88319565117bcc808a1cb0cc2"
+      },
+      "websocket-json.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-artifacts/websocket-json.json",
+        "sha256": "cf48725b78b7b7b775746215bc466239e1a1fa09e28cad871e68cf2c17f67912"
+      },
+      "command-queue.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-v1-artifacts/command-queue.json",
+        "sha256": "838c53b35c4d6e2f8d008a4d06b26c862af0a9c577c72e5f95a567a93106a1c2"
+      }
+    }
+  },
+  "publication": {
+    "at": "2026-10-17T04:15:31.622405+00:00",
+    "status": "accepted-in-stated-scope",
+    "oldSha256": "f52c0364b140ebca0a6a26a93edde43868fce93f461517e841387521a48c54ae",
+    "newSha256": "8f55ba4469331cca0c243486b889d806eeac6e62e482c6241dafdc689715432f",
+    "previousBinary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-previous-canonical-f52",
+    "previousReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-previous-build-receipt.json",
+    "binary": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/broker-build.json",
+    "scope": "Atomic local Linuxarm64 replacement only;proof/8h processes and Chromium/Cargo caches preserved;no commit/push.",
+    "canonicalSmoke": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/command-queue-canonical-smoke-v1.json",
+    "evidence": "docs/evidence/outgoing-command-owners.json"
+  },
+  "remaining": [
+    "Tungstenite HTTP/raw/read/fragment/write backing capacities and copies;next audit in tungstenite-backing-next-audit.json.",
+    "Other Gateway scene/header/delta/notification/handshake and handler Value/String builders.",
+    "Remaining asset/hash scratch,persistent Mapper resource/weak-index backing,Node active/app/VM,native recording/epoch/physicalwholeSession/PSS.",
+    "B4 comparable baseline,independent8h and remaining41-row/N1 requirements."
+  ],
+  "eightHours": "Immutable2585828c usesa296/earlier JS,excluding this and later accepted scopes;no elapsed stitching.",
+  "preserve": "No commit/push. HEAD3ff9512c/live peer1+/1-,proof/8h/compiler6713 processes and all Chromium/Cargo caches preserved;previousf52 binary/receipt backed up."
+}

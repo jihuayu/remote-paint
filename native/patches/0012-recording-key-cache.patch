@@ -1,0 +1,63 @@
+--- a/cc/raster/raster_source.h
++++ b/cc/raster/raster_source.h
+@@ -6,6 +6,7 @@
+ #define CC_RASTER_RASTER_SOURCE_H_
+ 
+ #include <stddef.h>
++#include <stdint.h>
+ 
+ #include <memory>
+ #include <string>
+@@ -126,6 +127,8 @@
+   void DidBeginTracing();
+   void AsValueInto(base::trace_event::TracedValue* array) const;
+ 
++  uint64_t remote_paint_source_id() const { return remote_paint_source_id_; }
++
+   const scoped_refptr<const DisplayItemList>& GetDisplayItemList() const {
+     return display_list_;
+   }
+@@ -176,6 +179,8 @@
+ 
+   // These members are const as this raster source may be in use on another
+   // thread and so should not be touched after construction.
++  static uint64_t NewRemotePaintSourceId();
++  const uint64_t remote_paint_source_id_ = NewRemotePaintSourceId();
+   const scoped_refptr<const DisplayItemList> display_list_;
+   const SkColor4f background_color_;
+   const bool requires_clear_;
+--- a/cc/raster/raster_source.cc
++++ b/cc/raster/raster_source.cc
+@@ -7,6 +7,8 @@
+ #include <stddef.h>
+ 
+ #include <algorithm>
++#include <atomic>
++#include "base/check_op.h"
+ 
+ #include "base/trace_event/trace_event.h"
+ #include "cc/base/math_util.h"
+@@ -37,6 +39,13 @@
+       directly_composited_image_info_(other.directly_composited_image_info_) {
+   DCHECK(recorded_bounds_.IsEmpty() ||
+          gfx::Rect(size_).Contains(recorded_bounds_));
++}
++
++uint64_t RasterSource::NewRemotePaintSourceId() {
++  static std::atomic<uint64_t> next{1};
++  const auto id = next.fetch_add(1, std::memory_order_relaxed);
++  CHECK_NE(id, 0u);
++  return id;
+ }
+ 
+ RasterSource::~RasterSource() = default;
+--- a/cc/trees/layer_tree_host_impl.cc
++++ b/cc/trees/layer_tree_host_impl.cc
+@@ -5,6 +5,7 @@
+ #include "cc/trees/layer_tree_host_impl.h"
+ #include "components/remote_paint/capture_state.h"
+ #include "components/remote_paint/canvas_capture.h"
++#include "components/remote_paint/recording_index.h"
+ #include "components/viz/common/resources/shared_image_format_utils.h"
+ #include "gpu/command_buffer/client/raster_interface.h"
+ #include "third_party/skia/include/core/SkColorSpace.h"

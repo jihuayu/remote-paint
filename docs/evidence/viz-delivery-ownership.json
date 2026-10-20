@@ -1,0 +1,109 @@
+{
+  "at": "2026-10-16T19:56:58.859443+00:00",
+  "scope": "Bounded Viz delivery ownership/fault receipt and atomic scene/resource publication; unit and protocol acceptance only, long-run timeout remains unresolved",
+  "uncommitted": true,
+  "sha256": {
+    "native/chromium/viz_capture.cc": "1ba660a185a11084f46303c0cc6b530e48fb00337d7e53ed70a02cf46ae963bd",
+    "native/chromium/viz_delivery.h": "79dce1e9361e4c8fd3d77095e91b46e573253dbd5a942a203806f1b4e89463c7",
+    "native/chromium/viz_delivery.cc": "01dc554babd4be57f38cb5f7f85fa8f3a3b4b860d5f49c19568e21a4667d3d81",
+    "native/chromium/serializer_unittest.cc": "cb75baaa0f4ea4a0a459a7e7fb618887cd1e9391ed4fb0a0fa5a71a384a9a68c",
+    "native/chromium/BUILD.gn": "d5b4b087265bd04bff8b0cf5024f41224e2921b2726503269f71d663f5d92dac",
+    "native/patches/0008-viz-delivery-dependency.patch": "6564295e7360bc489055eb5cd7088b24620d153c0e4d9671e05a47a1feaafd7b",
+    "native/broker/src/viz.rs": "245866d9a4210bc34993e6ea9cb025a4ad99fdf2a4ea561c735d6346f6c00fc5",
+    "capture/viz-ipc.mjs": "db851e4db0dd842834591840e60a7a0be38b07b40406357f41f57447f34c5a64",
+    "tests/viz-timeout.test.mjs": "8a09a3d15445677bb3127f8ecc9f77a96b08d140390b6261f117fb062d732401",
+    "tests/verify-broker-viz.mjs": "fc81f119659cdccf23fd69efa2c4df2e6a352b4e76493deb236828db3321a22c"
+  },
+  "checks": {
+    "nodeTests": 131,
+    "rustTests": 11,
+    "cppTests": 13,
+    "actualMacLinuxBrokerFaultContract": "passed",
+    "stagedChromiumBuild": "passed",
+    "currentShortStress": "failed at53cycles; not passed"
+  },
+  "stagedBuild": {
+    "format": 1,
+    "target": {
+      "os": "linux",
+      "cpu": "arm64"
+    },
+    "buildProfile": "linux-arm64-host-cc",
+    "hostCrossCompiler": {
+      "mode": "mac-arm64-clang-cross",
+      "target": "aarch64-linux-gnu",
+      "compilerSha256": "b3785ad91b93cb56eac31eaef5d8cf5ef71fae512843417a55bd3912b4d41766",
+      "compilerVersion": "clang version 24.0.0git (https://chromium.googlesource.com/a/external/github.com/llvm/llvm-project 86922d51225db089fffb99475eefc4904f79e3c8)",
+      "jobs": 4
+    },
+    "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+    "skiaRevision": "29ed1e87a0a50f3d8347e988842d9d59e7573efa",
+    "nativeSources": {
+      "BUILD.gn": "d5b4b087265bd04bff8b0cf5024f41224e2921b2726503269f71d663f5d92dac",
+      "capture_state.cc": "77b12f093b079370abbcfb7008656a1a5e8404b2fcdec803c3a0c897ad7126ef",
+      "capture_state.h": "7185d7868ab01d23343070042bbe251846076cc5887df2f591e11ee5d4e0f63b",
+      "cc_capture.inc": "7e935207ded492313c982732c692d0becccd0497877360215d4e671b7f6678ab",
+      "extension_capture.inc": "d4cca278fcfb24f90bd253d366eda190e5d81d0e33bf8c5f21b6d267dfe08421",
+      "font_subset.cc": "b3e1dd8c3502c97094b30d232e0c14d2f57605b98206375b63bd516fdd06f64c",
+      "font_subset.h": "a0ef6e8b07487412cf5632a8bd5b6d094beeb617cdfcdac802113286a6b7f8e8",
+      "serializer.cc": "f90fa4d3a6c8ea4d9ddb9a7264f6c37ffcde4719bb45e8c9450c5fc64977192a",
+      "serializer.h": "dcb6213497795b5361fda26d2f62e2ce0e4636b4e98d807e21cdb650e175cdde",
+      "serializer_unittest.cc": "cb75baaa0f4ea4a0a459a7e7fb618887cd1e9391ed4fb0a0fa5a71a384a9a68c",
+      "socket_transport.h": "aa55764ef39cc802f560c03bde5886fcb382b8c1833314465f19189a3e2ad4c1",
+      "test_main.cc": "2683a596f6572109fb43c7a70c125ceb023df1796e70fc025f44a477012d9fb6",
+      "viz_capture.cc": "1ba660a185a11084f46303c0cc6b530e48fb00337d7e53ed70a02cf46ae963bd",
+      "viz_capture.h": "c10433e61457d8deeba6b0f73505bb01037e7726e5fbae6f3f07995c40da7306",
+      "viz_delivery.cc": "01dc554babd4be57f38cb5f7f85fa8f3a3b4b860d5f49c19568e21a4667d3d81",
+      "viz_delivery.h": "79dce1e9361e4c8fd3d77095e91b46e573253dbd5a942a203806f1b4e89463c7"
+    },
+    "patches": {
+      "0001-async-capture.patch": "50b45c2d8fea81c8230644bdf9e3bd80c92b23285d263d88cefbf1fd368b5e2f",
+      "0002-compositor-viz-pairing.patch": "ecefbed1a09f81f23082955c74f2aa6a94946fa724e45901cb4926bf66fab45b",
+      "0003-chromium-build-contracts.patch": "618e568969d778b55836d02cbecc62709968bd7c3c1a896fc536262b19fffe31",
+      "0004-v8-context-isolate.patch": "e6d91dd928da133c1d9437e8f55ccceb451029a4b4fdb5e9df6c6fdba2225983",
+      "0005-accumulate-tile-damage.patch": "8cbe9fd8c08c1cf77ea41c59e5e13ddcf9b6feaf813a56baab8fffa783e04a6a",
+      "0006-copy-damage-region-rects.patch": "f785000d601d48d2988430b8154da2996d7fa28a76a0c9971dc4da18e391801f",
+      "0007-webgl-layer-classification.patch": "59901b21c9af2df1e746a6df655c1eed8c4ecac5b046700afe7c058efc84d7e4",
+      "0008-viz-delivery-dependency.patch": "6564295e7360bc489055eb5cd7088b24620d153c0e4d9671e05a47a1feaafd7b"
+    },
+    "patchedSources": {
+      "content/renderer/gpu_benchmarking_extension.cc": "e3becb774bcce814073a6da5e33fbbc1350fade2e11d1164d26e7a24a3728b67",
+      "content/renderer/gpu_benchmarking_extension.h": "d674acd0223fe1f0c9068a9ca62f78452b9c1a049520d5f587419874dbfd4ab8",
+      "content/renderer/BUILD.gn": "2d4bcd546ae90a6cf1a99f25e55fad7d5545784327338b97d1f05eb1ff89924b",
+      "content/browser/renderer_host/render_process_host_impl.cc": "12b866e91c414a2f1fb8776a44ada9a34d32dcdfd793103bf5434de2016e3b6c",
+      "content/renderer/render_frame_impl.cc": "4c4703a9eeab1d4b914dabab3d00b739958714b6e8384a19a2277571c62524c9",
+      "cc/BUILD.gn": "62b777a82e7bb5d79604627b5cae7dcad602e15846bc72c92bb66543852fe582",
+      "cc/trees/layer_tree_host_impl.cc": "287322683d39c6e5e487e4f2c7763be24f81c5cc93e572384cf6f24956940343",
+      "components/viz/common/quads/compositor_frame_metadata.h": "e605ec46868e93bf6d7b57451d1512415fbbf1707dcbaa758459f9ebd004a1c4",
+      "components/viz/common/quads/compositor_frame_metadata.cc": "ebe0b12fa91c1ec334f20b4e6bf457d9c63bfd79034a1b29bbca058803b3b870",
+      "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom": "ca153263077f4cbfe4af35a7ab446b2e77acf4bd6baa9b268ed2ffd684f7bfd1",
+      "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h": "38445da06359dfe644723b9f5048e3bc43c2eee9a6e79d8ddb0ec93a5a9a8f2d",
+      "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc": "3ebcab9dbdae731eb4d8241ca567a5d8290f437d5e2eb2279eba5983a8c468b1",
+      "components/viz/service/BUILD.gn": "7b683180fadc88fe7b4b6564176cddbb6dcc070e36797bcab8450ae16732ad92",
+      "components/viz/service/display/surface_aggregator.cc": "ab5095dac86fbee8498968e17d9485c314db82031c943a4f25ddb5af45849e8b",
+      "cc/layers/picture_layer_impl.cc": "56aef3ef25e1f22ff947b4f575af421e8b6d066914b19e981bd310738a143f53"
+    },
+    "argsSha256": "25a86fd4153e0f0fb6a2025dc9dc35ed4cb3993b92553d25b370fe49a005b339",
+    "hostConfiguration": {
+      "gnSha256": "36fe330f4e6a0c8cebcc893a72a6e70871fb395b501a811a231c80465b3fec9d",
+      "swiftShaderSha256": "75f21859d5caa845546086fc67816353d33b0da1edfc7d6a1844664f0b745fa8"
+    },
+    "artifact": "staged-browser",
+    "targetName": "headless_shell_viz_delivery",
+    "canonicalGraphAccepted": false,
+    "builtAt": "2026-10-16T19:52:51.002Z",
+    "buildLogSha256": "f0c729a0f7b5cfb8ba1b690863bbd2fc78c2edd021f13b1cbbf4f8838b7a2e34",
+    "binaries": {
+      "headless_shell": "cb09f834ea6c38765e99e4f7e7effe98d7715ca1140a32b3abfc25179be6a4d0",
+      "serializer_tests": "52dc949d2b1fc4f4c4bc94ee700492723baf965abc89d3eafaed4ba554252068"
+    },
+    "cppTests": 13
+  },
+  "invariants": [
+    "Only completed writes enter bounded LRU history; active duplicates touch history, no whole-set clear",
+    "Two normal packet slots retained; overflow produces bounded global failure receipt for pending expectations",
+    "Capture attempts during fault transmission are covered by a subsequent receipt",
+    "Pending expectations remain locked through scene/resource publication; cancel cannot miss a late insert",
+    "Oversize scene returns a compact correlated error; native Viz writes are serialized by one task"
+  ]
+}

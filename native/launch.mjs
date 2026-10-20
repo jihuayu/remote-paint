@@ -5,6 +5,7 @@ export function nativeLaunchArgs(token,{beginFrames=false}={}){
  return [`--remote-paint-token=${token}`,'--disable-gpu-rasterization',
   ...(process.platform==='darwin'?['--in-process-gpu']:['--ozone-platform=headless','--disable-gpu']),
   ...(beginFrames?['--enable-begin-frame-control','--run-all-compositor-stages-before-draw']:[]),
+  ...(process.env.REMOTE_PAINT_TRACE==='1'?['--enable-logging=stderr','--log-level=0']:[]),
   '--no-sandbox'];
 }
 

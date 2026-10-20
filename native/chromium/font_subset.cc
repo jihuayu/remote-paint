@@ -26,7 +26,8 @@ sk_sp<SkFontMgr> FontManager() {
 #endif
 }
 
-sk_sp<SkData> SubsetTypeface(SkTypeface* typeface, const std::set<SkGlyphID>& glyphs, std::string* error) {
+sk_sp<SkData> SubsetTypeface(SkTypeface* typeface, const std::set<SkGlyphID>& glyphs, std::string* error, size_t* glyph_slots) {
+  if(glyph_slots)*glyph_slots=0;
   auto fail = [error](const char* stage) -> sk_sp<SkData> { if (error) *error = stage; return nullptr; };
   int index = 0;
   auto stream = typeface->openStream(&index);
@@ -85,6 +86,7 @@ sk_sp<SkData> SubsetTypeface(SkTypeface* typeface, const std::set<SkGlyphID>& gl
     subset_font.getWidths({&glyph, 1}, {&subset_width, 1});
     if (std::abs(source_width - subset_width) > 0.01f) return fail("retained glyph advance changed");
   }
+  if(glyph_slots)*glyph_slots=result->countGlyphs();
   return result->serialize(SkTypeface::SerializeBehavior::kDoIncludeData);
 }
 }

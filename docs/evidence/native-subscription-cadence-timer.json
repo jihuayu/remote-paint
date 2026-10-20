@@ -1,0 +1,67 @@
+{
+  "at": "2026-10-17T13:52:29.823225+00:00",
+  "status": "accepted-native-cadence-timer-NOT-defaultSource-orB1-complete",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-checkpoint-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-checkpoint-browser-v1",
+  "browserSha256": "14bce326d2c4c8627c49926fb6a78aa003a0dc6a67f130c922b48da3c2663efa",
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "scope": "Actual native CC damage/monotonic timestamps/coalesced main OneShotTimer;bindDocument default cadence and private controls;fixed lifecycle harness. Default Source is still legacy.",
+  "cppActualLinux": 73,
+  "frozenCadenceChecks": 7,
+  "frozenBusyCreditChecks": 2,
+  "frozenDocumentChecks": 8,
+  "rapidCrosssiteNavigations": 24,
+  "frozenLegacyNativeLifecycleChecks": 4,
+  "frozenLegacyPixelSamples": 21,
+  "large": {
+    "documentCadenceBinding": true,
+    "requiredSkpBytes": 57802256,
+    "skps": 4,
+    "actualPixels": 4,
+    "hashRecoveries": 0
+  },
+  "reports": {
+    "cadence": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-frozen-cadence-v1.json",
+      "sha256": "8d7789da773e699e742b0c7b1edbcd6a9b146578ad3e71c6e2061af0ec89c1de"
+    },
+    "busy": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-frozen-busy-v1.json",
+      "sha256": "ee2e67cf3cda72ae27706b0ad6681beab0c4559e8405dc4f8ae13ae17c254275"
+    },
+    "document": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-frozen-document-v1.json",
+      "sha256": "255ef8aa4d179dd6cc49f738105f17b0cd49ac664a95427836ffb182970b5895"
+    },
+    "publication": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-frozen-publication-v1.json",
+      "sha256": "74b847f75c4a064e50f7df5174ee9ff5f66ae508abc9930172141bd1860a2abf"
+    },
+    "large": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-frozen-large-v1.json",
+      "sha256": "036c89206e594c59b2a91e002b973f0d861a34b071838797b5cab0a3ca0eed30"
+    }
+  },
+  "behavior": [
+    "No per-frame capture CDP/map/publish in autonomous cadence windows. Independent BeginFrame clock remains active.",
+    "100ms capture limit on animation;static 1s heartbeats;single throttled damage visible around619ms before1s heartbeat.",
+    "Native ordinal fence includes inflight;fresh request from idle arrived99ms.",
+    "Awaiting actual Broker credit retains pending damage,stops timer;old frame input0,next input7 respects source-frame activation floor.",
+    "Pause drains actual C++ inflight before reenable;resume full resources;cancel stops native timer.",
+    "Same-renderer document replacement andcrosssite renderer changes preserve native heartbeat.",
+    "Existing0001..0014 patches,canonical browser/brokers andunrelatedpeer change preserved."
+  ],
+  "remaining": [
+    "DefaultSource controller/integration andautonomous transport input/demand/observation lifecycle.",
+    "Complete default-path57MB/Base64/rollback/64MiB/pressure/control/ACK/close/fourdisplay+twoautomation/WebGL/non-tiled contracts.",
+    "All41itemwise/N1/fullSession memory/8h/performance acceptance remain scoped andunfinished."
+  ],
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  }
+}

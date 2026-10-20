@@ -1,0 +1,10 @@
+--- a/components/viz/service/BUILD.gn
++++ b/components/viz/service/BUILD.gn
+@@ -301,6 +301,7 @@
+     "//cc/animation",
+     "//cc/base",
+     "//cc/paint",
++    "//components/remote_paint:viz_delivery",
+     "//components/crash/core/common:crash_key",
+     "//components/input",
+     "//components/input:mojom",

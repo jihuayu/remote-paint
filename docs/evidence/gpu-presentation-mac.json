@@ -1,0 +1,204 @@
+{
+  "at": "2026-10-16T15:18:51.033Z",
+  "scope": "Real browser CanvasKit WebGL2 + CPU in main thread and Worker; direct presentation alpha/text/picture cache/resize/context loss, local 960x640 timing probe (not an end-to-end performance claim)",
+  "browser": "155.0.8059.84",
+  "build": "0993ca5685c7d661cd744d018853ce974c55dd8643d6613e7942d37ee7d08701",
+  "main": {
+    "device": {
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+    },
+    "automaticMode": "webgl2-bitmap",
+    "webgpuCompiled": false,
+    "allocation": {
+      "gpuTargets": 3,
+      "cpuTargets": 0,
+      "ckReadbacks": 0,
+      "glReadbacks": 0
+    },
+    "alphaSample": [
+      255,
+      128,
+      0,
+      64
+    ],
+    "textInk": {
+      "pixels": 198,
+      "missing": 0
+    },
+    "comparison": {
+      "differentChannelsOver2": 149,
+      "channels": 2457600,
+      "maxError": 255
+    },
+    "frames": 60,
+    "gpu": {
+      "renderMs": {
+        "p50": 0.10000038146972656,
+        "p95": 0.3000001907348633
+      },
+      "readbackMs": {
+        "p50": 0,
+        "p95": 0
+      },
+      "bitmapMs": {
+        "p50": 0,
+        "p95": 0
+      },
+      "submitMs": {
+        "p50": 0,
+        "p95": 0.10000038146972656
+      },
+      "totalMs": {
+        "p50": 0.10000038146972656,
+        "p95": 0.39999961853027344
+      }
+    },
+    "cpu": {
+      "renderMs": {
+        "p50": 1.3999996185302734,
+        "p95": 1.6999998092651367
+      },
+      "readbackMs": {
+        "p50": 0.3000001907348633,
+        "p95": 0.40000057220458984
+      },
+      "bitmapMs": {
+        "p50": 1,
+        "p95": 1.1000003814697266
+      },
+      "submitMs": {
+        "p50": 1,
+        "p95": 1.1999998092651367
+      },
+      "totalMs": {
+        "p50": 2.6999998092651367,
+        "p95": 3.1999998092651367
+      }
+    },
+    "gpuReadbackBytes": 0,
+    "contextLoss": {
+      "mode": "cpu-bitmap",
+      "frames": 63,
+      "gpuFrames": 62,
+      "cpuFrames": 1,
+      "readbackBytes": 1920000,
+      "totalReadbackBytes": 1920000,
+      "fallbacks": 1,
+      "gpuCacheBytes": 134217728,
+      "device": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+      },
+      "renderMs": 3,
+      "readbackMs": 0.3000001907348633,
+      "bitmapMs": 0.8000001907348633,
+      "submitMs": 0.8000001907348633,
+      "totalMs": 4.100000381469727,
+      "fallbackReason": "WebGL2 context lost"
+    },
+    "unavailableFallback": "cpu-bitmap",
+    "twoDFallback": "cpu-2d",
+    "resize": true,
+    "staleBitmapSuppressed": true
+  },
+  "worker": {
+    "device": {
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+    },
+    "automaticMode": "webgl2-bitmap",
+    "webgpuCompiled": false,
+    "allocation": {
+      "gpuTargets": 3,
+      "cpuTargets": 0,
+      "ckReadbacks": 0,
+      "glReadbacks": 0
+    },
+    "alphaSample": [
+      255,
+      128,
+      0,
+      64
+    ],
+    "textInk": {
+      "pixels": 198,
+      "missing": 0
+    },
+    "comparison": {
+      "differentChannelsOver2": 149,
+      "channels": 2457600,
+      "maxError": 255
+    },
+    "frames": 60,
+    "gpu": {
+      "renderMs": {
+        "p50": 0.10000038146972656,
+        "p95": 0.6999998092651367
+      },
+      "readbackMs": {
+        "p50": 0,
+        "p95": 0
+      },
+      "bitmapMs": {
+        "p50": 0,
+        "p95": 0.09999942779541016
+      },
+      "submitMs": {
+        "p50": 0,
+        "p95": 0.10000038146972656
+      },
+      "totalMs": {
+        "p50": 0.19999980926513672,
+        "p95": 0.6999998092651367
+      }
+    },
+    "cpu": {
+      "renderMs": {
+        "p50": 1.3999996185302734,
+        "p95": 1.6000003814697266
+      },
+      "readbackMs": {
+        "p50": 0.3000001907348633,
+        "p95": 0.40000057220458984
+      },
+      "bitmapMs": {
+        "p50": 1,
+        "p95": 1.2000007629394531
+      },
+      "submitMs": {
+        "p50": 1.0999994277954102,
+        "p95": 1.3000001907348633
+      },
+      "totalMs": {
+        "p50": 2.8000001907348633,
+        "p95": 3.700000762939453
+      }
+    },
+    "gpuReadbackBytes": 0,
+    "contextLoss": {
+      "mode": "cpu-bitmap",
+      "frames": 63,
+      "gpuFrames": 62,
+      "cpuFrames": 1,
+      "readbackBytes": 1920000,
+      "totalReadbackBytes": 1920000,
+      "fallbacks": 1,
+      "gpuCacheBytes": 134217728,
+      "device": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+      },
+      "renderMs": 3.40000057220459,
+      "readbackMs": 0.39999961853027344,
+      "bitmapMs": 0.8000001907348633,
+      "submitMs": 0.8000001907348633,
+      "totalMs": 4.600000381469727,
+      "fallbackReason": "WebGL2 context lost"
+    },
+    "unavailableFallback": "cpu-bitmap",
+    "twoDFallback": "cpu-2d",
+    "resize": true,
+    "staleBitmapSuppressed": true
+  }
+}

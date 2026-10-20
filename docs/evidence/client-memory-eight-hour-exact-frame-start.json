@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-16T20:32:21.082916+00:00",
+  "status": "running-not-accepted",
+  "runId": "8c8f0d4c-1c2f-44f4-918b-926c5e555be8",
+  "startedAt": "2026-10-16T20:31:34.255Z",
+  "targetSeconds": 28800,
+  "workload": {
+    "seconds": 28800,
+    "burst": 400,
+    "intervalMs": 2000,
+    "navigationEvery": 40
+  },
+  "sourceBrowser": "155.0.8059.79",
+  "browserSha256": "496581c3ba5f3df720331157e032141e11316632ea36454425546c9aa46fdfe2",
+  "runtimeFiles": {
+    "headless_command_resources.pak": "8be045eeba9f670fe9e75682f2246ec5ba4d63eae115681b956000558d45e131",
+    "headless_lib_data.pak": "b8bb5c0d480f6e213099cba8423d0cc7db008580d66a14a4158bed6136e2e94d",
+    "headless_lib_strings.pak": "b0246695931d310ade0c1d3b0790cad5c4c37ca40183c0ac52dbed4558938183",
+    "headless_shell": "496581c3ba5f3df720331157e032141e11316632ea36454425546c9aa46fdfe2",
+    "icudtl.dat": "495c45cc7a65562ec461f860c310c6b66e006acd96833f61d1aa31f77fe18cf1",
+    "libEGL.so": "e062ddaf57483979cb83b1e37c75fc708d2b9945b0ce664aaf6d52407b1efb78",
+    "libGLESv2.so": "12f2e07e02ebebfd7d6bec82bf17fb814d6da64e06a0b477a9eef19d77993cbe",
+    "libVkICD_mock_icd.so": "d0032605642b7e0b1887737e7148bb4048b11d65c0da4b83e14f4929b8bca4d5",
+    "libVkLayer_khronos_validation.so": "17c89c4a4452966fd53c8ffc384e8acbaf0f72aad4e93522c23b29ac70c35b1f",
+    "libvk_swiftshader.so": "652ad439bcdeecb8ee4c96d193dbc1148627bf3ba294c1c6bfb6fd836955bfe6",
+    "libvulkan.so.1": "d7316afedac8cc08c8e1cc0045446f6f758854f4ddd095f8d347571dc91f96d8",
+    "package.json": "dff52d6b799f4b6dc7ab2d4af7fe7663d2e8249458ae4aeff2caf420e1d7ae6e",
+    "remote-paint-build.json": "e2913bef49c8e29ae5bc54d031bc369a63687486c236a5e8de7a0733159119c5",
+    "remote-paint-patches.json": "a3f1f91d7f13424680555f52193ee2bbd5724a0e0c5dff1d227c11fa22168782",
+    "snapshot_blob.bin": "724badd42512973fbb4ee97746bc0b0c48c622f09df012f394b783eb174e7fe1",
+    "v8_build_config.json": "e2fcc502272dfb5e4f8f2b36517ee514cbe3304f44531f2b76c079e9ff7432a4",
+    "v8_features.json": "c147a301d0c610c55e4fa151aece0f76db04baebd595646dfcc583194ee2a294",
+    "vk_swiftshader_icd.json": "c9eef28b6b984fec220ef0abfecc40b502d46946706e47bfe97707027cb818bd"
+  },
+  "dependenciesFrozen": true,
+  "sourceFileCount": 607,
+  "frozenManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-exact-frame/frozen-version.json",
+  "frozenManifestSha256": "34aec87d699343356ed185e18e8d6110083d38ad89fa794b5ad26bb93f8f2a89",
+  "results": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-exact-frame",
+  "currentSample": {
+    "status": "running",
+    "elapsedSeconds": 1.5530760000000001,
+    "cycle": 0,
+    "navigations": 0,
+    "resizes": 0,
+    "inputs": 0
+  },
+  "previousRun": "Failed run 6b9d3076-fdb9-4cdb-bfe0-bfeaea27b8c7 remains recorded separately; this run has not passed eight-hour acceptance."
+}

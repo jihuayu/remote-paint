@@ -1,0 +1,5173 @@
+{
+  "at": "2026-10-17T06:05:21.314570+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Gateway retained config moves original admitted RPC graph with capacity-based final lease;64KiB registry/16KiB route/64MiB per-peer container and scratch before construction,default512MiB. Real storage/aliases keep credit through reset/stop;existing admitted capture remains ready while new peer can be denied. Exact resource delivery plan resets between resource groups and uses supported raw packets for metadata-dense sections while preserving normal chunk reuse;previous data-class WS write allowance already covers raw format. Parser/payload/library/DNS/thread runtime/VM/native/OS/RSS/fullSession remain outside. All41+N1 remain7complete/12partial/22pending.",
+  "baseline": {
+    "at": "2026-10-17T05:28:08.351986+00:00",
+    "status": "measured",
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-baseline.log",
+    "measurements": [
+      "gateway-config-before: dense=false live=144687 requested_peak=144687 retained_after_rpc_scope=true",
+      "gateway-config-before: dense=true live=141615 requested_peak=141615 retained_after_rpc_scope=true",
+      "gateway-order-before: passes=64 resources=256 live=4096 requested_peak=22560",
+      "gateway-containers-before: previous_chunks=32768 frame_chunk_bound=133376 known_chunks=166144 known_capacity=229376 pending_capacity=229376 packet_len=133635 packet_capacity=262144 message_size=56 live=36602941 requested_peak=43515984"
+    ],
+    "scope": "Original actual Gateway::start(config.clone) and resource_order;actual std HashSet/VecDeque/Flight/Message/stats types under conservative simultaneous valid upper bounds. Caller IDs/resources/static payloads prebuilt and held. Requested layouts,not RSS or full workload throughput. 133376 frame-chunk bound includes256resource*513sections plus64MiB/32KiB;known may overshoot32768 by that whole frame before reset."
+  },
+  "layout": {
+    "mac": [
+      "gateway-start-after: live=13000 requested_peak=13000 reservation=3867086 config_pointer_preserved=true",
+      "gateway-config-capacity: case=0 requested_peak=260338 reservation=3267842",
+      "gateway-config-capacity: case=1 requested_peak=2955156 reservation=6240084",
+      "gateway-config-capacity: case=2 requested_peak=360637 reservation=547852",
+      "gateway-config-after-move: requested_peak=0 retained_graph_reservation=7732900 original_pointer=true",
+      "gateway-delivery-choice: dense_chunks=513 raw_bytes=8252 manifest_bytes=45030 normal_bytes=2097152 normal_chunks=64 warm_bytes=13966",
+      "gateway-state-after: known_chunks=166144 known_capacity=229376 pending_capacity=229376 packet_len=133635 packet_capacity=262144 message_size=56 live=36602941 requested_peak=43515984 reservation=67108864"
+    ],
+    "linux": [
+      "gateway-start-after: live=12976 requested_peak=12976 reservation=3867086 config_pointer_preserved=true",
+      "gateway-config-after-move: requested_peak=0 retained_graph_reservation=7732900 original_pointer=true",
+      "gateway-config-capacity: case=0 requested_peak=260338 reservation=3267842",
+      "gateway-config-capacity: case=1 requested_peak=2955156 reservation=6240084",
+      "gateway-config-capacity: case=2 requested_peak=360637 reservation=547852",
+      "gateway-delivery-choice: dense_chunks=513 raw_bytes=8252 manifest_bytes=45030 normal_bytes=2097152 normal_chunks=64 warm_bytes=13966",
+      "gateway-state-after: known_chunks=166144 known_capacity=229376 pending_capacity=229376 packet_len=133635 packet_capacity=262144 message_size=56 live=36602941 requested_peak=43515984 reservation=67108864"
+    ]
+  },
+  "ownership": {
+    "defaultBytes": 536870912,
+    "environment": "REMOTE_PAINT_GATEWAY_STATE_BYTES",
+    "range": "1MiB..2GiB",
+    "registryBytes": 65536,
+    "routeBytes": 16384,
+    "peerBytes": 67108864,
+    "frameChunkUpperBound": 133376,
+    "knownChunkUpperBound": 166144,
+    "config": "Original admitted RPC Value moves without clone;recursive capacity-based allowance precedes move and retained fields precede final credit. Unknown fields preserved.",
+    "lifetime": "Config survives until final Gateway alias,including a live partial HTTP route after stop. Per-peer storage and retained capacities remain charged for entire serve_data;reset does not return their credit. Routes/registry cover outer lifecycle metadata;existing command/payload/packet/parser/library owners remain separate.",
+    "readiness": "Fixed reservations already cover future bounded container growth. ready stays true for existing admitted state;canAdmitPeer describes byte room for another route+peer only,independent of protocol four-viewer ceiling.",
+    "scopeNote": "Requested allocator-layout allowance,not whole heap/allocator rounding/stack/thread runtime/DNS/OS/RSS/Session."
+  },
+  "delivery": {
+    "reason": "256ranges can produce513sections per resource;64MiB/32KiB alone is not a valid chunk-count bound.",
+    "behavior": "Plan exact emitted bytes and reset chunk cache at resource boundaries within frame before crossing existing32768entry/64MiB thresholds. Existing raw format selected when manifest is larger or at least64KiB of current compact chunk-index estimate exceeds raw payload;normal small and large chunk reuse preserved.",
+    "denseFixture": {
+      "at": "2026-10-17T06:03:44.252Z",
+      "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+      "status": "passed",
+      "scope": "Actual existing Rust256resources*256asset ranges,actual compact ClientMemory+AssetCache with browser-equivalent exact message ArrayBuffers and scene commit gate;synthetic SKP-header payload integrity,not decoded pixels.",
+      "progress": {
+        "chunks": 0,
+        "manifests": 0,
+        "resets": 0,
+        "commits": 1,
+        "missing": [],
+        "rawResources": 256
+      },
+      "errors": [],
+      "cacheStats": {
+        "receivedChunks": 0,
+        "receivedBytes": 0,
+        "fontBytes": 0,
+        "imageBytes": 0,
+        "reusedBytes": 0,
+        "evictions": 0,
+        "missingManifests": 0
+      },
+      "memory": {
+        "profile": "compact",
+        "decodeAdmission": "not-negotiated",
+        "limits": {
+          "profile": "compact",
+          "total": 671088640,
+          "js": 201326592,
+          "wasm": 268435456,
+          "gpu": 134217728,
+          "render": 100663296,
+          "pictures": 16777216,
+          "rasters": 16777216,
+          "chunks": 67108864,
+          "raw": 67108864,
+          "receive": 33554432,
+          "decodeCache": 8388608,
+          "gpuCache": 67108864
+        },
+        "categories": {
+          "raw": 2112512,
+          "sceneMetadata": 577294,
+          "jsIndexEstimate": 287616
+        },
+        "domains": {
+          "js": 2977422,
+          "wasm": 0,
+          "gpu": 0,
+          "browser": 0
+        },
+        "jsBufferBytes": 2112512,
+        "referencedJsBytes": 2112512,
+        "jsIndexEstimateBytes": 287616,
+        "ledgerIndexEstimateBytes": 156288,
+        "ownerMetadataBytes": 131328,
+        "decodeHeadroomBytes": 0,
+        "renderBytes": 0,
+        "residentEstimate": 2977422,
+        "retiredWasmBytes": 0,
+        "retiredArenaCount": 0,
+        "owners": 257,
+        "buffers": 256,
+        "observed": {
+          "wasmHeapBytes": 0,
+          "decodeCacheBytes": 0,
+          "gpuCacheBytes": null,
+          "gpuUsageSource": "unavailable"
+        },
+        "stats": {
+          "pressureEvents": 0,
+          "failures": 0,
+          "trims": 0,
+          "peakResidentEstimate": 3190414,
+          "peakJsBufferBytes": 2112512,
+          "peakJsIndexEstimateBytes": 500608,
+          "retiredArenas": 0,
+          "collectedArenas": 0
+        },
+        "accounting": "ArrayBuffers exact/deduplicated; retained scenes/pass copies and cache/ledger JS metadata estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; transient parser/VM/driver/process overhead not fully covered"
+      },
+      "brokerBudget": {
+        "allocations": 263936,
+        "bytes": 77580032,
+        "commands": {
+          "close": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 0,
+            "ready": true,
+            "scope": "outgoing-command-close"
+          },
+          "closeSlot": "one priority slot per mailbox",
+          "mailboxReservation": 8192,
+          "maximumMessage": 32768,
+          "normal": {
+            "allocations": 2,
+            "bytes": 16384,
+            "denied": 0,
+            "headroom": 8388608,
+            "limit": 33554432,
+            "peak": 16384,
+            "ready": true,
+            "scope": "outgoing-command-packets"
+          },
+          "normalSlots": 64,
+          "ready": true,
+          "scope": "outgoing-command-pool",
+          "tungsteniteCopies": "outside command owner"
+        },
+        "denied": 0,
+        "gatewayPackets": {
+          "cacheCapacity": 128,
+          "cacheMetadataBytes": 65536,
+          "control": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 4272,
+            "ready": true,
+            "scope": "gateway-packet-control"
+          },
+          "data": {
+            "allocations": 1,
+            "bytes": 65536,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "peak": 190754,
+            "ready": true,
+            "scope": "gateway-packet-data"
+          },
+          "maximumScene": 262144,
+          "ready": true,
+          "scope": "gateway-packet-pool",
+          "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+        },
+        "gatewayState": {
+          "allocations": 4,
+          "available": 469599316,
+          "bytes": 67271596,
+          "canAdmitPeer": true,
+          "config": {
+            "bytes": 80812,
+            "owners": 1
+          },
+          "denied": 0,
+          "frameChunkUpperBound": 133376,
+          "headroom": 0,
+          "knownChunkUpperBound": 166144,
+          "limit": 536870912,
+          "peak": 67271596,
+          "peer": {
+            "bytes": 67108864,
+            "owners": 1
+          },
+          "peerBytes": 67108864,
+          "ready": true,
+          "registry": {
+            "bytes": 65536,
+            "owners": 1
+          },
+          "registryBytes": 65536,
+          "route": {
+            "bytes": 16384,
+            "owners": 1
+          },
+          "routeBytes": 16384,
+          "scope": "gateway-state-pool",
+          "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+        },
+        "headroom": 335544320,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 0,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 805306368,
+        "output": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 12642,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 182612,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "peak": 77580032,
+        "ready": true,
+        "retiredGatewayDeltas": 0,
+        "retiredSnapshots": 0,
+        "rpcInput": {
+          "control": {
+            "allocations": 2,
+            "bytes": 135032,
+            "denied": 0,
+            "headroom": 2097152,
+            "limit": 4194304,
+            "peak": 151835,
+            "ready": true,
+            "scope": "rpc-control-input"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 268435456,
+            "limit": 536870912,
+            "peak": 390151193,
+            "ready": true,
+            "scope": "rpc-data-input"
+          },
+          "framingBytes": 65536,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-input-pool"
+        },
+        "scope": "resource-allocation-pool",
+        "snapshots": {
+          "allocations": 2,
+          "bytes": 13089198,
+          "denied": 0,
+          "headroom": 67108864,
+          "limit": 268435456,
+          "peak": 39334154,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "websocketBacking": {
+          "allocations": 2,
+          "bytes": 52625408,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 0,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 134217728,
+          "limit": 536870912,
+          "peak": 54722560,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "websocketJson": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 33554432,
+          "limit": 134217728,
+          "maximumMessage": 32768,
+          "peak": 75172,
+          "rawSocketBuffers": "outside parsed JSON owner",
+          "ready": true,
+          "scope": "websocket-parsed-json-pool"
+        },
+        "nodeRequests": {
+          "scope": "node-broker-requests",
+          "dataBytes": 0,
+          "controlBytes": 5092,
+          "dataLimit": 536870912,
+          "controlLimit": 4194304,
+          "peakDataBytes": 203033081,
+          "peakControlBytes": 14847,
+          "owners": 1,
+          "dataOwners": 0,
+          "ownerLimit": 64,
+          "dataOwnerLimit": 48,
+          "denied": 0,
+          "ready": true,
+          "retainedEstimate": 5092,
+          "serializationEstimate": 0,
+          "packetBackingBytes": 0
+        },
+        "nodeResponses": {
+          "scope": "node-broker-response-transients",
+          "dataBytes": 0,
+          "controlBytes": 129304,
+          "dataLimit": 805306368,
+          "controlLimit": 8388608,
+          "peakDataBytes": 5928944,
+          "peakControlBytes": 129304,
+          "owners": 1,
+          "packetReservedBytes": 3624,
+          "privatePacketBackingBytes": 3624,
+          "parseDeliveryEstimate": 124656,
+          "receivedBackingBytes": 12076,
+          "peakReceivedBackingBytes": 73984,
+          "receivedBackingLimit": 2097152,
+          "denied": 0,
+          "ready": true,
+          "applicationGraph": "outside this transient owner after delivery",
+          "nativeStreamAndVm": "not covered",
+          "packets": 7,
+          "deniedPackets": 0,
+          "privateAllocations": 7,
+          "copiedBodyBytes": 182540,
+          "receivedChunks": 10,
+          "frameBytesRemaining": 0,
+          "draining": false
+        }
+      }
+    },
+    "syntheticScope": "Hash/byte-integrity and real ClientMemory/AssetCache/FrameCommit only;synthetic SKP headers are not decoded pixel proof. Real native pixel gates are separate.",
+    "beforeProbeCaveat": "Nodews shared Buffer slices caused misleading backing-buffer pressure;corrected exact-message Uint8Array probe on old9d timed out at original15s. No exact old browser cache-count failure is claimed. ClientMemory.totals repeated full scans remain a separate performance finding.",
+    "nextClientMemoryAudit": {
+      "at": "2026-10-17T06:01:14.085870+00:00",
+      "status": "read-only next audit;unresolved performance finding",
+      "source": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/protocol/client-memory.mjs",
+      "sha256": "4cc4c66868030de49ca919d7b24e7a4dfe354fb6a9ba2f4b4fba8e7370c0ed55",
+      "finding": "ClientMemory.add/resize/split calls check->totals,which scans every live entry and unique buffer. Repeated chunk addition can become quadratic even with byte/owner hard limits. New Gateway dense-section raw choice avoids the256*513 fixture but is not a general ClientMemory performance fix.",
+      "evidence": [
+        "gateway-segment-browser-buffers-before.log",
+        "gateway-segment-after-state-v1.log"
+      ],
+      "boundary": "Original Nodews shared Buffer backing produced a separate pressure artifact;only exact Uint8Array.from(message) probe models browser ArrayBuffers. Old exact-buffer broker timed out at original15s;no exact original cache-count failure proven.",
+      "tasks": [
+        "Measure actual unchanged totals/check workload at bounded realistic chunk/alias counts,compare identical inputs and totals across add/release/resize/split/failure/trimming.",
+        "Implement incremental category/domain/exact-buffer/metadata counters only after Gateway checkpoint is accepted,with rollback invariants and trimmer reentrancy.",
+        "Keep compact limits and deadlines,show equivalent full snapshots/peaks/failure semantics;real native/assets/8h remain separate acceptance."
+      ],
+      "preserve": "No current runtime change or widened gate;no commit/push/subagents/cache cleanup."
+    }
+  },
+  "rustMac": {
+    "passed": 109,
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-rust-final-v2.log"
+  },
+  "rustLinux": {
+    "at": "2026-10-17T05:48:03.362257+00:00",
+    "status": "passed",
+    "tests": 109,
+    "target": "aarch64-unknown-linux-gnu",
+    "binary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-linux-tests-v2",
+    "sha256": "800d8e043bfdf081e663de2bd5e7e3a1d77148163088e55fe4d341ddd4efc76b",
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-rust-linux-v2.log",
+    "exitCode": 0
+  },
+  "node": {
+    "passed": 178,
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-js-tests.log"
+  },
+  "functionalRegressions": {
+    "at": "2026-10-17T05:59:44.022369+00:00",
+    "tests": [
+      {
+        "name": "verify-broker",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-broker.log"
+      },
+      {
+        "name": "verify-broker-viz",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-broker-viz.log"
+      },
+      {
+        "name": "verify-broker-resources",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-broker-resources.log"
+      },
+      {
+        "name": "verify-broker-gateway",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-broker-gateway.log"
+      },
+      {
+        "name": "verify-broker-tiles",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-broker-tiles.log"
+      },
+      {
+        "name": "verify-frame-window",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-frame-window.log"
+      },
+      {
+        "name": "verify-native",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-native.log"
+      },
+      {
+        "name": "verify-input",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-input.log"
+      },
+      {
+        "name": "verify-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-live.log"
+      },
+      {
+        "name": "verify-resource-memory",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-resource-memory.log"
+      },
+      {
+        "name": "verify-source-close",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-source-close.log"
+      },
+      {
+        "name": "verify-viewer-lifecycle",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-viewer-lifecycle.log"
+      },
+      {
+        "name": "verify-webgl-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-webgl-live.log"
+      },
+      {
+        "name": "verify-broker-cache-lru",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-broker-cache-lru.log"
+      },
+      {
+        "name": "verify-broker-mapper-transaction",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-broker-mapper-transaction.log"
+      },
+      {
+        "name": "verify-large-native-cache",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-large-native-cache.log"
+      },
+      {
+        "name": "verify-resource-pool",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-resource-pool.log"
+      },
+      {
+        "name": "verify-source-resource-pressure",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-source-resource-pressure.log"
+      },
+      {
+        "name": "verify-viz-input-pool",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-viz-input-pool.log"
+      },
+      {
+        "name": "verify-source-input-pressure",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-source-input-pressure.log"
+      },
+      {
+        "name": "verify-node-request-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-node-request-budget.log"
+      },
+      {
+        "name": "verify-control-channel",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-control-channel.log"
+      },
+      {
+        "name": "verify-control-priority",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-control-priority.log"
+      },
+      {
+        "name": "verify-input-feedback",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-input-feedback.log"
+      },
+      {
+        "name": "verify-worker-control",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-worker-control.log"
+      },
+      {
+        "name": "verify-streaming-startup",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-streaming-startup.log"
+      },
+      {
+        "name": "verify-page-activity",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-page-activity.log"
+      },
+      {
+        "name": "verify-node-request-lifetime",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-node-request-lifetime.log"
+      },
+      {
+        "name": "verify-memory-diagnostics",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-memory-diagnostics.log"
+      },
+      {
+        "name": "verify-rpc-input",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-rpc-input.log"
+      },
+      {
+        "name": "verify-viz-fault-pairing",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-viz-fault-pairing.log"
+      },
+      {
+        "name": "verify-node-response-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-node-response-budget.log"
+      },
+      {
+        "name": "verify-node-response-contract",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-node-response-contract.log"
+      },
+      {
+        "name": "verify-node-response-lifetime",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-node-response-lifetime.log"
+      },
+      {
+        "name": "verify-snapshot-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-snapshot-budget.log"
+      },
+      {
+        "name": "verify-rpc-output",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-rpc-output.log"
+      },
+      {
+        "name": "verify-node-stream-close",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-node-stream-close.log"
+      },
+      {
+        "name": "verify-websocket-json-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-websocket-json-budget.log"
+      },
+      {
+        "name": "verify-command-queue",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-command-queue.log"
+      },
+      {
+        "name": "verify-websocket-backing",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-websocket-backing.log"
+      },
+      {
+        "name": "verify-gateway-packets",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-gateway-packets.log"
+      },
+      {
+        "name": "verify-gateway-state",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-gateway-state.log"
+      },
+      {
+        "name": "verify-gateway-segmented",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-gateway-segmented.log"
+      },
+      {
+        "name": "verify-gateway-state-source",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-gateway-state-source.log"
+      },
+      {
+        "name": "verify-native-asset-cache",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-v4-verify-native-asset-cache.log"
+      }
+    ],
+    "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+    "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-checkpoint-version-v4.json",
+    "status": "passed"
+  },
+  "canonicalSmoke": {
+    "at": "2026-10-17T06:04:07.939951+00:00",
+    "source": "Live /project validated Gateway state/container and delivery candidate;109Mac/109LinuxRust178JS45frozenLinux;isolated artifacts",
+    "tests": [
+      {
+        "name": "verify-broker",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-broker.log"
+      },
+      {
+        "name": "verify-broker-viz",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-broker-viz.log"
+      },
+      {
+        "name": "verify-control-channel",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-control-channel.log"
+      },
+      {
+        "name": "verify-viz-fault-pairing",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-viz-fault-pairing.log"
+      },
+      {
+        "name": "verify-node-response-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-node-response-budget.log"
+      },
+      {
+        "name": "verify-resource-memory",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-resource-memory.log"
+      },
+      {
+        "name": "verify-source-close",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-source-close.log"
+      },
+      {
+        "name": "verify-memory-diagnostics",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-memory-diagnostics.log"
+      },
+      {
+        "name": "verify-node-request-lifetime",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-node-request-lifetime.log"
+      },
+      {
+        "name": "verify-node-response-lifetime",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-node-response-lifetime.log"
+      },
+      {
+        "name": "verify-rpc-output",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-rpc-output.log"
+      },
+      {
+        "name": "verify-node-stream-close",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-node-stream-close.log"
+      },
+      {
+        "name": "verify-control-events-dense",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-control-events-dense.log"
+      },
+      {
+        "name": "verify-websocket-json-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-websocket-json-budget.log"
+      },
+      {
+        "name": "verify-command-queue",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-command-queue.log"
+      },
+      {
+        "name": "verify-websocket-backing",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-websocket-backing.log"
+      },
+      {
+        "name": "verify-gateway-packets",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-gateway-packets.log"
+      },
+      {
+        "name": "verify-gateway-state",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-gateway-state.log"
+      },
+      {
+        "name": "verify-gateway-segmented",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-gateway-segmented.log"
+      },
+      {
+        "name": "verify-gateway-state-source",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-gateway-state-source.log"
+      },
+      {
+        "name": "verify-native-asset-cache",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-v1-verify-native-asset-cache.log"
+      }
+    ],
+    "status": "passed"
+  },
+  "actual": {
+    "state": {
+      "at": "2026-10-17T06:03:43.693Z",
+      "status": "passed",
+      "scope": "Actual Linux Gateway config transfer,registry/route/64MiB peer-container pre-admission.1MiB config and authenticated peer rejection,failed bind cleanup,128MiB one-peer continued input/frame with no room for another peer,reset keeps live storage credit and stop keeps config until actual half-HTTP route drops. Default four viewers(two paired) preserve exact scenes;all state owners return only at actual final drop. Conservative requested-layout allowance,not parser/payload/library/thread/DNS/OS/RSS/fullSession.",
+      "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+      "variants": [
+        {
+          "mode": "quota",
+          "configDeniedBeforeRetain": true,
+          "callerConfigIntact": true,
+          "failedBindReturnedAllOwners": true,
+          "newPeerStatus": 503,
+          "wrongOriginStatus": 403,
+          "rejected": {
+            "allocations": 0,
+            "available": 1048576,
+            "bytes": 0,
+            "canAdmitPeer": false,
+            "config": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "denied": 1,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 1048576,
+            "peak": 0,
+            "peer": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "badBind": {
+            "allocations": 0,
+            "available": 1048576,
+            "bytes": 0,
+            "canAdmitPeer": false,
+            "config": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "denied": 1,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 1048576,
+            "peak": 146374,
+            "peer": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "held": {
+            "allocations": 2,
+            "available": 902202,
+            "bytes": 146374,
+            "canAdmitPeer": false,
+            "config": {
+              "bytes": 80838,
+              "owners": 1
+            },
+            "denied": 2,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 1048576,
+            "peak": 162758,
+            "peer": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "final": {
+            "allocations": 0,
+            "available": 1048576,
+            "bytes": 0,
+            "canAdmitPeer": false,
+            "config": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "denied": 2,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 1048576,
+            "peak": 162758,
+            "peer": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "pidUnchanged": true
+        },
+        {
+          "mode": "one-peer",
+          "secondPeerDenied": 503,
+          "existingInputAndFramePreserved": true,
+          "held": {
+            "allocations": 5,
+            "available": 63725100,
+            "bytes": 70492628,
+            "canAdmitPeer": false,
+            "config": {
+              "bytes": 3285460,
+              "owners": 1
+            },
+            "denied": 1,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 134217728,
+            "peak": 70509012,
+            "peer": {
+              "bytes": 67108864,
+              "owners": 1
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 32768,
+              "owners": 2
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "reset": {
+            "allocations": 5,
+            "available": 63725100,
+            "bytes": 70492628,
+            "canAdmitPeer": false,
+            "config": {
+              "bytes": 3285460,
+              "owners": 1
+            },
+            "denied": 1,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 134217728,
+            "peak": 70509012,
+            "peer": {
+              "bytes": 67108864,
+              "owners": 1
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 32768,
+              "owners": 2
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "closed": {
+            "allocations": 2,
+            "available": 130866732,
+            "bytes": 3350996,
+            "canAdmitPeer": true,
+            "config": {
+              "bytes": 3285460,
+              "owners": 1
+            },
+            "denied": 1,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 134217728,
+            "peak": 70509012,
+            "peer": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "stoppedWithLiveRoute": {
+            "allocations": 3,
+            "available": 130850348,
+            "bytes": 3367380,
+            "canAdmitPeer": true,
+            "config": {
+              "bytes": 3285460,
+              "owners": 1
+            },
+            "denied": 1,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 134217728,
+            "peak": 70509012,
+            "peer": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 16384,
+              "owners": 1
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "final": {
+            "allocations": 0,
+            "available": 134217728,
+            "bytes": 0,
+            "canAdmitPeer": true,
+            "config": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "denied": 1,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 134217728,
+            "peak": 70509012,
+            "peer": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "creditKeptUntilLastRoute": true,
+          "pidUnchanged": true
+        },
+        {
+          "mode": "default-four",
+          "viewers": 4,
+          "paired": 2,
+          "commits": 8,
+          "fifthPeerStatus": 403,
+          "held": {
+            "allocations": 12,
+            "available": 264986156,
+            "bytes": 271884756,
+            "canAdmitPeer": true,
+            "config": {
+              "bytes": 3285460,
+              "owners": 1
+            },
+            "denied": 0,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 536870912,
+            "peak": 271901140,
+            "peer": {
+              "bytes": 268435456,
+              "owners": 4
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 98304,
+              "owners": 6
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "final": {
+            "allocations": 0,
+            "available": 536870912,
+            "bytes": 0,
+            "canAdmitPeer": true,
+            "config": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "denied": 0,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 536870912,
+            "peak": 271901140,
+            "peer": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 0,
+              "owners": 0
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "pidUnchanged": true
+        }
+      ],
+      "cleanup": [
+        {
+          "mode": "quota",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "one-peer",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "default-four",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      ]
+    },
+    "source": {
+      "at": "2026-10-17T06:03:45.210Z",
+      "status": "passed",
+      "scope": "Actual Linux native Chromium/Rust128px PNG Source after image readiness and five page-clock warmup frames under explicit128MiB Gateway state pool. One admitted peer continues native captures/page clock and exact CPU CanvasKit pixel while a second peer getsHTTP503;fixed already-admitted container allowance does not pause existing capture. Small2D-canvas fixture failure is independently preserved and unresolved. No allSession/RSS/VM/DNS/OS or eight-hour acceptance.",
+      "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+      "before": {
+        "allocations": 11,
+        "bytes": 4782,
+        "commands": {
+          "close": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 0,
+            "ready": true,
+            "scope": "outgoing-command-close"
+          },
+          "closeSlot": "one priority slot per mailbox",
+          "mailboxReservation": 8192,
+          "maximumMessage": 32768,
+          "normal": {
+            "allocations": 2,
+            "bytes": 16384,
+            "denied": 0,
+            "headroom": 8388608,
+            "limit": 33554432,
+            "peak": 16384,
+            "ready": true,
+            "scope": "outgoing-command-packets"
+          },
+          "normalSlots": 64,
+          "ready": true,
+          "scope": "outgoing-command-pool",
+          "tungsteniteCopies": "outside command owner"
+        },
+        "denied": 0,
+        "gatewayPackets": {
+          "cacheCapacity": 128,
+          "cacheMetadataBytes": 65536,
+          "control": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 4272,
+            "ready": true,
+            "scope": "gateway-packet-control"
+          },
+          "data": {
+            "allocations": 3,
+            "bytes": 68412,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "peak": 75752,
+            "ready": true,
+            "scope": "gateway-packet-data"
+          },
+          "maximumScene": 262144,
+          "ready": true,
+          "scope": "gateway-packet-pool",
+          "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+        },
+        "gatewayState": {
+          "allocations": 4,
+          "available": 66936292,
+          "bytes": 67281436,
+          "canAdmitPeer": false,
+          "config": {
+            "bytes": 90652,
+            "owners": 1
+          },
+          "denied": 0,
+          "frameChunkUpperBound": 133376,
+          "headroom": 0,
+          "knownChunkUpperBound": 166144,
+          "limit": 134217728,
+          "peak": 67281436,
+          "peer": {
+            "bytes": 67108864,
+            "owners": 1
+          },
+          "peerBytes": 67108864,
+          "ready": true,
+          "registry": {
+            "bytes": 65536,
+            "owners": 1
+          },
+          "registryBytes": 65536,
+          "route": {
+            "bytes": 16384,
+            "owners": 1
+          },
+          "routeBytes": 16384,
+          "scope": "gateway-state-pool",
+          "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+        },
+        "headroom": 335544320,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 203235,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 805306368,
+        "output": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 12652,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 6339,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "peak": 4782,
+        "ready": true,
+        "retiredGatewayDeltas": 0,
+        "retiredSnapshots": 2,
+        "rpcInput": {
+          "control": {
+            "allocations": 2,
+            "bytes": 135036,
+            "denied": 0,
+            "headroom": 2097152,
+            "limit": 4194304,
+            "peak": 162196,
+            "ready": true,
+            "scope": "rpc-control-input"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 268435456,
+            "limit": 536870912,
+            "peak": 207308,
+            "ready": true,
+            "scope": "rpc-data-input"
+          },
+          "framingBytes": 65536,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-input-pool"
+        },
+        "scope": "resource-allocation-pool",
+        "snapshots": {
+          "allocations": 2,
+          "bytes": 616608,
+          "denied": 0,
+          "headroom": 67108864,
+          "limit": 268435456,
+          "peak": 2551884,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "websocketBacking": {
+          "allocations": 2,
+          "bytes": 52625408,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 0,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 134217728,
+          "limit": 536870912,
+          "peak": 54722560,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "websocketJson": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 33554432,
+          "limit": 134217728,
+          "maximumMessage": 32768,
+          "peak": 74556,
+          "rawSocketBuffers": "outside parsed JSON owner",
+          "ready": true,
+          "scope": "websocket-parsed-json-pool"
+        },
+        "nodeRequests": {
+          "scope": "node-broker-requests",
+          "dataBytes": 0,
+          "controlBytes": 6123,
+          "dataLimit": 536870912,
+          "controlLimit": 4194304,
+          "peakDataBytes": 76760,
+          "peakControlBytes": 20440,
+          "owners": 1,
+          "dataOwners": 0,
+          "ownerLimit": 64,
+          "dataOwnerLimit": 48,
+          "denied": 0,
+          "ready": true,
+          "retainedEstimate": 5092,
+          "serializationEstimate": 996,
+          "packetBackingBytes": 35
+        },
+        "nodeResponses": {
+          "scope": "node-broker-response-transients",
+          "dataBytes": 0,
+          "controlBytes": 129199,
+          "dataLimit": 805306368,
+          "controlLimit": 8388608,
+          "peakDataBytes": 75065,
+          "peakControlBytes": 129199,
+          "owners": 1,
+          "packetReservedBytes": 3609,
+          "privatePacketBackingBytes": 3609,
+          "parseDeliveryEstimate": 124566,
+          "receivedBackingBytes": 12061,
+          "peakReceivedBackingBytes": 12061,
+          "receivedBackingLimit": 2097152,
+          "denied": 0,
+          "ready": true,
+          "applicationGraph": "outside this transient owner after delivery",
+          "nativeStreamAndVm": "not covered",
+          "packets": 19,
+          "deniedPackets": 0,
+          "privateAllocations": 19,
+          "copiedBodyBytes": 10925,
+          "receivedChunks": 19,
+          "frameBytesRemaining": 0,
+          "draining": false
+        }
+      },
+      "after": {
+        "allocations": 11,
+        "bytes": 4782,
+        "commands": {
+          "close": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 0,
+            "ready": true,
+            "scope": "outgoing-command-close"
+          },
+          "closeSlot": "one priority slot per mailbox",
+          "mailboxReservation": 8192,
+          "maximumMessage": 32768,
+          "normal": {
+            "allocations": 2,
+            "bytes": 16384,
+            "denied": 0,
+            "headroom": 8388608,
+            "limit": 33554432,
+            "peak": 16384,
+            "ready": true,
+            "scope": "outgoing-command-packets"
+          },
+          "normalSlots": 64,
+          "ready": true,
+          "scope": "outgoing-command-pool",
+          "tungsteniteCopies": "outside command owner"
+        },
+        "denied": 0,
+        "gatewayPackets": {
+          "cacheCapacity": 128,
+          "cacheMetadataBytes": 65536,
+          "control": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 4272,
+            "ready": true,
+            "scope": "gateway-packet-control"
+          },
+          "data": {
+            "allocations": 6,
+            "bytes": 72726,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "peak": 80067,
+            "ready": true,
+            "scope": "gateway-packet-data"
+          },
+          "maximumScene": 262144,
+          "ready": true,
+          "scope": "gateway-packet-pool",
+          "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+        },
+        "gatewayState": {
+          "allocations": 4,
+          "available": 66936292,
+          "bytes": 67281436,
+          "canAdmitPeer": false,
+          "config": {
+            "bytes": 90652,
+            "owners": 1
+          },
+          "denied": 1,
+          "frameChunkUpperBound": 133376,
+          "headroom": 0,
+          "knownChunkUpperBound": 166144,
+          "limit": 134217728,
+          "peak": 67297820,
+          "peer": {
+            "bytes": 67108864,
+            "owners": 1
+          },
+          "peerBytes": 67108864,
+          "ready": true,
+          "registry": {
+            "bytes": 65536,
+            "owners": 1
+          },
+          "registryBytes": 65536,
+          "route": {
+            "bytes": 16384,
+            "owners": 1
+          },
+          "routeBytes": 16384,
+          "scope": "gateway-state-pool",
+          "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+        },
+        "headroom": 335544320,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 203235,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 805306368,
+        "output": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 16029,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 6339,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "peak": 4782,
+        "ready": true,
+        "retiredGatewayDeltas": 0,
+        "retiredSnapshots": 3,
+        "rpcInput": {
+          "control": {
+            "allocations": 2,
+            "bytes": 135036,
+            "denied": 0,
+            "headroom": 2097152,
+            "limit": 4194304,
+            "peak": 162196,
+            "ready": true,
+            "scope": "rpc-control-input"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 268435456,
+            "limit": 536870912,
+            "peak": 207308,
+            "ready": true,
+            "scope": "rpc-data-input"
+          },
+          "framingBytes": 65536,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-input-pool"
+        },
+        "scope": "resource-allocation-pool",
+        "snapshots": {
+          "allocations": 2,
+          "bytes": 616608,
+          "denied": 0,
+          "headroom": 67108864,
+          "limit": 268435456,
+          "peak": 3159136,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "websocketBacking": {
+          "allocations": 2,
+          "bytes": 52625408,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 0,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 134217728,
+          "limit": 536870912,
+          "peak": 105250816,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "websocketJson": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 33554432,
+          "limit": 134217728,
+          "maximumMessage": 32768,
+          "peak": 74556,
+          "rawSocketBuffers": "outside parsed JSON owner",
+          "ready": true,
+          "scope": "websocket-parsed-json-pool"
+        },
+        "nodeRequests": {
+          "scope": "node-broker-requests",
+          "dataBytes": 0,
+          "controlBytes": 5092,
+          "dataLimit": 536870912,
+          "controlLimit": 4194304,
+          "peakDataBytes": 76760,
+          "peakControlBytes": 20440,
+          "owners": 1,
+          "dataOwners": 0,
+          "ownerLimit": 64,
+          "dataOwnerLimit": 48,
+          "denied": 0,
+          "ready": true,
+          "retainedEstimate": 5092,
+          "serializationEstimate": 0,
+          "packetBackingBytes": 0
+        },
+        "nodeResponses": {
+          "scope": "node-broker-response-transients",
+          "dataBytes": 0,
+          "controlBytes": 129206,
+          "dataLimit": 805306368,
+          "controlLimit": 8388608,
+          "peakDataBytes": 75065,
+          "peakControlBytes": 129206,
+          "owners": 1,
+          "packetReservedBytes": 3610,
+          "privatePacketBackingBytes": 3610,
+          "parseDeliveryEstimate": 124572,
+          "receivedBackingBytes": 12062,
+          "peakReceivedBackingBytes": 12062,
+          "receivedBackingLimit": 2097152,
+          "denied": 0,
+          "ready": true,
+          "applicationGraph": "outside this transient owner after delivery",
+          "nativeStreamAndVm": "not covered",
+          "packets": 35,
+          "deniedPackets": 0,
+          "privateAllocations": 35,
+          "copiedBodyBytes": 21688,
+          "receivedChunks": 35,
+          "frameBytesRemaining": 0,
+          "draining": false
+        }
+      },
+      "frames": 6,
+      "additionalFrames": 3,
+      "additionalCaptures": 3,
+      "ticks": 20,
+      "afterTicks": 26,
+      "pixel": [
+        31,
+        79,
+        191,
+        255
+      ],
+      "pidUnchanged": true
+    },
+    "nativeAssets": {
+      "at": "2026-10-17T06:03:56.007Z",
+      "status": "passed",
+      "scope": "Actual Linux native Chromium/Rust → CPU CanvasKit Worker, 140 noisy PNG replacements with constant source glyphs and per-update visible pixel confirmation. Native cache charge estimates exclude active serializer/IPC pins and physical process/driver overhead; no latency A/B claim. Baseline mode measures the old binary and does not certify new cache budgets or expose encoding ownership, so its frame-level timing cannot establish avoided cold encodings.",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "updates": 140,
+      "encodedImageBytes": 31651030,
+      "elapsedMs": 10842.548031,
+      "first": {
+        "fontBypasses": 0,
+        "fontBytes": 769584,
+        "fontEncodes": 1,
+        "fontEntries": 1,
+        "fontEvictions": 0,
+        "fontPending": 0,
+        "fontShares": 1,
+        "imageBypasses": 0,
+        "imageBytes": 488737,
+        "imageEncodes": 1,
+        "imageEntries": 1,
+        "imageEvictions": 0,
+        "imagePending": 0,
+        "imageShares": 3,
+        "fontCacheHits": 0,
+        "imageCacheHits": 0,
+        "fontEncodingShares": 1,
+        "imageEncodingShares": 3
+      },
+      "last": {
+        "fontBypasses": 0,
+        "fontBytes": 769584,
+        "fontEncodes": 1,
+        "fontEntries": 1,
+        "fontEvictions": 0,
+        "fontPending": 0,
+        "fontShares": 1,
+        "imageBypasses": 0,
+        "imageBytes": 33227628,
+        "imageEncodes": 141,
+        "imageEntries": 68,
+        "imageEvictions": 73,
+        "imagePending": 0,
+        "imageShares": 143,
+        "fontCacheHits": 1,
+        "imageCacheHits": 0,
+        "fontEncodingShares": 0,
+        "imageEncodingShares": 1
+      },
+      "maximum": {
+        "fontBytes": 769584,
+        "imageBytes": 33227870,
+        "fontEntries": 1,
+        "imageEntries": 68
+      },
+      "captureSamples": 165,
+      "errors": []
+    },
+    "canonicalNewGates": {
+      "state": {
+        "at": "2026-10-17T06:04:47.247Z",
+        "status": "passed",
+        "scope": "Actual Linux Gateway config transfer,registry/route/64MiB peer-container pre-admission.1MiB config and authenticated peer rejection,failed bind cleanup,128MiB one-peer continued input/frame with no room for another peer,reset keeps live storage credit and stop keeps config until actual half-HTTP route drops. Default four viewers(two paired) preserve exact scenes;all state owners return only at actual final drop. Conservative requested-layout allowance,not parser/payload/library/thread/DNS/OS/RSS/fullSession.",
+        "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+        "variants": [
+          {
+            "mode": "quota",
+            "configDeniedBeforeRetain": true,
+            "callerConfigIntact": true,
+            "failedBindReturnedAllOwners": true,
+            "newPeerStatus": 503,
+            "wrongOriginStatus": 403,
+            "rejected": {
+              "allocations": 0,
+              "available": 1048576,
+              "bytes": 0,
+              "canAdmitPeer": false,
+              "config": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "denied": 1,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 1048576,
+              "peak": 0,
+              "peer": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "badBind": {
+              "allocations": 0,
+              "available": 1048576,
+              "bytes": 0,
+              "canAdmitPeer": false,
+              "config": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "denied": 1,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 1048576,
+              "peak": 146374,
+              "peer": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "held": {
+              "allocations": 2,
+              "available": 902202,
+              "bytes": 146374,
+              "canAdmitPeer": false,
+              "config": {
+                "bytes": 80838,
+                "owners": 1
+              },
+              "denied": 2,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 1048576,
+              "peak": 162758,
+              "peer": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 65536,
+                "owners": 1
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "final": {
+              "allocations": 0,
+              "available": 1048576,
+              "bytes": 0,
+              "canAdmitPeer": false,
+              "config": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "denied": 2,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 1048576,
+              "peak": 162758,
+              "peer": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "pidUnchanged": true
+          },
+          {
+            "mode": "one-peer",
+            "secondPeerDenied": 503,
+            "existingInputAndFramePreserved": true,
+            "held": {
+              "allocations": 5,
+              "available": 63725100,
+              "bytes": 70492628,
+              "canAdmitPeer": false,
+              "config": {
+                "bytes": 3285460,
+                "owners": 1
+              },
+              "denied": 1,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 134217728,
+              "peak": 70509012,
+              "peer": {
+                "bytes": 67108864,
+                "owners": 1
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 65536,
+                "owners": 1
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 32768,
+                "owners": 2
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "reset": {
+              "allocations": 5,
+              "available": 63725100,
+              "bytes": 70492628,
+              "canAdmitPeer": false,
+              "config": {
+                "bytes": 3285460,
+                "owners": 1
+              },
+              "denied": 1,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 134217728,
+              "peak": 70509012,
+              "peer": {
+                "bytes": 67108864,
+                "owners": 1
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 65536,
+                "owners": 1
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 32768,
+                "owners": 2
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "closed": {
+              "allocations": 2,
+              "available": 130866732,
+              "bytes": 3350996,
+              "canAdmitPeer": true,
+              "config": {
+                "bytes": 3285460,
+                "owners": 1
+              },
+              "denied": 1,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 134217728,
+              "peak": 70509012,
+              "peer": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 65536,
+                "owners": 1
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "stoppedWithLiveRoute": {
+              "allocations": 3,
+              "available": 130850348,
+              "bytes": 3367380,
+              "canAdmitPeer": true,
+              "config": {
+                "bytes": 3285460,
+                "owners": 1
+              },
+              "denied": 1,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 134217728,
+              "peak": 70509012,
+              "peer": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 65536,
+                "owners": 1
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 16384,
+                "owners": 1
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "final": {
+              "allocations": 0,
+              "available": 134217728,
+              "bytes": 0,
+              "canAdmitPeer": true,
+              "config": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "denied": 1,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 134217728,
+              "peak": 70509012,
+              "peer": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "creditKeptUntilLastRoute": true,
+            "pidUnchanged": true
+          },
+          {
+            "mode": "default-four",
+            "viewers": 4,
+            "paired": 2,
+            "commits": 8,
+            "fifthPeerStatus": 403,
+            "held": {
+              "allocations": 12,
+              "available": 264986156,
+              "bytes": 271884756,
+              "canAdmitPeer": true,
+              "config": {
+                "bytes": 3285460,
+                "owners": 1
+              },
+              "denied": 0,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 536870912,
+              "peak": 271901140,
+              "peer": {
+                "bytes": 268435456,
+                "owners": 4
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 65536,
+                "owners": 1
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 98304,
+                "owners": 6
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "final": {
+              "allocations": 0,
+              "available": 536870912,
+              "bytes": 0,
+              "canAdmitPeer": true,
+              "config": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "denied": 0,
+              "frameChunkUpperBound": 133376,
+              "headroom": 0,
+              "knownChunkUpperBound": 166144,
+              "limit": 536870912,
+              "peak": 271901140,
+              "peer": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "peerBytes": 67108864,
+              "ready": true,
+              "registry": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "registryBytes": 65536,
+              "route": {
+                "bytes": 0,
+                "owners": 0
+              },
+              "routeBytes": 16384,
+              "scope": "gateway-state-pool",
+              "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+            },
+            "pidUnchanged": true
+          }
+        ],
+        "cleanup": [
+          {
+            "mode": "quota",
+            "childExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "stdoutBytes": 0,
+            "stderrBytes": 0
+          },
+          {
+            "mode": "one-peer",
+            "childExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "stdoutBytes": 0,
+            "stderrBytes": 0
+          },
+          {
+            "mode": "default-four",
+            "childExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "stdoutBytes": 0,
+            "stderrBytes": 0
+          }
+        ]
+      },
+      "source": {
+        "at": "2026-10-17T06:04:48.761Z",
+        "status": "passed",
+        "scope": "Actual Linux native Chromium/Rust128px PNG Source after image readiness and five page-clock warmup frames under explicit128MiB Gateway state pool. One admitted peer continues native captures/page clock and exact CPU CanvasKit pixel while a second peer getsHTTP503;fixed already-admitted container allowance does not pause existing capture. Small2D-canvas fixture failure is independently preserved and unresolved. No allSession/RSS/VM/DNS/OS or eight-hour acceptance.",
+        "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+        "before": {
+          "allocations": 11,
+          "bytes": 4782,
+          "commands": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 2,
+              "bytes": 16384,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 16384,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "denied": 0,
+          "gatewayPackets": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4272,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 3,
+              "bytes": 68412,
+              "denied": 0,
+              "headroom": 33554432,
+              "limit": 134217728,
+              "peak": 75753,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "gatewayState": {
+            "allocations": 4,
+            "available": 66936292,
+            "bytes": 67281436,
+            "canAdmitPeer": false,
+            "config": {
+              "bytes": 90652,
+              "owners": 1
+            },
+            "denied": 0,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 134217728,
+            "peak": 67281436,
+            "peer": {
+              "bytes": 67108864,
+              "owners": 1
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 16384,
+              "owners": 1
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "headroom": 335544320,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 83886080,
+            "limit": 268435456,
+            "peak": 203747,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 805306368,
+          "output": {
+            "control": {
+              "allocations": 1,
+              "bytes": 8192,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 12652,
+              "ready": true,
+              "scope": "rpc-output-control"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 67108864,
+              "limit": 134217728,
+              "peak": 6337,
+              "ready": true,
+              "scope": "rpc-output-data"
+            },
+            "framingBytes": 8192,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-output-packet-pool"
+          },
+          "peak": 4782,
+          "ready": true,
+          "retiredGatewayDeltas": 0,
+          "retiredSnapshots": 2,
+          "rpcInput": {
+            "control": {
+              "allocations": 2,
+              "bytes": 135036,
+              "denied": 0,
+              "headroom": 2097152,
+              "limit": 4194304,
+              "peak": 162196,
+              "ready": true,
+              "scope": "rpc-control-input"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 268435456,
+              "limit": 536870912,
+              "peak": 207298,
+              "ready": true,
+              "scope": "rpc-data-input"
+            },
+            "framingBytes": 65536,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-input-pool"
+          },
+          "scope": "resource-allocation-pool",
+          "snapshots": {
+            "allocations": 2,
+            "bytes": 616608,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 268435456,
+            "peak": 2551884,
+            "ready": true,
+            "scope": "snapshot-graph-pool"
+          },
+          "websocketBacking": {
+            "allocations": 2,
+            "bytes": 52625408,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 0,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 134217728,
+            "limit": 536870912,
+            "peak": 54722560,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "websocketJson": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "maximumMessage": 32768,
+            "peak": 74556,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          },
+          "nodeRequests": {
+            "scope": "node-broker-requests",
+            "dataBytes": 0,
+            "controlBytes": 6123,
+            "dataLimit": 536870912,
+            "controlLimit": 4194304,
+            "peakDataBytes": 76758,
+            "peakControlBytes": 20440,
+            "owners": 1,
+            "dataOwners": 0,
+            "ownerLimit": 64,
+            "dataOwnerLimit": 48,
+            "denied": 0,
+            "ready": true,
+            "retainedEstimate": 5092,
+            "serializationEstimate": 996,
+            "packetBackingBytes": 35
+          },
+          "nodeResponses": {
+            "scope": "node-broker-response-transients",
+            "dataBytes": 0,
+            "controlBytes": 129199,
+            "dataLimit": 805306368,
+            "controlLimit": 8388608,
+            "peakDataBytes": 75051,
+            "peakControlBytes": 129199,
+            "owners": 1,
+            "packetReservedBytes": 3609,
+            "privatePacketBackingBytes": 3609,
+            "parseDeliveryEstimate": 124566,
+            "receivedBackingBytes": 12061,
+            "peakReceivedBackingBytes": 12061,
+            "receivedBackingLimit": 2097152,
+            "denied": 0,
+            "ready": true,
+            "applicationGraph": "outside this transient owner after delivery",
+            "nativeStreamAndVm": "not covered",
+            "packets": 19,
+            "deniedPackets": 0,
+            "privateAllocations": 19,
+            "copiedBodyBytes": 10924,
+            "receivedChunks": 19,
+            "frameBytesRemaining": 0,
+            "draining": false
+          }
+        },
+        "after": {
+          "allocations": 11,
+          "bytes": 4782,
+          "commands": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 2,
+              "bytes": 16384,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 16384,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "denied": 0,
+          "gatewayPackets": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4272,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 6,
+              "bytes": 72726,
+              "denied": 0,
+              "headroom": 33554432,
+              "limit": 134217728,
+              "peak": 80069,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "gatewayState": {
+            "allocations": 4,
+            "available": 66936292,
+            "bytes": 67281436,
+            "canAdmitPeer": false,
+            "config": {
+              "bytes": 90652,
+              "owners": 1
+            },
+            "denied": 1,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 134217728,
+            "peak": 67297820,
+            "peer": {
+              "bytes": 67108864,
+              "owners": 1
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 16384,
+              "owners": 1
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "headroom": 335544320,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 83886080,
+            "limit": 268435456,
+            "peak": 203747,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 805306368,
+          "output": {
+            "control": {
+              "allocations": 1,
+              "bytes": 8192,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 16029,
+              "ready": true,
+              "scope": "rpc-output-control"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 67108864,
+              "limit": 134217728,
+              "peak": 6337,
+              "ready": true,
+              "scope": "rpc-output-data"
+            },
+            "framingBytes": 8192,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-output-packet-pool"
+          },
+          "peak": 4782,
+          "ready": true,
+          "retiredGatewayDeltas": 0,
+          "retiredSnapshots": 3,
+          "rpcInput": {
+            "control": {
+              "allocations": 2,
+              "bytes": 135036,
+              "denied": 0,
+              "headroom": 2097152,
+              "limit": 4194304,
+              "peak": 162196,
+              "ready": true,
+              "scope": "rpc-control-input"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 268435456,
+              "limit": 536870912,
+              "peak": 207298,
+              "ready": true,
+              "scope": "rpc-data-input"
+            },
+            "framingBytes": 65536,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-input-pool"
+          },
+          "scope": "resource-allocation-pool",
+          "snapshots": {
+            "allocations": 2,
+            "bytes": 616608,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 268435456,
+            "peak": 3159136,
+            "ready": true,
+            "scope": "snapshot-graph-pool"
+          },
+          "websocketBacking": {
+            "allocations": 2,
+            "bytes": 52625408,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 0,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 134217728,
+            "limit": 536870912,
+            "peak": 107347968,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "websocketJson": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "maximumMessage": 32768,
+            "peak": 74556,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          },
+          "nodeRequests": {
+            "scope": "node-broker-requests",
+            "dataBytes": 0,
+            "controlBytes": 6123,
+            "dataLimit": 536870912,
+            "controlLimit": 4194304,
+            "peakDataBytes": 76758,
+            "peakControlBytes": 20440,
+            "owners": 1,
+            "dataOwners": 0,
+            "ownerLimit": 64,
+            "dataOwnerLimit": 48,
+            "denied": 0,
+            "ready": true,
+            "retainedEstimate": 5092,
+            "serializationEstimate": 996,
+            "packetBackingBytes": 35
+          },
+          "nodeResponses": {
+            "scope": "node-broker-response-transients",
+            "dataBytes": 0,
+            "controlBytes": 129206,
+            "dataLimit": 805306368,
+            "controlLimit": 8388608,
+            "peakDataBytes": 75051,
+            "peakControlBytes": 129206,
+            "owners": 1,
+            "packetReservedBytes": 3610,
+            "privatePacketBackingBytes": 3610,
+            "parseDeliveryEstimate": 124572,
+            "receivedBackingBytes": 12062,
+            "peakReceivedBackingBytes": 12062,
+            "receivedBackingLimit": 2097152,
+            "denied": 0,
+            "ready": true,
+            "applicationGraph": "outside this transient owner after delivery",
+            "nativeStreamAndVm": "not covered",
+            "packets": 35,
+            "deniedPackets": 0,
+            "privateAllocations": 35,
+            "copiedBodyBytes": 21702,
+            "receivedChunks": 35,
+            "frameBytesRemaining": 0,
+            "draining": false
+          }
+        },
+        "frames": 6,
+        "additionalFrames": 3,
+        "additionalCaptures": 3,
+        "ticks": 20,
+        "afterTicks": 26,
+        "pixel": [
+          31,
+          79,
+          191,
+          255
+        ],
+        "pidUnchanged": true
+      },
+      "segmented": {
+        "at": "2026-10-17T06:04:47.818Z",
+        "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+        "status": "passed",
+        "scope": "Actual existing Rust256resources*256asset ranges,actual compact ClientMemory+AssetCache with browser-equivalent exact message ArrayBuffers and scene commit gate;synthetic SKP-header payload integrity,not decoded pixels.",
+        "progress": {
+          "chunks": 0,
+          "manifests": 0,
+          "resets": 0,
+          "commits": 1,
+          "missing": [],
+          "rawResources": 256
+        },
+        "errors": [],
+        "cacheStats": {
+          "receivedChunks": 0,
+          "receivedBytes": 0,
+          "fontBytes": 0,
+          "imageBytes": 0,
+          "reusedBytes": 0,
+          "evictions": 0,
+          "missingManifests": 0
+        },
+        "memory": {
+          "profile": "compact",
+          "decodeAdmission": "not-negotiated",
+          "limits": {
+            "profile": "compact",
+            "total": 671088640,
+            "js": 201326592,
+            "wasm": 268435456,
+            "gpu": 134217728,
+            "render": 100663296,
+            "pictures": 16777216,
+            "rasters": 16777216,
+            "chunks": 67108864,
+            "raw": 67108864,
+            "receive": 33554432,
+            "decodeCache": 8388608,
+            "gpuCache": 67108864
+          },
+          "categories": {
+            "raw": 2112512,
+            "sceneMetadata": 577294,
+            "jsIndexEstimate": 287616
+          },
+          "domains": {
+            "js": 2977422,
+            "wasm": 0,
+            "gpu": 0,
+            "browser": 0
+          },
+          "jsBufferBytes": 2112512,
+          "referencedJsBytes": 2112512,
+          "jsIndexEstimateBytes": 287616,
+          "ledgerIndexEstimateBytes": 156288,
+          "ownerMetadataBytes": 131328,
+          "decodeHeadroomBytes": 0,
+          "renderBytes": 0,
+          "residentEstimate": 2977422,
+          "retiredWasmBytes": 0,
+          "retiredArenaCount": 0,
+          "owners": 257,
+          "buffers": 256,
+          "observed": {
+            "wasmHeapBytes": 0,
+            "decodeCacheBytes": 0,
+            "gpuCacheBytes": null,
+            "gpuUsageSource": "unavailable"
+          },
+          "stats": {
+            "pressureEvents": 0,
+            "failures": 0,
+            "trims": 0,
+            "peakResidentEstimate": 3190414,
+            "peakJsBufferBytes": 2112512,
+            "peakJsIndexEstimateBytes": 500608,
+            "retiredArenas": 0,
+            "collectedArenas": 0
+          },
+          "accounting": "ArrayBuffers exact/deduplicated; retained scenes/pass copies and cache/ledger JS metadata estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; transient parser/VM/driver/process overhead not fully covered"
+        },
+        "brokerBudget": {
+          "allocations": 263936,
+          "bytes": 77580032,
+          "commands": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 2,
+              "bytes": 16384,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 16384,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "denied": 0,
+          "gatewayPackets": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4272,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 1,
+              "bytes": 65536,
+              "denied": 0,
+              "headroom": 33554432,
+              "limit": 134217728,
+              "peak": 190754,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "gatewayState": {
+            "allocations": 4,
+            "available": 469599316,
+            "bytes": 67271596,
+            "canAdmitPeer": true,
+            "config": {
+              "bytes": 80812,
+              "owners": 1
+            },
+            "denied": 0,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 536870912,
+            "peak": 67271596,
+            "peer": {
+              "bytes": 67108864,
+              "owners": 1
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 16384,
+              "owners": 1
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "headroom": 335544320,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 83886080,
+            "limit": 268435456,
+            "peak": 0,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 805306368,
+          "output": {
+            "control": {
+              "allocations": 1,
+              "bytes": 8192,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 12642,
+              "ready": true,
+              "scope": "rpc-output-control"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 67108864,
+              "limit": 134217728,
+              "peak": 182612,
+              "ready": true,
+              "scope": "rpc-output-data"
+            },
+            "framingBytes": 8192,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-output-packet-pool"
+          },
+          "peak": 77580032,
+          "ready": true,
+          "retiredGatewayDeltas": 0,
+          "retiredSnapshots": 0,
+          "rpcInput": {
+            "control": {
+              "allocations": 2,
+              "bytes": 135032,
+              "denied": 0,
+              "headroom": 2097152,
+              "limit": 4194304,
+              "peak": 151835,
+              "ready": true,
+              "scope": "rpc-control-input"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 268435456,
+              "limit": 536870912,
+              "peak": 390151193,
+              "ready": true,
+              "scope": "rpc-data-input"
+            },
+            "framingBytes": 65536,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-input-pool"
+          },
+          "scope": "resource-allocation-pool",
+          "snapshots": {
+            "allocations": 2,
+            "bytes": 13089198,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 268435456,
+            "peak": 39334154,
+            "ready": true,
+            "scope": "snapshot-graph-pool"
+          },
+          "websocketBacking": {
+            "allocations": 2,
+            "bytes": 52625408,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 0,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 134217728,
+            "limit": 536870912,
+            "peak": 54722560,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "websocketJson": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "maximumMessage": 32768,
+            "peak": 75172,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          },
+          "nodeRequests": {
+            "scope": "node-broker-requests",
+            "dataBytes": 0,
+            "controlBytes": 5092,
+            "dataLimit": 536870912,
+            "controlLimit": 4194304,
+            "peakDataBytes": 203033081,
+            "peakControlBytes": 14847,
+            "owners": 1,
+            "dataOwners": 0,
+            "ownerLimit": 64,
+            "dataOwnerLimit": 48,
+            "denied": 0,
+            "ready": true,
+            "retainedEstimate": 5092,
+            "serializationEstimate": 0,
+            "packetBackingBytes": 0
+          },
+          "nodeResponses": {
+            "scope": "node-broker-response-transients",
+            "dataBytes": 0,
+            "controlBytes": 129304,
+            "dataLimit": 805306368,
+            "controlLimit": 8388608,
+            "peakDataBytes": 5928944,
+            "peakControlBytes": 129304,
+            "owners": 1,
+            "packetReservedBytes": 3624,
+            "privatePacketBackingBytes": 3624,
+            "parseDeliveryEstimate": 124656,
+            "receivedBackingBytes": 12076,
+            "peakReceivedBackingBytes": 73984,
+            "receivedBackingLimit": 2097152,
+            "denied": 0,
+            "ready": true,
+            "applicationGraph": "outside this transient owner after delivery",
+            "nativeStreamAndVm": "not covered",
+            "packets": 7,
+            "deniedPackets": 0,
+            "privateAllocations": 7,
+            "copiedBodyBytes": 182540,
+            "receivedChunks": 10,
+            "frameBytesRemaining": 0,
+            "draining": false
+          }
+        }
+      },
+      "native-assets": {
+        "at": "2026-10-17T06:04:59.321Z",
+        "status": "passed",
+        "scope": "Actual Linux native Chromium/Rust → CPU CanvasKit Worker, 140 noisy PNG replacements with constant source glyphs and per-update visible pixel confirmation. Native cache charge estimates exclude active serializer/IPC pins and physical process/driver overhead; no latency A/B claim. Baseline mode measures the old binary and does not certify new cache budgets or expose encoding ownership, so its frame-level timing cannot establish avoided cold encodings.",
+        "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+        "updates": 140,
+        "encodedImageBytes": 31651030,
+        "elapsedMs": 10604.411562,
+        "first": {
+          "fontBypasses": 0,
+          "fontBytes": 769584,
+          "fontEncodes": 1,
+          "fontEntries": 1,
+          "fontEvictions": 0,
+          "fontPending": 0,
+          "fontShares": 1,
+          "imageBypasses": 0,
+          "imageBytes": 488737,
+          "imageEncodes": 1,
+          "imageEntries": 1,
+          "imageEvictions": 0,
+          "imagePending": 0,
+          "imageShares": 3,
+          "fontCacheHits": 0,
+          "imageCacheHits": 0,
+          "fontEncodingShares": 1,
+          "imageEncodingShares": 3
+        },
+        "last": {
+          "fontBypasses": 0,
+          "fontBytes": 769584,
+          "fontEncodes": 1,
+          "fontEntries": 1,
+          "fontEvictions": 0,
+          "fontPending": 0,
+          "fontShares": 1,
+          "imageBypasses": 0,
+          "imageBytes": 33227628,
+          "imageEncodes": 141,
+          "imageEntries": 68,
+          "imageEvictions": 73,
+          "imagePending": 0,
+          "imageShares": 143,
+          "fontCacheHits": 1,
+          "imageCacheHits": 0,
+          "fontEncodingShares": 0,
+          "imageEncodingShares": 1
+        },
+        "maximum": {
+          "fontBytes": 769584,
+          "imageBytes": 33227870,
+          "fontEntries": 1,
+          "imageEntries": 68
+        },
+        "captureSamples": 169,
+        "errors": []
+      }
+    }
+  },
+  "compatibility": {
+    "rawFourSkpBytes": 57802256,
+    "pixels": 4,
+    "resourceRecoveries": 0,
+    "rollbackRejections": 423,
+    "resourcePoolFrames": 14,
+    "sourceResourcePressure": {
+      "at": "2026-10-17T06:03:06.146Z",
+      "status": "passed",
+      "scope": "Actual Linux non-tiled native capture of1536² noisy PNG while two7.5MiB synthetic protocol fixtures are held by an unacknowledged peer.64MiB resource admission triggers typed Source backpressure; display capture pauses, page clock advances, latest/epoch/viewport/input fences remain intact, ACK frees old owners, native force-resource retry resumes, and actual recovered CanvasKit CPU pixel matches. Not an all-native slow-peer workload, Viewer GPU test, parser/output-copy or process-memory budget.",
+      "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 8069750,
+      "tickBefore": 26,
+      "tickAfter": 27,
+      "pressured": {
+        "allocations": 970,
+        "bytes": 47447420,
+        "commands": {
+          "close": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 0,
+            "ready": true,
+            "scope": "outgoing-command-close"
+          },
+          "closeSlot": "one priority slot per mailbox",
+          "mailboxReservation": 8192,
+          "maximumMessage": 32768,
+          "normal": {
+            "allocations": 2,
+            "bytes": 16384,
+            "denied": 0,
+            "headroom": 8388608,
+            "limit": 33554432,
+            "peak": 16587,
+            "ready": true,
+            "scope": "outgoing-command-packets"
+          },
+          "normalSlots": 64,
+          "ready": true,
+          "scope": "outgoing-command-pool",
+          "tungsteniteCopies": "outside command owner"
+        },
+        "denied": 1,
+        "gatewayPackets": {
+          "cacheCapacity": 128,
+          "cacheMetadataBytes": 65536,
+          "control": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 4272,
+            "ready": true,
+            "scope": "gateway-packet-control"
+          },
+          "data": {
+            "allocations": 2,
+            "bytes": 66186,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "peak": 71406,
+            "ready": true,
+            "scope": "gateway-packet-data"
+          },
+          "maximumScene": 262144,
+          "ready": true,
+          "scope": "gateway-packet-pool",
+          "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+        },
+        "gatewayState": {
+          "allocations": 4,
+          "available": 469589476,
+          "bytes": 67281436,
+          "canAdmitPeer": true,
+          "config": {
+            "bytes": 90652,
+            "owners": 1
+          },
+          "denied": 0,
+          "frameChunkUpperBound": 133376,
+          "headroom": 0,
+          "knownChunkUpperBound": 166144,
+          "limit": 536870912,
+          "peak": 67281436,
+          "peer": {
+            "bytes": 67108864,
+            "owners": 1
+          },
+          "peerBytes": 67108864,
+          "ready": true,
+          "registry": {
+            "bytes": 65536,
+            "owners": 1
+          },
+          "registryBytes": 65536,
+          "route": {
+            "bytes": 16384,
+            "owners": 1
+          },
+          "routeBytes": 16384,
+          "scope": "gateway-state-pool",
+          "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+        },
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 8330619,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "output": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 12646,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 5433,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "peak": 63842103,
+        "ready": false,
+        "retiredGatewayDeltas": 0,
+        "retiredSnapshots": 0,
+        "rpcInput": {
+          "control": {
+            "allocations": 2,
+            "bytes": 135036,
+            "denied": 0,
+            "headroom": 2097152,
+            "limit": 4194304,
+            "peak": 162201,
+            "ready": true,
+            "scope": "rpc-control-input"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 268435456,
+            "limit": 536870912,
+            "peak": 52573321,
+            "ready": true,
+            "scope": "rpc-data-input"
+          },
+          "framingBytes": 65536,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-input-pool"
+        },
+        "scope": "resource-allocation-pool",
+        "snapshots": {
+          "allocations": 3,
+          "bytes": 797580,
+          "denied": 0,
+          "headroom": 67108864,
+          "limit": 268435456,
+          "peak": 9571786,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "websocketBacking": {
+          "allocations": 2,
+          "bytes": 52625408,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 0,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 134217728,
+          "limit": 536870912,
+          "peak": 54722560,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "websocketJson": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 33554432,
+          "limit": 134217728,
+          "maximumMessage": 32768,
+          "peak": 78600,
+          "rawSocketBuffers": "outside parsed JSON owner",
+          "ready": true,
+          "scope": "websocket-parsed-json-pool"
+        },
+        "nodeRequests": {
+          "scope": "node-broker-requests",
+          "dataBytes": 0,
+          "controlBytes": 5092,
+          "dataLimit": 536870912,
+          "controlLimit": 4194304,
+          "peakDataBytes": 52472653,
+          "peakControlBytes": 20441,
+          "owners": 1,
+          "dataOwners": 0,
+          "ownerLimit": 64,
+          "dataOwnerLimit": 48,
+          "denied": 0,
+          "ready": true,
+          "retainedEstimate": 5092,
+          "serializationEstimate": 0,
+          "packetBackingBytes": 0
+        },
+        "nodeResponses": {
+          "scope": "node-broker-response-transients",
+          "dataBytes": 0,
+          "controlBytes": 129276,
+          "dataLimit": 805306368,
+          "controlLimit": 8388608,
+          "peakDataBytes": 53811,
+          "peakControlBytes": 129276,
+          "owners": 1,
+          "packetReservedBytes": 3620,
+          "privatePacketBackingBytes": 3620,
+          "parseDeliveryEstimate": 124632,
+          "receivedBackingBytes": 12072,
+          "peakReceivedBackingBytes": 12072,
+          "receivedBackingLimit": 2097152,
+          "denied": 0,
+          "ready": true,
+          "applicationGraph": "outside this transient owner after delivery",
+          "nativeStreamAndVm": "not covered",
+          "packets": 16,
+          "deniedPackets": 0,
+          "privateAllocations": 16,
+          "copiedBodyBytes": 7255,
+          "receivedChunks": 16,
+          "frameBytesRemaining": 0,
+          "draining": false
+        }
+      },
+      "after": {
+        "allocations": 992,
+        "bytes": 48247382,
+        "commands": {
+          "close": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 0,
+            "ready": true,
+            "scope": "outgoing-command-close"
+          },
+          "closeSlot": "one priority slot per mailbox",
+          "mailboxReservation": 8192,
+          "maximumMessage": 32768,
+          "normal": {
+            "allocations": 2,
+            "bytes": 16384,
+            "denied": 0,
+            "headroom": 8388608,
+            "limit": 33554432,
+            "peak": 16587,
+            "ready": true,
+            "scope": "outgoing-command-packets"
+          },
+          "normalSlots": 64,
+          "ready": true,
+          "scope": "outgoing-command-pool",
+          "tungsteniteCopies": "outside command owner"
+        },
+        "denied": 1,
+        "gatewayPackets": {
+          "cacheCapacity": 128,
+          "cacheMetadataBytes": 65536,
+          "control": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 4325,
+            "ready": true,
+            "scope": "gateway-packet-control"
+          },
+          "data": {
+            "allocations": 4,
+            "bytes": 89677,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "peak": 118726,
+            "ready": true,
+            "scope": "gateway-packet-data"
+          },
+          "maximumScene": 262144,
+          "ready": true,
+          "scope": "gateway-packet-pool",
+          "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+        },
+        "gatewayState": {
+          "allocations": 4,
+          "available": 469589476,
+          "bytes": 67281436,
+          "canAdmitPeer": true,
+          "config": {
+            "bytes": 90652,
+            "owners": 1
+          },
+          "denied": 0,
+          "frameChunkUpperBound": 133376,
+          "headroom": 0,
+          "knownChunkUpperBound": 166144,
+          "limit": 536870912,
+          "peak": 67281436,
+          "peer": {
+            "bytes": 67108864,
+            "owners": 1
+          },
+          "peerBytes": 67108864,
+          "ready": true,
+          "registry": {
+            "bytes": 65536,
+            "owners": 1
+          },
+          "registryBytes": 65536,
+          "route": {
+            "bytes": 16384,
+            "owners": 1
+          },
+          "routeBytes": 16384,
+          "scope": "gateway-state-pool",
+          "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+        },
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 8330619,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "output": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 16040,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 6317,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "peak": 63842103,
+        "ready": false,
+        "retiredGatewayDeltas": 0,
+        "retiredSnapshots": 1,
+        "rpcInput": {
+          "control": {
+            "allocations": 2,
+            "bytes": 135036,
+            "denied": 0,
+            "headroom": 2097152,
+            "limit": 4194304,
+            "peak": 162201,
+            "ready": true,
+            "scope": "rpc-control-input"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 268435456,
+            "limit": 536870912,
+            "peak": 52573321,
+            "ready": true,
+            "scope": "rpc-data-input"
+          },
+          "framingBytes": 65536,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-input-pool"
+        },
+        "scope": "resource-allocation-pool",
+        "snapshots": {
+          "allocations": 4,
+          "bytes": 6140044,
+          "denied": 0,
+          "headroom": 67108864,
+          "limit": 268435456,
+          "peak": 14664840,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "websocketBacking": {
+          "allocations": 2,
+          "bytes": 52625408,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 0,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 134217728,
+          "limit": 536870912,
+          "peak": 54722560,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "websocketJson": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 33554432,
+          "limit": 134217728,
+          "maximumMessage": 32768,
+          "peak": 78600,
+          "rawSocketBuffers": "outside parsed JSON owner",
+          "ready": true,
+          "scope": "websocket-parsed-json-pool"
+        },
+        "nodeRequests": {
+          "scope": "node-broker-requests",
+          "dataBytes": 0,
+          "controlBytes": 5092,
+          "dataLimit": 536870912,
+          "controlLimit": 4194304,
+          "peakDataBytes": 52472653,
+          "peakControlBytes": 20441,
+          "owners": 1,
+          "dataOwners": 0,
+          "ownerLimit": 64,
+          "dataOwnerLimit": 48,
+          "denied": 0,
+          "ready": true,
+          "retainedEstimate": 5092,
+          "serializationEstimate": 0,
+          "packetBackingBytes": 0
+        },
+        "nodeResponses": {
+          "scope": "node-broker-response-transients",
+          "dataBytes": 0,
+          "controlBytes": 129297,
+          "dataLimit": 805306368,
+          "controlLimit": 8388608,
+          "peakDataBytes": 75167,
+          "peakControlBytes": 129297,
+          "owners": 1,
+          "packetReservedBytes": 3623,
+          "privatePacketBackingBytes": 3623,
+          "parseDeliveryEstimate": 124650,
+          "receivedBackingBytes": 12075,
+          "peakReceivedBackingBytes": 12075,
+          "receivedBackingLimit": 2097152,
+          "denied": 0,
+          "ready": true,
+          "applicationGraph": "outside this transient owner after delivery",
+          "nativeStreamAndVm": "not covered",
+          "packets": 42,
+          "deniedPackets": 0,
+          "privateAllocations": 42,
+          "copiedBodyBytes": 29759,
+          "receivedChunks": 41,
+          "frameBytesRemaining": 0,
+          "draining": false
+        }
+      },
+      "pixel": [
+        37,
+        91,
+        199,
+        255
+      ],
+      "pressureEvents": [
+        "RESOURCE_BUDGET_PRESSURE"
+      ],
+      "sourceStats": {
+        "captures": 5,
+        "errors": 0,
+        "captureSupersessions": 0,
+        "resourceRecoveries": 0,
+        "resourcePressureEvents": 1,
+        "resourcePressureResumes": 1,
+        "lastError": null,
+        "recentErrors": [],
+        "lastPressureCode": "RESOURCE_BUDGET_PRESSURE",
+        "resourcePool": {
+          "allocations": 485,
+          "bytes": 23723710,
+          "commands": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 2,
+              "bytes": 16384,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 16587,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "denied": 1,
+          "gatewayPackets": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4325,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 2,
+              "bytes": 66186,
+              "denied": 0,
+              "headroom": 33554432,
+              "limit": 134217728,
+              "peak": 71406,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "gatewayState": {
+            "allocations": 4,
+            "available": 469589476,
+            "bytes": 67281436,
+            "canAdmitPeer": true,
+            "config": {
+              "bytes": 90652,
+              "owners": 1
+            },
+            "denied": 0,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 536870912,
+            "peak": 67281436,
+            "peer": {
+              "bytes": 67108864,
+              "owners": 1
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 16384,
+              "owners": 1
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "headroom": 33554432,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 83886080,
+            "limit": 268435456,
+            "peak": 8330619,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 67108864,
+          "output": {
+            "control": {
+              "allocations": 1,
+              "bytes": 8192,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 16040,
+              "ready": true,
+              "scope": "rpc-output-control"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 67108864,
+              "limit": 134217728,
+              "peak": 5433,
+              "ready": true,
+              "scope": "rpc-output-data"
+            },
+            "framingBytes": 8192,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-output-packet-pool"
+          },
+          "peak": 63842103,
+          "ready": true,
+          "retiredGatewayDeltas": 0,
+          "retiredSnapshots": 0,
+          "rpcInput": {
+            "control": {
+              "allocations": 2,
+              "bytes": 135036,
+              "denied": 0,
+              "headroom": 2097152,
+              "limit": 4194304,
+              "peak": 162201,
+              "ready": true,
+              "scope": "rpc-control-input"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 268435456,
+              "limit": 536870912,
+              "peak": 52573321,
+              "ready": true,
+              "scope": "rpc-data-input"
+            },
+            "framingBytes": 65536,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-input-pool"
+          },
+          "scope": "resource-allocation-pool",
+          "snapshots": {
+            "allocations": 2,
+            "bytes": 404552,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 268435456,
+            "peak": 9571786,
+            "ready": true,
+            "scope": "snapshot-graph-pool"
+          },
+          "websocketBacking": {
+            "allocations": 2,
+            "bytes": 52625408,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 0,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 134217728,
+            "limit": 536870912,
+            "peak": 54722560,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "websocketJson": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "maximumMessage": 32768,
+            "peak": 78600,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          },
+          "nodeRequests": {
+            "scope": "node-broker-requests",
+            "dataBytes": 0,
+            "controlBytes": 5092,
+            "dataLimit": 536870912,
+            "controlLimit": 4194304,
+            "peakDataBytes": 52472653,
+            "peakControlBytes": 20441,
+            "owners": 1,
+            "dataOwners": 0,
+            "ownerLimit": 64,
+            "dataOwnerLimit": 48,
+            "denied": 0,
+            "ready": true,
+            "retainedEstimate": 5092,
+            "serializationEstimate": 0,
+            "packetBackingBytes": 0
+          },
+          "nodeResponses": {
+            "scope": "node-broker-response-transients",
+            "dataBytes": 0,
+            "controlBytes": 129269,
+            "dataLimit": 805306368,
+            "controlLimit": 8388608,
+            "peakDataBytes": 53811,
+            "peakControlBytes": 129276,
+            "owners": 1,
+            "packetReservedBytes": 3619,
+            "privatePacketBackingBytes": 3619,
+            "parseDeliveryEstimate": 124626,
+            "receivedBackingBytes": 12071,
+            "peakReceivedBackingBytes": 12072,
+            "receivedBackingLimit": 2097152,
+            "denied": 0,
+            "ready": true,
+            "applicationGraph": "outside this transient owner after delivery",
+            "nativeStreamAndVm": "not covered",
+            "packets": 18,
+            "deniedPackets": 0,
+            "privateAllocations": 18,
+            "copiedBodyBytes": 14493,
+            "receivedChunks": 18,
+            "frameBytesRemaining": 0,
+            "draining": false
+          }
+        },
+        "lastCaptureMs": 4.915191999998569,
+        "lastMapMs": 0.953629000001456,
+        "registrationRetries": 0
+      },
+      "latestBrokerSerialAtReport": 7,
+      "recoveredFrame": {
+        "captureId": "02fa2f1f-9575-43bd-ae43-1b1251ba0896",
+        "frameId": 3,
+        "resources": 1
+      },
+      "errors": []
+    },
+    "sourceInputPressure": {
+      "at": "2026-10-17T06:03:09.084Z",
+      "status": "passed",
+      "scope": "Actual Linux non-tiled1536² noisy PNG native RPA packet rejected before full allocation under explicit2MiB input quota. Typed input pressure reaches Source,display capture pauses without stopping page clock or publishing a partial frame. A smaller actual page scene then recovers on the private connection,forces resources and matches CPU CanvasKit pixel. This does not claim the original noisy scene fits2MiB; default-quota57.8MB native support is a separate regression. Packet capacity/metadata estimates only,no full process-memory or GPU claim.",
+      "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 8069807,
+      "smallImageBytes": 2701,
+      "inputBefore": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 1,
+        "headroom": 1048576,
+        "limit": 2097152,
+        "peak": 10810,
+        "ready": true,
+        "scope": "viz-input-pool"
+      },
+      "inputAfter": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 2,
+        "headroom": 1048576,
+        "limit": 2097152,
+        "peak": 202325,
+        "ready": true,
+        "scope": "viz-input-pool"
+      },
+      "ticks": 25,
+      "afterTicks": 28,
+      "pixel": [
+        29,
+        83,
+        197,
+        255
+      ],
+      "pressureEvents": [
+        "RESOURCE_BUDGET_PRESSURE",
+        "RESOURCE_BUDGET_PRESSURE"
+      ],
+      "statuses": [
+        "绘制资源正在回收，正在重试",
+        "绘制资源正在回收，正在重试"
+      ],
+      "sourceStats": {
+        "captures": 3,
+        "errors": 0,
+        "captureSupersessions": 0,
+        "resourceRecoveries": 0,
+        "resourcePressureEvents": 2,
+        "resourcePressureResumes": 2,
+        "lastError": null,
+        "recentErrors": [],
+        "lastPressureCode": "INPUT_BUDGET_PRESSURE",
+        "resourcePool": {
+          "allocations": 0,
+          "bytes": 0,
+          "commands": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 2,
+              "bytes": 16384,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 16587,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "denied": 0,
+          "gatewayPackets": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 0,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 1,
+              "bytes": 65536,
+              "denied": 0,
+              "headroom": 33554432,
+              "limit": 134217728,
+              "peak": 70199,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "gatewayState": {
+            "allocations": 4,
+            "available": 469589476,
+            "bytes": 67281436,
+            "canAdmitPeer": true,
+            "config": {
+              "bytes": 90652,
+              "owners": 1
+            },
+            "denied": 0,
+            "frameChunkUpperBound": 133376,
+            "headroom": 0,
+            "knownChunkUpperBound": 166144,
+            "limit": 536870912,
+            "peak": 67281436,
+            "peer": {
+              "bytes": 67108864,
+              "owners": 1
+            },
+            "peerBytes": 67108864,
+            "ready": true,
+            "registry": {
+              "bytes": 65536,
+              "owners": 1
+            },
+            "registryBytes": 65536,
+            "route": {
+              "bytes": 16384,
+              "owners": 1
+            },
+            "routeBytes": 16384,
+            "scope": "gateway-state-pool",
+            "scopeNote": "retained config capacity and fixed registry/route/per-peer container+scratch requested-layout allowance;payloads/parser/library/DNS/thread runtime/stack/OS/RSS outside"
+          },
+          "headroom": 335544320,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 2,
+            "headroom": 1048576,
+            "limit": 2097152,
+            "peak": 10810,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 805306368,
+          "output": {
+            "control": {
+              "allocations": 1,
+              "bytes": 8192,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 16001,
+              "ready": true,
+              "scope": "rpc-output-control"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 67108864,
+              "limit": 134217728,
+              "peak": 0,
+              "ready": true,
+              "scope": "rpc-output-data"
+            },
+            "framingBytes": 8192,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-output-packet-pool"
+          },
+          "peak": 0,
+          "ready": true,
+          "retiredGatewayDeltas": 0,
+          "retiredSnapshots": 0,
+          "rpcInput": {
+            "control": {
+              "allocations": 2,
+              "bytes": 135036,
+              "denied": 0,
+              "headroom": 2097152,
+              "limit": 4194304,
+              "peak": 162201,
+              "ready": true,
+              "scope": "rpc-control-input"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 268435456,
+              "limit": 536870912,
+              "peak": 207383,
+              "ready": true,
+              "scope": "rpc-data-input"
+            },
+            "framingBytes": 65536,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-input-pool"
+          },
+          "scope": "resource-allocation-pool",
+          "snapshots": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 268435456,
+            "peak": 0,
+            "ready": true,
+            "scope": "snapshot-graph-pool"
+          },
+          "websocketBacking": {
+            "allocations": 2,
+            "bytes": 52625408,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 0,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 134217728,
+            "limit": 536870912,
+            "peak": 54722560,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "websocketJson": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "maximumMessage": 32768,
+            "peak": 74556,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          },
+          "nodeRequests": {
+            "scope": "node-broker-requests",
+            "dataBytes": 0,
+            "controlBytes": 6123,
+            "dataLimit": 536870912,
+            "controlLimit": 4194304,
+            "peakDataBytes": 76775,
+            "peakControlBytes": 20441,
+            "owners": 1,
+            "dataOwners": 0,
+            "ownerLimit": 64,
+            "dataOwnerLimit": 48,
+            "denied": 0,
+            "ready": true,
+            "retainedEstimate": 5092,
+            "serializationEstimate": 996,
+            "packetBackingBytes": 35
+          },
+          "nodeResponses": {
+            "scope": "node-broker-response-transients",
+            "dataBytes": 0,
+            "controlBytes": 129003,
+            "dataLimit": 805306368,
+            "controlLimit": 8388608,
+            "peakDataBytes": 11646,
+            "peakControlBytes": 129003,
+            "owners": 1,
+            "packetReservedBytes": 3581,
+            "privatePacketBackingBytes": 3581,
+            "parseDeliveryEstimate": 124398,
+            "receivedBackingBytes": 12033,
+            "peakReceivedBackingBytes": 12033,
+            "receivedBackingLimit": 2097152,
+            "denied": 0,
+            "ready": true,
+            "applicationGraph": "outside this transient owner after delivery",
+            "nativeStreamAndVm": "not covered",
+            "packets": 17,
+            "deniedPackets": 0,
+            "privateAllocations": 17,
+            "copiedBodyBytes": 11686,
+            "receivedChunks": 17,
+            "frameBytesRemaining": 0,
+            "draining": false
+          }
+        },
+        "lastCaptureMs": 4.267563000000109,
+        "lastMapMs": 0.8074209999999766,
+        "registrationRetries": 0
+      },
+      "recoveredFrame": {
+        "captureId": "279973f3-1e5c-4b93-a15a-02106902f704",
+        "frameId": 1,
+        "resources": 1
+      },
+      "errors": []
+    },
+    "gatewayPackets": {
+      "at": "2026-10-17T06:03:43.474Z",
+      "status": "passed",
+      "scope": "Actual Linux Rust Gateway final packet/delta cache ownership:four simultaneous viewers(two paired),32 commits match mapped scenes and exact frame/base metadata with16000-node timing. Explicit256KiB budget polling evicts cached delta and continues the same live peer without reset;actual subsequent quota denial closes1013 before fourth commit. Budget polling reclaims evictable cache,then same Broker accepts a fresh full frame without reset;explicit reset also preserves only table credit. Minimum64KiB denies before Welcome. Stop drops actual cache backing and all packet owners;library backing/JSON/command owners are separate accepted scopes. No pixels,OS/RSS,config/peer/index/other builders or wholeSession claim.",
+      "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+      "variants": [
+        {
+          "mode": "default-four",
+          "viewers": 4,
+          "paired": 2,
+          "framesPerViewer": 8,
+          "totalCommitted": 32,
+          "fullFrames": 4,
+          "deltaFrames": 28,
+          "exactScenes": true,
+          "denseTimingNodes": 16000,
+          "maximumWireBytes": 109581,
+          "held": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4800,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 8,
+              "bytes": 602660,
+              "denied": 0,
+              "headroom": 33554432,
+              "limit": 134217728,
+              "peak": 833366,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "reset": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4800,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 1,
+              "bytes": 65536,
+              "denied": 0,
+              "headroom": 33554432,
+              "limit": 134217728,
+              "peak": 833366,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "final": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4800,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 33554432,
+              "limit": 134217728,
+              "peak": 833366,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "pidUnchanged": true
+        },
+        {
+          "mode": "cache-pressure",
+          "before": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4272,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 1,
+              "bytes": 65536,
+              "denied": 0,
+              "headroom": 131072,
+              "limit": 262144,
+              "peak": 255573,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "budgetPollingReclaimsCache": true,
+          "activePeerContinuedWithoutReset": true,
+          "close": {
+            "code": 1013,
+            "reason": "Gateway packet allocation pressure"
+          },
+          "committedBeforeDenial": 3,
+          "deniedFrameNotCommitted": true,
+          "held": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4272,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 1,
+              "bytes": 65536,
+              "denied": 1,
+              "headroom": 131072,
+              "limit": 262144,
+              "peak": 255573,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "reset": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4272,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 1,
+              "bytes": 65536,
+              "denied": 1,
+              "headroom": 131072,
+              "limit": 262144,
+              "peak": 255573,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "recoveredFullFrame": true,
+          "recoveredWithoutReset": true,
+          "final": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 4272,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 1,
+              "headroom": 131072,
+              "limit": 262144,
+              "peak": 255573,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "pidUnchanged": true
+        },
+        {
+          "mode": "minimum-pressure",
+          "deniedBeforeWelcome": true,
+          "close": {
+            "code": 1013,
+            "reason": "Gateway packet allocation pressure"
+          },
+          "held": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 0,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 1,
+              "bytes": 65536,
+              "denied": 1,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 65536,
+              "ready": false,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": false,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "final": {
+            "cacheCapacity": 128,
+            "cacheMetadataBytes": 65536,
+            "control": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 0,
+              "ready": true,
+              "scope": "gateway-packet-control"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 1,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 65536,
+              "ready": true,
+              "scope": "gateway-packet-data"
+            },
+            "maximumScene": 262144,
+            "ready": true,
+            "scope": "gateway-packet-pool",
+            "scopeNote": "final serialized Gateway text and delta cache backing;original config/peer/scratch/index/OS/RSS outside"
+          },
+          "pidUnchanged": true
+        }
+      ],
+      "cleanup": [
+        {
+          "mode": "default-four",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "cache-pressure",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "minimum-pressure",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      ]
+    },
+    "websocketBacking": {
+      "at": "2026-10-17T06:03:42.712Z",
+      "status": "passed",
+      "scope": "Actual Linux Gateway WebSocket library backing admission:default four simultaneous authenticated pairs and sub32KiB UTF8 input,64MiB role failure503 and raw-read pressure1013,8MiB fixed HTTP preparse denial,all credits returned after actual close and same Broker recovery. No allocator usable-size/RSS/PSS,OS socket/thread,other Gateway builders or fullSession claim.",
+      "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+      "variants": [
+        {
+          "mode": "four-pairs",
+          "pairs": 4,
+          "fifthDenied": 403,
+          "exactEvents": 4,
+          "inputBytes": 32155,
+          "held": {
+            "allocations": 20,
+            "bytes": 228851712,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 0,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 134217728,
+            "limit": 536870912,
+            "peak": 230948864,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "released": {
+            "allocations": 0,
+            "bytes": 0,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 0,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 134217728,
+            "limit": 536870912,
+            "peak": 230948864,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "pidUnchanged": true
+        },
+        {
+          "mode": "role-pressure",
+          "deniedHttp": 503,
+          "existingInputPreserved": true,
+          "held": {
+            "allocations": 2,
+            "bytes": 52625408,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 1,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 33554432,
+            "limit": 67108864,
+            "peak": 54722560,
+            "rawMessageBytes": 2097152,
+            "ready": false,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "released": {
+            "allocations": 0,
+            "bytes": 0,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 1,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 33554432,
+            "limit": 67108864,
+            "peak": 54722560,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "recoveredReleased": {
+            "allocations": 0,
+            "bytes": 0,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 1,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 33554432,
+            "limit": 67108864,
+            "peak": 54722560,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "pidUnchanged": true
+        },
+        {
+          "mode": "raw-pressure",
+          "partialHandshakes": 6,
+          "close": {
+            "channel": "data",
+            "code": 1013,
+            "reason": "WebSocket backing allocation pressure"
+          },
+          "held": {
+            "allocations": 6,
+            "bytes": 12582912,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 1,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 33554432,
+            "limit": 67108864,
+            "peak": 65208320,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "released": {
+            "allocations": 0,
+            "bytes": 0,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 1,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 33554432,
+            "limit": 67108864,
+            "peak": 65208320,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "recoveredReleased": {
+            "allocations": 0,
+            "bytes": 0,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 1,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 33554432,
+            "limit": 67108864,
+            "peak": 65208320,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "pidUnchanged": true
+        },
+        {
+          "mode": "fixed-pressure",
+          "incompleteHandshakes": 4,
+          "fifthClosedBeforeHttpParse": true,
+          "held": {
+            "allocations": 4,
+            "bytes": 8388608,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 1,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 8388608,
+            "rawMessageBytes": 2097152,
+            "ready": false,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "released": {
+            "allocations": 0,
+            "bytes": 0,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 1,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 8388608,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "pidUnchanged": true
+        }
+      ],
+      "cleanup": [
+        {
+          "mode": "four-pairs",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "role-pressure",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "raw-pressure",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "fixed-pressure",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      ]
+    },
+    "commandQueue": {
+      "at": "2026-10-17T06:03:42.490Z",
+      "status": "passed",
+      "scope": "Actual Linux Rust outgoing command packet/mailbox ownership. Unattached paired control under explicit64KiB quota retains exactly owned text and rejects another body;paused real fallback socket eventually fills byte credit;64-slot paired queue rejects its65th normal packet. Independent priority close succeeds in every case,data receives requested1001/reason,all packet/close/mailbox owners release and same Broker control remains usable. Missing peer remains a no-op. No CDP/pixel,OS buffer/Tungstenite copy or RSS claim.",
+      "brokerSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+      "variants": [
+        {
+          "mode": "paired-byte",
+          "paired": true,
+          "accepted": 1,
+          "receivedBeforeClose": 0,
+          "closeCode": 1001,
+          "closeReason": "queue contract close",
+          "closeDeliveredAfterNormalPressure": true,
+          "transportPressure": null,
+          "held": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 3,
+              "bytes": 48548,
+              "denied": 1,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48548,
+              "ready": false,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": false,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "released": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 332,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 1,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48548,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "brokerPidUnchanged": true,
+          "stalePeerNoop": true
+        },
+        {
+          "mode": "fallback-byte",
+          "paired": false,
+          "accepted": 12,
+          "receivedBeforeClose": 11,
+          "closeCode": 1001,
+          "closeReason": "queue contract close",
+          "closeDeliveredAfterNormalPressure": true,
+          "transportPressure": {
+            "before": {
+              "sendBytes": 142848,
+              "state": "01"
+            },
+            "after": {
+              "sendBytes": 142848,
+              "state": "01"
+            },
+            "observationMs": 50,
+            "queuedCommandBytes": 32165,
+            "parentPaused": true,
+            "parentReadableBytes": 96120
+          },
+          "held": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 3,
+              "bytes": 48549,
+              "denied": 2,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48549,
+              "ready": false,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": false,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "released": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 332,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 2,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48549,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "brokerPidUnchanged": true,
+          "stalePeerNoop": true
+        },
+        {
+          "mode": "paired-count",
+          "paired": true,
+          "accepted": 64,
+          "receivedBeforeClose": 0,
+          "closeCode": 1001,
+          "closeReason": "queue contract close",
+          "closeDeliveredAfterNormalPressure": true,
+          "transportPressure": null,
+          "held": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 66,
+              "bytes": 33334,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 33599,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "released": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 332,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 33599,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "brokerPidUnchanged": true,
+          "stalePeerNoop": true
+        }
+      ],
+      "cleanup": [
+        {
+          "mode": "paired-byte",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "fallback-byte",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "paired-count",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      ]
+    }
+  },
+  "readinessInferenceCorrection": {
+    "at": "2026-10-17T05:27:04.477818+00:00",
+    "status": "evidence interpretation corrected;no runtime/gate weakening",
+    "source": "live/resource-pressure.mjs",
+    "finding": "Bounded1s retry already prevents indefinite waiting solely from conservative readyfalse. Existing WS library headroom remains unchanged;new state pool fixed reservations should not gate capture headroom because future container growth is already admitted.",
+    "evidence": "docs/evidence/gateway-packet-owners.json pressureCorrection.interpretationCorrection",
+    "next": "Keep Gatewayconfig/registry/route/peer ownership implementation;admission exposes canAdmitPeer separately."
+  },
+  "unresolvedCanvas": {
+    "at": "2026-10-17T06:00:05.403114+00:00",
+    "status": "unresolved small2Dcanvas record/quad mismatch;warmup also fails",
+    "fixtureSource": "tests/verify-gateway-state-source.mjs cold v1 frozen fixture",
+    "oldBroker": "9d61c6a641b12ad2cf9c9920609aad06084395c5ce7c409844191cc964cfee1f",
+    "candidateBroker": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+    "logs": [
+      "gateway-containers-targeted-v1-verify-gateway-state-source.log",
+      "gateway-state-source-old-control.log"
+    ],
+    "observed": "Both brokers report Missing native layer from scene.rs by_id lookup before Source readiness assertions. No production fix or ignored capture error.",
+    "next": "Keep exact64px2Dcanvas fixture and metadata evidence.128px actual PNG fixture separately verifies existing peer Source readiness;do not count canvas gap as resolved.",
+    "warmFailure": "gateway-containers-targeted-v2-verify-gateway-state-source.log",
+    "nodePlaneProbe": "gateway-small-canvas-node-debug.log",
+    "observedNativeIds": {
+      "error": "Viz content has no matching native full-layer record",
+      "captureId": "e4b7f4d5-0999-4e1c-9c57-bdc374e2ac5e",
+      "resourceIds": [],
+      "quads": [
+        {
+          "kind": "solid",
+          "localId": 22,
+          "namespace": [
+            4,
+            10
+          ]
+        },
+        {
+          "kind": "picture",
+          "localId": 21,
+          "namespace": [
+            4,
+            10
+          ]
+        },
+        {
+          "kind": "solid",
+          "localId": 20,
+          "namespace": [
+            4,
+            10
+          ]
+        },
+        {
+          "kind": "solid",
+          "localId": 0,
+          "namespace": [
+            4,
+            10
+          ]
+        },
+        {
+          "kind": "solid",
+          "localId": 0,
+          "namespace": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "interpretation": "Actual Node mapper independently observes0resources and a picture quad localId21. Same native output mismatch independent of new Gateway pool;not solely cold startup. Viz treatsTextureContent as picture while cc_capture only recordsPicture layers,which suggests a texture-backed2Dcanvas gap;not yet a proven native fix.",
+    "nativeSourcePointers": [
+      "native/chromium/cc_capture.inc:TextureLayer branch only classifiesDrawingBuffer forWebGL,then skips every nonPicture layer.",
+      "native/chromium/viz_capture.cc:TextureContent/TiledContent/PictureContent all emitkind3,picture;2DcanvasTextureContent can therefore lack an SKPrecord.",
+      "native/chromium/capture_state.h:Snapshot.webgl_layers onlyDrawingBuffer;do not classify missing2Dcanvas asWebGL."
+    ],
+    "nextNativeGate": "Reproduceactual2Dcanvas texture/source metadata then implement supported per-region CPU/recording fallback preserving exact pixel,alpha,transform,clip,epoch andFrameCommit dependencies;no blanket missing-resource placeholder or silent frame omission."
+  },
+  "failedFixtures": [
+    {
+      "log": "gateway-containers-focused-v1.log",
+      "correction": "Lazy error construction removes eager40B allocation;spare-capacity fixtures now insert Value containers directly because json! serialization shrinks spare capacities."
+    },
+    {
+      "log": "gateway-containers-targeted-v3-verify-gateway-state-source.log",
+      "correction": "Never-pressured Source resourcePaused is initially undefined;assert not true plus zero pressure events,actual progress and pixels. No runtime or quota change."
+    }
+  ],
+  "version": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-checkpoint-version-v4.json",
+  "publication": {
+    "at": "2026-10-17T06:04:04.577069+00:00",
+    "status": "accepted-in-stated-scope",
+    "oldSha256": "9d61c6a641b12ad2cf9c9920609aad06084395c5ce7c409844191cc964cfee1f",
+    "newSha256": "809459a5f9e5338f0446ecb710ffc1afcbaf1db2ab14c1ea3868e193aa8c2c2b",
+    "previousBinary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-previous-canonical-9d",
+    "previousReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-previous-build-receipt.json",
+    "binary": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/broker-build.json",
+    "scope": "Atomic local LinuxARM64 replacement. No commit/push;proof,independent8h and caches preserved.",
+    "canonicalSmoke": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-containers-canonical-smoke-v1.json",
+    "evidence": "docs/evidence/gateway-state-owners.json"
+  },
+  "remaining": [
+    "Mapper strong/recency/weak-resource/chunk index persistent backing and asset/hash scratch after coarse Snapshot staging.",
+    "ClientMemory repeated full-owner scans and ordinary2Dcanvas texture-backed native record/quad mismatch.",
+    "Node active/app/VM,native recording/RasterSource/epoch/pendingcancel,totalSession/OS/RSS/PSS,comparableB4,independent8h and remaining41+N1."
+  ],
+  "preserved": [
+    "HEAD3ff9512 unchanged,no staging/commit/push",
+    "live/peer.mjs exactly1+/1-",
+    "Chromiumaa unchanged;34C++ previously accepted,reused explicitly",
+    "Old9d binary/receipt,all failed logs/frozen bundles,proof,independent8h and caches retained"
+  ]
+}

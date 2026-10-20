@@ -1,0 +1,159 @@
+{
+  "at": "2026-10-16T15:34:30.965Z",
+  "scope": "Actual Linux kernel netem on Gateway TCP only; real source CDP input, native capture and CanvasKit pixel counter; synthetic beforeinput to latest rendered state including each input, excludes physical input/display scanout; intermediate states may coalesce",
+  "samplesPerCase": 1000,
+  "results": [
+    {
+      "configuredRttMs": 80,
+      "lossPercent": 1,
+      "measuredRttMs": [
+        78.2077240000001,
+        81.55139799999984,
+        81.52885800000013,
+        84.89553099999989,
+        88.67092900000011,
+        79.64343000000008,
+        87.30401099999972,
+        89.15948299999991,
+        80.76044600000023,
+        86.17707999999993
+      ],
+      "samples": 1000,
+      "p50Ms": 186.59999999403954,
+      "p95Ms": 346,
+      "p99Ms": 582.5,
+      "maxMs": 847.5,
+      "maxProgressGapMs": 749.9000000059605,
+      "maxOutstanding": 33,
+      "frames": 440,
+      "lifecycle": {
+        "dragMoves": 22,
+        "dragFinalLeft": 320,
+        "dragPixelsCorrect": true,
+        "blackholeMs": 300,
+        "blackholeRecoveryMs": 440.1835460000002,
+        "reconnectMs": 1012.2579700000024,
+        "reconnectFullBaseline": true,
+        "leaseRevoked": true
+      },
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 18029253,
+          "packets": 8956,
+          "drops": 102,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 209,
+          "qlen": 2
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.04,
+              "jitter": 0.004,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.01,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 18026619,
+          "packets": 8930,
+          "drops": 102,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 209,
+          "qlen": 2
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 5185209,
+          "coalesced": 802,
+          "delta": 248,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 29360,
+          "maxPendingBytes": 29360,
+          "pendingBytes": 0,
+          "resources": 487,
+          "slowDisconnects": 0,
+          "ackRttMs": 86.73092100000001
+        },
+        {
+          "bytes": 27359,
+          "coalesced": 0,
+          "delta": 1,
+          "full": 1,
+          "maxInflight": 2,
+          "maxInflightBytes": 27359,
+          "maxPendingBytes": 26115,
+          "pendingBytes": 0,
+          "resources": 4,
+          "slowDisconnects": 0
+        }
+      ],
+      "sourceErrors": 0
+    }
+  ],
+  "sourceVersion": {
+    "at": "2026-10-16T15:32:54.901725+00:00",
+    "scope": "Frozen final C1/C2 revision, auto CPU2D for SwiftShader, isolated real netem80ms/1% lifecycle regression",
+    "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "sha256": {
+      "viewer/scene-renderer.mjs": "21bc5ac81b59c68dfc311778b1757325cf07dbced61fbd9209ce7e0085dad50b",
+      "viewer/damage.mjs": "f5671175ef576bc76917b076a1abfad54bbc792e481afe7d5ca60cc350829869",
+      "viewer/frame-presenter.mjs": "2793c48de1b9662a4578c5d90865d6ec97a7968bd912043d096e70c57c337903",
+      "viewer/live.mjs": "16392c1e10300face11404a0a76703e57ec7f978a10668a89343167c352dd4f8",
+      "viewer/stream-worker.mjs": "4d189f31ac7a2dd6e95aee9604a52c51909d7c1075df9e9f9888839776b476c2",
+      "live/viewer-assets.mjs": "1d4f8c2ac893a553bd5374250b2f3632a149f41d351d0381c4ae29013b74949c",
+      "live/static-assets.mjs": "b9dcac387446e18e99a9326ff432b2e6f4ada7c262aae274d475fa3cf7ec869b",
+      "protocol/live-wire.mjs": "2e2c86ef61767a21fc367f0287bb3a10baa29d49cda2dadc8c88915f593fc667",
+      "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": "ced9ff03b5e5dd3ef79d6edb3cabf54fb9c72a432d1faf7c3faf281c826d9924",
+      "tests/verify-loss.mjs": "c233887ed654992e2b636f8d8549ab4f7b07ebcf69c580b32437a8350dcf0df3"
+    }
+  },
+  "versionNotes": [
+    "Final C1/C2 default backend selects CPU2D for the actual SwiftShader driver tested in presentation probes. Hardware GPU remains WebGL2/ImageBitmap.",
+    "One80ms/1% case, not the full13-case matrix. Independent random kernel packet loss; no historical A/B performance claim."
+  ]
+}

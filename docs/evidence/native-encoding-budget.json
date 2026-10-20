@@ -1,0 +1,471 @@
+{
+  "at": "2026-10-16T21:58:30.273160+00:00",
+  "status": "partial",
+  "scope": "B10 admitted native encoding ownership only, global within each renderer process. This is not a complete Session/native-process/RSS budget.",
+  "implementation": {
+    "limits": {
+      "rendererAdmittedBytes": 67108864,
+      "rendererEntries": 512,
+      "perHostEntries": 256,
+      "entryIndexEstimateBytes": 512
+    },
+    "lru": "All host namespaces in one renderer share one weighted LRU. Lookup touches the entry. Entries are evicted for byte, process-entry or host-entry pressure; host IDs cannot multiply the byte limit.",
+    "charge": "Checked/saturating accounting includes generated SKP data, Base64/resource/error strings, reserved font/range vector storage, nested string capacities, EncodedPicture/SkData/control and cache-index estimates. Conservative cache-owner charge, not measured allocator usage.",
+    "pins": "Returned pointers alias a charged allocation control block. Eviction and host retirement detach cache ownership, but the reservation remains until the final returned alias releases and its payload destructor finishes. Snapshot/layer owners pin the allocation through native payload delivery.",
+    "fallback": "Encoding and retired-payload destruction run outside the registry mutex. Oversized, stale-owner, untracked shared input or fully pinned budget returns the current complete encoding uncached; it cannot become a false cache/hash-only hit. Victim retries are finite and do not wait for readers.",
+    "telemetry": "captureHosts reports cache, admitted resident, retired/cached pin bytes, peak, limits, admissions, evictions and each bypass reason. Scope is explicitly renderer-process; host index estimate is separately reported."
+  },
+  "tests": {
+    "node": 138,
+    "cpp": 34,
+    "specific": [
+      "Global byte LRU across two hosts and touch order",
+      "Retired pins retain reservations and force valid uncached fallback",
+      "Blocking payload destruction holds credit while a concurrent stats reader acquires the registry mutex",
+      "Oversize/SIZE_MAX arithmetic and untracked shared input bypass",
+      "Global entry cap across 100 active hosts",
+      "Base64/vector/nested metadata footprint"
+    ]
+  },
+  "nativePressure": {
+    "at": "2026-10-16T21:50:38.735Z",
+    "status": "passed",
+    "scope": "Actual Linux native Chromium → Rust tiled data plane and Node full-layer/Base64 data plane → CPU CanvasKit Worker. 80 noisy 512² image replacements per path with actual pixels; global per-renderer encoding admission and returned-alias charges stay within64MiB and byte eviction happens before256 entries. Does not bound uncached encoding/IPC work, recording/RasterSource memory, host namespace metadata or total Session/process memory.",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "variants": [
+      {
+        "dataPlane": "rust",
+        "updates": 80,
+        "samples": 168,
+        "first": {
+          "admissionBypasses": 0,
+          "admissions": 12,
+          "byteLimit": 67108864,
+          "cacheBytes": 8166943,
+          "cachedPinBytes": 8166943,
+          "created": 1,
+          "damageEntries": 0,
+          "encodings": 12,
+          "entryLimit": 512,
+          "evictions": 0,
+          "hostIndexEstimateBytes": 256,
+          "hosts": 1,
+          "markerHosts": 1,
+          "oversizedBypasses": 0,
+          "ownersAlive": 1,
+          "peakResidentBytes": 8166943,
+          "pinnedPressureBypasses": 0,
+          "released": 0,
+          "residentBytes": 8166943,
+          "retiredPinBytes": 0,
+          "scope": "renderer-process",
+          "sharedInputBypasses": 0,
+          "staleOwnerBypasses": 0,
+          "frameBytes": 0
+        },
+        "last": {
+          "admissionBypasses": 0,
+          "admissions": 510,
+          "byteLimit": 67108864,
+          "cacheBytes": 66236775,
+          "cachedPinBytes": 8165335,
+          "created": 1,
+          "damageEntries": 1,
+          "encodings": 76,
+          "entryLimit": 512,
+          "evictions": 434,
+          "hostIndexEstimateBytes": 256,
+          "hosts": 1,
+          "markerHosts": 1,
+          "oversizedBypasses": 0,
+          "ownersAlive": 1,
+          "peakResidentBytes": 66264815,
+          "pinnedPressureBypasses": 0,
+          "released": 0,
+          "residentBytes": 66236775,
+          "retiredPinBytes": 0,
+          "scope": "renderer-process",
+          "sharedInputBypasses": 0,
+          "staleOwnerBypasses": 0,
+          "frameBytes": 0
+        },
+        "maximum": {
+          "cacheBytes": 66263931,
+          "residentBytes": 66263931,
+          "retiredPinBytes": 0,
+          "cachedPinBytes": 8167423,
+          "encodings": 76
+        },
+        "errors": [],
+        "sourceResourceRecoveries": 0
+      },
+      {
+        "dataPlane": "node",
+        "updates": 80,
+        "samples": 136,
+        "first": {
+          "admissionBypasses": 0,
+          "admissions": 1,
+          "byteLimit": 67108864,
+          "cacheBytes": 2127827,
+          "cachedPinBytes": 2127827,
+          "created": 1,
+          "damageEntries": 0,
+          "encodings": 1,
+          "entryLimit": 512,
+          "evictions": 0,
+          "hostIndexEstimateBytes": 256,
+          "hosts": 1,
+          "markerHosts": 1,
+          "oversizedBypasses": 0,
+          "ownersAlive": 1,
+          "peakResidentBytes": 2127827,
+          "pinnedPressureBypasses": 0,
+          "released": 0,
+          "residentBytes": 2127827,
+          "retiredPinBytes": 0,
+          "scope": "renderer-process",
+          "sharedInputBypasses": 0,
+          "staleOwnerBypasses": 0,
+          "frameBytes": 911431
+        },
+        "last": {
+          "admissionBypasses": 0,
+          "admissions": 83,
+          "byteLimit": 67108864,
+          "cacheBytes": 65944201,
+          "cachedPinBytes": 2127207,
+          "created": 1,
+          "damageEntries": 0,
+          "encodings": 31,
+          "entryLimit": 512,
+          "evictions": 52,
+          "hostIndexEstimateBytes": 256,
+          "hosts": 1,
+          "markerHosts": 1,
+          "oversizedBypasses": 0,
+          "ownersAlive": 1,
+          "peakResidentBytes": 65948517,
+          "pinnedPressureBypasses": 0,
+          "released": 0,
+          "residentBytes": 65944201,
+          "retiredPinBytes": 0,
+          "scope": "renderer-process",
+          "sharedInputBypasses": 0,
+          "staleOwnerBypasses": 0,
+          "frameBytes": 911163
+        },
+        "maximum": {
+          "cacheBytes": 65948517,
+          "residentBytes": 65948517,
+          "retiredPinBytes": 0,
+          "cachedPinBytes": 2128019,
+          "encodings": 31
+        },
+        "errors": [],
+        "sourceResourceRecoveries": 0
+      }
+    ]
+  },
+  "navigation": {
+    "at": "2026-10-16T21:55:02.602Z",
+    "status": "passed",
+    "scope": "Actual custom Linux Chromium/Rust → CPU CanvasKit Worker: 200 navigations with noisy image pixel confirmation, exact single-owner state after real deferred compositor destruction. Compositor destruction calls are independently verified from opt-in native trace. The transient peak is reported, not treated as already-destroyed ownership. This checkpoint does not certify complete byte budgets, allocator/driver RSS return or BFCache.",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "navigations": 200,
+    "captureSamples": 227,
+    "rendererProcesses": 1,
+    "maximum": {
+      "hosts": 10,
+      "encodings": 120,
+      "ownersAlive": 10,
+      "damageEntries": 2
+    },
+    "deferredDestruction": {
+      "loopEndSample": {
+        "producer": "21895:202",
+        "frameToken": 2,
+        "admissionBypasses": 0,
+        "admissions": 2412,
+        "byteLimit": 67108864,
+        "cacheBytes": 3706208,
+        "cachedPinBytes": 926916,
+        "created": 201,
+        "damageEntries": 0,
+        "encodings": 48,
+        "entryLimit": 512,
+        "evictions": 0,
+        "hostIndexEstimateBytes": 1024,
+        "hosts": 4,
+        "markerHosts": 4,
+        "oversizedBypasses": 0,
+        "ownersAlive": 4,
+        "peakResidentBytes": 9274972,
+        "pinnedPressureBypasses": 0,
+        "released": 197,
+        "residentBytes": 3706208,
+        "retiredPinBytes": 0,
+        "scope": "renderer-process",
+        "sharedInputBypasses": 0,
+        "staleOwnerBypasses": 0
+      },
+      "settled": {
+        "producer": "21895:202",
+        "frameToken": 20,
+        "admissionBypasses": 0,
+        "admissions": 2412,
+        "byteLimit": 67108864,
+        "cacheBytes": 926916,
+        "cachedPinBytes": 926916,
+        "created": 201,
+        "damageEntries": 0,
+        "encodings": 12,
+        "entryLimit": 512,
+        "evictions": 0,
+        "hostIndexEstimateBytes": 256,
+        "hosts": 1,
+        "markerHosts": 1,
+        "oversizedBypasses": 0,
+        "ownersAlive": 1,
+        "peakResidentBytes": 9274972,
+        "pinnedPressureBypasses": 0,
+        "released": 200,
+        "residentBytes": 926916,
+        "retiredPinBytes": 0,
+        "scope": "renderer-process",
+        "sharedInputBypasses": 0,
+        "staleOwnerBypasses": 0
+      },
+      "retirementWaitMs": 990
+    },
+    "observedReleasedInSurvivingRenderers": 200,
+    "last": {
+      "producer": "21895:202",
+      "frameToken": 20,
+      "admissionBypasses": 0,
+      "admissions": 2412,
+      "byteLimit": 67108864,
+      "cacheBytes": 926916,
+      "cachedPinBytes": 926916,
+      "created": 201,
+      "damageEntries": 0,
+      "encodings": 12,
+      "entryLimit": 512,
+      "evictions": 0,
+      "hostIndexEstimateBytes": 256,
+      "hosts": 1,
+      "markerHosts": 1,
+      "oversizedBypasses": 0,
+      "ownersAlive": 1,
+      "peakResidentBytes": 9274972,
+      "pinnedPressureBypasses": 0,
+      "released": 200,
+      "residentBytes": 926916,
+      "retiredPinBytes": 0,
+      "scope": "renderer-process",
+      "sharedInputBypasses": 0,
+      "staleOwnerBypasses": 0
+    },
+    "expectedNavigationInvalidations": [
+      {
+        "phase": "navigation",
+        "message": "Navigation invalidated the in-flight capture",
+        "code": null
+      },
+      {
+        "phase": "navigation",
+        "message": "Navigation invalidated the in-flight capture",
+        "code": null
+      },
+      {
+        "phase": "navigation",
+        "message": "Navigation invalidated the in-flight capture",
+        "code": null
+      }
+    ],
+    "errors": []
+  },
+  "nativeTrace": {
+    "uniqueReleasedHosts": 200,
+    "releasedCachedEntries": 2400,
+    "pendingRequestsCanceled": 0,
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-navigation-trace.log",
+    "sha256": "d74604b4007c5e100bea0874727b3d4a44ce7d01c6e966dfbf97b6ee130f7409"
+  },
+  "stress": {
+    "runId": "7e99d5cf-8ef4-4bee-b0a3-161bde9ffb65",
+    "status": "passed",
+    "elapsedSeconds": 181.430611792,
+    "cycles": 1400,
+    "navigations": 350,
+    "resizes": 127,
+    "inputs": 87,
+    "supersessions": 21,
+    "expectedNavigationInvalidations": 5,
+    "unexpectedErrors": [],
+    "viewerBudgetFailures": [
+      0,
+      0,
+      0
+    ],
+    "results": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-stress"
+  },
+  "regressions": {
+    "at": "2026-10-16T21:53:03.535499+00:00",
+    "tests": [
+      {
+        "name": "verify-native",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-verify-native.log"
+      },
+      {
+        "name": "verify-input",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-verify-input.log"
+      },
+      {
+        "name": "verify-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-verify-live.log"
+      },
+      {
+        "name": "verify-resource-memory",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-verify-resource-memory.log"
+      },
+      {
+        "name": "verify-native-asset-cache",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-verify-native-asset-cache.log"
+      },
+      {
+        "name": "verify-viewer-lifecycle",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-verify-viewer-lifecycle.log"
+      },
+      {
+        "name": "verify-webgl-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-verify-webgl-live.log"
+      }
+    ],
+    "stagedBuild": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+    "status": "passed"
+  },
+  "build": {
+    "format": 1,
+    "target": {
+      "os": "linux",
+      "cpu": "arm64"
+    },
+    "buildProfile": "linux-arm64-host-cc",
+    "hostCrossCompiler": {
+      "mode": "mac-arm64-clang-cross",
+      "target": "aarch64-linux-gnu",
+      "compilerSha256": "b3785ad91b93cb56eac31eaef5d8cf5ef71fae512843417a55bd3912b4d41766",
+      "compilerVersion": "clang version 24.0.0git (https://chromium.googlesource.com/a/external/github.com/llvm/llvm-project 86922d51225db089fffb99475eefc4904f79e3c8)",
+      "jobs": 4
+    },
+    "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+    "skiaRevision": "29ed1e87a0a50f3d8347e988842d9d59e7573efa",
+    "nativeSources": {
+      "BUILD.gn": "0c6831cc14ef1cf43bb56513a1911ebbe7e115995248c243485ea9157cb3a1f4",
+      "asset_cache.h": "42c4d7b2d3770cbb2805e2283e5de1a2e3e5185e975cbf68c8a0de7c3aaa3f75",
+      "capture_frame_marker.cc": "8d63f63ea27f35e1fe1dd0b155d3755b8499d8fc335b89185ec683e13bb24bfd",
+      "capture_frame_marker.h": "9d42f7c01a5831fcdb2b8e8ffbd65205ada26f5e35efc90f830bac52f7c3243e",
+      "capture_host_registry.h": "7d6c558a1e185955aab2941d30cfe3e450bb9b00b32218e45cd0cd8b7bb3949d",
+      "capture_state.cc": "c5b697b3d3be1e78ef5073ceaefd518e5dabf714752825fe6277181c0f56c652",
+      "capture_state.h": "083e4af48e00d0e08b5755354de1571ad9e1b9bd9d1472f60bc0b36fd63f2c82",
+      "cc_capture.inc": "12ed49292e4ca0d371e8e99c67275b03ffeeeea76f449385b2698b24255ace79",
+      "encoded_picture.h": "d439db441561e9f6c1a01ced7bac98afdfeaed466d0220387bc492440af75e5f",
+      "extension_capture.inc": "d4cca278fcfb24f90bd253d366eda190e5d81d0e33bf8c5f21b6d267dfe08421",
+      "font_subset.cc": "b3e1dd8c3502c97094b30d232e0c14d2f57605b98206375b63bd516fdd06f64c",
+      "font_subset.h": "a0ef6e8b07487412cf5632a8bd5b6d094beeb617cdfcdac802113286a6b7f8e8",
+      "serializer.cc": "67482f6f21db5c0665f1b44489ccc59323d53594b6d0c22031a0f05ee464b1ee",
+      "serializer.h": "6e49d51d45bcaee797fab12a7629b3a416d96b52ff7d59f0f46e48e465acec40",
+      "serializer_unittest.cc": "539dc591c6bada8b14c5d8ddd2196bae1755aca3e6866336f4b595ee855785fc",
+      "socket_transport.h": "aa55764ef39cc802f560c03bde5886fcb382b8c1833314465f19189a3e2ad4c1",
+      "test_main.cc": "2683a596f6572109fb43c7a70c125ceb023df1796e70fc025f44a477012d9fb6",
+      "viz_capture.cc": "6dd86243fa4aca77d1b7df0c5ea2598538f62f25757e95c6a8d7f59ec68ddd61",
+      "viz_capture.h": "1c9c20b29f2e0cad17fef06161b8fb32343e6a5cac41c6031ea8456c6b5a23e5",
+      "viz_delivery.cc": "01dc554babd4be57f38cb5f7f85fa8f3a3b4b860d5f49c19568e21a4667d3d81",
+      "viz_delivery.h": "79dce1e9361e4c8fd3d77095e91b46e573253dbd5a942a203806f1b4e89463c7"
+    },
+    "patches": {
+      "0001-async-capture.patch": "50b45c2d8fea81c8230644bdf9e3bd80c92b23285d263d88cefbf1fd368b5e2f",
+      "0002-compositor-viz-pairing.patch": "ecefbed1a09f81f23082955c74f2aa6a94946fa724e45901cb4926bf66fab45b",
+      "0003-chromium-build-contracts.patch": "618e568969d778b55836d02cbecc62709968bd7c3c1a896fc536262b19fffe31",
+      "0004-v8-context-isolate.patch": "e6d91dd928da133c1d9437e8f55ccceb451029a4b4fdb5e9df6c6fdba2225983",
+      "0005-accumulate-tile-damage.patch": "8cbe9fd8c08c1cf77ea41c59e5e13ddcf9b6feaf813a56baab8fffa783e04a6a",
+      "0006-copy-damage-region-rects.patch": "f785000d601d48d2988430b8154da2996d7fa28a76a0c9971dc4da18e391801f",
+      "0007-webgl-layer-classification.patch": "59901b21c9af2df1e746a6df655c1eed8c4ecac5b046700afe7c058efc84d7e4",
+      "0008-viz-delivery-dependency.patch": "6564295e7360bc489055eb5cd7088b24620d153c0e4d9671e05a47a1feaafd7b",
+      "0009-exact-capture-frame-marker.patch": "c4f388b75793f5166edd722186664a3350043ac4953b63d77f2551eff5dd426c",
+      "0010-capture-host-lifetime.patch": "436dd278ed99b2bcb1269fe17521d11d07cebfc53bc088a5723052632a881439"
+    },
+    "patchedSources": {
+      "content/renderer/gpu_benchmarking_extension.cc": "e3becb774bcce814073a6da5e33fbbc1350fade2e11d1164d26e7a24a3728b67",
+      "content/renderer/gpu_benchmarking_extension.h": "d674acd0223fe1f0c9068a9ca62f78452b9c1a049520d5f587419874dbfd4ab8",
+      "content/renderer/BUILD.gn": "2d4bcd546ae90a6cf1a99f25e55fad7d5545784327338b97d1f05eb1ff89924b",
+      "content/browser/renderer_host/render_process_host_impl.cc": "12b866e91c414a2f1fb8776a44ada9a34d32dcdfd793103bf5434de2016e3b6c",
+      "content/renderer/render_frame_impl.cc": "4c4703a9eeab1d4b914dabab3d00b739958714b6e8384a19a2277571c62524c9",
+      "cc/BUILD.gn": "62b777a82e7bb5d79604627b5cae7dcad602e15846bc72c92bb66543852fe582",
+      "cc/trees/layer_tree_host_impl.cc": "3f2b56031112a2878bbac9310d7baea6680fa8f7be8fdab57a5a673d8f4cd7c8",
+      "components/viz/common/quads/compositor_frame_metadata.h": "e605ec46868e93bf6d7b57451d1512415fbbf1707dcbaa758459f9ebd004a1c4",
+      "components/viz/common/quads/compositor_frame_metadata.cc": "ebe0b12fa91c1ec334f20b4e6bf457d9c63bfd79034a1b29bbca058803b3b870",
+      "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom": "ca153263077f4cbfe4af35a7ab446b2e77acf4bd6baa9b268ed2ffd684f7bfd1",
+      "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h": "38445da06359dfe644723b9f5048e3bc43c2eee9a6e79d8ddb0ec93a5a9a8f2d",
+      "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc": "b702611a05fcdf8d0ab21832f6fa5103505b697563fe677cf5698118a39dc238",
+      "components/viz/service/BUILD.gn": "7b683180fadc88fe7b4b6564176cddbb6dcc070e36797bcab8450ae16732ad92",
+      "components/viz/service/display/surface_aggregator.cc": "f3481f0202863f279d4f81d07246e034047b1d97c73939d9410ad2bc52b68461",
+      "cc/layers/picture_layer_impl.cc": "56aef3ef25e1f22ff947b4f575af421e8b6d066914b19e981bd310738a143f53",
+      "cc/trees/layer_tree_host_impl.h": "774e652a2bd35e7b631fbdc880bb82929382f684c70e53c888494a29d41eb90f"
+    },
+    "argsSha256": "25a86fd4153e0f0fb6a2025dc9dc35ed4cb3993b92553d25b370fe49a005b339",
+    "hostConfiguration": {
+      "gnSha256": "36fe330f4e6a0c8cebcc893a72a6e70871fb395b501a811a231c80465b3fec9d",
+      "swiftShaderSha256": "75f21859d5caa845546086fc67816353d33b0da1edfc7d6a1844664f0b745fa8"
+    },
+    "binaries": {
+      "headless_shell": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "serializer_tests": "5b69f9fc30b6abada6edc6b3fd2708547c813b746a773b198233c5f4ed3f2408"
+    },
+    "stagedTarget": "headless_shell_viz_delivery",
+    "canonicalGraphAccepted": false,
+    "builtAt": "2026-10-16T21:52:42.945Z"
+  },
+  "publication": {
+    "at": "2026-10-16T21:58:27.249981+00:00",
+    "previousBrowserSha256": "cd39c016fd273775320ce7f7fcdaacc325901ffad7569194dcbcf395fd8464f5",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "atomicPublish": true,
+    "canonicalGraphUpToDate": true,
+    "matchesAcceptedStagingBinary": true,
+    "oldProofContainerPreserved": true
+  },
+  "preservedBuildFailure": {
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-build.log",
+    "cause": "Chromium raw_ptr plugin rejected semaphore raw pointer fields in the test payload fixture. Replaced those fixture fields with shared_ptr semaphores; production cache code was not weakened. Second build and all 34 C++ tests passed."
+  },
+  "remaining": [
+    "Uncached serialization/IPC work and all transient output copies",
+    "Host-owned recording/SkPicture/RasterSource bytes and host-namespace metadata admission",
+    "Page-epoch retirement before physical compositor destruction, including actual pending-capture cancellation",
+    "Transactional Rust/Node Mapper resource admission and rejected-scene rollback",
+    "Explicit Source/Broker close cleanup and many-Session release",
+    "Whole Session/cross-renderer budgets and allocator/process/driver RSS/PSS verification"
+  ],
+  "eightHour": {
+    "runId": "8c8f0d4c-1c2f-44f4-918b-926c5e555be8",
+    "containsB4": false,
+    "containsThisCheckpoint": false,
+    "status": "running-not-accepted"
+  },
+  "preserved": {
+    "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "committed": false,
+    "pushed": false,
+    "unrelatedPeerDiff": "1 insertion/1 deletion preserved",
+    "oldProofContainerPreserved": true
+  }
+}

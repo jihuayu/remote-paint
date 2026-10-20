@@ -1,0 +1,729 @@
+{
+  "at": "2026-10-17T03:28:25.433307+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Already buffered child stdout/stderr references at NativeBroker teardown. No active native-stream admission,application graph/VM,natural GC timing,allocator/RSS/PSS or whole Session completion claim. All41+N1 remain7complete/12partial/22pending.",
+  "baseline": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-before.json",
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-baseline.log",
+    "variant": {
+      "mode": "normal",
+      "before": {
+        "stdout": {
+          "views": 1,
+          "viewBytes": 65536,
+          "backingBytes": 65536
+        },
+        "stderr": {
+          "views": 1,
+          "viewBytes": 65536,
+          "backingBytes": 65536
+        }
+      },
+      "after": {
+        "stdout": 65536,
+        "stderr": 65536,
+        "collectible": false,
+        "closedDataCallbacks": 0,
+        "closedReadableCallbacks": 0,
+        "parses": 0,
+        "protocolEvents": 0,
+        "childExited": true
+      }
+    },
+    "interpretation": "Destroying streams/reaping child left65536 bytes in each paused readable queue. Retaining Broker+streams kept their observed Buffer/ArrayBuffer references alive through forced GC. Prior actual Rust blocked stdout likewise retained65536 bytes;this was outside the explicit Node response transient ledger."
+  },
+  "implementation": {
+    "path": "native/broker.mjs:destroyReadable/beginClose",
+    "behavior": "Remove data/readable delivery listeners while retaining error/close listeners;destroy first to stop new native reads,then discard already queued data using public read() in at-most1KiB pieces. No decoding,protocol feed or whole-queue concatenation. The helper has no chunk variable captured by the pending close Promise.",
+    "preserved": "Same immediate pending rejection,idempotent close Promise,actual write/request/response ownership,process reaping,SIGTERM/SIGKILL bounds and ordinary failure handling. Existing malformed/oversized/spawn-failure/partial-output cases now also assert both queues empty.",
+    "dataOrder": "Queued buffers are removed from retained Readables;observed Buffer/backing collection is separately verified while Broker and streams remain reachable. This is explicit reference disposal,not an allocator return promise."
+  },
+  "tests": {
+    "js": 178,
+    "jsLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-js-tests.log",
+    "rust": "Unchanged066698a3 Rust sources/binary;reuse prior60 release tests in rpc-output-packets.json. No rebuild/new Rust test claim.",
+    "hostGc": {
+      "at": "2026-10-17T03:09:54.248Z",
+      "status": "passed",
+      "nodeVersion": "v26.4.0",
+      "platform": "darwin",
+      "scope": "Real child stdout/stderr queues on paused binary streams,normal/forced/fragmented close,and forced-GC reachability while closed Broker and streams remain retained. No natural-GC/RSS or active-stream admission claim.",
+      "variants": [
+        {
+          "mode": "normal",
+          "before": {
+            "stdout": {
+              "views": 1,
+              "viewBytes": 65536,
+              "backingBytes": 65536
+            },
+            "stderr": {
+              "views": 1,
+              "viewBytes": 65536,
+              "backingBytes": 65536
+            }
+          },
+          "after": {
+            "stdout": 0,
+            "stderr": 0,
+            "collectible": true,
+            "closedDataCallbacks": 0,
+            "closedReadableCallbacks": 0,
+            "parses": 0,
+            "protocolEvents": 0,
+            "childExited": true
+          }
+        },
+        {
+          "mode": "forced",
+          "before": {
+            "stdout": {
+              "views": 1,
+              "viewBytes": 65536,
+              "backingBytes": 65536
+            },
+            "stderr": {
+              "views": 1,
+              "viewBytes": 65536,
+              "backingBytes": 65536
+            }
+          },
+          "after": {
+            "stdout": 0,
+            "stderr": 0,
+            "collectible": true,
+            "closedDataCallbacks": 0,
+            "closedReadableCallbacks": 0,
+            "parses": 0,
+            "protocolEvents": 0,
+            "childExited": true
+          }
+        },
+        {
+          "mode": "fragmented",
+          "before": {
+            "stdout": {
+              "views": 256,
+              "viewBytes": 65792,
+              "backingBytes": 65792
+            },
+            "stderr": {
+              "views": 254,
+              "viewBytes": 65792,
+              "backingBytes": 65792
+            }
+          },
+          "after": {
+            "stdout": 0,
+            "stderr": 0,
+            "collectible": true,
+            "closedDataCallbacks": 0,
+            "closedReadableCallbacks": 0,
+            "parses": 0,
+            "protocolEvents": 0,
+            "childExited": true
+          }
+        }
+      ]
+    },
+    "linuxGc": {
+      "at": "2026-10-17T03:16:26.363Z",
+      "status": "passed",
+      "nodeVersion": "v22.23.3",
+      "platform": "linux",
+      "scope": "Real child stdout/stderr queues on paused binary streams,normal/forced/fragmented close,and forced-GC reachability while closed Broker and streams remain retained. No natural-GC/RSS or active-stream admission claim.",
+      "variants": [
+        {
+          "mode": "normal",
+          "before": {
+            "stdout": {
+              "views": 1,
+              "viewBytes": 65536,
+              "backingBytes": 65536
+            },
+            "stderr": {
+              "views": 1,
+              "viewBytes": 65536,
+              "backingBytes": 65536
+            }
+          },
+          "after": {
+            "stdout": 0,
+            "stderr": 0,
+            "collectible": true,
+            "closedDataCallbacks": 0,
+            "closedReadableCallbacks": 0,
+            "parses": 0,
+            "protocolEvents": 0,
+            "childExited": true
+          }
+        },
+        {
+          "mode": "forced",
+          "before": {
+            "stdout": {
+              "views": 1,
+              "viewBytes": 65536,
+              "backingBytes": 65536
+            },
+            "stderr": {
+              "views": 1,
+              "viewBytes": 65536,
+              "backingBytes": 65536
+            }
+          },
+          "after": {
+            "stdout": 0,
+            "stderr": 0,
+            "collectible": true,
+            "closedDataCallbacks": 0,
+            "closedReadableCallbacks": 0,
+            "parses": 0,
+            "protocolEvents": 0,
+            "childExited": true
+          }
+        },
+        {
+          "mode": "fragmented",
+          "before": {
+            "stdout": {
+              "views": 253,
+              "viewBytes": 65792,
+              "backingBytes": 65792
+            },
+            "stderr": {
+              "views": 252,
+              "viewBytes": 65792,
+              "backingBytes": 65792
+            }
+          },
+          "after": {
+            "stdout": 0,
+            "stderr": 0,
+            "collectible": true,
+            "closedDataCallbacks": 0,
+            "closedReadableCallbacks": 0,
+            "parses": 0,
+            "protocolEvents": 0,
+            "childExited": true
+          }
+        }
+      ]
+    },
+    "gcScope": "Normal close,forced failure and fragmented stdout/stderr. Observer queue access is diagnostic only;production uses public read()/destroy(). Forced GC proves captured references collectible,not natural GC timing or every native allocation.",
+    "actualRustBlockedClose": {
+      "mode": "close-blocked-stdout",
+      "waitChannel": "sock_alloc_send_pskb",
+      "transport": "unix-socket",
+      "childExitCode": 2,
+      "oldProcessIdentityExited": true,
+      "parentReadableBytesAfterClose": 0,
+      "scope": "Actual blocked stdout loses its reader;child exits2 instead of continuing a partial frame. Logical Rust counters are not queried after process exit;OS/process cleanup and separate unit write-owner checks are distinct evidence."
+    },
+    "actualRustOtherVariants": {
+      "quota": {
+        "quotaBytes": 1048576,
+        "before": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 12452,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 5428,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "denied": {
+          "code": "RESOURCE_BUDGET_PRESSURE",
+          "message": "RPC output allocation budget exceeded"
+        },
+        "backendCommittedSerial": 2,
+        "oldPublishedSerial": 1,
+        "recoveredSerial": 3,
+        "sameProcess": true,
+        "publishedBaselineIntact": true,
+        "after": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 13699,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 1,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 5428,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "cleared": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 13704,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 1,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 5428,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "remoteRollback": false
+      },
+      "defaultReply": {
+        "metadataBytes": 2097152,
+        "status": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 8192,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 2102578,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        }
+      },
+      "blockedDrain": {
+        "mode": "drain-blocked-stdout",
+        "waitChannel": "sock_alloc_send_pskb",
+        "transport": "unix-socket",
+        "readableBytesAtBlock": 65536,
+        "controlWaitsBehindData": true,
+        "returnedMetadataBytes": 4194304,
+        "afterDrain": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 13674,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 4199208,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "scope": "Actual Linux stdout write blocks while parent pauses reading. Main RPC control remains behind it;after drain,full reply and following control succeed,and output data credit is0. In-block credit ownership is independently checked with the blocking Rust writer unit."
+      }
+    },
+    "linuxFrozen": {
+      "at": "2026-10-17T03:12:34.296328+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-webgl-live.log"
+        },
+        {
+          "name": "verify-broker-cache-lru",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-broker-cache-lru.log"
+        },
+        {
+          "name": "verify-broker-mapper-transaction",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-broker-mapper-transaction.log"
+        },
+        {
+          "name": "verify-large-native-cache",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-large-native-cache.log"
+        },
+        {
+          "name": "verify-resource-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-resource-pool.log"
+        },
+        {
+          "name": "verify-source-resource-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-source-resource-pressure.log"
+        },
+        {
+          "name": "verify-viz-input-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-viz-input-pool.log"
+        },
+        {
+          "name": "verify-source-input-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-source-input-pressure.log"
+        },
+        {
+          "name": "verify-node-request-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-node-request-budget.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-control-channel.log"
+        },
+        {
+          "name": "verify-control-priority",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-control-priority.log"
+        },
+        {
+          "name": "verify-input-feedback",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-input-feedback.log"
+        },
+        {
+          "name": "verify-worker-control",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-worker-control.log"
+        },
+        {
+          "name": "verify-streaming-startup",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-streaming-startup.log"
+        },
+        {
+          "name": "verify-page-activity",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-page-activity.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-node-response-contract",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-node-response-contract.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-snapshot-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-snapshot-budget.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-rpc-output.log"
+        },
+        {
+          "name": "verify-node-stream-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-verify-node-stream-close.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-checkpoint-version-v1.json",
+      "status": "passed"
+    },
+    "canonicalLiveJs": {
+      "at": "2026-10-17T03:25:12.865598+00:00",
+      "source": "Live /project JS,new stream teardown and unchanged canonical066 Rust;isolated artifacts",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-v3-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-v3-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-v3-verify-source-close.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-v3-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-v3-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-v3-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-v3-verify-rpc-output.log"
+        },
+        {
+          "name": "verify-node-stream-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-v3-verify-node-stream-close.log"
+        }
+      ],
+      "status": "passed"
+    },
+    "largeNative": {
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "mapperRollbackRejections": 423
+  },
+  "canonicalHarnessPrototype": {
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-smoke-failed-v1.json",
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-memory-failed-v1.log",
+    "pathProbe": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-fixture-path.log",
+    "cause": "verify-memory-diagnostics spawns tests/serve-memory-soak.mjs relative to cwd. Isolated canonical cwd had no tests directory;node --check confirms MODULE_NOT_FOUND. Runtime unchanged;new isolated v2 cwd links tests to live/project/tests. Original20s readiness deadline unchanged.",
+    "secondReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-smoke-failed-v2.json",
+    "secondLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-canonical-request-path-failed-v2.log",
+    "secondCause": "Request lifetime GC checks completed,but final source-hash reads native/broker.mjs relative to isolated cwd. v3 mirrors live source top-level as symlinks,except artifacts/.git,so all repo-relative test assumptions hold while outputs stay isolated. Runtime/test files and all timeouts unchanged."
+  },
+  "version": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-checkpoint-version-v1.json",
+    "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-checkpoint-project-v1",
+    "runtimeSha256": {
+      "native/broker.mjs": "2eed4463bbbf42f0050afe3cf6d7eac7d084bf296ddc2a7aee137c0cc30a5c66"
+    },
+    "brokerSha256": "066698a35df17f72c3fb926ed355a0bd613af84ee26d701ea663e7a8a38d87f5",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "binariesUnchanged": true,
+    "cpp": "Unchanged browser reuses prior34 C++ tests.",
+    "artifactReports": {
+      "gc-linux.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-artifacts/gc-linux.json",
+        "sha256": "963e6fb96b7ecb4c20f89e9c93e9d453dfaa1a91c259ff8ae7f387f77ed474b5"
+      },
+      "rust-output.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-artifacts/rust-output.json",
+        "sha256": "10c48326f6454d4b304d2bb883362cc50cfc46415e85c397755bfb969e86958b"
+      },
+      "large-native.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-artifacts/large-native.json",
+        "sha256": "c1cfc76bea59414508227fb5ad7270a44d886bafd65d79e3f4e6f6a3abffdf7f"
+      },
+      "rollback.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-artifacts/rollback.json",
+        "sha256": "ea69d6cff3a5764ad47d4e93f5e2eb5085c6bc85c3b615c3fbde4886f0346358"
+      },
+      "memory-diagnostics.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-artifacts/memory-diagnostics.json",
+        "sha256": "8bc8075b0caecb40edcaf8c0ac242343bc27fec89e206557c248af8fc6882b03"
+      },
+      "source-close.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-stream-close-v1-artifacts/source-close.json",
+        "sha256": "ea7e917c9723425ec1e6e1e8b93bffa3b3d90176827d029767b00f91014e3886"
+      }
+    }
+  },
+  "remaining": [
+    "Active stream/VM and returned application graph accounting.",
+    "Prebuilt control/Gateway Value builders,handler/asset parse/manifest scratch,Gateway scene/delta/Tungstenite copies and Mapper persistent resource/weak-index backing.",
+    "Native recordings/uncached work/tiled duplication/epoch/actual cancellation and whole Session/many-process PSS/cgroup.",
+    "B4 comparable baseline,independent8h,all other41-row/N1 requirements."
+  ],
+  "eightHours": "2585828c remains immutablea296/earlier JS,excluding this and later Rust/RPC/response checkpoints. Never carry elapsed time from failed older runs.",
+  "preserve": "No commit/push. HEAD3ff9512c/live peer1+/1-,Rust066/browseraa,proof/8h processes/compiler6713 and all Chromium/Cargo caches preserved."
+}

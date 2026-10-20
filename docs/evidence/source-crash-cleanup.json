@@ -1,0 +1,716 @@
+{
+  "at": "2026-10-17T00:45:51.088835+00:00",
+  "status": "passed-in-stated-scope",
+  "checkpoint": "Source renderer crash cleanup and independent native memory diagnostics",
+  "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+  "rustSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+  "rustAndBrowserUnchanged": true,
+  "nodeTests": 165,
+  "frozenLinuxRegressions": {
+    "at": "2026-10-17T00:41:35.716316+00:00",
+    "tests": [
+      {
+        "name": "verify-broker",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-broker.log"
+      },
+      {
+        "name": "verify-broker-viz",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-broker-viz.log"
+      },
+      {
+        "name": "verify-broker-resources",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-broker-resources.log"
+      },
+      {
+        "name": "verify-broker-gateway",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-broker-gateway.log"
+      },
+      {
+        "name": "verify-broker-tiles",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-broker-tiles.log"
+      },
+      {
+        "name": "verify-frame-window",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-frame-window.log"
+      },
+      {
+        "name": "verify-native",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-native.log"
+      },
+      {
+        "name": "verify-input",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-input.log"
+      },
+      {
+        "name": "verify-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-live.log"
+      },
+      {
+        "name": "verify-resource-memory",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-resource-memory.log"
+      },
+      {
+        "name": "verify-source-close",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-source-close.log"
+      },
+      {
+        "name": "verify-viewer-lifecycle",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-viewer-lifecycle.log"
+      },
+      {
+        "name": "verify-webgl-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-webgl-live.log"
+      },
+      {
+        "name": "verify-broker-cache-lru",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-broker-cache-lru.log"
+      },
+      {
+        "name": "verify-broker-mapper-transaction",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-broker-mapper-transaction.log"
+      },
+      {
+        "name": "verify-large-native-cache",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-large-native-cache.log"
+      },
+      {
+        "name": "verify-resource-pool",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-resource-pool.log"
+      },
+      {
+        "name": "verify-source-resource-pressure",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-source-resource-pressure.log"
+      },
+      {
+        "name": "verify-viz-input-pool",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-viz-input-pool.log"
+      },
+      {
+        "name": "verify-source-input-pressure",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-source-input-pressure.log"
+      },
+      {
+        "name": "verify-node-request-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-node-request-budget.log"
+      },
+      {
+        "name": "verify-control-channel",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-control-channel.log"
+      },
+      {
+        "name": "verify-control-priority",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-control-priority.log"
+      },
+      {
+        "name": "verify-input-feedback",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-input-feedback.log"
+      },
+      {
+        "name": "verify-worker-control",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-worker-control.log"
+      },
+      {
+        "name": "verify-streaming-startup",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-streaming-startup.log"
+      },
+      {
+        "name": "verify-page-activity",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-page-activity.log"
+      },
+      {
+        "name": "verify-node-request-lifetime",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-node-request-lifetime.log"
+      },
+      {
+        "name": "verify-memory-diagnostics",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-final-verify-memory-diagnostics.log"
+      }
+    ],
+    "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+    "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-diagnostics-checkpoint-version.json",
+    "status": "passed"
+  },
+  "contract": {
+    "at": "2026-10-17T00:45:32.068Z",
+    "status": "passed",
+    "scope": "Three actual native Linux Sources: normal stop, real Page.crash renderer fault, and injected post-Live cleanup error. Independent per-process PSS/cgroup sampling and crash events survive a dead page; fixture/diagnostics cleanup continues after close errors; every sampled /proc pid+start identity exits. No memory-growth or eight-hour pass claim.",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "variants": [
+      {
+        "fault": "none",
+        "runId": "20430762-4514-4a30-abe5-67bfe884d3d8",
+        "exitCode": 0,
+        "processes": [
+          {
+            "pid": 49964,
+            "startTicks": 12253163,
+            "kind": "node",
+            "pssBytes": 155618304
+          },
+          {
+            "pid": 49977,
+            "startTicks": 12253190,
+            "kind": "broker",
+            "pssBytes": 1318912
+          },
+          {
+            "pid": 49979,
+            "startTicks": 12253191,
+            "kind": "chromium",
+            "chromiumRole": "browser",
+            "pssBytes": 59607040
+          },
+          {
+            "pid": 49981,
+            "startTicks": 12253192,
+            "kind": "chromium",
+            "pssBytes": 12752896
+          },
+          {
+            "pid": 49982,
+            "startTicks": 12253192,
+            "kind": "chromium",
+            "pssBytes": 12789760
+          },
+          {
+            "pid": 49998,
+            "startTicks": 12253193,
+            "kind": "chromium",
+            "chromiumRole": "network.mojom.NetworkService",
+            "pssBytes": 33658880
+          },
+          {
+            "pid": 49997,
+            "startTicks": 12253193,
+            "kind": "chromium",
+            "chromiumRole": "GPU",
+            "pssBytes": 42950656
+          },
+          {
+            "pid": 50033,
+            "startTicks": 12253195,
+            "kind": "chromium",
+            "chromiumRole": "renderer",
+            "pssBytes": 122327040
+          }
+        ],
+        "samples": 7,
+        "sourceCleanup": {
+          "at": "2026-10-17T00:45:26.431Z",
+          "runId": "20430762-4514-4a30-abe5-67bfe884d3d8",
+          "status": "closed",
+          "steps": [
+            {
+              "name": "live",
+              "status": "closed"
+            },
+            {
+              "name": "fixture",
+              "status": "closed"
+            },
+            {
+              "name": "diagnostics",
+              "status": "closed"
+            }
+          ],
+          "fixtureListening": false,
+          "sourceClosed": true,
+          "brokerClosed": true,
+          "remainingProcesses": [
+            {
+              "pid": 49964,
+              "kind": "node",
+              "cpuMs": 780,
+              "rssBytes": 188592128,
+              "startTicks": 12253163,
+              "state": "S",
+              "pssBytes": 165342208,
+              "privateCleanBytes": 6029312,
+              "privateDirtyBytes": 137003008,
+              "swapPssBytes": 0
+            }
+          ]
+        },
+        "crashObserved": false
+      },
+      {
+        "fault": "renderer-crash",
+        "runId": "bef19b06-677c-43b1-83c0-76b759c7b56f",
+        "exitCode": 0,
+        "processes": [
+          {
+            "pid": 50045,
+            "startTicks": 12253340,
+            "kind": "node",
+            "pssBytes": 155194368
+          },
+          {
+            "pid": 50058,
+            "startTicks": 12253367,
+            "kind": "broker",
+            "pssBytes": 1327104
+          },
+          {
+            "pid": 50060,
+            "startTicks": 12253368,
+            "kind": "chromium",
+            "chromiumRole": "browser",
+            "pssBytes": 59587584
+          },
+          {
+            "pid": 50063,
+            "startTicks": 12253369,
+            "kind": "chromium",
+            "pssBytes": 12789760
+          },
+          {
+            "pid": 50062,
+            "startTicks": 12253369,
+            "kind": "chromium",
+            "pssBytes": 12747776
+          },
+          {
+            "pid": 50079,
+            "startTicks": 12253370,
+            "kind": "chromium",
+            "chromiumRole": "network.mojom.NetworkService",
+            "pssBytes": 33678336
+          },
+          {
+            "pid": 50078,
+            "startTicks": 12253370,
+            "kind": "chromium",
+            "chromiumRole": "GPU",
+            "pssBytes": 43100160
+          },
+          {
+            "pid": 50114,
+            "startTicks": 12253372,
+            "kind": "chromium",
+            "chromiumRole": "renderer",
+            "pssBytes": 121764864
+          }
+        ],
+        "samples": 13,
+        "sourceCleanup": {
+          "at": "2026-10-17T00:45:30.274Z",
+          "runId": "bef19b06-677c-43b1-83c0-76b759c7b56f",
+          "status": "closed",
+          "steps": [
+            {
+              "name": "live",
+              "status": "closed"
+            },
+            {
+              "name": "fixture",
+              "status": "closed"
+            },
+            {
+              "name": "diagnostics",
+              "status": "closed"
+            }
+          ],
+          "fixtureListening": false,
+          "sourceClosed": true,
+          "brokerClosed": true,
+          "remainingProcesses": [
+            {
+              "pid": 50045,
+              "kind": "node",
+              "cpuMs": 920,
+              "rssBytes": 187285504,
+              "startTicks": 12253340,
+              "state": "S",
+              "pssBytes": 164011008,
+              "privateCleanBytes": 6029312,
+              "privateDirtyBytes": 135663616,
+              "swapPssBytes": 0
+            }
+          ]
+        },
+        "crashObserved": true
+      },
+      {
+        "fault": "cleanup-error",
+        "runId": "13765c01-b94b-4258-bc06-41efc83c4e25",
+        "exitCode": 1,
+        "processes": [
+          {
+            "pid": 50126,
+            "startTicks": 12253724,
+            "kind": "node",
+            "pssBytes": 163070976
+          },
+          {
+            "pid": 50139,
+            "startTicks": 12253750,
+            "kind": "broker",
+            "pssBytes": 1331200
+          },
+          {
+            "pid": 50141,
+            "startTicks": 12253752,
+            "kind": "chromium",
+            "chromiumRole": "browser",
+            "pssBytes": 59777024
+          },
+          {
+            "pid": 50144,
+            "startTicks": 12253753,
+            "kind": "chromium",
+            "pssBytes": 12789760
+          },
+          {
+            "pid": 50167,
+            "startTicks": 12253754,
+            "kind": "chromium",
+            "chromiumRole": "network.mojom.NetworkService",
+            "pssBytes": 33748992
+          },
+          {
+            "pid": 50143,
+            "startTicks": 12253753,
+            "kind": "chromium",
+            "pssBytes": 12753920
+          },
+          {
+            "pid": 50197,
+            "startTicks": 12253755,
+            "kind": "chromium",
+            "chromiumRole": "renderer",
+            "pssBytes": 122424320
+          },
+          {
+            "pid": 50166,
+            "startTicks": 12253754,
+            "kind": "chromium",
+            "chromiumRole": "GPU",
+            "pssBytes": 42994688
+          }
+        ],
+        "samples": 7,
+        "sourceCleanup": {
+          "at": "2026-10-17T00:45:32.062Z",
+          "runId": "13765c01-b94b-4258-bc06-41efc83c4e25",
+          "status": "failed",
+          "steps": [
+            {
+              "name": "live",
+              "status": "failed",
+              "error": "Error: Injected soak cleanup failure\n    at file:///tmp/remote-paint-memory-diagnostics-checkpoint/tests/serve-memory-soak.mjs:46:73\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///tmp/remote-paint-memory-diagnostics-checkpoint/tests/serve-memory-soak.mjs:49:9\n    at async poll (file:///tmp/remote-paint-memory-diagnostics-checkpoint/tests/serve-memory-soak.mjs:65:108)"
+            },
+            {
+              "name": "fixture",
+              "status": "closed"
+            },
+            {
+              "name": "diagnostics",
+              "status": "closed"
+            }
+          ],
+          "fixtureListening": false,
+          "sourceClosed": true,
+          "brokerClosed": true,
+          "remainingProcesses": [
+            {
+              "pid": 50126,
+              "kind": "node",
+              "cpuMs": 740,
+              "rssBytes": 190214144,
+              "startTicks": 12253724,
+              "state": "S",
+              "pssBytes": 166923264,
+              "privateCleanBytes": 6029312,
+              "privateDirtyBytes": 138575872,
+              "swapPssBytes": 0
+            }
+          ]
+        },
+        "crashObserved": false
+      }
+    ]
+  },
+  "fixedCrashCloseTraces": {
+    "renderer-crash-0dJe9G": [
+      {
+        "at": "2026-10-17T00:45:30.236Z",
+        "label": "control",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:45:30.237Z",
+        "label": "source",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:45:30.238Z",
+        "label": "browser",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:45:30.260Z",
+        "label": "browser",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:45:30.260Z",
+        "label": "capture",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:45:30.261Z",
+        "label": "capture",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:45:30.261Z",
+        "label": "frame-driver",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:45:30.262Z",
+        "label": "frame-driver",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:45:30.262Z",
+        "label": "viz",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:45:30.264Z",
+        "label": "viz",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:45:30.265Z",
+        "label": "broker",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:45:30.265Z",
+        "label": "broker",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:45:30.266Z",
+        "label": "source",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:45:30.266Z",
+        "label": "control",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:45:30.266Z",
+        "label": "source",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:45:30.266Z",
+        "label": "source",
+        "event": "end"
+      }
+    ],
+    "renderer-crash-V4tAkV": [
+      {
+        "at": "2026-10-17T00:40:53.158Z",
+        "label": "control",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:53.158Z",
+        "label": "source",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:53.159Z",
+        "label": "browser",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:53.177Z",
+        "label": "browser",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:53.177Z",
+        "label": "capture",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:53.177Z",
+        "label": "capture",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:53.178Z",
+        "label": "frame-driver",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:53.178Z",
+        "label": "frame-driver",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:53.179Z",
+        "label": "viz",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:53.179Z",
+        "label": "viz",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:53.180Z",
+        "label": "broker",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:53.181Z",
+        "label": "broker",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:53.181Z",
+        "label": "source",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:53.181Z",
+        "label": "control",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:53.182Z",
+        "label": "source",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:53.182Z",
+        "label": "source",
+        "event": "end"
+      }
+    ],
+    "renderer-crash-uv1BcV": [
+      {
+        "at": "2026-10-17T00:39:57.845Z",
+        "label": "control",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:17.886Z",
+        "label": "control",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:17.887Z",
+        "label": "source",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:17.888Z",
+        "label": "capture",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:17.890Z",
+        "label": "capture",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:17.892Z",
+        "label": "frame-driver",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:17.896Z",
+        "label": "frame-driver",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:17.897Z",
+        "label": "browser",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:17.899Z",
+        "label": "browser",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:17.900Z",
+        "label": "viz",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:17.902Z",
+        "label": "viz",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:17.903Z",
+        "label": "broker",
+        "event": "begin"
+      },
+      {
+        "at": "2026-10-17T00:40:17.904Z",
+        "label": "broker",
+        "event": "end"
+      },
+      {
+        "at": "2026-10-17T00:40:17.905Z",
+        "label": "source",
+        "event": "end"
+      }
+    ]
+  },
+  "implementation": {
+    "diagnostics": "Source samples per-process pid+start identity,RSS/PSS/private pages/swap,CDP roles and controller cgroup memory/events every10s independent of page evaluation. Crash/disconnect/exit events persist serially. State snapshots return page errors alongside process measurements.",
+    "close": "A renderer-crash latch changes Source close order:owning browser closes before target sessions. Control close is idempotent,closes the crashed Source before draining CDP input and skips target detach after browser exit. Normal close order stays unchanged;all outer fixture/diagnostic cleanup steps continue after errors.",
+    "receipt": "Viewer only publishes passed after workload assertions and Source cleanup receipt. Final sampling is validating,not complete. Existing15s pixel,600ms control and1200ms SHA gates unchanged."
+  },
+  "failedPrototypes": {
+    "initial": "work/memory-diagnostics-initial-artifacts/failure.json:normal stop passed,Page.crash event/PSS survived,but Source exit exceeded20s.",
+    "trace": "work/memory-diagnostics-traced-artifacts:source-close-trace stopped at control begin. Failed runs and original thresholds retained.",
+    "testFixtureCorrection": "First added unit fixture unrealistically left every future CDP send pending after simulated browser close. Corrected it to reject new sends after disconnect;actual native crash contract independently passed before this unit correction."
+  },
+  "limits": [
+    "PSS is sampled requested /proc process scope,not a complete Session allocation budget or proof of allocator/driver return.",
+    "The diagnostic contract used the existing proof container;its cgroup includes the retained demo. The new memory soak must use a dedicated container.",
+    "No8h pass/current-version growth conclusion yet. Old exact-frame8h failed at6735,Source Target crashed after13.78GB summed Chromium RSS/cgrouppeak14.04GB;oom_kill0 is preserved.",
+    "B10 Rust stdin,Node responses/VM,Snapshot/output/native recording/epoch/full Session scopes remain incomplete. All41+N1 remain7complete/12partial/22pending."
+  ]
+}

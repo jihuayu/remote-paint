@@ -1,0 +1,529 @@
+{
+  "at": "2026-10-17T03:45:25.671829+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "All19 native emit call sites use borrowed static event envelopes for Control,PeerStats,peer lifecycle,VizReady/VizRejected. No wrapper Value graph/ID/error string clone. Existing exact OutputPool packet owns serialized bytes through actual write. Original parser/caller graphs,queued command Values,other Gateway builders/WS copies,index/VM/native/fullSession remain separate. All41+N1 stay7complete/12partial/22pending.",
+  "baseline": {
+    "at": "2026-10-17T03:36:48.730178+00:00",
+    "status": "measured",
+    "source": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-builders-baseline-version.json",
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-builders-baseline-layout.log",
+    "control": {
+      "inputBytes": 32647,
+      "requestedPeak": 522928
+    },
+    "peerStats": {
+      "statsBytes": 177,
+      "requestedPeak": 1408
+    },
+    "scope": "Isolated crate copy with exact production json! expressions extracted to helpers used by Control/Gateway forwarding paths. Valid32KiB dense message and actual11field stats schema remain retained before/after wrapper construction. Requested-layout builder allocations only;not raw input parsing/output packet/Tungstenite/RSS. Current source/frozen/canonical/8h unchanged."
+  },
+  "implementation": {
+    "staticBorrowing": "Event name and keys are static strings;Text/MaybeText/Json/Bool fields borrow caller message,stats,ID or error. Root emit only accepts typed Event,so all19 current Control/Gateway/Viz sites cannot pass a prebuilt event Value. Caller owners remain alive across existing count/admit/write path. This does not remove their original parsed/owned source allocation.",
+    "schema": "Merge the event key into static sorted fields without a map/vector;reject duplicate/unsorted/shadowing static keys before packet allocation. Seven event names preserve prior sorted-key JSON bytes,Unicode/escaping,error codes,and each omitted/null captureId/code distinction. Dynamic values are never interpreted as static field names.",
+    "output": "Reuse unchanged shared128MiB data/8MiB control OutputPool with256KiB control body limit,4096 per-packet sizing and exact owned packet. No borrowed fields escape into asynchronous work;emit is synchronous through stdout write. Fatal critical-event output failure still exits2. No FIFO priority change.",
+    "remainingSources": "WebSocket from_str,handshake/welcome/close,queued outbound commands and send-time serialization still allocate their existing graphs/strings. Existing Viz id/error preparation and persistent stats objects also remain;only wrapper cloning was removed."
+  },
+  "tests": {
+    "rustRelease": 69,
+    "newRustTests": 3,
+    "rustLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-rust-final.log",
+    "js": 178,
+    "jsLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-js-tests.log",
+    "requestedLayouts": [
+      {
+        "sourceBytes": 32647,
+        "builderPeak": 0,
+        "packetCapacity": 32703,
+        "packetRequestedPeak": 32703,
+        "packetReservation": 36927,
+        "case": "Control"
+      },
+      {
+        "sourceBytes": 177,
+        "builderPeak": 0,
+        "packetCapacity": 233,
+        "packetRequestedPeak": 233,
+        "packetReservation": 4457,
+        "case": "PeerStats"
+      }
+    ],
+    "layoutInterpretation": "Baseline measures wrapper graph construction only with source retained;new borrowed builder requested-layout peak0. New packet peak is separately shown under existing packet reservation,not an all-in old/new RSS comparison. Same denseControl and actual11fieldStats fixtures;exact canonical envelopes also match.",
+    "schemas": "Control,PeerStats,PeerClosed,ControlClosed,PeerReady,VizReady,VizRejected;optional error/code/captureId combinations,null and omission;all source message/stats values remain intact.",
+    "boundaries": "Invalid static fields and over256KiB event fail before packet allocation;exact256KiB body works;insufficient packet quota fails without a large allocation. Existing blocking/partial-output/90MiB/ownership tests continue unchanged.",
+    "linuxFrozen": {
+      "at": "2026-10-17T03:39:48.552938+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-webgl-live.log"
+        },
+        {
+          "name": "verify-broker-cache-lru",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-broker-cache-lru.log"
+        },
+        {
+          "name": "verify-broker-mapper-transaction",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-broker-mapper-transaction.log"
+        },
+        {
+          "name": "verify-large-native-cache",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-large-native-cache.log"
+        },
+        {
+          "name": "verify-resource-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-resource-pool.log"
+        },
+        {
+          "name": "verify-source-resource-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-source-resource-pressure.log"
+        },
+        {
+          "name": "verify-viz-input-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-viz-input-pool.log"
+        },
+        {
+          "name": "verify-source-input-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-source-input-pressure.log"
+        },
+        {
+          "name": "verify-node-request-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-node-request-budget.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-control-channel.log"
+        },
+        {
+          "name": "verify-control-priority",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-control-priority.log"
+        },
+        {
+          "name": "verify-input-feedback",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-input-feedback.log"
+        },
+        {
+          "name": "verify-worker-control",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-worker-control.log"
+        },
+        {
+          "name": "verify-streaming-startup",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-streaming-startup.log"
+        },
+        {
+          "name": "verify-page-activity",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-page-activity.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-node-response-contract",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-node-response-contract.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-snapshot-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-snapshot-budget.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-rpc-output.log"
+        },
+        {
+          "name": "verify-node-stream-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-verify-node-stream-close.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-checkpoint-version-v1.json",
+      "status": "passed"
+    },
+    "canonical": {
+      "at": "2026-10-17T03:44:09.212722+00:00",
+      "source": "Live /project accepted asset manifest/Node stream teardown,new borrowed Control/PeerStats/Viz event LinuxRust candidate;isolated artifacts",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-control-channel.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-source-close.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-rpc-output.log"
+        },
+        {
+          "name": "verify-node-stream-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-node-stream-close.log"
+        },
+        {
+          "name": "verify-control-events-dense",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-v1-verify-control-events-dense.log"
+        }
+      ],
+      "status": "passed"
+    },
+    "actualDenseControl": {
+      "at": "2026-10-17T03:42:00.386Z",
+      "status": "passed",
+      "scope": "Actual Linux Rust Gateway fallback and paired Control WebSockets each forward one valid sub32KiB dense Input with16000extra nodes through borrowed native event and Node response reader. Exact message/envelope,continued same broker control readiness,paired close events and child/queue/owner cleanup. No CDP input semantics,pixels,WS parser/queue allocation or RSS claim.",
+      "brokerSha256": "22e466ce99120f31f63372c977f3c60fb42aee73dfd3d49e9c501564f0c4d96f",
+      "variants": [
+        {
+          "paired": false,
+          "inputBytes": 32146,
+          "extraNodes": 16000,
+          "exactEnvelope": true,
+          "brokerAliveAfterEvent": true,
+          "controlOutputPeak": 44616,
+          "pairedCloseEvents": null
+        },
+        {
+          "paired": true,
+          "inputBytes": 32146,
+          "extraNodes": 16000,
+          "exactEnvelope": true,
+          "brokerAliveAfterEvent": true,
+          "controlOutputPeak": 44616,
+          "pairedCloseEvents": true
+        }
+      ],
+      "cleanup": {
+        "childExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "stdoutBytes": 0,
+        "stderrBytes": 0
+      },
+      "errors": []
+    },
+    "actualDenseFixture": {
+      "status": "passed",
+      "script": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/verify-control-events-dense-v2.mjs",
+      "scriptSha256": "b695ba74c2079588c9cc3703df6bd8882bbc149e26d3f369c7214abc9d0c9c7c",
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-actual-dense-v2.log",
+      "variants": [
+        {
+          "paired": false,
+          "inputBytes": 32146,
+          "extraNodes": 16000,
+          "exactEnvelope": true,
+          "brokerAliveAfterEvent": true,
+          "controlOutputPeak": 44616,
+          "pairedCloseEvents": null
+        },
+        {
+          "paired": true,
+          "inputBytes": 32146,
+          "extraNodes": 16000,
+          "exactEnvelope": true,
+          "brokerAliveAfterEvent": true,
+          "controlOutputPeak": 44616,
+          "pairedCloseEvents": true
+        }
+      ],
+      "prototype": {
+        "script": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/verify-control-events-dense-v1.mjs",
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-actual-dense-v1.log",
+        "cause": "Direct dynamic import of CommonJS ws/index.js exposes constructor as default,not named WebSocket. Fixed only isolated diagnostic import;runtime/test timeouts unchanged."
+      }
+    },
+    "actualDenseScope": "Independent read-only probe imports the frozen/canonical project at REMOTE_PAINT_PROJECT. Valid32,146byte Input has16,000extra array nodes in both actual fallback/paired WebSockets;no CDP semantics/pixel/parser-admission/RSS claim. Probe source and first CommonJS-import failure are preserved.",
+    "largeNative": {
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "mapperRollbackRejections": 423,
+    "resourcePoolFrames": 14,
+    "readableClose": {
+      "mode": "close-blocked-stdout",
+      "waitChannel": "sock_alloc_send_pskb",
+      "transport": "unix-socket",
+      "childExitCode": 2,
+      "oldProcessIdentityExited": true,
+      "parentReadableBytesAfterClose": 0,
+      "scope": "Actual blocked stdout loses its reader;child exits2 instead of continuing a partial frame. Logical Rust counters are not queried after process exit;OS/process cleanup and separate unit write-owner checks are distinct evidence."
+    }
+  },
+  "version": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-checkpoint-version-v1.json",
+    "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-checkpoint-project-v1",
+    "rustSources": {
+      "native/broker/src/allocation_probe.rs": "ddec052782fb29d8ad7a27d2c2332a70ad9f94226ad230c7fe0923e1cea97ffb",
+      "native/broker/src/assets.rs": "c799737cd3b1577312201461b36972baa682e4201acaea040f7749de9b1a5c00",
+      "native/broker/src/budget.rs": "41bef43441a10f02c23ad0c0d6eb04bbd48436ad6d2dac0e2ed5cdf5758941e8",
+      "native/broker/src/control.rs": "737631d567fef721512586d17f1c4054e2e00224bac4d04c66ed22e2876ee8e6",
+      "native/broker/src/gateway.rs": "b65e592bddf5667757e2f8f51216290ae06a9a9cf265441d8ad4705fff590b4b",
+      "native/broker/src/history.rs": "4b64273428615445d9ceb99bfd38a5004e66b2eead2d6aaf7dfadfa686578e2a",
+      "native/broker/src/input.rs": "9e56c120a1bc534fc9b9696314335af3c9ae79e16bebd4c93f9b3eb54820f42b",
+      "native/broker/src/main.rs": "1148560ba837a3c5c8256135b71bd7b69a197f475ba144704305f043293ceef8",
+      "native/broker/src/output.rs": "fd175957f5948349edb37515848d9db621ed0f8a1a40251c92ced56376c30f9f",
+      "native/broker/src/rpc.rs": "e277cc24c016dc73a9199cd4dc4375f978a1efa1ad19e5d30ab4e171790533dd",
+      "native/broker/src/scene.rs": "6246d0aed40a3840efc0c20cc384c62bc0e419bd15c76b8b04d8e2111238bc86",
+      "native/broker/src/snapshot_memory.rs": "dacd32697849b66b54089a259b93189c3c643522be81c55046a1c52400f82143",
+      "native/broker/src/viz.rs": "44c436fa135da6f59a382b4b3a1f7dd8fe05df199f746e54b06be95a59f8a4d9",
+      "native/broker/src/writer.rs": "26fef581106539a5dc43ba9dc9324c4f6e4850863e65d7ecce8ce40f18ebbb61"
+    },
+    "brokerSha256": "22e466ce99120f31f63372c977f3c60fb42aee73dfd3d49e9c501564f0c4d96f",
+    "previousBrokerSha256": "2f87cf2a560d9015c6130472d6c8eb62146abcbee578c3bc8c181a375c5bcbc3",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "browserUnchanged": true,
+    "cpp": "Unchanged browser reuses prior34 C++ tests.",
+    "artifacts": {
+      "large-native.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-artifacts/large-native.json",
+        "sha256": "4ce0469218806d22d2e33687e0aa3ea531ffbc94e2ddca3c51139881247de172"
+      },
+      "rollback.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-artifacts/rollback.json",
+        "sha256": "9b767dfb995c1c434bd3d2bcbdc79ed3ba35fd9308d51df8a613fafb32f0dc8d"
+      },
+      "resource-pool.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-artifacts/resource-pool.json",
+        "sha256": "d4eab677ff65d357972681143477990a80f140b25b40dccaeb1105da202e03c3"
+      },
+      "source-resource.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-artifacts/source-resource.json",
+        "sha256": "7be5c1ccdec79bf391e104606cfdeb582b0e0e7d3d56098e249922956f27687a"
+      },
+      "source-input.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-artifacts/source-input.json",
+        "sha256": "88e6efb733aa237049a1495c29fb3d5483bf39fa10cd3f2170da53c5c8af848b"
+      },
+      "output-contract.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-artifacts/output-contract.json",
+        "sha256": "d074eb5e9499b96c0d0e7f0204793b278997a428d4bd225d0cbe072a7a68f947"
+      },
+      "node-stream-close.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-artifacts/node-stream-close.json",
+        "sha256": "9ad49b954383d9f5c99445c4dc1d36e36004c1452e4988a6fe8dc032949d5396"
+      },
+      "viz-fault.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-artifacts/viz-fault.json",
+        "sha256": "f42af4de5055cb0bdc20433c4031ff7eb074ba6711522c2cdbca9509dacd338c"
+      },
+      "dense-control.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-v1-artifacts/dense-control.json",
+        "sha256": "b0e8548c863e0c4bd122de109f94c1db99742c5ee961f0635f59ae64e231cae9"
+      }
+    }
+  },
+  "publication": {
+    "at": "2026-10-17T03:44:05.415500+00:00",
+    "status": "accepted-in-stated-scope",
+    "oldSha256": "2f87cf2a560d9015c6130472d6c8eb62146abcbee578c3bc8c181a375c5bcbc3",
+    "newSha256": "22e466ce99120f31f63372c977f3c60fb42aee73dfd3d49e9c501564f0c4d96f",
+    "previousBinary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-previous-canonical-2f8",
+    "previousReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-previous-build-receipt.json",
+    "binary": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/broker-build.json",
+    "scope": "Atomic local Linuxarm64 replacement only;proof/8h processes and Chromium/Cargo caches preserved;no commit/push.",
+    "canonicalSmoke": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-events-canonical-smoke-v1.json",
+    "evidence": "docs/evidence/borrowed-native-events.json"
+  },
+  "remaining": [
+    "Explicit WebSocket receive/parser graph admission and outbound queued command/message ownership,other handler/Gateway builders/Tungstenite copies.",
+    "Remaining asset/hash scratch,staged/persistent Mapper resource/weak-index backing.",
+    "Node active-stream/application/VM,native recordings/uncached work/tiled duplication/epoch/actual cancellation,wholeSession/PSS.",
+    "B4 comparable baseline,independent8h and other41-row/N1 requirements."
+  ],
+  "eightHours": "Immutable2585828c usesa296/earlier JS,excluding this and all later accepted checkpoints;no elapsed stitching.",
+  "preserve": "No commit/push. HEAD3ff9512c/live peer1+/1-,all proof/8h/compiler6713 processes and Chromium/Cargo caches preserved;previous2f8 binary/receipt backed up."
+}

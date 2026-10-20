@@ -1,0 +1,427 @@
+{
+  "at": "2026-10-16T23:01:18.634640+00:00",
+  "status": "partial",
+  "scope": "B10 immutable shared Resource owners, strict strong-cache LRU and bounded weak indexes, Linux arm64. Snapshot/queued-wire allocation pool and whole Session quotas remain incomplete.",
+  "implementation": {
+    "snapshotOwnership": "Snapshot.resources and Mapper share Arc<Resource>, retaining immutable payload/wire/chunk/manifest owners. Ordinary snapshot clones no longer deep-clone each manifest String; descriptor upgrades create a separate immutable record sharing existing bytes.",
+    "cache": {
+      "bytes": 134217728,
+      "entries": 512,
+      "charge": "Actual retained payload/wire Vec capacities plus manifest/vector capacities, Resource/index estimate and conservatively referenced chunk charges. Repeated/shared chunks may be overcharged. This is a strong-cache owner estimate, not RSS or global live allocation accounting.",
+      "eviction": "Successful admission touches current hashes and evicts cold keys until both byte/count caps hold; it can bypass cache admission for some current required resources. Returned snapshots retain all required references and complete bytes."
+    },
+    "weakLookup": {
+      "resourceEntries": 512,
+      "chunkEntries": 8192,
+      "behavior": "Weak resource lookup keeps externally pinned uncached snapshot resources hash-addressable. Current snapshot hashes have priority; bounded history eviction yields a genuine recoverable miss. Expired entries are pruned; too many live pins do not expand either weak index."
+    },
+    "transaction": "No cache/recency/reference/index mutation occurs before Mapper validation/Snapshot construction. The previous423-failure rollback probe remains passing."
+  },
+  "tests": {
+    "rustRelease": 19,
+    "nodePreviouslyAccepted": 149,
+    "regressions": {
+      "at": "2026-10-16T22:52:07.764382+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-verify-webgl-live.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "brokerStagedBuild": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-staged-build.json",
+      "status": "passed"
+    },
+    "specific": [
+      "Full45MiB three-resource frame exceeds strong-cache working set, succeeds and hash-only follow-up shares identical Arc/manifest pointers",
+      "LRU touch order and retained snapshot revival after strong eviction",
+      "Twenty live snapshots under tiny configured cache/reference/chunk limits cannot expand indexes",
+      "Reset empties caches/indexes; retired snapshot data stays valid until final owner releases",
+      "Cached hash descriptor upgrades preserve prior snapshots"
+    ],
+    "rpcContract": {
+      "at": "2026-10-16T22:51:05.326Z",
+      "status": "passed",
+      "scope": "Actual Rust RPC with three15MiB synthetic header fixtures, not CanvasKit/pixel fixtures. Full45MiB frame still succeeds while strong cache stays below128MiB; uncached snapshot pins retain hash-only reuse. 520 successful small scenes keep512 strong entries and bounded weak indexes; reset releases all retained indexes, and rejected misses preserve state. Does not certify a global snapshot/queued-wire allocation budget.",
+      "brokerSha256": "0676218ebc8b3808b13182c5979d1088ca22cda7ee3ae367cc1ebb0837908f87",
+      "pressure": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 94831208,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 1,
+        "cacheOwnedChunkBytes": 31499520,
+        "chunkIndexEntries": 1440,
+        "chunkIndexEstimateBytes": 230400,
+        "chunkIndexLimit": 8192,
+        "entries": 3,
+        "epoch": 1,
+        "liveChunkIndexEntries": 1440,
+        "manifestBytes": 83814,
+        "payloadBytes": 31457280,
+        "referenceIndexEntries": 3,
+        "referenceIndexEstimateBytes": 768,
+        "referenceIndexLimit": 512,
+        "resourceWireBytes": 31457368,
+        "resources": 2,
+        "revision": 3,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "reset": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 0,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 2,
+        "cacheOwnedChunkBytes": 0,
+        "chunkIndexEntries": 0,
+        "chunkIndexEstimateBytes": 0,
+        "chunkIndexLimit": 8192,
+        "entries": 0,
+        "epoch": 0,
+        "liveChunkIndexEntries": 0,
+        "manifestBytes": 0,
+        "payloadBytes": 0,
+        "referenceIndexEntries": 0,
+        "referenceIndexEstimateBytes": 0,
+        "referenceIndexLimit": 512,
+        "resourceWireBytes": 0,
+        "resources": 0,
+        "revision": 0,
+        "scope": "mapper-retained-cache",
+        "serial": 2
+      },
+      "indexed": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 793088,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 10,
+        "cacheOwnedChunkBytes": 38912,
+        "chunkIndexEntries": 512,
+        "chunkIndexEstimateBytes": 81920,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 512,
+        "manifestBytes": 116736,
+        "payloadBytes": 16384,
+        "referenceIndexEntries": 512,
+        "referenceIndexEstimateBytes": 131072,
+        "referenceIndexLimit": 512,
+        "resourceWireBytes": 38912,
+        "resources": 512,
+        "revision": 520,
+        "scope": "mapper-retained-cache",
+        "serial": 522
+      },
+      "fullFrameResources": 3,
+      "hashOnlySerial": 2
+    },
+    "genuineLargeNative": {
+      "at": "2026-10-16T22:50:16.551Z",
+      "status": "passed",
+      "scope": "Actual Linux Chromium non-tiled native RPA capture of four2048² noisy PNG layers → Rust Gateway raw-resource path → validating FrameGate → CanvasKit CPU scene replay and four actual pixels. Genuine SKPs plus three-copy working set exceed128MiB; strong cache and weak indexes remain bounded, snapshots still deliver every resource and hash-only follow-up recovers without a false resource miss. This does not certify all snapshot/transport allocation reservations or process/RSS budgets.",
+      "brokerSha256": "0676218ebc8b3808b13182c5979d1088ca22cda7ee3ae367cc1ebb0837908f87",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 57380806,
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "replayMs": 645.9519440000004,
+      "before": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 130709217,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 988,
+        "cacheOwnedChunkBytes": 43410649,
+        "chunkIndexEntries": 1772,
+        "chunkIndexEstimateBytes": 283520,
+        "chunkIndexLimit": 8192,
+        "entries": 4,
+        "epoch": 1,
+        "liveChunkIndexEntries": 1772,
+        "manifestBytes": 118898,
+        "payloadBytes": 43352179,
+        "referenceIndexEntries": 4,
+        "referenceIndexEstimateBytes": 1024,
+        "referenceIndexLimit": 512,
+        "resourceWireBytes": 43352311,
+        "resources": 3,
+        "revision": 4,
+        "scope": "mapper-retained-cache",
+        "serial": 987
+      },
+      "after": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 130709217,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 989,
+        "cacheOwnedChunkBytes": 43410649,
+        "chunkIndexEntries": 1772,
+        "chunkIndexEstimateBytes": 283520,
+        "chunkIndexLimit": 8192,
+        "entries": 4,
+        "epoch": 1,
+        "liveChunkIndexEntries": 1772,
+        "manifestBytes": 118898,
+        "payloadBytes": 43352179,
+        "referenceIndexEntries": 4,
+        "referenceIndexEstimateBytes": 1024,
+        "referenceIndexLimit": 512,
+        "resourceWireBytes": 43352311,
+        "resources": 3,
+        "revision": 4,
+        "scope": "mapper-retained-cache",
+        "serial": 988
+      },
+      "followUpCaptures": 1,
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "rollback": {
+      "at": "2026-10-16T22:56:14.534Z",
+      "status": "passed",
+      "scope": "Actual Linux arm64 Rust Broker RPC and private Unix RPA2/Viz path. 140 Base64 and140 raw1MiB scene failures,140 follow-up rejected-hash misses, pre-map tile expansion and late metadata/profile failures preserve exact retained-resource/chunk byte counters, entries, epoch, revision and serial. Old native hash-only recovery succeeds at serial2, then a new valid capture commits serial3/revision2. Cache counters cover Mapper-retained ownership only; no complete Session/RSS budget or rendered pixels claimed here.",
+      "brokerSha256": "0676218ebc8b3808b13182c5979d1088ca22cda7ee3ae367cc1ebb0837908f87",
+      "before": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 102554,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 33682,
+        "chunkIndexEntries": 2,
+        "chunkIndexEstimateBytes": 320,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 2,
+        "manifestBytes": 318,
+        "payloadBytes": 33594,
+        "referenceIndexEntries": 1,
+        "referenceIndexEstimateBytes": 256,
+        "referenceIndexLimit": 512,
+        "resourceWireBytes": 33638,
+        "resources": 1,
+        "revision": 1,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "base64Bytes": 146800640,
+      "rawBytes": 146800640,
+      "rejections": 423,
+      "afterRejected": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 102554,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 33682,
+        "chunkIndexEntries": 2,
+        "chunkIndexEstimateBytes": 320,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 2,
+        "manifestBytes": 318,
+        "payloadBytes": 33594,
+        "referenceIndexEntries": 1,
+        "referenceIndexEstimateBytes": 256,
+        "referenceIndexLimit": 512,
+        "resourceWireBytes": 33638,
+        "resources": 1,
+        "revision": 1,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "last": {
+        "cacheByteLimit": 134217728,
+        "cacheBytes": 205153,
+        "cacheEntryLimit": 512,
+        "cacheEvictions": 0,
+        "cacheOwnedChunkBytes": 34567,
+        "chunkIndexEntries": 3,
+        "chunkIndexEstimateBytes": 480,
+        "chunkIndexLimit": 8192,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 3,
+        "manifestBytes": 636,
+        "payloadBytes": 67203,
+        "referenceIndexEntries": 2,
+        "referenceIndexEstimateBytes": 512,
+        "referenceIndexLimit": 512,
+        "resourceWireBytes": 67291,
+        "resources": 2,
+        "revision": 2,
+        "scope": "mapper-retained-cache",
+        "serial": 3
+      },
+      "recovered": {
+        "serial": 2,
+        "revision": 1
+      },
+      "changed": {
+        "serial": 3,
+        "revision": 2
+      }
+    },
+    "canonicalSmoke": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-canonical-smoke.log"
+  },
+  "originalFailureReplay": {
+    "originalEvidence": "rust-mapper-transaction.json",
+    "rawReplay": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-original-probe.json",
+    "invariantPassed": true,
+    "knownStrongCacheByteLengths": 94497982,
+    "conservativeCacheCharge": 94831208,
+    "cacheTarget": 134217728,
+    "note": "Raw replay inherits the old diagnostic prose expecting a violation. Numeric values and the new standalone RPC contract show the strong-cache invariant now holds. Three resources remain pinned by the returned Snapshot outside this cache-only budget."
+  },
+  "build": {
+    "brokerSha256": "0676218ebc8b3808b13182c5979d1088ca22cda7ee3ae367cc1ebb0837908f87",
+    "previousBrokerSha256": "06c93fb14f941a25e2d9bf5c4456558a552aca97a77760952d1886ce5e6bb9e4",
+    "staged": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-cache-owner-broker-staged",
+    "canonicalAccepted": false,
+    "rustSources": {
+      "native/broker/src/assets.rs": "2f00afe7b0bf84612fdce5f4d648263b0d06e42794acef5a4a50723e526b20dc",
+      "native/broker/src/control.rs": "020a7bc8befd37850a746a602698d8972bd2df03343534559e3cfdfed12c52eb",
+      "native/broker/src/gateway.rs": "965c8803a9312ffe87bfdb498bb33b2154d664c73be63bde3bc6e04881821724",
+      "native/broker/src/main.rs": "d8eefebb1a3f7a34cb23381dbbd23b77e5e6f5d0a30fabfde0f4b75eb25c45ae",
+      "native/broker/src/scene.rs": "a59e1e6a033420e335fd3a6a0e40b6aab48b1ad9144139eece8bbcea70f8056e",
+      "native/broker/src/viz.rs": "28687889b64f8d72e4db7f12b70e6d14d1ff5751c12465342a737ddb109d388c",
+      "native/broker/src/writer.rs": "26fef581106539a5dc43ba9dc9324c4f6e4850863e65d7ecce8ce40f18ebbb61"
+    },
+    "lockSha256": "4370a93e1dc4f4ea61d0df6094cbc51862c190d0838e60c2fa10f28ebd432c86"
+  },
+  "publication": {
+    "at": "2026-10-16T22:59:01.685572+00:00",
+    "status": "passed",
+    "previousBrokerSha256": "06c93fb14f941a25e2d9bf5c4456558a552aca97a77760952d1886ce5e6bb9e4",
+    "brokerSha256": "0676218ebc8b3808b13182c5979d1088ca22cda7ee3ae367cc1ebb0837908f87",
+    "atomicBinaryReplacement": true,
+    "atomicReceiptReplacement": true,
+    "sourceHashesVerified": true,
+    "scope": "Strong-cache/weak-index admission and immutable shared Resource snapshot refs; global allocation/pin budget still pending",
+    "oldProofContainerAndEightHourPreserved": true
+  },
+  "remaining": [
+    "Global unique allocation reservations for payload/wire/chunks/Resource metadata until final Snapshot or queued Bytes aliases drop, including allocations outside strong cache",
+    "Copied Gateway manifest/scene/delta/output buffers, Snapshot metadata and all index estimates need explicit total ownership/admission scopes",
+    "Raw RPA input/parser/staging reservations and pressure/backpressure without breaking valid large frames or old accepted dependencies",
+    "Native recordings/SkPicture/RasterSource, unadmitted encoding work and page-epoch retirement/cancellation",
+    "Node legacy Snapshot/peer/wire ownership plus cross-renderer/Session/cgroup/RSS/PSS scopes"
+  ],
+  "longRun": {
+    "currentEightHourRunId": "8c8f0d4c-1c2f-44f4-918b-926c5e555be8",
+    "containsThisCheckpoint": false,
+    "status": "running-not-accepted",
+    "priorRustMapperThreeMinuteRunAlsoPredatesThisChange": true,
+    "currentValidation": "No new three-minute stress claim; current genuine57.8MB native capture followed by snapshot hash-only captures,19 deterministic Rust cases,13 native regressions and explicit pressure/rollback probes passed."
+  },
+  "preserved": {
+    "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "committed": false,
+    "pushed": false,
+    "unrelatedPeerDiff": "1 insertion/1 deletion preserved",
+    "oldProofContainerAndOtherArchitectureBinariesPreserved": true
+  }
+}

@@ -1,0 +1,803 @@
+{
+  "at": "2026-10-17T19:35:18.277790+00:00",
+  "status": "accepted-B1-default-LinuxARM64-managedSource-formal-artifacts",
+  "B1CompleteInStatedScope": true,
+  "scope": "Default LinuxARM64 managed Source:browser-owned authenticated native subscription/actualdocument+frame token/inputwatermark/cadence/4slotcredit/autonomousBroker singleMapper+Gateway. Node controls lifecycle/input/policy andLinuxBeginFramepageclock;no per-frame capture registration/map/publish/Runtime.awaitPromise. FormalbrowserandBrokerpaths executed. MacBroker protocol+JS checked;MacSource/otherarchitectures andstandardpackage/CI areseparatecompatibility/B16 gates.",
+  "prepromotionGates": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-prepromotion-gates-v1.json",
+    "sha256": "717f7b5cfda19ea7bb111fec5f718428c8b636a7e0d60e250a32d3eb65a396f7",
+    "currentProductionFiles": 134,
+    "currentCppFiles": 27,
+    "runtimeContracts": {
+      "at": "2026-10-17T19:25:35.660817+00:00",
+      "status": "B1-runtime-gates-accepted-before-formal-artifact-promotion-NOT-complete",
+      "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-loss-integration-checkpoint-version-v1.json",
+      "productionFilesExactWithC5d18StepVersion": 134,
+      "currentCppFilesMatchBuildReceipt": 27,
+      "patchedChromiumFilesMatchReceipt": 18,
+      "patches": 14,
+      "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-clock-checkpoint-browser-v1",
+      "browserSha256": "c5d29a3b5a22ff27ee3914c68650feea3e342dd1c4d2dc502e9ff0e596ae1b4e",
+      "brokerCandidates": {
+        "mac": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-checkpoint-project-v1/native/bin/remote-paint-broker",
+          "sha256": "6b7e771842fd1ac6d5357ed3c75780d6dd433ebd3ed1aa146e28c95eb3128f93",
+          "receipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-loss-integration-checkpoint-project-v1/native/bin/broker-build.json",
+          "rustSourceFiles": 25,
+          "cargoManifestSha256": "3f0fffa80ddab131bb5ff7d4df7783867cd1558a87b1062bea22aee51a16266e",
+          "lockSha256": "4831c23a28eee756f60da8e1c27f673d5687356e08650df791d7bcbcccecc124"
+        },
+        "linux": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-checkpoint-project-v1/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+          "sha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+          "receipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-loss-integration-checkpoint-project-v1/native/bin/aarch64-unknown-linux-gnu/broker-build.json",
+          "rustSourceFiles": 25,
+          "cargoManifestSha256": "3f0fffa80ddab131bb5ff7d4df7783867cd1558a87b1062bea22aee51a16266e",
+          "lockSha256": "4831c23a28eee756f60da8e1c27f673d5687356e08650df791d7bcbcccecc124"
+        }
+      },
+      "priorCppActualLinux": 76,
+      "priorFrozenSuite": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-clock-frozen-suite-v1/progress.json",
+        "sha256": "e7635b5cfa3631bf7cc60434684e72016a2a30aa4cd8de8c2ef23ef1eed91e1f",
+        "steps": 18
+      },
+      "priorRuntimeReports": {
+        "working-clock": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-working-v1/clock.json",
+          "sha256": "63c8772350c9367f1dc1dac52a209f976664bc0f0354584cb0173e325eb63534",
+          "scope": "Actual default autonomous NativeSource/fixed native Take timestamp/private currentTimeTicks probe/real Gateway+FrameGate+CanvasKit pixels/input/pause/resume/resize/crosssite navigation/reset and cleanup. Calibration probe bounds are raw provenance,not completed frame-age measurements;no claim for Viewer Worker/physical scanout/fullN1/8h.",
+          "checks": 7
+        },
+        "frozen-clock": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/clock/clock.json",
+          "sha256": "c32eaf5c492dab84744747ed8e10229c8a1d15825c5d09575cc056ba247406b9",
+          "scope": "Actual default autonomous NativeSource/fixed native Take timestamp/private currentTimeTicks probe/real Gateway+FrameGate+CanvasKit pixels/input/pause/resume/resize/crosssite navigation/reset and cleanup. Calibration probe bounds are raw provenance,not completed frame-age measurements;no claim for Viewer Worker/physical scanout/fullN1/8h.",
+          "checks": 7
+        },
+        "cadence": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/cadence/cadence.json",
+          "sha256": "00601091b2b42b447da2e0f4df039d7e0ac80a3d8d5add44d7f3d78295e55463",
+          "scope": "ActualLinux nativecadence/mainOneShotTimer/CCrootdamage+monotonictime/productionBroker/Gateway/CanvasKit actualpixels. Lifecycle harness,notdefaultSource/fullSession/B4CPU orcompleteB1.",
+          "checks": 7
+        },
+        "busy-credit": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/busy-credit/busy.json",
+          "sha256": "9db638816ff06aee7030564d18c91614b19f9f023eed816892c7b43105336787",
+          "scope": "Actualnativeproducer/privateIPC/productionMapper heldin oneexplicit diagnosticmap,realpublication/credit,latchedbusydamage/nativeinputwatermark. No syntheticnativecredit;no pixels/defaultSource/physicalinputinjection/fullSessionclaim.",
+          "checks": 2
+        },
+        "controller": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/controller/controller.json",
+          "sha256": "14cc0cf17948dcad229c6520969aa625377e829c9fb7d71789ffdf7c09fdae15",
+          "scope": "Standalone production NativeSubscription controls withactualLinuxbrowser/Broker/Gateway/CanvasKitpixels/coldwake/input/resize/navigation. DefaultSource integration andfullB1contracts remainpending. Duplicate-lifecycle signals areexplicit diagnosticrefreshcalls,notinjectednetworkCDPdelay.",
+          "checks": 12
+        },
+        "controller-credit": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/controller-credit/credit.json",
+          "sha256": "dd175f80aa1a3140518d7daa36d01e033f6876af6ac001ffc1ab9cd5e8b7a856",
+          "scope": "ActualproductionNativeSubscription/privateIPC/Brokercredit/nativeordinalfence/inputwatermark/reentrantpause-resume. Twoexplicit diagnosticmapwaits;nosyntheticnativecredit. No pixels/defaultSource/fullSession claim.",
+          "checks": 3
+        },
+        "reset": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/reset/reset.json",
+          "sha256": "a15cb7da69b5a3437b1572bd21c76f4a718ded9a263132c19ceb9d4c2a752ade",
+          "scope": "ActualdefaultNativeSource/privateCppsubscription/Brokerreset/rebind/Gateway/CanvasKitpixels/input/docEpoch/resize/4queuedRPCdenial. TwoexplicitdiagnosticmapsawaitactualRPAresources;no syntheticnativecredit. Resetrecoveryisdistinctfromactualhash-missretry;nofullB1/processRSSclaim.",
+          "checks": 7
+        },
+        "hash-retry": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/hash-retry/retry.json",
+          "sha256": "d1bbe4ca2ac64769a2733ff359eb13d07b32f094797885fb90b6a8fbffb51cf8",
+          "scope": "Actual default NativeSource/real PNG/native hash-only cache miss/real Retry credit/full resend/Gateway/CanvasKit image and DOM pixels. Five explicit empty diagnostic maps and normal resourceBudget reclamation induce the fault before Gateway/peer pins exist; this is not organic workload eviction or a reset. All production limits and binaries unchanged; no full B1/process-memory claim.",
+          "checks": 4
+        },
+        "webgl-cpu": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/webgl-cpu/placeholder-live.json",
+          "sha256": "4802ec7b5be572d7f7003e3104d17d933ad3503364961d8b1704c0acf1c282df",
+          "scope": "Actual default autonomous NativeSource/custom Linux Chromium/native Rust Gateway/CanvasKit Worker pixels. Real WebGL2 green source is rendered as black with expected WebGL 无法显示 glyph pixels; DOM and Canvas2D updates plus WebGL removal/re-addition. Viewer CPU or forced SwiftShader WebGL2 is stated from actual presentation; no physical GPU/full B1/process-memory claim.",
+          "checks": 4
+        },
+        "webgl-gpu": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/webgl-gpu/placeholder-live.json",
+          "sha256": "1ee67204520a37f8552b709afbcab19336aeeb3fa47898fc50c741da469a1125",
+          "scope": "Actual default autonomous NativeSource/custom Linux Chromium/native Rust Gateway/CanvasKit Worker pixels. Real WebGL2 green source is rendered as black with expected WebGL 无法显示 glyph pixels; DOM and Canvas2D updates plus WebGL removal/re-addition. Viewer CPU or forced SwiftShader WebGL2 is stated from actual presentation; no physical GPU/full B1/process-memory claim.",
+          "checks": 4
+        },
+        "six-consumers": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/six-consumers/six.json",
+          "sha256": "46ef5e35a68256ebb7332679e3834d27f04d26662df09e1f15a3f679202dacf8",
+          "scope": "Actual default autonomous NativeSource/Chromium PNG+DOM/native Gateway/six real WebSocket+FrameGate+CanvasKit clients:4display+2read-onlyautomation slots,actual ordinal/input/target fences,real key input2,navigation/resize,default5s slow-recorder isolation and owner/clock drain. Clients run in this verifier process;not six full browser processes,physical GPU,network impairment/full B1 or SDK tenant-auth acceptance.",
+          "checks": 7
+        },
+        "pool": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/pool/pool.json",
+          "sha256": "c689b5ec3412215726f1ddab280bf0a8fa5aa8df9a71a88cfcbde55d64e35850",
+          "scope": "ActualdefaultNativeSource/real1536squarePNGSKPs/64MiBresourcepool/privateIPC/autonomousBroker/Gateway/CanvasKitpixels. RealnativeSKPbytesreported;theexact7.5MiBsyntheticprotocolcontract isseparate. No process/RSS/VM/GPU/fullB1claim.",
+          "checks": 4
+        },
+        "bulk-local": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-local/contract.json",
+          "sha256": "6e579649d7feca86e3942d3ddcf8d41aeba4d034b6eeeaf6a5dcd3ee62d3279b",
+          "scope": "Actual default autonomous NativeSource/default tiled capture/1792square Canvas texture SKPs/private native IPC/real Gateway WebSockets/FrameGate/CanvasKit pixels and paired-control CDP input. Original local raw9MiB/15s/16MiB/ACK1.5s case and separate original32KiB-chunks/default5s/800ms-paused-control/3s/200ms Gateway close case. Native32KiB socket send buffer is unchanged; positive kernel TX50ms plus>=9MiB pending-frame stats prove backpressure. No synthetic SKP padding/fake CDP; local network only,not kernel impairment/N1/full B1/whole Source200ms close/process-memory acceptance.",
+          "checks": 4
+        },
+        "live-native": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/live-native/report.json",
+          "sha256": "874122b8fbbbd583309a2e8c34b07c51a35f596a46d49660bbfb8add8b50a88c",
+          "scope": "Actual default autonomous native Source/real custom Chromium/native Gateway/CanvasKit Viewer complete dynamic fixture, pixels/private images/fonts/streaming/human input/animation reuse/slow peer/reconnect/controlled reset/navigation/3resize/dropped-resource recovery/cache drain/idle. Actual native hash-miss Retry is a separate required verifier. No weak-network/9MiB/full B1/physical-memory claim.",
+          "checks": null
+        },
+        "live-node": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/live-node/report.json",
+          "sha256": "6ebb1bd30909d8c4dad8e06f844c0c67aa6e89d1dfb91bd0545bd7097c3d452b",
+          "scope": "Actual explicit Node fallback/custom Chromium/Node SceneMapper+transport/CanvasKit Viewer complete dynamic fixture with real pixels/private images/fonts/streaming/human input/animation reuse/slow peer/reconnect/navigation/3resize/dropped-resource recovery/cache drain/idle. No autonomous-native or weak-network/full B1/physical-memory claim.",
+          "checks": null
+        },
+        "close": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/close/ownership.json",
+          "sha256": "c208d9ef433dbbb9c9e0e5c43e1ab103a6db7c3d3476fc2d8d80446f4109ffc4",
+          "scope": "Actual Linux Chromium with default autonomous native Rust Source and explicit Node fallback: ten retained closed Sources plus two Live control-cleanup failures. Native Source keeps scalar receipts, Node Mapper caches/latest reset; one explicit diagnostic map holds the real Mapper while actual C++ awaits credit, then real close rejects/drains it. Late work/reset events cannot republish, idempotent close, queued resize and injected cleanup errors propagate while all owned browser processes/Broker/fixture still exit. /proc start identities avoid PID-reuse false positives. Ownership/process-exit evidence only, not native rendered-pixel/RSS/PSS/whole-Session/eight-hour or complete B1 acceptance.",
+          "checks": null
+        },
+        "crash": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/crash/crash.json",
+          "sha256": "4716577dc2cc6bb5e8fc6c818ab074108f130f16e57ba33cd6f656ec47d654fa",
+          "scope": "Three actual Chromium Page.crash cases: active default autonomous native Source, real Mapper diagnostic resource wait with actual native C++ awaiting credit, and active explicit Node fallback. Post-crash real CDP control rejects through idempotent Live close; retained Sources stay empty, all browser PID/start identities and Broker/request/response/control owners retire. One explicit diagnostic map induces the held case; no synthetic native credit. Process/fault cleanup only, not rendered pixels,200ms bulk/network close,RSS/PSS growth,8h or full B1 acceptance.",
+          "checks": null
+        },
+        "bulk-network": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/network.json",
+          "sha256": "b23d4fca66d7e3383e49e035cd6cab9267838f7b97079861ea17a5fe23d02ff1",
+          "scope": "Actual default autonomous NativeSource/defaulttiled1792Canvas genuine>=9MiB SKP/privateIPC/nativeGateway/realViewerWorker CanvasKit pixels and16actual paired-control CDP inputs. Kernel netem matches Gateway TCP in both directions:configuredCases(default13RTT/loss/jitter20Mbit profiles plus80ms1%2Mbit). SourceCDP excluded. Default5s post-commit ACK,15s resource progress inactivity,32KiB chunks and3s input ACK gates unchanged; original network bulk90s whole-transfer gate. Local raw16MiB/ACK1.5s and200ms close are separateacceptedcontracts; cleanup removesimpairment anddoesnotclaimweaknetwork200ms close/capture-startframeage/fullN1.",
+          "checks": null
+        }
+      },
+      "freshGapSuite": {
+        "at": "2026-10-17T19:23:30.744316+00:00",
+        "runnerPid": 23195,
+        "container": "remote-paint-native-source-bulk-20261018-v1",
+        "project": "/tmp/remote-paint-native-source-loss-integration-frozen-v1",
+        "runs": [
+          {
+            "name": "large57",
+            "test": "verify-large-native-cache.mjs",
+            "exitCode": 0,
+            "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-gap-suite-v1/large57.log",
+            "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/b1-gap-current-v1/large57/large/replay.json",
+            "sha256": "ec58bd877ff5219b95bb87eb7b3b2e8140996bb88ccd07ceee12d7a1c68f7123"
+          },
+          {
+            "name": "input2MiB",
+            "test": "verify-source-input-pressure.mjs",
+            "exitCode": 0,
+            "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-gap-suite-v1/input2MiB.log",
+            "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/b1-gap-current-v1/input2MiB/input/report.json",
+            "sha256": "31fcefd616c069dec6ae29fa1d5ce3c19b136ae880a79cac536e9267cab75f22"
+          },
+          {
+            "name": "legacy45MiB",
+            "test": "verify-broker-cache-lru.mjs",
+            "exitCode": 0,
+            "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-gap-suite-v1/legacy45MiB.log",
+            "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/b1-gap-current-v1/legacy45MiB/artifacts/broker-cache-lru/contract.json",
+            "sha256": "a9317251b79522bc09382372cc1d72a74da625206be553841947204598a9a912"
+          },
+          {
+            "name": "rollback423",
+            "test": "verify-broker-mapper-transaction.mjs",
+            "exitCode": 0,
+            "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-gap-suite-v1/rollback423.log",
+            "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/b1-gap-current-v1/rollback423/artifacts/rust-mapper-transaction/rollback.json",
+            "sha256": "4eb662f9de13ee9765bc01839db46682fa6adb7fbc9e60eb6b81d5cc2f48e55c"
+          }
+        ],
+        "status": "passed",
+        "phase": "terminal"
+      },
+      "freshGapSummaries": {
+        "large57": {
+          "rawBytes": 57802256,
+          "resources": 4,
+          "pixels": [
+            {
+              "x": 2,
+              "y": 2,
+              "rgba": [
+                20,
+                37,
+                199,
+                255
+              ]
+            },
+            {
+              "x": 2050,
+              "y": 2,
+              "rgba": [
+                70,
+                37,
+                199,
+                255
+              ]
+            },
+            {
+              "x": 2,
+              "y": 2050,
+              "rgba": [
+                120,
+                37,
+                199,
+                255
+              ]
+            },
+            {
+              "x": 2050,
+              "y": 2050,
+              "rgba": [
+                170,
+                37,
+                199,
+                255
+              ]
+            }
+          ],
+          "resourceRecoveries": 0,
+          "nodeCalls": {
+            "evaluate": 3,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          }
+        },
+        "input2MiB": {
+          "inputBefore": {
+            "allocations": 1,
+            "bytes": 32768,
+            "denied": 1,
+            "headroom": 1048576,
+            "limit": 2097152,
+            "peak": 43576,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "inputAfter": {
+            "allocations": 1,
+            "bytes": 32768,
+            "denied": 2,
+            "headroom": 1048576,
+            "limit": 2097152,
+            "peak": 573960,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "pixel": [
+            29,
+            83,
+            197,
+            255
+          ],
+          "nativeDrained": true,
+          "ticks": 18,
+          "afterTicks": 22,
+          "nodeCalls": {
+            "evaluate": 12,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          }
+        },
+        "legacy45MiB": {
+          "fullFrameResources": 3,
+          "hashOnlySerial": 2,
+          "reset": {
+            "cacheByteLimit": 134217728,
+            "cacheBytes": 0,
+            "cacheEntryLimit": 512,
+            "cacheEvictions": 2,
+            "cacheOwnedChunkBytes": 0,
+            "chunkIndexCapacity": 0,
+            "chunkIndexEntries": 0,
+            "chunkIndexEstimateBytes": 0,
+            "chunkIndexLimit": 8192,
+            "entries": 0,
+            "epoch": 0,
+            "indexAllowanceBytes": 0,
+            "liveChunkIndexEntries": 0,
+            "manifestBytes": 0,
+            "mapperIndices": {
+              "allocations": 0,
+              "allowanceBytes": 16777216,
+              "bytes": 0,
+              "canAdmitMapper": true,
+              "denied": 0,
+              "headroom": 0,
+              "limit": 67108864,
+              "peak": 16777216,
+              "ready": true,
+              "scope": "mapper-index-pool",
+              "scopeNote": "fixed requested-layout allowance for persistent strong/recency/weak/chunk index backing and bounded sorting/hash/stats scratch;logical entries,Snapshot graphs,payload/wire/manifest and parser owners remain separate;VM/allocator/OS/RSS outside"
+            },
+            "payloadBytes": 0,
+            "recencyIndexCapacity": 0,
+            "referenceIndexCapacity": 0,
+            "referenceIndexEntries": 0,
+            "referenceIndexEstimateBytes": 0,
+            "referenceIndexLimit": 512,
+            "resourcePoolBytes": 0,
+            "resourcePoolLimit": 805306368,
+            "resourceWireBytes": 0,
+            "resources": 0,
+            "revision": 0,
+            "scope": "mapper-retained-cache",
+            "serial": 2,
+            "strongIndexCapacity": 0
+          }
+        },
+        "rollback423": {
+          "rejections": 423,
+          "base64Bytes": 146800640,
+          "rawBytes": 146800640,
+          "recovered": {
+            "serial": 2,
+            "revision": 1
+          },
+          "changed": {
+            "serial": 3,
+            "revision": 2
+          }
+        }
+      },
+      "latestLossMetrics": {
+        "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-loss-integration-checkpoint-v1.json",
+        "sha256": "5516bfa5903f7a9fb14c595b50c3411f56c322ab50126e1c861a24fd7a5a1ea9",
+        "cases": 27,
+        "nominalInputs": 27000,
+        "pairedFrames": 11879
+      },
+      "buildDebt": {
+        "canonicalGraphAccepted": false,
+        "incrementalGraphUpToDate": false,
+        "stagedTarget": "headless_shell_capture_clock",
+        "graph": "remote-paint-capture-clock.ninja",
+        "scope": "Preserveactualbuildprovenance.Native-runtimeacceptanceisnotstandardGN/Ninjagraph/dual-architecturepackage/CI/signing/B16completion."
+      },
+      "requiredRemainingBeforeB1Acceptance": [
+        "Atomicformalbinary/receiptpromotionwithpreviousartifactsrecoverable.",
+        "ActualformalpathSource/full-live/WebGL/localbulk/close/Nodefallback+fullJSchecks;thenqualifieddefaultLinuxARM64Sourceacceptance."
+      ],
+      "productionImplementationUnchanged": true,
+      "noCommitPush": true,
+      "canonicalNotYetChanged": true,
+      "all41": {
+        "complete": 8,
+        "partial": 13,
+        "pending": 20
+      }
+    }
+  },
+  "formalBrowser": {
+    "headlessShell": "/Users/jihuayu/Documents/Codex/2026-10-15/q/work/linux-build/chromium/src/out/RemotePaintLinux/headless_shell",
+    "compatibilityAlias": "/Users/jihuayu/Documents/Codex/2026-10-15/q/work/linux-build/chromium/src/out/RemotePaintLinux/headless_shell_viz_delivery",
+    "sha256": "c5d29a3b5a22ff27ee3914c68650feea3e342dd1c4d2dc502e9ff0e596ae1b4e",
+    "serializerSha256": "2c853b5b4937a625d22e0e29a3dba42e5ea2f2d6ed2cc5be130d273ed4dce27d",
+    "buildReceiptSha256": "fc3e19f938705d6f8a697c1b376b8c97acf27f54248647ce076c011c1fc7b4ed",
+    "patchReceiptSha256": "cca7d969e088a43f0eabadef4382705596f640172d60e458b6788d021251bdb0"
+  },
+  "formalBrokers": {
+    "mac": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/remote-paint-broker",
+      "sha256": "6b7e771842fd1ac6d5357ed3c75780d6dd433ebd3ed1aa146e28c95eb3128f93"
+    },
+    "linux": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+      "sha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c"
+    }
+  },
+  "formalSuite": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v3/progress.json",
+    "sha256": "692474b3ad286be4b20881920f85b4b4805b08a48464648d43494def39ee299c",
+    "steps": 9,
+    "cpp": 76,
+    "js": {
+      "js-linux": {
+        "tests": 221,
+        "pass": 221,
+        "fail": 0,
+        "skipped": 0
+      },
+      "js-mac": {
+        "tests": 221,
+        "pass": 221,
+        "fail": 0,
+        "skipped": 0
+      }
+    },
+    "runs": [
+      {
+        "name": "cpp",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v1/cpp.log",
+        "logSha256": "0583de2006de3127d6968c53dbc04faf6ac908d56d1bdde5cf4ca88f5db1ca8f",
+        "reusedFrom": "native-source-b1-formal-suite-v2"
+      },
+      {
+        "name": "clock",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v1/clock.log",
+        "logSha256": "26456b1f353e3a7c0a9260e4e32578899cf77defda809ceb4be3ebe426446df1",
+        "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/clock/clock.json",
+        "reportSha256": "07a4d81371088f5f53ee257782bf0d6c4ddc47eef827aff1a395bf8a27db4461",
+        "reusedFrom": "native-source-b1-formal-suite-v2",
+        "scope": "Actual default autonomous NativeSource/fixed native Take timestamp/private currentTimeTicks probe/real Gateway+FrameGate+CanvasKit pixels/input/pause/resume/resize/crosssite navigation/reset and cleanup. Calibration probe bounds are raw provenance,not completed frame-age measurements;no claim for Viewer Worker/physical scanout/fullN1/8h."
+      },
+      {
+        "name": "native-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v1/native-live.log",
+        "logSha256": "451f2cc52faf38c637593f45216d37f09217a0c4fea0cea2ba7cb34b7929638f",
+        "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/native-live/report.json",
+        "reportSha256": "cafd40283a73b2c48684676e5149f8c814399044e7df100d3295d61e85cf84a4",
+        "reusedFrom": "native-source-b1-formal-suite-v2",
+        "scope": "Actual default autonomous native Source/real custom Chromium/native Gateway/CanvasKit Viewer complete dynamic fixture, pixels/private images/fonts/streaming/human input/animation reuse/slow peer/reconnect/controlled reset/navigation/3resize/dropped-resource recovery/cache drain/idle. Actual native hash-miss Retry is a separate required verifier. No weak-network/9MiB/full B1/physical-memory claim."
+      },
+      {
+        "name": "node-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v1/node-live.log",
+        "logSha256": "c16122f41de04ac3ebdc754bda9ff1049e662aa50b328b25fd9c6b848f4ddf0e",
+        "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/node-live/report.json",
+        "reportSha256": "80cb243bedef41bd0963188dd7bdc6e53245e383c63416f234dbebf4282d6f50",
+        "reusedFrom": "native-source-b1-formal-suite-v2",
+        "scope": "Actual explicit Node fallback/custom Chromium/Node SceneMapper+transport/CanvasKit Viewer complete dynamic fixture with real pixels/private images/fonts/streaming/human input/animation reuse/slow peer/reconnect/navigation/3resize/dropped-resource recovery/cache drain/idle. No autonomous-native or weak-network/full B1/physical-memory claim."
+      },
+      {
+        "name": "webgl",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v1/webgl.log",
+        "logSha256": "ffeeee1967dc5253b9a1b9f040ac7066251ef6ea46605496c32a89332789c3f6",
+        "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/webgl/placeholder-live.json",
+        "reportSha256": "f17cf7333c9095a88dfff3d9652593525c8cb9b9d72f64911bbaf48110669f57",
+        "reusedFrom": "native-source-b1-formal-suite-v2",
+        "scope": "Actual default autonomous NativeSource/custom Linux Chromium/native Rust Gateway/CanvasKit Worker pixels. Real WebGL2 green source is rendered as black with expected WebGL 无法显示 glyph pixels; DOM and Canvas2D updates plus WebGL removal/re-addition. Viewer CPU or forced SwiftShader WebGL2 is stated from actual presentation; no physical GPU/full B1/process-memory claim."
+      },
+      {
+        "name": "bulk-local-v2",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v2/bulk-local-v2.log",
+        "logSha256": "b3950a4999e4d7592bf17122213d708b111e96147b4b32f089b5ce5bf443ce39",
+        "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/bulk-local-v2/contract.json",
+        "reportSha256": "60fff6f3e058425116b25b2004a3a9dee73ba00969da1c0485b48f29732c902d",
+        "reusedFrom": "native-source-b1-formal-suite-v2",
+        "scope": "Actual default autonomous NativeSource/default tiled capture/1792square Canvas texture SKPs/private native IPC/real Gateway WebSockets/FrameGate/CanvasKit pixels and paired-control CDP input. Original local raw9MiB/15s/16MiB/ACK1.5s case and separate original32KiB-chunks/default5s/800ms-paused-control/3s/200ms Gateway close case. Native32KiB socket send buffer is unchanged; positive kernel TX50ms plus>=9MiB pending-frame stats prove backpressure. No synthetic SKP padding/fake CDP; local network only,not kernel impairment/N1/full B1/whole Source200ms close/process-memory acceptance."
+      },
+      {
+        "name": "close",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v2/close.log",
+        "logSha256": "6f119c5ca795c7af7411325a80219d4295d2b92c4a1094ccb59bf8ca6bb2e921",
+        "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/close/ownership.json",
+        "reportSha256": "4d3b4d6ff734d3ef58bd1abf3017a3e223a623fe05a9101649e2be7edb94698d",
+        "reusedFrom": "native-source-b1-formal-suite-v2",
+        "scope": "Actual Linux Chromium with default autonomous native Rust Source and explicit Node fallback: ten retained closed Sources plus two Live control-cleanup failures. Native Source keeps scalar receipts, Node Mapper caches/latest reset; one explicit diagnostic map holds the real Mapper while actual C++ awaits credit, then real close rejects/drains it. Late work/reset events cannot republish, idempotent close, queued resize and injected cleanup errors propagate while all owned browser processes/Broker/fixture still exit. /proc start identities avoid PID-reuse false positives. Ownership/process-exit evidence only, not native rendered-pixel/RSS/PSS/whole-Session/eight-hour or complete B1 acceptance."
+      },
+      {
+        "name": "js-linux",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v3/js-linux.log",
+        "logSha256": "a8218f957766e6ef9ceb651bb6d3e60cbe45a2574dfd27391831f869c1819473",
+        "testReportWorkspace": "/artifacts/js-linux-v3",
+        "sourceTestsFromFormalPath": true
+      },
+      {
+        "name": "js-mac",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v3/js-mac.log",
+        "logSha256": "76f486c27a7c354e0ca3029271378030b005ddd4e0c0c2d2d3dedbcc9e76cb46",
+        "testReportWorkspace": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-js-mac-v3",
+        "sourceTestsFromFormalPath": true
+      }
+    ]
+  },
+  "actualMacBroker": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-mac-dispatch-v1/dispatch.json",
+    "sha256": "9006cf9fdfa1fa2af2768aafba90f931360e6b855867f24f8ac65c598fa9232f",
+    "checks": 4,
+    "scope": "Actual Broker process/private native binary IPC/single Mapper/Gateway/CanvasKit. Synthetic authenticated native input; no Chromium/defaultSource,document-token orfullSession/pressure/close acceptance claimed."
+  },
+  "formalSummaries": {
+    "nativeLivePixelFractionOver24": 0.009757486979166667,
+    "nativeLiveQuiescentResources": 17,
+    "nodeLivePixelFractionOver24": 0.009757486979166667,
+    "nativeNodeCalls": {
+      "evaluate": 58,
+      "awaitPromise": 0,
+      "map": 0,
+      "publish": 0
+    },
+    "webglLabelChecks": [
+      {
+        "phase": "initial",
+        "text": "WebGL 无法显示",
+        "expected": 406,
+        "actual": 446,
+        "recall": 1,
+        "precision": 0.9977578475336323
+      },
+      {
+        "phase": "update",
+        "text": "WebGL 无法显示",
+        "expected": 406,
+        "actual": 446,
+        "recall": 1,
+        "precision": 0.9977578475336323
+      },
+      {
+        "phase": "restored",
+        "text": "WebGL 无法显示",
+        "expected": 406,
+        "actual": 446,
+        "recall": 1,
+        "precision": 0.9977578475336323
+      }
+    ],
+    "bulk": {
+      "byteWindow": {
+        "firstBytes": 11054972,
+        "secondBytes": 11054944,
+        "windowBytes": 16777216,
+        "firstMs": 6799.526577,
+        "afterAckMs": 6108.804830000001,
+        "first": {
+          "phase": "byte-window",
+          "at": 7413.588749,
+          "pageEpoch": 1,
+          "frameId": 2,
+          "ordinal": 2,
+          "sourceFrame": 7,
+          "inputSeq": 0,
+          "tag": 1,
+          "pixels": [
+            [
+              43,
+              161,
+              89,
+              255
+            ],
+            [
+              43,
+              161,
+              89,
+              255
+            ],
+            [
+              43,
+              161,
+              89,
+              255
+            ]
+          ],
+          "marker": [
+            0,
+            0,
+            42,
+            255
+          ],
+          "requiredBytes": 11054972
+        },
+        "second": {
+          "phase": "byte-window",
+          "at": 14770.972094,
+          "pageEpoch": 1,
+          "frameId": 5,
+          "ordinal": 9,
+          "sourceFrame": 151,
+          "inputSeq": 0,
+          "tag": 2,
+          "pixels": [
+            [
+              191,
+              61,
+              107,
+              255
+            ],
+            [
+              191,
+              61,
+              107,
+              255
+            ],
+            [
+              191,
+              61,
+              107,
+              255
+            ]
+          ],
+          "marker": [
+            0,
+            0,
+            42,
+            255
+          ],
+          "requiredBytes": 11054944
+        },
+        "ackTimeoutMs": 1500
+      },
+      "ackDeadline": {
+        "configuredMs": 1500,
+        "closeCode": 1013,
+        "afterCommitMs": 1501.7096680000013
+      },
+      "control": {
+        "ackTimeoutMs": 5000,
+        "readPauseMinimumMs": 800,
+        "actualPauseMs": 2195.9707610000005,
+        "pressure": {
+          "peakBytes": 69776,
+          "heldMs": 50.86053399999946,
+          "nativeMaxPendingBytes": 11108198,
+          "configuredSendBufferBytes": 32768
+        },
+        "inputAcks": [
+          {
+            "seq": 3,
+            "ms": 3.6204690000013215
+          },
+          {
+            "seq": 4,
+            "ms": 2.600746000000072
+          },
+          {
+            "seq": 5,
+            "ms": 2.8447919999998703
+          },
+          {
+            "seq": 6,
+            "ms": 5.771875999998883
+          },
+          {
+            "seq": 7,
+            "ms": 6.332676000001811
+          },
+          {
+            "seq": 8,
+            "ms": 5.812709999998333
+          },
+          {
+            "seq": 9,
+            "ms": 6.139090000000579
+          },
+          {
+            "seq": 10,
+            "ms": 2.6237880000007863
+          },
+          {
+            "seq": 11,
+            "ms": 3.3046739999990677
+          },
+          {
+            "seq": 12,
+            "ms": 3.1638370000000577
+          },
+          {
+            "seq": 13,
+            "ms": 5.729041999999026
+          },
+          {
+            "seq": 14,
+            "ms": 2.8372500000004948
+          },
+          {
+            "seq": 15,
+            "ms": 3.757345999998506
+          },
+          {
+            "seq": 16,
+            "ms": 4.16881099999955
+          },
+          {
+            "seq": 17,
+            "ms": 5.759709000001749
+          },
+          {
+            "seq": 18,
+            "ms": 2.877999999996973
+          }
+        ],
+        "inputSeq": 18,
+        "chunkPackets": 353,
+        "maxChunkBytes": 32768,
+        "complete": {
+          "phase": "paired-control",
+          "at": 20151.544127,
+          "pageEpoch": 1,
+          "frameId": 6,
+          "ordinal": 8,
+          "sourceFrame": 123,
+          "inputSeq": 18,
+          "tag": 1,
+          "pixels": [
+            [
+              43,
+              161,
+              89,
+              255
+            ],
+            [
+              43,
+              161,
+              89,
+              255
+            ],
+            [
+              43,
+              161,
+              89,
+              255
+            ]
+          ],
+          "marker": [
+            0,
+            16,
+            42,
+            255
+          ],
+          "requiredBytes": 11060160
+        }
+      },
+      "close": {
+        "pressure": {
+          "peakBytes": 65632,
+          "heldMs": 51.994009000001824,
+          "nativeMaxPendingBytes": 11108206,
+          "configuredSendBufferBytes": 32768
+        },
+        "finalInput": {
+          "seq": 19,
+          "ms": 3.2669220000025234
+        },
+        "readerResumeMs": 20,
+        "ms": 22.757332000001043,
+        "originalDeadlineMs": 200,
+        "dataCode": 1001,
+        "controlCode": 1001,
+        "peerOwners": 0,
+        "routeOwners": 0
+      }
+    },
+    "closeSources": 12,
+    "reapedBrowserProcessIdentities": 48
+  },
+  "previousArtifacts": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-promotion-before-v1",
+  "promotionPlan": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-promotion-plan-v1.json",
+  "failuresPreserved": [
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v1/bulk-local.log",
+      "reason": "Missingisolated-containerENVmarker;teststoppedatpreconditionbeforecontractexecution."
+    },
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-suite-v2/js-linux.log",
+      "reason": "TwoGC/streamreportwritesfailedEROFSinread-onlyproject;full221repassedwithwritablereportworkspaceusingunchangedformaltests/source/binaries."
+    }
+  ],
+  "sourceImplementationUnchanged": true,
+  "canonicalPromoted": true,
+  "oldLiveProofContainerUntouched": true,
+  "buildDebt": {
+    "canonicalGraphAccepted": false,
+    "incrementalGraphUpToDate": false,
+    "stagedTarget": "headless_shell_capture_clock",
+    "graph": "remote-paint-capture-clock.ninja",
+    "scope": "Preserveactualbuildprovenance.Native-runtimeacceptanceisnotstandardGN/Ninjagraph/dual-architecturepackage/CI/signing/B16completion."
+  },
+  "scopeLimits": [
+    "Localformalartifact/runtimeacceptance,notpublisheddual-architecturepackages/standardGNgraph/CI/SBOM/signing/B16completion. Buildgraphflagsremainunchangedfalse.",
+    "LinuxSource andMacBroker/JSscopesareexplicit. PhysicalGPUs/IME/devices/otherSourceplatformsandSDK/tenantauth areseparaterequirements.",
+    "N1longload/fullSessionPSS/eighthoursremainincomplete;currentfailures/failedsoaktimesarenotcountedaspass. All41goalcontinues."
+  ],
+  "noCommitPush": true,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}

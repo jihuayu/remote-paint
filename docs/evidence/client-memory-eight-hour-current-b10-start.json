@@ -1,0 +1,233 @@
+{
+  "at": "2026-10-17T00:51:33.074476+00:00",
+  "status": "running-NOT-passed",
+  "runId": "2585828c-e3d1-4175-98f9-8a8c656dcd7c",
+  "startedAt": "2026-10-17T00:49:31.748Z",
+  "targetSeconds": 28800,
+  "workload": {
+    "seconds": 28800,
+    "burst": 400,
+    "intervalMs": 2000,
+    "navigationEvery": 40
+  },
+  "initialViewerSetupSeconds": 36.720839375,
+  "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+  "rustSha256": "a2966b7f15fabec227654cad543e8519ef25fa052c5760941db6875e0da52c23",
+  "dependenciesFrozen": true,
+  "sourceFileCount": 653,
+  "runtimeFiles": {
+    "headless_command_resources.pak": "8be045eeba9f670fe9e75682f2246ec5ba4d63eae115681b956000558d45e131",
+    "headless_lib_data.pak": "b8bb5c0d480f6e213099cba8423d0cc7db008580d66a14a4158bed6136e2e94d",
+    "headless_lib_strings.pak": "b0246695931d310ade0c1d3b0790cad5c4c37ca40183c0ac52dbed4558938183",
+    "headless_shell": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "icudtl.dat": "495c45cc7a65562ec461f860c310c6b66e006acd96833f61d1aa31f77fe18cf1",
+    "libEGL.so": "e062ddaf57483979cb83b1e37c75fc708d2b9945b0ce664aaf6d52407b1efb78",
+    "libGLESv2.so": "12f2e07e02ebebfd7d6bec82bf17fb814d6da64e06a0b477a9eef19d77993cbe",
+    "libVkICD_mock_icd.so": "d0032605642b7e0b1887737e7148bb4048b11d65c0da4b83e14f4929b8bca4d5",
+    "libVkLayer_khronos_validation.so": "17c89c4a4452966fd53c8ffc384e8acbaf0f72aad4e93522c23b29ac70c35b1f",
+    "libvk_swiftshader.so": "652ad439bcdeecb8ee4c96d193dbc1148627bf3ba294c1c6bfb6fd836955bfe6",
+    "libvulkan.so.1": "d7316afedac8cc08c8e1cc0045446f6f758854f4ddd095f8d347571dc91f96d8",
+    "package.json": "dff52d6b799f4b6dc7ab2d4af7fe7663d2e8249458ae4aeff2caf420e1d7ae6e",
+    "remote-paint-build.json": "0d7bb7dd2659dab87279ee719ee7d62289e0b518f58fb2be45befe7fac120b60",
+    "remote-paint-patches.json": "5227a558e6d0939bec33f1ed612510d1c607f290d153ab4788b21aba1ae66611",
+    "snapshot_blob.bin": "724badd42512973fbb4ee97746bc0b0c48c622f09df012f394b783eb174e7fe1",
+    "v8_build_config.json": "e2fcc502272dfb5e4f8f2b36517ee514cbe3304f44531f2b76c079e9ff7432a4",
+    "v8_features.json": "c147a301d0c610c55e4fa151aece0f76db04baebd595646dfcc583194ee2a294",
+    "vk_swiftshader_icd.json": "c9eef28b6b984fec220ef0abfecc40b502d46946706e47bfe97707027cb818bd"
+  },
+  "frozenManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-b10/frozen-version.json",
+  "frozenManifestSha256": "1d4aacc50c86ea1c1f6f894fc52741265e54cb898bc90ad05d7d1eb9d7da3d5a",
+  "results": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-current-b10",
+  "currentSample": {
+    "at": "2026-10-17T00:51:12.037Z",
+    "elapsedSeconds": 98.84087612500001,
+    "cycle": 405,
+    "navigations": 0,
+    "resizes": 36,
+    "inputs": 25,
+    "viewerBudgetFailures": [
+      0,
+      0,
+      0
+    ]
+  },
+  "sourceDiagnostic": {
+    "at": "2026-10-17T00:51:32.098Z",
+    "runId": "2585828c-e3d1-4175-98f9-8a8c656dcd7c",
+    "closing": false,
+    "health": {
+      "pageCrashed": false,
+      "browserDisconnected": false,
+      "brokerExited": false
+    },
+    "metrics": {
+      "atMs": 120981.318225,
+      "clockTicksPerSecond": 100,
+      "captures": 871,
+      "byKind": {
+        "node": {
+          "cpuMs": 13450,
+          "rssBytes": 201756672,
+          "processes": 1
+        },
+        "broker": {
+          "cpuMs": 18340,
+          "rssBytes": 125579264,
+          "processes": 1
+        },
+        "chromium": {
+          "cpuMs": 24140,
+          "rssBytes": 835125248,
+          "processes": 6
+        }
+      },
+      "processes": [
+        {
+          "pid": 7,
+          "kind": "node",
+          "cpuMs": 13450,
+          "rssBytes": 201756672,
+          "startTicks": 12277807,
+          "state": "R",
+          "pssBytes": 194728960,
+          "privateCleanBytes": 38903808,
+          "privateDirtyBytes": 150065152,
+          "swapPssBytes": 0
+        },
+        {
+          "pid": 21,
+          "kind": "broker",
+          "cpuMs": 18340,
+          "rssBytes": 125579264,
+          "startTicks": 12277838,
+          "state": "S",
+          "pssBytes": 124453888,
+          "privateCleanBytes": 749568,
+          "privateDirtyBytes": 123564032,
+          "swapPssBytes": 0
+        },
+        {
+          "pid": 23,
+          "kind": "chromium",
+          "cpuMs": 5040,
+          "rssBytes": 82993152,
+          "startTicks": 12277839,
+          "state": "S",
+          "pssBytes": 41934848,
+          "privateCleanBytes": 3502080,
+          "privateDirtyBytes": 20594688,
+          "swapPssBytes": 0,
+          "chromiumRole": "browser"
+        },
+        {
+          "pid": 26,
+          "kind": "chromium",
+          "cpuMs": 0,
+          "rssBytes": 32604160,
+          "startTicks": 12277842,
+          "state": "S",
+          "pssBytes": 9835520,
+          "privateCleanBytes": 0,
+          "privateDirtyBytes": 778240,
+          "swapPssBytes": 0
+        },
+        {
+          "pid": 25,
+          "kind": "chromium",
+          "cpuMs": 0,
+          "rssBytes": 32636928,
+          "startTicks": 12277842,
+          "state": "S",
+          "pssBytes": 9800704,
+          "privateCleanBytes": 0,
+          "privateDirtyBytes": 688128,
+          "swapPssBytes": 0
+        },
+        {
+          "pid": 42,
+          "kind": "chromium",
+          "cpuMs": 730,
+          "rssBytes": 110292992,
+          "startTicks": 12277852,
+          "state": "S",
+          "pssBytes": 77271040,
+          "privateCleanBytes": 2428928,
+          "privateDirtyBytes": 63586304,
+          "swapPssBytes": 0,
+          "chromiumRole": "network.mojom.NetworkService"
+        },
+        {
+          "pid": 39,
+          "kind": "chromium",
+          "cpuMs": 2860,
+          "rssBytes": 58949632,
+          "startTicks": 12277852,
+          "state": "S",
+          "pssBytes": 26987520,
+          "privateCleanBytes": 3452928,
+          "privateDirtyBytes": 8323072,
+          "swapPssBytes": 0,
+          "chromiumRole": "GPU"
+        },
+        {
+          "pid": 78,
+          "kind": "chromium",
+          "cpuMs": 15510,
+          "rssBytes": 517648384,
+          "startTicks": 12277854,
+          "state": "S",
+          "pssBytes": 476756992,
+          "privateCleanBytes": 66048000,
+          "privateDirtyBytes": 387379200,
+          "swapPssBytes": 0,
+          "chromiumRole": "renderer"
+        }
+      ],
+      "pss": {
+        "bytes": 961769472,
+        "sampledProcesses": 8,
+        "totalProcesses": 8
+      },
+      "cgroup": {
+        "memory.current": 901660672,
+        "memory.peak": 968249344,
+        "memory.max": "max",
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0,
+          "sock_throttled": 0
+        },
+        "memory.swap.current": 0,
+        "memory.swap.max": "max"
+      }
+    },
+    "reason": "interval"
+  },
+  "sourceExecSession": 58974,
+  "viewerExecSession": 37225,
+  "containerObserverExecSession": 87542,
+  "container": "remote-paint-memory-eight-hours-current-b10-20261017",
+  "containsCheckpoints": [
+    "native host lifecycle",
+    "native renderer encoded64MiB/512 budget",
+    "Rust resource/cache and Viz input pools",
+    "Node outbound request budget",
+    "Source crashed-renderer close"
+  ],
+  "previousRun": {
+    "runId": "8c8f0d4c-1c2f-44f4-918b-926c5e555be8",
+    "status": "failed and cleaned;cycle6735;Source renderer Target crashed",
+    "evidence": "client-memory-eight-hour-exact-frame-failure.json",
+    "elapsedTimeCarried": false
+  },
+  "limitations": "Start/progress receipt only. Requires full continuous8h,workload/memory gates and successful cleanup/final report. No whole Session budget or root-cause claim. Rust stdin/Node output/native recording/epoch and full41+N1 remain incomplete.",
+  "externalDockerObserver": {
+    "execSession": 87542,
+    "eventPersistenceVerified": true,
+    "probe": "Read-only docker exec true produced persisted exec_create,exec_start,exec_die events. No Source/Viewer parameter or code changes."
+  }
+}

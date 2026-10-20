@@ -1,0 +1,1753 @@
+{
+  "at": "2026-10-17T17:01:39.102420+00:00",
+  "status": "accepted-two-independent-actualNativeSource-input-network-matrices-NOT-fullN1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-loss-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-loss-checkpoint-project-v1",
+  "sourceFiles": 527,
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-checkpoint-v1.json",
+  "changed": [
+    "tests/verify-loss.mjs"
+  ],
+  "productionUnchanged": true,
+  "scope": "ActualdefaultNativeSource/realViewerWorker/13kernelnetworkprofiles*1000realCDPtextinputs withpixelconfirmation;compositoranimation,22movedrag,300msblackhole/fullreconnect/lease revocationpercase. Ack-onlyRTTpingpeerissupplemental,notasecondpixelViewer. 20Mbit+RTT20/40/80/150/jitter+loss0.5/1/2plusunshaped0/0inputbaseline. No9MiBkerneltransfer/capture-startframeage/fullN1/all41claim.",
+  "runs": [
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/loss.json",
+      "sha256": "dde93cb4d8b8ed968b852898e4fed2aea472e4c610d7f30ca2746d1e7a6f781e",
+      "rawReports": [
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-0-0.json",
+          "sha256": "eb7ba0ff7df9b000f6e57f23a177891ab0cbab907638a2c8ade4b8d076d31e30"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-20-0.5.json",
+          "sha256": "05f92da7dde1aa11879babe48a0bf230395ae636739c2c346bdeb5ad584bfddd"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-20-1.json",
+          "sha256": "e6e8adef95d92782a7a120b49418ab113f0fff3bfceeb39973e44a7b4e91f3ee"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-20-2.json",
+          "sha256": "38f525320e3eeeada6528d37aa7b5d1abace54f9b7af97754bc4347ba5c62241"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-40-0.5.json",
+          "sha256": "76dd859d601fbb8c528c99c6eae8ab4c4e1e69dea230ce4644b3c050329819a2"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-40-1.json",
+          "sha256": "f27301fb2de84032439d85f490ef3b91272feff2cccce9ef164ffc247751e9ad"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-40-2.json",
+          "sha256": "f550b358686b0af0a10bf9206b4fcec45a70fc378c497cd838ef20e19a813b14"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-80-0.5.json",
+          "sha256": "bc557440bf5b61710c1fc085c817faee740e5833664ecbfe5bf8ab98cc2009f9"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-80-1.json",
+          "sha256": "302f3c7e2c272648a3a4977704cad695e421c9c38794a6d6a3021ba2a363d99e"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-80-2.json",
+          "sha256": "7466cbc52eff0738f5cd4b677e80fbcefd0d8157f496817db99050540e6d116b"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-150-0.5.json",
+          "sha256": "c86d2e0b089e98750dee05a70807c271048f432cb6eda62fcf3c2c73e2f8ca5e"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-150-1.json",
+          "sha256": "e86f5145bfe2443c9e00d64e05304348e46f6394e4c4aa117c22149a0b71a4dd"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-v1/case-150-2.json",
+          "sha256": "25245687eb1c0b78582f536cf9190b69fe973cc9b241d5deef10eb03ecac9e19"
+        }
+      ],
+      "samples": 13000,
+      "rows": [
+        {
+          "configuredRttMs": 0,
+          "lossPercent": 0,
+          "p50Ms": 45.30000001192093,
+          "p95Ms": 61,
+          "p99Ms": 77.5,
+          "maxMs": 194.09999999403954,
+          "maxProgressGapMs": 192.09999999403954,
+          "maxOutstanding": 6,
+          "frames": 1018,
+          "animationPatterns": [
+            0,
+            2,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 449.4047900000005,
+            "reconnectMs": 311.8675690000018,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1038,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 0,
+          "peerStats": [
+            {
+              "bytes": 24431852,
+              "coalesced": 15,
+              "delta": 1113,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 30259,
+              "maxPendingBytes": 30259,
+              "pendingBytes": 0,
+              "resources": 2035,
+              "slowDisconnects": 0,
+              "ackRttMs": 4.836296
+            },
+            {
+              "bytes": 43215,
+              "coalesced": 0,
+              "delta": 2,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 28085,
+              "maxPendingBytes": 28085,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0,
+              "ackRttMs": 8.957434000000001
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 0.5,
+          "p50Ms": 82.30000001192093,
+          "p95Ms": 111.7999999821186,
+          "p99Ms": 131.5,
+          "maxMs": 192,
+          "maxProgressGapMs": 136.19999998807907,
+          "maxOutstanding": 7,
+          "frames": 945,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 597.9766190000009,
+            "reconnectMs": 498.6604689999949,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1041,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 100,
+          "peerStats": [
+            {
+              "bytes": 15424827,
+              "coalesced": 431,
+              "delta": 708,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31137,
+              "maxPendingBytes": 31137,
+              "pendingBytes": 0,
+              "resources": 1304,
+              "slowDisconnects": 0,
+              "ackRttMs": 35.882326
+            },
+            {
+              "bytes": 35686,
+              "coalesced": 0,
+              "delta": 1,
+              "full": 1,
+              "maxInflight": 2,
+              "maxInflightBytes": 35686,
+              "maxPendingBytes": 28103,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 1,
+          "p50Ms": 84.80000001192093,
+          "p95Ms": 120.59999999403954,
+          "p99Ms": 146.7000000178814,
+          "maxMs": 201,
+          "maxProgressGapMs": 152.39999997615814,
+          "maxOutstanding": 7,
+          "frames": 926,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 596.1558079999959,
+            "reconnectMs": 482.1914300000062,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1041,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 157,
+          "peerStats": [
+            {
+              "bytes": 15784911,
+              "coalesced": 402,
+              "delta": 729,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31136,
+              "maxPendingBytes": 31136,
+              "pendingBytes": 0,
+              "resources": 1321,
+              "slowDisconnects": 0,
+              "ackRttMs": 32.038412
+            },
+            {
+              "bytes": 43242,
+              "coalesced": 0,
+              "delta": 2,
+              "full": 1,
+              "maxInflight": 2,
+              "maxInflightBytes": 35664,
+              "maxPendingBytes": 28084,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0,
+              "ackRttMs": 31.488621000000002
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 2,
+          "p50Ms": 86.59999999403954,
+          "p95Ms": 137.5,
+          "p99Ms": 192.40000000596046,
+          "maxMs": 321.80000001192093,
+          "maxProgressGapMs": 268.30000001192093,
+          "maxOutstanding": 13,
+          "frames": 873,
+          "animationPatterns": [
+            0,
+            2,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 558.7370700000029,
+            "reconnectMs": 498.72611499999766,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1040,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 295,
+          "peerStats": [
+            {
+              "bytes": 12070156,
+              "coalesced": 585,
+              "delta": 559,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31138,
+              "maxPendingBytes": 31138,
+              "pendingBytes": 0,
+              "resources": 1007,
+              "slowDisconnects": 0,
+              "ackRttMs": 26.410837
+            },
+            {
+              "bytes": 50832,
+              "coalesced": 0,
+              "delta": 3,
+              "full": 1,
+              "maxInflight": 3,
+              "maxInflightBytes": 43267,
+              "maxPendingBytes": 28103,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0,
+              "ackRttMs": 33.521701
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 0.5,
+          "p50Ms": 105,
+          "p95Ms": 164.7999999821186,
+          "p99Ms": 226.59999999403954,
+          "maxMs": 333.30000001192093,
+          "maxProgressGapMs": 166.80000001192093,
+          "maxOutstanding": 10,
+          "frames": 896,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 232.978992999997,
+            "reconnectMs": 661.9955889999983,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1036,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 75,
+          "peerStats": [
+            {
+              "bytes": 10942861,
+              "coalesced": 664,
+              "delta": 501,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31137,
+              "maxPendingBytes": 31137,
+              "pendingBytes": 0,
+              "resources": 920,
+              "slowDisconnects": 0,
+              "ackRttMs": 45.997389999999996
+            },
+            {
+              "bytes": 50848,
+              "coalesced": 0,
+              "delta": 3,
+              "full": 1,
+              "maxInflight": 4,
+              "maxInflightBytes": 50848,
+              "maxPendingBytes": 28102,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 1,
+          "p50Ms": 107.10000002384186,
+          "p95Ms": 160.09999999403954,
+          "p99Ms": 193.40000000596046,
+          "maxMs": 262.09999999403954,
+          "maxProgressGapMs": 262.09999999403954,
+          "maxOutstanding": 10,
+          "frames": 808,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 307.51052999999956,
+            "reconnectMs": 646.2424940000055,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1039,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 155,
+          "peerStats": [
+            {
+              "bytes": 9445553,
+              "coalesced": 740,
+              "delta": 436,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31138,
+              "maxPendingBytes": 31138,
+              "pendingBytes": 0,
+              "resources": 789,
+              "slowDisconnects": 0,
+              "ackRttMs": 51.886097
+            },
+            {
+              "bytes": 50848,
+              "coalesced": 0,
+              "delta": 3,
+              "full": 1,
+              "maxInflight": 4,
+              "maxInflightBytes": 50848,
+              "maxPendingBytes": 28104,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 2,
+          "p50Ms": 119,
+          "p95Ms": 192.30000001192093,
+          "p99Ms": 232,
+          "maxMs": 335.90000000596046,
+          "maxProgressGapMs": 200.19999998807907,
+          "maxOutstanding": 13,
+          "frames": 710,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 205.5207769999979,
+            "reconnectMs": 697.0285349999904,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1038,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 235,
+          "peerStats": [
+            {
+              "bytes": 8395880,
+              "coalesced": 781,
+              "delta": 392,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31138,
+              "maxPendingBytes": 31138,
+              "pendingBytes": 0,
+              "resources": 709,
+              "slowDisconnects": 0,
+              "ackRttMs": 44.214282
+            },
+            {
+              "bytes": 58428,
+              "coalesced": 0,
+              "delta": 4,
+              "full": 1,
+              "maxInflight": 5,
+              "maxInflightBytes": 58428,
+              "maxPendingBytes": 28102,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 0.5,
+          "p50Ms": 200.09999999403954,
+          "p95Ms": 309.69999998807907,
+          "p99Ms": 347.7000000178814,
+          "maxMs": 399.69999998807907,
+          "maxProgressGapMs": 216.40000000596046,
+          "maxOutstanding": 15,
+          "frames": 571,
+          "animationPatterns": [
+            0,
+            1,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 385.85849600000074,
+            "reconnectMs": 1014.4912030000123,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1035,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 46,
+          "peerStats": [
+            {
+              "bytes": 6511622,
+              "coalesced": 918,
+              "delta": 302,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31197,
+              "maxPendingBytes": 31197,
+              "pendingBytes": 0,
+              "resources": 541,
+              "slowDisconnects": 0,
+              "ackRttMs": 88.626484
+            },
+            {
+              "bytes": 65919,
+              "coalesced": 0,
+              "delta": 5,
+              "full": 1,
+              "maxInflight": 6,
+              "maxInflightBytes": 65919,
+              "maxPendingBytes": 28098,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 1,
+          "p50Ms": 226.7999999821186,
+          "p95Ms": 427.59999999403954,
+          "p99Ms": 609.5999999940395,
+          "maxMs": 748.8000000119209,
+          "maxProgressGapMs": 484.59999999403954,
+          "maxOutstanding": 29,
+          "frames": 432,
+          "animationPatterns": [
+            0,
+            1,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 564.3789470000193,
+            "reconnectMs": 1032.0865830000257,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1035,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 88,
+          "peerStats": [
+            {
+              "bytes": 5863443,
+              "coalesced": 963,
+              "delta": 281,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31138,
+              "maxPendingBytes": 31138,
+              "pendingBytes": 0,
+              "resources": 484,
+              "slowDisconnects": 0,
+              "ackRttMs": 90.74965399999999
+            },
+            {
+              "bytes": 65894,
+              "coalesced": 0,
+              "delta": 5,
+              "full": 1,
+              "maxInflight": 6,
+              "maxInflightBytes": 65894,
+              "maxPendingBytes": 28084,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 2,
+          "p50Ms": 233.7000000178814,
+          "p95Ms": 420.09999999403954,
+          "p99Ms": 619.9000000059605,
+          "maxMs": 762.5999999940395,
+          "maxProgressGapMs": 499.89999997615814,
+          "maxOutstanding": 28,
+          "frames": 399,
+          "animationPatterns": [
+            0,
+            1,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 474.2719630000065,
+            "reconnectMs": 1036.4035229999572,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1031,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 168,
+          "peerStats": [
+            {
+              "bytes": 5412141,
+              "coalesced": 980,
+              "delta": 256,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31200,
+              "maxPendingBytes": 31200,
+              "pendingBytes": 0,
+              "resources": 442,
+              "slowDisconnects": 0,
+              "ackRttMs": 97.899817
+            },
+            {
+              "bytes": 65898,
+              "coalesced": 0,
+              "delta": 5,
+              "full": 1,
+              "maxInflight": 6,
+              "maxInflightBytes": 65898,
+              "maxPendingBytes": 28084,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0,
+              "ackRttMs": 62.978588
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 0.5,
+          "p50Ms": 352.40000000596046,
+          "p95Ms": 570.5,
+          "p99Ms": 628.2000000178814,
+          "maxMs": 766.9000000059605,
+          "maxProgressGapMs": 350.80000001192093,
+          "maxOutstanding": 26,
+          "frames": 312,
+          "animationPatterns": [
+            1,
+            0,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 597.1839979999932,
+            "reconnectMs": 1665.5222760000033,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1038,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 35,
+          "peerStats": [
+            {
+              "bytes": 3612607,
+              "coalesced": 1109,
+              "delta": 175,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31136,
+              "maxPendingBytes": 31136,
+              "pendingBytes": 0,
+              "resources": 296,
+              "slowDisconnects": 0,
+              "ackRttMs": 164.023006
+            },
+            {
+              "bytes": 66009,
+              "coalesced": 0,
+              "delta": 5,
+              "full": 1,
+              "maxInflight": 6,
+              "maxInflightBytes": 66009,
+              "maxPendingBytes": 28103,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 1,
+          "p50Ms": 412.7000000178814,
+          "p95Ms": 700.6999999880791,
+          "p99Ms": 884.0999999940395,
+          "maxMs": 1018.0999999940395,
+          "maxProgressGapMs": 667.2000000178814,
+          "maxOutstanding": 40,
+          "frames": 261,
+          "animationPatterns": [
+            0,
+            1,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 571.7831110000261,
+            "reconnectMs": 1811.0803069999674,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1033,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 55,
+          "peerStats": [
+            {
+              "bytes": 3653816,
+              "coalesced": 1103,
+              "delta": 177,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31197,
+              "maxPendingBytes": 31197,
+              "pendingBytes": 0,
+              "resources": 294,
+              "slowDisconnects": 0,
+              "ackRttMs": 153.45074
+            },
+            {
+              "bytes": 66006,
+              "coalesced": 0,
+              "delta": 5,
+              "full": 1,
+              "maxInflight": 6,
+              "maxInflightBytes": 66006,
+              "maxPendingBytes": 28101,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 2,
+          "p50Ms": 452.69999998807907,
+          "p95Ms": 895.2999999821186,
+          "p99Ms": 1120.300000011921,
+          "maxMs": 1377.4000000059605,
+          "maxProgressGapMs": 1066.7000000178814,
+          "maxOutstanding": 53,
+          "frames": 210,
+          "animationPatterns": [
+            1,
+            0,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 624.1886999999988,
+            "reconnectMs": 1647.4537509999936,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1018,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 114,
+          "peerStats": [
+            {
+              "bytes": 3176095,
+              "coalesced": 1124,
+              "delta": 153,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31137,
+              "maxPendingBytes": 31137,
+              "pendingBytes": 0,
+              "resources": 255,
+              "slowDisconnects": 0,
+              "ackRttMs": 162.562105
+            },
+            {
+              "bytes": 66010,
+              "coalesced": 0,
+              "delta": 5,
+              "full": 1,
+              "maxInflight": 6,
+              "maxInflightBytes": 66010,
+              "maxPendingBytes": 28102,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/loss.json",
+      "sha256": "b35b05b727c4c4d04876b3ad0c99e7f0edd92654bef2a56c27d8afc8f49c9ba5",
+      "rawReports": [
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-0-0.json",
+          "sha256": "a4ebc4fa4fb95562c915459fa4f6e2237a749d1b942d4607cbb804ed59097693"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-20-0.5.json",
+          "sha256": "95f53d914c42cbb6bea8a0322bfdacedfc52235a58e69d83d3293b2626a5ddc9"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-20-1.json",
+          "sha256": "c5fa3a3fedcb90a2f7863668f98e55ba37e002f3ad1e39f92e8f9c1b777be5dc"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-20-2.json",
+          "sha256": "dd735c59d46c3c87514c81f8beeb49944ef357ee5296666b815059b317464c5c"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-40-0.5.json",
+          "sha256": "eac6b3fae3cb9818fa354ab38c3a2d25f5aea40353fceb750c0428fd413b1125"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-40-1.json",
+          "sha256": "41969e6ce31b896f427a5ef847fa830a52b5276f1c161b6a9d79e00d9a12cc40"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-40-2.json",
+          "sha256": "485ae9e580fc1cbeb588b62206cddaff1d3382f8d0172e1df4d1558f25a6e091"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-80-0.5.json",
+          "sha256": "d1226af7868f58b1d355bd26f79e2eacdf4c56025eb05e14ce41b55fc3fc8029"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-80-1.json",
+          "sha256": "5f0315e5d54c9c9caaff74cd5e9bbefe6cc8fc3db16d1bcdae1d2ce042bcda7b"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-80-2.json",
+          "sha256": "c812b0ef767c0aed5d1765dfc93ebebfdf308d3a502d1045502d7e155d7ebc1d"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-150-0.5.json",
+          "sha256": "266b65a7d73fae10aa4f2f47a5619dbf23f1dfb86dd49e31d42d40c7509c4d40"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-150-1.json",
+          "sha256": "dfc8417965d23de30e51a03f104e0cc1ed5c16bf064a74554c4f2bd5eee6bed0"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/input-matrix-frozen-v1/case-150-2.json",
+          "sha256": "d8bcfb08b37ce92263016a712384f8c7898af1d0b29b5fa2912cbb1d08a38516"
+        }
+      ],
+      "samples": 13000,
+      "rows": [
+        {
+          "configuredRttMs": 0,
+          "lossPercent": 0,
+          "p50Ms": 50.5,
+          "p95Ms": 60.400000005960464,
+          "p99Ms": 63.400000005960464,
+          "maxMs": 119.80000001192093,
+          "maxProgressGapMs": 119.90000000596046,
+          "maxOutstanding": 5,
+          "frames": 1026,
+          "animationPatterns": [
+            0,
+            2,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 425.8677090000019,
+            "reconnectMs": 312.8339620000006,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1039,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 0,
+          "peerStats": [
+            {
+              "bytes": 24386166,
+              "coalesced": 17,
+              "delta": 1105,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31201,
+              "maxPendingBytes": 31201,
+              "pendingBytes": 0,
+              "resources": 2037,
+              "slowDisconnects": 0,
+              "ackRttMs": 4.15188
+            },
+            {
+              "bytes": 43205,
+              "coalesced": 0,
+              "delta": 2,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 28079,
+              "maxPendingBytes": 28079,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0,
+              "ackRttMs": 5.179464
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 0.5,
+          "p50Ms": 81.59999999403954,
+          "p95Ms": 109,
+          "p99Ms": 129.2999999821186,
+          "maxMs": 209.09999999403954,
+          "maxProgressGapMs": 209.19999998807907,
+          "maxOutstanding": 7,
+          "frames": 953,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 523.977565000001,
+            "reconnectMs": 481.8385610000041,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1040,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 93,
+          "peerStats": [
+            {
+              "bytes": 15985810,
+              "coalesced": 400,
+              "delta": 739,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31138,
+              "maxPendingBytes": 31138,
+              "pendingBytes": 0,
+              "resources": 1347,
+              "slowDisconnects": 0,
+              "ackRttMs": 26.899695
+            },
+            {
+              "bytes": 43266,
+              "coalesced": 0,
+              "delta": 2,
+              "full": 1,
+              "maxInflight": 2,
+              "maxInflightBytes": 35685,
+              "maxPendingBytes": 28103,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0,
+              "ackRttMs": 4.153588
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 1,
+          "p50Ms": 82.10000002384186,
+          "p95Ms": 116.30000001192093,
+          "p99Ms": 138.7000000178814,
+          "maxMs": 168.69999998807907,
+          "maxProgressGapMs": 168.80000001192093,
+          "maxOutstanding": 7,
+          "frames": 911,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 525.3473579999991,
+            "reconnectMs": 480.75097700000333,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1040,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 207,
+          "peerStats": [
+            {
+              "bytes": 14272405,
+              "coalesced": 475,
+              "delta": 669,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31139,
+              "maxPendingBytes": 31139,
+              "pendingBytes": 0,
+              "resources": 1206,
+              "slowDisconnects": 0,
+              "ackRttMs": 34.784537
+            },
+            {
+              "bytes": 43266,
+              "coalesced": 0,
+              "delta": 2,
+              "full": 1,
+              "maxInflight": 3,
+              "maxInflightBytes": 43266,
+              "maxPendingBytes": 28104,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0,
+              "ackRttMs": 36.492331
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 2,
+          "p50Ms": 85.69999998807907,
+          "p95Ms": 128,
+          "p99Ms": 171.39999997615814,
+          "maxMs": 297.30000001192093,
+          "maxProgressGapMs": 252.5,
+          "maxOutstanding": 12,
+          "frames": 881,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 164.4768849999964,
+            "reconnectMs": 498.6448709999968,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1040,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 312,
+          "peerStats": [
+            {
+              "bytes": 12064339,
+              "coalesced": 587,
+              "delta": 559,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31139,
+              "maxPendingBytes": 31139,
+              "pendingBytes": 0,
+              "resources": 1011,
+              "slowDisconnects": 0,
+              "ackRttMs": 25.412694
+            },
+            {
+              "bytes": 50847,
+              "coalesced": 0,
+              "delta": 3,
+              "full": 1,
+              "maxInflight": 4,
+              "maxInflightBytes": 50847,
+              "maxPendingBytes": 28103,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0,
+              "ackRttMs": 53.964725
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 0.5,
+          "p50Ms": 104.19999998807907,
+          "p95Ms": 146.80000001192093,
+          "p99Ms": 172.09999999403954,
+          "maxMs": 193.09999999403954,
+          "maxProgressGapMs": 149.89999997615814,
+          "maxOutstanding": 8,
+          "frames": 869,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 219.88057000000845,
+            "reconnectMs": 682.6705699999875,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1040,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 81,
+          "peerStats": [
+            {
+              "bytes": 10720695,
+              "coalesced": 656,
+              "delta": 484,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31137,
+              "maxPendingBytes": 31137,
+              "pendingBytes": 0,
+              "resources": 904,
+              "slowDisconnects": 0,
+              "ackRttMs": 50.397262
+            },
+            {
+              "bytes": 50851,
+              "coalesced": 0,
+              "delta": 3,
+              "full": 1,
+              "maxInflight": 3,
+              "maxInflightBytes": 43270,
+              "maxPendingBytes": 28104,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0,
+              "ackRttMs": 29.315948000000002
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 1,
+          "p50Ms": 107,
+          "p95Ms": 165,
+          "p99Ms": 210,
+          "maxMs": 280.2999999821186,
+          "maxProgressGapMs": 196,
+          "maxOutstanding": 11,
+          "frames": 841,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 267.83293100001174,
+            "reconnectMs": 665.2140920000093,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1039,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 135,
+          "peerStats": [
+            {
+              "bytes": 9931363,
+              "coalesced": 686,
+              "delta": 460,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31199,
+              "maxPendingBytes": 31199,
+              "pendingBytes": 0,
+              "resources": 835,
+              "slowDisconnects": 0,
+              "ackRttMs": 46.533553
+            },
+            {
+              "bytes": 50843,
+              "coalesced": 0,
+              "delta": 3,
+              "full": 1,
+              "maxInflight": 4,
+              "maxInflightBytes": 50843,
+              "maxPendingBytes": 28102,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 2,
+          "p50Ms": 114.5,
+          "p95Ms": 198.5,
+          "p99Ms": 251.30000001192093,
+          "maxMs": 336.69999998807907,
+          "maxProgressGapMs": 252.5,
+          "maxOutstanding": 13,
+          "frames": 731,
+          "animationPatterns": [
+            2,
+            0,
+            1
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 201.72627099999227,
+            "reconnectMs": 683.3212800000038,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1036,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 227,
+          "peerStats": [
+            {
+              "bytes": 8083895,
+              "coalesced": 795,
+              "delta": 378,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31195,
+              "maxPendingBytes": 31195,
+              "pendingBytes": 0,
+              "resources": 669,
+              "slowDisconnects": 0,
+              "ackRttMs": 33.625122
+            },
+            {
+              "bytes": 50850,
+              "coalesced": 0,
+              "delta": 3,
+              "full": 1,
+              "maxInflight": 4,
+              "maxInflightBytes": 50850,
+              "maxPendingBytes": 28103,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 0.5,
+          "p50Ms": 195.19999998807907,
+          "p95Ms": 303.69999998807907,
+          "p99Ms": 348.7999999821186,
+          "maxMs": 401.2999999821186,
+          "maxProgressGapMs": 217.2999999821186,
+          "maxOutstanding": 16,
+          "frames": 498,
+          "animationPatterns": [
+            0,
+            1,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 948.793291000009,
+            "reconnectMs": 1015.8537000000069,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1040,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 51,
+          "peerStats": [
+            {
+              "bytes": 6231147,
+              "coalesced": 926,
+              "delta": 294,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31196,
+              "maxPendingBytes": 31196,
+              "pendingBytes": 0,
+              "resources": 517,
+              "slowDisconnects": 0,
+              "ackRttMs": 80.972301
+            },
+            {
+              "bytes": 65933,
+              "coalesced": 0,
+              "delta": 5,
+              "full": 1,
+              "maxInflight": 6,
+              "maxInflightBytes": 65933,
+              "maxPendingBytes": 28103,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 1,
+          "p50Ms": 201.2000000178814,
+          "p95Ms": 351.40000000596046,
+          "p99Ms": 424.80000001192093,
+          "maxMs": 486.69999998807907,
+          "maxProgressGapMs": 366.59999999403954,
+          "maxOutstanding": 19,
+          "frames": 469,
+          "animationPatterns": [
+            0,
+            1,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 799.3560370000196,
+            "reconnectMs": 1047.6160709999967,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1036,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 97,
+          "peerStats": [
+            {
+              "bytes": 5322368,
+              "coalesced": 975,
+              "delta": 255,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31139,
+              "maxPendingBytes": 31139,
+              "pendingBytes": 0,
+              "resources": 441,
+              "slowDisconnects": 0,
+              "ackRttMs": 87.817142
+            },
+            {
+              "bytes": 58378,
+              "coalesced": 0,
+              "delta": 4,
+              "full": 1,
+              "maxInflight": 5,
+              "maxInflightBytes": 58378,
+              "maxPendingBytes": 28085,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 2,
+          "p50Ms": 250.40000000596046,
+          "p95Ms": 427.40000000596046,
+          "p99Ms": 583.5,
+          "maxMs": 678.2000000178814,
+          "maxProgressGapMs": 514.7000000178814,
+          "maxOutstanding": 26,
+          "frames": 377,
+          "animationPatterns": [
+            0,
+            1,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 423.60621200001333,
+            "reconnectMs": 1162.1558869999717,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1029,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 155,
+          "peerStats": [
+            {
+              "bytes": 4340423,
+              "coalesced": 1017,
+              "delta": 207,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31199,
+              "maxPendingBytes": 31199,
+              "pendingBytes": 0,
+              "resources": 367,
+              "slowDisconnects": 0,
+              "ackRttMs": 82.212232
+            },
+            {
+              "bytes": 65897,
+              "coalesced": 0,
+              "delta": 5,
+              "full": 1,
+              "maxInflight": 6,
+              "maxInflightBytes": 65897,
+              "maxPendingBytes": 28084,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 0.5,
+          "p50Ms": 375,
+          "p95Ms": 621.2000000178814,
+          "p99Ms": 725.7000000178814,
+          "maxMs": 803,
+          "maxProgressGapMs": 499.7999999821186,
+          "maxOutstanding": 31,
+          "frames": 284,
+          "animationPatterns": [
+            1,
+            0,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 479.8766300000134,
+            "reconnectMs": 1665.2803799999529,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1032,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 36,
+          "peerStats": [
+            {
+              "bytes": 3775440,
+              "coalesced": 1086,
+              "delta": 177,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31138,
+              "maxPendingBytes": 31138,
+              "pendingBytes": 0,
+              "resources": 308,
+              "slowDisconnects": 0,
+              "ackRttMs": 151.178979
+            },
+            {
+              "bytes": 66004,
+              "coalesced": 0,
+              "delta": 5,
+              "full": 1,
+              "maxInflight": 6,
+              "maxInflightBytes": 66004,
+              "maxPendingBytes": 28103,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 1,
+          "p50Ms": 456.09999999403954,
+          "p95Ms": 774.4000000059605,
+          "p99Ms": 1100.699999988079,
+          "maxMs": 1337.199999988079,
+          "maxProgressGapMs": 717.1999999880791,
+          "maxOutstanding": 51,
+          "frames": 240,
+          "animationPatterns": [
+            0,
+            1,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 651.7355090000201,
+            "reconnectMs": 1618.947930000024,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1036,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 66,
+          "peerStats": [
+            {
+              "bytes": 3504692,
+              "coalesced": 1113,
+              "delta": 170,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31137,
+              "maxPendingBytes": 31137,
+              "pendingBytes": 0,
+              "resources": 288,
+              "slowDisconnects": 0,
+              "ackRttMs": 154.870668
+            },
+            {
+              "bytes": 73593,
+              "coalesced": 2,
+              "delta": 6,
+              "full": 1,
+              "maxInflight": 6,
+              "maxInflightBytes": 66013,
+              "maxPendingBytes": 28102,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0,
+              "ackRttMs": 227.788413
+            }
+          ]
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 2,
+          "p50Ms": 478.2000000178814,
+          "p95Ms": 889.5999999940395,
+          "p99Ms": 1123.9000000059605,
+          "maxMs": 1391,
+          "maxProgressGapMs": 1033.4000000059605,
+          "maxOutstanding": 53,
+          "frames": 214,
+          "animationPatterns": [
+            1,
+            0,
+            2
+          ],
+          "lifecycle": {
+            "dragMoves": 22,
+            "dragFinalLeft": 320,
+            "dragPixelsCorrect": true,
+            "blackholeMs": 300,
+            "blackholeRecoveryMs": 1285.5594669999555,
+            "reconnectMs": 1649.9617579999613,
+            "reconnectFullBaseline": true,
+            "leaseRevoked": true
+          },
+          "nodeCalls": {
+            "evaluate": 1013,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceErrors": 0,
+          "mildInputNetemDrops": 120,
+          "peerStats": [
+            {
+              "bytes": 2898166,
+              "coalesced": 1164,
+              "delta": 148,
+              "full": 1,
+              "maxInflight": 1,
+              "maxInflightBytes": 31157,
+              "maxPendingBytes": 31157,
+              "pendingBytes": 0,
+              "resources": 233,
+              "slowDisconnects": 0,
+              "ackRttMs": 166.29739800000002
+            },
+            {
+              "bytes": 50777,
+              "coalesced": 0,
+              "delta": 3,
+              "full": 1,
+              "maxInflight": 4,
+              "maxInflightBytes": 50777,
+              "maxPendingBytes": 28085,
+              "pendingBytes": 0,
+              "resources": 4,
+              "slowDisconnects": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "totalInputs": 26000,
+  "reportSamplingNote": "Per-case JSON serializes before cleanup; final summary retains live peer/nodeCalls references through cleanup, so evaluate and some peer counters can increase. Immutable latency/raw input/lifecycle/network fields match exactly. Preserve both sample boundaries, do not claim identical counter snapshots. Both phases retain map/publish/awaitPromise0 and bounded queue maxima.",
+  "checks": [
+    "Two independent full13profile runs;1000 ordered real CDP text inputs perprofile,confirmed by actual Viewer Worker CanvasKit pixels.",
+    "Each of26cases has actual compositor animation pixels,22move drag endpoint pixels,300mskernel blackhole/insertion pixels,automatic full-baseline reconnect and prior human lease revoked.",
+    "Gateway TCP port alone is impaired:20Mbit plusRTT20/40/80/150,jitterRTT/20,loss0.5/1/2. Baselineinputis unshaped;it gets a class onlyforits later blackhole.",
+    "Every impairedinput phase has actualnetemchild packetdrops captured before blackhole;root+childcountsarenotsummed. SupplementalACK-only RTTprobeisnotasecondpixelViewer.",
+    "All26Sources have0errors andzeroNode map/publish/awaitPromise;actualqueue/latency/progress/coalescing/packetstats andraw1000durationspercase saved."
+  ],
+  "remaining": [
+    "Actual>=9MiBkernelnetwork/control/pixels matrix,completecapture-startframeage withclockcalibration/coverage andfullN1 stillpending.",
+    "No canonicalpromotion/fullB1/fullSession/PSS/8h/all41 completion."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true
+}

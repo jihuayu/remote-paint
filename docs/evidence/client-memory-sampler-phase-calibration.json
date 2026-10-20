@@ -1,0 +1,99 @@
+{
+  "at": "2026-10-17T09:09:39.925887+00:00",
+  "status": "passed-short-calibration-only",
+  "scope": "Actual3modeMacviewer/LinuxSource short calibration of sampler per-phase deadlines/background Source-command ordering and waitTrue-handle disposal. Productionb46/48dfe9/ecb unchanged;not8hacceptance.",
+  "production": {
+    "clientLedgerSha256": "b46ed2b28677e4a7db943e4a43b071c2eefe6c6255f799c319200a5869c3cb5e",
+    "brokerSha256": "48dfe9acc4b77437a3326855b96132803e96a685b6fbdba9ca4604be03684af7",
+    "browserSha256": "ecb176300cf9b11a2042b6a224c72b79653f8e026e467226dd0a408fd0191886",
+    "viewerBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10"
+  },
+  "runId": "d8b4662b-7bcb-4fdd-b1c2-9e7aeae914f0",
+  "workload": {
+    "burst": 400,
+    "intervalMs": 2000,
+    "navigationEvery": 20,
+    "samplingMode": "phase-deadline-background-v1",
+    "sampleIntervalMs": 60000,
+    "maxAllowedSampleGapSeconds": 90
+  },
+  "requestedSeconds": 240,
+  "elapsedSeconds": 243.61300695799997,
+  "cycles": 482,
+  "navigations": 4,
+  "resizes": 43,
+  "inputs": 30,
+  "sampleCount": 5,
+  "maximumSampleGapSeconds": 60.730000000000004,
+  "maximumSampleDurationMs": 231.57162499999686,
+  "maximumPhaseDurationMs": 184.93325000000186,
+  "maximumObserverEventLoopDelayMs": 181.665791,
+  "backgroundProgressWitness": [
+    {
+      "startedAt": "2026-10-17T09:05:14.783Z",
+      "elapsedMs": 231.57162499999686,
+      "eventLoopMaxMs": 48.922623,
+      "sourceCycleAtSnapshot": 399,
+      "controllerCycleAtFinish": 400
+    }
+  ],
+  "controlledLoad": {
+    "at": "2026-10-17T09:06:59.367869+00:00",
+    "purpose": "Controlled actual57.8MiB native working-set validation concurrent with background sampler,to check observer scheduling under a representative existing heavy native workload. Not a product-performance A/B or a rerun to erase either failed8h.",
+    "status": "passed",
+    "endedAt": "2026-10-17T09:07:36.975583+00:00",
+    "exitCode": 0
+  },
+  "samplesDuringControlledLoad": [
+    {
+      "at": "2026-10-17T09:07:16.398Z",
+      "cycle": 456,
+      "sampling": {
+        "startedAt": "2026-10-17T09:07:16.271Z",
+        "elapsedMs": 126.24600000001374,
+        "eventLoopMaxMs": 40.370175,
+        "sourceCycleAtSnapshot": 456,
+        "controllerCycleAtFinish": 456
+      }
+    }
+  ],
+  "handleCalibration": {
+    "at": "2026-10-17T09:02:15.640Z",
+    "status": "passed",
+    "scope": "Actual disposable Mac Chrome/Playwright1.64.1: primitive true waitForFunction handles remain in the client connection ownership map until explicitly disposed.64retained then64released;another64immediate-dispose calls leave no handle/channel growth. This proves a harness-retained object lifetime,not that it caused the recorded91–119s sample gaps or a product Viewer memory leak.",
+    "before": {
+      "objects": 16,
+      "jsHandles": 0
+    },
+    "retained": {
+      "objects": 80,
+      "jsHandles": 64
+    },
+    "released": {
+      "objects": 16,
+      "jsHandles": 0
+    },
+    "disposed": {
+      "objects": 16,
+      "jsHandles": 0
+    }
+  },
+  "handleCalibrationCorrection": "First probe filtered constructor.name===JSHandle,but bundled client constructor names differ and count was0. Protocol _type===JSHandle correctly measured64 retained channels;v1 failure log preserved. No source/product behavior changed by this calibration correction.",
+  "implementation": [
+    "Explicit waitTrue checks true and disposes every temporary waitForFunction handle.",
+    "Background memory sampling leaves PNG/font/nav/resize/input workload running;file-channel Source commands retain order so state queries do not race navigation.",
+    "Each diagnostic phase records start/end/error/latency. CDP/ps normally5s,source metrics15s,worker combined18s;completed latency also checked to catch timer starvation. ps is async and timeout-bounded.",
+    "Original strict90s inter-sample gate now checked immediately for every run as well as final8h check. Eight-hour duration,pixel checks,logical limits,health and cleanup unchanged."
+  ],
+  "cleanup": {
+    "errors": [],
+    "sourceClosed": true,
+    "brokerClosed": true,
+    "fixtureListening": false,
+    "remainingKinds": [
+      "node"
+    ]
+  },
+  "provenance": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-sampler-calibration-v1/frozen-version.json",
+  "remaining": "This4minute calibration does not establish8h stability or prove the cause of either earlier91–119s gap. Start a fresh independent run ID on this exact frozen verifier;retain failed evidence and all41/N1 scope."
+}

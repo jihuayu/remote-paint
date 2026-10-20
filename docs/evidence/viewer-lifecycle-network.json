@@ -1,0 +1,245 @@
+{
+  "at": "2026-10-16T19:26:34.369Z",
+  "scope": "Actual Linux kernel netem on Gateway TCP only; real source CDP input, native capture and CanvasKit pixel counter; synthetic beforeinput to latest rendered state including each input, excludes physical input/display scanout; intermediate states may coalesce",
+  "samplesPerCase": 1000,
+  "results": [
+    {
+      "publicTextFeedback": true,
+      "publicFeedbackCount": 256,
+      "configuredRttMs": 80,
+      "lossPercent": 1,
+      "measuredRttMs": [
+        83.99839100000008,
+        85.13388000000009,
+        78.20177699999999,
+        80.80791999999997,
+        86.39628500000003,
+        89.55229800000006,
+        84.68571700000007,
+        84.66275900000005,
+        80.79417000000012,
+        84.26418000000012
+      ],
+      "samples": 1000,
+      "p50Ms": 197.70000000298023,
+      "p95Ms": 339.40000000596046,
+      "p99Ms": 400.29999999701977,
+      "maxMs": 452.59999999403954,
+      "maxProgressGapMs": 249.59999999403954,
+      "maxOutstanding": 17,
+      "frames": 542,
+      "lifecycle": {
+        "dragMoves": 22,
+        "dragFinalLeft": 320,
+        "dragPixelsCorrect": true,
+        "blackholeMs": 300,
+        "blackholeRecoveryMs": 352.46474300000045,
+        "reconnectMs": 984.6537329999992,
+        "reconnectFullBaseline": true,
+        "leaseRevoked": true
+      },
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 18557620,
+          "packets": 10399,
+          "drops": 128,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 209,
+          "qlen": 2
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.04,
+              "jitter": 0.004,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.01,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 18554508,
+          "packets": 10366,
+          "drops": 128,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 209,
+          "qlen": 2
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 5714115,
+          "coalesced": 771,
+          "delta": 265,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 29815,
+          "maxPendingBytes": 29815,
+          "pendingBytes": 0,
+          "resources": 525,
+          "slowDisconnects": 0,
+          "ackRttMs": 161.391383
+        },
+        {
+          "bytes": 26767,
+          "coalesced": 0,
+          "delta": 0,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 26767,
+          "maxPendingBytes": 26767,
+          "pendingBytes": 0,
+          "resources": 4,
+          "slowDisconnects": 0
+        }
+      ],
+      "sourceErrors": 0
+    }
+  ],
+  "version": {
+    "at": "2026-10-16T19:26:01.455418+00:00",
+    "scope": "Frozen Viewer lifecycle and source Agent activity separation with prior bounded memory admission; actual80ms1%1000-input lifecycle regression",
+    "gitHead": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "sha256": {
+      "protocol/client-memory.mjs": "4cc4c66868030de49ca919d7b24e7a4dfe354fb6a9ba2f4b4fba8e7370c0ed55",
+      "protocol/live-wire.mjs": "8dc1fdfc91d001bed3df8ad2347cc584dc66944734182ac976bb313ee73adea7",
+      "protocol/asset-wire.mjs": "d17fbe4b51657061504ec5d974b08b56438b5827933435236c0d5d05de8e9f4d",
+      "protocol/resource-memory.mjs": "5a30334dccf36b00bd908bf6585f49fac18e8da412fe424899e7c5d22bb1e777",
+      "viewer/scene-renderer.mjs": "737c5981b925a8be641f8eecaf6f3b2dd044fdc7d1058aebf221a95170cae2ff",
+      "viewer/input.mjs": "c488ad11d274e55bb9263fed62f9390dc38647413b4e76f77828f0e1e326a8a6",
+      "viewer/live.mjs": "03320550bee5bb986231c8c2b49cc3574512e5ccf617c098caa443227d0d3065",
+      "viewer/stream-worker.mjs": "1cae63e04599286f65a013cb0828bcf00f664ee235fe602539b3563ce108d74f",
+      "viewer/renderer-runtime.mjs": "dcb5d991de24b98613f9214598457b13d129aa120565b9fa5ec036188a696683",
+      "viewer/frame-presenter.mjs": "3193a7aa11c6008cf2be6fa02dfdafe65a76c76d25412fc81436a5d062d7575c",
+      "live/source.mjs": "279e71e0ae2b0a514a740da4df4629b91111a465e72182668d0674b100fb176d",
+      "live/native-peers.mjs": "86702ca5754220edf02e54d42c6bc49d4eb55e255ad1893723cb0e1fbcb4b361",
+      "live/transport.mjs": "76a293916589349a0366bd23afcd2d86a89471c7285ef305053a061f570351d9",
+      "live/input.mjs": "65d3e30e9f0b19de5166e728dbfcfd9b099dc0259d1eade2ec3393344dfb3090",
+      "live/feedback.mjs": "556807b09b93d1dac46487a2670fc58d92974bcb604c90fd22dfd4863ba228f8",
+      "tests/verify-loss.mjs": "871549febd80ba19b54724e2383b26d8fa47649857c5ae65aaa57a03d512500a",
+      "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": "e78341a8521533f81bd0151e5c0a944c88b7ab9c27c4b5d04d9a795609acfff4",
+      "protocol/metadata-json.mjs": "709ee342f7e3bb996ad2f32c39d879d3d33e5363b2bccb7c9c9270b7311ce0d1",
+      "viewer/control-channel.mjs": "5053afe5844d4cb9233a572ef55615eeaeb3730a774d3bf36c4b93a9ead22dc6",
+      "live/viewer-assets.mjs": "2bd454ed3f1b41dc7a7096c47b6d2fcb44db5c37e43d461eb8e32cfc5f98b16b",
+      "viewer/lifecycle.mjs": "51ec43f38ed2f9b7da398622c8d605721653890c4ccfc70cf8af3dffb8c7c553"
+    },
+    "sourceBrowserSha256": "e3575864b894bd557bdcc233fd997136e4fd46d8af57537eae024ea58a13d031",
+    "browserProvenance": {
+      "format": 1,
+      "target": {
+        "os": "linux",
+        "cpu": "arm64"
+      },
+      "buildProfile": "linux-arm64-host-cc",
+      "hostCrossCompiler": {
+        "mode": "mac-arm64-clang-cross",
+        "target": "aarch64-linux-gnu",
+        "compilerSha256": "b3785ad91b93cb56eac31eaef5d8cf5ef71fae512843417a55bd3912b4d41766",
+        "compilerVersion": "clang version 24.0.0git (https://chromium.googlesource.com/a/external/github.com/llvm/llvm-project 86922d51225db089fffb99475eefc4904f79e3c8)",
+        "jobs": 4
+      },
+      "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+      "skiaRevision": "29ed1e87a0a50f3d8347e988842d9d59e7573efa",
+      "nativeSources": {
+        "BUILD.gn": "c4ee4bdfddc3da6b92fce01d8f56076e2caafffdc030a9ac32ee34a6af23a3ee",
+        "capture_state.cc": "77b12f093b079370abbcfb7008656a1a5e8404b2fcdec803c3a0c897ad7126ef",
+        "capture_state.h": "7185d7868ab01d23343070042bbe251846076cc5887df2f591e11ee5d4e0f63b",
+        "cc_capture.inc": "7e935207ded492313c982732c692d0becccd0497877360215d4e671b7f6678ab",
+        "extension_capture.inc": "d4cca278fcfb24f90bd253d366eda190e5d81d0e33bf8c5f21b6d267dfe08421",
+        "font_subset.cc": "b3e1dd8c3502c97094b30d232e0c14d2f57605b98206375b63bd516fdd06f64c",
+        "font_subset.h": "a0ef6e8b07487412cf5632a8bd5b6d094beeb617cdfcdac802113286a6b7f8e8",
+        "serializer.cc": "f90fa4d3a6c8ea4d9ddb9a7264f6c37ffcde4719bb45e8c9450c5fc64977192a",
+        "serializer.h": "dcb6213497795b5361fda26d2f62e2ce0e4636b4e98d807e21cdb650e175cdde",
+        "serializer_unittest.cc": "4985d09b0fee842eb91df03355c2bb4e64a2381df62a630b973cc82da6030ec7",
+        "socket_transport.h": "aa55764ef39cc802f560c03bde5886fcb382b8c1833314465f19189a3e2ad4c1",
+        "test_main.cc": "2683a596f6572109fb43c7a70c125ceb023df1796e70fc025f44a477012d9fb6",
+        "viz_capture.cc": "b24bf3f6c7d99e8276155b250a0dffc4067b5ef3fecc0ae420ad05b03f97d717",
+        "viz_capture.h": "c10433e61457d8deeba6b0f73505bb01037e7726e5fbae6f3f07995c40da7306"
+      },
+      "patches": {
+        "0001-async-capture.patch": "50b45c2d8fea81c8230644bdf9e3bd80c92b23285d263d88cefbf1fd368b5e2f",
+        "0002-compositor-viz-pairing.patch": "ecefbed1a09f81f23082955c74f2aa6a94946fa724e45901cb4926bf66fab45b",
+        "0003-chromium-build-contracts.patch": "618e568969d778b55836d02cbecc62709968bd7c3c1a896fc536262b19fffe31",
+        "0004-v8-context-isolate.patch": "e6d91dd928da133c1d9437e8f55ccceb451029a4b4fdb5e9df6c6fdba2225983",
+        "0005-accumulate-tile-damage.patch": "8cbe9fd8c08c1cf77ea41c59e5e13ddcf9b6feaf813a56baab8fffa783e04a6a",
+        "0006-copy-damage-region-rects.patch": "f785000d601d48d2988430b8154da2996d7fa28a76a0c9971dc4da18e391801f",
+        "0007-webgl-layer-classification.patch": "59901b21c9af2df1e746a6df655c1eed8c4ecac5b046700afe7c058efc84d7e4"
+      },
+      "patchedSources": {
+        "content/renderer/gpu_benchmarking_extension.cc": "e3becb774bcce814073a6da5e33fbbc1350fade2e11d1164d26e7a24a3728b67",
+        "content/renderer/gpu_benchmarking_extension.h": "d674acd0223fe1f0c9068a9ca62f78452b9c1a049520d5f587419874dbfd4ab8",
+        "content/renderer/BUILD.gn": "2d4bcd546ae90a6cf1a99f25e55fad7d5545784327338b97d1f05eb1ff89924b",
+        "content/browser/renderer_host/render_process_host_impl.cc": "12b866e91c414a2f1fb8776a44ada9a34d32dcdfd793103bf5434de2016e3b6c",
+        "content/renderer/render_frame_impl.cc": "4c4703a9eeab1d4b914dabab3d00b739958714b6e8384a19a2277571c62524c9",
+        "cc/BUILD.gn": "62b777a82e7bb5d79604627b5cae7dcad602e15846bc72c92bb66543852fe582",
+        "cc/trees/layer_tree_host_impl.cc": "287322683d39c6e5e487e4f2c7763be24f81c5cc93e572384cf6f24956940343",
+        "components/viz/common/quads/compositor_frame_metadata.h": "e605ec46868e93bf6d7b57451d1512415fbbf1707dcbaa758459f9ebd004a1c4",
+        "components/viz/common/quads/compositor_frame_metadata.cc": "ebe0b12fa91c1ec334f20b4e6bf457d9c63bfd79034a1b29bbca058803b3b870",
+        "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom": "ca153263077f4cbfe4af35a7ab446b2e77acf4bd6baa9b268ed2ffd684f7bfd1",
+        "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h": "38445da06359dfe644723b9f5048e3bc43c2eee9a6e79d8ddb0ec93a5a9a8f2d",
+        "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc": "3ebcab9dbdae731eb4d8241ca567a5d8290f437d5e2eb2279eba5983a8c468b1",
+        "components/viz/service/BUILD.gn": "115cbde256b205691a7a639cd62590e2102f73777d1abc96eddc592f68438f5f",
+        "components/viz/service/display/surface_aggregator.cc": "ab5095dac86fbee8498968e17d9485c314db82031c943a4f25ddb5af45849e8b",
+        "cc/layers/picture_layer_impl.cc": "56aef3ef25e1f22ff947b4f575af421e8b6d066914b19e981bd310738a143f53"
+      },
+      "argsSha256": "25a86fd4153e0f0fb6a2025dc9dc35ed4cb3993b92553d25b370fe49a005b339",
+      "hostConfiguration": {
+        "gnSha256": "36fe330f4e6a0c8cebcc893a72a6e70871fb395b501a811a231c80465b3fec9d",
+        "swiftShaderSha256": "75f21859d5caa845546086fc67816353d33b0da1edfc7d6a1844664f0b745fa8"
+      },
+      "binaries": {
+        "headless_shell": "e3575864b894bd557bdcc233fd997136e4fd46d8af57537eae024ea58a13d031",
+        "serializer_tests": "0e39c12dcdde077b6cf98e3ecea227b3b9b5191f7b867c20dd9a902888a1eadd"
+      },
+      "builtAt": "2026-10-16T18:57:34.130Z",
+      "incrementalGraphUpToDate": true,
+      "ninjaVersion": "1.13.2"
+    }
+  },
+  "terminal": {
+    "exitCode": 0,
+    "containerRemoved": true
+  },
+  "versionNote": "Network snapshot preceded the final monotonic connection-generation carry fix. That fix was then verified by complete native manual reconnect + Worker lifecycle tests; do not conflate the exact revisions."
+}

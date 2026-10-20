@@ -1,0 +1,765 @@
+{
+  "at": "2026-10-16T16:36:05.455Z",
+  "scope": "Actual Chromium HTTP cache + CanvasKit Worker/main-thread fixture replay; native Rust build mismatch refusal; not source-browser performance or a repeated latency benchmark",
+  "viewerBuild": "240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446",
+  "immutableWasm": true,
+  "sessionConfigNoStore": true,
+  "entryHtmlNoStore": true,
+  "conditionalStatus": 304,
+  "staleAssetStatus": 410,
+  "buildMismatchClose": 1008,
+  "buildMismatchVisibleInUi": true,
+  "corruptWasmRejectedBeforeExecution": true,
+  "rawWasmBytes": 8242911,
+  "compressedWasmBytes": 3484204,
+  "results": [
+    {
+      "mainThread": false,
+      "measurements": [
+        {
+          "pass": 0,
+          "firstFrameMs": 731.086603,
+          "startup": {
+            "wasmFetchMs": 39.20000000298023,
+            "wasmVerifyMs": 7.5999999940395355,
+            "wasmInitMs": 84.6000000089407,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": true
+          },
+          "resources": [
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 3484504,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.css",
+              "transferSize": 1280,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.js",
+              "transferSize": 41634,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.mjs",
+              "transferSize": 5211,
+              "decodedBodySize": 14369
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/input.mjs",
+              "transferSize": 4495,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/wire.mjs",
+              "transferSize": 1927,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/asset-wire.mjs",
+              "transferSize": 1922,
+              "decodedBodySize": 3968
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/live-wire.mjs",
+              "transferSize": 2891,
+              "decodedBodySize": 7465
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/renderer-runtime.mjs",
+              "transferSize": 1400,
+              "decodedBodySize": 2945
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/client-memory.mjs",
+              "transferSize": 2941,
+              "decodedBodySize": 6790
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/control-channel.mjs",
+              "transferSize": 1358,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/frame-presenter.mjs",
+              "transferSize": 3753,
+              "decodedBodySize": 9994
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/scene-renderer.mjs",
+              "transferSize": 4753,
+              "decodedBodySize": 12713
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/damage.mjs",
+              "transferSize": 1309,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/stream-worker.mjs",
+              "transferSize": 4467,
+              "decodedBodySize": 10901
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/canvaskit-worker.mjs",
+              "transferSize": 41641,
+              "decodedBodySize": 123737
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/renderer-runtime.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2945
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/client-memory.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 6790
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 3968
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7465
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9994
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12713
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            }
+          ],
+          "workerResources": [
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ]
+        },
+        {
+          "pass": 1,
+          "firstFrameMs": 666.3297230000001,
+          "startup": {
+            "wasmFetchMs": 35.20000000298023,
+            "wasmVerifyMs": 4.799999997019768,
+            "wasmInitMs": 68.30000001192093,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": true
+          },
+          "resources": [
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.css",
+              "transferSize": 0,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.js",
+              "transferSize": 0,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 14369
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/input.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 3968
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7465
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/renderer-runtime.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2945
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/client-memory.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 6790
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/control-channel.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9994
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12713
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/stream-worker.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 10901
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/canvaskit-worker.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 123737
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/renderer-runtime.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2945
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/client-memory.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 6790
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 3968
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7465
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9994
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12713
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            }
+          ],
+          "workerResources": [
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ]
+        },
+        {
+          "pass": 2,
+          "firstFrameMs": 581.5042109999999,
+          "startup": {
+            "wasmFetchMs": 37.599999994039536,
+            "wasmVerifyMs": 5.700000002980232,
+            "wasmInitMs": 74.40000000596046,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": true
+          },
+          "resources": [
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.css",
+              "transferSize": 0,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.js",
+              "transferSize": 0,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 14369
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/input.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 3968
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7465
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/renderer-runtime.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2945
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/client-memory.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 6790
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/control-channel.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9994
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12713
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/stream-worker.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 10901
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/canvaskit-worker.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 123737
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/renderer-runtime.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2945
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/client-memory.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 6790
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 3968
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7465
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9994
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12713
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            }
+          ],
+          "workerResources": [
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mainThread": true,
+      "measurements": [
+        {
+          "pass": 0,
+          "firstFrameMs": 493.5944599999998,
+          "startup": {
+            "wasmFetchMs": 8,
+            "wasmVerifyMs": 5.299999997019768,
+            "wasmInitMs": 74.90000000596046,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": false
+          },
+          "resources": [
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 3484504,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.css",
+              "transferSize": 1280,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.js",
+              "transferSize": 41634,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.mjs",
+              "transferSize": 5211,
+              "decodedBodySize": 14369
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/input.mjs",
+              "transferSize": 4495,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/wire.mjs",
+              "transferSize": 1927,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/asset-wire.mjs",
+              "transferSize": 1922,
+              "decodedBodySize": 3968
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/live-wire.mjs",
+              "transferSize": 2891,
+              "decodedBodySize": 7465
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/renderer-runtime.mjs",
+              "transferSize": 1400,
+              "decodedBodySize": 2945
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/client-memory.mjs",
+              "transferSize": 2941,
+              "decodedBodySize": 6790
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/control-channel.mjs",
+              "transferSize": 1358,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/frame-presenter.mjs",
+              "transferSize": 3753,
+              "decodedBodySize": 9994
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/scene-renderer.mjs",
+              "transferSize": 4753,
+              "decodedBodySize": 12713
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/damage.mjs",
+              "transferSize": 1309,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ],
+          "workerResources": []
+        },
+        {
+          "pass": 1,
+          "firstFrameMs": 521.416268,
+          "startup": {
+            "wasmFetchMs": 5.9000000059604645,
+            "wasmVerifyMs": 4.200000002980232,
+            "wasmInitMs": 83,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": false
+          },
+          "resources": [
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.css",
+              "transferSize": 0,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.js",
+              "transferSize": 0,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 14369
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/input.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 3968
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7465
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/renderer-runtime.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2945
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/client-memory.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 6790
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/control-channel.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9994
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12713
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ],
+          "workerResources": []
+        },
+        {
+          "pass": 2,
+          "firstFrameMs": 177.10709300000053,
+          "startup": {
+            "wasmFetchMs": 28.399999991059303,
+            "wasmVerifyMs": 4.200000002980232,
+            "wasmInitMs": 50.099999994039536,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": false
+          },
+          "resources": [
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.css",
+              "transferSize": 0,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.js",
+              "transferSize": 0,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/live.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 14369
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/input.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 3968
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7465
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/renderer-runtime.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2945
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/protocol/client-memory.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 6790
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/control-channel.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9994
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12713
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/240c0991329de39359462f0fb7d040829a48ed34545d2eb3fc0f89f267c43446/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ],
+          "workerResources": []
+        }
+      ]
+    }
+  ]
+}

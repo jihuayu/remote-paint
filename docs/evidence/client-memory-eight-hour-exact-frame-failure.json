@@ -1,0 +1,99 @@
+{
+  "at": "2026-10-17T00:31:24.384358+00:00",
+  "status": "failed",
+  "runId": "8c8f0d4c-1c2f-44f4-918b-926c5e555be8",
+  "scope": "Frozen exact-frame pre-B4/pre-B10 source,browser496581c3...,not the newly accepted Node/Rust/host budget checkpoints.",
+  "failureCycle": 6735,
+  "lastSuccessfulSampleSeconds": 13689.874012375,
+  "lastSuccessfulSampleCycle": 6733,
+  "failureAt": "2026-10-17T00:20:08.799Z",
+  "failureSummary": "Viewer pixel wait timed out15s;Source Target crashed;all3 Viewers retained6734 pixels and had0 budget failures.",
+  "sourceLastRss": {
+    "node": {
+      "cpuMs": 724670,
+      "rssBytes": 162209792,
+      "processes": 1
+    },
+    "chromium": {
+      "cpuMs": 1562390,
+      "rssBytes": 13776060416,
+      "processes": 6
+    },
+    "broker": {
+      "cpuMs": 839680,
+      "rssBytes": 112537600,
+      "processes": 1
+    }
+  },
+  "cgroup": {
+    "memory.current": "355266560",
+    "memory.peak": "14036246528",
+    "memory.max": "max",
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+    "memory.swap.current": "0",
+    "memory.swap.max": "max"
+  },
+  "containerOOMAndConfiguredLimits": "false 0 0",
+  "kernelOOMKillProven": false,
+  "rootCause": "Not yet proven;Source Chromium grew from first metric to13.78GB summed RSS. Current source/native changes need separate long-run evidence.",
+  "firstMetrics": {
+    "atMs": 7654.869584,
+    "clockTicksPerSecond": 100,
+    "captures": 3,
+    "byKind": {
+      "node": {
+        "cpuMs": 1090,
+        "rssBytes": 188813312,
+        "processes": 1
+      },
+      "broker": {
+        "cpuMs": 190,
+        "rssBytes": 10248192,
+        "processes": 1
+      },
+      "chromium": {
+        "cpuMs": 680,
+        "rssBytes": 587599872,
+        "processes": 6
+      }
+    }
+  },
+  "lastMetrics": {
+    "atMs": 13695932.255997,
+    "clockTicksPerSecond": 100,
+    "captures": 36345,
+    "byKind": {
+      "node": {
+        "cpuMs": 724670,
+        "rssBytes": 162209792,
+        "processes": 1
+      },
+      "chromium": {
+        "cpuMs": 1562390,
+        "rssBytes": 13776060416,
+        "processes": 6
+      },
+      "broker": {
+        "cpuMs": 839680,
+        "rssBytes": 112537600,
+        "processes": 1
+      }
+    }
+  },
+  "fullFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-exact-frame/failure.json",
+  "terminalAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/eight-hour-exact-frame-terminal-audit.json",
+  "viewerExitCode": 1,
+  "sourceStillLiveBeforeCleanup": true,
+  "noEightHourPass": true,
+  "currentNodeCheckpointContained": false,
+  "cleanup": {
+    "at": "2026-10-17T00:34:24.145521+00:00",
+    "sourceExecExitCode": 137,
+    "viewerExecExitCode": 1,
+    "command": "docker stop --time10 of this failed owned run after diagnostics",
+    "containerAutoRemoved": true,
+    "runFilesAndFrozenBundlesPreserved": true,
+    "oldProofContainerStillRunning": true,
+    "note": "Source137 is cleanup after failed Viewer/source Target crash,not the original failure exit signal."
+  }
+}

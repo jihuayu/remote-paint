@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import net from 'node:net';
 import {stat} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import {SceneMapper} from '../capture/scene.mjs';
 import {startVizIPC} from '../capture/viz-ipc.mjs';
 import {validateScene} from '../protocol/live-wire.mjs';
@@ -66,4 +67,59 @@ test('incremental native resources reuse the mapper cache and verify their check
  assert.deepEqual([...second.payloads.keys()],[id]);
  const corrupted=capture();corrupted.resources[0].resourceId='0'.repeat(64);
  assert.throws(()=>mapper.map(corrupted,1),/checksum/);
+});
+
+const variant=(n,size=32)=>{const value=capture(),bytes=Buffer.alloc(size);bytes.write('skiapict');bytes.writeUInt32LE(n,8);value.resources[0].skp=bytes.toString('base64');return value;};
+const mapperState=mapper=>({entries:mapper.entries,resources:[...mapper.resources],memory:[...mapper.resourceMemory],bytes:mapper.resourceBytes,revision:mapper.revision,epoch:mapper.epoch});
+function unchanged(mapper,before){assert.equal(mapper.entries,before.entries);assert.deepEqual(mapperState(mapper),before);for(const [id,bytes]of before.resources)assert.equal(mapper.resources.get(id),bytes);}
+function incremental(native,id){const next=structuredClone(native);delete next.resources[0].skp;next.resources[0].resourceId=id;return next;}
+
+test('rejected Node scenes cannot accumulate a cache-sized flood or consume revisions/epochs',()=>{
+ const mapper=new SceneMapper(),native=capture(),first=mapper.map(native,1),before=mapperState(mapper);
+ let rejected;
+ for(let n=1;n<=140;n++){
+  rejected=variant(n,1024*1024);rejected.viz.passes[0].quads.push({...rejected.viz.passes[0].quads[0],kind:'unknown'});
+  assert.throws(()=>mapper.map(rejected,n%2?1:2),/Unknown Viz quad/);unchanged(mapper,before);
+ }
+ // A failed payload was never admitted; the last committed hash still works.
+ const failedId=createHash('sha256').update(Buffer.from(rejected.resources[0].skp,'base64')).digest('hex');
+ assert.throws(()=>mapper.map(incremental(native,failedId),1),/cache miss/);unchanged(mapper,before);
+ const recovered=mapper.map(incremental(native,first.mappings[0].resourceId),1);assert.deepEqual(recovered.mappings,first.mappings);
+});
+
+test('Node protocol/viewport and metadata validation precede every cache and descriptor commit',()=>{
+ const mapper=new SceneMapper(),native=capture(),first=mapper.map(native,1),before=mapperState(mapper),id=first.mappings[0].resourceId;
+ const profile=structuredClone(native);Object.assign(profile.resources[0],{assetRangeVersion:1,assetRangesComplete:true,assetRanges:[]});
+ assert.throws(()=>mapper.map(profile,2,{cssWidth:99,cssHeight:100}),/Root viewport mismatch/);unchanged(mapper,before);assert.equal(mapper.resourceMemory.get(id),null);
+ const longPass=variant(7);longPass.viz.passes[0].id='p'.repeat(65);assert.throws(()=>mapper.map(longPass,1),/Invalid render pass/);unchanged(mapper,before);
+ const metadata=variant(8),quad={...metadata.viz.passes[0].quads[0],vizResource:'x'.repeat(256)};metadata.viz.passes[0].quads=Array.from({length:1500},()=>({...quad}));
+ assert.throws(()=>mapper.map(metadata,1),/Scene metadata budget/);unchanged(mapper,before);
+ const upgraded=mapper.map(profile,1);assert.deepEqual(upgraded.resourceMemory.resources[id],{imageBytes:0,fontBytes:0});assert.deepEqual(upgraded.mappings,first.mappings);
+});
+
+test('Node scene-byte rejection leaves committed resources and incremental recovery intact',()=>{
+ const mapper=new SceneMapper(),native=capture(),first=mapper.map(native,1),before=mapperState(mapper),big=variant(20,13*1024*1024),quad=big.viz.passes[0].quads[0];
+ big.resources=[];big.viz.passes[0].quads=[];
+ for(let n=0;n<5;n++){const record=variant(n+20,13*1024*1024).resources[0];record.localId=19+n;big.resources.push(record);big.viz.passes[0].quads.push({...quad,localId:record.localId});}
+ assert.throws(()=>mapper.map(big,1),/Scene resource budget/);unchanged(mapper,before);
+ assert.deepEqual(mapper.map(incremental(native,first.mappings[0].resourceId),1).mappings,first.mappings);
+});
+
+test('Node history stays within both byte and index limits while returned snapshots remain valid',()=>{
+ const mapper=new SceneMapper(),native=capture(),first=mapper.map(native,1),oldBytes=first.payloads.values().next().value;
+ for(let n=1;n<=9;n++){mapper.map(variant(n,16*1024*1024),1);assert.ok(mapper.resourceBytes<=128*1024*1024);}
+ assert.ok(mapper.resources.size<=8);assert.equal(mapper.resourceBytes,128*1024*1024);assert.equal(first.payloads.values().next().value,oldBytes);assert.equal(oldBytes.subarray(0,8).toString(),'skiapict');
+ mapper.reset();for(let n=1;n<=520;n++){mapper.map(variant(n),1);assert.ok(mapper.resources.size<=512);}
+ assert.equal(mapper.resources.size,512);assert.equal(mapper.resourceMemory.size,512);
+ const evicted=variant(1),id=createHash('sha256').update(Buffer.from(evicted.resources[0].skp,'base64')).digest('hex'),before=mapperState(mapper);
+ assert.throws(()=>mapper.map(incremental(evicted,id),1),/cache miss/);unchanged(mapper,before);
+});
+
+test('conflicting same-hash and invalid incremental descriptors roll back Node staged upgrades',()=>{
+ const mapper=new SceneMapper(),native=capture(),first=mapper.map(native,1),before=mapperState(mapper),id=first.mappings[0].resourceId;
+ const conflict=structuredClone(native),record=conflict.resources[0];Object.assign(record,{assetRangeVersion:1,assetRangesComplete:true,assetRanges:[]});
+ conflict.resources.push({...record,localId:20,assetRanges:[{offset:8,bytes:16,kind:'font',glyphSlots:1}]});conflict.viz.passes[0].quads.push({...conflict.viz.passes[0].quads[0],localId:20});
+ assert.throws(()=>mapper.map(conflict,1),/Conflicting resource memory descriptor/);unchanged(mapper,before);
+ const bad=incremental(native,id);Object.assign(bad.resources[0],{assetRangeVersion:1,assetRangesComplete:false,assetRanges:[]});
+ assert.throws(()=>mapper.map(bad,1),/Incomplete or incompatible/);unchanged(mapper,before);
 });

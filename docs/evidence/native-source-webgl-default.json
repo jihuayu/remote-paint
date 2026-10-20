@@ -1,0 +1,181 @@
+{
+  "at": "2026-10-17T15:49:28.130351+00:00",
+  "status": "accepted-defaultSource-WebGL-Canvas2D-DOM-CPUandSwiftShader-NOT-fullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-webgl-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-webgl-checkpoint-project-v1",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-legacy-checkpoint-v1.json",
+  "changed": [
+    "tests/verify-webgl-live.mjs"
+  ],
+  "productionUnchanged": true,
+  "cases": [
+    {
+      "requestedViewerMode": "cpu",
+      "checks": 4,
+      "labelChecks": [
+        {
+          "phase": "initial",
+          "text": "WebGL 无法显示",
+          "expected": 406,
+          "actual": 446,
+          "recall": 1,
+          "precision": 0.9977578475336323
+        },
+        {
+          "phase": "update",
+          "text": "WebGL 无法显示",
+          "expected": 406,
+          "actual": 446,
+          "recall": 1,
+          "precision": 0.9977578475336323
+        },
+        {
+          "phase": "restored",
+          "text": "WebGL 无法显示",
+          "expected": 406,
+          "actual": 446,
+          "recall": 1,
+          "precision": 0.9977578475336323
+        }
+      ],
+      "presentation": {
+        "mode": "cpu-2d",
+        "frames": 5,
+        "gpuFrames": 0,
+        "cpuFrames": 5,
+        "readbackBytes": 2457600,
+        "totalReadbackBytes": 12288000,
+        "fallbacks": 0,
+        "gpuCacheBytes": 134217728,
+        "damage": [
+          0,
+          0,
+          960,
+          640
+        ],
+        "skipped": false,
+        "renderMs": 4.699999988079071,
+        "readbackMs": 0.3999999761581421,
+        "bitmapMs": 0,
+        "submitMs": 0.20000001788139343,
+        "totalMs": 5.5
+      },
+      "worker": true,
+      "sourceErrors": 0,
+      "sourceHashRecoveries": 0,
+      "nodeCalls": {
+        "evaluate": 10,
+        "awaitPromise": 0,
+        "map": 0,
+        "publish": 0
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0
+      }
+    },
+    {
+      "requestedViewerMode": "gpu",
+      "checks": 4,
+      "labelChecks": [
+        {
+          "phase": "initial",
+          "text": "WebGL 无法显示",
+          "expected": 406,
+          "actual": 447,
+          "recall": 0.9753694581280788,
+          "precision": 0.9821029082774049
+        },
+        {
+          "phase": "update",
+          "text": "WebGL 无法显示",
+          "expected": 406,
+          "actual": 447,
+          "recall": 0.9753694581280788,
+          "precision": 0.9821029082774049
+        },
+        {
+          "phase": "restored",
+          "text": "WebGL 无法显示",
+          "expected": 406,
+          "actual": 447,
+          "recall": 0.9753694581280788,
+          "precision": 0.9821029082774049
+        }
+      ],
+      "presentation": {
+        "mode": "webgl2-bitmap",
+        "frames": 5,
+        "gpuFrames": 5,
+        "cpuFrames": 0,
+        "readbackBytes": 0,
+        "totalReadbackBytes": 0,
+        "fallbacks": 0,
+        "gpuCacheBytes": 134217728,
+        "device": {
+          "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+        },
+        "damage": [
+          0,
+          0,
+          960,
+          640
+        ],
+        "skipped": false,
+        "renderMs": 1.5,
+        "readbackMs": 0,
+        "bitmapMs": 8,
+        "submitMs": 8.400000005960464,
+        "totalMs": 10
+      },
+      "worker": true,
+      "sourceErrors": 0,
+      "sourceHashRecoveries": 0,
+      "nodeCalls": {
+        "evaluate": 10,
+        "awaitPromise": 0,
+        "map": 0,
+        "publish": 0
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0
+      }
+    }
+  ],
+  "reports": {
+    "cpu": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-webgl-frozen-cpu-v1.json",
+      "sha256": "35de846a378ed47c8037ffdaf5a4fb32dca348e6261c797d838180b4d12cf042"
+    },
+    "gpu": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-webgl-frozen-gpu-v1.json",
+      "sha256": "8cda4ba50c925e030d2a12264f4cccf7a3091c68d5ec2f308fbf040429c8c6f1"
+    }
+  },
+  "scope": "ActualdefaultSourceWebGLblackexactlabelpixels/normalCanvas2D+DOMupdates/removalrestore;WorkerCPUandforcedSwiftShaderWebGL2Viewer. Newverifieronly,production/binariesunchanged.",
+  "proved": [
+    "SourceWebGL2reallydrawsgreen;actualViewerreplacesitwithblackandexpectedWebGL无法显示glyphpixels. Bidirectionalone-pixelmaskmatchprecision/recallboth>0.95,threephasespermode.",
+    "OrdinaryblueCanvas2D+DOMinitialpixels;actualnewgreenCanvas2D/redDOMpixelswhileWebGLlabelremains.",
+    "RemovingWebGLrestoreswhiteoldrectangleandkeepsotherpixels;re-addinggenuineWebGL2restoresblackexacttext.",
+    "CPUWorkerandforcedSwiftShaderWebGL2Worker presentationactuallyverified;GPUfiveframeswithzeroCPUreadbackstats,nohardwareGPUclaim.",
+    "DefaultSourceautopublishandcompactmetadataonly;zeroNodemap/publish/awaitPromise;nohashrecoveries/errors;cleanupBrokerandRPCowners0."
+  ],
+  "notClaimed": [
+    "ThisdoesnotboundfullSession/RSS/VManddoesnotvalidatephysicalGPUorallCanvasgeometry/pressurecases.",
+    "RemainingfullB1:4display+2actualautomation;9MiBnetwork/control/ACK/close;Sourceclose/crash/Nodefallback;canonicalpromotion.",
+    "All41/N1/8h/fullphysicalmemoryremainincomplete."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true
+}

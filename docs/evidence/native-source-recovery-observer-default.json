@@ -1,0 +1,1406 @@
+{
+  "at": "2026-10-17T19:01:27.284129+00:00",
+  "status": "accepted-typed-actualWorker-recovery-fault-and-reconnect-observer-NOT-fullN1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-recovery-observer-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-recovery-observer-checkpoint-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-clock-checkpoint-browser-v1",
+  "browserSha256": "c5d29a3b5a22ff27ee3914c68650feea3e342dd1c4d2dc502e9ff0e596ae1b4e",
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-exposure-repeat-checkpoint-v1.json",
+  "changed": [
+    "tests/frame-age-observer.mjs",
+    "tests/verify-native-source-recovery-observer.mjs"
+  ],
+  "frozenSourceFiles": 539,
+  "clockAndResourceMathLinux": {
+    "count": 10,
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-recovery-observer-unit-linux-v1.log",
+    "sha256": "9393e9708552f99c3fcd0ffbd8289ac09db50be66a2e972bd1b948ad5295a4f0"
+  },
+  "sources": 4,
+  "windows": 12,
+  "actualDiagnosticFaults": 8,
+  "actualQueuedKeyframeRequests": 8,
+  "actualCommitsSkippedDuringRecovery": 4,
+  "actualNormalReconnects": 4,
+  "pairedFrames": 16,
+  "runs": [
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/recovery-observer-pilot-v1/recovery.json",
+      "sha256": "78ffa35b20db24d0a5ba24896b046954cae3b400549d0b04b1b8aca780b4488a",
+      "sources": 2,
+      "windows": 6,
+      "results": [
+        {
+          "trial": 1,
+          "windows": [
+            {
+              "kind": "delta-base",
+              "counts": {
+                "recoverAttempts": 1,
+                "keyframeRequestDecisions": 1,
+                "keyframeRequests": 1,
+                "missingDeltaBase": 1,
+                "commitResourcesUnavailable": 0,
+                "commitsSkippedDuringRecovery": 1,
+                "diagnosticFaults": 1
+              },
+              "coverage": {
+                "successfulCommits": 1,
+                "pixelSamples": 1,
+                "normalFrameEvents": 1,
+                "paired": 1,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 1,
+                "p50Ms": 84.7690117508173,
+                "p95Ms": 84.7690117508173,
+                "p99Ms": 84.7690117508173,
+                "maxMs": 84.7690117508173,
+                "minMs": 84.7690117508173
+              },
+              "before": {
+                "atNodeMs": 2000.957331,
+                "source": {
+                  "captures": 2,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 1,
+                  "lastMapMs": 0.275
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 17877,
+                      "coalesced": 0,
+                      "delta": 1,
+                      "full": 1,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 10399,
+                      "maxPendingBytes": 10399,
+                      "pendingBytes": 0,
+                      "resources": 6,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 125.15809999999999
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 2129.53978,
+                "source": {
+                  "captures": 3,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 1,
+                  "lastMapMs": 0.34
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 46228,
+                      "coalesced": 0,
+                      "delta": 2,
+                      "full": 2,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14898,
+                      "maxPendingBytes": 14898,
+                      "pendingBytes": 0,
+                      "resources": 12,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 18.031047
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "missing-resource",
+              "counts": {
+                "recoverAttempts": 1,
+                "keyframeRequestDecisions": 1,
+                "keyframeRequests": 1,
+                "missingDeltaBase": 0,
+                "commitResourcesUnavailable": 1,
+                "commitsSkippedDuringRecovery": 0,
+                "diagnosticFaults": 1
+              },
+              "coverage": {
+                "successfulCommits": 1,
+                "pixelSamples": 1,
+                "normalFrameEvents": 1,
+                "paired": 1,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 1,
+                "p50Ms": 12.70217378437519,
+                "p95Ms": 12.70217378437519,
+                "p99Ms": 12.70217378437519,
+                "maxMs": 12.70217378437519,
+                "minMs": 12.70217378437519
+              },
+              "before": {
+                "atNodeMs": 2247.120256,
+                "source": {
+                  "captures": 3,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 1,
+                  "lastMapMs": 0.34
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 46228,
+                      "coalesced": 0,
+                      "delta": 2,
+                      "full": 2,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14898,
+                      "maxPendingBytes": 14898,
+                      "pendingBytes": 0,
+                      "resources": 12,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 18.031047
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 2299.099861,
+                "source": {
+                  "captures": 4,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 1,
+                  "lastMapMs": 0.411
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 70100,
+                      "coalesced": 0,
+                      "delta": 3,
+                      "full": 3,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14912,
+                      "maxPendingBytes": 14912,
+                      "pendingBytes": 0,
+                      "resources": 18,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 75.549451
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "explicit-server-reconnect",
+              "counts": {
+                "recoverAttempts": 0,
+                "keyframeRequestDecisions": 0,
+                "keyframeRequests": 0,
+                "missingDeltaBase": 0,
+                "commitResourcesUnavailable": 0,
+                "commitsSkippedDuringRecovery": 0,
+                "diagnosticFaults": 0
+              },
+              "coverage": {
+                "successfulCommits": 2,
+                "pixelSamples": 2,
+                "normalFrameEvents": 2,
+                "paired": 2,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 2,
+                "p50Ms": 3.6307461857795715,
+                "p95Ms": 25.146280169487,
+                "p99Ms": 25.146280169487,
+                "maxMs": 25.146280169487,
+                "minMs": 3.6307461857795715
+              },
+              "before": {
+                "atNodeMs": 2423.618409,
+                "source": {
+                  "captures": 4,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 1,
+                  "lastMapMs": 0.411
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 70100,
+                      "coalesced": 0,
+                      "delta": 3,
+                      "full": 3,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14912,
+                      "maxPendingBytes": 14912,
+                      "pendingBytes": 0,
+                      "resources": 18,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 75.549451
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 2766.287921,
+                "source": {
+                  "captures": 7,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 1,
+                  "lastMapMs": 0.266
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-1",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 22228,
+                      "coalesced": 0,
+                      "delta": 1,
+                      "full": 1,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14840,
+                      "maxPendingBytes": 14840,
+                      "pendingBytes": 0,
+                      "resources": 4,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 18.062172
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "nodeCalls": {
+            "map": 0,
+            "publish": 0,
+            "awaitPromise": 0
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          }
+        },
+        {
+          "trial": 2,
+          "windows": [
+            {
+              "kind": "delta-base",
+              "counts": {
+                "recoverAttempts": 1,
+                "keyframeRequestDecisions": 1,
+                "keyframeRequests": 1,
+                "missingDeltaBase": 1,
+                "commitResourcesUnavailable": 0,
+                "commitsSkippedDuringRecovery": 1,
+                "diagnosticFaults": 1
+              },
+              "coverage": {
+                "successfulCommits": 1,
+                "pixelSamples": 1,
+                "normalFrameEvents": 1,
+                "paired": 1,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 1,
+                "p50Ms": 85.03295683860779,
+                "p95Ms": 85.03295683860779,
+                "p99Ms": 85.03295683860779,
+                "maxMs": 85.03295683860779,
+                "minMs": 85.03295683860779
+              },
+              "before": {
+                "atNodeMs": 3616.650117,
+                "source": {
+                  "captures": 3,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.272
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 23861,
+                      "coalesced": 0,
+                      "delta": 2,
+                      "full": 1,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 8876,
+                      "maxPendingBytes": 8876,
+                      "pendingBytes": 0,
+                      "resources": 6,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 10.644341
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 3746.10858,
+                "source": {
+                  "captures": 4,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.278
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 52208,
+                      "coalesced": 0,
+                      "delta": 3,
+                      "full": 2,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14896,
+                      "maxPendingBytes": 14896,
+                      "pendingBytes": 0,
+                      "resources": 12,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 12.692876
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "missing-resource",
+              "counts": {
+                "recoverAttempts": 1,
+                "keyframeRequestDecisions": 1,
+                "keyframeRequests": 1,
+                "missingDeltaBase": 0,
+                "commitResourcesUnavailable": 1,
+                "commitsSkippedDuringRecovery": 0,
+                "diagnosticFaults": 1
+              },
+              "coverage": {
+                "successfulCommits": 1,
+                "pixelSamples": 1,
+                "normalFrameEvents": 1,
+                "paired": 1,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 1,
+                "p50Ms": 16.097158193588257,
+                "p95Ms": 16.097158193588257,
+                "p99Ms": 16.097158193588257,
+                "maxMs": 16.097158193588257,
+                "minMs": 16.097158193588257
+              },
+              "before": {
+                "atNodeMs": 3864.518861,
+                "source": {
+                  "captures": 4,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.278
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 52208,
+                      "coalesced": 0,
+                      "delta": 3,
+                      "full": 2,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14896,
+                      "maxPendingBytes": 14896,
+                      "pendingBytes": 0,
+                      "resources": 12,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 12.692876
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 3915.75712,
+                "source": {
+                  "captures": 5,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.361
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 76074,
+                      "coalesced": 0,
+                      "delta": 4,
+                      "full": 3,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14909,
+                      "maxPendingBytes": 14909,
+                      "pendingBytes": 0,
+                      "resources": 18,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 74.863065
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "explicit-server-reconnect",
+              "counts": {
+                "recoverAttempts": 0,
+                "keyframeRequestDecisions": 0,
+                "keyframeRequests": 0,
+                "missingDeltaBase": 0,
+                "commitResourcesUnavailable": 0,
+                "commitsSkippedDuringRecovery": 0,
+                "diagnosticFaults": 0
+              },
+              "coverage": {
+                "successfulCommits": 2,
+                "pixelSamples": 2,
+                "normalFrameEvents": 2,
+                "paired": 2,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 2,
+                "p50Ms": 3.8625460863113403,
+                "p95Ms": 15.480399891734123,
+                "p99Ms": 15.480399891734123,
+                "maxMs": 15.480399891734123,
+                "minMs": 3.8625460863113403
+              },
+              "before": {
+                "atNodeMs": 4034.101817,
+                "source": {
+                  "captures": 5,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.361
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 76074,
+                      "coalesced": 0,
+                      "delta": 4,
+                      "full": 3,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14909,
+                      "maxPendingBytes": 14909,
+                      "pendingBytes": 0,
+                      "resources": 18,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 74.863065
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 4383.91778,
+                "source": {
+                  "captures": 8,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.305
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-1",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 22229,
+                      "coalesced": 0,
+                      "delta": 1,
+                      "full": 1,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14840,
+                      "maxPendingBytes": 14840,
+                      "pendingBytes": 0,
+                      "resources": 4,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 10.297377
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "nodeCalls": {
+            "map": 0,
+            "publish": 0,
+            "awaitPromise": 0
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          }
+        }
+      ]
+    },
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/recovery-observer-frozen-v1/recovery.json",
+      "sha256": "97218363250459786e2f1f6e29c27f1808875caf6bcc2fddc2d49ab47a11d02a",
+      "sources": 2,
+      "windows": 6,
+      "results": [
+        {
+          "trial": 1,
+          "windows": [
+            {
+              "kind": "delta-base",
+              "counts": {
+                "recoverAttempts": 1,
+                "keyframeRequestDecisions": 1,
+                "keyframeRequests": 1,
+                "missingDeltaBase": 1,
+                "commitResourcesUnavailable": 0,
+                "commitsSkippedDuringRecovery": 1,
+                "diagnosticFaults": 1
+              },
+              "coverage": {
+                "successfulCommits": 1,
+                "pixelSamples": 1,
+                "normalFrameEvents": 1,
+                "paired": 1,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 1,
+                "p50Ms": 80.57759407162666,
+                "p95Ms": 80.57759407162666,
+                "p99Ms": 80.57759407162666,
+                "maxMs": 80.57759407162666,
+                "minMs": 80.57759407162666
+              },
+              "before": {
+                "atNodeMs": 1892.151417,
+                "source": {
+                  "captures": 3,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.274
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 23858,
+                      "coalesced": 0,
+                      "delta": 2,
+                      "full": 1,
+                      "maxInflight": 2,
+                      "maxInflightBytes": 16378,
+                      "maxPendingBytes": 8872,
+                      "pendingBytes": 0,
+                      "resources": 6,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 115.900032
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 2056.470203,
+                "source": {
+                  "captures": 4,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.292
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 52211,
+                      "coalesced": 0,
+                      "delta": 3,
+                      "full": 2,
+                      "maxInflight": 2,
+                      "maxInflightBytes": 16378,
+                      "maxPendingBytes": 14899,
+                      "pendingBytes": 0,
+                      "resources": 12,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 22.883418
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "missing-resource",
+              "counts": {
+                "recoverAttempts": 1,
+                "keyframeRequestDecisions": 1,
+                "keyframeRequests": 1,
+                "missingDeltaBase": 0,
+                "commitResourcesUnavailable": 1,
+                "commitsSkippedDuringRecovery": 0,
+                "diagnosticFaults": 1
+              },
+              "coverage": {
+                "successfulCommits": 1,
+                "pixelSamples": 1,
+                "normalFrameEvents": 1,
+                "paired": 1,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 1,
+                "p50Ms": 12.416830629110336,
+                "p95Ms": 12.416830629110336,
+                "p99Ms": 12.416830629110336,
+                "maxMs": 12.416830629110336,
+                "minMs": 12.416830629110336
+              },
+              "before": {
+                "atNodeMs": 2173.867009,
+                "source": {
+                  "captures": 4,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.292
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 52211,
+                      "coalesced": 0,
+                      "delta": 3,
+                      "full": 2,
+                      "maxInflight": 2,
+                      "maxInflightBytes": 16378,
+                      "maxPendingBytes": 14899,
+                      "pendingBytes": 0,
+                      "resources": 12,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 22.883418
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 2222.591727,
+                "source": {
+                  "captures": 5,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.334
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 76073,
+                      "coalesced": 0,
+                      "delta": 4,
+                      "full": 3,
+                      "maxInflight": 2,
+                      "maxInflightBytes": 16378,
+                      "maxPendingBytes": 14907,
+                      "pendingBytes": 0,
+                      "resources": 18,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 73.421458
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "explicit-server-reconnect",
+              "counts": {
+                "recoverAttempts": 0,
+                "keyframeRequestDecisions": 0,
+                "keyframeRequests": 0,
+                "missingDeltaBase": 0,
+                "commitResourcesUnavailable": 0,
+                "commitsSkippedDuringRecovery": 0,
+                "diagnosticFaults": 0
+              },
+              "coverage": {
+                "successfulCommits": 2,
+                "pixelSamples": 2,
+                "normalFrameEvents": 2,
+                "paired": 2,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 2,
+                "p50Ms": 3.998980790376663,
+                "p95Ms": 17.909919679164886,
+                "p99Ms": 17.909919679164886,
+                "maxMs": 17.909919679164886,
+                "minMs": 3.998980790376663
+              },
+              "before": {
+                "atNodeMs": 2338.321589,
+                "source": {
+                  "captures": 5,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.334
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 76073,
+                      "coalesced": 0,
+                      "delta": 4,
+                      "full": 3,
+                      "maxInflight": 2,
+                      "maxInflightBytes": 16378,
+                      "maxPendingBytes": 14907,
+                      "pendingBytes": 0,
+                      "resources": 18,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 73.421458
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 2676.097062,
+                "source": {
+                  "captures": 7,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.306
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-1",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 14840,
+                      "coalesced": 0,
+                      "delta": 0,
+                      "full": 1,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14840,
+                      "maxPendingBytes": 14840,
+                      "pendingBytes": 0,
+                      "resources": 4,
+                      "slowDisconnects": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "nodeCalls": {
+            "map": 0,
+            "publish": 0,
+            "awaitPromise": 0
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          }
+        },
+        {
+          "trial": 2,
+          "windows": [
+            {
+              "kind": "delta-base",
+              "counts": {
+                "recoverAttempts": 1,
+                "keyframeRequestDecisions": 1,
+                "keyframeRequests": 1,
+                "missingDeltaBase": 1,
+                "commitResourcesUnavailable": 0,
+                "commitsSkippedDuringRecovery": 1,
+                "diagnosticFaults": 1
+              },
+              "coverage": {
+                "successfulCommits": 1,
+                "pixelSamples": 1,
+                "normalFrameEvents": 1,
+                "paired": 1,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 1,
+                "p50Ms": 81.39287607371807,
+                "p95Ms": 81.39287607371807,
+                "p99Ms": 81.39287607371807,
+                "maxMs": 81.39287607371807,
+                "minMs": 81.39287607371807
+              },
+              "before": {
+                "atNodeMs": 3527.792114,
+                "source": {
+                  "captures": 4,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.229
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 26686,
+                      "coalesced": 0,
+                      "delta": 3,
+                      "full": 1,
+                      "maxInflight": 2,
+                      "maxInflightBytes": 11706,
+                      "maxPendingBytes": 8871,
+                      "pendingBytes": 0,
+                      "resources": 6,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 15.988221000000001
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 3645.441799,
+                "source": {
+                  "captures": 5,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.29
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 55041,
+                      "coalesced": 0,
+                      "delta": 4,
+                      "full": 2,
+                      "maxInflight": 2,
+                      "maxInflightBytes": 14900,
+                      "maxPendingBytes": 14900,
+                      "pendingBytes": 0,
+                      "resources": 12,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 13.392845000000001
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "missing-resource",
+              "counts": {
+                "recoverAttempts": 1,
+                "keyframeRequestDecisions": 1,
+                "keyframeRequests": 1,
+                "missingDeltaBase": 0,
+                "commitResourcesUnavailable": 1,
+                "commitsSkippedDuringRecovery": 0,
+                "diagnosticFaults": 1
+              },
+              "coverage": {
+                "successfulCommits": 1,
+                "pixelSamples": 1,
+                "normalFrameEvents": 1,
+                "paired": 1,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 1,
+                "p50Ms": 12.693387761712074,
+                "p95Ms": 12.693387761712074,
+                "p99Ms": 12.693387761712074,
+                "maxMs": 12.693387761712074,
+                "minMs": 12.693387761712074
+              },
+              "before": {
+                "atNodeMs": 3764.168544,
+                "source": {
+                  "captures": 5,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.29
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 55041,
+                      "coalesced": 0,
+                      "delta": 4,
+                      "full": 2,
+                      "maxInflight": 2,
+                      "maxInflightBytes": 14900,
+                      "maxPendingBytes": 14900,
+                      "pendingBytes": 0,
+                      "resources": 12,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 13.392845000000001
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 3807.876055,
+                "source": {
+                  "captures": 6,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.413
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 78911,
+                      "coalesced": 0,
+                      "delta": 5,
+                      "full": 3,
+                      "maxInflight": 2,
+                      "maxInflightBytes": 14911,
+                      "maxPendingBytes": 14911,
+                      "pendingBytes": 0,
+                      "resources": 18,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 74.102803
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "kind": "explicit-server-reconnect",
+              "counts": {
+                "recoverAttempts": 0,
+                "keyframeRequestDecisions": 0,
+                "keyframeRequests": 0,
+                "missingDeltaBase": 0,
+                "commitResourcesUnavailable": 0,
+                "commitsSkippedDuringRecovery": 0,
+                "diagnosticFaults": 0
+              },
+              "coverage": {
+                "successfulCommits": 2,
+                "pixelSamples": 2,
+                "normalFrameEvents": 2,
+                "paired": 2,
+                "fraction": 1,
+                "missing": 0
+              },
+              "age": {
+                "count": 2,
+                "p50Ms": 3.916364163160324,
+                "p95Ms": 15.776179254055023,
+                "p99Ms": 15.776179254055023,
+                "maxMs": 15.776179254055023,
+                "minMs": 3.916364163160324
+              },
+              "before": {
+                "atNodeMs": 3925.282944,
+                "source": {
+                  "captures": 6,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.413
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-0",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 78911,
+                      "coalesced": 0,
+                      "delta": 5,
+                      "full": 3,
+                      "maxInflight": 2,
+                      "maxInflightBytes": 14911,
+                      "maxPendingBytes": 14911,
+                      "pendingBytes": 0,
+                      "resources": 18,
+                      "slowDisconnects": 0,
+                      "ackRttMs": 74.102803
+                    }
+                  }
+                ]
+              },
+              "after": {
+                "atNodeMs": 4256.647645,
+                "source": {
+                  "captures": 8,
+                  "errors": 0,
+                  "captureSupersessions": 0,
+                  "resourceRecoveries": 0,
+                  "resourcePressureEvents": 0,
+                  "resourcePressureResumes": 0,
+                  "resetRequests": 0,
+                  "completedResets": 0,
+                  "failedResets": 0,
+                  "lastError": null,
+                  "recentErrors": [],
+                  "registrationRetries": 0,
+                  "lastMapMs": 0.344
+                },
+                "rejectionCount": 0,
+                "peers": [
+                  {
+                    "id": "native-1",
+                    "kind": "display",
+                    "closed": false,
+                    "stats": {
+                      "bytes": 14841,
+                      "coalesced": 0,
+                      "delta": 0,
+                      "full": 1,
+                      "maxInflight": 1,
+                      "maxInflightBytes": 14841,
+                      "maxPendingBytes": 14841,
+                      "pendingBytes": 0,
+                      "resources": 4,
+                      "slowDisconnects": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "nodeCalls": {
+            "map": 0,
+            "publish": 0,
+            "awaitPromise": 0
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          }
+        }
+      ]
+    }
+  ],
+  "proved": [
+    "TypedpassiveobservationofactualWorkerRecoveryRequired/missing-required-resourcecommit branches,conditionalrequestdecisionseparatedfromactualopenWebSocketsendandactualGatewaynewfullbaseline/pixels. Exactprotocol-eventcoverageincludingcommitsignoredwhileawaitingrecovery.",
+    "SeparatelyenabledanddeclaredtestdiagnosticmodulealtersoneactualincomingdeltabaseandskipsoneactualnewResourceManifest. RealSourceinputACK<3s/value/pixels/inputwatermarkandnohiddenreconnect;notorganicnetworkloss. Defaultpassivegeneratedmodulecontainsnofaultarmsorwiremutation.",
+    "Actualserver1012close/autoreconnect/newfullbaseline/revokedhumanlease,twoobservedgenerationswithallactualCPUWorkercommits100percentpaired. Sourceerrors/map/publish/awaitPromise0;RPC/browsercleanupverified.",
+    "BoundedNativeFrameRejected observerpreservesactualcode/outcome/captureidentity/ordinalandmatchedcurrentscope,plusseparateNodeSource/asynchronousGatewayPeerStatswitnesses. NativepositiveRetryintegrationandpassivenetworkmatrixapplynext."
+  ],
+  "scopeLimits": [
+    "Tests-onlymodule/CPUWorkerpixelendpoint/affineclockcalibrationandquantizationassumptions;notphysicalscanout/GPUorfullobserveroverheadisolation.",
+    "Diagnosticfaultsareexplicit;passivefullnetworkmatrixwithnewmetricsandactualNativeRetrypositivestillnext. Prior538file675largeframesand535file23238smallframeskeepindependentversions.",
+    "DoesnotcompletefullN1longload/fullB1promotion/remaining41/SessionPSS/eighthours."
+  ],
+  "productionUnchanged": true,
+  "canonicalUnchanged": true,
+  "noCommitPush": true,
+  "all41": {
+    "complete": 8,
+    "partial": 13,
+    "pending": 20
+  }
+}

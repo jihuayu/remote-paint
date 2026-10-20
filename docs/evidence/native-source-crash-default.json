@@ -1,0 +1,143 @@
+{
+  "at": "2026-10-17T16:03:44.922509+00:00",
+  "status": "accepted-actualPagecrash-nativeheld-andNode-NOT-fullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-crash-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-crash-checkpoint-project-v1",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-close-checkpoint-v1.json",
+  "changed": [
+    "tests/verify-native-source-crash.mjs"
+  ],
+  "productionUnchanged": true,
+  "scope": "ThreeactualPage.crashcases:activedefaultnative,realMapperwait/Cppawaitingcredit,andactiveNodefallback;realpostcrashCDPinput/Liveclose/reaping/retainedclosedSources. Oneexplicitdiagnosticmaponlyinheldcase;noSourceproductionchangeorpixel/RSS/200msbulk/fullB1claim.",
+  "retainedClosedSources": 3,
+  "ownedProcessIdentitiesReaped": 12,
+  "variants": [
+    {
+      "dataPlane": "rust",
+      "held": false,
+      "processes": [
+        {
+          "pid": 229203,
+          "start": "17755372"
+        },
+        {
+          "pid": 229257,
+          "start": "17755379"
+        },
+        {
+          "pid": 229219,
+          "start": "17755376"
+        },
+        {
+          "pid": 229222,
+          "start": "17755377"
+        }
+      ],
+      "firstFrameOrdinal": 1,
+      "actualAwaitingCredit": false,
+      "realPageCrash": true,
+      "inputPendingBeforeClose": true,
+      "inputRejected": true,
+      "inputError": "cdpSession.send: Target page, context or browser has been closed",
+      "closeMs": 34.33125400000017,
+      "reapedProcesses": 4,
+      "viewerServerClosed": true,
+      "retainedSourceEmpty": true,
+      "errors": []
+    },
+    {
+      "dataPlane": "rust",
+      "held": true,
+      "processes": [
+        {
+          "pid": 229281,
+          "start": "17755465"
+        },
+        {
+          "pid": 229335,
+          "start": "17755468"
+        },
+        {
+          "pid": 229299,
+          "start": "17755467"
+        },
+        {
+          "pid": 229300,
+          "start": "17755467"
+        }
+      ],
+      "firstFrameOrdinal": 1,
+      "actualAwaitingCredit": true,
+      "realPageCrash": true,
+      "inputPendingBeforeClose": true,
+      "inputRejected": true,
+      "inputError": "cdpSession.send: Target page, context or browser has been closed",
+      "closeMs": 2047.5844029999998,
+      "reapedProcesses": 4,
+      "viewerServerClosed": true,
+      "retainedSourceEmpty": true,
+      "errors": [
+        {
+          "message": "Native resource connection closed",
+          "code": "NATIVE_SUBSCRIPTION_FAILED"
+        }
+      ]
+    },
+    {
+      "dataPlane": "node",
+      "held": false,
+      "processes": [
+        {
+          "pid": 229357,
+          "start": "17755751"
+        },
+        {
+          "pid": 229414,
+          "start": "17755757"
+        },
+        {
+          "pid": 229374,
+          "start": "17755755"
+        },
+        {
+          "pid": 229375,
+          "start": "17755755"
+        }
+      ],
+      "firstFrameOrdinal": 1,
+      "actualAwaitingCredit": false,
+      "realPageCrash": true,
+      "inputPendingBeforeClose": true,
+      "inputRejected": true,
+      "inputError": "cdpSession.send: Target page, context or browser has been closed",
+      "closeMs": 33.66546400000061,
+      "reapedProcesses": 4,
+      "viewerServerClosed": true,
+      "retainedSourceEmpty": true,
+      "errors": []
+    }
+  ],
+  "report": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-crash-frozen-v1.json",
+    "sha256": "dc12be53704af5a8468e9e59f9486176e4f83c14a1b888c6e6bfe42f16675f3a"
+  },
+  "proved": [
+    "RealPage.crashobservedwhilebrowserownerstillconnected,aftergenuinenativeimagecapture;defaultnativeactive/nativeCppawaitingrealMappercredit/explicitNodefallbacktested.",
+    "Inall3frozenrunsactualpostcrashCDPInput.insertTextwasstillpendingbeforeLivecloseandthenrejected;idempotentcloseunblockeditratherthanwaitingondeadtargetinputforever.",
+    "OneexplicitdiagnosticmapinheldcaserejectswhenBrokercloses;realnativeCppcredit/scope isrevoked,notfabricated.",
+    "All12browserPID+startidentitiesexit;retainedSourceslatest/cache/demand/control/bindings/resetlisteners andBroker/RPCownersremainempty;ViewerHTTPends.",
+    "Wellformedlatecapture/frame/error/reset/navigationevents cannotrestorestateoradvanceepoch."
+  ],
+  "failedHarnessProbe": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-crash-failed-v1.json",
+  "remaining": [
+    "9MiBrealnativeSourceweaknetwork/resourceprogress/control/ACK/200msbulkclose;Nodefallbackfullrenderedpixels/defaultfullLive/canonicalpromotion.",
+    "NofullSession/RSS/PSS/8h/fullB1/all41/N1completionclaim."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true
+}

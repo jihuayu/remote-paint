@@ -1,0 +1,135 @@
+{
+  "at": "2026-10-17T20:05:11.696397+00:00",
+  "status": "passed-stated-600s-hardware-three-Viewer-integration-not8h",
+  "scope": "Actual frozen accepted B1 LinuxARM64 native Source;AppleM2Max Metal GPUWorker+CPUWorker+CPUmain. Existing PNG/font updates/input pixels/resizes/navigation/logical budgets and original deadlines retained. RSS,virtual/physicalFootprint reported separately with libproc before-after start identity. Per-sample returned Chrome ancestry checked in this audit;not an atomic CDP/OS cohort or unique session memory bound. Current Linux PSS hardening/full C5/B10/8h remain pending.",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/frozen-version.json",
+  "manifestSha256": "cbe5a5f9f8de60d8e7fbf379203cef2affe63327fd975bd33c21365ccca9a8ed",
+  "workload": {
+    "burst": 400,
+    "intervalMs": 2000,
+    "navigationEvery": 40,
+    "samplingMode": "phase-deadline-background-native-libproc-v3",
+    "sampleIntervalMs": 60000,
+    "maxAllowedSampleGapSeconds": 90
+  },
+  "requestedSeconds": 600,
+  "actualExerciseSeconds": 601.0906304580001,
+  "cycles": 655,
+  "navigations": 6,
+  "resizes": 59,
+  "inputs": 40,
+  "imageBytes": 147255157,
+  "samples": 11,
+  "maxSampleGapSeconds": 62.124000000000024,
+  "helperPid": 50947,
+  "persistentHelperCount": 1,
+  "nativeSampleMs": {
+    "min": 0.16358300007414073,
+    "median": 0.472291000012774,
+    "max": 1.0286249999917345
+  },
+  "phaseMsMax": 1.519666000000143,
+  "actualViewerGpu": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+  },
+  "WasmMaxByMode": [
+    161087488,
+    161087488,
+    161087488
+  ],
+  "maxRssSumBytes": 3710730240,
+  "maxPhysicalFootprintSumBytes": 1905936072,
+  "helperCleanup": {
+    "pid": 50947,
+    "exited": true,
+    "exitCode": 0,
+    "signal": null
+  },
+  "sourceCleanup": {
+    "status": "closed",
+    "sourceClosed": true,
+    "brokerClosed": true,
+    "fixtureListening": false,
+    "remainingKinds": [
+      "node"
+    ]
+  },
+  "negativeProvenanceFault": {
+    "scope": "Explicit test-only receipt corruption;factory rejected before helper/Viewer startup;Source/Broker/fixture all closed",
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-provenance-fault-v1",
+    "failureSha256": "37a7d9cbdf5e3c282abe1d00c9ee0564e6c3e92a76b815d57dde6298fc0571ac",
+    "cleanupSha256": "db13ceb1243d224588d18ddad5a36a537c5a27ffb82d9420b96ea33fdf64dbd0",
+    "expectedViewerExit": 1,
+    "sourceExit": 0
+  },
+  "js": {
+    "macPassed": 228,
+    "linuxPassed": 224,
+    "linuxDarwinOnlySkipped": 4
+  },
+  "artifacts": {
+    "report.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/results/report.json",
+      "sha256": "92758d18e45c11b7f20008976a3aa5e5e0f79f6306b2783794aa579020228934"
+    },
+    "samples.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/results/samples.jsonl",
+      "sha256": "1b98acf8cb56a0f20421b533dc7298cc63a1e81bb1def3541a07d73a92c08ad8"
+    },
+    "native-memory-attempts.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/results/native-memory-attempts.jsonl",
+      "sha256": "17ec6a0cdc5b23fc1d11818317c4309cf090ab5cb2b7d0d31eb0afae6aaea9fa"
+    },
+    "sampling-phases.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/results/sampling-phases.jsonl",
+      "sha256": "5e249ead136e0690443dd63bd440a822bd4b14697b2bc2cb6ad72186d0022fce"
+    },
+    "native-memory-observer.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/results/native-memory-observer.json",
+      "sha256": "4e919e96c09aec035849618e833f5fbfb4bf4a3e969dfe1ed61a4b2783c092c8"
+    },
+    "cleanup.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/results/cleanup.json",
+      "sha256": "31501e274e5bb7d5296a3c8202947e75d3a23b04f106c8f725269991243aa7ef"
+    },
+    "source-stopped.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/results/source-stopped.json",
+      "sha256": "9c5b64fe6a7e3cc2af4431e2afe8a2b7cd9b900adeeac34f115fffbf57a4cc5b"
+    },
+    "source-runtime.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/results/source-runtime.jsonl",
+      "sha256": "5a293c9ca53ba5808e6f9f1f06f3d3da51add706632cc79acc4860795665a174"
+    },
+    "js-mac.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/js-mac.log",
+      "sha256": "e12afce954043fbac47b594db4cbae6a810d6c6344afcb233407689499395e6a"
+    },
+    "js-linux.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/js-linux.log",
+      "sha256": "8c48a7e6b9001d058568e9dcd10d1b175cd9d69868b5d1ca4c1800d1426fa60e"
+    },
+    "source.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/source.log",
+      "sha256": "a0afee94e8a05f27ce3cb4209ed1e4c518e2d70a28ee45e6778f1e8eda79eb22"
+    },
+    "viewer.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-v1/viewer.log",
+      "sha256": "bbd25f7cfd1d2b761cdb886a5d2f646b8c3063781975b3fbb57df37390249c87"
+    }
+  },
+  "productionB1Unchanged": true,
+  "oldFailuresPreserved": true,
+  "noCommitPush": true,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  },
+  "eightHourStarted": false,
+  "eightHourPassed": false,
+  "acceptanceReceipt": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-acceptance-v1.json",
+    "sha256": "9de2d6b8fb0af44efe42bc3ff9332488b4f20855685bd0cd39875b8d1e0785f2"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "at": "2026-10-17T15:30:20.379353+00:00",
+  "status": "accepted-defaultSource-reset-rebind-NOT-fullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-reset-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-reset-checkpoint-project-v1",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-pool-checkpoint-v2.json",
+  "brokerLifecycle": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-broker-reset-checkpoint-v1.json",
+  "changed": [
+    "native/broker.mjs",
+    "capture/subscription.mjs",
+    "live/native-source.mjs",
+    "tests/broker-reset.test.mjs",
+    "tests/verify-native-source-reset.mjs"
+  ],
+  "unitMac": 211,
+  "unitActualLinux": 211,
+  "resetChecks": 7,
+  "controllerChecks": 12,
+  "controllerCreditChecks": 3,
+  "resetRequests": 11,
+  "completedResets": 9,
+  "failedResets": 2,
+  "actualResourceRecoveries": 0,
+  "explicitDiagnosticMaps": 2,
+  "nodePublish": 0,
+  "nodeAwaitPromise": 0,
+  "nativePoolChangedPixelStates": 14,
+  "reports": {
+    "reset": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-reset-frozen-reset-v1.json",
+      "sha256": "bbd178a90680bbb4f0578ca5d26a4989f8b6e90b3f6b71010a872eb56417bff4"
+    },
+    "controller": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-reset-frozen-controller-v1.json",
+      "sha256": "789e5e7ff80bb747c8535c1b5c18c85d9574b0ff09d7b738a6c5b306bfe83ef6"
+    },
+    "credit": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-reset-frozen-credit-v1.json",
+      "sha256": "e92db05e2ceca0d1cb1a5db4d093ec27bcf136733ffd9d42eec8ae6574c7de4f"
+    },
+    "demand": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-reset-frozen-demand-v1.json",
+      "sha256": "076ef9f4c0687b20faee5aac38e09d4ce47a2f771c90de0c8f785a09fc1e500c"
+    },
+    "consumers": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-reset-frozen-consumers-v1.json",
+      "sha256": "af918a7087147498068efdda17206a87b60baaa3f90338f12f86f418e2cf5a27"
+    },
+    "pool": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-reset-frozen-pool-v1.json",
+      "sha256": "8cbb4211d4109664808dc3b4c829e47411d34fd8cdd3dd4b5bfa28b0b5b80ff8"
+    }
+  },
+  "proved": [
+    "Actualpre-fixsilentstall reproduced:defaultSourcecaptured1framewhileclockadvanced7to41andBrokerregistered0 afterreset.",
+    "FixedscalarresetlifecycleholdsfromNodewriteuntilallterminalreplies;fixedmanual/resize/resetmaskpreventsonecallerreleasinganother.",
+    "Coldno-demandresetneverencodes;activereset/resetScenerawRPC/wrappers rebindsameactualDocToken/epoch1andlatestinput2 withnewreservedordinalrange/fullresources/realCanvasKitCanvas+DOMpixels.",
+    "ActualMapperRPAresourcewaitkeeps4resetsqueued;fifthdispatchdenialandresizecoexist. Matchedhumaninputandconsumerfencerejectduringtransition;noinputwatermarkadvance.",
+    "Evenonlyresetrejectedbehind4nonresetRPCs mustrebindbecauserevocationprecedesenqueue. Actualtestresumesfullpixelsviewport2/input2.",
+    "Manualpause remainsheldthroughreset;Sourceclosedetachesitslisteners;Broker/request/responseownerszero.",
+    "24actualcrosssitenavs,actualheldcredit/reentrantresume,demand/PageRun/coalescedresize,observations/recording/slowclose,64MiBnativepool14statespassedonfrozenproject.",
+    "PoolresetretainsrealpeerACKbaseandpeerclosereturnscredit0. NoC++/Rust/binary/dependencychange;theirparenttestsretainexactversionattribution."
+  ],
+  "remaining": [
+    "Actualnativehash-miss/fullretry isnotprovedbycontrolledreset;counter0.",
+    "45MiBBase64/423rollbacks,WebGL,4display+2automation,actual9MiBnetwork/close/crash/Nodefallback andotherfullB1contracts remain.",
+    "Canonicalpromotion/all41/N1/fullSession/VM/PSS/8h/B4CPU notcomplete."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "no8hPass": true
+}

@@ -1,0 +1,678 @@
+{
+  "at": "2026-10-17T03:55:05.940346+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Shared parsed WebSocket JSON graph/parser transient admission before serde parsing,private Value-before-lease owner and explicit hello release. Default128MiB;configured1MiB..1GiB. Exact existing32KiB/rate/connection gates preserved. Raw Tungstenite/HTTP/frame buffers,queued outbound Values,other builders/copies,index/VM/native/fullSession remain separate. All41+N1 stay7complete/12partial/22pending.",
+  "baseline": {
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-before-v1.log",
+    "report": {
+      "at": "2026-10-17T03:47:06.046Z",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: WebSocket JSON contract deadline\n    at until (file:///project/tests/verify-websocket-json-budget.mjs:16:113)\n    at async group (file:///project/tests/verify-websocket-json-budget.mjs:29:14)\n    at async file:///project/tests/verify-websocket-json-budget.mjs:44:21",
+      "progress": {
+        "small": true,
+        "paired": false,
+        "stage": "dense-input",
+        "inputBytes": 32149,
+        "parserStatsExposed": false,
+        "forwarded": 1
+      },
+      "variants": [
+        {
+          "small": false,
+          "paired": false,
+          "inputBytes": 32149,
+          "extraNodes": 16000,
+          "handshakeReleased": false,
+          "deniedBeforeEvent": null,
+          "closeCode": null,
+          "pairedDataCloseCode": null,
+          "exactEvent": true,
+          "brokerAlive": true
+        },
+        {
+          "small": false,
+          "paired": true,
+          "inputBytes": 32149,
+          "extraNodes": 16000,
+          "handshakeReleased": false,
+          "deniedBeforeEvent": null,
+          "closeCode": null,
+          "pairedDataCloseCode": null,
+          "exactEvent": true,
+          "brokerAlive": true
+        }
+      ],
+      "cleanup": [
+        {
+          "small": false,
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "small": true,
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      ]
+    },
+    "interpretation": "Old22e accepted the existing default dense paired/fallback inputs. With the newly requested1MiB setting it still forwarded dense Input because no WebSocket parser pool existed;expected pressure close did not occur within unchanged5s test deadline. Missing stats/handshakeReleased=false in old report mean unobserved ownership,not measured retention or RSS leakage."
+  },
+  "implementation": {
+    "pool": "One process-wide128MiB parsed-JSON pool across Gateway/control connections,configured by REMOTE_PAINT_WEBSOCKET_JSON_BYTES1MiB..1GiB. Existing no-allocation json_charge lexical preflight prices4*UTF8 +768/token +64KiB,depth128 before serde_json::from_slice. Estimate includes parser growth/escaped scratch and final graph;it is not allocator usable-size/RSS.",
+    "owner": "Private Parsed stores Value first and lease last;Deref exposes only borrow. Caller holds it through validation and synchronous borrowed event/write,then actual graph destruction returns credit. Control hello drops explicitly after authentication before long connection loop;data hello graph is scoped to the read branch. No message graph is moved into asynchronous work.",
+    "failures": "Admission pressure closes only the offending WebSocket1013. A paired data connection follows existing control-closed policy1012. Invalid/deep JSON remains1008 through existing policy. Original frame/message32KiB,512/sec and connection/peer gates remain. Main RPC/output pools stay independent and usable after denial.",
+    "stats": "resourceBudget.websocketJson exposes live/peak/limit/denied/allocations and graph-only scope;combined readiness also checks this pool. Readiness keeps32MiB headroom capped at half the configured limit.",
+    "excludedRaw": "Tungstenite receives/allocates raw UTF8/frame/HTTP data before this preflight. Those buffers are explicitly outside this graph owner,as are outbound Value queues,handshake/welcome construction,Tungstenite copies and other persistent state."
+  },
+  "tests": {
+    "rustRelease": 74,
+    "newRustTests": 5,
+    "rustLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-rust-final.log",
+    "js": 178,
+    "jsLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-js-tests.log",
+    "requestedLayouts": [
+      {
+        "inputBytes": 32647,
+        "requestedPeak": 786438,
+        "reservation": 12719900,
+        "deniedRequestedPeak": 41,
+        "case": "dense-default-and-denied"
+      },
+      {
+        "inputBytes": 32768,
+        "requestedPeak": 32766,
+        "reservation": 197376,
+        "case": "max-string"
+      },
+      {
+        "inputBytes": 24580,
+        "requestedPeak": 73729,
+        "reservation": 164624,
+        "case": "late-escape"
+      },
+      {
+        "inputBytes": 16001,
+        "requestedPeak": 1331536,
+        "reservation": 4738308,
+        "case": "objects"
+      },
+      {
+        "inputBytes": 16001,
+        "requestedPeak": 643072,
+        "reservation": 6274308,
+        "case": "nested-arrays"
+      },
+      {
+        "inputBytes": 18291,
+        "requestedPeak": 92786,
+        "reservation": 1368268,
+        "case": "unicode-keys"
+      },
+      {
+        "inputBytes": 11001,
+        "requestedPeak": 644,
+        "reservation": 1646308,
+        "case": "duplicate-keys"
+      },
+      {
+        "inputBytes": 121,
+        "requestedPeak": 7680,
+        "reservation": 112868,
+        "case": "depth"
+      }
+    ],
+    "layouts": "Dense32KiB,exact32KiB string,late escaped string,objects,nested arrays,Unicode keys,duplicate keys and60deep valid graph;all requested-layout peaks fit preflight. Invalid UTF8/JSON,129depth and oversize fail with credit returned.",
+    "concurrency": "Eight concurrent readers compete for exactly two graph reservations;only two survive until final drop. Full graph pool does not consume independent RPC control output credit.",
+    "actualLinux": {
+      "at": "2026-10-17T03:53:58.263Z",
+      "status": "passed",
+      "scope": "Actual Linux Gateway fallback/paired WebSocket parsed JSON graph budget. Default valid sub32KiB dense16000-node Input passes and padded hello graph is released after validation. Explicit1MiB parser quota closes dense sender1013 before Control event,paired data closes1012,and same Broker RPC remains ready;all graph/process/Node owners release. No CDP semantics,pixels,raw Tungstenite/frame/HTTP or queue/output-copy/RSS claim.",
+      "brokerSha256": "f52c0364b140ebca0a6a26a93edde43868fce93f461517e841387521a48c54ae",
+      "variants": [
+        {
+          "small": false,
+          "paired": false,
+          "inputBytes": 32149,
+          "extraNodes": 16000,
+          "handshakeReleased": true,
+          "deniedBeforeEvent": null,
+          "closeCode": null,
+          "pairedDataCloseCode": null,
+          "exactEvent": true,
+          "brokerAlive": true,
+          "stats": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "maximumMessage": 32768,
+            "peak": 12496724,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          }
+        },
+        {
+          "small": false,
+          "paired": true,
+          "inputBytes": 32149,
+          "extraNodes": 16000,
+          "handshakeReleased": true,
+          "deniedBeforeEvent": null,
+          "closeCode": null,
+          "pairedDataCloseCode": null,
+          "exactEvent": true,
+          "brokerAlive": true,
+          "stats": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "maximumMessage": 32768,
+            "peak": 12496724,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          }
+        },
+        {
+          "small": true,
+          "paired": false,
+          "inputBytes": 32149,
+          "extraNodes": 16000,
+          "handshakeReleased": true,
+          "deniedBeforeEvent": true,
+          "closeCode": 1013,
+          "pairedDataCloseCode": null,
+          "exactEvent": null,
+          "brokerAlive": true,
+          "stats": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 1,
+            "headroom": 524288,
+            "limit": 1048576,
+            "maximumMessage": 32768,
+            "peak": 74352,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          }
+        },
+        {
+          "small": true,
+          "paired": true,
+          "inputBytes": 32149,
+          "extraNodes": 16000,
+          "handshakeReleased": true,
+          "deniedBeforeEvent": true,
+          "closeCode": 1013,
+          "pairedDataCloseCode": 1012,
+          "exactEvent": null,
+          "brokerAlive": true,
+          "stats": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 2,
+            "headroom": 524288,
+            "limit": 1048576,
+            "maximumMessage": 32768,
+            "peak": 75200,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          }
+        }
+      ],
+      "cleanup": [
+        {
+          "small": false,
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "small": true,
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      ]
+    },
+    "linuxFrozen": {
+      "at": "2026-10-17T03:50:04.121955+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-webgl-live.log"
+        },
+        {
+          "name": "verify-broker-cache-lru",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-broker-cache-lru.log"
+        },
+        {
+          "name": "verify-broker-mapper-transaction",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-broker-mapper-transaction.log"
+        },
+        {
+          "name": "verify-large-native-cache",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-large-native-cache.log"
+        },
+        {
+          "name": "verify-resource-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-resource-pool.log"
+        },
+        {
+          "name": "verify-source-resource-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-source-resource-pressure.log"
+        },
+        {
+          "name": "verify-viz-input-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-viz-input-pool.log"
+        },
+        {
+          "name": "verify-source-input-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-source-input-pressure.log"
+        },
+        {
+          "name": "verify-node-request-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-node-request-budget.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-control-channel.log"
+        },
+        {
+          "name": "verify-control-priority",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-control-priority.log"
+        },
+        {
+          "name": "verify-input-feedback",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-input-feedback.log"
+        },
+        {
+          "name": "verify-worker-control",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-worker-control.log"
+        },
+        {
+          "name": "verify-streaming-startup",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-streaming-startup.log"
+        },
+        {
+          "name": "verify-page-activity",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-page-activity.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-node-response-contract",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-node-response-contract.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-snapshot-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-snapshot-budget.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-rpc-output.log"
+        },
+        {
+          "name": "verify-node-stream-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-node-stream-close.log"
+        },
+        {
+          "name": "verify-websocket-json-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-verify-websocket-json-budget.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-checkpoint-version-v1.json",
+      "status": "passed"
+    },
+    "canonical": {
+      "at": "2026-10-17T03:54:17.715947+00:00",
+      "source": "Live /project accepted events/asset/Node teardown,new WebSocket parsed JSON pool LinuxRust candidate;isolated artifacts",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-control-channel.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-source-close.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-rpc-output.log"
+        },
+        {
+          "name": "verify-node-stream-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-node-stream-close.log"
+        },
+        {
+          "name": "verify-control-events-dense",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-control-events-dense.log"
+        },
+        {
+          "name": "verify-websocket-json-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-v1-verify-websocket-json-budget.log"
+        }
+      ],
+      "status": "passed"
+    },
+    "largeNative": {
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "mapperRollbackRejections": 423,
+    "resourcePoolFrames": 14,
+    "readableClose": {
+      "mode": "close-blocked-stdout",
+      "waitChannel": "sock_alloc_send_pskb",
+      "transport": "unix-socket",
+      "childExitCode": 2,
+      "oldProcessIdentityExited": true,
+      "parentReadableBytesAfterClose": 0,
+      "scope": "Actual blocked stdout loses its reader;child exits2 instead of continuing a partial frame. Logical Rust counters are not queried after process exit;OS/process cleanup and separate unit write-owner checks are distinct evidence."
+    }
+  },
+  "version": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-checkpoint-version-v1.json",
+    "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-checkpoint-project-v1",
+    "rustSources": {
+      "native/broker/src/allocation_probe.rs": "ddec052782fb29d8ad7a27d2c2332a70ad9f94226ad230c7fe0923e1cea97ffb",
+      "native/broker/src/assets.rs": "c799737cd3b1577312201461b36972baa682e4201acaea040f7749de9b1a5c00",
+      "native/broker/src/budget.rs": "41bef43441a10f02c23ad0c0d6eb04bbd48436ad6d2dac0e2ed5cdf5758941e8",
+      "native/broker/src/control.rs": "2088c496645c01cfd2ab2f15865da40f073d49ea3b5bdc4af233702b1672436d",
+      "native/broker/src/gateway.rs": "4322ae89f036b43b81ced56ccda49f32fb060c09126851a9edbd51d4ac4f65e2",
+      "native/broker/src/history.rs": "4b64273428615445d9ceb99bfd38a5004e66b2eead2d6aaf7dfadfa686578e2a",
+      "native/broker/src/input.rs": "9e56c120a1bc534fc9b9696314335af3c9ae79e16bebd4c93f9b3eb54820f42b",
+      "native/broker/src/main.rs": "1f188d1cfd8d439e397b9bca1ffe860e677dafd15ab61bf81b973c893f25ab85",
+      "native/broker/src/output.rs": "fd175957f5948349edb37515848d9db621ed0f8a1a40251c92ced56376c30f9f",
+      "native/broker/src/rpc.rs": "e277cc24c016dc73a9199cd4dc4375f978a1efa1ad19e5d30ab4e171790533dd",
+      "native/broker/src/scene.rs": "6246d0aed40a3840efc0c20cc384c62bc0e419bd15c76b8b04d8e2111238bc86",
+      "native/broker/src/snapshot_memory.rs": "dacd32697849b66b54089a259b93189c3c643522be81c55046a1c52400f82143",
+      "native/broker/src/viz.rs": "44c436fa135da6f59a382b4b3a1f7dd8fe05df199f746e54b06be95a59f8a4d9",
+      "native/broker/src/writer.rs": "26fef581106539a5dc43ba9dc9324c4f6e4850863e65d7ecce8ce40f18ebbb61",
+      "native/broker/src/ws_json.rs": "7d3838d27d942a72c8c9a1b232a0ac489ea42b8452f4568b0d2f459e75de74f7"
+    },
+    "brokerSha256": "f52c0364b140ebca0a6a26a93edde43868fce93f461517e841387521a48c54ae",
+    "previousBrokerSha256": "22e466ce99120f31f63372c977f3c60fb42aee73dfd3d49e9c501564f0c4d96f",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "browserUnchanged": true,
+    "cpp": "Unchanged browser reuses prior34 C++ tests.",
+    "artifacts": {
+      "large-native.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-artifacts/large-native.json",
+        "sha256": "ce494d738e7da47f888ca94ae8186a9ec5df523c1dbad052e11fd5950ae6a353"
+      },
+      "rollback.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-artifacts/rollback.json",
+        "sha256": "bfffe33cebdabd7bc0c7b8606127ef7010c198d76a8c3a9aaccf7102ed8a9aab"
+      },
+      "resource-pool.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-artifacts/resource-pool.json",
+        "sha256": "be981d149b136189320cf4864f22f8ef2f74050a454844abe7db6d7b539b44ff"
+      },
+      "source-resource.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-artifacts/source-resource.json",
+        "sha256": "ee8b734945d43b2ba9dcf70549990278d007eb31517bab87eb98f595a891c573"
+      },
+      "source-input.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-artifacts/source-input.json",
+        "sha256": "3ea450a949054080e961bedda38fc98615be84fcf36809a8f8b0b3acb2af2955"
+      },
+      "output-contract.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-artifacts/output-contract.json",
+        "sha256": "57104fb03ab496de03da298182bb6a7a196e37515cb55aa90714b1293f0d915b"
+      },
+      "node-stream-close.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-artifacts/node-stream-close.json",
+        "sha256": "8fb1c460e4453a14a438bf98f8b71595abfe7c088a6ff776d118fdb63d39ea23"
+      },
+      "viz-fault.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-artifacts/viz-fault.json",
+        "sha256": "49b174925fc718d167619f52e81d9c55406ff16b0e8fff4bb56c13c518579bca"
+      },
+      "websocket-json.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-v1-artifacts/websocket-json.json",
+        "sha256": "0fe8b6742b68a2ad70421d1b21c9b321a3def09db32b7a615787695ca58cc9b3"
+      }
+    }
+  },
+  "publication": {
+    "at": "2026-10-17T03:54:15.294909+00:00",
+    "status": "accepted-in-stated-scope",
+    "oldSha256": "22e466ce99120f31f63372c977f3c60fb42aee73dfd3d49e9c501564f0c4d96f",
+    "newSha256": "f52c0364b140ebca0a6a26a93edde43868fce93f461517e841387521a48c54ae",
+    "previousBinary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-previous-canonical-22e",
+    "previousReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-previous-build-receipt.json",
+    "binary": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/broker-build.json",
+    "scope": "Atomic local Linuxarm64 replacement only;proof/8h processes and Chromium/Cargo caches preserved;no commit/push.",
+    "canonicalSmoke": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/websocket-json-canonical-smoke-v1.json",
+    "evidence": "docs/evidence/websocket-json-graphs.json"
+  },
+  "remaining": [
+    "Outbound queued command graph ownership and main send clone/size-check/stringification,other Gateway/handler builders/Tungstenite raw/frame/HTTP/output copies.",
+    "Remaining asset/hash scratch,staged/persistent Mapper resource/weak-index backing.",
+    "Node active-stream/application/VM,native recordings/uncached work/tiled duplication/epoch/actual cancellation,wholeSession/PSS.",
+    "B4 comparable baseline,independent8h and other41-row/N1 requirements."
+  ],
+  "eightHours": "Immutable2585828c usesa296/earlier JS,excluding this and all later accepted scopes;no elapsed stitching.",
+  "preserve": "No commit/push. HEAD3ff9512c/live peer1+/1-,proof/8h/compiler6713 processes and Chromium/Cargo caches preserved;previous22e binary/receipt backed up."
+}

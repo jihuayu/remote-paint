@@ -1,0 +1,115 @@
+{
+  "at": "2026-10-16T15:16:42.755Z",
+  "scope": "Actual custom Linux Chromium capture, native Rust mapping/Gateway, CanvasKit Worker pixels",
+  "browserSha256": "fa2cedec0bf2f3cd7d8d40e9de344a7a103fd66e7efb36b7afa9f377d8fb6c19",
+  "webgl2": true,
+  "placeholderPixel": [
+    0,
+    0,
+    0,
+    255
+  ],
+  "labelPixels": 447,
+  "ordinaryDomPixel": [
+    18,
+    52,
+    86,
+    255
+  ],
+  "updatedDomPixel": [
+    170,
+    51,
+    51,
+    255
+  ],
+  "removedCanvasRecovered": true,
+  "captureErrors": [],
+  "result": {
+    "protocol": 4,
+    "connectionGeneration": 1,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "frameId": 3,
+    "native": {
+      "bitmapGlyphs": 0,
+      "captureId": "23a11134-715b-4a47-8a2a-6225c1104267",
+      "frameToken": 4,
+      "namespace": [
+        4,
+        10
+      ],
+      "producer": "4308:2",
+      "sourceFrame": 3,
+      "timing": {
+        "base64Ms": 0,
+        "cachedLayers": 10,
+        "captureRoundTripMs": 6.262541000000056,
+        "cdpReplyMs": 5.864315000000033,
+        "encodeTotalMs": 1.0250000059604645,
+        "encodingThreads": 5,
+        "fontCacheHits": 2,
+        "fontMs": 0.0021670013666152954,
+        "glyphCollectionMs": 0.0023330003023147583,
+        "imageCacheHits": 0,
+        "imageMs": 0,
+        "parallelLayers": 12,
+        "portableMs": 0.028665006160736084,
+        "recordingCacheHits": 10,
+        "recordingCacheMisses": 2,
+        "recordingMs": 0.023,
+        "resultAssemblyMs": 0.032,
+        "serializeMs": 0.18394698202610016,
+        "vizWaitMs": 0.01333199999999124
+      }
+    },
+    "lastProcessedInputSeq": 0,
+    "resourceBytes": 708193,
+    "resources": 3,
+    "resourcesReceived": 5,
+    "receivedBytes": 630465,
+    "fullFrames": 1,
+    "deltaFrames": 2,
+    "renderMs": 9.900000005960464,
+    "requiredResources": [
+      "017fad3962556036f0338d504de8b3c32eb2b212201744c7188c6a08e17eda15",
+      "464ff756046229254c37c34a6d64bc91d0809011230f63cde0ccab2bfdf3e8f7",
+      "8f309711296a3bbc03a751ff61856e5d125cb32df860dcebca12f1954b4de384"
+    ],
+    "rendererStats": {
+      "pictureDecodes": 5,
+      "pictureRasters": 5,
+      "pictureRasterHits": 7,
+      "passRenders": 3,
+      "passHits": 0,
+      "isolatedDraws": 0
+    },
+    "presentation": {
+      "mode": "webgl2-bitmap",
+      "frames": 3,
+      "gpuFrames": 3,
+      "cpuFrames": 0,
+      "readbackBytes": 0,
+      "totalReadbackBytes": 0,
+      "fallbacks": 0,
+      "gpuCacheBytes": 134217728,
+      "device": {
+        "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "renderMs": 1.7999999970197678,
+      "readbackMs": 0,
+      "bitmapMs": 7.700000002980232,
+      "submitMs": 8.100000008940697,
+      "totalMs": 9.900000005960464
+    },
+    "assetStats": {
+      "receivedChunks": 27,
+      "receivedBytes": 608485,
+      "fontBytes": 1157041,
+      "imageBytes": 0,
+      "reusedBytes": 550389,
+      "cacheBytes": 608485
+    },
+    "worker": true
+  }
+}

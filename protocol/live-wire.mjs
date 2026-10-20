@@ -1,4 +1,6 @@
 import {isHash} from './wire.mjs';
+import {estimateJsMetadata} from './client-memory.mjs';
+import {validateFrameMemory} from './resource-memory.mjs';
 export const LIVE_VERSION=4;
 export const LIVE_LIMITS=Object.freeze({resourceBytes:16*1024*1024,sceneBytes:256*1024,frameBytes:64*1024*1024,
  cacheBytes:128*1024*1024,cacheResources:512,passes:64,quads:2048,dimension:4096});
@@ -23,6 +25,7 @@ export function validateScene(scene,required,viewport){
     used.add(q.resourceId);
    }else if(q.kind==='pass'){if(!ids.has(q.passId))throw new Error('Cyclic or missing child pass');}
    else if(q.kind==='solid'){if(!numbers(q.color,4)||q.color.some(n=>n<0||n>1))throw new Error('Invalid color');}
+   else if(q.kind==='placeholder'){if(q.reason!=='webgl')throw new Error('Invalid placeholder');}
    else throw new Error('Unknown quad kind');
   }
   ids.add(p.id);
@@ -54,15 +57,19 @@ export function applyDelta(previous,delta){
  return {rootPass:delta.rootPass,passes:delta.order.map(id=>passes.get(id))};
 }
 export class LiveFrameGate {
- constructor(){this.resources=new Map();this.bytes=0;this.pending=null;this.committed=null;}
+ constructor({memory,requireResourceMemory=false}={}){this.memory=memory;this.requireResourceMemory=requireResourceMemory;this.bounds=new Map();this.charges=new Map();this.resources=new Map();this.records=new Map();this.displaying=new Map();this.generation=0;this.bytes=0;this.pending=null;this.committed=null;}
+ prune(){for(const [frame,release]of this.records)if(frame!==this.pending&&frame!==this.committed&&!this.displaying.has(frame)){release?.();this.records.delete(frame);}}
+ clear(){this.generation++;for(const release of this.charges.values())release();this.charges.clear();this.resources.clear();this.bounds.clear();this.bytes=0;this.pending=null;this.committed=null;this.prune();}
  put(id,payload){
   if(!isHash(id)||payload.byteLength<28||payload.byteLength>LIVE_LIMITS.resourceBytes)throw new Error('Invalid resource');
   if(this.resources.has(id))return;
   if(this.resources.size>=LIVE_LIMITS.cacheResources||this.bytes+payload.byteLength>LIVE_LIMITS.cacheBytes)throw new Error('Resource cache budget exceeded');
-  this.resources.set(id,payload);this.bytes+=payload.byteLength;
+  const release=this.memory?.buffer('raw',payload,{metadataBytes:384+id.length*2});if(release)this.charges.set(id,release);this.resources.set(id,payload);this.bytes+=payload.byteLength;
+  const bound=this.pending?.resourceMemory?.resources[id];if(bound)this.bounds.set(id,{imageBytes:bound.imageBytes,fontBytes:bound.fontBytes});
  }
  stage(frame){
-  validateHeader(frame);const old=this.committed;
+  validateHeader(frame);const estimates=validateFrameMemory(frame,this.requireResourceMemory),old=this.committed;
+  if(estimates)for(const [id,bound]of Object.entries(estimates)){const previous=this.bounds.get(id);if(previous&&(previous.imageBytes!==bound.imageBytes||previous.fontBytes!==bound.fontBytes))throw new Error('Resource memory descriptor changed');}
   if(old&&(frame.pageEpoch<old.pageEpoch||frame.frameId<=old.frameId||frame.pageEpoch===old.pageEpoch&&frame.viewportVersion<old.viewportVersion))throw new Error('Stale frame');
   let scene;
   if(frame.baseFrameId===null){if(frame.delta)throw new Error('Full frame contains delta');scene=frame.scene;}
@@ -71,26 +78,36 @@ export class LiveFrameGate {
    if(frame.scene)throw new Error('Delta contains full scene');scene=applyDelta(old.scene,frame.delta);
   }
   validateScene(scene,frame.requiredResources,frame.viewport);
-  this.pending={...frame,scene};return this.pending;
+  const staged={...frame,scene},release=this.memory?.reserve('sceneMetadata',estimateJsMetadata(staged,{maxBytes:Math.min(this.memory.policy.js,16*1024*1024)}),'js',{metadataBytes:256});
+  this.records.set(staged,release);this.pending=staged;if(estimates)for(const [id,bound]of Object.entries(estimates))if(this.resources.has(id))this.bounds.set(id,{imageBytes:bound.imageBytes,fontBytes:bound.fontBytes});this.prune();return staged;
  }
- commit(epoch,id,display=()=>{}){
+ beginCommit(epoch,id){
   const frame=this.pending;
   if(!frame||frame.pageEpoch!==epoch||frame.frameId!==id)throw new Error('Unmatched frame commit');
   if(frame.requiredResources.some(id=>!this.resources.has(id)))return null;
-  display(frame,this.resources); // Decode/render must succeed before advancing dependencies.
-  this.committed=frame;this.pending=null;return frame;
+  if(this.displaying.has(frame))throw new Error('Frame display already running');
+  const resources=new Map(),releases=[];
+  try{for(const id of frame.requiredResources){const payload=this.resources.get(id),release=this.memory?.buffer('inflightRaw',payload,{metadataBytes:192+id.length*2});if(release)releases.push(release);resources.set(id,payload);}}
+  catch(error){for(const release of releases)release();throw error;}
+  const record={frame,generation:this.generation,resources,releases};this.displaying.set(frame,record);return record;
  }
-  async commitAsync(epoch,id,display=()=>{}){
-    const frame=this.pending;
-    if(!frame||frame.pageEpoch!==epoch||frame.frameId!==id)throw new Error('Unmatched frame commit');
-    if(frame.requiredResources.some(id=>!this.resources.has(id)))return null;
-    await display(frame,this.resources);
-    this.committed=frame;this.pending=null;return frame;
-  }
+ finishCommit(record){
+  if(record.generation!==this.generation||this.pending!==record.frame)return null;
+  this.committed=record.frame;this.pending=null;return record.frame;
+ }
+ endCommit(record){for(const release of record.releases)release();this.displaying.delete(record.frame);this.prune();}
+ commit(epoch,id,display=()=>{}){
+  const record=this.beginCommit(epoch,id);if(!record)return null;
+  try{display(record.frame,record.resources);return this.finishCommit(record);}finally{this.endCommit(record);}
+ }
+ async commitAsync(epoch,id,display=()=>{}){
+  const record=this.beginCommit(epoch,id);if(!record)return null;
+  try{await display(record.frame,record.resources);return this.finishCommit(record);}finally{this.endCommit(record);}
+ }
  release(id){
   if(this.committed?.requiredResources.includes(id)||this.pending?.requiredResources.includes(id))return false;
-  const payload=this.resources.get(id);if(payload){this.bytes-=payload.byteLength;this.resources.delete(id);}return true;
+  const payload=this.resources.get(id);if(payload){this.bytes-=payload.byteLength;this.resources.delete(id);this.bounds.delete(id);this.charges.get(id)?.();this.charges.delete(id);}return true;
  }
  collect(){for(const id of this.resources.keys())this.release(id);}
- recover(){this.pending=null;this.collect();}
+ recover(){this.generation++;this.pending=null;this.prune();this.collect();}
 }

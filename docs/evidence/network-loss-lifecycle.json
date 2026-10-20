@@ -1,0 +1,150 @@
+{
+  "at": "2026-10-16T13:50:11.551Z",
+  "scope": "Actual Linux kernel netem on Gateway TCP only; real source CDP input, native capture and CanvasKit pixel counter; synthetic beforeinput to latest rendered state including each input, excludes physical input/display scanout; intermediate states may coalesce",
+  "samplesPerCase": 1000,
+  "results": [
+    {
+      "configuredRttMs": 80,
+      "lossPercent": 1,
+      "measuredRttMs": [
+        80.82987000000003,
+        85.86325599999986,
+        85.27889100000016,
+        84.93314099999998,
+        87.8662220000001,
+        81.46121499999981,
+        78.50754099999995,
+        87.46828000000005,
+        84.7120339999999,
+        91.9747460000001
+      ],
+      "samples": 1000,
+      "p50Ms": 161.19999998807907,
+      "p95Ms": 295.09999999403954,
+      "p99Ms": 368.70000000298023,
+      "maxMs": 631.0999999940395,
+      "maxProgressGapMs": 502.20000000298023,
+      "maxOutstanding": 18,
+      "frames": 579,
+      "lifecycle": {
+        "dragMoves": 22,
+        "dragFinalLeft": 320,
+        "dragPixelsCorrect": true,
+        "blackholeMs": 300,
+        "blackholeRecoveryMs": 504.62163999999757,
+        "reconnectMs": 700.9345700000013,
+        "reconnectFullBaseline": true,
+        "leaseRevoked": true
+      },
+      "network": [
+        {
+          "kind": "prio",
+          "handle": "1:",
+          "root": true,
+          "refcnt": 2,
+          "options": {
+            "bands": 3,
+            "priomap": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "multiqueue": false
+          },
+          "bytes": 19988548,
+          "packets": 8158,
+          "drops": 100,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 418,
+          "qlen": 4
+        },
+        {
+          "kind": "netem",
+          "handle": "30:",
+          "parent": "1:3",
+          "options": {
+            "limit": 1000,
+            "delay": {
+              "delay": 0.04,
+              "jitter": 0.004,
+              "correlation": 0
+            },
+            "loss-random": {
+              "loss": 0.01,
+              "correlation": 0
+            },
+            "rate": {
+              "rate": 2500000,
+              "packetoverhead": 0,
+              "cellsize": 0,
+              "celloverhead": 0
+            },
+            "ecn": false,
+            "gap": 0
+          },
+          "bytes": 19985781,
+          "packets": 8129,
+          "drops": 100,
+          "overlimits": 0,
+          "requeues": 0,
+          "backlog": 418,
+          "qlen": 4
+        }
+      ],
+      "peers": [
+        {
+          "bytes": 5086727,
+          "coalesced": 785,
+          "delta": 245,
+          "full": 1,
+          "maxInflight": 1,
+          "maxInflightBytes": 28380,
+          "resources": 481,
+          "slowDisconnects": 0,
+          "ackRttMs": 85.83385
+        },
+        {
+          "bytes": 28476,
+          "coalesced": 0,
+          "delta": 2,
+          "full": 1,
+          "maxInflight": 3,
+          "maxInflightBytes": 28476,
+          "resources": 4,
+          "slowDisconnects": 0,
+          "ackRttMs": 2.346485
+        }
+      ],
+      "sourceErrors": 0
+    }
+  ],
+  "fileSha256": {
+    "tests/verify-loss.mjs": "c233887ed654992e2b636f8d8549ab4f7b07ebcf69c580b32437a8350dcf0df3",
+    "viewer/input.mjs": "2fddcce2dbab7f1503e55ca2bc8660800c7a6bf9f4d99c5d938d60d09d0d7275",
+    "viewer/live.mjs": "1e0b4418cf8663ad4a38a366699211b31160cbd1f3d889ccfaf1d226dbbc82b9",
+    "viewer/stream-worker.mjs": "b00d07dec5b7e1b4ed8b1b7f08a51e634fa98490af33e106982189eb39e1cf84",
+    "native/broker/src/gateway.rs": "d4cf5ff0dee7b384aacecb722380bd067818974adf387ce7047dfd72e867fb0a",
+    "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": "3b2a2fe89cc63e633bdbdb30f57793918356befc831c43aea5ed6571bae39f57",
+    "live/source.mjs": "f4cc29ab896d61dace3e7c54ccf49119a347464657ac524004601bdd85d5c4fb",
+    "live/input.mjs": "c0ba3c9f0a827295bb4c28198efa3e7ecce90704284ebe93f94d90ad54a03da5"
+  },
+  "notes": [
+    "Newest binary after the 512-resource credit guard and cache telemetry update.",
+    "The 300ms 100% loss phase is separate from the 1000-input configured 80ms/1% measurement; final tc drop counters include both phases.",
+    "The final server-close reconnect is an explicit session recovery test after the real kernel packet-blackhole recovery."
+  ]
+}

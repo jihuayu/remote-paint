@@ -1,0 +1,23 @@
+--- a/services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc
++++ b/services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc
+@@ -48,7 +48,7 @@
+   }
+   out->frame_token = data.frame_token();
+   if (!data.ReadRemotePaintCaptureId(&out->remote_paint_capture_id) ||
+-      out->remote_paint_capture_id.size() > 128)
++      out->remote_paint_capture_id.size() > 256)
+     return base::unexpected(DeserializationError());
+ 
+   if (!data.ReadContentColorUsage(&out->content_color_usage)) {
+--- a/components/viz/service/display/surface_aggregator.cc
++++ b/components/viz/service/display/surface_aggregator.cc
+@@ -2298,7 +2298,8 @@
+     auto remote_frame = resolved_frames_.find(remote_surface);
+     if (remote_frame != resolved_frames_.end() && remote_frame->second.is_valid()) {
+       const auto& tag = remote_frame->second.GetMetadata().remote_paint_capture_id;
+-      if (!tag.empty()) remote_paint::EmitVizScene(frame, tag, remote_frame->second.GetClientNamespaceId());
++      if (!tag.empty()) remote_paint::EmitVizScene(frame, tag, remote_frame->second.GetClientNamespaceId(),
++                                               remote_frame->second.GetMetadata().frame_token);
+     }
+   }
+   ProcessAddedAndRemovedSurfaces();

@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-16T13:47:03.201Z",
+  "scope": "Real Viewer sockets and CanvasKit; test-injected asynchronous SHA delay, no packet loss; synchronous Wasm replay can still block its thread",
+  "results": [
+    {
+      "mainThread": false,
+      "checksumDelayMs": 1200,
+      "authorityDeliveryMs": 1.4198749999995925,
+      "resourceFrameCompleted": true,
+      "invalidMetadataRejected": true
+    },
+    {
+      "mainThread": true,
+      "checksumDelayMs": 1200,
+      "authorityDeliveryMs": 1.5704999999998108,
+      "resourceFrameCompleted": true,
+      "invalidMetadataRejected": true
+    }
+  ]
+}

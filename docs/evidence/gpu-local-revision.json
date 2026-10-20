@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-16T15:20:33.308102+00:00",
+  "scope": "C1 checkpoint before damage redraw changes; uncommitted local revision",
+  "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+  "sha256": {
+    "viewer/frame-presenter.mjs": "1f436fc758349fd44ac2eccff04d32da61016f6045ce19184bf9011dca38b39f",
+    "viewer/scene-renderer.mjs": "47a824b7820b257d45979b1efc7dfa69131c658aea23e71821803c41fae48baf",
+    "viewer/live.mjs": "16392c1e10300face11404a0a76703e57ec7f978a10668a89343167c352dd4f8",
+    "viewer/stream-worker.mjs": "4d189f31ac7a2dd6e95aee9604a52c51909d7c1075df9e9f9888839776b476c2",
+    "live/viewer-assets.mjs": "af24730b5521fb868bab72a8486b5174e4ee65f3fb6032cbf7199e77b75cbfc8",
+    "tests/verify-presentation.mjs": "1dd63ffd06fe15c34d539749954eb9ea944a77abade78d247e686a74cfa660b4",
+    "tests/verify-live.mjs": "47ef423f2592816944d6cb30020b7d2adc1ea741bff92e4c242aca862dd26be6"
+  }
+}

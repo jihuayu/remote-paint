@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-17T14:06:55.523423+00:00",
+  "status": "accepted-standalone-native-controller-NOT-defaultSource-orB1-complete",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-controller-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-controller-checkpoint-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-checkpoint-browser-v1",
+  "browserSha256": "14bce326d2c4c8627c49926fb6a78aa003a0dc6a67f130c922b48da3c2663efa",
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "changed": [
+    "capture/subscription.mjs",
+    "tests/verify-native-source-controller.mjs",
+    "tests/verify-native-controller-credit.mjs"
+  ],
+  "scope": "Standalone productionNativeSubscription lifecycle controller;defaultSource andtransport/consumer/input adapters unchanged. C++cadence/timer andBrokerfoundation reused at exactacceptedversions.",
+  "frozenControllerChecks": 12,
+  "frozenCreditChecks": 3,
+  "rapidCrosssiteNavigations": 24,
+  "reports": {
+    "controller": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-controller-frozen-controller-v1.json",
+      "sha256": "c9d13b0359d7a6402b679bf43caf6a7a7ea1c7783fc51747a13c4240aab9f5cf"
+    },
+    "credit": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-controller-frozen-credit-v1.json",
+      "sha256": "75df88124ecd405134f9458e4bdd218f1c00cbea5675666333efd7efab146342"
+    }
+  },
+  "proved": [
+    "Disabledbootstrap/2.25s coldidle;fencealone neitherencodes norwakesclock;firstdemand primesactualBeginFrameACK.",
+    "Autonomous100ms capture/actualCanvas+DOMpixels,zero perframecaptureCDP/awaitPromise/map/publish.",
+    "Actualnativefence includesencoding/inIPC ordinal beyondlastpublishedcompactevent.",
+    "RealInput.dispatchKeyEvent ACK theninput7/SourceFramefloor/newpixels;captureOnInputfalse stillupdatesfuturewatermark.",
+    "ActualBrokerpolicyACK deliberatelyheld whileinput9injected;latestinputrereadbeforeenable andfirstnewbindingframe carries9.",
+    "1000synchronousfreshrequests collapseintooneRuntime.evaluate;fixedonecontrolpump,coalescedfence/drain;6sdeadlines,terminalCDPtimeout preventsnewcommandsbehinduncancelableone.",
+    "Demand0/suspend drainactualnativeinflight beforeexternalclockstop/resize;resume fullresources anddisjointviewportrange.",
+    "24actualcrosssite navigations incrementDocTokenepochonce acrossrealrendererPIDs,carrylatestinput/ranges andcorrectpixels.",
+    "128explicitduplicate lifecycle signals coalescewithoutassigningnewepoch. Thisisadiagnosticrefreshcheck,notactualnetworkdelayinjection.",
+    "RealMapper diagnosticwait:oldjobretainsinput0,nextjobinput7;resume duringdisablewaitsforC++inflightfalse andcanceledheldframe neverpublishes.",
+    "Bothfrozenruns closecleanly:Brokerexited,pendingRPC/request/responseowners0.",
+    "DefaultSource5baselinefiles,canonicalbrowser/brokers,unrelatedpeerchange,HEAD/index andall14patches preserved."
+  ],
+  "limits": [
+    "12+3checks covercontrollerharness only. Default Source stillRuntime.evaluate/awaitPromise/map/publish eachframe.",
+    "Explicit diagnosticcreditverifier uses2realmaprequests toholdMapper;no syntheticnativecredit. Maincontrollerpixelverifier useszero map/publish.",
+    "GenericPause/error recovery,defaultSourceconsumerfence/freshHello/inputtransitiongate/full resource/pressure/close acceptance remainnexttask.",
+    "No fullSession/VM/PSS/8h/B4CPU orall41/N1 completionclaim."
+  ],
+  "nextDesign": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-integration-design-v1.json",
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  }
+}

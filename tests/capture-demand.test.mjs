@@ -66,6 +66,7 @@ test('a completed Viz frame with a lost CDP callback expires and releases single
  capture.setDemand(1);await new Promise(setImmediate);assert.equal(capture.running,true);
  t.mock.timers.tick(6000);await new Promise(setImmediate);
  assert.match(failure?.message??'',/Native capture deadline/);assert.equal(capture.running,false);assert.equal(canceled,1);
+ assert.equal(failure.code,'NATIVE_CAPTURE_TIMEOUT');assert.ok(failure.captureDiagnostics.vizReadyMs!==null);assert.equal(failure.captureDiagnostics.cdpReplyMs,null);assert.equal(failure.captureDiagnostics.generation,failure.captureDiagnostics.currentGeneration);
  await capture.close();
 });
 
@@ -91,4 +92,34 @@ test('a native refusal is reported immediately even if Viz never sends a frame',
  capture.world=1;capture.cdp={send:async()=>({exceptionDetails:{text:'Native capture refused'}}),detach:async()=>{}};
  let failure;const attempt=capture.capture().catch(error=>failure=error);
  await new Promise(setImmediate);assert.equal(failure?.message,'Native capture refused');await attempt;await capture.close();
+});
+
+test('pausing capture drains its native transaction before a resize can change generation',async()=>{
+ const capture=new NativeCapture(null,{interval:10000,viz:{cancel(){}}});let finish,drained=false,delivered=0;
+ capture.capture=()=>new Promise(resolve=>finish=resolve);capture.on('capture',()=>delivered++);
+ capture.setDemand(1);capture.setDemand(0);const waiting=capture.drain().then(()=>drained=true);await new Promise(setImmediate);
+ assert.equal(drained,false);assert.equal(capture.running,true);assert.equal(capture.generation,0);
+ finish({captureId:'old'});await waiting;assert.equal(capture.running,false);assert.equal(delivered,0);
+ capture.generation++;capture.setDemand(1);finish({});await new Promise(setImmediate);assert.equal(delivered,1);await capture.close();
+});
+
+test('new-document native registration refusal retries are bounded and counted',async()=>{
+ const capture=new NativeCapture(null,{interval:10000});capture.capture=async()=>{throw new Error('Native capture refused');};capture.registrationWarmupUntil=performance.now()+2000;let failure;
+ capture.on('captureError',error=>failure=error);capture.setDemand(1);await new Promise(setImmediate);assert.equal(failure,undefined);assert.equal(capture.registrationRetries,1);
+ capture.registrationWarmupUntil=0;await capture.tick();assert.match(failure?.message??'',/Native capture refused/);await capture.close();
+});
+
+
+test('a first consumer after idle waits for a clock ACK before capture and input sampling',async()=>{
+ let acknowledge,acks=0,calls=0,input=1,context;
+ const capture=new NativeCapture(null,{interval:10000,frameDriver:{requestNow:()=>new Promise(resolve=>acknowledge=()=>{acks++;resolve();}),off(){}}});
+ capture.registrationWarmupUntil=0;capture.sampleContext=()=>input;capture.capture=async()=>{assert.equal(acks,1);calls++;return {};};capture.on('capture',(_,value)=>context=value);
+ capture.setDemand(1);capture.setDemand(2);capture.onFrame({hasDamage:true});assert.equal(calls,0);assert.equal(capture.running,true);input=2;acknowledge();await new Promise(setImmediate);
+ assert.equal(calls,1);assert.equal(context,2);assert.equal(capture.registrationRetries,0);capture.setDemand(0);await capture.close();
+});
+
+test('canceling the first consumer drains its pending clock ACK without encoding or sampling',async()=>{
+ let acknowledge,calls=0,samples=0,drained=false;
+ const capture=new NativeCapture(null,{frameDriver:{requestNow:()=>new Promise(resolve=>acknowledge=resolve),off(){}}});capture.capture=async()=>{calls++;return {};};capture.sampleContext=()=>samples++;
+ capture.setDemand(1);capture.setDemand(0);const waiting=capture.drain().then(()=>drained=true);await new Promise(setImmediate);assert.equal(drained,false);assert.equal(calls,0);acknowledge();await waiting;assert.equal(calls,0);assert.equal(samples,0);assert.equal(capture.running,false);await capture.close();
 });

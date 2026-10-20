@@ -1,14 +1,30 @@
 import("//testing/test.gni")
 
 source_set("serializer") {
-  sources = [ "serializer.cc", "serializer.h", "font_subset.cc", "font_subset.h" ]
+  sources = [ "serializer.cc", "serializer.h", "canvas_capture.cc", "canvas_capture.h", "recording_index.cc", "recording_index.h", "asset_cache.h", "font_subset.cc", "font_subset.h" ]
   defines = [ "REMOTE_PAINT_CHROMIUM" ]
   deps = [ "//base", "//skia", "//third_party/harfbuzz" ]
 }
 
+source_set("capture_hosts") {
+  sources = [ "capture_host_registry.h", "encoded_picture.h" ]
+  public_deps = [ ":serializer" ]
+}
+
+source_set("subscription_state") {
+  sources = [ "subscription_state.h", "subscription_credit.h" ]
+}
+
 source_set("capture") {
   sources = [ "capture_state.cc", "capture_state.h" ]
-  deps = [ ":serializer", "//base", "//crypto", "//skia" ]
+  public_deps = [ ":capture_hosts", ":subscription_state" ]
+  deps = [ ":serializer", ":viz_delivery", "//base", "//crypto", "//skia" ]
+}
+
+source_set("viz_delivery") {
+  public_deps = [ ":subscription_state" ]
+  sources = [ "viz_delivery.cc", "viz_delivery.h", "capture_frame_marker.cc", "capture_frame_marker.h" ]
+  deps = [ "//base" ]
 }
 
 test("serializer_tests") {
@@ -17,6 +33,9 @@ test("serializer_tests") {
     "//base/test/test_discardable_memory_allocator.h" ]
   deps = [
     ":serializer",
+    ":viz_delivery",
+    ":capture_hosts",
+    ":subscription_state",
     "//base",
     "//skia",
     "//testing/gtest",

@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-17T15:59:24.161852+00:00",
+  "status": "accepted-actualnative-andNode-close12cases-NOT-fullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-close-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-close-checkpoint-project-v1",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-six-consumers-checkpoint-v1.json",
+  "changed": [
+    "tests/verify-source-close.mjs"
+  ],
+  "productionUnchanged": true,
+  "scope": "Existing12realSourceclosecasesadaptedfordefaultautonomousnativeSourceandexplicitNodefallback;actualMapperresourcewait/nativeCppawaitingcreditreplacesobsoleteperframemapmonkeypatch. RetainedclosedSources/processidentityreaping/latework/resize/cleanupfaults;noSourceproductionchangeorpixel/RSS/fullB1claim.",
+  "retainedClosedSources": 12,
+  "ownedProcessIdentitiesReaped": 48,
+  "nativeAndNodeCasesEach": 6,
+  "heldNativeMapper": {
+    "dataPlane": "rust",
+    "iteration": 1,
+    "injected": false,
+    "actualMapperWait": true,
+    "queuedResize": false,
+    "processes": [
+      {
+        "pid": 227905,
+        "start": "17727412"
+      },
+      {
+        "pid": 227959,
+        "start": "17727416"
+      },
+      {
+        "pid": 227923,
+        "start": "17727414"
+      },
+      {
+        "pid": 227924,
+        "start": "17727414"
+      }
+    ],
+    "heldNative": {
+      "awaitingCredit": true,
+      "lastStarted": 2,
+      "mapRejected": true
+    },
+    "closeMs": 2031.401857,
+    "reapedProcesses": 4,
+    "errors": []
+  },
+  "maxObservedSourceCloseMs": 2031.401857,
+  "report": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-close-frozen-v1.json",
+    "sha256": "d9ea81c0a7e03899da509c8e56a3f23efc8f0cf9db3625fce15eff8b625164f4"
+  },
+  "proved": [
+    "FiveSourcecasesandoneouterLivefailureeachforactualdefaultnativeRustandexplicitNodefallback;all12closedobjectsremainretainedforlateworkchecks.",
+    "RealnativefirstframefixedrawreceipthasresourceswithoutfakeNodepayloads;oneexplicitdiagnosticmapholdsrealMapperandactualCppawaitingcredit,bothreject/drainthroughrealclose.",
+    "Idempotentcloseimmediatelyclearslatest/cache/demand;queuedresizecannotreactivate;injectedcapture/control/Gatewaystopfailurespropagatewhileallremainingpartsclose.",
+    "LateNativeFrame/capture/error/reset/navigation/demandrequestscannotrestorelatest/epoch/cache;NativeSourcebindings/resetlisteners/request+responseownerscleared.",
+    "All48browserprocessPID+startidentitiesexit;Brokerexits/pending/outputempty. TwoouterViewerHTTP/socketandownedfixturelifetimesenddespitecleanupfaults."
+  ],
+  "remaining": [
+    "Actualrenderercrashwhiledefaultnativeencoding andrealheldcredit remainsnexttask.",
+    "Nodefallbackpixel/end-to-endcompatibilityand9MiBweaknetwork/resourceprogress/control/ACK/close/fullB1/canonicalpromotion remain.",
+    "No200msbulkclose/RSS/PSSgrowth/fullSession/8h/all41/N1completionclaim."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true
+}

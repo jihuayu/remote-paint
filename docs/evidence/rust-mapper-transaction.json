@@ -1,0 +1,246 @@
+{
+  "at": "2026-10-16T22:39:31.061307+00:00",
+  "status": "partial",
+  "scope": "B10 Rust Mapper atomic native-ingest/scene transaction and failure rollback, Linux arm64. Successful-scene total retention and full Session memory remain incomplete.",
+  "implementation": [
+    "RPA native blocks remain local until tile expansion and map complete; there is no separate mutating ingest before map. Base64 and native blocks share one transaction.",
+    "Stage fresh resources, descriptor upgrades and weak chunk-index additions; epoch/revision/entries/serial commit only after all Mapper checks and immutable Snapshot construction succeed. Old cached chunks remain shareable, and prior Bytes/Arc/Snapshot metadata stay immutable.",
+    "Validate cached and incremental asset indexes; upgrade legacy decode metadata by cloning the resource/manifest while sharing existing bytes, and reject conflicting same-hash bounds. Validate native hashes, logical-ID size and glyph-count arithmetic before commit.",
+    "New staged raw resource bytes are limited to64MiB; failed staged owners release. Private mapperStats separates retained payload/wire/manifest/unique cache-owned chunk lengths and index/counter scope. This is not a whole-process memory ledger."
+  ],
+  "tests": {
+    "nodePreviouslyAccepted": 149,
+    "rustRelease": 16,
+    "specific": [
+      "Base64 and native140x1MiB failure floods each preserve pointer identities, cache/chunk indexes and every generation",
+      "Rejected hashes remain misses; accepted original hash recovers without a revision jump",
+      "Wrong viewport, duplicate/unreferenced blocks, oversized metadata, logical IDs and glyph counts reject without mutation",
+      "Descriptor upgrades never alter old snapshots; incomplete/conflicting profiles roll back",
+      "Cached chunks still share across accepted command changes",
+      "65MiB staged resources and raw checksum mismatch reject with no retained additions"
+    ],
+    "actualLinuxRpc": {
+      "at": "2026-10-16T22:30:42.774Z",
+      "status": "passed",
+      "scope": "Actual Linux arm64 Rust Broker RPC and private Unix RPA2/Viz path. 140 Base64 and140 raw1MiB scene failures,140 follow-up rejected-hash misses, pre-map tile expansion and late metadata/profile failures preserve exact retained-resource/chunk byte counters, entries, epoch, revision and serial. Old native hash-only recovery succeeds at serial2, then a new valid capture commits serial3/revision2. Cache counters cover Mapper-retained ownership only; no complete Session/RSS budget or rendered pixels claimed here.",
+      "brokerSha256": "06c93fb14f941a25e2d9bf5c4456558a552aca97a77760952d1886ce5e6bb9e4",
+      "before": {
+        "cacheOwnedChunkBytes": 33682,
+        "chunkIndexEntries": 2,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 2,
+        "manifestBytes": 318,
+        "payloadBytes": 33594,
+        "resourceWireBytes": 33638,
+        "resources": 1,
+        "revision": 1,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "base64Bytes": 146800640,
+      "rawBytes": 146800640,
+      "rejections": 423,
+      "afterRejected": {
+        "cacheOwnedChunkBytes": 33682,
+        "chunkIndexEntries": 2,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 2,
+        "manifestBytes": 318,
+        "payloadBytes": 33594,
+        "resourceWireBytes": 33638,
+        "resources": 1,
+        "revision": 1,
+        "scope": "mapper-retained-cache",
+        "serial": 1
+      },
+      "last": {
+        "cacheOwnedChunkBytes": 34567,
+        "chunkIndexEntries": 3,
+        "entries": 1,
+        "epoch": 1,
+        "liveChunkIndexEntries": 3,
+        "manifestBytes": 636,
+        "payloadBytes": 67203,
+        "resourceWireBytes": 67291,
+        "resources": 2,
+        "revision": 2,
+        "scope": "mapper-retained-cache",
+        "serial": 3
+      },
+      "recovered": {
+        "serial": 2,
+        "revision": 1
+      },
+      "changed": {
+        "serial": 3,
+        "revision": 2
+      }
+    },
+    "regressions": {
+      "at": "2026-10-16T22:31:26.574138+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-verify-webgl-live.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "brokerStagedBuild": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-staged-build.json",
+      "status": "passed"
+    },
+    "canonicalSmoke": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-canonical-smoke.log"
+  },
+  "stress": {
+    "runId": "209cf9be-f3aa-4899-87a5-ef99f8c68c99",
+    "status": "passed",
+    "elapsedSeconds": 181.290725208,
+    "cycles": 1316,
+    "navigations": 329,
+    "resizes": 119,
+    "inputs": 82,
+    "supersessions": 22,
+    "expectedNavigationInvalidations": 5,
+    "unexpectedErrors": [],
+    "viewerBudgetFailures": [
+      0,
+      0,
+      0
+    ],
+    "results": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-stress"
+  },
+  "build": {
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "brokerSha256": "06c93fb14f941a25e2d9bf5c4456558a552aca97a77760952d1886ce5e6bb9e4",
+    "previousBrokerSha256": "911bb6fd0ab0613f21ed51fcb2d08beb48a5214818f36537dd8b8deb09e39065",
+    "staged": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-broker-staged",
+    "canonicalAccepted": false,
+    "rustSources": {
+      "native/broker/src/assets.rs": "6e44bd8078ab1c21f0582e8f3ca06f12865b24019bbb750463eb22bb1a8c8737",
+      "native/broker/src/control.rs": "020a7bc8befd37850a746a602698d8972bd2df03343534559e3cfdfed12c52eb",
+      "native/broker/src/gateway.rs": "ab67adc3aee4eb479858b5cafc30ba6ac39a95b5a56207eca0d72899509e39ad",
+      "native/broker/src/main.rs": "d8eefebb1a3f7a34cb23381dbbd23b77e5e6f5d0a30fabfde0f4b75eb25c45ae",
+      "native/broker/src/scene.rs": "372d0263a92d5a252e15c391d17f095606e26ba4b3d71793b4141c7460e60f94",
+      "native/broker/src/viz.rs": "28687889b64f8d72e4db7f12b70e6d14d1ff5751c12465342a737ddb109d388c",
+      "native/broker/src/writer.rs": "26fef581106539a5dc43ba9dc9324c4f6e4850863e65d7ecce8ce40f18ebbb61"
+    },
+    "lockSha256": "4370a93e1dc4f4ea61d0df6094cbc51862c190d0838e60c2fa10f28ebd432c86"
+  },
+  "publication": {
+    "at": "2026-10-16T22:37:30.757276+00:00",
+    "status": "passed",
+    "previousBrokerSha256": "911bb6fd0ab0613f21ed51fcb2d08beb48a5214818f36537dd8b8deb09e39065",
+    "brokerSha256": "06c93fb14f941a25e2d9bf5c4456558a552aca97a77760952d1886ce5e6bb9e4",
+    "atomicBinaryReplacement": true,
+    "atomicReceiptReplacement": true,
+    "sourceHashesVerified": true,
+    "oldProofContainerAndEightHourPreserved": true
+  },
+  "preservedCompilerFailure": {
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rust-mapper-transaction-tests.log",
+    "cause": "New Rust test used comma-separated let declarations; corrected fixture syntax, then16 debug/release tests passed. Initial11-test build and all logs preserved."
+  },
+  "successfulRetentionFailure": {
+    "status": "observed-violation",
+    "invariantPassed": false,
+    "scope": "Three15MiB synthetic SKP validation fixtures accepted by Mapper, with unique chunks. Protocol/header fixtures only; no CanvasKit decode/pixels or RSS claim. Sum of retained payload/wire/manifest/unique cache-owned chunk lengths already exceeds128MiB before map/index/allocator overhead. Successful-scene retention is the next B10 task; this is not an acceptance pass.",
+    "brokerSha256": "06c93fb14f941a25e2d9bf5c4456558a552aca97a77760952d1886ce5e6bb9e4",
+    "cacheTarget": 134217728,
+    "knownOwnedByteLengths": 141746973,
+    "stats": {
+      "cacheOwnedChunkBytes": 47249280,
+      "chunkIndexEntries": 1440,
+      "entries": 3,
+      "epoch": 1,
+      "liveChunkIndexEntries": 1440,
+      "manifestBytes": 125721,
+      "payloadBytes": 47185920,
+      "resourceWireBytes": 47186052,
+      "resources": 3,
+      "revision": 3,
+      "scope": "mapper-retained-cache",
+      "serial": 1
+    }
+  },
+  "remaining": [
+    "Successful Rust Mapper cache can retain all required resources above128MiB; observed known-owned byte lengths141746973 with three15MiB protocol fixtures. No CanvasKit decode or RSS claim for this diagnostic.",
+    "Resource/Snapshot/latest/Gateway/window shared allocations and copied manifest/scene/index metadata need a global byte budget with pin accounting. Four snapshots and per-peer credits are count/window policies, not the total ownership budget.",
+    "Native recording/SkPicture/RasterSource/namespace byte admission and page-epoch retirement before physical destruction, including real pending-capture cancellation",
+    "Whole Session/cross-renderer quotas and actual allocator/process/driver RSS/PSS lifecycle validation"
+  ],
+  "eightHour": {
+    "runId": "8c8f0d4c-1c2f-44f4-918b-926c5e555be8",
+    "containsThisCheckpoint": false,
+    "status": "running-not-accepted"
+  },
+  "preserved": {
+    "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "committed": false,
+    "pushed": false,
+    "unrelatedPeerDiff": "1 insertion/1 deletion preserved",
+    "oldProofContainerPreserved": true,
+    "otherArchitectureBinariesUntouched": true
+  }
+}

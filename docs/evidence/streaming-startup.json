@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-16T14:45:32.218Z",
+  "scope": "Actual native browser, Rust data plane and CanvasKit pixels with an unfinished HTML response, slow image and event stream",
+  "sessionReadyMs": 508.852217,
+  "firstViewerPixelsMs": 1010.124555,
+  "readiness": {
+    "navigation": "committed",
+    "capture": "ready",
+    "firstScene": true,
+    "navigationCommittedMs": 469.56149100000005,
+    "captureReadyMs": 505.39209100000005,
+    "firstSceneMs": 833.2923740000001
+  },
+  "documentReadyState": "loading",
+  "unfinishedResponses": 3
+}

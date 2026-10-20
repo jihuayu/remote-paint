@@ -1,0 +1,1721 @@
+{
+  "at": "2026-10-17T17:12:08.630202+00:00",
+  "status": "accepted-actual9MiB-Worker-kernelnetwork14profiles-NOT-fullframeage-orN1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-network-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-network-checkpoint-project-v1",
+  "sourceFiles": 529,
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-loss-checkpoint-v1.json",
+  "changed": [
+    "tests/verify-native-source-bulk-network.mjs"
+  ],
+  "productionUnchanged": true,
+  "scope": "Actual default autonomous NativeSource/defaulttiled1792Canvas genuine>=9MiB SKP/privateIPC/nativeGateway/realViewerWorker CanvasKit pixels and16actual paired-control CDP inputs. Kernel netem matches Gateway TCP in both directions:configuredCases(default13RTT/loss/jitter20Mbit profiles plus80ms1%2Mbit). SourceCDP excluded. Default5s post-commit ACK,15s resource progress inactivity,32KiB chunks and3s input ACK gates unchanged; original network bulk90s whole-transfer gate. Local raw16MiB/ACK1.5s and200ms close are separateacceptedcontracts; cleanup removesimpairment anddoesnotclaimweaknetwork200ms close/capture-startframeage/fullN1.",
+  "runs": [
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-pilot-v1/network.json",
+      "sha256": "03c83ca2dc466afc6c4667552d50babfd0b3804835b5c0416cdedbcc97e44107",
+      "cases": 3,
+      "inputs": 48,
+      "rawReports": [
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-pilot-v1/case-0-0-20.json",
+          "sha256": "7345035921e3b730edc14ffb0f135b261c3094d8cbd0434833a4ca0a6cd9bbe6"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-pilot-v1/case-150-2-20.json",
+          "sha256": "96c891d701094809f6c0ab49596171b3de83556df0c14aaf93a8d026b951d196"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-pilot-v1/case-80-1-2.json",
+          "sha256": "3d545e5b580a02d80677b88f77876166d0c4a381351ee021b2390177b7d09c41"
+        }
+      ],
+      "rows": [
+        {
+          "configuredRttMs": 0,
+          "lossPercent": 0,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108128,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 55.20000001788139,
+          "bulkThroughFinalPixelsMs": 5679.14112,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11160788,
+            "coalesced": 6,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11122897,
+            "maxPendingBytes": 11108128,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 154.914251
+          },
+          "sourceStats": {
+            "captures": 12,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 33.32
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11177030,
+            "packets": 575,
+            "drops": 0,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 0,
+            "qlen": 0
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                           \nESTAB 0      65632      127.0.0.1:41541    127.0.0.1:36500\n\t cubic wscale:10,10 rto:212 rtt:11.328/16.915 ato:40 mss:56320 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:194183 bytes_acked:128551 bytes_received:1121 segs_out:34 segs_in:21 data_segs_out:30 data_segs_in:5 send 397740113bps lastsnd:27 lastrcv:821 lastack:27 pacing_rate 795427560bps delivery_rate 450560000000bps delivered:29 app_limited busy:145ms unacked:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:94208\nESTAB 0      0          127.0.0.1:41541    127.0.0.1:36502\n\t cubic wscale:10,10 rto:209 rtt:8.726/13.823 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:14 segs_in:13 data_segs_out:11 data_segs_in:6 send 300417144bps lastsnd:835 lastrcv:939 lastack:794 pacing_rate 600808464bps delivery_rate 9709037032bps delivered:12 app_limited busy:78ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.011 snd_wnd:65536                \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                          \nESTAB 0      0          127.0.0.1:41541    127.0.0.1:36500\n\t cubic wscale:10,10 rto:218 rtt:17.741/8.475 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:20 bytes_sent:11163393 bytes_acked:11163393 bytes_received:1352 segs_out:384 segs_in:200 data_segs_out:379 data_segs_in:8 send 590568739bps lastsnd:31 lastrcv:30 lastack:30 pacing_rate 1181104184bps delivery_rate 523864000000bps delivered:380 app_limited busy:4673ms rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:268288\nESTAB 0      0          127.0.0.1:41541    127.0.0.1:36502\n\t cubic wscale:10,10 rto:242 rtt:41.148/20.46 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:3842 bytes_acked:3842 bytes_received:5171 segs_out:32 segs_in:32 data_segs_out:28 data_segs_in:22 send 63707592bps lastsnd:3066 lastrcv:4181 lastack:3039 pacing_rate 127413248bps delivery_rate 9709037032bps delivered:29 app_limited busy:830ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.011 snd_wnd:65536           \n"
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 2,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108128,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 548.7999999821186,
+          "bulkThroughFinalPixelsMs": 30996.54879,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11144426,
+            "coalesced": 48,
+            "delta": 3,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11122881,
+            "maxPendingBytes": 11108128,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 23.220372
+          },
+          "sourceStats": {
+            "captures": 52,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 1,
+            "lastMapMs": 30.815
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.075,
+                "jitter": 0.007499,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.02,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11212129,
+            "packets": 730,
+            "drops": 11,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 312,
+            "qlen": 2
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                           \nESTAB 0      0          127.0.0.1:40665    127.0.0.1:41280\n\t cubic wscale:10,10 rto:207 rtt:6.55/10.469 ato:43 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:13 segs_in:13 data_segs_out:11 data_segs_in:6 send 400219847bps lastsnd:782 lastrcv:854 lastack:782 pacing_rate 800378592bps delivery_rate 34952533328bps delivered:12 app_limited busy:57ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.006 snd_wnd:65536\nESTAB 0      65833      127.0.0.1:40665    127.0.0.1:41278\n\t cubic wscale:10,10 rto:206 rtt:5.87/11.312 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:88298 bytes_acked:22465 bytes_received:1044 segs_out:28 segs_in:14 data_segs_out:25 data_segs_in:4 send 781519591bps lastsnd:71 lastrcv:786 lastack:744 pacing_rate 1562939328bps delivery_rate 152917333328bps delivered:23 app_limited busy:123ms unacked:3 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.002 snd_wnd:114688\n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \nESTAB 0      0          127.0.0.1:40665    127.0.0.1:41280\n\t cubic wscale:10,10 rto:358 rtt:151.791/23.83 ato:43 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:4628 bytes_retrans:96 bytes_acked:4532 bytes_received:5696 segs_out:34 segs_in:39 data_segs_out:32 data_segs_in:25 send 17270062bps lastsnd:741 lastrcv:744 lastack:574 pacing_rate 34540120bps delivery_rate 34952533328bps delivered:33 app_limited busy:3599ms retrans:0/1 dsack_dups:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.006 snd_wnd:65536\nESTAB 0      103        127.0.0.1:40665    127.0.0.1:41278\n\t cubic wscale:10,10 rto:364 rtt:163.736/7.142 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:5 ssthresh:2 bytes_sent:11409375 bytes_retrans:262528 bytes_acked:11146744 bytes_received:1121 segs_out:376 segs_in:354 data_segs_out:373 data_segs_in:5 send 15997215bps lastsnd:30 lastrcv:30 lastack:30 pacing_rate 19196640bps delivery_rate 174621333328bps delivered:366 app_limited busy:30227ms unacked:1 retrans:0/8 dsack_dups:1 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.002 snd_wnd:289792\n"
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 1,
+          "rateMbit": 2,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108127,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 784.2999999821186,
+          "bulkThroughFinalPixelsMs": 54868.919847000005,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11160776,
+            "coalesced": 85,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11131804,
+            "maxPendingBytes": 11108127,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 20.596855
+          },
+          "sourceStats": {
+            "captures": 91,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.794
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.04,
+                "jitter": 0.004,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 250000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11256664,
+            "packets": 751,
+            "drops": 8,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 381,
+            "qlen": 2
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                             \nESTAB 0      0          127.0.0.1:32959    127.0.0.1:32834\n\t cubic wscale:10,10 rto:212 rtt:11.962/22.805 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:14 segs_in:14 data_segs_out:11 data_segs_in:6 send 219147300bps lastsnd:795 lastrcv:865 lastack:709 pacing_rate 438280856bps delivery_rate 43690666664bps delivered:12 app_limited busy:99ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.006 snd_wnd:65536\nESTAB 0      65833      127.0.0.1:32959    127.0.0.1:32824\n\t cubic wscale:10,10 rto:203 rtt:2.683/4.713 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:95731 bytes_acked:29898 bytes_received:1121 segs_out:31 segs_in:22 data_segs_out:27 data_segs_in:5 send 1709847186bps lastsnd:69 lastrcv:796 lastack:796 pacing_rate 3419216464bps delivery_rate 458752000000bps delivered:25 app_limited busy:133ms unacked:3 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:114688\n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                            \nESTAB 0      0          127.0.0.1:32959    127.0.0.1:32834\n\t cubic wscale:10,10 rto:579 rtt:250.793/69.898 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:5090 bytes_retrans:96 bytes_acked:4994 bytes_received:6046 segs_out:40 segs_in:46 data_segs_out:34 data_segs_in:28 send 10452604bps lastsnd:3717 lastrcv:3721 lastack:3537 pacing_rate 20905192bps delivery_rate 43690666664bps delivered:35 app_limited busy:6822ms retrans:0/1 dsack_dups:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.006 snd_wnd:65536\nESTAB 0      103        127.0.0.1:32959    127.0.0.1:32824\n\t cubic wscale:10,10 rto:469 rtt:266.275/27.86 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:5 ssthresh:2 bytes_sent:11393122 bytes_retrans:229913 bytes_acked:11163106 bytes_received:1198 segs_out:380 segs_in:365 data_segs_out:375 data_segs_in:6 send 9836898bps lastsnd:67 lastrcv:69 lastack:69 pacing_rate 11804240bps delivery_rate 523864000000bps delivered:369 app_limited busy:54165ms sndbuf_limited:39ms(0.1%) unacked:1 retrans:0/7 dsack_dups:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:289792\n"
+        }
+      ]
+    },
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/network.json",
+      "sha256": "7261c6ee5b984d57a3307806a120ff7747fa64f8bf93ee6fdf1236db5646858b",
+      "cases": 14,
+      "inputs": 224,
+      "rawReports": [
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-0-0-20.json",
+          "sha256": "9248eda6ba8035cd90c47c6a1a733ae697b24afa44cd38848faf33b10a751ec9"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-20-0.5-20.json",
+          "sha256": "dde8306a6dcf8938915ad8eb187a01a4f98788a9a8278968464c907954d12ac6"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-20-1-20.json",
+          "sha256": "61def91c1fb8d9aad01af8fe3e5238d04e19d27d5fa4dcf321a0961d1a5c50f9"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-20-2-20.json",
+          "sha256": "0d277932cb15f324eaf05bd839f7cef4af113ed873cff768bcf8eaa13cf61bd6"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-40-0.5-20.json",
+          "sha256": "db504f3f1d577517e56ce338554a3f449088abb29cb2ac04bd51eb57e83b1cff"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-40-1-20.json",
+          "sha256": "ea8fc451bdc7b4b77bab348054cb724140a6e56192d0636b3ccadb0f99a536df"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-40-2-20.json",
+          "sha256": "9fecd1c0645517581f3e0406fbcd77fb67d7477bcd2821606a5f23d3014454a6"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-80-0.5-20.json",
+          "sha256": "9cf687165a3a6b073155b225fbc499e87c751af8077a0b8f8b3b1f6c81a68528"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-80-1-20.json",
+          "sha256": "2e14298141ea27a8e90e7ef2b5333d57037e79ff46d900757734bb60e6253e9b"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-80-2-20.json",
+          "sha256": "a5d24c08249a5dc2357037c76e57208d3ebb9180137050e60aa57200ef03b367"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-150-0.5-20.json",
+          "sha256": "b686a3e01d41d67c4e15a0b8f687a6057f7e8f7b9f4069afd8c886009ed50327"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-150-1-20.json",
+          "sha256": "662d11e3396e7047cfa53b7786187ae22f8fe0a2fa9793b5ce2a6198621e77be"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-150-2-20.json",
+          "sha256": "40ba7672b44b48cf6cfcedb2b360cfb49829a9809a0116c89a96b704f6f27991"
+        },
+        {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-network-frozen-v1/case-80-1-2.json",
+          "sha256": "4db0ccf81d127a3bf52d0f4a2507c4f85be15b6f421e1542d9b04383c24a01fa"
+        }
+      ],
+      "rows": [
+        {
+          "configuredRttMs": 0,
+          "lossPercent": 0,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108127,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 55.79999998211861,
+          "bulkThroughFinalPixelsMs": 5576.092995,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11153342,
+            "coalesced": 6,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11122893,
+            "maxPendingBytes": 11108127,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 128.454208
+          },
+          "sourceStats": {
+            "captures": 11,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.901
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11188428,
+            "packets": 748,
+            "drops": 0,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 0,
+            "qlen": 0
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                      \nESTAB 0      0          127.0.0.1:37435    127.0.0.1:55972\n\t cubic wscale:10,10 rto:207 rtt:6.45/11.228 ato:43 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:13 segs_in:14 data_segs_out:11 data_segs_in:6 send 406424806bps lastsnd:797 lastrcv:869 lastack:797 pacing_rate 812833856bps delivery_rate 131072000000bps delivered:12 app_limited busy:64ms rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.002 snd_wnd:65536\nESTAB 0      65632      127.0.0.1:37435    127.0.0.1:55970\n\t cubic wscale:10,10 rto:219 rtt:18.876/12.086 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:285199 bytes_acked:219567 bytes_received:1044 segs_out:34 segs_in:27 data_segs_out:31 data_segs_in:4 send 277529138bps lastsnd:17 lastrcv:815 lastack:17 pacing_rate 555043568bps delivery_rate 523864000000bps delivered:30 app_limited busy:194ms unacked:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:236544\n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                            \nESTAB 0      0          127.0.0.1:37435    127.0.0.1:55972\n\t cubic wscale:10,10 rto:239 rtt:38.508/17.071 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:3842 bytes_acked:3842 bytes_received:5171 segs_out:30 segs_in:33 data_segs_out:28 data_segs_in:22 send 68075205bps lastsnd:3030 lastrcv:4022 lastack:3028 pacing_rate 136150408bps delivery_rate 131072000000bps delivered:29 app_limited busy:825ms rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.002 snd_wnd:65536\nESTAB 0      0          127.0.0.1:37435    127.0.0.1:55970\n\t cubic wscale:10,10 rto:211 rtt:10.248/4.848 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:20 bytes_sent:11155941 bytes_acked:11155941 bytes_received:1275 segs_out:380 segs_in:377 data_segs_out:377 data_segs_in:7 send 1022373146bps lastsnd:26 lastrcv:21 lastack:21 pacing_rate 2044696408bps delivery_rate 523864000000bps delivered:378 app_limited busy:4660ms rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:268288 \n"
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 0.5,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108126,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 291.2999999821186,
+          "bulkThroughFinalPixelsMs": 8209.055303,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11151869,
+            "coalesced": 11,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11122896,
+            "maxPendingBytes": 11108126,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 15.02825
+          },
+          "sourceStats": {
+            "captures": 16,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 1,
+            "lastMapMs": 31.709
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.01,
+                "jitter": 0.001,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.005,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11207599,
+            "packets": 673,
+            "drops": 6,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 66,
+            "qlen": 1
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                         \nESTAB 0      65632      127.0.0.1:33301    127.0.0.1:46460\n\t cubic wscale:10,10 rto:207 rtt:6.911/12.02 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:128548 bytes_acked:62916 bytes_received:1121 segs_out:32 segs_in:24 data_segs_out:28 data_segs_in:5 send 663799740bps lastsnd:23 lastrcv:749 lastack:24 pacing_rate 1327455416bps delivery_rate 458752000000bps delivered:27 app_limited busy:126ms unacked:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:94208\nESTAB 0      0          127.0.0.1:33301    127.0.0.1:46466\n\t cubic wscale:10,10 rto:206 rtt:5.416/7.533 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:14 segs_in:13 data_segs_out:11 data_segs_in:6 send 484017725bps lastsnd:752 lastrcv:819 lastack:752 pacing_rate 968035448bps delivery_rate 43690666664bps delivered:12 app_limited busy:50ms rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.006 snd_wnd:65536    \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \nESTAB 0      172        127.0.0.1:33301    127.0.0.1:46460\n\t cubic wscale:10,10 rto:232 rtt:31.582/5.059 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:5 ssthresh:4 bytes_sent:11252916 bytes_retrans:98448 bytes_acked:11154296 bytes_received:1275 segs_out:380 segs_in:306 data_segs_out:375 data_segs_in:7 send 82937116bps lastsnd:13 lastrcv:13 lastack:13 pacing_rate 99522168bps delivery_rate 523864000000bps delivered:373 app_limited busy:7408ms unacked:1 retrans:0/3 dsack_dups:1 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:394240\nESTAB 0      0          127.0.0.1:33301    127.0.0.1:46466\n\t cubic wscale:10,10 rto:242 rtt:41.684/18.851 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:7 ssthresh:7 bytes_sent:3940 bytes_retrans:98 bytes_acked:3842 bytes_received:5171 segs_out:35 segs_in:32 data_segs_out:29 data_segs_in:23 send 44021879bps lastsnd:5821 lastrcv:6523 lastack:5800 pacing_rate 52825144bps delivery_rate 43690666664bps delivered:29 app_limited busy:1049ms retrans:0/1 rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.006 snd_wnd:65536                      \n"
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 1,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108129,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 54.900000005960464,
+          "bulkThroughFinalPixelsMs": 9073.702220000003,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11160770,
+            "coalesced": 12,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11131794,
+            "maxPendingBytes": 11108129,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 22.087083
+          },
+          "sourceStats": {
+            "captures": 18,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 31.344
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.01,
+                "jitter": 0.001,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11211376,
+            "packets": 597,
+            "drops": 5,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 66,
+            "qlen": 1
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                          \nESTAB 0      65632      127.0.0.1:45967    127.0.0.1:33350\n\t cubic wscale:10,10 rto:208 rtt:7.756/13.173 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:128551 bytes_acked:62919 bytes_received:1121 segs_out:32 segs_in:25 data_segs_out:28 data_segs_in:5 send 591480144bps lastsnd:24 lastrcv:777 lastack:24 pacing_rate 1182922152bps delivery_rate 458752000000bps delivered:27 app_limited busy:136ms unacked:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:94208\nESTAB 0      0          127.0.0.1:45967    127.0.0.1:33354\n\t cubic wscale:10,10 rto:207 rtt:6.44/9.923 ato:44 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:13 segs_in:13 data_segs_out:11 data_segs_in:6 send 407055901bps lastsnd:777 lastrcv:845 lastack:777 pacing_rate 814111800bps delivery_rate 37449142856bps delivered:12 app_limited busy:58ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.007 snd_wnd:65536                \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \nESTAB 0      172        127.0.0.1:45967    127.0.0.1:33350\n\t cubic wscale:10,10 rto:237 rtt:36.906/11.61 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:4 ssthresh:4 bytes_sent:11292263 bytes_retrans:128888 bytes_acked:11163203 bytes_received:1352 segs_out:383 segs_in:233 data_segs_out:378 data_segs_in:8 send 56778193bps lastsnd:11 lastrcv:6 lastack:11 pacing_rate 68133600bps delivery_rate 523864000000bps delivered:375 app_limited busy:8180ms unacked:1 retrans:0/4 dsack_dups:1 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:394240\nESTAB 0      0          127.0.0.1:45967    127.0.0.1:33354\n\t cubic wscale:10,10 rto:243 rtt:42.246/10.034 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:3842 bytes_acked:3842 bytes_received:5171 segs_out:30 segs_in:31 data_segs_out:28 data_segs_in:22 send 62051792bps lastsnd:6603 lastrcv:7573 lastack:6564 pacing_rate 124101008bps delivery_rate 37449142856bps delivered:29 app_limited busy:840ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.007 snd_wnd:65536                                                                       \n"
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 2,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108129,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 263.2000000178814,
+          "bulkThroughFinalPixelsMs": 8153.804551999998,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11153309,
+            "coalesced": 11,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11122899,
+            "maxPendingBytes": 11108129,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 25.63325
+          },
+          "sourceStats": {
+            "captures": 16,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.675
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.01,
+                "jitter": 0.001,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.02,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11208090,
+            "packets": 685,
+            "drops": 10,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 238,
+            "qlen": 1
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                          \nESTAB 0      65632      127.0.0.1:37551    127.0.0.1:55832\n\t cubic wscale:10,10 rto:207 rtt:6.123/11.029 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:129985 bytes_acked:64353 bytes_received:1121 segs_out:32 segs_in:24 data_segs_out:28 data_segs_in:5 send 749227503bps lastsnd:23 lastrcv:756 lastack:24 pacing_rate 1498363232bps delivery_rate 458752000000bps delivered:27 app_limited busy:119ms unacked:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:94208\nESTAB 0      0          127.0.0.1:37551    127.0.0.1:55836\n\t cubic wscale:10,10 rto:207 rtt:6.234/9.818 ato:44 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:13 segs_in:13 data_segs_out:11 data_segs_in:6 send 420506898bps lastsnd:761 lastrcv:829 lastack:761 pacing_rate 840946344bps delivery_rate 43690666664bps delivered:12 app_limited busy:58ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.006 snd_wnd:65536               \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      \nESTAB 0      172        127.0.0.1:37551    127.0.0.1:55832\n\t cubic wscale:10,10 rto:237 rtt:36.113/2.776 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:3 ssthresh:2 bytes_sent:11319988 bytes_retrans:164080 bytes_acked:11155736 bytes_received:1275 segs_out:377 segs_in:326 data_segs_out:372 data_segs_in:7 send 43518733bps lastsnd:7 lastrcv:9 lastack:9 pacing_rate 52221208bps delivery_rate 523864000000bps delivered:368 app_limited busy:7339ms unacked:1 retrans:0/5 dsack_dups:1 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:394240\nESTAB 0      0          127.0.0.1:37551    127.0.0.1:55836\n\t cubic wscale:10,10 rto:244 rtt:43.349/15.898 ato:44 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:7 ssthresh:7 bytes_sent:3938 bytes_retrans:96 bytes_acked:3842 bytes_received:5171 segs_out:31 segs_in:32 data_segs_out:29 data_segs_in:22 send 42331034bps lastsnd:5744 lastrcv:6481 lastack:5709 pacing_rate 50796208bps delivery_rate 43690666664bps delivered:29 app_limited busy:1052ms retrans:0/1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.006 snd_wnd:65536                              \n"
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 0.5,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108128,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 87,
+          "bulkThroughFinalPixelsMs": 10758.315014,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11151860,
+            "coalesced": 15,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11122881,
+            "maxPendingBytes": 11108128,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 20.948083
+          },
+          "sourceStats": {
+            "captures": 20,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 29.582
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.02,
+                "jitter": 0.002,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.005,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11211721,
+            "packets": 739,
+            "drops": 2,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 143,
+            "qlen": 1
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                     \nESTAB 0      65632      127.0.0.1:35265    127.0.0.1:42156\n\t cubic wscale:10,10 rto:210 rtt:9.325/16.341 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:128554 bytes_acked:62922 bytes_received:1121 segs_out:32 segs_in:16 data_segs_out:28 data_segs_in:5 send 491959249bps lastsnd:6 lastrcv:744 lastack:6 pacing_rate 983826176bps delivery_rate 76458666664bps delivered:27 app_limited busy:92ms unacked:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.002 snd_wnd:94208\nESTAB 0      0          127.0.0.1:35265    127.0.0.1:42172\n\t cubic wscale:10,10 rto:206 rtt:5.606/9.716 ato:44 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:13 segs_in:13 data_segs_out:11 data_segs_in:6 send 467613271bps lastsnd:742 lastrcv:810 lastack:742 pacing_rate 935143136bps delivery_rate 52428800000bps delivered:12 app_limited busy:50ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.005 snd_wnd:65536          \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      \nESTAB 0      103        127.0.0.1:35265    127.0.0.1:42156\n\t cubic wscale:10,10 rto:250 rtt:49.085/2.494 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:21 ssthresh:21 bytes_sent:11187103 bytes_retrans:32816 bytes_acked:11154184 bytes_received:1198 segs_out:382 segs_in:362 data_segs_out:377 data_segs_in:6 send 224124356bps lastsnd:63 lastrcv:66 lastack:66 pacing_rate 268949224bps delivery_rate 87310666664bps delivered:377 app_limited busy:10028ms sndbuf_limited:47ms(0.5%) unacked:1 retrans:0/1 dsack_dups:1 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.002 snd_wnd:708608\nESTAB 0      0          127.0.0.1:35265    127.0.0.1:42172\n\t cubic wscale:10,10 rto:254 rtt:53.189/13.702 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:4072 bytes_acked:4072 bytes_received:5346 segs_out:31 segs_in:33 data_segs_out:29 data_segs_in:23 send 49285379bps lastsnd:849 lastrcv:852 lastack:794 pacing_rate 98570056bps delivery_rate 52428800000bps delivered:30 app_limited busy:1100ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.005 snd_wnd:65536                                                                                                        \n"
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 1,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108129,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 68.09999999403954,
+          "bulkThroughFinalPixelsMs": 11188.182264000003,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11151870,
+            "coalesced": 16,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11122896,
+            "maxPendingBytes": 11108129,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 30.916124999999997
+          },
+          "sourceStats": {
+            "captures": 21,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.307
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.02,
+                "jitter": 0.002,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11243737,
+            "packets": 724,
+            "drops": 9,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 143,
+            "qlen": 1
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                       \nESTAB 0      65632      127.0.0.1:39211    127.0.0.1:34090\n\t cubic wscale:10,10 rto:210 rtt:9.729/17.174 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:128549 bytes_acked:62917 bytes_received:1121 segs_out:32 segs_in:26 data_segs_out:28 data_segs_in:5 send 471530476bps lastsnd:7 lastrcv:758 lastack:7 pacing_rate 943036712bps delivery_rate 458752000000bps delivered:27 app_limited busy:142ms unacked:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:94208\nESTAB 0      0          127.0.0.1:39211    127.0.0.1:34106\n\t cubic wscale:10,10 rto:203 rtt:2.538/4.081 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:14 segs_in:14 data_segs_out:11 data_segs_in:6 send 1032876281bps lastsnd:784 lastrcv:881 lastack:784 pacing_rate 2065549096bps delivery_rate 29127111104bps delivered:12 app_limited busy:22ms rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.005 snd_wnd:65536\n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                \nESTAB 0      0          127.0.0.1:39211    127.0.0.1:34090\n\t cubic wscale:10,10 rto:254 rtt:53.433/3.916 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:3 ssthresh:2 bytes_sent:11384009 bytes_retrans:229712 bytes_acked:11154297 bytes_received:1198 segs_out:378 segs_in:364 data_segs_out:373 data_segs_in:6 send 29412386bps lastsnd:73 lastrcv:74 lastack:32 pacing_rate 35294776bps delivery_rate 523864000000bps delivered:369 app_limited busy:10414ms retrans:0/7 dsack_dups:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:710656\nESTAB 0      0          127.0.0.1:39211    127.0.0.1:34106\n\t cubic wscale:10,10 rto:253 rtt:52.805/14.649 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:4072 bytes_acked:4072 bytes_received:5346 segs_out:33 segs_in:34 data_segs_out:29 data_segs_in:23 send 49643784bps lastsnd:1344 lastrcv:1348 lastack:1292 pacing_rate 99287096bps delivery_rate 29127111104bps delivered:30 app_limited busy:1039ms rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.005 snd_wnd:65536                                                     \n"
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 2,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108125,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 297,
+          "bulkThroughFinalPixelsMs": 11121.981514,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11153338,
+            "coalesced": 15,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11131790,
+            "maxPendingBytes": 11108125,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 21.68425
+          },
+          "sourceStats": {
+            "captures": 20,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.28
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.02,
+                "jitter": 0.002,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.02,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11187675,
+            "packets": 730,
+            "drops": 17,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 447,
+            "qlen": 3
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \nESTAB 0      65632      127.0.0.1:45313    127.0.0.1:53832\n\t cubic wscale:10,10 rto:219 rtt:18.218/25.887 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:153933 bytes_retrans:32816 bytes_acked:55485 bytes_received:1044 segs_out:30 segs_in:22 data_segs_out:27 data_segs_in:4 send 251812493bps lastsnd:4 lastrcv:741 lastack:5 pacing_rate 503600792bps delivery_rate 458752000000bps delivered:25 app_limited busy:178ms unacked:2 retrans:0/1 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:94208\nESTAB 0      0          127.0.0.1:45313    127.0.0.1:53840\n\t cubic wscale:10,10 rto:211 rtt:10.615/18.397 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:14 segs_in:13 data_segs_out:11 data_segs_in:6 send 246956194bps lastsnd:749 lastrcv:816 lastack:687 pacing_rate 493883304bps delivery_rate 43690666664bps delivered:12 app_limited busy:91ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.006 snd_wnd:65536                                           \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         \nESTAB 0      172        127.0.0.1:45313    127.0.0.1:53832\n\t cubic wscale:10,10 rto:254 rtt:53.21/3.536 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:2 ssthresh:2 bytes_sent:11396578 bytes_retrans:240641 bytes_acked:11155765 bytes_received:1275 segs_out:379 segs_in:359 data_segs_out:375 data_segs_in:7 send 19690434bps lastsnd:8 lastrcv:9 lastack:9 pacing_rate 23628240bps delivery_rate 523864000000bps delivered:367 app_limited busy:10451ms unacked:1 retrans:0/8 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:440320\nESTAB 0      0          127.0.0.1:45313    127.0.0.1:53840\n\t cubic wscale:10,10 rto:272 rtt:64.373/15.708 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:4168 bytes_retrans:96 bytes_acked:4072 bytes_received:5346 segs_out:36 segs_in:36 data_segs_out:30 data_segs_in:23 send 40722663bps lastsnd:1222 lastrcv:1225 lastack:1155 pacing_rate 81445168bps delivery_rate 43690666664bps delivered:31 app_limited busy:1568ms retrans:0/1 dsack_dups:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.006 snd_wnd:65536              \n"
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 0.5,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108125,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 110,
+          "bulkThroughFinalPixelsMs": 17693.549398000003,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11160770,
+            "coalesced": 26,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11131793,
+            "maxPendingBytes": 11108125,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 33.701916
+          },
+          "sourceStats": {
+            "captures": 32,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 29.947
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.04,
+                "jitter": 0.004,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.005,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11187278,
+            "packets": 729,
+            "drops": 2,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 352,
+            "qlen": 3
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                         \nESTAB 0      65833      127.0.0.1:44747    127.0.0.1:44978\n\t cubic wscale:10,10 rto:205 rtt:4.294/7.66 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:95736 bytes_acked:29903 bytes_received:1121 segs_out:31 segs_in:15 data_segs_out:27 data_segs_in:5 send 1068355845bps lastsnd:58 lastrcv:723 lastack:723 pacing_rate 3418042200bps delivery_rate 99728695648bps delivered:25 app_limited busy:101ms unacked:3 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.002 snd_wnd:114688\nESTAB 0      0          127.0.0.1:44747    127.0.0.1:44980\n\t cubic wscale:10,10 rto:212 rtt:11.249/21.506 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:14 segs_in:14 data_segs_out:11 data_segs_in:6 send 233037603bps lastsnd:741 lastrcv:810 lastack:659 pacing_rate 466038952bps delivery_rate 32768000000bps delivered:12 app_limited busy:92ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.004 snd_wnd:65536            \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           \nESTAB 0      103        127.0.0.1:44747    127.0.0.1:44978\n\t cubic wscale:10,10 rto:296 rtt:95.18/3.054 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:5 ssthresh:4 bytes_sent:11228835 bytes_retrans:65632 bytes_acked:11163100 bytes_received:1198 segs_out:375 segs_in:357 data_segs_out:370 data_segs_in:6 send 27519647bps lastsnd:59 lastrcv:61 lastack:61 pacing_rate 33023576bps delivery_rate 113883478256bps delivered:368 app_limited busy:16956ms unacked:1 retrans:0/2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.002 snd_wnd:289792\nESTAB 0      0          127.0.0.1:44747    127.0.0.1:44980\n\t cubic wscale:10,10 rto:287 rtt:86.216/14.568 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:4072 bytes_acked:4072 bytes_received:5346 segs_out:33 segs_in:35 data_segs_out:29 data_segs_in:23 send 30405493bps lastsnd:7781 lastrcv:7784 lastack:7695 pacing_rate 60810720bps delivery_rate 32768000000bps delivered:30 app_limited busy:1755ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.004 snd_wnd:65536                                                          \n"
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 1,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108129,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 375.19999998807907,
+          "bulkThroughFinalPixelsMs": 18222.997357,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11153344,
+            "coalesced": 27,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11131797,
+            "maxPendingBytes": 11108129,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 21.016750000000002
+          },
+          "sourceStats": {
+            "captures": 32,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.83
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.04,
+                "jitter": 0.004,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11187134,
+            "packets": 723,
+            "drops": 12,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 286,
+            "qlen": 2
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                         \nESTAB 0      65833      127.0.0.1:33109    127.0.0.1:59980\n\t cubic wscale:10,10 rto:212 rtt:11.3/21.744 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:88300 bytes_acked:22467 bytes_received:1044 segs_out:28 segs_in:20 data_segs_out:25 data_segs_in:4 send 405975221bps lastsnd:62 lastrcv:754 lastack:675 pacing_rate 811905536bps delivery_rate 458752000000bps delivered:23 app_limited busy:193ms unacked:3 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:114688\nESTAB 0      0          127.0.0.1:33109    127.0.0.1:59994\n\t cubic wscale:10,10 rto:205 rtt:4.901/6.947 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:14 segs_in:13 data_segs_out:11 data_segs_in:6 send 534878596bps lastsnd:766 lastrcv:832 lastack:766 pacing_rate 1069566232bps delivery_rate 23831272720bps delivered:12 app_limited busy:45ms rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.008 snd_wnd:65536   \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         \nESTAB 0      103        127.0.0.1:33109    127.0.0.1:59980\n\t cubic wscale:10,10 rto:293 rtt:92.677/4.434 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:2 ssthresh:2 bytes_sent:11265148 bytes_retrans:109377 bytes_acked:11155668 bytes_received:1121 segs_out:372 segs_in:357 data_segs_out:369 data_segs_in:5 send 11305157bps lastsnd:70 lastrcv:70 lastack:70 pacing_rate 13566128bps delivery_rate 12323888bps delivered:365 app_limited busy:17581ms unacked:1 retrans:0/4 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:293888\nESTAB 0      0          127.0.0.1:33109    127.0.0.1:59994\n\t cubic wscale:10,10 rto:289 rtt:88.339/17.289 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:4 ssthresh:4 bytes_sent:4266 bytes_retrans:194 bytes_acked:4072 bytes_received:5346 segs_out:37 segs_in:34 data_segs_out:31 data_segs_in:24 send 11869910bps lastsnd:8318 lastrcv:8321 lastack:8234 pacing_rate 14243768bps delivery_rate 23831272720bps delivered:30 app_limited busy:2287ms retrans:0/2 rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.008 snd_wnd:65536      \n"
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 2,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108129,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 369.39999997615814,
+          "bulkThroughFinalPixelsMs": 19143.06835799999,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11151879,
+            "coalesced": 29,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11122899,
+            "maxPendingBytes": 11108129,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 16.397833000000002
+          },
+          "sourceStats": {
+            "captures": 34,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.243
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.04,
+                "jitter": 0.004,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.02,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11211088,
+            "packets": 722,
+            "drops": 18,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 209,
+            "qlen": 2
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                           \nESTAB 0      65833      127.0.0.1:40121    127.0.0.1:40834\n\t cubic wscale:10,10 rto:203 rtt:2.806/4.986 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:95739 bytes_acked:29906 bytes_received:1121 segs_out:31 segs_in:25 data_segs_out:27 data_segs_in:5 send 1634896650bps lastsnd:58 lastrcv:749 lastack:749 pacing_rate 3269793296bps delivery_rate 458752000000bps delivered:25 app_limited busy:125ms unacked:3 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:114688\nESTAB 0      0          127.0.0.1:40121    127.0.0.1:40844\n\t cubic wscale:10,10 rto:205 rtt:4.9/7.083 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:14 segs_in:13 data_segs_out:11 data_segs_in:6 send 534987755bps lastsnd:758 lastrcv:826 lastack:758 pacing_rate 1069839048bps delivery_rate 34952533328bps delivered:12 app_limited busy:45ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.007 snd_wnd:65536                 \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           \nESTAB 0      103        127.0.0.1:40121    127.0.0.1:40834\n\t cubic wscale:10,10 rto:297 rtt:96.687/3.357 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:3 ssthresh:2 bytes_sent:11580914 bytes_retrans:426608 bytes_acked:11154203 bytes_received:1198 segs_out:383 segs_in:361 data_segs_out:378 data_segs_in:6 send 16254429bps lastsnd:53 lastrcv:55 lastack:55 pacing_rate 19505264bps delivery_rate 523864000000bps delivered:366 app_limited busy:18391ms unacked:1 retrans:0/13 dsack_dups:1 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:289792\nESTAB 0      0          127.0.0.1:40121    127.0.0.1:40844\n\t cubic wscale:10,10 rto:287 rtt:86.6/16.617 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:7 ssthresh:7 bytes_sent:4170 bytes_retrans:98 bytes_acked:4072 bytes_received:5346 segs_out:36 segs_in:34 data_segs_out:30 data_segs_in:24 send 21189469bps lastsnd:9233 lastrcv:9236 lastack:9143 pacing_rate 25427208bps delivery_rate 34952533328bps delivered:30 app_limited busy:2010ms retrans:0/1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.007 snd_wnd:65536                                     \n"
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 0.5,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108123,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 172.09999999403954,
+          "bulkThroughFinalPixelsMs": 29676.014283000026,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11160774,
+            "coalesced": 46,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11131796,
+            "maxPendingBytes": 11108123,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 21.95025
+          },
+          "sourceStats": {
+            "captures": 52,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.604
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.075,
+                "jitter": 0.007499,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.005,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11253904,
+            "packets": 736,
+            "drops": 4,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 521,
+            "qlen": 4
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                           \nESTAB 0      65833      127.0.0.1:46033    127.0.0.1:59264\n\t cubic wscale:10,10 rto:205 rtt:4.256/7.428 ato:40 mss:56320 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:95737 bytes_acked:29904 bytes_received:1121 segs_out:31 segs_in:21 data_segs_out:27 data_segs_in:5 send 1058646617bps lastsnd:64 lastrcv:767 lastack:767 pacing_rate 2117231048bps delivery_rate 450560000000bps delivered:25 app_limited busy:140ms unacked:3 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:112640\nESTAB 0      0          127.0.0.1:46033    127.0.0.1:59276\n\t cubic wscale:10,10 rto:217 rtt:16.382/31.656 ato:44 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:13 segs_in:14 data_segs_out:11 data_segs_in:6 send 160019534bps lastsnd:762 lastrcv:834 lastack:642 pacing_rate 320039064bps delivery_rate 52428800000bps delivered:12 app_limited busy:134ms rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.005 snd_wnd:65536   \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     \nESTAB 0      103        127.0.0.1:46033    127.0.0.1:59264\n\t cubic wscale:10,10 rto:363 rtt:162.843/4.589 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:6 ssthresh:5 bytes_sent:11294672 bytes_retrans:131465 bytes_acked:11163104 bytes_received:1198 segs_out:380 segs_in:365 data_segs_out:375 data_segs_in:6 send 19301929bps lastsnd:47 lastrcv:48 lastack:48 pacing_rate 23162312bps delivery_rate 523864000000bps delivered:372 app_limited busy:29033ms sndbuf_limited:18ms(0.1%) unacked:1 retrans:0/4 dsack_dups:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:289792\nESTAB 0      0          127.0.0.1:46033    127.0.0.1:59276\n\t cubic wscale:10,10 rto:360 rtt:151.394/23.409 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:4304 bytes_acked:4304 bytes_received:5521 segs_out:32 segs_in:37 data_segs_out:30 data_segs_in:24 send 17315349bps lastsnd:9546 lastrcv:9550 lastack:9389 pacing_rate 34630696bps delivery_rate 52428800000bps delivered:31 app_limited busy:3186ms rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.005 snd_wnd:65536                                                                                         \n"
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 1,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108129,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 181.80000001192093,
+          "bulkThroughFinalPixelsMs": 29616.931430999975,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 21,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11160768,
+            "coalesced": 46,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11131798,
+            "maxPendingBytes": 11108129,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 17.896922
+          },
+          "sourceStats": {
+            "captures": 52,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 33.493
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.075,
+                "jitter": 0.007499,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11221212,
+            "packets": 735,
+            "drops": 7,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 587,
+            "qlen": 5
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                     \nESTAB 0      0          127.0.0.1:35349    127.0.0.1:45260\n\t cubic wscale:10,10 rto:263 rtt:33.167/57.364 ato:44 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:2283 bytes_retrans:413 bytes_acked:1870 bytes_received:1785 segs_out:14 segs_in:15 data_segs_out:12 data_segs_in:6 send 79037598bps lastsnd:689 lastrcv:785 lastack:535 pacing_rate 158071024bps delivery_rate 23831272720bps delivered:12 app_limited busy:240ms retrans:0/1 rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.007 snd_wnd:65536\nESTAB 0      65833      127.0.0.1:35349    127.0.0.1:45248\n\t cubic wscale:10,10 rto:204 rtt:3.284/4.987 ato:40 mss:56320 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:95729 bytes_acked:29896 bytes_received:1121 segs_out:31 segs_in:17 data_segs_out:27 data_segs_in:5 send 1371985384bps lastsnd:64 lastrcv:739 lastack:739 pacing_rate 4664040184bps delivery_rate 450560000000bps delivered:25 app_limited busy:124ms unacked:3 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:112640                          \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    \nESTAB 0      0          127.0.0.1:35349    127.0.0.1:45260\n\t cubic wscale:10,10 rto:362 rtt:154.227/19.427 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:7 ssthresh:7 bytes_sent:4717 bytes_retrans:413 bytes_acked:4304 bytes_received:5521 segs_out:33 segs_in:38 data_segs_out:31 data_segs_in:24 send 11898098bps lastsnd:9483 lastrcv:9486 lastack:9325 pacing_rate 14277688bps delivery_rate 23831272720bps delivered:31 app_limited busy:3378ms retrans:0/1 rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.007 snd_wnd:65536\nESTAB 0      9025       127.0.0.1:35349    127.0.0.1:45248\n\t cubic wscale:10,10 rto:362 rtt:161.29/4.851 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:8 ssthresh:7 bytes_sent:11228833 bytes_retrans:65632 bytes_acked:11154176 bytes_received:1198 segs_out:380 segs_in:357 data_segs_out:375 data_segs_in:6 send 25983706bps lastsnd:14 lastrcv:15 lastack:15 pacing_rate 31180416bps delivery_rate 523864000000bps delivered:372 app_limited busy:29015ms sndbuf_limited:139ms(0.5%) unacked:3 retrans:0/2 dsack_dups:1 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:289792\n"
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 2,
+          "rateMbit": 20,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108129,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 185.90000000596046,
+          "bulkThroughFinalPixelsMs": 31240.019910000003,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 22,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11151876,
+            "coalesced": 48,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11122902,
+            "maxPendingBytes": 11108129,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 17.94563
+          },
+          "sourceStats": {
+            "captures": 53,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.425
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.075,
+                "jitter": 0.007499,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.02,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11244134,
+            "packets": 719,
+            "drops": 21,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 378,
+            "qlen": 3
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                          \nESTAB 0      65833      127.0.0.1:33005    127.0.0.1:60866\n\t cubic wscale:10,10 rto:203 rtt:2.59/5.007 ato:40 mss:56320 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:95733 bytes_acked:29900 bytes_received:1121 segs_out:31 segs_in:17 data_segs_out:27 data_segs_in:5 send 1739613900bps lastsnd:58 lastrcv:749 lastack:749 pacing_rate 5913545640bps delivery_rate 225280000000bps delivered:25 app_limited busy:112ms unacked:3 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.002 snd_wnd:112640\nESTAB 0      0          127.0.0.1:33005    127.0.0.1:60870\n\t cubic wscale:10,10 rto:216 rtt:15.548/29.899 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:14 segs_in:14 data_segs_out:11 data_segs_in:6 send 168603036bps lastsnd:763 lastrcv:839 lastack:651 pacing_rate 337197936bps delivery_rate 23831272720bps delivered:12 app_limited busy:126ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.005 snd_wnd:65536            \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        \nESTAB 0      103        127.0.0.1:33005    127.0.0.1:60866\n\t cubic wscale:10,10 rto:379 rtt:177.884/8.762 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:5 ssthresh:2 bytes_sent:11416831 bytes_retrans:262528 bytes_acked:11154200 bytes_received:1198 segs_out:379 segs_in:345 data_segs_out:374 data_segs_in:6 send 14724877bps lastsnd:2 lastrcv:4 lastack:4 pacing_rate 17669784bps delivery_rate 261932000000bps delivered:368 app_limited busy:30453ms unacked:1 retrans:0/8 dsack_dups:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.002 snd_wnd:289792\nESTAB 0      0          127.0.0.1:33005    127.0.0.1:60870\n\t cubic wscale:10,10 rto:360 rtt:153.407/20.754 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:4534 bytes_acked:4534 bytes_received:5696 segs_out:35 segs_in:39 data_segs_out:31 data_segs_in:25 send 17088138bps lastsnd:593 lastrcv:596 lastack:420 pacing_rate 34176248bps delivery_rate 23831272720bps delivered:32 app_limited busy:3404ms rcv_space:45568 rcv_ssthresh:45568 minrtt:0.005 snd_wnd:65536                                                                         \n"
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 1,
+          "rateMbit": 2,
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108129,
+          "kernelTxPeak": 65833,
+          "kernelTxHeldMs": 50,
+          "inputAckMaxMs": 510.30000001192093,
+          "bulkThroughFinalPixelsMs": 54454.04748099999,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "nodeCalls": {
+            "evaluate": 21,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "peerStats": {
+            "bytes": 11160782,
+            "coalesced": 87,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11131807,
+            "maxPendingBytes": 11108129,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 17.757089
+          },
+          "sourceStats": {
+            "captures": 93,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 31.363
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "inputAcksBeforeLargeCommit": 16,
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.04,
+                "jitter": 0.004,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 250000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11257066,
+            "packets": 756,
+            "drops": 7,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 352,
+            "qlen": 3
+          },
+          "tcpDuringBulk": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                           \nESTAB 0      65833      127.0.0.1:46067    127.0.0.1:38676\n\t cubic wscale:10,10 rto:203 rtt:2.947/5.244 ato:40 mss:57344 pmtu:65535 rcvmss:536 advmss:65483 cwnd:10 bytes_sent:95734 bytes_acked:29901 bytes_received:1121 segs_out:31 segs_in:24 data_segs_out:27 data_segs_in:5 send 1556674584bps lastsnd:63 lastrcv:738 lastack:738 pacing_rate 3112953048bps delivery_rate 458752000000bps delivered:25 app_limited busy:132ms unacked:3 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:114688\nESTAB 0      0          127.0.0.1:46067    127.0.0.1:38680\n\t cubic wscale:10,10 rto:214 rtt:13.806/24.402 ato:44 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:1870 bytes_acked:1870 bytes_received:1785 segs_out:13 segs_in:13 data_segs_out:11 data_segs_in:6 send 189876865bps lastsnd:737 lastrcv:802 lastack:653 pacing_rate 379729656bps delivery_rate 52428800000bps delivered:12 app_limited busy:116ms rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.005 snd_wnd:65536   \n",
+          "tcpAfterPixels": "State Recv-Q Send-Q Local Address:Port  Peer Address:Port Process                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           \nESTAB 0      103        127.0.0.1:46067    127.0.0.1:38676\n\t cubic wscale:10,10 rto:407 rtt:206.53/43.908 ato:40 mss:65483 pmtu:65535 rcvmss:536 advmss:65483 cwnd:4 ssthresh:4 bytes_sent:11295028 bytes_retrans:131813 bytes_acked:11163112 bytes_received:1198 segs_out:384 segs_in:370 data_segs_out:379 data_segs_in:6 send 10146013bps lastsnd:60 lastrcv:70 lastack:58 pacing_rate 12175200bps delivery_rate 523864000000bps delivered:375 app_limited busy:53872ms unacked:1 retrans:0/5 dsack_dups:2 rcv_space:65483 rcv_ssthresh:65483 minrtt:0.001 snd_wnd:271360\nESTAB 0      0          127.0.0.1:46067    127.0.0.1:38680\n\t cubic wscale:10,10 rto:550 rtt:281.037/47.013 ato:40 mss:32768 pmtu:65535 rcvmss:614 advmss:65483 cwnd:10 bytes_sent:5224 bytes_retrans:230 bytes_acked:4994 bytes_received:6046 segs_out:38 segs_in:43 data_segs_out:34 data_segs_in:28 send 9327740bps lastsnd:3401 lastrcv:3405 lastack:3100 pacing_rate 18655456bps delivery_rate 52428800000bps delivered:35 app_limited busy:7674ms retrans:0/1 dsack_dups:1 rcv_rtt:1 rcv_space:45568 rcv_ssthresh:45568 minrtt:0.005 snd_wnd:65536                     \n"
+        }
+      ]
+    }
+  ],
+  "totalCases": 17,
+  "totalInputs": 272,
+  "proved": [
+    "14profile frozenmatrix plusindependent3profilepilot;eachrealSource1792Canvas generatesactual>=9MiBnativeSKP and>=9MiBnativeGatewaypendingframe. No paddingorfakeCDP.",
+    "ActualViewerWorker validatescompletechecksum/chunk/resource/scene pipeline and3exacttexturepixels plusinput16marker. AllSourceshave0errors andzeromap/publish/awaitPromise.",
+    "RealTCP TXnonzero50ms;allGatewayTCP-directionsimpactedbykernelRTT/loss/jitter/bandwidth,sourceCDPexcluded. Everylossprofilehasrealnetemchilddrops;kernelTCPRTTestimatorscapturedseparatelyfromconfiguredRTT.",
+    "Everycase injects16realpaired-control CDPtextinputs,eachACK<3s,atleastonebeforelargeimagecommit;sourceinputexactlyx16 andViewerinputmarker16/fullimagepixels,clockprogress.",
+    "Default5sACK/15sinactivityprogress/32KiBchunks/16MiBcredit/6frames andoriginal90snetembulkcompletion limitsunchanged;noautoreconnecthiddeninthebulkcase.",
+    "All17Source/Broker/browserownersreleased;cleanupremovesnetem. Separateacceptedlocalraw9MiB/16MiB/ACK1.5sandclean200msGatewayclose remainatparentbulkcontract;weaknetwork200msremotecloseunclaimed."
+  ],
+  "remaining": [
+    "Completeproducer-capture-starttoactualViewerpixelage,clockcalibration/uncertainty/coverage anddropmetrics/fullN1stillpending.",
+    "FullB1audit/canonicalpromotion/all41/fullSession/PSS/8h incomplete."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true
+}

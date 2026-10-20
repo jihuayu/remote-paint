@@ -53,7 +53,7 @@ export class BeginFrameDriver extends EventEmitter {
   if(this.running&&!this.closed)this.timer=setTimeout(()=>void this.pump(),Math.max(0,cadence-(performance.now()-start)));
  }
  async stop(){this.running=false;clearTimeout(this.timer);await this.pending?.catch(()=>{});}
- async close(){await this.stop();this.closed=true;await this.cdp.detach();}
+ async close({detach=true}={}){await this.stop();this.closed=true;if(detach)await this.cdp.detach();}
 }
 
 export async function startBeginFrames(page,options={}){

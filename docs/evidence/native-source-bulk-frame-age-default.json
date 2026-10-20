@@ -1,0 +1,4133 @@
+{
+  "at": "2026-10-17T18:24:37.727909+00:00",
+  "status": "accepted-real9MiB-exactWorker-frameage14profiles-plus3pilot-NOT-fullN1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-frame-age-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-frame-age-checkpoint-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-clock-checkpoint-browser-v1",
+  "browserSha256": "c5d29a3b5a22ff27ee3914c68650feea3e342dd1c4d2dc502e9ff0e596ae1b4e",
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-frame-age-matrix-checkpoint-v1.json",
+  "changed": [
+    "tests/frame-age-observer.mjs",
+    "tests/frame-age-clock.test.mjs",
+    "tests/verify-native-source-bulk-frame-age.mjs"
+  ],
+  "productionUnchanged": true,
+  "frozenSourceFiles": 538,
+  "clockAndResourceMathTestsLinux": {
+    "count": 10,
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-frame-age-unit-linux-v1.log",
+    "sha256": "d09dc77c1e67a3cf28dd7903ada1cf7d104f7d2bd9cc90d575b985222ad5b35a"
+  },
+  "runs": [
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-pilot-v1/network.json",
+      "sha256": "313ded5fb871bed4071fee18b482c2a0352c52afa3d49a8c8e1dc246a432de0a",
+      "cases": 3,
+      "inputs": 48,
+      "rows": [
+        {
+          "configuredRttMs": 0,
+          "lossPercent": 0,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108216,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 57.30000001192093,
+          "bulkThroughFinalPixelsMs": 5616.843699999999,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 3,
+            "windowOrdinals": [
+              1,
+              2,
+              3
+            ],
+            "age": {
+              "count": 3,
+              "p50Ms": 1298.5492927581072,
+              "p95Ms": 5494.290454402566,
+              "p99Ms": 5494.290454402566,
+              "maxMs": 5494.290454402566,
+              "minMs": 699.9153148829937
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1297.5339632680416,
+              "p95Ms": 5493.2466545751095,
+              "p99Ms": 5493.2466545751095,
+              "maxMs": 5493.2466545751095,
+              "minMs": 698.9040646305084
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1299.5646222481728,
+              "p95Ms": 5495.334254230022,
+              "p99Ms": 5495.334254230022,
+              "maxMs": 5495.334254230022,
+              "minMs": 700.926565135479
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 2
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 12,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 1,
+            "lastMapMs": 30.441
+          },
+          "peerStats": {
+            "bytes": 11161292,
+            "coalesced": 6,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11132060,
+            "maxPendingBytes": 11108216,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 20.145207
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 3,
+              "pixelSamples": 3,
+              "normalFrameEvents": 3,
+              "paired": 3,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 3,
+              "p50Ms": 1298.5492927581072,
+              "p95Ms": 5494.290454402566,
+              "p99Ms": 5494.290454402566,
+              "maxMs": 5494.290454402566,
+              "minMs": 699.9153148829937
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1297.5339632680416,
+              "p95Ms": 5493.2466545751095,
+              "p99Ms": 5493.2466545751095,
+              "maxMs": 5493.2466545751095,
+              "minMs": 698.9040646305084
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1299.5646222481728,
+              "p95Ms": 5495.334254230022,
+              "p99Ms": 5495.334254230022,
+              "maxMs": 5495.334254230022,
+              "minMs": 700.926565135479
+            },
+            "clockUncertainty": {
+              "count": 3,
+              "p50Ms": 1.0153294900655965,
+              "p95Ms": 1.0437998274564961,
+              "p99Ms": 1.0437998274564961,
+              "maxMs": 1.0437998274564961,
+              "minMs": 1.011250252485297
+            },
+            "pixelObserverCost": {
+              "count": 3,
+              "p50Ms": 0.4000000059604645,
+              "p95Ms": 1.2999999821186066,
+              "p99Ms": 1.2999999821186066,
+              "maxMs": 1.2999999821186066,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 5780.680999994278,
+                "midpointOffsetChangeMs": 0.018723517656326294,
+                "estimatedPpm": 3.2389812993217975,
+                "lowerPpm": -69.6123797051217,
+                "upperPpm": 76.0903423037653
+              },
+              "worker": {
+                "domainDurationMs": 5784,
+                "midpointOffsetChangeMs": -0.029194999999845095,
+                "estimatedPpm": -5.047544951563813,
+                "lowerPpm": -207.48979944676367,
+                "upperPpm": 197.39470954363605
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11177147,
+            "packets": 573,
+            "drops": 0,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 0,
+            "qlen": 0
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-pilot-v1/case-0-0-20.json",
+          "sha256": "f589f1cb886422bb0e52160492d98481c3b04b0ec60aa56f1abd1ee4a52b984f"
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 2,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108214,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 173.30000001192093,
+          "bulkThroughFinalPixelsMs": 29938.142437000002,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 1067.6925001442432,
+              "p95Ms": 29820.565702661872,
+              "p99Ms": 29820.565702661872,
+              "maxMs": 29820.565702661872,
+              "minMs": 1067.6925001442432
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1066.7465647509098,
+              "p95Ms": 29819.61969092989,
+              "p99Ms": 29819.61969092989,
+              "maxMs": 29819.61969092989,
+              "minMs": 1066.7465647509098
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1068.6384355375767,
+              "p95Ms": 29821.511714393855,
+              "p99Ms": 29821.511714393855,
+              "maxMs": 29821.511714393855,
+              "minMs": 1068.6384355375767
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 52,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.141
+          },
+          "peerStats": {
+            "bytes": 11152302,
+            "coalesced": 47,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123071,
+            "maxPendingBytes": 11108214,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 19.639325999999997
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 1067.6925001442432,
+              "p95Ms": 29820.565702661872,
+              "p99Ms": 29820.565702661872,
+              "maxMs": 29820.565702661872,
+              "minMs": 1067.6925001442432
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1066.7465647509098,
+              "p95Ms": 29819.61969092989,
+              "p99Ms": 29819.61969092989,
+              "maxMs": 29819.61969092989,
+              "minMs": 1066.7465647509098
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1068.6384355375767,
+              "p95Ms": 29821.511714393855,
+              "p99Ms": 29821.511714393855,
+              "maxMs": 29821.511714393855,
+              "minMs": 1068.6384355375767
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 0.9459353933334569,
+              "p95Ms": 0.9460117319831625,
+              "p99Ms": 0.9460117319831625,
+              "maxMs": 0.9460117319831625,
+              "minMs": 0.9459353933334569
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0.09999999403953552,
+              "p95Ms": 0.5999999940395355,
+              "p99Ms": 0.5999999940395355,
+              "maxMs": 0.5999999940395355,
+              "minMs": 0.09999999403953552
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 30096.393000006676,
+                "midpointOffsetChangeMs": 0.04195450246334076,
+                "estimatedPpm": 1.394004340099209,
+                "lowerPpm": -11.573512839255532,
+                "upperPpm": 14.361520529224908
+              },
+              "worker": {
+                "domainDurationMs": 30082.79999998212,
+                "midpointOffsetChangeMs": -0.00650548211979185,
+                "estimatedPpm": -0.2162525469635711,
+                "lowerPpm": -36.98934215298036,
+                "upperPpm": 36.55683705905322
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.075,
+                "jitter": 0.007499,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.02,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11244367,
+            "packets": 727,
+            "drops": 10,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 378,
+            "qlen": 3
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-pilot-v1/case-150-2-20.json",
+          "sha256": "a1918037477e35e718124ae7c9f758a81ae69eeab399777a19f2234c432bafda"
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 1,
+          "rateMbit": 2,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108214,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 471.19999998807907,
+          "bulkThroughFinalPixelsMs": 54008.065176,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 955.8252151459455,
+              "p95Ms": 53903.528301626444,
+              "p99Ms": 53903.528301626444,
+              "maxMs": 53903.528301626444,
+              "minMs": 955.8252151459455
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 954.8984705855846,
+              "p95Ms": 53902.6130578568,
+              "p99Ms": 53902.6130578568,
+              "maxMs": 53902.6130578568,
+              "minMs": 954.8984705855846
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 956.7519597063065,
+              "p95Ms": 53904.44354539609,
+              "p99Ms": 53904.44354539609,
+              "maxMs": 53904.44354539609,
+              "minMs": 956.7519597063065
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 92,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.126
+          },
+          "peerStats": {
+            "bytes": 11152308,
+            "coalesced": 87,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123076,
+            "maxPendingBytes": 11108214,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 20.743132
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 955.8252151459455,
+              "p95Ms": 53903.528301626444,
+              "p99Ms": 53903.528301626444,
+              "maxMs": 53903.528301626444,
+              "minMs": 955.8252151459455
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 954.8984705855846,
+              "p95Ms": 53902.6130578568,
+              "p99Ms": 53902.6130578568,
+              "maxMs": 53902.6130578568,
+              "minMs": 954.8984705855846
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 956.7519597063065,
+              "p95Ms": 53904.44354539609,
+              "p99Ms": 53904.44354539609,
+              "maxMs": 53904.44354539609,
+              "minMs": 956.7519597063065
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 0.9152437696466222,
+              "p95Ms": 0.9267445603609303,
+              "p99Ms": 0.9267445603609303,
+              "maxMs": 0.9267445603609303,
+              "minMs": 0.9152437696466222
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0.10000002384185791,
+              "p95Ms": 0.5999999940395355,
+              "p99Ms": 0.5999999940395355,
+              "maxMs": 0.5999999940395355,
+              "minMs": 0.10000002384185791
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 54146.81700000167,
+                "midpointOffsetChangeMs": -0.00921100378036499,
+                "estimatedPpm": -0.17011163888663497,
+                "lowerPpm": -6.8351381584740185,
+                "upperPpm": 6.494914880700748
+              },
+              "worker": {
+                "domainDurationMs": 54152.5,
+                "midpointOffsetChangeMs": -0.08042600000044331,
+                "estimatedPpm": -1.4851761229941982,
+                "lowerPpm": -21.051567332818415,
+                "upperPpm": 18.08121508683002
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.04,
+                "jitter": 0.004,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 250000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11182059,
+            "packets": 751,
+            "drops": 4,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 209,
+            "qlen": 2
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-pilot-v1/case-80-1-2.json",
+          "sha256": "aa0ca1a2afe6d8c88921ac362be0da276012904d8da098cce6d0549888a9d1a8"
+        }
+      ]
+    },
+    {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/network.json",
+      "sha256": "81b4ecd36ba67a67b549309e9888022a7eca7dca2ad0bfcdc679d678acb958d9",
+      "cases": 14,
+      "inputs": 224,
+      "rows": [
+        {
+          "configuredRttMs": 0,
+          "lossPercent": 0,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108217,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 56.19999998807907,
+          "bulkThroughFinalPixelsMs": 5595.356975999999,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 3,
+            "windowOrdinals": [
+              1,
+              2,
+              3
+            ],
+            "age": {
+              "count": 3,
+              "p50Ms": 1312.9378916174173,
+              "p95Ms": 5465.520588874817,
+              "p99Ms": 5465.520588874817,
+              "maxMs": 5465.520588874817,
+              "minMs": 706.0669084787369
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1312.0036823501587,
+              "p95Ms": 5464.578216617346,
+              "p99Ms": 5464.578216617346,
+              "maxMs": 5464.578216617346,
+              "minMs": 705.1338510563373
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1313.872100884676,
+              "p95Ms": 5466.462961132288,
+              "p99Ms": 5466.462961132288,
+              "maxMs": 5466.462961132288,
+              "minMs": 706.9999659011364
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 2
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 12,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 1,
+            "lastMapMs": 30.897
+          },
+          "peerStats": {
+            "bytes": 11161289,
+            "coalesced": 6,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11132055,
+            "maxPendingBytes": 11108217,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 17.996973
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 3,
+              "pixelSamples": 3,
+              "normalFrameEvents": 3,
+              "paired": 3,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 3,
+              "p50Ms": 1312.9378916174173,
+              "p95Ms": 5465.520588874817,
+              "p99Ms": 5465.520588874817,
+              "maxMs": 5465.520588874817,
+              "minMs": 706.0669084787369
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1312.0036823501587,
+              "p95Ms": 5464.578216617346,
+              "p99Ms": 5464.578216617346,
+              "maxMs": 5464.578216617346,
+              "minMs": 705.1338510563373
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1313.872100884676,
+              "p95Ms": 5466.462961132288,
+              "p99Ms": 5466.462961132288,
+              "maxMs": 5466.462961132288,
+              "minMs": 706.9999659011364
+            },
+            "clockUncertainty": {
+              "count": 3,
+              "p50Ms": 0.9342092672586659,
+              "p95Ms": 0.9423722574711064,
+              "p99Ms": 0.9423722574711064,
+              "maxMs": 0.9423722574711064,
+              "minMs": 0.9330574223995427
+            },
+            "pixelObserverCost": {
+              "count": 3,
+              "p50Ms": 0.19999998807907104,
+              "p95Ms": 0.5,
+              "p99Ms": 0.5,
+              "maxMs": 0.5,
+              "minMs": 0.09999999403953552
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 5766.94399997592,
+                "midpointOffsetChangeMs": -3.0487775802612305e-05,
+                "estimatedPpm": -0.005286643290231293,
+                "lowerPpm": -68.83228684682877,
+                "upperPpm": 68.82171872803256
+              },
+              "worker": {
+                "domainDurationMs": 5765.5,
+                "midpointOffsetChangeMs": 0.02072300000031646,
+                "estimatedPpm": 3.594310987826981,
+                "lowerPpm": -186.37689706006455,
+                "upperPpm": 193.56551903571852
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11177076,
+            "packets": 572,
+            "drops": 0,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 0,
+            "qlen": 0
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-0-0-20.json",
+          "sha256": "d4f2250ae6129b861d5cd5d23a3d1705448eadcee1ae89de7680069318e53e1d"
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 0.5,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108215,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 42,
+          "bulkThroughFinalPixelsMs": 7546.795992000001,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 841.1221725195646,
+              "p95Ms": 7436.13622802496,
+              "p99Ms": 7436.13622802496,
+              "maxMs": 7436.13622802496,
+              "minMs": 841.1221725195646
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 840.1403593173027,
+              "p95Ms": 7435.154634838343,
+              "p99Ms": 7435.154634838343,
+              "maxMs": 7435.154634838343,
+              "minMs": 840.1403593173027
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 842.1039857218266,
+              "p95Ms": 7437.1178212115765,
+              "p99Ms": 7437.1178212115765,
+              "maxMs": 7437.1178212115765,
+              "minMs": 842.1039857218266
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 14,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.12
+          },
+          "peerStats": {
+            "bytes": 11144770,
+            "coalesced": 10,
+            "delta": 3,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123054,
+            "maxPendingBytes": 11108215,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 21.00051
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 841.1221725195646,
+              "p95Ms": 7436.13622802496,
+              "p99Ms": 7436.13622802496,
+              "maxMs": 7436.13622802496,
+              "minMs": 841.1221725195646
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 840.1403593173027,
+              "p95Ms": 7435.154634838343,
+              "p99Ms": 7435.154634838343,
+              "maxMs": 7435.154634838343,
+              "minMs": 840.1403593173027
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 842.1039857218266,
+              "p95Ms": 7437.1178212115765,
+              "p99Ms": 7437.1178212115765,
+              "maxMs": 7437.1178212115765,
+              "minMs": 842.1039857218266
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 0.9815931866169194,
+              "p95Ms": 0.9818132022619466,
+              "p99Ms": 0.9818132022619466,
+              "maxMs": 0.9818132022619466,
+              "minMs": 0.9815931866169194
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0,
+              "p95Ms": 0.6000000238418579,
+              "p99Ms": 0.6000000238418579,
+              "maxMs": 0.6000000238418579,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 7694.157999992371,
+                "midpointOffsetChangeMs": 0.026104018092155457,
+                "estimatedPpm": 3.392706270417288,
+                "lowerPpm": -48.74697995788195,
+                "upperPpm": 55.532392498716526
+              },
+              "worker": {
+                "domainDurationMs": 7676.9000000059605,
+                "midpointOffsetChangeMs": 0.06112049404055142,
+                "estimatedPpm": 7.9616113327650435,
+                "lowerPpm": -149.2184353006543,
+                "upperPpm": 165.1416579661844
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.01,
+                "jitter": 0.001,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.005,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11178114,
+            "packets": 725,
+            "drops": 4,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 66,
+            "qlen": 1
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-20-0.5-20.json",
+          "sha256": "64bc450ce6854cf27a2ed9cf4c1121a61d49acdaaea362d7e382d0fb9c5783fe"
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 1,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108212,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 48.30000001192093,
+          "bulkThroughFinalPixelsMs": 8212.449628999999,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 3,
+            "windowOrdinals": [
+              1,
+              2,
+              3
+            ],
+            "age": {
+              "count": 3,
+              "p50Ms": 1398.7196134477854,
+              "p95Ms": 8100.073889955878,
+              "p99Ms": 8100.073889955878,
+              "maxMs": 8100.073889955878,
+              "minMs": 738.40419010818
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1397.8010298361778,
+              "p95Ms": 8099.147369657993,
+              "p99Ms": 8099.147369657993,
+              "maxMs": 8099.147369657993,
+              "minMs": 737.4863809099197
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1399.638197059393,
+              "p95Ms": 8101.000410253763,
+              "p99Ms": 8101.000410253763,
+              "maxMs": 8101.000410253763,
+              "minMs": 739.3219993064404
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 2
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 16,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 29.889
+          },
+          "peerStats": {
+            "bytes": 11161284,
+            "coalesced": 10,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11132057,
+            "maxPendingBytes": 11108212,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 15.670152
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 3,
+              "pixelSamples": 3,
+              "normalFrameEvents": 3,
+              "paired": 3,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 3,
+              "p50Ms": 1398.7196134477854,
+              "p95Ms": 8100.073889955878,
+              "p99Ms": 8100.073889955878,
+              "maxMs": 8100.073889955878,
+              "minMs": 738.40419010818
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1397.8010298361778,
+              "p95Ms": 8099.147369657993,
+              "p99Ms": 8099.147369657993,
+              "maxMs": 8099.147369657993,
+              "minMs": 737.4863809099197
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1399.638197059393,
+              "p95Ms": 8101.000410253763,
+              "p99Ms": 8101.000410253763,
+              "maxMs": 8101.000410253763,
+              "minMs": 739.3219993064404
+            },
+            "clockUncertainty": {
+              "count": 3,
+              "p50Ms": 0.9185836116075734,
+              "p95Ms": 0.9265202978849629,
+              "p99Ms": 0.9265202978849629,
+              "maxMs": 0.9265202978849629,
+              "minMs": 0.9178091982603291
+            },
+            "pixelObserverCost": {
+              "count": 3,
+              "p50Ms": 0.09999999403953552,
+              "p95Ms": 0.4000000059604645,
+              "p99Ms": 0.4000000059604645,
+              "maxMs": 0.4000000059604645,
+              "minMs": 0.09999999403953552
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 8360.967999994755,
+                "midpointOffsetChangeMs": 0.005442515015602112,
+                "estimatedPpm": 0.6509431701694739,
+                "lowerPpm": -43.32129712302202,
+                "upperPpm": 44.62317989890259
+              },
+              "worker": {
+                "domainDurationMs": 8350.200000017881,
+                "midpointOffsetChangeMs": 0.015893482119281543,
+                "estimatedPpm": 1.9033654426537698,
+                "lowerPpm": -130.46729633796636,
+                "upperPpm": 134.27402722327392
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.01,
+                "jitter": 0.001,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11183624,
+            "packets": 671,
+            "drops": 3,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 66,
+            "qlen": 1
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-20-1-20.json",
+          "sha256": "8f7ac02e17ce45e2e46cfd45cf80de08a80218d06061e2b6fff725e5976f8b4b"
+        },
+        {
+          "configuredRttMs": 20,
+          "lossPercent": 2,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108214,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 285,
+          "bulkThroughFinalPixelsMs": 8397.787752,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 3,
+            "windowOrdinals": [
+              1,
+              2,
+              3
+            ],
+            "age": {
+              "count": 3,
+              "p50Ms": 1178.5366460233927,
+              "p95Ms": 8272.591423600912,
+              "p99Ms": 8272.591423600912,
+              "maxMs": 8272.591423600912,
+              "minMs": 601.3604494184256
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1177.6471233417988,
+              "p95Ms": 8271.667832200766,
+              "p99Ms": 8271.667832200766,
+              "maxMs": 8271.667832200766,
+              "minMs": 600.4737113764286
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1179.4261687049866,
+              "p95Ms": 8273.515015001058,
+              "p99Ms": 8273.515015001058,
+              "maxMs": 8273.515015001058,
+              "minMs": 602.2471874604225
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 2
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 17,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.07
+          },
+          "peerStats": {
+            "bytes": 11161287,
+            "coalesced": 11,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123053,
+            "maxPendingBytes": 11108214,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 212.080827
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 3,
+              "pixelSamples": 3,
+              "normalFrameEvents": 3,
+              "paired": 3,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 3,
+              "p50Ms": 1178.5366460233927,
+              "p95Ms": 8272.591423600912,
+              "p99Ms": 8272.591423600912,
+              "maxMs": 8272.591423600912,
+              "minMs": 601.3604494184256
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1177.6471233417988,
+              "p95Ms": 8271.667832200766,
+              "p99Ms": 8271.667832200766,
+              "maxMs": 8271.667832200766,
+              "minMs": 600.4737113764286
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1179.4261687049866,
+              "p95Ms": 8273.515015001058,
+              "p99Ms": 8273.515015001058,
+              "maxMs": 8273.515015001058,
+              "minMs": 602.2471874604225
+            },
+            "clockUncertainty": {
+              "count": 3,
+              "p50Ms": 0.8895226815939168,
+              "p95Ms": 0.9235914001455967,
+              "p99Ms": 0.9235914001455967,
+              "maxMs": 0.9235914001455967,
+              "minMs": 0.8867380419969777
+            },
+            "pixelObserverCost": {
+              "count": 3,
+              "p50Ms": 0.19999998807907104,
+              "p95Ms": 1.2000000178813934,
+              "p99Ms": 1.2000000178813934,
+              "maxMs": 1.2000000178813934,
+              "minMs": 0.09999999403953552
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 8561.79699999094,
+                "midpointOffsetChangeMs": -0.027389496564865112,
+                "estimatedPpm": -3.199035969305754,
+                "lowerPpm": -47.53417785184523,
+                "upperPpm": 41.13610591323371
+              },
+              "worker": {
+                "domainDurationMs": 8548.90000000596,
+                "midpointOffsetChangeMs": -0.08063300596222689,
+                "estimatedPpm": -9.431974401638886,
+                "lowerPpm": -141.89158908908243,
+                "upperPpm": 123.02764028580465
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.01,
+                "jitter": 0.001,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.02,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11218992,
+            "packets": 705,
+            "drops": 15,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 0,
+            "qlen": 0
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-20-2-20.json",
+          "sha256": "292bf8dd35e1d295acfc76cb69b0f66b3e940b35d8ced92815e6408be4bf5394"
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 0.5,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108215,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 58.89999997615814,
+          "bulkThroughFinalPixelsMs": 10435.009288000001,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 3,
+            "windowOrdinals": [
+              1,
+              2,
+              3
+            ],
+            "age": {
+              "count": 3,
+              "p50Ms": 1296.2555433362722,
+              "p95Ms": 10313.67833264172,
+              "p99Ms": 10313.67833264172,
+              "maxMs": 10313.67833264172,
+              "minMs": 716.5678409188986
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1295.3294742753505,
+              "p95Ms": 10312.738705729485,
+              "p99Ms": 10312.738705729485,
+              "maxMs": 10312.738705729485,
+              "minMs": 715.6426460196972
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1297.181612397194,
+              "p95Ms": 10314.617959553956,
+              "p99Ms": 10314.617959553956,
+              "maxMs": 10314.617959553956,
+              "minMs": 717.4930358181
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 2
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 19,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.537
+          },
+          "peerStats": {
+            "bytes": 11153782,
+            "coalesced": 14,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11132056,
+            "maxPendingBytes": 11108215,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 19.922239
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 3,
+              "pixelSamples": 3,
+              "normalFrameEvents": 3,
+              "paired": 3,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 3,
+              "p50Ms": 1296.2555433362722,
+              "p95Ms": 10313.67833264172,
+              "p99Ms": 10313.67833264172,
+              "maxMs": 10313.67833264172,
+              "minMs": 716.5678409188986
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1295.3294742753505,
+              "p95Ms": 10312.738705729485,
+              "p99Ms": 10312.738705729485,
+              "maxMs": 10312.738705729485,
+              "minMs": 715.6426460196972
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1297.181612397194,
+              "p95Ms": 10314.617959553956,
+              "p99Ms": 10314.617959553956,
+              "maxMs": 10314.617959553956,
+              "minMs": 717.4930358181
+            },
+            "clockUncertainty": {
+              "count": 3,
+              "p50Ms": 0.9260690609216908,
+              "p95Ms": 0.939626912235326,
+              "p99Ms": 0.939626912235326,
+              "maxMs": 0.939626912235326,
+              "minMs": 0.925194899201415
+            },
+            "pixelObserverCost": {
+              "count": 3,
+              "p50Ms": 0.09999999403953552,
+              "p95Ms": 0.5,
+              "p99Ms": 0.5,
+              "maxMs": 0.5,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 10581.577999979258,
+                "midpointOffsetChangeMs": 0.011266544461250305,
+                "estimatedPpm": 1.0647319767687191,
+                "lowerPpm": -34.12354419528205,
+                "upperPpm": 36.25300533238489
+              },
+              "worker": {
+                "domainDurationMs": 10580.09999999404,
+                "midpointOffsetChangeMs": -0.16212799403365352,
+                "estimatedPpm": -15.323862159501786,
+                "lowerPpm": -121.59903914254333,
+                "upperPpm": 90.95131482285207
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.02,
+                "jitter": 0.002,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.005,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11188596,
+            "packets": 743,
+            "drops": 1,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 381,
+            "qlen": 2
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-40-0.5-20.json",
+          "sha256": "53d1e636e8d8c44a1dcc83cf52a83e474f751bb3a7e677b3c98699a8ead4bfaa"
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 1,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108218,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 66.2999999821186,
+          "bulkThroughFinalPixelsMs": 10736.862025000002,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 1129.1083809435368,
+              "p95Ms": 10613.16258533299,
+              "p99Ms": 10613.16258533299,
+              "maxMs": 10613.16258533299,
+              "minMs": 1129.1083809435368
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1128.2148845245838,
+              "p95Ms": 10612.246560667993,
+              "p99Ms": 10612.246560667993,
+              "maxMs": 10612.246560667993,
+              "minMs": 1128.2148845245838
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1130.0018773624897,
+              "p95Ms": 10614.078609997987,
+              "p99Ms": 10614.078609997987,
+              "maxMs": 10614.078609997987,
+              "minMs": 1130.0018773624897
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 21,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 29.811
+          },
+          "peerStats": {
+            "bytes": 11161313,
+            "coalesced": 15,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123076,
+            "maxPendingBytes": 11108218,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 267.042196
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 1129.1083809435368,
+              "p95Ms": 10613.16258533299,
+              "p99Ms": 10613.16258533299,
+              "maxMs": 10613.16258533299,
+              "minMs": 1129.1083809435368
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1128.2148845245838,
+              "p95Ms": 10612.246560667993,
+              "p99Ms": 10612.246560667993,
+              "maxMs": 10612.246560667993,
+              "minMs": 1128.2148845245838
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1130.0018773624897,
+              "p95Ms": 10614.078609997987,
+              "p99Ms": 10614.078609997987,
+              "maxMs": 10614.078609997987,
+              "minMs": 1130.0018773624897
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 0.8934964189529637,
+              "p95Ms": 0.9160246649971668,
+              "p99Ms": 0.9160246649971668,
+              "maxMs": 0.9160246649971668,
+              "minMs": 0.8934964189529637
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0,
+              "p95Ms": 0.7000000178813934,
+              "p99Ms": 0.7000000178813934,
+              "maxMs": 0.7000000178813934,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 10878.222000002861,
+                "midpointOffsetChangeMs": 0.02366498112678528,
+                "estimatedPpm": 2.175445686508241,
+                "lowerPpm": -32.361538429534086,
+                "upperPpm": 36.71242980255057
+              },
+              "worker": {
+                "domainDurationMs": 10877.700000017881,
+                "midpointOffsetChangeMs": 0.08652298211745801,
+                "estimatedPpm": 7.954161460356121,
+                "lowerPpm": -85.13785247559774,
+                "upperPpm": 101.04617539630998
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.02,
+                "jitter": 0.002,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11211965,
+            "packets": 737,
+            "drops": 3,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 238,
+            "qlen": 1
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-40-1-20.json",
+          "sha256": "feb525b197adcc1c3b0daa5152b2f8f96f84979d1fd34d3c370436441ecd1e66"
+        },
+        {
+          "configuredRttMs": 40,
+          "lossPercent": 2,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108217,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 61.10000002384186,
+          "bulkThroughFinalPixelsMs": 10700.712767999998,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 958.3502890467644,
+              "p95Ms": 10593.754576593637,
+              "p99Ms": 10593.754576593637,
+              "maxMs": 10593.754576593637,
+              "minMs": 958.3502890467644
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 957.2948705306053,
+              "p95Ms": 10592.725334440709,
+              "p99Ms": 10592.725334440709,
+              "maxMs": 10592.725334440709,
+              "minMs": 957.2948705306053
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 959.4057075629235,
+              "p95Ms": 10594.783818746566,
+              "p99Ms": 10594.783818746566,
+              "maxMs": 10594.783818746566,
+              "minMs": 959.4057075629235
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 19,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 29.956
+          },
+          "peerStats": {
+            "bytes": 11144772,
+            "coalesced": 15,
+            "delta": 3,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123057,
+            "maxPendingBytes": 11108217,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 22.647923
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 958.3502890467644,
+              "p95Ms": 10593.754576593637,
+              "p99Ms": 10593.754576593637,
+              "maxMs": 10593.754576593637,
+              "minMs": 958.3502890467644
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 957.2948705306053,
+              "p95Ms": 10592.725334440709,
+              "p99Ms": 10592.725334440709,
+              "maxMs": 10592.725334440709,
+              "minMs": 957.2948705306053
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 959.4057075629235,
+              "p95Ms": 10594.783818746566,
+              "p99Ms": 10594.783818746566,
+              "maxMs": 10594.783818746566,
+              "minMs": 959.4057075629235
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 1.0292421529284184,
+              "p95Ms": 1.0554185161590794,
+              "p99Ms": 1.0554185161590794,
+              "maxMs": 1.0554185161590794,
+              "minMs": 1.0292421529284184
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0.09999999403953552,
+              "p95Ms": 0.5,
+              "p99Ms": 0.5,
+              "maxMs": 0.5,
+              "minMs": 0.09999999403953552
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 10863.159000009298,
+                "midpointOffsetChangeMs": 0.06360746920108795,
+                "estimatedPpm": 5.85533813884465,
+                "lowerPpm": -34.16860460587119,
+                "upperPpm": 45.879283626991054
+              },
+              "worker": {
+                "domainDurationMs": 10887.600000023842,
+                "midpointOffsetChangeMs": -0.07709502383659128,
+                "estimatedPpm": -7.080993408687172,
+                "lowerPpm": -113.83730333863231,
+                "upperPpm": 99.67531652125797
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.02,
+                "jitter": 0.002,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.02,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11177967,
+            "packets": 720,
+            "drops": 9,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 143,
+            "qlen": 1
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-40-2-20.json",
+          "sha256": "24116a264cc596f61a1531931cefd820e6340cf24b5ec90e9fbc9dff9f3c0a89"
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 0.5,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108214,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 111.7000000178814,
+          "bulkThroughFinalPixelsMs": 17419.471885000006,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 1067.4000038951635,
+              "p95Ms": 17291.36549268663,
+              "p99Ms": 17291.36549268663,
+              "maxMs": 17291.36549268663,
+              "minMs": 1067.4000038951635
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1066.461579625845,
+              "p95Ms": 17290.416486178874,
+              "p99Ms": 17290.416486178874,
+              "maxMs": 17290.416486178874,
+              "minMs": 1066.461579625845
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1068.3384281644821,
+              "p95Ms": 17292.314499194385,
+              "p99Ms": 17292.314499194385,
+              "maxMs": 17292.314499194385,
+              "minMs": 1068.3384281644821
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 30,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.538
+          },
+          "peerStats": {
+            "bytes": 11144774,
+            "coalesced": 26,
+            "delta": 3,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123050,
+            "maxPendingBytes": 11108214,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 18.587689
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 1067.4000038951635,
+              "p95Ms": 17291.36549268663,
+              "p99Ms": 17291.36549268663,
+              "maxMs": 17291.36549268663,
+              "minMs": 1067.4000038951635
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1066.461579625845,
+              "p95Ms": 17290.416486178874,
+              "p99Ms": 17290.416486178874,
+              "maxMs": 17290.416486178874,
+              "minMs": 1066.461579625845
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1068.3384281644821,
+              "p95Ms": 17292.314499194385,
+              "p99Ms": 17292.314499194385,
+              "maxMs": 17292.314499194385,
+              "minMs": 1068.3384281644821
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 0.9384242693186025,
+              "p95Ms": 0.9490065077552572,
+              "p99Ms": 0.9490065077552572,
+              "maxMs": 0.9490065077552572,
+              "minMs": 0.9384242693186025
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0.19999998807907104,
+              "p95Ms": 0.5,
+              "p99Ms": 0.5,
+              "maxMs": 0.5,
+              "minMs": 0.19999998807907104
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 17557.969999998808,
+                "midpointOffsetChangeMs": 0.05016951262950897,
+                "estimatedPpm": 2.857364070533916,
+                "lowerPpm": -19.140821224448846,
+                "upperPpm": 24.855549365516676
+              },
+              "worker": {
+                "domainDurationMs": 17560.69999998808,
+                "midpointOffsetChangeMs": 0.021957511926302686,
+                "estimatedPpm": 1.250377942013564,
+                "lowerPpm": -60.35642019217261,
+                "upperPpm": 62.857176076199735
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.04,
+                "jitter": 0.004,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.005,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11178650,
+            "packets": 731,
+            "drops": 2,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 209,
+            "qlen": 2
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-80-0.5-20.json",
+          "sha256": "118661cddf32cf5c9c6de923c2e147ebeaac636b86d8fd12db20fdcc16a8d934"
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 1,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108214,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 356.19999998807907,
+          "bulkThroughFinalPixelsMs": 17923.58399900001,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 1009.5003762990236,
+              "p95Ms": 17810.6156527102,
+              "p99Ms": 17810.6156527102,
+              "maxMs": 17810.6156527102,
+              "minMs": 1009.5003762990236
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1008.5544587125778,
+              "p95Ms": 17809.6848666718,
+              "p99Ms": 17809.6848666718,
+              "maxMs": 17809.6848666718,
+              "minMs": 1008.5544587125778
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1010.4462938854695,
+              "p95Ms": 17811.5464387486,
+              "p99Ms": 17811.5464387486,
+              "maxMs": 17811.5464387486,
+              "minMs": 1010.4462938854695
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 32,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 1,
+            "lastMapMs": 29.121
+          },
+          "peerStats": {
+            "bytes": 11152282,
+            "coalesced": 27,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123054,
+            "maxPendingBytes": 11108214,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 16.571364000000003
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 1009.5003762990236,
+              "p95Ms": 17810.6156527102,
+              "p99Ms": 17810.6156527102,
+              "maxMs": 17810.6156527102,
+              "minMs": 1009.5003762990236
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1008.5544587125778,
+              "p95Ms": 17809.6848666718,
+              "p99Ms": 17809.6848666718,
+              "maxMs": 17809.6848666718,
+              "minMs": 1008.5544587125778
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1010.4462938854695,
+              "p95Ms": 17811.5464387486,
+              "p99Ms": 17811.5464387486,
+              "maxMs": 17811.5464387486,
+              "minMs": 1010.4462938854695
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 0.930786038399674,
+              "p95Ms": 0.9459175864458302,
+              "p99Ms": 0.9459175864458302,
+              "maxMs": 0.9459175864458302,
+              "minMs": 0.930786038399674
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0,
+              "p95Ms": 0.5,
+              "p99Ms": 0.5,
+              "maxMs": 0.5,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 18066.340000003576,
+                "midpointOffsetChangeMs": -0.007455512881278992,
+                "estimatedPpm": -0.41267422628365874,
+                "lowerPpm": -20.499115104293235,
+                "upperPpm": 19.673766651725916
+              },
+              "worker": {
+                "domainDurationMs": 18063.80000001192,
+                "midpointOffsetChangeMs": 0.19189498809282668,
+                "estimatedPpm": 10.623179402600783,
+                "lowerPpm": -53.75552275326195,
+                "upperPpm": 75.00188155765794
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.04,
+                "jitter": 0.004,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11244282,
+            "packets": 727,
+            "drops": 9,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 209,
+            "qlen": 2
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-80-1-20.json",
+          "sha256": "a8c3acf4aeb3bb6c4490667506667e659a22df5c2193c302064e4fdd76bded46"
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 2,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108216,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 108.69999998807907,
+          "bulkThroughFinalPixelsMs": 18292.17863000001,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 3,
+            "windowOrdinals": [
+              1,
+              2,
+              3
+            ],
+            "age": {
+              "count": 3,
+              "p50Ms": 1423.607951283455,
+              "p95Ms": 18173.160896718502,
+              "p99Ms": 18173.160896718502,
+              "maxMs": 18173.160896718502,
+              "minMs": 834.9954823106527
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1422.665305977106,
+              "p95Ms": 18172.185952280997,
+              "p99Ms": 18172.185952280997,
+              "maxMs": 18172.185952280997,
+              "minMs": 834.0539704909324
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1424.5505965898037,
+              "p95Ms": 18174.135841156007,
+              "p99Ms": 18174.135841156007,
+              "maxMs": 18174.135841156007,
+              "minMs": 835.936994130373
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 2
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 33,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 29.312
+          },
+          "peerStats": {
+            "bytes": 11161286,
+            "coalesced": 27,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11132054,
+            "maxPendingBytes": 11108216,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 16.242811
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 3,
+              "pixelSamples": 3,
+              "normalFrameEvents": 3,
+              "paired": 3,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 3,
+              "p50Ms": 1423.607951283455,
+              "p95Ms": 18173.160896718502,
+              "p99Ms": 18173.160896718502,
+              "maxMs": 18173.160896718502,
+              "minMs": 834.9954823106527
+            },
+            "ageLower": {
+              "count": 3,
+              "p50Ms": 1422.665305977106,
+              "p95Ms": 18172.185952280997,
+              "p99Ms": 18172.185952280997,
+              "maxMs": 18172.185952280997,
+              "minMs": 834.0539704909324
+            },
+            "ageUpper": {
+              "count": 3,
+              "p50Ms": 1424.5505965898037,
+              "p95Ms": 18174.135841156007,
+              "p99Ms": 18174.135841156007,
+              "maxMs": 18174.135841156007,
+              "minMs": 835.936994130373
+            },
+            "clockUncertainty": {
+              "count": 3,
+              "p50Ms": 0.9426453063488225,
+              "p95Ms": 0.974944437504746,
+              "p99Ms": 0.974944437504746,
+              "maxMs": 0.974944437504746,
+              "minMs": 0.9415118197202901
+            },
+            "pixelObserverCost": {
+              "count": 3,
+              "p50Ms": 0.19999998807907104,
+              "p95Ms": 0.5,
+              "p99Ms": 0.5,
+              "maxMs": 0.5,
+              "minMs": 0.09999999403953552
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 18427.272000014782,
+                "midpointOffsetChangeMs": -0.01642303168773651,
+                "estimatedPpm": -0.8912351045625927,
+                "lowerPpm": -21.77929561336585,
+                "upperPpm": 19.996827021534987
+              },
+              "worker": {
+                "domainDurationMs": 18432,
+                "midpointOffsetChangeMs": 0.013774000006378628,
+                "estimatedPpm": 0.7472873267349517,
+                "lowerPpm": -57.23068576360093,
+                "upperPpm": 58.725260416281344
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.04,
+                "jitter": 0.004,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.02,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11219860,
+            "packets": 721,
+            "drops": 11,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 352,
+            "qlen": 3
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-80-2-20.json",
+          "sha256": "83912717d1da595cadfd60df6cc278854a855111e1a2133f6bbd3d42da44b689"
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 0.5,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108212,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 172.5,
+          "bulkThroughFinalPixelsMs": 30089.496209999998,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 1068.7189201414585,
+              "p95Ms": 29971.183346360922,
+              "p99Ms": 29971.183346360922,
+              "maxMs": 29971.183346360922,
+              "minMs": 1068.7189201414585
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1067.7814807941913,
+              "p95Ms": 29970.244090681314,
+              "p99Ms": 29970.244090681314,
+              "maxMs": 29970.244090681314,
+              "minMs": 1067.7814807941913
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1069.6563594887257,
+              "p95Ms": 29972.12260204053,
+              "p99Ms": 29972.12260204053,
+              "maxMs": 29972.12260204053,
+              "minMs": 1069.6563594887257
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 52,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 30.955
+          },
+          "peerStats": {
+            "bytes": 11152303,
+            "coalesced": 47,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123073,
+            "maxPendingBytes": 11108212,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 23.03423
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 1068.7189201414585,
+              "p95Ms": 29971.183346360922,
+              "p99Ms": 29971.183346360922,
+              "maxMs": 29971.183346360922,
+              "minMs": 1068.7189201414585
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1067.7814807941913,
+              "p95Ms": 29970.244090681314,
+              "p99Ms": 29970.244090681314,
+              "maxMs": 29970.244090681314,
+              "minMs": 1067.7814807941913
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1069.6563594887257,
+              "p95Ms": 29972.12260204053,
+              "p99Ms": 29972.12260204053,
+              "maxMs": 29972.12260204053,
+              "minMs": 1069.6563594887257
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 0.9374393472671727,
+              "p95Ms": 0.9392556796083227,
+              "p99Ms": 0.9392556796083227,
+              "maxMs": 0.9392556796083227,
+              "minMs": 0.9374393472671727
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0,
+              "p95Ms": 0.6000000238418579,
+              "p99Ms": 0.6000000238418579,
+              "maxMs": 0.6000000238418579,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 30230.52000001073,
+                "midpointOffsetChangeMs": 0.008023977279663086,
+                "estimatedPpm": 0.2654263730713278,
+                "lowerPpm": -12.295322692930148,
+                "upperPpm": 12.826175439072802
+              },
+              "worker": {
+                "domainDurationMs": 30231.399999976158,
+                "midpointOffsetChangeMs": 0.10468952383234864,
+                "estimatedPpm": 3.4629399840044197,
+                "lowerPpm": -31.906460705452794,
+                "upperPpm": 38.83234067346163
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.075,
+                "jitter": 0.007499,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.005,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11211301,
+            "packets": 723,
+            "drops": 5,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 619,
+            "qlen": 4
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-150-0.5-20.json",
+          "sha256": "758d8db27380b861a2284be7cd8f263defbd212e388fed76e81f336ab8fb2424"
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 1,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108216,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 173.19999998807907,
+          "bulkThroughFinalPixelsMs": 30052.802972000005,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 1185.287239715457,
+              "p95Ms": 29932.188512697816,
+              "p99Ms": 29932.188512697816,
+              "maxMs": 29932.188512697816,
+              "minMs": 1185.287239715457
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1184.3111161341667,
+              "p95Ms": 29931.195288990973,
+              "p99Ms": 29931.195288990973,
+              "maxMs": 29931.195288990973,
+              "minMs": 1184.3111161341667
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1186.2633632967472,
+              "p95Ms": 29933.18173640466,
+              "p99Ms": 29933.18173640466,
+              "maxMs": 29933.18173640466,
+              "minMs": 1186.2633632967472
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 53,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 0,
+            "lastMapMs": 31.132
+          },
+          "peerStats": {
+            "bytes": 11161295,
+            "coalesced": 47,
+            "delta": 5,
+            "full": 1,
+            "maxInflight": 3,
+            "maxInflightBytes": 11132062,
+            "maxPendingBytes": 11108216,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 16.868917
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 1185.287239715457,
+              "p95Ms": 29932.188512697816,
+              "p99Ms": 29932.188512697816,
+              "maxMs": 29932.188512697816,
+              "minMs": 1185.287239715457
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1184.3111161341667,
+              "p95Ms": 29931.195288990973,
+              "p99Ms": 29931.195288990973,
+              "maxMs": 29931.195288990973,
+              "minMs": 1184.3111161341667
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1186.2633632967472,
+              "p95Ms": 29933.18173640466,
+              "p99Ms": 29933.18173640466,
+              "maxMs": 29933.18173640466,
+              "minMs": 1186.2633632967472
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 0.9761235812902669,
+              "p95Ms": 0.9932237068424001,
+              "p99Ms": 0.9932237068424001,
+              "maxMs": 0.9932237068424001,
+              "minMs": 0.9761235812902669
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0.10000002384185791,
+              "p95Ms": 0.5999999940395355,
+              "p99Ms": 0.5999999940395355,
+              "maxMs": 0.5999999940395355,
+              "minMs": 0.10000002384185791
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 30200.81700000167,
+                "midpointOffsetChangeMs": -0.03522948920726776,
+                "estimatedPpm": -1.166507820211149,
+                "lowerPpm": -13.540791550548184,
+                "upperPpm": 11.207775910125886
+              },
+              "worker": {
+                "domainDurationMs": 30206.40000000596,
+                "midpointOffsetChangeMs": 0.03931499402096961,
+                "estimatedPpm": 1.3015451699296126,
+                "lowerPpm": -40.71948348628343,
+                "upperPpm": 43.32257382710616
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.075,
+                "jitter": 0.007499,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11211426,
+            "packets": 725,
+            "drops": 5,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 9500,
+            "qlen": 5
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-150-1-20.json",
+          "sha256": "41f56cd084a2e1335eb78d86c9651002c86dd23234d6529d9c39a61e5e54f2b8"
+        },
+        {
+          "configuredRttMs": 150,
+          "lossPercent": 2,
+          "rateMbit": 20,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108217,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 172.09999999403954,
+          "bulkThroughFinalPixelsMs": 31222.701654000004,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 1115.606890976429,
+              "p95Ms": 31106.664578080177,
+              "p99Ms": 31106.664578080177,
+              "maxMs": 31106.664578080177,
+              "minMs": 1115.606890976429
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1114.6941352536678,
+              "p95Ms": 31105.72820255661,
+              "p99Ms": 31105.72820255661,
+              "maxMs": 31105.72820255661,
+              "minMs": 1114.6941352536678
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1116.5196466991902,
+              "p95Ms": 31107.600953603745,
+              "p99Ms": 31107.600953603745,
+              "maxMs": 31107.600953603745,
+              "minMs": 1116.5196466991902
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 53,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 1,
+            "lastMapMs": 29.961
+          },
+          "peerStats": {
+            "bytes": 11144795,
+            "coalesced": 49,
+            "delta": 3,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123075,
+            "maxPendingBytes": 11108217,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 19.175641
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 1115.606890976429,
+              "p95Ms": 31106.664578080177,
+              "p99Ms": 31106.664578080177,
+              "maxMs": 31106.664578080177,
+              "minMs": 1115.606890976429
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 1114.6941352536678,
+              "p95Ms": 31105.72820255661,
+              "p99Ms": 31105.72820255661,
+              "maxMs": 31105.72820255661,
+              "minMs": 1114.6941352536678
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 1116.5196466991902,
+              "p95Ms": 31107.600953603745,
+              "p99Ms": 31107.600953603745,
+              "maxMs": 31107.600953603745,
+              "minMs": 1116.5196466991902
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 0.912755722761176,
+              "p95Ms": 0.936375523568131,
+              "p99Ms": 0.936375523568131,
+              "maxMs": 0.936375523568131,
+              "minMs": 0.912755722761176
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0,
+              "p95Ms": 0.5,
+              "p99Ms": 0.5,
+              "maxMs": 0.5,
+              "minMs": 0
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 31364.32499998808,
+                "midpointOffsetChangeMs": -0.028614968061447144,
+                "estimatedPpm": -0.9123412686693567,
+                "lowerPpm": -13.421425751288073,
+                "upperPpm": 11.596742263751247
+              },
+              "worker": {
+                "domainDurationMs": 31358.09999999404,
+                "midpointOffsetChangeMs": -0.04929849403561093,
+                "estimatedPpm": -1.572113553934081,
+                "lowerPpm": -36.438527655127736,
+                "upperPpm": 33.29430054725957
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.075,
+                "jitter": 0.007499,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.02,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 2500000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11211930,
+            "packets": 724,
+            "drops": 13,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 312,
+            "qlen": 2
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-150-2-20.json",
+          "sha256": "158324ad7abac866744e3035becafd6b4192891d9aa9d508aa5cb6c2ce12df91"
+        },
+        {
+          "configuredRttMs": 80,
+          "lossPercent": 1,
+          "rateMbit": 2,
+          "originalPolicies": {
+            "postCommitAckMs": 5000,
+            "resourceProgressInactivityMs": 15000,
+            "inputAckMs": 3000,
+            "wholeNetworkTransferMs": 90000,
+            "chunkBytes": 32768
+          },
+          "genuineNativeBytes": 11059290,
+          "maxPendingBytes": 11108210,
+          "kernelTxPeak": 65833,
+          "inputAckMaxMs": 419.60000002384186,
+          "bulkThroughFinalPixelsMs": 53902.97168699998,
+          "largeFrameAge": {
+            "scope": "Subset of all covered commits whose actual required FrameGate payload includes one>=9MiB resource andwhose threeactualtexturepixels aregreen. Count reported;small samples do not establishanSLA. Timestamp is rootframe Take,not timeoflastchangeofeverycachedresource.",
+            "count": 2,
+            "windowOrdinals": [
+              1,
+              2
+            ],
+            "age": {
+              "count": 2,
+              "p50Ms": 965.2565226256847,
+              "p95Ms": 53792.20700520277,
+              "p99Ms": 53792.20700520277,
+              "maxMs": 53792.20700520277,
+              "minMs": 965.2565226256847
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 964.3642199089527,
+              "p95Ms": 53791.28852707648,
+              "p99Ms": 53791.28852707648,
+              "maxMs": 53791.28852707648,
+              "minMs": 964.3642199089527
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 966.1488253424168,
+              "p95Ms": 53793.12548332906,
+              "p99Ms": 53793.12548332906,
+              "maxMs": 53793.12548332906,
+              "minMs": 966.1488253424168
+            },
+            "largestRequiredResourceBytes": 11053857,
+            "minimumRequiredResourceBytes": 11055842,
+            "finalInputFrames": 1
+          },
+          "nodeCalls": {
+            "evaluate": 46,
+            "awaitPromise": 0,
+            "map": 0,
+            "publish": 0
+          },
+          "sourceStats": {
+            "captures": 91,
+            "errors": 0,
+            "captureSupersessions": 0,
+            "resourceRecoveries": 0,
+            "resourcePressureEvents": 0,
+            "resourcePressureResumes": 0,
+            "resetRequests": 0,
+            "completedResets": 0,
+            "failedResets": 0,
+            "lastError": null,
+            "recentErrors": [],
+            "registrationRetries": 1,
+            "lastMapMs": 31.032
+          },
+          "peerStats": {
+            "bytes": 11152284,
+            "coalesced": 86,
+            "delta": 4,
+            "full": 1,
+            "maxInflight": 2,
+            "maxInflightBytes": 11123053,
+            "maxPendingBytes": 11108210,
+            "pendingBytes": 0,
+            "resources": 11,
+            "slowDisconnects": 0,
+            "ackRttMs": 29.230427
+          },
+          "cleanup": {
+            "brokerExited": true,
+            "pending": 0,
+            "requestOwners": 0,
+            "responseOwners": 0,
+            "browserConnected": false,
+            "errors": []
+          },
+          "allFrameAge": {
+            "scope": "Each successful actual CPU2D Worker commit at the enabled pixel-read point,paired with its normal production frame event and native Take identity. Capture-start to synchronous actual OffscreenCanvas pixel read,not physical display scanout. Test-only instrumented module/observer cost explicitly reported;all successful commits at that point covered. Clock offsets use min-RTT request/response intervals and affine drift between before/after probes;this assumption does not prove arbitrary intervening nonlinear drift.",
+            "coverage": {
+              "successfulCommits": 2,
+              "pixelSamples": 2,
+              "normalFrameEvents": 2,
+              "paired": 2,
+              "fraction": 1,
+              "missing": 0
+            },
+            "age": {
+              "count": 2,
+              "p50Ms": 965.2565226256847,
+              "p95Ms": 53792.20700520277,
+              "p99Ms": 53792.20700520277,
+              "maxMs": 53792.20700520277,
+              "minMs": 965.2565226256847
+            },
+            "ageLower": {
+              "count": 2,
+              "p50Ms": 964.3642199089527,
+              "p95Ms": 53791.28852707648,
+              "p99Ms": 53791.28852707648,
+              "maxMs": 53791.28852707648,
+              "minMs": 964.3642199089527
+            },
+            "ageUpper": {
+              "count": 2,
+              "p50Ms": 966.1488253424168,
+              "p95Ms": 53793.12548332906,
+              "p99Ms": 53793.12548332906,
+              "maxMs": 53793.12548332906,
+              "minMs": 966.1488253424168
+            },
+            "clockUncertainty": {
+              "count": 2,
+              "p50Ms": 0.892302716732047,
+              "p95Ms": 0.9184781262883916,
+              "p99Ms": 0.9184781262883916,
+              "maxMs": 0.9184781262883916,
+              "minMs": 0.892302716732047
+            },
+            "pixelObserverCost": {
+              "count": 2,
+              "p50Ms": 0.09999999403953552,
+              "p95Ms": 0.5999999940395355,
+              "p99Ms": 0.5999999940395355,
+              "maxMs": 0.5999999940395355,
+              "minMs": 0.09999999403953552
+            },
+            "pixelObserverCostTimerAllowanceMs": 0.4,
+            "observedDrift": {
+              "native": {
+                "domainDurationMs": 54051.310000002384,
+                "midpointOffsetChangeMs": 0.01579698920249939,
+                "estimatedPpm": 0.2922591367813045,
+                "lowerPpm": -6.735506778951577,
+                "upperPpm": 7.320025603885141
+              },
+              "worker": {
+                "domainDurationMs": 54044.70000001788,
+                "midpointOffsetChangeMs": -0.016955517858150415,
+                "estimatedPpm": -0.31373137158953246,
+                "lowerPpm": -20.133167875513177,
+                "upperPpm": 19.505705132334107
+              }
+            },
+            "provenance": {
+              "baseTemplateSha256": "b6bfa3ca47450b4e009d648ae6a60078cf7134f38f76ccf21a43fecc4dd1e671",
+              "instrumentedTemplateSha256": "b81a04357d49708362962c550f78618f6fd27e8d19a32cfc0fd701ce6ac021a2",
+              "productionBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+              "observerBuild": "330e070adeb87445d25d2fcb2e61ac87e5baad8cc7e05dfeafdb17e949717016",
+              "mode": "test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting",
+              "points": [
+                [
+                  22,
+                  102
+                ],
+                [
+                  276,
+                  356
+                ],
+                [
+                  528,
+                  608
+                ],
+                [
+                  612,
+                  32
+                ]
+              ],
+              "limit": 4096,
+              "timerRounding": {
+                "nativeStampAllowanceMs": 0.001,
+                "workerStampAllowanceMs": 0.2,
+                "basis": "Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints."
+              },
+              "served": [
+                {
+                  "originalServedSha256": "dd126c5b4014949b075e36a20bb2b1d9b811eb38740e5108c2b9ccc8c2d41f4f",
+                  "instrumentedServedSha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f",
+                  "instrumentationBytes": 3103
+                }
+              ],
+              "actualServed": [
+                {
+                  "status": 200,
+                  "sha256": "226e55adeb174dea540253e4b5a7cd4ccebf12c0c87fd4e79b06d13edd60ed0f"
+                }
+              ]
+            }
+          },
+          "netemChild": {
+            "kind": "netem",
+            "handle": "30:",
+            "parent": "1:3",
+            "options": {
+              "limit": 1000,
+              "delay": {
+                "delay": 0.04,
+                "jitter": 0.004,
+                "correlation": 0
+              },
+              "loss-random": {
+                "loss": 0.01,
+                "correlation": 0
+              },
+              "rate": {
+                "rate": 250000,
+                "packetoverhead": 0,
+                "cellsize": 0,
+                "celloverhead": 0
+              },
+              "ecn": false,
+              "gap": 0
+            },
+            "bytes": 11182102,
+            "packets": 752,
+            "drops": 4,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 209,
+            "qlen": 2
+          },
+          "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/bulk-frame-age-frozen-v1/case-80-1-2.json",
+          "sha256": "98f7dc7379a93ab846c799403723f8c862cbc3e7d34a1520bf6c9232e01441d2"
+        }
+      ]
+    }
+  ],
+  "totalCases": 17,
+  "totalInputs": 272,
+  "totalPairedFrames": 40,
+  "actualLargeResourceFrames": 40,
+  "proved": [
+    "Actual1792Canvas nativeSKP,oneactualrequiredFrameGatepayload>=9MiB and3greenpixels/input16 belongtothesameWorkercommit;sum/max/count ignoreunrelatedcache/backingbuffers,limitedto256currentdependencies/unchanged512window.",
+    "EveryenabledsuccessfulactualCPUWorkercommitmatchesnativeTakeclock,actualpixelsandnormalframeevent;100%coverageincludingallinitialstates,largegreen subset reportscount androotframeage ratherthan replacingstartwithpublication/completiontime.",
+    "All14RTT/loss/jitter/bandwidthprofiles plus3independentpilotcases;16realcontrolinputs/profile eachACK<3s,atleastonebeforebigcommit,actualSourcevaluex16/latestinputwatermark+marker16andlargegreenpixels;nohiddenreconnect.",
+    "Keepdefault5sACK/15sresourceINACTIVITY/32KiBchunks/16MiB6framecredit/90swholetransfer;kernelTXpositive50ms andgenuine>=9MiBpendingframe,actualnetemchilddrops. LocalrawACK1.5s/200msGatewayclose remainsseparate.",
+    "Normalproductionstaticbuilder/preparedAssets/versionhandshake;baselinefingerprintequivalence andactualobservermoduleSHA checked,no browserrouting orproductionWorkerchange. Sourceerrors0,map/publish/awaitPromise0,allBroker/RPC/browsercleanup verified.",
+    "10Linuxmath/resource tests:7clock interval/origin/drift/domain/quantization/errorgates plus3actualresource-view/subset/empty/missing/duplicate/nonbyte/256limit cases."
+  ],
+  "scopeLimits": [
+    "AgesendatactualCPUOffscreenCanvaspixelread,notphysicalscanout/GPU/allbrowsers. Before/aftercalibrationboundsassumeaffinedrift,withquantizationallowance;notarbitrarynonlineardriftproof.",
+    "Pixelreadcostonly measured;resourcecounting,serialization/postMessage/listener/probeoverheadnotisolated. Smalllarge-framecountsareexplicit,p95/p99notanSLA. TimestampbelongsrootTake,notlastcontentchangeofeverycachedasset.",
+    "Prior26000input/23238framefullmatrix remainsits535fileobserverversion;this538helperaddsonlyboundedresourcecounters,test/math unchangedotherwise.",
+    "Independentfull14repeatandexplicitmissingdropmetrics/longtermN1auditnext;fullB1canonicalpromotion/all41/fullSDK/physicaldevices/fullSessionPSS/8h incomplete."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true
+}

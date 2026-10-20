@@ -1,0 +1,53 @@
+{
+  "at": "2026-10-16T21:06:32.196083+00:00",
+  "status": "failed",
+  "stage": "Impl-only ownership cleanup, before checking the main-thread LayerTreeHost lifecycle",
+  "browserSha256": "cd39c016fd273775320ce7f7fcdaacc325901ffad7569194dcbcf395fd8464f5",
+  "tests": {
+    "node": 138,
+    "cpp": 28,
+    "nativeNavigationExitCode": 1
+  },
+  "failedAssertion": "Retired compositor hosts accumulated in one renderer (hosts <= 2)",
+  "nativeTrace": {
+    "healthyVizEmits": 215,
+    "hostReleaseReceipts": 191,
+    "lastHostReleases": [
+      "REMOTE_PAINT_CAPTURE_HOST_RELEASE pid=18475 host=190 encodings=12 canceled=0",
+      "REMOTE_PAINT_CAPTURE_HOST_RELEASE pid=18475 host=191 encodings=12 canceled=0",
+      "REMOTE_PAINT_CAPTURE_HOST_RELEASE pid=18475 host=192 encodings=12 canceled=0"
+    ]
+  },
+  "limits": "The initial failed probe did not persist its in-memory ownership samples. Do not infer a precise leak count from acquire/release differences. Keep this failure; diagnose request registration/main-host lifecycle and repeat the unchanged gate.",
+  "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/host-lifetime-navigation-trace.log",
+  "canonicalUnchanged": "6f67de2805300056ee1d810bd0fc909f19183ea9e8a78a26e03e9949e8b2a122",
+  "followUp": {
+    "sameBinary": true,
+    "loopEnd": {
+      "producer": "18652:202",
+      "frameToken": 2,
+      "created": 201,
+      "damageEntries": 0,
+      "encodings": 120,
+      "hosts": 10,
+      "markerHosts": 4,
+      "ownersAlive": 10,
+      "released": 191
+    },
+    "afterWaitingForActualDestructors": {
+      "producer": "18652:202",
+      "frameToken": 20,
+      "created": 201,
+      "damageEntries": 0,
+      "encodings": 12,
+      "hosts": 1,
+      "markerHosts": 1,
+      "ownersAlive": 1,
+      "released": 200
+    },
+    "maximumTransientHosts": 12,
+    "unexpectedErrors": [],
+    "diagnosis": "The initial gate incorrectly treated deferred live compositor hosts as already retired. The same binary settled from 10 registered hosts to exactly 1, with 201 created and 200 actually released. Main LayerTreeHost destruction stops its proxy/Impl; no speculative extra hook was added. A correct final-state gate must inspect destruction completion, while transient cache bytes still require the following B10 budget work.",
+    "allSamples": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/host-lifetime-deferred-destruction-failure.json"
+  }
+}

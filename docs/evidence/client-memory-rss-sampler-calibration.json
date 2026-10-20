@@ -1,0 +1,272 @@
+{
+  "at": "2026-10-17T10:28:48.623584+00:00",
+  "status": "passed-short-calibration-only",
+  "scope": "Actual Mac hardwareGPUWorker/CPUWorker/CPUmain to current B2 LinuxSource/Rust238/Chromiumecb/clientb46. On the second RSS sample only, a test preload substitutes a dedicated hung subprocess;after its confirmed SIGKILL close the retry executes real /bin/ps. Fresh RSS/pixels/budgets/Source/cleanup required;not8h/fullVM acceptance.",
+  "production": {
+    "clientLedgerSha256": "b46ed2b28677e4a7db943e4a43b071c2eefe6c6255f799c319200a5869c3cb5e",
+    "brokerSha256": "2385f69da5c8dd7ac4496d32292275766454ff9cbd3716a3fce6d0b4244b8e4c",
+    "browserSha256": "ecb176300cf9b11a2042b6a224c72b79653f8e026e467226dd0a408fd0191886",
+    "viewerBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10"
+  },
+  "runId": "8457b008-d28a-409f-8eca-c1a135ca7b9a",
+  "requestedSeconds": 240,
+  "elapsedSeconds": 246.992213292,
+  "cycles": 480,
+  "navigations": 4,
+  "resizes": 43,
+  "inputs": 30,
+  "sampleCount": 5,
+  "maximumSampleGapSeconds": 62.150999999999996,
+  "maximumSampleDurationMs": 2225.6946660000103,
+  "maximumRssPhaseMs": 2054.577000000005,
+  "backgroundProgressWitness": [
+    {
+      "startedAt": "2026-10-17T10:23:56.507Z",
+      "elapsedMs": 2225.6946660000103,
+      "eventLoopMaxMs": 34.144255,
+      "sourceCycleAtSnapshot": 373,
+      "controllerCycleAtFinish": 388
+    }
+  ],
+  "rssAttempts": [
+    {
+      "at": "2026-10-17T10:22:56.581Z",
+      "cycle": 0,
+      "attempt": 1,
+      "startedAt": "2026-10-17T10:22:56.557Z",
+      "elapsedMs": 24.117958000000726,
+      "childPid": 33465,
+      "closed": true,
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "timeoutMs": 2000,
+      "reapGraceMs": 250,
+      "stdoutBytes": 143,
+      "stderrBytes": 0
+    },
+    {
+      "at": "2026-10-17T10:23:58.687Z",
+      "cycle": 387,
+      "attempt": 1,
+      "startedAt": "2026-10-17T10:23:56.678Z",
+      "elapsedMs": 2008.3888750000042,
+      "childPid": 34399,
+      "closed": true,
+      "exitCode": null,
+      "signal": "SIGKILL",
+      "status": "RSS_ATTEMPT_TIMEOUT",
+      "timeoutMs": 2000,
+      "reapGraceMs": 250,
+      "stdoutBytes": 0,
+      "stderrBytes": 0
+    },
+    {
+      "at": "2026-10-17T10:23:58.732Z",
+      "cycle": 388,
+      "attempt": 2,
+      "startedAt": "2026-10-17T10:23:58.687Z",
+      "elapsedMs": 43.65637500000594,
+      "childPid": 34402,
+      "closed": true,
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "timeoutMs": 2000,
+      "reapGraceMs": 250,
+      "stdoutBytes": 143,
+      "stderrBytes": 0
+    },
+    {
+      "at": "2026-10-17T10:24:57.603Z",
+      "cycle": 426,
+      "attempt": 1,
+      "startedAt": "2026-10-17T10:24:57.576Z",
+      "elapsedMs": 26.456500000000233,
+      "childPid": 35189,
+      "closed": true,
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "timeoutMs": 2000,
+      "reapGraceMs": 250,
+      "stdoutBytes": 143,
+      "stderrBytes": 0
+    },
+    {
+      "at": "2026-10-17T10:25:59.291Z",
+      "cycle": 454,
+      "attempt": 1,
+      "startedAt": "2026-10-17T10:25:59.268Z",
+      "elapsedMs": 22.541208999988157,
+      "childPid": 36296,
+      "closed": true,
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "timeoutMs": 2000,
+      "reapGraceMs": 250,
+      "stdoutBytes": 143,
+      "stderrBytes": 0
+    },
+    {
+      "at": "2026-10-17T10:26:59.726Z",
+      "cycle": 480,
+      "attempt": 1,
+      "startedAt": "2026-10-17T10:26:59.699Z",
+      "elapsedMs": 26.29924999998184,
+      "childPid": 37307,
+      "closed": true,
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "timeoutMs": 2000,
+      "reapGraceMs": 250,
+      "stdoutBytes": 143,
+      "stderrBytes": 0
+    }
+  ],
+  "injectedChild": [
+    {
+      "at": "2026-10-17T10:23:56.682Z",
+      "event": "injected-hang",
+      "rssCall": 2,
+      "pid": 34399,
+      "scope": "Dedicated test child replaces second RSS command;the retry remains real /bin/ps."
+    },
+    {
+      "at": "2026-10-17T10:23:58.686Z",
+      "event": "closed",
+      "pid": 34399,
+      "code": null,
+      "signal": "SIGKILL"
+    }
+  ],
+  "retrySample": {
+    "at": "2026-10-17T10:23:58.733Z",
+    "cycle": 388,
+    "sampling": {
+      "startedAt": "2026-10-17T10:23:56.507Z",
+      "elapsedMs": 2225.6946660000103,
+      "eventLoopMaxMs": 34.144255,
+      "sourceCycleAtSnapshot": 373,
+      "controllerCycleAtFinish": 388
+    },
+    "rss": {
+      "requestedPids": [
+        33273,
+        33461,
+        33462,
+        33460,
+        33456,
+        33404,
+        33403,
+        33401,
+        33380,
+        33381,
+        33382
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "startedAt": "2026-10-17T10:23:56.678Z",
+          "elapsedMs": 2008.3888750000042,
+          "childPid": 34399,
+          "closed": true,
+          "exitCode": null,
+          "signal": "SIGKILL",
+          "status": "RSS_ATTEMPT_TIMEOUT",
+          "timeoutMs": 2000,
+          "reapGraceMs": 250,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "attempt": 2,
+          "startedAt": "2026-10-17T10:23:58.687Z",
+          "elapsedMs": 43.65637500000594,
+          "childPid": 34402,
+          "closed": true,
+          "exitCode": 0,
+          "signal": null,
+          "status": "passed",
+          "timeoutMs": 2000,
+          "reapGraceMs": 250,
+          "stdoutBytes": 143,
+          "stderrBytes": 0
+        }
+      ],
+      "elapsedMs": 2054.4441670000087,
+      "phaseDeadlineMs": 5000
+    }
+  },
+  "unitTestsEach": 205,
+  "helperCheckpoint": {
+    "at": "2026-10-17T10:19:30.067232+00:00",
+    "status": "accepted-helper-and-targeted-fault-tests;runtime-calibration-pending",
+    "files": {
+      "tests/process-rss-sample.mjs": "9eebb22c62f46c4395248e1a114d65e09f1a6dc6da61e141c20ec8d489bb4d71",
+      "tests/process-rss-sample.test.mjs": "96fc1d89dff5389e03478d697863187c0a79c24f4a9f8c0c9557762d5142fb79",
+      "tests/fixtures/rss-sample-child.mjs": "d233965147d9a0ad632c7b7cef26a9d90bcfd4a79e225fa5daf2fc4ed9d3eefc",
+      "tests/verify-memory-soak.mjs": "e97bf93012e2b435d7424d696b1e141b56008609939e27d4df7e3a142c3c9d2c"
+    },
+    "testsEach": 7,
+    "platforms": [
+      "actual Mac",
+      "actual Linux"
+    ],
+    "logs": [
+      "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rss-sampler-unit-mac-v2.log",
+      "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rss-sampler-unit-linux-v2.log"
+    ],
+    "bounds": {
+      "attemptMs": 2000,
+      "reapGraceMs": 250,
+      "attempts": 2,
+      "rssPhaseMs": 5000,
+      "strictSampleGapSeconds": 90
+    },
+    "scope": "Actual ps plus dedicated hung/exit/malformed/overflow child processes. Retry only confirmed closed deadline;both hangs fail;unreaped simulated handle is terminal. No old failure cause claim,no8h claim. Production/rendering unchanged."
+  },
+  "implementation": [
+    "Absolute /bin/ps;each attempt2s,SIGKILL and250ms closed-child grace;onlyone deadline retry after confirmed subprocess close.",
+    "Do not retry exit/spawn/output/parse/missing-process errors oran unreaped child. Fixed output/process-count bounds prevent unbounded diagnostics.",
+    "Record each actual attempt andmatch all requested process rows. No stale RSS orzero-filled missing samples.",
+    "Original5sRSSphase,90scontinuous coverage,8hworkload,pixels,budget andcleanup gates unchanged. Only the short calibration loads the fault preload;new8h must not load it."
+  ],
+  "cleanup": {
+    "errors": [],
+    "sourceClosed": true,
+    "brokerClosed": true,
+    "fixtureListening": false,
+    "remainingKinds": [
+      "node"
+    ]
+  },
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/rss-sampler-calibration-v1/frozen-version.json",
+  "previousFailure": "docs/evidence/client-memory-eight-hour-sampler-failure.json",
+  "remaining": "The specific cause of the old macOS ps timeout is unproven. Four minutes plus a deliberate hung test child do not establish8h orfullVM/Session stability. A fresh independent8h without fault preload is required;allfailedrunshave0elapsedcarry. B1/all41/N1 remain.",
+  "hardwareGpuVerification": {
+    "checkedAt": "2026-10-17T10:34:52.536484+00:00",
+    "allSamplesRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)",
+    "scope": "Actual recorded WebGL device renderer in every short-calibration sample;totalReadbackBytes0 already asserted. Physical driver memory remains outside logical ledger."
+  },
+  "viewerModes": [
+    {
+      "requestedMode": "gpu-worker",
+      "workerResultFlag": true,
+      "presentation": "webgl2-bitmap"
+    },
+    {
+      "requestedMode": "cpu-worker",
+      "workerResultFlag": true,
+      "presentation": "cpu-2d"
+    },
+    {
+      "requestedMode": "cpu-main",
+      "workerResultFlag": null,
+      "presentation": "cpu-2d"
+    }
+  ],
+  "mainThreadEvidence": "Verifier explicitly selects cpu&mainThread. Inspected viewer/live.mjs enters its main path when that parameter is present;stream-worker results always set worker:true,whereas main-path results omit that field. Main result worker:null here records absence rather than fabricating an explicit false flag."
+}

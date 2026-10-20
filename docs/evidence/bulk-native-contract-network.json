@@ -1,0 +1,106 @@
+{
+  "at": "2026-10-16T14:12:28.828Z",
+  "scope": "Real native Rust data/control WebSockets, 8 MiB fixture font transfer, checksum/reassembly gate and ControlLease with fake CDP; Linux kernel 40ms delay/1% loss/2Mbit applied to data egress only; control connection in separate priority class; no pixel rendering",
+  "inputAcks": 16,
+  "inputAckMs": [
+    2.536634000000049,
+    5.211724999999888,
+    3.9296580000000176,
+    3.8627010000000155,
+    5.283766000000014,
+    2.869754999999941,
+    2.9645040000000336,
+    2.8374209999999493,
+    3.3108740000000125,
+    5.3723059999999805,
+    3.4797470000000885,
+    3.329332000000022,
+    4.4581090000001495,
+    4.642273000000159,
+    5.147809000000052,
+    3.2645830000001297
+  ],
+  "maxChunkBytes": 32768,
+  "dataReadPauseMs": 800,
+  "bulkMs": 34333.792554,
+  "network": [
+    {
+      "kind": "prio",
+      "handle": "1:",
+      "root": true,
+      "refcnt": 2,
+      "options": {
+        "bands": 3,
+        "priomap": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "multiqueue": false
+      },
+      "bytes": 8500290,
+      "packets": 559,
+      "drops": 2,
+      "overlimits": 0,
+      "requeues": 0,
+      "backlog": 235,
+      "qlen": 2
+    },
+    {
+      "kind": "netem",
+      "handle": "30:",
+      "parent": "1:3",
+      "options": {
+        "limit": 1000,
+        "delay": {
+          "delay": 0.04,
+          "jitter": 0.004,
+          "correlation": 0
+        },
+        "loss-random": {
+          "loss": 0.01,
+          "correlation": 0
+        },
+        "rate": {
+          "rate": 250000,
+          "packetoverhead": 0,
+          "cellsize": 0,
+          "celloverhead": 0
+        },
+        "ecn": false,
+        "gap": 0
+      },
+      "bytes": 8474782,
+      "packets": 261,
+      "drops": 2,
+      "overlimits": 0,
+      "requeues": 0,
+      "backlog": 235,
+      "qlen": 2
+    }
+  ],
+  "allResourceBytesVerified": true,
+  "invalidTicketRejected": true,
+  "wrongPeerRejected": true,
+  "wrongOriginRejected": true,
+  "ticketReplayRejected": true,
+  "controlCloseRevokesLease": true,
+  "pairedDataClosed": true,
+  "viewerLimitUnchanged": 4,
+  "notes": [
+    "The 4-viewer number in this earlier raw transfer receipt records configuration. Concurrent admission was subsequently tested with 4 paired viewers and fifth rejection in paired-control-contract.json."
+  ]
+}

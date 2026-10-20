@@ -4,6 +4,7 @@ import CanvasKitInit from 'canvaskit-wasm/full';
 import {createRequire} from 'node:module';
 import {PNG} from 'pngjs';
 import {SceneRenderer} from '../viewer/scene-renderer.mjs';
+import {ClientMemory,memoryPolicy} from '../protocol/client-memory.mjs';
 const ck=await CanvasKitInit({locateFile:()=>createRequire(import.meta.url).resolve('canvaskit-wasm/bin/full/canvaskit.wasm')});
 const matrix=[1,0,0,0,1,0,0,0,1],rect=[0,0,100,100];
 const solid=(color,area=rect,extra={})=>({kind:'solid',color,rect:area,visible:area,matrix,opacity:1,clip:null,...extra});
@@ -54,7 +55,9 @@ test('incremental rendering reuses unchanged passes and invalidates dependent pa
  try{
   const first=renderer.render(scene,new Map(),ck.WHITE);assert.equal(calls.length,2);assert.equal(first.surface,null);first.release();
   const second=renderer.render(scene,new Map(),ck.WHITE);assert.equal(calls.length,2,'unchanged child and root passes should be reused');assert.equal(second.surface,null);second.release();
-  child.quads[0].color=[1,0,0,1];const third=renderer.render(scene,new Map(),ck.WHITE);assert.equal(calls.length,4,'changing a child must invalidate its dependent root');third.release();
+  child.quads[0].color=[1,0,0,1];const third=renderer.render(scene,new Map(),ck.WHITE);
+  assert.equal(calls.length,2,'changed passes must reuse their persistent surfaces');assert.equal(renderer.stats.passRenders,4,'changing a child must redraw its dependent root');
+  assert.deepEqual(pixel(PNG.sync.read(Buffer.from(third.image.encodeToBytes())),5,5),[255,0,0,255]);third.release();
  }finally{renderer.clear();ck.MakeRasterDirectSurface=original;}
 });
 
@@ -145,4 +148,114 @@ test('immutable pictures rasterize once across compositor moves and preserve tra
   assert.equal(renderer.stats.pictureRasters,1);assert.equal(renderer.stats.pictureRasterHits,1);assert.equal(renderer.stats.isolatedDraws,0);assert.equal(renderer.rasterPixels,400);
   renderer.retain(new Set());assert.equal(renderer.rasterPixels,0);assert.equal(renderer.pictures.size,0);
  }finally{renderer.clear();picture.delete();recorder.delete();paint.delete();}
+});
+
+test('WebGL black placeholder preserves target clip, transform, opacity and front-to-back order',()=>{
+ const renderer=new SceneRenderer(ck);
+ const placeholder={kind:'placeholder',reason:'webgl',matrix:[1,0,20,0,1,10,0,0,1],rect:[0,0,60,60],visible:[0,0,60,60],clip:[20,10,60,60],opacity:0.5};
+ const output=renderer.render({rootPass:'root',passes:[{id:'root',output:rect,quads:[solid([1,0,0,1],[30,30,40,40]),placeholder,solid([0,0,1,1])]}]},new Map());
+ try{const png=PNG.sync.read(Buffer.from(output.image.encodeToBytes()));
+  assert.deepEqual(pixel(png,5,5),[0,0,255,255]);
+  assert.deepEqual(pixel(png,35,35),[255,0,0,255]);
+  assert.ok(Math.abs(pixel(png,25,25)[2]-127)<=1);
+  assert.deepEqual(pixel(png,70,25),[0,0,255,255]);
+ }finally{output.image.delete();output.surface.dispose();renderer.clear();}
+});
+
+test('damage scissor covers both caret positions and propagates local child damage',()=>{
+ const renderer=new SceneRenderer(ck,{incremental:true}),area=[0,0,200,120];
+ const caret=solid([1,0,0,1],[10,10,12,30]);
+ const scene={rootPass:'root',passes:[{id:'child',output:area,quads:[caret]},
+  {id:'root',output:area,quads:[{kind:'pass',passId:'child',matrix:[1,0,20,0,1,10,0,0,1],rect:area,visible:area,clip:null,opacity:.5},solid([0,0,1,1],area)]}]};
+ try{
+  renderer.render(scene,new Map(),ck.WHITE).release();const before=renderer.stats.damagedPixels;
+  caret.matrix=[1,0,4,0,1,0,0,0,1];const out=renderer.render(scene,new Map(),ck.WHITE),png=PNG.sync.read(Buffer.from(out.image.encodeToBytes()));
+  assert.deepEqual(pixel(png,30,22),[0,0,255,255],'old caret must be erased');assert.ok(pixel(png,35,22)[0]>=127,'new caret must blend');
+  assert.ok(out.damage[0]<=30&&out.damage[2]>=36&&out.damage[2]-out.damage[0]<20);
+  assert.ok(renderer.stats.damagedPixels-before<2000,'small child update must not repaint the full child and root');assert.equal(renderer.stats.passSurfaceAllocations,2);out.release();
+ }finally{renderer.clear();}
+});
+
+test('persistent damage rendering matches a fresh full replay through scroll, overlap, clipping and resize',()=>{
+ const renderer=new SceneRenderer(ck,{incremental:true}),reference=new SceneRenderer(ck);
+ let background=ck.WHITE;const child=solid([.8,.3,.1,.6],[15,12,35,33]);
+ const parent={kind:'pass',passId:'child',matrix:[1,0,0,0,1,0,0,0,1],rect,visible:rect,clip:[5,5,95,95],roundedClip:[5,5,95,95,9,9,9,9,9,9,9,9],opacity:.65};
+ const foreground=solid([.1,.9,.4,.4],[20,20,60,60]);
+ const scene={rootPass:'root',passes:[{id:'child',output:rect,quads:[child]},{id:'root',output:[...rect],quads:[foreground,parent,solid([.1,.2,.8,1])]}]};
+ try{
+  for(let n=0;n<120;n++){
+   const angle=n%5===0?n*.03:0,c=Math.cos(angle),s=Math.sin(angle);
+   child.matrix=[c,-s,(n*7)%45-15,s,c,(n*3)%30-10,0,0,1];
+   child.color=[n%7/7,.3,.2,n%11===0?0:.6];parent.matrix=[c,-s,-n%20,s,c,n%9,0,0,1];
+   parent.clip=[n%10,5,85+n%10,95];foreground.opacity=n%13===0?0:.7;
+   if(n%17===0)scene.passes[1].quads.reverse();
+   scene.passes[1].output=n%23===0?[0,0,110,90]:[...rect];
+   background=n%19===0?ck.TRANSPARENT:ck.WHITE;
+   const a=renderer.render(scene,new Map(),background),b=reference.render(scene,new Map(),background);
+   try{assert.deepEqual(PNG.sync.read(Buffer.from(a.image.encodeToBytes())).data,PNG.sync.read(Buffer.from(b.image.encodeToBytes())).data,`damage replay mismatch at ${n}`);}finally{a.release();b.image.delete();b.surface.dispose();}
+  }
+  assert.ok(renderer.stats.partialPassRenders>100);
+ }finally{renderer.clear();reference.clear();}
+});
+
+test('offscreen changes skip raster work and failed partial renders release their persistent surface',()=>{
+ const renderer=new SceneRenderer(ck,{incremental:true}),q=solid([1,0,0,1],[150,150,160,160]),scene={rootPass:'root',passes:[{id:'root',output:rect,quads:[q]}]};
+ try{
+  renderer.render(scene,new Map(),ck.WHITE).release();const renders=renderer.stats.passRenders;
+  q.matrix=[1,0,10,0,1,0,0,0,1];const out=renderer.render(scene,new Map(),ck.WHITE);assert.equal(out.damage,null);assert.equal(renderer.stats.passRenders,renders);out.release();
+  q.visible=q.rect=[0,0,10,10];q.kind='invalid';assert.throws(()=>renderer.render(scene,new Map(),ck.WHITE),/Unsupported/);assert.equal(renderer.passCache.size,0);
+  q.kind='solid';renderer.render(scene,new Map(),ck.WHITE).release();assert.equal(renderer.passCache.size,1);
+ }finally{renderer.clear();}
+});
+
+test('decoded picture and raster eviction preserves replay and releases owned surfaces',()=>{
+ const memory=new ClientMemory({...memoryPolicy(),pictures:200,rasters:1600}),renderer=new SceneRenderer(ck,{incremental:true,memory}),reference=new SceneRenderer(ck),resources=new Map(),quads=[];
+ const originals=[];
+ for(let n=0;n<3;n++){
+  const recorder=new ck.PictureRecorder(),canvas=recorder.beginRecording([0,0,20,20]),paint=new ck.Paint();paint.setColor([n===0?1:0,n===1?1:0,n===2?1:0,1]);canvas.drawRect([0,0,20,20],paint);const picture=recorder.finishRecordingAsPicture();
+  resources.set(String(n),picture.serialize());originals.push({picture,paint,recorder});quads.push({kind:'picture',resourceId:String(n),width:20,height:20,quadScale:1,contentOrigin:[0,0],matrix:[1,0,n*20,0,1,0,0,0,1],rect:[0,0,20,20],visible:[0,0,20,20],clip:null,opacity:1});
+ }
+ const scene={rootPass:'root',passes:[{id:'root',output:rect,quads}]};
+ try{
+  for(let n=0;n<12;n++){
+   quads[0].matrix[5]=n;const a=renderer.render(scene,resources,ck.WHITE),b=reference.render(scene,resources,ck.WHITE);
+   try{assert.deepEqual(PNG.sync.read(Buffer.from(a.image.encodeToBytes())).data,PNG.sync.read(Buffer.from(b.image.encodeToBytes())).data);}finally{a.release();b.image.delete();b.surface.dispose();}
+   assert.ok(renderer.pictureBytes<=200);assert.ok(renderer.rasterPixels<=400);
+  }
+  assert.ok(renderer.stats.pictureEvictions>0&&renderer.stats.rasterEvictions>0);
+  renderer.clear();assert.equal(memory.snapshot().domains.wasm,0);assert.equal(memory.snapshot().owners,0);
+ }finally{renderer.clear();reference.clear();for(const entry of originals){entry.picture.delete();entry.paint.delete();entry.recorder.delete();}}
+});
+
+test('pass deep copies and signatures stay budgeted through hits, in-place source edits and nonvisual metadata changes',()=>{
+ const memory=new ClientMemory(),renderer=new SceneRenderer(ck,{incremental:true,memory}),quad=solid([1,0,0,1]),pass={id:'root',output:rect,quads:[quad]},scene={rootPass:'root',passes:[pass]};
+ try{
+  renderer.render(scene,new Map(),ck.WHITE).release();const first=memory.snapshot().categories.passMetadata,owners=memory.snapshot().owners,stored=renderer.passCache.get('root').pass;assert.ok(first>0);
+  renderer.render(scene,new Map(),ck.WHITE).release();assert.equal(renderer.passCache.get('root').pass,stored);assert.equal(memory.snapshot().categories.passMetadata,first);
+  quad.color[0]=0;quad.color[2]=1;const changed=renderer.render(scene,new Map(),ck.WHITE);assert.deepEqual(pixel(PNG.sync.read(Buffer.from(changed.image.encodeToBytes())),50,50),[0,0,255,255]);changed.release();assert.equal(memory.snapshot().owners,owners);
+  const renders=renderer.stats.passRenders;for(let n=0;n<10;n++){pass.note='x'.repeat(1000+n);renderer.render(scene,new Map(),ck.WHITE).release();assert.ok(memory.snapshot().categories.passMetadata>first);assert.equal(memory.snapshot().owners,owners);}assert.equal(renderer.stats.passRenders,renders,'metadata-only changes must not redraw pixels');delete pass.note;renderer.render(scene,new Map(),ck.WHITE).release();assert.equal(memory.snapshot().categories.passMetadata,first);
+ }finally{renderer.clear();assert.equal(memory.snapshot().owners,0);assert.equal(memory.snapshot().domains.js,0);}
+});
+test('signature work admission fails before pixel allocation and retains the previous valid cache',()=>{
+ const memory=new ClientMemory({...memoryPolicy(),js:64*1024}),renderer=new SceneRenderer(ck,{incremental:true,memory}),pass={id:'root',output:rect,quads:[solid([1,0,0,1])]},scene={rootPass:'root',passes:[pass]};
+ try{renderer.render(scene,new Map(),ck.WHITE).release();const before=memory.snapshot(),allocations=renderer.stats.passSurfaceAllocations;pass.note='x'.repeat(8000);assert.throws(()=>renderer.render(scene,new Map(),ck.WHITE),/memory budget/);assert.equal(renderer.stats.passSurfaceAllocations,allocations);assert.equal(memory.snapshot().owners,before.owners);assert.equal(memory.snapshot().categories.passMetadata,before.categories.passMetadata);assert.deepEqual(pixel(PNG.sync.read(Buffer.from(renderer.passCache.get('root').image.encodeToBytes())),50,50),[255,0,0,255]);delete pass.note;renderer.render(scene,new Map(),ck.WHITE).release();}finally{renderer.clear();assert.equal(memory.snapshot().owners,0);}
+});
+test('failed reuse drops its pass metadata and pixels while a later replay can recover',()=>{
+ const memory=new ClientMemory(),renderer=new SceneRenderer(ck,{incremental:true,memory}),quad=solid([1,0,0,1]),scene={rootPass:'root',passes:[{id:'root',output:rect,quads:[quad]}]};
+ try{renderer.render(scene,new Map(),ck.WHITE).release();quad.kind='invalid';assert.throws(()=>renderer.render(scene,new Map(),ck.WHITE),/Unsupported/);assert.equal(memory.snapshot().owners,0);quad.kind='solid';renderer.render(scene,new Map(),ck.WHITE).release();assert.ok(memory.snapshot().categories.passMetadata>0);}finally{renderer.clear();assert.equal(memory.snapshot().owners,0);}
+});
+test('removed child passes release their metadata; a device cleanup error still releases the remaining pass surface and metadata',()=>{
+ const memory=new ClientMemory(),renderer=new SceneRenderer(ck,{incremental:true,memory}),scene={rootPass:'root',passes:[{id:'child',output:rect,quads:[solid([1,0,0,1])]},{id:'root',output:rect,quads:[{kind:'pass',passId:'child',matrix,rect,visible:rect,clip:null,opacity:1}]}]};
+ renderer.render(scene,new Map(),ck.WHITE).release();const both=memory.snapshot().categories.passMetadata;scene.passes=[{id:'root',output:rect,quads:[solid([0,1,0,1])]}];renderer.render(scene,new Map(),ck.WHITE).release();assert.equal(renderer.passCache.size,1);assert.ok(memory.snapshot().categories.passMetadata<both);const entry=renderer.passCache.get('root'),dispose=entry.image.delete.bind(entry.image);entry.image.delete=()=>{dispose();throw new Error('device cleanup probe');};assert.throws(()=>renderer.clear(),/device cleanup probe/);assert.equal(renderer.passCache.size,0);assert.equal(memory.snapshot().owners,0);renderer.clear();
+});
+test('a device error while reusing a pass releases its metadata and surface and resets render activity',()=>{
+ const memory=new ClientMemory(),renderer=new SceneRenderer(ck,{incremental:true,memory}),quad=solid([1,0,0,1]),scene={rootPass:'root',passes:[{id:'root',output:rect,quads:[quad]}]};renderer.render(scene,new Map(),ck.WHITE).release();const entry=renderer.passCache.get('root'),dispose=entry.image.delete.bind(entry.image);entry.image.delete=()=>{dispose();throw new Error('reuse cleanup probe');};quad.color=[0,0,1,1];assert.throws(()=>renderer.render(scene,new Map(),ck.WHITE),/reuse cleanup probe/);assert.equal(renderer.busy,false);assert.equal(memory.snapshot().owners,0);renderer.render(scene,new Map(),ck.WHITE).release();renderer.clear();assert.equal(memory.snapshot().owners,0);
+});
+test('oversized decoded estimates are refused before CanvasKit MakePicture is called',()=>{
+ const memory=new ClientMemory({...memoryPolicy(),wasm:ck.HEAPU8.buffer.byteLength+2*1024*1024}),renderer=new SceneRenderer(ck,{memory,rasterCache:false}),area=[0,0,10,10],quad={kind:'picture',resourceId:'large',width:10,height:10,quadScale:1,contentOrigin:[0,0],rect:area,visible:area,matrix,clip:null,opacity:1},scene={rootPass:'root',passes:[{id:'root',output:area,quads:[quad]}]},original=ck.MakePicture;let calls=0;ck.MakePicture=(...args)=>{calls++;return original(...args);};
+ try{assert.throws(()=>renderer.render(scene,new Map([['large',new Uint8Array(32)]]),ck.WHITE,{large:{imageBytes:64*1024*1024,fontBytes:0}}),/picture decode headroom/);assert.equal(calls,0);assert.equal(memory.snapshot().categories.pictureDecode,undefined);}finally{ck.MakePicture=original;renderer.clear();assert.equal(memory.snapshot().owners,0);}
+});
+test('a picture larger than the LRU uses transient ownership, then cached rasters avoid repeated decoding',()=>{
+ const memory=new ClientMemory({...memoryPolicy(),pictures:1}),renderer=new SceneRenderer(ck,{memory,incremental:false,rasterCache:true}),recorder=new ck.PictureRecorder(),canvas=recorder.beginRecording([0,0,10,10]),paint=new ck.Paint();paint.setColor(ck.RED);canvas.drawRect([0,0,10,10],paint);const picture=recorder.finishRecordingAsPicture(),bytes=picture.serialize(),area=[0,0,10,10],quad={kind:'picture',resourceId:'tiny-cache',width:10,height:10,quadScale:1,contentOrigin:[0,0],rect:area,visible:area,matrix,clip:null,opacity:1},scene={rootPass:'root',passes:[{id:'root',output:area,quads:[quad]}]};
+ try{for(let n=0;n<2;n++){const out=renderer.render(scene,new Map([['tiny-cache',bytes]]),ck.WHITE,{'tiny-cache':{imageBytes:0,fontBytes:0}});assert.deepEqual(pixel(PNG.sync.read(Buffer.from(out.image.encodeToBytes())),5,5),[255,0,0,255]);out.image.delete();out.surface.dispose();assert.equal(renderer.pictureBytes,0);assert.equal(renderer.pictures.size,0);assert.equal(memory.snapshot().categories.pictureTransient,undefined);assert.equal(memory.snapshot().categories.pictureDecode,undefined);}assert.equal(renderer.stats.pictureDecodes,1);assert.equal(renderer.stats.pictureRasterHits,1);}finally{renderer.clear();picture.delete();paint.delete();recorder.delete();assert.equal(memory.snapshot().owners,0);}
 });

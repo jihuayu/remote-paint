@@ -1,0 +1,93 @@
+{
+  "at": "2026-10-16T19:09:43.235337+00:00",
+  "version": {
+    "at": "2026-10-16T19:09:43.235337+00:00",
+    "uncommitted": true,
+    "sha256": {
+      "protocol/metadata-json.mjs": "709ee342f7e3bb996ad2f32c39d879d3d33e5363b2bccb7c9c9270b7311ce0d1",
+      "viewer/live.mjs": "a2aea6607bdaee4d5c1256e95c7283413486706ad7d35e782434d07bae3d1902",
+      "viewer/stream-worker.mjs": "0a429793b5a98e0ac5165b2540d4747c6f2f598b51268d11839e553eae7854c4",
+      "viewer/control-channel.mjs": "5053afe5844d4cb9233a572ef55615eeaeb3730a774d3bf36c4b93a9ead22dc6",
+      "live/viewer-assets.mjs": "564971b50accdd94dc2aaf3d3f6636a43b63f5def16d22789bc9c099b3d0e42c",
+      "tests/metadata-json.test.mjs": "1399cce6bc218565c349549ca79aa3e33dc0431fa9437f8300483fb58b569bcc",
+      "tests/verify-metadata-admission.mjs": "9ebf8b7f6ed78a68e73119be45c34b414990edba18088b06d24dd01e6638b32f"
+    }
+  },
+  "scope": "Allocation-free UTF8/structure inspection before JSON.parse, pre-parse conservative receive reservation retained through queue completion, same structural bounds on control channel. Does not measure JS engine allocator or browser socket internals.",
+  "checks": {
+    "nodeTests": 123,
+    "adversarialBrowserCases": 8,
+    "browser": {
+      "at": "2026-10-16T19:07:54.671Z",
+      "scope": "Actual Chrome Worker/main sockets with valid CanvasKit fixture baseline and adversarial SceneUpdate/control metadata; structural/UTF8 pre-parse refusal, close and receive cleanup. Node fixture transport, not source capture/performance.",
+      "variants": [
+        {
+          "worker": true,
+          "kind": "scene-depth",
+          "closeCode": 4008,
+          "previousPixelsPreserved": true,
+          "receiveReleased": true
+        },
+        {
+          "worker": true,
+          "kind": "control-depth",
+          "closeCode": 4008,
+          "previousPixelsPreserved": true,
+          "receiveReleased": true
+        },
+        {
+          "worker": true,
+          "kind": "utf8-bytes",
+          "closeCode": 4008,
+          "previousPixelsPreserved": true,
+          "receiveReleased": true
+        },
+        {
+          "worker": true,
+          "kind": "invalid-json",
+          "closeCode": 4008,
+          "previousPixelsPreserved": true,
+          "receiveReleased": true
+        },
+        {
+          "worker": false,
+          "kind": "scene-depth",
+          "closeCode": 4008,
+          "previousPixelsPreserved": true,
+          "receiveReleased": true
+        },
+        {
+          "worker": false,
+          "kind": "control-depth",
+          "closeCode": 4008,
+          "previousPixelsPreserved": true,
+          "receiveReleased": true
+        },
+        {
+          "worker": false,
+          "kind": "utf8-bytes",
+          "closeCode": 4008,
+          "previousPixelsPreserved": true,
+          "receiveReleased": true
+        },
+        {
+          "worker": false,
+          "kind": "invalid-json",
+          "closeCode": 4008,
+          "previousPixelsPreserved": true,
+          "receiveReleased": true
+        }
+      ],
+      "status": "passed"
+    },
+    "nativeFullReplay": "passed; one expected navigation invalidation recorded",
+    "nativeInputFeedback": "passed both Worker/main",
+    "assetCacheIntegrity": "passed",
+    "workerControl": "passed; bounded control parsing preserves independent input/revocation"
+  },
+  "remaining": [
+    "UI/Worker message cloning and JS VM/transport allocations not fully counted",
+    "driver/process physical overhead remains outside estimates",
+    "current version eight-hour acceptance pending; old frozen run remains separate"
+  ]
+}

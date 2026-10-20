@@ -1,0 +1,675 @@
+{
+  "at": "2026-10-16T15:31:38.933Z",
+  "scope": "Actual Chromium HTTP cache + CanvasKit Worker/main-thread fixture replay; native Rust build mismatch refusal; not source-browser performance or a repeated latency benchmark",
+  "viewerBuild": "a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8",
+  "immutableWasm": true,
+  "sessionConfigNoStore": true,
+  "entryHtmlNoStore": true,
+  "conditionalStatus": 304,
+  "staleAssetStatus": 410,
+  "buildMismatchClose": 1008,
+  "buildMismatchVisibleInUi": true,
+  "corruptWasmRejectedBeforeExecution": true,
+  "rawWasmBytes": 8242911,
+  "compressedWasmBytes": 3484204,
+  "results": [
+    {
+      "mainThread": false,
+      "measurements": [
+        {
+          "pass": 0,
+          "firstFrameMs": 586.9792000000001,
+          "startup": {
+            "wasmFetchMs": 34.5,
+            "wasmVerifyMs": 6.5999999940395355,
+            "wasmInitMs": 70.5,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": true
+          },
+          "resources": [
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 3484504,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.css",
+              "transferSize": 1280,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.js",
+              "transferSize": 41634,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.mjs",
+              "transferSize": 4743,
+              "decodedBodySize": 12476
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/input.mjs",
+              "transferSize": 4495,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/wire.mjs",
+              "transferSize": 1927,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/asset-wire.mjs",
+              "transferSize": 1491,
+              "decodedBodySize": 2747
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/live-wire.mjs",
+              "transferSize": 2783,
+              "decodedBodySize": 7115
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/frame-presenter.mjs",
+              "transferSize": 3085,
+              "decodedBodySize": 7803
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/control-channel.mjs",
+              "transferSize": 1358,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/scene-renderer.mjs",
+              "transferSize": 3956,
+              "decodedBodySize": 9973
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/damage.mjs",
+              "transferSize": 1309,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/stream-worker.mjs",
+              "transferSize": 4070,
+              "decodedBodySize": 9388
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/canvaskit-worker.mjs",
+              "transferSize": 41641,
+              "decodedBodySize": 123737
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7803
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2747
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7115
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9973
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            }
+          ],
+          "workerResources": [
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ]
+        },
+        {
+          "pass": 1,
+          "firstFrameMs": 629.9109579999999,
+          "startup": {
+            "wasmFetchMs": 33.70000000298023,
+            "wasmVerifyMs": 4.700000002980232,
+            "wasmInitMs": 72.19999998807907,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": true
+          },
+          "resources": [
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.css",
+              "transferSize": 0,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.js",
+              "transferSize": 0,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12476
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/input.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2747
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7115
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7803
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/control-channel.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9973
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/stream-worker.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9388
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/canvaskit-worker.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 123737
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7803
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2747
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7115
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9973
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            }
+          ],
+          "workerResources": [
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ]
+        },
+        {
+          "pass": 2,
+          "firstFrameMs": 640.4082029999997,
+          "startup": {
+            "wasmFetchMs": 34.79999999701977,
+            "wasmVerifyMs": 4.9000000059604645,
+            "wasmInitMs": 93,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": true
+          },
+          "resources": [
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.css",
+              "transferSize": 0,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.js",
+              "transferSize": 0,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12476
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/input.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2747
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7115
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7803
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/control-channel.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9973
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/stream-worker.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9388
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/canvaskit-worker.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 123737
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7803
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2747
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7115
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9973
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            }
+          ],
+          "workerResources": [
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mainThread": true,
+      "measurements": [
+        {
+          "pass": 0,
+          "firstFrameMs": 520.9691600000001,
+          "startup": {
+            "wasmFetchMs": 6.5999999940395355,
+            "wasmVerifyMs": 5.200000002980232,
+            "wasmInitMs": 71.20000000298023,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": false
+          },
+          "resources": [
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 3484504,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.css",
+              "transferSize": 1280,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.js",
+              "transferSize": 41634,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.mjs",
+              "transferSize": 4743,
+              "decodedBodySize": 12476
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/input.mjs",
+              "transferSize": 4495,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/wire.mjs",
+              "transferSize": 1927,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/asset-wire.mjs",
+              "transferSize": 1491,
+              "decodedBodySize": 2747
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/live-wire.mjs",
+              "transferSize": 2783,
+              "decodedBodySize": 7115
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/frame-presenter.mjs",
+              "transferSize": 3085,
+              "decodedBodySize": 7803
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/control-channel.mjs",
+              "transferSize": 1358,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/scene-renderer.mjs",
+              "transferSize": 3956,
+              "decodedBodySize": 9973
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/damage.mjs",
+              "transferSize": 1309,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ],
+          "workerResources": []
+        },
+        {
+          "pass": 1,
+          "firstFrameMs": 621.9566020000002,
+          "startup": {
+            "wasmFetchMs": 7.0999999940395355,
+            "wasmVerifyMs": 4.5,
+            "wasmInitMs": 99.5,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": false
+          },
+          "resources": [
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.css",
+              "transferSize": 0,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.js",
+              "transferSize": 0,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12476
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/input.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2747
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7803
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7115
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/control-channel.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9973
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ],
+          "workerResources": []
+        },
+        {
+          "pass": 2,
+          "firstFrameMs": 195.803003,
+          "startup": {
+            "wasmFetchMs": 28.899999991059303,
+            "wasmVerifyMs": 4.800000011920929,
+            "wasmInitMs": 55.8999999910593,
+            "wasmBytes": 8242911,
+            "presentation": "cpu-2d",
+            "worker": false
+          },
+          "resources": [
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.css",
+              "transferSize": 0,
+              "decodedBodySize": 2118
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.js",
+              "transferSize": 0,
+              "decodedBodySize": 123707
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/live.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12476
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/input.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 12325
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 4297
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/asset-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2747
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/protocol/live-wire.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7115
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/frame-presenter.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 7803
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/control-channel.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2666
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/scene-renderer.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 9973
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/damage.mjs",
+              "transferSize": 0,
+              "decodedBodySize": 2288
+            },
+            {
+              "name": "/assets/a531dfa670723526fed7699fc9ccdfd054cb34b16a92a75fcc8cdf8e2cca7ce8/vendor/canvaskit.wasm",
+              "transferSize": 0,
+              "decodedBodySize": 8242911
+            },
+            {
+              "name": "/session-config",
+              "transferSize": 401,
+              "decodedBodySize": 101
+            }
+          ],
+          "workerResources": []
+        }
+      ]
+    }
+  ]
+}

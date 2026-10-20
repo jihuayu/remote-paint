@@ -1,0 +1,96 @@
+{
+  "at": "2026-10-17T11:24:53.324860+00:00",
+  "status": "accepted-native-foundation-candidate-only-NOT-B1-complete",
+  "candidateBrowserSha256": "0fc8d1600f0e7a86228525aaceff1b2f189b04f4beb09f208ea09a70bea4afda",
+  "candidateBrowser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-subscription-checkpoint-browser-v3",
+  "frozenProject": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-subscription-checkpoint-project-v3",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-subscription-checkpoint-version-v3.json",
+  "canonicalUnchanged": {
+    "browser": "ecb176300cf9b11a2042b6a224c72b79653f8e026e467226dd0a408fd0191886",
+    "linuxBroker": "2385f69da5c8dd7ac4496d32292275766454ff9cbd3716a3fce6d0b4244b8e4c",
+    "macBroker": "64e21c77a39eb9c11136d7202cb20fe3e7e7cf65488ed7cee14cf5dfeff11a25"
+  },
+  "files": {
+    "native/chromium/BUILD.gn": "8f135d814e3c193aecbe9cdcd5721b93b3e5261d2650f4f79f83e680239e2906",
+    "native/chromium/subscription_state.h": "9f0603f5b570ac065028d30bb5423b03800703e576d137b765d92a842d5ab4a9",
+    "native/chromium/subscription_credit.h": "4c1a2a5066f3e88225171ab888b7450a4ef8440acc0ee9fcf16c650385c7af51",
+    "native/chromium/capture_state.h": "cebe339da6eccc768bef7aa839a20ae361a915769caa577088b8027936a06005",
+    "native/chromium/capture_state.cc": "5572e1f260a8e651d638fd232cdebf44843324eb0392c73eb77727e9f3d3636a",
+    "native/chromium/socket_transport.h": "fc3e3c6f1232190b4daeca33e14be3f72b7178bd5534e1069e98a97b63f8e5a4",
+    "native/chromium/cc_capture.inc": "d7833798b4529935b566926835b3ee598a22bb524fe625970b3edef1df78e856",
+    "native/chromium/extension_capture.inc": "55ce0c88d1bbbd46bb4bd68b5fc5ed42220fc0e974e7a32307531a8e8d21887e",
+    "native/chromium/serializer_unittest.cc": "f3394a05a74f9064a03888f7f518a58169c5c642274367b9adc0b9d75fc46004",
+    "native/patches/0013-native-subscription-lifecycle.patch": "025f436302dbea8adaa5410257bf37674c05cfd9ca1fa1bf25f4f1d19b039756",
+    "tests/verify-native-subscription.mjs": "e2f4a7030a5a2daef6fea1fc61f430004565f9f3c122639a4dabbef328e033e7"
+  },
+  "implemented": [
+    "Renderer-process fixed4scalar subscription bindings andnon-overlapping JS-safe native ordinal ranges;last-started queries include encoding/IPC jobs. Legacy andpersistent jobs share the four-job admission cap.",
+    "Isolated main-frame token-authenticated bind/inspect/update/enable/cancel API. Bind starts disabled;one-time policy registration can precede enabling. Input ismonotonic;target epoch,viewport anddimensions areimmutable perbinding.",
+    "Synchronous native invalidation atnew-document,script-context release andframe destruction,independent ofNode navigationnotification. Canceledjobs keeptheir exact slot untilcompletion;latecredit cannotresurrect oldhosts.",
+    "Bind/input update/resume captures the main-thread pending SourceFrameNumber;CC mustactivate that commit before labeling a recording withthe newcontext. Compositor-only subsequent frames neednoforcedmaincommit.",
+    "CC takes persistent snapshots onlywhileenabled andwithout anoutstanding job;immutable actualCaptureOwner/SkPicture/encoded owners outlive definitive credit. Native resource IPC keeps exact-frame Viz markers. No V8 per-frame callback isneeded for this branch.",
+    "Fixed56byte RPC3receipt validates scope/generation/ordinal/status/reservedbytes. Five-secondlock/write/receiptbudgetusesdeadline-checkedTry/adopt acquisition andpartialI/O checks;existingconnectretainsitsseparate1s timeout. Missing/invalidcredit pauses;Retry/resumeforcesfullresources andoldACK cannotclearnewerfullrevision."
+  ],
+  "verification": {
+    "cppActualLinux": 66,
+    "nativeSyntheticCreditChecks": 9,
+    "nativeSerializedViewportRepetitions": 12,
+    "nativeSteadyFrameProof": "Eight natural native frames afterenable withzeroadditional Runtime.evaluate calls andzeroRuntime.awaitPromise. This testsnative branch only;defaultSource remains one-shot.",
+    "frozenNativeReport": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-subscription-frozen-runtime-v3.json",
+    "frozenCanvasReport": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-subscription-frozen-canvas-v3.json",
+    "canvas": "Real frozen candidate → unchanged Rust Broker → CPU CanvasKit;static geometry/text/Canvas,12same-frame animated Canvas+DOM samples,3colors,navigation andresize passed;pixel difference .0044074074.",
+    "legacyFullLive": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-subscription-live-v3.json",
+    "legacyFullLiveScope": "Actualcandidate default one-shotSource → unchangedRustBroker/Gateway → realViewer: exactprivate/blobimagepixels,text/input,slow1013,reconnect,cache repair,nav/resize andidle cleanup passed. Legitimate single navigation invalidation retained.",
+    "failedRuns": [
+      {
+        "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-subscription-runtime-failed-v1.json",
+        "status": "retained failure:viewporttimedout;no clockdiagnostics,individualcauseunproven"
+      },
+      {
+        "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-subscription-runtime-failed-v3.json",
+        "status": "harness initiallypaused onalegitimate preceding old-geometryframe beforebrowserresizeACKreachedrenderer;changedreceiver towaitfortypednativegeometryfailure,notaddarbitrarydelay"
+      },
+      {
+        "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-subscription-runtime-failed-v4.json",
+        "status": "reproduced externalBeginFrameACKloss onunsynchronized LocalSurfaceId changes;realSource.resizealreadydrainscapture/stopsclock.Newharnessuses thesamebarrier,then12freshrepetitionspasswithallACKs."
+      }
+    ],
+    "startupHarnessFailure": "FirstlegacyLiveattempt lackedCHROME_EXECUTABLE_PATH;noViewerexecutablewaspresent atPlaywright default. ExplicitunchangedcanonicalViewerverifiedthe subsequent run.",
+    "slowLegacyWriter": {
+      "actualFrozenCppResult": {
+        "name": "SlowLegacyWriterCannotExtendNativeLockDeadline",
+        "file": "../../components/remote_paint/serializer_unittest.cc",
+        "line": 912,
+        "status": "RUN",
+        "result": "COMPLETED",
+        "timestamp": "2026-10-17T11:22:57Z",
+        "time": "6.266s",
+        "classname": "RemotePaintSubscriptionCredit"
+      },
+      "proof": "A real Unix server drains16KiB/250ms for6250ms whilea real1MiB legacy writer holds the socket lock. Native credit wait returnswithoutcredit in4500..5750ms whilethelegacywriterisstillactive. Allthreads/sockets thenjoined/closed. This independently verifies boundedlock acquisition rather thaninferreddeadline placement.",
+      "scope": "Encoder worker contention/write/credit handling;not a hardreal-timeOS guarantee. Existing connect hasitsseparate1s sockettimeout;connect-failure/backlog behavior remainsseparate fromthisreal locktest."
+    }
+  },
+  "remaining": [
+    "ProductionBroker scope authorization,range/contextvalidation,exactnativepairing,serializedMapper/historyactorandcreditonlyaftermapping/publication;boundedqueues andcontrolprogress.",
+    "AggregatedVizrootcanresizebeforethe rendererCCtree;nativeCCviewportguard aloneisinsufficient. BrokermustindependentlyrejectRoot/contextmismatchbeforemapping/credit. Test-onlyreceiversyntheticRetryisnotproductionimplementation.",
+    "Source continuous lifecycle/demand/pressure integration;native last-startedfenceforobservation;inputACK/nativeupdateordering;native drainbeforeresize/stop. Removeper-frameRuntime registration/awaitPromise/Node map/publish inthe actualdefaultpath.",
+    "Frozen actualautonomouspixels,nav/resize/cancel,slow/pressure,4display+2automation,resourcepool/57.8MB/Base64/423rollback/9MiBprogress andcloseacceptance beforecanonicalpromotion.",
+    "C5eight-hour remainsfailed/noactive8h;all41/N1,fullSession/PSS/nativeandNodeVM,SDK/compatibility/physicalIME/publicnetwork/packaging remain."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalPromoted": false,
+  "postCheckpointAudit": {
+    "status": "fixed-and-freshly-verified-v3-native-candidate-only",
+    "predecessor": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-subscription-foundation-pre-lock-fix-v2.json",
+    "finding": "v2 blocking AutoLock acquisition couldoutlivethe5s pendingtransferdeadline withaslowlegacywriter. v3 usesdeadlinecheckedTry/adopt acquisition,keepinglegacysendsemantics andnotclosing anotherjob socket onlock-timeout.",
+    "actualCpp": 66,
+    "candidateHash": "0fc8d1600f0e7a86228525aaceff1b2f189b04f4beb09f208ea09a70bea4afda",
+    "canonicalPromoted": false
+  }
+}

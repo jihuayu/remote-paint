@@ -1,0 +1,193 @@
+{
+  "at": "2026-10-16T19:04:08.253407+00:00",
+  "scope": "Complete indexed native resource estimates negotiated by actual Rust/Node sources; Viewer pre-decode conservative Wasm headroom, transient picture ownership and GPU-to-CPU admission. Not a physical process/driver bound or eight-hour acceptance.",
+  "version": {
+    "at": "2026-10-16T19:04:08.253407+00:00",
+    "gitHead": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "uncommitted": true,
+    "sha256": {
+      "protocol/client-memory.mjs": "4cc4c66868030de49ca919d7b24e7a4dfe354fb6a9ba2f4b4fba8e7370c0ed55",
+      "protocol/live-wire.mjs": "8dc1fdfc91d001bed3df8ad2347cc584dc66944734182ac976bb313ee73adea7",
+      "protocol/resource-memory.mjs": "5a30334dccf36b00bd908bf6585f49fac18e8da412fe424899e7c5d22bb1e777",
+      "viewer/frame-presenter.mjs": "3193a7aa11c6008cf2be6fa02dfdafe65a76c76d25412fc81436a5d062d7575c",
+      "viewer/scene-renderer.mjs": "737c5981b925a8be641f8eecaf6f3b2dd044fdc7d1058aebf221a95170cae2ff",
+      "viewer/renderer-runtime.mjs": "dcb5d991de24b98613f9214598457b13d129aa120565b9fa5ec036188a696683",
+      "viewer/live.mjs": "781798d37c913676cb6075cb83ed289bfbe8c844d30260bea193c1e449ace5c6",
+      "viewer/stream-worker.mjs": "42f02932394bf3d220dc7fab95f23766b44e0c647aa431f2912fa7e566180571",
+      "live/source.mjs": "e847fd926d1690ba3cddee8c34da1c5440b539fe9f35cc1df115e97d780987f1",
+      "live/transport.mjs": "76a293916589349a0366bd23afcd2d86a89471c7285ef305053a061f570351d9",
+      "live/native-peers.mjs": "86702ca5754220edf02e54d42c6bc49d4eb55e255ad1893723cb0e1fbcb4b361",
+      "live/viewer-assets.mjs": "444f154ca9f0e938622741053ec3ea52fdb332350474e0fab92838e3d07bae86",
+      "capture/scene.mjs": "36f21ddce799e762b14683fb3a6902d5cd246fa682e046c32aed773a74a7e82b",
+      "native/broker/src/gateway.rs": "ab67adc3aee4eb479858b5cafc30ba6ac39a95b5a56207eca0d72899509e39ad",
+      "native/broker/src/assets.rs": "dc636078329cffede274db7b460090a5ee8293bc620c78d95721b75bcb994443",
+      "native/broker/src/scene.rs": "1a5865835440b85ca1b64fc018154369040166d9ff06e4f41c413d1a3ecf1485",
+      "native/chromium/serializer.h": "dcb6213497795b5361fda26d2f62e2ce0e4636b4e98d807e21cdb650e175cdde",
+      "native/chromium/serializer.cc": "f90fa4d3a6c8ea4d9ddb9a7264f6c37ffcde4719bb45e8c9450c5fc64977192a",
+      "native/chromium/serializer_unittest.cc": "4985d09b0fee842eb91df03355c2bb4e64a2381df62a630b973cc82da6030ec7",
+      "native/chromium/font_subset.h": "a0ef6e8b07487412cf5632a8bd5b6d094beeb617cdfcdac802113286a6b7f8e8",
+      "native/chromium/font_subset.cc": "b3e1dd8c3502c97094b30d232e0c14d2f57605b98206375b63bd516fdd06f64c",
+      "native/chromium/capture_state.cc": "77b12f093b079370abbcfb7008656a1a5e8404b2fcdec803c3a0c897ad7126ef",
+      "tests/client-memory.test.mjs": "72616d9e0f23ee99cf490a60c1c819ac8c9b736c109e19fce24149bf24426e3f",
+      "tests/resource-memory.test.mjs": "17e8df2afaea45f44df045a2ee6a7af800b74c77791fe8dfee9a015789d01ca1",
+      "tests/scene-memory.test.mjs": "d5349320d50fb8841a9c221265fe03c5ef73b9edb8fd9601ff9c516da0e44cd0",
+      "tests/verify-decode-admission.mjs": "9c0e0fcb7d93023a360028eb7a6cab867df8556e0f82b7dab6757334e12a6321",
+      "tests/verify-resource-memory.mjs": "b89a87d81b27ba6c164eadd8b3e43ad5e455d1d6960e7d2d7f703067b754b674",
+      "tests/verify-presentation.mjs": "2d765822ad9841142f106bcbdd2f06c3e4a05b80a74049d746045534e24828df",
+      "tests/verify-renderer-runtime.mjs": "a8cef6a9f050695ac6d3318662c11cd4653fa5467dbfbb38893ead57da539616",
+      "native/bin/remote-paint-broker": "f01af6b22e3ccd58216754a85f04e13e82e6ddf19934d4a71cbec8d3048a5bd5",
+      "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": "e78341a8521533f81bd0151e5c0a944c88b7ab9c27c4b5d04d9a795609acfff4"
+    }
+  },
+  "nativeBrowser": {
+    "format": 1,
+    "target": {
+      "os": "linux",
+      "cpu": "arm64"
+    },
+    "buildProfile": "linux-arm64-host-cc",
+    "hostCrossCompiler": {
+      "mode": "mac-arm64-clang-cross",
+      "target": "aarch64-linux-gnu",
+      "compilerSha256": "b3785ad91b93cb56eac31eaef5d8cf5ef71fae512843417a55bd3912b4d41766",
+      "compilerVersion": "clang version 24.0.0git (https://chromium.googlesource.com/a/external/github.com/llvm/llvm-project 86922d51225db089fffb99475eefc4904f79e3c8)",
+      "jobs": 4
+    },
+    "chromiumRevision": "a49e2e3d4addfd84e765b52afe230bedb81096db",
+    "skiaRevision": "29ed1e87a0a50f3d8347e988842d9d59e7573efa",
+    "nativeSources": {
+      "BUILD.gn": "c4ee4bdfddc3da6b92fce01d8f56076e2caafffdc030a9ac32ee34a6af23a3ee",
+      "capture_state.cc": "77b12f093b079370abbcfb7008656a1a5e8404b2fcdec803c3a0c897ad7126ef",
+      "capture_state.h": "7185d7868ab01d23343070042bbe251846076cc5887df2f591e11ee5d4e0f63b",
+      "cc_capture.inc": "7e935207ded492313c982732c692d0becccd0497877360215d4e671b7f6678ab",
+      "extension_capture.inc": "d4cca278fcfb24f90bd253d366eda190e5d81d0e33bf8c5f21b6d267dfe08421",
+      "font_subset.cc": "b3e1dd8c3502c97094b30d232e0c14d2f57605b98206375b63bd516fdd06f64c",
+      "font_subset.h": "a0ef6e8b07487412cf5632a8bd5b6d094beeb617cdfcdac802113286a6b7f8e8",
+      "serializer.cc": "f90fa4d3a6c8ea4d9ddb9a7264f6c37ffcde4719bb45e8c9450c5fc64977192a",
+      "serializer.h": "dcb6213497795b5361fda26d2f62e2ce0e4636b4e98d807e21cdb650e175cdde",
+      "serializer_unittest.cc": "4985d09b0fee842eb91df03355c2bb4e64a2381df62a630b973cc82da6030ec7",
+      "socket_transport.h": "aa55764ef39cc802f560c03bde5886fcb382b8c1833314465f19189a3e2ad4c1",
+      "test_main.cc": "2683a596f6572109fb43c7a70c125ceb023df1796e70fc025f44a477012d9fb6",
+      "viz_capture.cc": "b24bf3f6c7d99e8276155b250a0dffc4067b5ef3fecc0ae420ad05b03f97d717",
+      "viz_capture.h": "c10433e61457d8deeba6b0f73505bb01037e7726e5fbae6f3f07995c40da7306"
+    },
+    "patches": {
+      "0001-async-capture.patch": "50b45c2d8fea81c8230644bdf9e3bd80c92b23285d263d88cefbf1fd368b5e2f",
+      "0002-compositor-viz-pairing.patch": "ecefbed1a09f81f23082955c74f2aa6a94946fa724e45901cb4926bf66fab45b",
+      "0003-chromium-build-contracts.patch": "618e568969d778b55836d02cbecc62709968bd7c3c1a896fc536262b19fffe31",
+      "0004-v8-context-isolate.patch": "e6d91dd928da133c1d9437e8f55ccceb451029a4b4fdb5e9df6c6fdba2225983",
+      "0005-accumulate-tile-damage.patch": "8cbe9fd8c08c1cf77ea41c59e5e13ddcf9b6feaf813a56baab8fffa783e04a6a",
+      "0006-copy-damage-region-rects.patch": "f785000d601d48d2988430b8154da2996d7fa28a76a0c9971dc4da18e391801f",
+      "0007-webgl-layer-classification.patch": "59901b21c9af2df1e746a6df655c1eed8c4ecac5b046700afe7c058efc84d7e4"
+    },
+    "patchedSources": {
+      "content/renderer/gpu_benchmarking_extension.cc": "e3becb774bcce814073a6da5e33fbbc1350fade2e11d1164d26e7a24a3728b67",
+      "content/renderer/gpu_benchmarking_extension.h": "d674acd0223fe1f0c9068a9ca62f78452b9c1a049520d5f587419874dbfd4ab8",
+      "content/renderer/BUILD.gn": "2d4bcd546ae90a6cf1a99f25e55fad7d5545784327338b97d1f05eb1ff89924b",
+      "content/browser/renderer_host/render_process_host_impl.cc": "12b866e91c414a2f1fb8776a44ada9a34d32dcdfd793103bf5434de2016e3b6c",
+      "content/renderer/render_frame_impl.cc": "4c4703a9eeab1d4b914dabab3d00b739958714b6e8384a19a2277571c62524c9",
+      "cc/BUILD.gn": "62b777a82e7bb5d79604627b5cae7dcad602e15846bc72c92bb66543852fe582",
+      "cc/trees/layer_tree_host_impl.cc": "287322683d39c6e5e487e4f2c7763be24f81c5cc93e572384cf6f24956940343",
+      "components/viz/common/quads/compositor_frame_metadata.h": "e605ec46868e93bf6d7b57451d1512415fbbf1707dcbaa758459f9ebd004a1c4",
+      "components/viz/common/quads/compositor_frame_metadata.cc": "ebe0b12fa91c1ec334f20b4e6bf457d9c63bfd79034a1b29bbca058803b3b870",
+      "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom": "ca153263077f4cbfe4af35a7ab446b2e77acf4bd6baa9b268ed2ffd684f7bfd1",
+      "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h": "38445da06359dfe644723b9f5048e3bc43c2eee9a6e79d8ddb0ec93a5a9a8f2d",
+      "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.cc": "3ebcab9dbdae731eb4d8241ca567a5d8290f437d5e2eb2279eba5983a8c468b1",
+      "components/viz/service/BUILD.gn": "115cbde256b205691a7a639cd62590e2102f73777d1abc96eddc592f68438f5f",
+      "components/viz/service/display/surface_aggregator.cc": "ab5095dac86fbee8498968e17d9485c314db82031c943a4f25ddb5af45849e8b",
+      "cc/layers/picture_layer_impl.cc": "56aef3ef25e1f22ff947b4f575af421e8b6d066914b19e981bd310738a143f53"
+    },
+    "argsSha256": "25a86fd4153e0f0fb6a2025dc9dc35ed4cb3993b92553d25b370fe49a005b339",
+    "hostConfiguration": {
+      "gnSha256": "36fe330f4e6a0c8cebcc893a72a6e70871fb395b501a811a231c80465b3fec9d",
+      "swiftShaderSha256": "75f21859d5caa845546086fc67816353d33b0da1edfc7d6a1844664f0b745fa8"
+    },
+    "binaries": {
+      "headless_shell": "e3575864b894bd557bdcc233fd997136e4fd46d8af57537eae024ea58a13d031",
+      "serializer_tests": "0e39c12dcdde077b6cf98e3ecea227b3b9b5191f7b867c20dd9a902888a1eadd"
+    },
+    "builtAt": "2026-10-16T18:57:34.130Z",
+    "incrementalGraphUpToDate": true,
+    "ninjaVersion": "1.13.2"
+  },
+  "contract": {
+    "at": "2026-10-16T18:43:05.923Z",
+    "scope": "Actual staged custom Chromium capture → Rust/Node data plane → complete per-resource decode estimates and CanvasKit first frame; complete resource negotiation and protected Viewer first frame; oversized-allocation refusal covered by separate unit/large-image probes",
+    "variants": [
+      {
+        "mode": "native",
+        "resources": 17,
+        "imageEstimateBytes": 720000,
+        "fontEstimateBytes": 96861348,
+        "manifestMatchesFrame": true,
+        "complete": true,
+        "sourceErrors": 0,
+        "viewerFirstFrame": true,
+        "viewerAdmissionNegotiated": true
+      },
+      {
+        "mode": "node",
+        "resources": 3,
+        "imageEstimateBytes": 240000,
+        "fontEstimateBytes": 19022392,
+        "manifestMatchesFrame": null,
+        "complete": true,
+        "sourceErrors": 0,
+        "viewerFirstFrame": true,
+        "viewerAdmissionNegotiated": true
+      }
+    ],
+    "status": "passed"
+  },
+  "largePng": {
+    "at": "2026-10-16T18:45:57.542Z",
+    "scope": "Actual staged Chromium PNG capture + native memory descriptor + CPU CanvasKit Worker/main;3072² highly compressed image, compact admission rejection and standard transient replay; not GPU driver peak or physical display measurement",
+    "image": {
+      "width": 3072,
+      "height": 3072,
+      "encodedBytes": 42082,
+      "rgbaF16Estimate": 75497472
+    },
+    "variants": [
+      {
+        "worker": true,
+        "compactRejectedBeforeVisibleCommit": true,
+        "previousFrame": 1,
+        "previousPixelsPreserved": true,
+        "compactWasmBytes": 134217728,
+        "standardReplayedLargeImage": true,
+        "standardWasmBytes": 134217728,
+        "transientOwnersReleased": true,
+        "sourceErrors": 0
+      },
+      {
+        "worker": false,
+        "compactRejectedBeforeVisibleCommit": true,
+        "previousFrame": 1,
+        "previousPixelsPreserved": true,
+        "compactWasmBytes": 134217728,
+        "standardReplayedLargeImage": true,
+        "standardWasmBytes": 134217728,
+        "transientOwnersReleased": true,
+        "sourceErrors": 0
+      }
+    ],
+    "status": "passed"
+  },
+  "checks": {
+    "nodeTests": 118,
+    "cppTests": 8,
+    "rustTests": 8,
+    "macAndLinuxMainWorkerPresentation": "passed; alpha/text/cache/resize/context loss and pre-upload GPU-budget fallback pixels",
+    "mainWorkerRuntimeRaces": "passed",
+    "nativeFullReplay": "passed; one expected navigation invalidation recorded",
+    "nativeInputFeedback": "passed",
+    "webglPlaceholder": "passed",
+    "assetCacheAndIntegrity": "passed"
+  },
+  "remaining": [
+    "wire JSON parse/transient traversal and UI/VM accounting",
+    "physical driver/process memory cannot be inferred solely from ledger",
+    "current code not covered by running frozen older eight-hour run"
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "scope": "Separate Node processes and native Linux browsers; three interleaved serial/parallel cold-asset preparations, no Viewer rendering; not a latency SLA",
+  "results": [
+    {
+      "mode": "serial",
+      "sessionReadyMs": 748.8726959999999,
+      "readiness": {
+        "navigation": "committed",
+        "capture": "ready",
+        "firstScene": false,
+        "navigationCommittedMs": 533.8623160000001,
+        "captureReadyMs": 576.0794890000001,
+        "firstSceneMs": null
+      }
+    },
+    {
+      "mode": "parallel",
+      "sessionReadyMs": 208.57905800000003,
+      "readiness": {
+        "navigation": "committed",
+        "capture": "ready",
+        "firstScene": false,
+        "navigationCommittedMs": 137.051353,
+        "captureReadyMs": 163.234781,
+        "firstSceneMs": null
+      }
+    },
+    {
+      "mode": "serial",
+      "sessionReadyMs": 295.59220799999997,
+      "readiness": {
+        "navigation": "committed",
+        "capture": "ready",
+        "firstScene": false,
+        "navigationCommittedMs": 118.97893900000003,
+        "captureReadyMs": 139.82927,
+        "firstSceneMs": null
+      }
+    },
+    {
+      "mode": "parallel",
+      "sessionReadyMs": 194.14200800000003,
+      "readiness": {
+        "navigation": "committed",
+        "capture": "ready",
+        "firstScene": false,
+        "navigationCommittedMs": 126.18000599999999,
+        "captureReadyMs": 149.494731,
+        "firstSceneMs": null
+      }
+    },
+    {
+      "mode": "serial",
+      "sessionReadyMs": 285.14146,
+      "readiness": {
+        "navigation": "committed",
+        "capture": "ready",
+        "firstScene": false,
+        "navigationCommittedMs": 115.208956,
+        "captureReadyMs": 134.66382999999996,
+        "firstSceneMs": null
+      }
+    },
+    {
+      "mode": "parallel",
+      "sessionReadyMs": 195.892111,
+      "readiness": {
+        "navigation": "committed",
+        "capture": "ready",
+        "firstScene": false,
+        "navigationCommittedMs": 123.02448699999997,
+        "captureReadyMs": 144.897632,
+        "firstSceneMs": null
+      }
+    }
+  ],
+  "notes": [
+    "First serial sample overlapped a host Cargo rebuild; retained without removing the outlier. Three pairs and medians are diagnostic, not a latency SLA."
+  ],
+  "mediansMs": {
+    "serial": 295.59220799999997,
+    "parallel": 195.892111
+  }
+}

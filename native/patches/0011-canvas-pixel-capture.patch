@@ -1,0 +1,14 @@
+--- a/cc/trees/layer_tree_host_impl.cc
++++ b/cc/trees/layer_tree_host_impl.cc
+@@ -4,6 +4,11 @@
+ 
+ #include "cc/trees/layer_tree_host_impl.h"
+ #include "components/remote_paint/capture_state.h"
++#include "components/remote_paint/canvas_capture.h"
++#include "components/viz/common/resources/shared_image_format_utils.h"
++#include "gpu/command_buffer/client/raster_interface.h"
++#include "third_party/skia/include/core/SkColorSpace.h"
++#include "third_party/skia/include/core/SkImage.h"
+ #include "base/process/process_handle.h"
+ #include "base/threading/platform_thread.h"
+ #include "cc/layers/picture_layer_impl.h"

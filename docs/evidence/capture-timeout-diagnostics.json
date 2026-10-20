@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-16T19:34:05.795927+00:00",
+  "scope": "Distinct native Viz timeout/cancel codes and bounded capture-phase error diagnostics, investigation foundation only; underlying long-run timeout not fixed or accepted",
+  "uncommitted": true,
+  "sha256": {
+    "capture/live.mjs": "0c146cf128d17fd681f03ca2f4f1628fa57f50466e53e226c2a93d4da789bd4a",
+    "capture/viz-ipc.mjs": "c63d8cd728d298ccb5ac76573ae626764619c3c222513c91f9623b9208e14ca4",
+    "live/source.mjs": "e5b63fa25b9709708dd151b971c82f1bf6dc8cf37e9580e975ba0762927ca926",
+    "tests/capture-demand.test.mjs": "e75e76bec37d9ec76646c4daf3d481477b981ee98da23cbccc639726cd9d8c87",
+    "tests/viz-timeout.test.mjs": "d40892e6ed01585bc1134cba02a738c24811f60aff79adb1a9380a67fe217520",
+    "tests/verify-memory-soak.mjs": "c7d30bafca06a2025cfdab4d2678545c4d5d39bd5baea43371d9246b3a730a26"
+  },
+  "checks": {
+    "nodeTests": 130,
+    "actualBrokerVizContract": "passed"
+  },
+  "shortReproductionPlan": {
+    "seconds": 180,
+    "burst": 1,
+    "intervalMs": 0,
+    "navigationEvery": 4
+  },
+  "eightHourStatus": "old frozen run failed; no passing report; not running"
+}

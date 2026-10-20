@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-16T16:44:32.831437+00:00",
+  "status": "running",
+  "runId": "6b9d3076-fdb9-4cdb-bfe0-bfeaea27b8c7",
+  "targetSeconds": 28800,
+  "latestCheckpoint": {
+    "at": "2026-10-16T16:44:08.458Z",
+    "elapsedSeconds": 310.94073050000003,
+    "cycle": 521,
+    "resizes": 47,
+    "navigations": 3,
+    "inputs": 32
+  },
+  "sourceVersion": {
+    "at": "2026-10-16T16:38:50.202062+00:00",
+    "scope": "C5 implementation checkpoint; frozen eight-hour run retains this source and browser version. Eight-hour success is not yet proven.",
+    "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+    "sha256": {
+      "viewer/renderer-runtime.mjs": "56ff3cd2df3a59a2a9bc647bb85eb472ef7861f332f6800c2e1d85ac25388c8a",
+      "viewer/frame-presenter.mjs": "8800652544b0991a1cdd75f392f1973c36f78fe216f981e469d30230f2c91266",
+      "viewer/scene-renderer.mjs": "093de17fcf7ab9694ee72ad2303b8224709008a1127dd820ea7c82387bd1dc3d",
+      "viewer/live.mjs": "55a50a9b38f5044655c2c7d545abc4571ee45f5093af8d15b23f2b3fde6c75b2",
+      "viewer/stream-worker.mjs": "d875b2ef4ef87f3c6e40b52e4a261c8fe11c993369744530c111cd483c5d976f",
+      "protocol/client-memory.mjs": "66677813c5fc4eb10e61cd10bcb44884d11475cb22b7d4c70e18426072f016eb",
+      "protocol/asset-wire.mjs": "b76a0cab4f53bc380da087af01bb159fecb6b1fa393c2772e865c068ce945db1",
+      "protocol/live-wire.mjs": "a7dce812e142c69eadbbd291b6af086417e6801fe4c8210539e3072655fd8ce4",
+      "capture/live.mjs": "1190e6526e8d96b36637e50d742ccccda16b6c46109f45f3ac2facdaba67153e",
+      "live/source.mjs": "cbbbb8e1591c8d5a9873e6c4da318dd5e3d583f43e874685ce50bd5bd52f84eb",
+      "live/static-assets.mjs": "d602b5062fb6ee2b49c0417b197bb4562f41cc9d2e395205aefd5773790f0f44",
+      "live/viewer-assets.mjs": "4c5d22c49a549738ac4c75dccee0790cbd252d6afdbeec7166cd7cf51fd752dc",
+      "tests/serve-memory-soak.mjs": "e556acb01bd0c1d12569ce4527360d1977a88fcd857fe48f44a37fc104e950f6",
+      "tests/verify-memory-soak.mjs": "5179b537d0b02af03c07c02aafe50570d514eff1992d94830eb0e23e3aa025c4",
+      "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": "ced9ff03b5e5dd3ef79d6edb3cabf54fb9c72a432d1faf7c3faf281c826d9924"
+    },
+    "browserSha256": "fa2cedec0bf2f3cd7d8d40e9de344a7a103fd66e7efb36b7afa9f377d8fb6c19",
+    "tests": {
+      "node": 84,
+      "short": {
+        "cycles": 589,
+        "resizes": 53,
+        "navigations": 4,
+        "inputs": 36,
+        "seconds": 120.385790708
+      },
+      "runtime": "main and Worker generation-clear and disposal during blocked reinitialization pass",
+      "native": "input, static assets, full live passed; expected navigation invalidations and bounded registration retries are separately recorded"
+    }
+  },
+  "notes": [
+    "Three actual Mac Chrome Viewers: Metal GPU Worker, CPU Worker and CPU main thread, with a frozen Linux native source.",
+    "Browser runtime files cloned into a separate directory with a different executable inode; future builds cannot overwrite this run.",
+    "Wasm/Skia GPU/JS VM heaps and process RSS are recorded separately. RSS includes shared pages; driver overhead is not a hard ledger cap.",
+    "The eight-hour gate requires continuous sample coverage; startup or a running status is not completion."
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-16T14:39:06.543Z",
+  "scope": "Native Rust paired control/data WebSockets and real CanvasKit Worker, fixture capture/fake CDP; injected synchronous Worker stall represents its event-loop blockage, not measured Wasm execution",
+  "workerStallMs": 1200,
+  "inputAckMs": 8.012959000000137,
+  "revokedMs": 18.613959000000023,
+  "controlOnUiThread": true,
+  "leaseRevokedBeforeWorkerResumed": true
+}

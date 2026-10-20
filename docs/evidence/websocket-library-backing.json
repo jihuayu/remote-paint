@@ -1,0 +1,1918 @@
+{
+  "at": "2026-10-17T04:44:35.714225+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Shared WebSocket library backing allowance before HTTP parse,role codec and raw-message read;2MiB fixed+3*role maxwrite until codec drop,2MiB final raw-payload owner through all aliases. Default512MiB,8MiB..2GiB;data16MiB+64KiB,control128KiB. Other builders/index/VM/native/OS/RSS/fullSession remain incomplete. All41+N1 remain7complete/12partial/22pending.",
+  "baseline": {
+    "at": "2026-10-17T04:29:22.814472+00:00",
+    "status": "measured",
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-baseline-layout.log",
+    "cases": [
+      "ws-backing-before-handshake: header_bytes=179 chunk=4096 live=131072 requested_peak=131072",
+      "ws-backing-before-handshake: header_bytes=64179 chunk=4096 live=131072 requested_peak=134367",
+      "ws-backing-before-handshake: header_bytes=64179 chunk=256 live=131072 requested_peak=134367",
+      "ws-backing-before-write: live_after_flush=16908396 requested_peak=25297058",
+      "ws-backing-before-read: fragment=32768 chunk=131072 live=131112 requested_peak=131112",
+      "ws-backing-before-read: fragment=1 chunk=1 live=163904 requested_peak=180264",
+      "ws-backing-before-read: fragment=31 chunk=256 live=161856 requested_peak=177192"
+    ],
+    "scope": "Pinned actualTungstenite0.28/bytes1.12.1 factory requested allocations,with source payload/request/frame wire prebuilt and kept alive. Observe reports live requested bytes at closure return,not allocator usable-size/RSS. Write gate discards bytes after flush;16,908,396 live bytes remain in actual library socket including read+write buffers;25,297,058 peak includes conservative realloc overlap. No live-peer/global Session measurement."
+  },
+  "dependencySources": {
+    "tungstenite-0.28.0/src/buffer.rs": "0b3b99d4c041fbeca72d1cf41706cd07ca9f7bd4caa37acf524f2cd6ba156c30",
+    "tungstenite-0.28.0/src/handshake/machine.rs": "54a82a2643682e2ae17a98e69dcfa8ad10761919ea42f696551970057a428420",
+    "tungstenite-0.28.0/src/handshake/headers.rs": "0e6d3e15faa8b82bd2a239f5094335368e578acef2f17ee74825de606f529b75",
+    "tungstenite-0.28.0/src/protocol/frame/mod.rs": "7f1c37d4626d2fbffe0adcc0da85fe515612be9395d3aaaa93dc82edf0ded986",
+    "tungstenite-0.28.0/src/protocol/message.rs": "de3313e228225b99c0747b6742e5356551874afe9f930704d60b3f9c1f8a74f7",
+    "bytes-1.12.1/src/bytes_mut.rs": "48bf55ffb1e3062082cae343c223e063104e3eee0a18f291a72942026062adbd"
+  },
+  "ownership": {
+    "poolBytes": 536870912,
+    "env": "REMOTE_PAINT_WEBSOCKET_BACKING_BYTES",
+    "range": "8MiB..2GiB",
+    "fixedBytesBeforeHttp": 2097152,
+    "rawMessageBytesBeforeRead": 2097152,
+    "writeFactor": 3,
+    "dataWriteLimit": 16842752,
+    "controlWriteLimit": 131072,
+    "fixedAndCodec": "Actual codec field drops before connection leases;postflush retained Vec capacity and reduced negotiated limit do not return credit.",
+    "raw": "Private Bytes::from_owner payload wrapper keeps independent credit through Text/Binary/Ping/Pong/Close reason clones or slices,even after socket destruction. Fixed allowance covers incomplete message collector/temporary autoPong/close drain,which does not escape.",
+    "denial": "Fixed quota may close TCP before parsing HTTP. Authenticated role denial returnsHTTP503;raw read denial closes1013 with bounded existing close drain. Normal fifth Viewer remains403.",
+    "invariants": "Existing32KiB incoming JSON/frame limits,512message/rate,12connection/fourViewer,16MiB raw resource and chunked256KiB scene contracts preserved. Role and fixed amounts conservatively cover pinned requested backing,not allocator usable-size or RSS."
+  },
+  "layout": [
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-failure partial: requested_peak=8192 fixed=2097152",
+      "requestedPeak": 8192,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-failure too-many-headers: requested_peak=8192 fixed=2097152",
+      "requestedPeak": 8192,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-failure small-packet-attack: requested_peak=16384 fixed=2097152",
+      "requestedPeak": 16384,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-failure broken-response: requested_peak=10236 fixed=2097152",
+      "requestedPeak": 10236,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-failure reject-after-role: requested_peak=10236 fixed=2097152",
+      "requestedPeak": 10236,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-handshake small: bytes=205 live=131072 requested_peak=131072 fixed=2097152",
+      "requestedPeak": 131072,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-read: fragment=32768 chunk=131072 ping=false live=131168 requested_peak=131168 fixed=2097152 raw_owner=2097152",
+      "requestedPeak": 131168,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-handshake max-bytes: bytes=65536 live=131072 requested_peak=137007 fixed=2097152",
+      "requestedPeak": 137007,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-handshake fragmented: bytes=64205 live=131072 requested_peak=135676 fixed=2097152",
+      "requestedPeak": 135676,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-handshake 124-headers: bytes=51733 live=131072 requested_peak=151996 fixed=2097152",
+      "requestedPeak": 151996,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-write data: live_after_flush=16973932 requested_peak=25395362 reservation=52625408 limit=16842752",
+      "requestedPeak": 25395362,
+      "reservation": 52625408
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-write control: live_after_flush=262252 requested_peak=327842 reservation=2490368 limit=131072",
+      "requestedPeak": 327842,
+      "reservation": 2490368
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-read: fragment=1 chunk=1 ping=false live=163960 requested_peak=180264 fixed=2097152 raw_owner=2097152",
+      "requestedPeak": 180264,
+      "reservation": 2097152
+    },
+    {
+      "platform": "mac-host",
+      "measurement": "ws-backing-read: fragment=31 chunk=256 ping=true live=161920 requested_peak=177200 fixed=2097152 raw_owner=2097152",
+      "requestedPeak": 177200,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-handshake small: bytes=205 live=131072 requested_peak=131072 fixed=2097152",
+      "requestedPeak": 131072,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-handshake max-bytes: bytes=65536 live=131072 requested_peak=137007 fixed=2097152",
+      "requestedPeak": 137007,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-handshake fragmented: bytes=64205 live=131072 requested_peak=135676 fixed=2097152",
+      "requestedPeak": 135676,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-handshake 124-headers: bytes=51733 live=131072 requested_peak=151996 fixed=2097152",
+      "requestedPeak": 151996,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-read: fragment=32768 chunk=131072 ping=false live=131168 requested_peak=131168 fixed=2097152 raw_owner=2097152",
+      "requestedPeak": 131168,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-failure partial: requested_peak=8192 fixed=2097152",
+      "requestedPeak": 8192,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-failure too-many-headers: requested_peak=8192 fixed=2097152",
+      "requestedPeak": 8192,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-failure small-packet-attack: requested_peak=16384 fixed=2097152",
+      "requestedPeak": 16384,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-failure broken-response: requested_peak=10236 fixed=2097152",
+      "requestedPeak": 10236,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-failure reject-after-role: requested_peak=10236 fixed=2097152",
+      "requestedPeak": 10236,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-write data: live_after_flush=16973932 requested_peak=25395362 reservation=52625408 limit=16842752",
+      "requestedPeak": 25395362,
+      "reservation": 52625408
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-write control: live_after_flush=262252 requested_peak=327842 reservation=2490368 limit=131072",
+      "requestedPeak": 327842,
+      "reservation": 2490368
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-read: fragment=1 chunk=1 ping=false live=163960 requested_peak=180264 fixed=2097152 raw_owner=2097152",
+      "requestedPeak": 180264,
+      "reservation": 2097152
+    },
+    {
+      "platform": "linux-arm64",
+      "measurement": "ws-backing-read: fragment=31 chunk=256 ping=true live=161920 requested_peak=177200 fixed=2097152 raw_owner=2097152",
+      "requestedPeak": 177200,
+      "reservation": 2097152
+    }
+  ],
+  "rustMac": {
+    "passed": 88,
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-rust-final.log"
+  },
+  "rustLinux": {
+    "at": "2026-10-17T04:37:23.099531+00:00",
+    "status": "passed",
+    "tests": 88,
+    "target": "aarch64-unknown-linux-gnu",
+    "binary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-linux-tests-v1",
+    "sha256": "4cc48a2355fd63868705694c8fc14065279c042d940d86694d7e8609805e03ec",
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-rust-linux-v1.log",
+    "exitCode": 0
+  },
+  "node": {
+    "passed": 178,
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-js-tests.log"
+  },
+  "functionalRegressions": {
+    "at": "2026-10-17T04:38:53.217782+00:00",
+    "tests": [
+      {
+        "name": "verify-broker",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-broker.log"
+      },
+      {
+        "name": "verify-broker-viz",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-broker-viz.log"
+      },
+      {
+        "name": "verify-broker-resources",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-broker-resources.log"
+      },
+      {
+        "name": "verify-broker-gateway",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-broker-gateway.log"
+      },
+      {
+        "name": "verify-broker-tiles",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-broker-tiles.log"
+      },
+      {
+        "name": "verify-frame-window",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-frame-window.log"
+      },
+      {
+        "name": "verify-native",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-native.log"
+      },
+      {
+        "name": "verify-input",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-input.log"
+      },
+      {
+        "name": "verify-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-live.log"
+      },
+      {
+        "name": "verify-resource-memory",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-resource-memory.log"
+      },
+      {
+        "name": "verify-source-close",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-source-close.log"
+      },
+      {
+        "name": "verify-viewer-lifecycle",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-viewer-lifecycle.log"
+      },
+      {
+        "name": "verify-webgl-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-webgl-live.log"
+      },
+      {
+        "name": "verify-broker-cache-lru",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-broker-cache-lru.log"
+      },
+      {
+        "name": "verify-broker-mapper-transaction",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-broker-mapper-transaction.log"
+      },
+      {
+        "name": "verify-large-native-cache",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-large-native-cache.log"
+      },
+      {
+        "name": "verify-resource-pool",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-resource-pool.log"
+      },
+      {
+        "name": "verify-source-resource-pressure",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-source-resource-pressure.log"
+      },
+      {
+        "name": "verify-viz-input-pool",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-viz-input-pool.log"
+      },
+      {
+        "name": "verify-source-input-pressure",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-source-input-pressure.log"
+      },
+      {
+        "name": "verify-node-request-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-node-request-budget.log"
+      },
+      {
+        "name": "verify-control-channel",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-control-channel.log"
+      },
+      {
+        "name": "verify-control-priority",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-control-priority.log"
+      },
+      {
+        "name": "verify-input-feedback",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-input-feedback.log"
+      },
+      {
+        "name": "verify-worker-control",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-worker-control.log"
+      },
+      {
+        "name": "verify-streaming-startup",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-streaming-startup.log"
+      },
+      {
+        "name": "verify-page-activity",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-page-activity.log"
+      },
+      {
+        "name": "verify-node-request-lifetime",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-node-request-lifetime.log"
+      },
+      {
+        "name": "verify-memory-diagnostics",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-memory-diagnostics.log"
+      },
+      {
+        "name": "verify-rpc-input",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-rpc-input.log"
+      },
+      {
+        "name": "verify-viz-fault-pairing",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-viz-fault-pairing.log"
+      },
+      {
+        "name": "verify-node-response-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-node-response-budget.log"
+      },
+      {
+        "name": "verify-node-response-contract",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-node-response-contract.log"
+      },
+      {
+        "name": "verify-node-response-lifetime",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-node-response-lifetime.log"
+      },
+      {
+        "name": "verify-snapshot-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-snapshot-budget.log"
+      },
+      {
+        "name": "verify-rpc-output",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-rpc-output.log"
+      },
+      {
+        "name": "verify-node-stream-close",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-node-stream-close.log"
+      },
+      {
+        "name": "verify-websocket-json-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-websocket-json-budget.log"
+      },
+      {
+        "name": "verify-command-queue",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-command-queue.log"
+      },
+      {
+        "name": "verify-websocket-backing",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-v1-verify-websocket-backing.log"
+      }
+    ],
+    "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+    "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-checkpoint-version-v2.json",
+    "status": "passed"
+  },
+  "canonicalSmoke": {
+    "at": "2026-10-17T04:43:13.234488+00:00",
+    "source": "Live /project validated WebSocket library backing candidate;88Mac/88LinuxRust178JS40frozenLinux;isolated artifacts",
+    "tests": [
+      {
+        "name": "verify-broker",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-broker.log"
+      },
+      {
+        "name": "verify-broker-viz",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-broker-viz.log"
+      },
+      {
+        "name": "verify-control-channel",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-control-channel.log"
+      },
+      {
+        "name": "verify-viz-fault-pairing",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-viz-fault-pairing.log"
+      },
+      {
+        "name": "verify-node-response-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-node-response-budget.log"
+      },
+      {
+        "name": "verify-resource-memory",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-resource-memory.log"
+      },
+      {
+        "name": "verify-source-close",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-source-close.log"
+      },
+      {
+        "name": "verify-memory-diagnostics",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-memory-diagnostics.log"
+      },
+      {
+        "name": "verify-node-request-lifetime",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-node-request-lifetime.log"
+      },
+      {
+        "name": "verify-node-response-lifetime",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-node-response-lifetime.log"
+      },
+      {
+        "name": "verify-rpc-output",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-rpc-output.log"
+      },
+      {
+        "name": "verify-node-stream-close",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-node-stream-close.log"
+      },
+      {
+        "name": "verify-control-events-dense",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-control-events-dense.log"
+      },
+      {
+        "name": "verify-websocket-json-budget",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-websocket-json-budget.log"
+      },
+      {
+        "name": "verify-command-queue",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-command-queue.log"
+      },
+      {
+        "name": "verify-websocket-backing",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-v1-verify-websocket-backing.log"
+      }
+    ],
+    "status": "passed"
+  },
+  "actual": {
+    "at": "2026-10-17T04:42:51.915Z",
+    "status": "passed",
+    "scope": "Actual Linux Gateway WebSocket library backing admission:default four simultaneous authenticated pairs and sub32KiB UTF8 input,64MiB role failure503 and raw-read pressure1013,8MiB fixed HTTP preparse denial,all credits returned after actual close and same Broker recovery. No allocator usable-size/RSS/PSS,OS socket/thread,other Gateway builders or fullSession claim.",
+    "brokerSha256": "3d4cd02f8b760addf2527690b29428d0e379f5d48edfd5d39e470bf8fabf6034",
+    "variants": [
+      {
+        "mode": "four-pairs",
+        "pairs": 4,
+        "fifthDenied": 403,
+        "exactEvents": 4,
+        "inputBytes": 32155,
+        "held": {
+          "allocations": 20,
+          "bytes": 228851712,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 0,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 134217728,
+          "limit": 536870912,
+          "peak": 230948864,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "released": {
+          "allocations": 0,
+          "bytes": 0,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 0,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 134217728,
+          "limit": 536870912,
+          "peak": 230948864,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "pidUnchanged": true
+      },
+      {
+        "mode": "role-pressure",
+        "deniedHttp": 503,
+        "existingInputPreserved": true,
+        "held": {
+          "allocations": 2,
+          "bytes": 52625408,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 1,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 33554432,
+          "limit": 67108864,
+          "peak": 54722560,
+          "rawMessageBytes": 2097152,
+          "ready": false,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "released": {
+          "allocations": 0,
+          "bytes": 0,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 1,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 33554432,
+          "limit": 67108864,
+          "peak": 54722560,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "recoveredReleased": {
+          "allocations": 0,
+          "bytes": 0,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 1,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 33554432,
+          "limit": 67108864,
+          "peak": 54722560,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "pidUnchanged": true
+      },
+      {
+        "mode": "raw-pressure",
+        "partialHandshakes": 6,
+        "close": {
+          "channel": "data",
+          "code": 1013,
+          "reason": "WebSocket backing allocation pressure"
+        },
+        "held": {
+          "allocations": 6,
+          "bytes": 12582912,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 1,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 33554432,
+          "limit": 67108864,
+          "peak": 65208320,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "released": {
+          "allocations": 0,
+          "bytes": 0,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 1,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 33554432,
+          "limit": 67108864,
+          "peak": 65208320,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "recoveredReleased": {
+          "allocations": 0,
+          "bytes": 0,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 1,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 33554432,
+          "limit": 67108864,
+          "peak": 65208320,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "pidUnchanged": true
+      },
+      {
+        "mode": "fixed-pressure",
+        "incompleteHandshakes": 4,
+        "fifthClosedBeforeHttpParse": true,
+        "held": {
+          "allocations": 4,
+          "bytes": 8388608,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 1,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 4194304,
+          "limit": 8388608,
+          "peak": 8388608,
+          "rawMessageBytes": 2097152,
+          "ready": false,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "released": {
+          "allocations": 0,
+          "bytes": 0,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 1,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 4194304,
+          "limit": 8388608,
+          "peak": 8388608,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "pidUnchanged": true
+      }
+    ],
+    "cleanup": [
+      {
+        "mode": "four-pairs",
+        "childExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "stdoutBytes": 0,
+        "stderrBytes": 0
+      },
+      {
+        "mode": "role-pressure",
+        "childExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "stdoutBytes": 0,
+        "stderrBytes": 0
+      },
+      {
+        "mode": "raw-pressure",
+        "childExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "stdoutBytes": 0,
+        "stderrBytes": 0
+      },
+      {
+        "mode": "fixed-pressure",
+        "childExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "stdoutBytes": 0,
+        "stderrBytes": 0
+      }
+    ]
+  },
+  "compatibility": {
+    "rawFourSkpBytes": 57802256,
+    "pixelChecks": 4,
+    "resourceRecoveries": 0,
+    "rollbackRejections": 423,
+    "resourcePoolFrames": 14,
+    "sourcePressure": {
+      "at": "2026-10-17T04:42:17.616Z",
+      "status": "passed",
+      "scope": "Actual Linux non-tiled native capture of1536² noisy PNG while two7.5MiB synthetic protocol fixtures are held by an unacknowledged peer.64MiB resource admission triggers typed Source backpressure; display capture pauses, page clock advances, latest/epoch/viewport/input fences remain intact, ACK frees old owners, native force-resource retry resumes, and actual recovered CanvasKit CPU pixel matches. Not an all-native slow-peer workload, Viewer GPU test, parser/output-copy or process-memory budget.",
+      "brokerSha256": "3d4cd02f8b760addf2527690b29428d0e379f5d48edfd5d39e470bf8fabf6034",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 8069750,
+      "tickBefore": 27,
+      "tickAfter": 28,
+      "pressured": {
+        "allocations": 970,
+        "bytes": 47447420,
+        "commands": {
+          "close": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 0,
+            "ready": true,
+            "scope": "outgoing-command-close"
+          },
+          "closeSlot": "one priority slot per mailbox",
+          "mailboxReservation": 8192,
+          "maximumMessage": 32768,
+          "normal": {
+            "allocations": 2,
+            "bytes": 16384,
+            "denied": 0,
+            "headroom": 8388608,
+            "limit": 33554432,
+            "peak": 16587,
+            "ready": true,
+            "scope": "outgoing-command-packets"
+          },
+          "normalSlots": 64,
+          "ready": true,
+          "scope": "outgoing-command-pool",
+          "tungsteniteCopies": "outside command owner"
+        },
+        "denied": 1,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 8330614,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "output": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 12646,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 5433,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "peak": 63842103,
+        "ready": false,
+        "retiredSnapshots": 0,
+        "rpcInput": {
+          "control": {
+            "allocations": 2,
+            "bytes": 135036,
+            "denied": 0,
+            "headroom": 2097152,
+            "limit": 4194304,
+            "peak": 162201,
+            "ready": true,
+            "scope": "rpc-control-input"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 268435456,
+            "limit": 536870912,
+            "peak": 52573321,
+            "ready": true,
+            "scope": "rpc-data-input"
+          },
+          "framingBytes": 65536,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-input-pool"
+        },
+        "scope": "resource-allocation-pool",
+        "snapshots": {
+          "allocations": 3,
+          "bytes": 797580,
+          "denied": 0,
+          "headroom": 67108864,
+          "limit": 268435456,
+          "peak": 9571786,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "websocketBacking": {
+          "allocations": 2,
+          "bytes": 52625408,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 0,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 134217728,
+          "limit": 536870912,
+          "peak": 54722560,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "websocketJson": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 33554432,
+          "limit": 134217728,
+          "maximumMessage": 32768,
+          "peak": 78600,
+          "rawSocketBuffers": "outside parsed JSON owner",
+          "ready": true,
+          "scope": "websocket-parsed-json-pool"
+        },
+        "nodeRequests": {
+          "scope": "node-broker-requests",
+          "dataBytes": 0,
+          "controlBytes": 6123,
+          "dataLimit": 536870912,
+          "controlLimit": 4194304,
+          "peakDataBytes": 52472653,
+          "peakControlBytes": 20441,
+          "owners": 1,
+          "dataOwners": 0,
+          "ownerLimit": 64,
+          "dataOwnerLimit": 48,
+          "denied": 0,
+          "ready": true,
+          "retainedEstimate": 5092,
+          "serializationEstimate": 996,
+          "packetBackingBytes": 35
+        },
+        "nodeResponses": {
+          "scope": "node-broker-response-transients",
+          "dataBytes": 0,
+          "controlBytes": 92702,
+          "dataLimit": 805306368,
+          "controlLimit": 8388608,
+          "peakDataBytes": 53811,
+          "peakControlBytes": 92702,
+          "owners": 1,
+          "packetReservedBytes": 2418,
+          "privatePacketBackingBytes": 2418,
+          "parseDeliveryEstimate": 89260,
+          "receivedBackingBytes": 10870,
+          "peakReceivedBackingBytes": 10870,
+          "receivedBackingLimit": 2097152,
+          "denied": 0,
+          "ready": true,
+          "applicationGraph": "outside this transient owner after delivery",
+          "nativeStreamAndVm": "not covered",
+          "packets": 16,
+          "deniedPackets": 0,
+          "privateAllocations": 16,
+          "copiedBodyBytes": 6053,
+          "receivedChunks": 16,
+          "frameBytesRemaining": 0,
+          "draining": false
+        }
+      },
+      "after": {
+        "allocations": 992,
+        "bytes": 48247382,
+        "commands": {
+          "close": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 524288,
+            "limit": 1048576,
+            "peak": 0,
+            "ready": true,
+            "scope": "outgoing-command-close"
+          },
+          "closeSlot": "one priority slot per mailbox",
+          "mailboxReservation": 8192,
+          "maximumMessage": 32768,
+          "normal": {
+            "allocations": 2,
+            "bytes": 16384,
+            "denied": 0,
+            "headroom": 8388608,
+            "limit": 33554432,
+            "peak": 16587,
+            "ready": true,
+            "scope": "outgoing-command-packets"
+          },
+          "normalSlots": 64,
+          "ready": true,
+          "scope": "outgoing-command-pool",
+          "tungsteniteCopies": "outside command owner"
+        },
+        "denied": 1,
+        "headroom": 33554432,
+        "input": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 83886080,
+          "limit": 268435456,
+          "peak": 8330614,
+          "ready": true,
+          "scope": "viz-input-pool"
+        },
+        "limit": 67108864,
+        "output": {
+          "control": {
+            "allocations": 1,
+            "bytes": 8192,
+            "denied": 0,
+            "headroom": 4194304,
+            "limit": 8388608,
+            "peak": 14838,
+            "ready": true,
+            "scope": "rpc-output-control"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 134217728,
+            "peak": 6317,
+            "ready": true,
+            "scope": "rpc-output-data"
+          },
+          "framingBytes": 8192,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-output-packet-pool"
+        },
+        "peak": 63842103,
+        "ready": false,
+        "retiredSnapshots": 1,
+        "rpcInput": {
+          "control": {
+            "allocations": 2,
+            "bytes": 135036,
+            "denied": 0,
+            "headroom": 2097152,
+            "limit": 4194304,
+            "peak": 162201,
+            "ready": true,
+            "scope": "rpc-control-input"
+          },
+          "data": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 268435456,
+            "limit": 536870912,
+            "peak": 52573321,
+            "ready": true,
+            "scope": "rpc-data-input"
+          },
+          "framingBytes": 65536,
+          "maximumControlPacket": 262144,
+          "maximumPacket": 94371840,
+          "ready": true,
+          "scope": "rpc-input-pool"
+        },
+        "scope": "resource-allocation-pool",
+        "snapshots": {
+          "allocations": 4,
+          "bytes": 6140044,
+          "denied": 0,
+          "headroom": 67108864,
+          "limit": 268435456,
+          "peak": 14664840,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "websocketBacking": {
+          "allocations": 2,
+          "bytes": 52625408,
+          "controlWriteLimit": 131072,
+          "dataWriteLimit": 16842752,
+          "denied": 0,
+          "fixedConnectionBytes": 2097152,
+          "headroom": 134217728,
+          "limit": 536870912,
+          "peak": 54722560,
+          "rawMessageBytes": 2097152,
+          "ready": true,
+          "scope": "websocket-library-backing-pool",
+          "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+          "writeFactor": 3
+        },
+        "websocketJson": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 33554432,
+          "limit": 134217728,
+          "maximumMessage": 32768,
+          "peak": 78600,
+          "rawSocketBuffers": "outside parsed JSON owner",
+          "ready": true,
+          "scope": "websocket-parsed-json-pool"
+        },
+        "nodeRequests": {
+          "scope": "node-broker-requests",
+          "dataBytes": 0,
+          "controlBytes": 5092,
+          "dataLimit": 536870912,
+          "controlLimit": 4194304,
+          "peakDataBytes": 52472653,
+          "peakControlBytes": 20441,
+          "owners": 1,
+          "dataOwners": 0,
+          "ownerLimit": 64,
+          "dataOwnerLimit": 48,
+          "denied": 0,
+          "ready": true,
+          "retainedEstimate": 5092,
+          "serializationEstimate": 0,
+          "packetBackingBytes": 0
+        },
+        "nodeResponses": {
+          "scope": "node-broker-response-transients",
+          "dataBytes": 0,
+          "controlBytes": 92716,
+          "dataLimit": 805306368,
+          "controlLimit": 8388608,
+          "peakDataBytes": 75167,
+          "peakControlBytes": 92716,
+          "owners": 1,
+          "packetReservedBytes": 2420,
+          "privatePacketBackingBytes": 2420,
+          "parseDeliveryEstimate": 89272,
+          "receivedBackingBytes": 10872,
+          "peakReceivedBackingBytes": 10872,
+          "receivedBackingLimit": 2097152,
+          "denied": 0,
+          "ready": true,
+          "applicationGraph": "outside this transient owner after delivery",
+          "nativeStreamAndVm": "not covered",
+          "packets": 45,
+          "deniedPackets": 0,
+          "privateAllocations": 45,
+          "copiedBodyBytes": 24712,
+          "receivedChunks": 44,
+          "frameBytesRemaining": 0,
+          "draining": false
+        }
+      },
+      "pixel": [
+        37,
+        91,
+        199,
+        255
+      ],
+      "pressureEvents": [
+        "RESOURCE_BUDGET_PRESSURE"
+      ],
+      "sourceStats": {
+        "captures": 6,
+        "errors": 0,
+        "captureSupersessions": 0,
+        "resourceRecoveries": 0,
+        "resourcePressureEvents": 1,
+        "resourcePressureResumes": 1,
+        "lastError": null,
+        "recentErrors": [],
+        "lastPressureCode": "RESOURCE_BUDGET_PRESSURE",
+        "resourcePool": {
+          "allocations": 485,
+          "bytes": 23723710,
+          "commands": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 2,
+              "bytes": 16384,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 16587,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "denied": 1,
+          "headroom": 33554432,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 83886080,
+            "limit": 268435456,
+            "peak": 8330614,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 67108864,
+          "output": {
+            "control": {
+              "allocations": 1,
+              "bytes": 8192,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 14838,
+              "ready": true,
+              "scope": "rpc-output-control"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 67108864,
+              "limit": 134217728,
+              "peak": 5433,
+              "ready": true,
+              "scope": "rpc-output-data"
+            },
+            "framingBytes": 8192,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-output-packet-pool"
+          },
+          "peak": 63842103,
+          "ready": true,
+          "retiredSnapshots": 0,
+          "rpcInput": {
+            "control": {
+              "allocations": 2,
+              "bytes": 135036,
+              "denied": 0,
+              "headroom": 2097152,
+              "limit": 4194304,
+              "peak": 162201,
+              "ready": true,
+              "scope": "rpc-control-input"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 268435456,
+              "limit": 536870912,
+              "peak": 52573321,
+              "ready": true,
+              "scope": "rpc-data-input"
+            },
+            "framingBytes": 65536,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-input-pool"
+          },
+          "scope": "resource-allocation-pool",
+          "snapshots": {
+            "allocations": 2,
+            "bytes": 404552,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 268435456,
+            "peak": 9571786,
+            "ready": true,
+            "scope": "snapshot-graph-pool"
+          },
+          "websocketBacking": {
+            "allocations": 2,
+            "bytes": 52625408,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 0,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 134217728,
+            "limit": 536870912,
+            "peak": 54722560,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "websocketJson": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "maximumMessage": 32768,
+            "peak": 78600,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          },
+          "nodeRequests": {
+            "scope": "node-broker-requests",
+            "dataBytes": 0,
+            "controlBytes": 6123,
+            "dataLimit": 536870912,
+            "controlLimit": 4194304,
+            "peakDataBytes": 52472653,
+            "peakControlBytes": 20441,
+            "owners": 1,
+            "dataOwners": 0,
+            "ownerLimit": 64,
+            "dataOwnerLimit": 48,
+            "denied": 0,
+            "ready": true,
+            "retainedEstimate": 5092,
+            "serializationEstimate": 996,
+            "packetBackingBytes": 35
+          },
+          "nodeResponses": {
+            "scope": "node-broker-response-transients",
+            "dataBytes": 0,
+            "controlBytes": 92695,
+            "dataLimit": 805306368,
+            "controlLimit": 8388608,
+            "peakDataBytes": 53811,
+            "peakControlBytes": 92702,
+            "owners": 1,
+            "packetReservedBytes": 2417,
+            "privatePacketBackingBytes": 2417,
+            "parseDeliveryEstimate": 89254,
+            "receivedBackingBytes": 10869,
+            "peakReceivedBackingBytes": 10870,
+            "receivedBackingLimit": 2097152,
+            "denied": 0,
+            "ready": true,
+            "applicationGraph": "outside this transient owner after delivery",
+            "nativeStreamAndVm": "not covered",
+            "packets": 17,
+            "deniedPackets": 0,
+            "privateAllocations": 17,
+            "copiedBodyBytes": 8470,
+            "receivedChunks": 17,
+            "frameBytesRemaining": 0,
+            "draining": false
+          }
+        },
+        "lastCaptureMs": 4.1345170000004146,
+        "lastMapMs": 1.0845980000012787,
+        "registrationRetries": 0
+      },
+      "latestBrokerSerialAtReport": 8,
+      "recoveredFrame": {
+        "captureId": "370eb17a-3946-4e31-a77a-d017fc2affe1",
+        "frameId": 3,
+        "resources": 1
+      },
+      "errors": []
+    },
+    "sourceInputPressure": {
+      "at": "2026-10-17T04:42:20.173Z",
+      "status": "passed",
+      "scope": "Actual Linux non-tiled1536² noisy PNG native RPA packet rejected before full allocation under explicit2MiB input quota. Typed input pressure reaches Source,display capture pauses without stopping page clock or publishing a partial frame. A smaller actual page scene then recovers on the private connection,forces resources and matches CPU CanvasKit pixel. This does not claim the original noisy scene fits2MiB; default-quota57.8MB native support is a separate regression. Packet capacity/metadata estimates only,no full process-memory or GPU claim.",
+      "brokerSha256": "3d4cd02f8b760addf2527690b29428d0e379f5d48edfd5d39e470bf8fabf6034",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "imageBytes": 8069807,
+      "smallImageBytes": 2701,
+      "inputBefore": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 1,
+        "headroom": 1048576,
+        "limit": 2097152,
+        "peak": 10810,
+        "ready": true,
+        "scope": "viz-input-pool"
+      },
+      "inputAfter": {
+        "allocations": 0,
+        "bytes": 0,
+        "denied": 2,
+        "headroom": 1048576,
+        "limit": 2097152,
+        "peak": 202490,
+        "ready": true,
+        "scope": "viz-input-pool"
+      },
+      "ticks": 22,
+      "afterTicks": 25,
+      "pixel": [
+        29,
+        83,
+        197,
+        255
+      ],
+      "pressureEvents": [
+        "RESOURCE_BUDGET_PRESSURE",
+        "RESOURCE_BUDGET_PRESSURE"
+      ],
+      "statuses": [
+        "绘制资源正在回收，正在重试",
+        "绘制资源正在回收，正在重试"
+      ],
+      "sourceStats": {
+        "captures": 1,
+        "errors": 0,
+        "captureSupersessions": 0,
+        "resourceRecoveries": 0,
+        "resourcePressureEvents": 2,
+        "resourcePressureResumes": 2,
+        "lastError": null,
+        "recentErrors": [],
+        "lastPressureCode": "INPUT_BUDGET_PRESSURE",
+        "resourcePool": {
+          "allocations": 0,
+          "bytes": 0,
+          "commands": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 2,
+              "bytes": 16384,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 16587,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "denied": 0,
+          "headroom": 335544320,
+          "input": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 2,
+            "headroom": 1048576,
+            "limit": 2097152,
+            "peak": 10810,
+            "ready": true,
+            "scope": "viz-input-pool"
+          },
+          "limit": 805306368,
+          "output": {
+            "control": {
+              "allocations": 1,
+              "bytes": 8192,
+              "denied": 0,
+              "headroom": 4194304,
+              "limit": 8388608,
+              "peak": 14802,
+              "ready": true,
+              "scope": "rpc-output-control"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 67108864,
+              "limit": 134217728,
+              "peak": 0,
+              "ready": true,
+              "scope": "rpc-output-data"
+            },
+            "framingBytes": 8192,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-output-packet-pool"
+          },
+          "peak": 0,
+          "ready": true,
+          "retiredSnapshots": 0,
+          "rpcInput": {
+            "control": {
+              "allocations": 2,
+              "bytes": 135036,
+              "denied": 0,
+              "headroom": 2097152,
+              "limit": 4194304,
+              "peak": 162201,
+              "ready": true,
+              "scope": "rpc-control-input"
+            },
+            "data": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 268435456,
+              "limit": 536870912,
+              "peak": 207373,
+              "ready": true,
+              "scope": "rpc-data-input"
+            },
+            "framingBytes": 65536,
+            "maximumControlPacket": 262144,
+            "maximumPacket": 94371840,
+            "ready": true,
+            "scope": "rpc-input-pool"
+          },
+          "scope": "resource-allocation-pool",
+          "snapshots": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 67108864,
+            "limit": 268435456,
+            "peak": 0,
+            "ready": true,
+            "scope": "snapshot-graph-pool"
+          },
+          "websocketBacking": {
+            "allocations": 2,
+            "bytes": 52625408,
+            "controlWriteLimit": 131072,
+            "dataWriteLimit": 16842752,
+            "denied": 0,
+            "fixedConnectionBytes": 2097152,
+            "headroom": 134217728,
+            "limit": 536870912,
+            "peak": 54722560,
+            "rawMessageBytes": 2097152,
+            "ready": true,
+            "scope": "websocket-library-backing-pool",
+            "scopeNote": "library requested-capacity allowance;OS/kernel/thread stacks/allocator/RSS outside",
+            "writeFactor": 3
+          },
+          "websocketJson": {
+            "allocations": 0,
+            "bytes": 0,
+            "denied": 0,
+            "headroom": 33554432,
+            "limit": 134217728,
+            "maximumMessage": 32768,
+            "peak": 74556,
+            "rawSocketBuffers": "outside parsed JSON owner",
+            "ready": true,
+            "scope": "websocket-parsed-json-pool"
+          },
+          "nodeRequests": {
+            "scope": "node-broker-requests",
+            "dataBytes": 0,
+            "controlBytes": 5092,
+            "dataLimit": 536870912,
+            "controlLimit": 4194304,
+            "peakDataBytes": 76773,
+            "peakControlBytes": 20441,
+            "owners": 1,
+            "dataOwners": 0,
+            "ownerLimit": 64,
+            "dataOwnerLimit": 48,
+            "denied": 0,
+            "ready": true,
+            "retainedEstimate": 5092,
+            "serializationEstimate": 0,
+            "packetBackingBytes": 0
+          },
+          "nodeResponses": {
+            "scope": "node-broker-response-transients",
+            "dataBytes": 0,
+            "controlBytes": 92450,
+            "dataLimit": 805306368,
+            "controlLimit": 8388608,
+            "peakDataBytes": 11646,
+            "peakControlBytes": 92450,
+            "owners": 1,
+            "packetReservedBytes": 2382,
+            "privatePacketBackingBytes": 2382,
+            "parseDeliveryEstimate": 89044,
+            "receivedBackingBytes": 10834,
+            "peakReceivedBackingBytes": 10834,
+            "receivedBackingLimit": 2097152,
+            "denied": 0,
+            "ready": true,
+            "applicationGraph": "outside this transient owner after delivery",
+            "nativeStreamAndVm": "not covered",
+            "packets": 17,
+            "deniedPackets": 0,
+            "privateAllocations": 17,
+            "copiedBodyBytes": 8089,
+            "receivedChunks": 17,
+            "frameBytesRemaining": 0,
+            "draining": false
+          }
+        },
+        "lastCaptureMs": 3.1921290000000226,
+        "lastMapMs": 1.403728000000001,
+        "registrationRetries": 0
+      },
+      "recoveredFrame": {
+        "captureId": "ca52c5e8-fa59-452e-a4d5-f9f4d7c4cae9",
+        "frameId": 1,
+        "resources": 1
+      },
+      "errors": []
+    },
+    "commandQueue": {
+      "at": "2026-10-17T04:42:51.714Z",
+      "status": "passed",
+      "scope": "Actual Linux Rust outgoing command packet/mailbox ownership. Unattached paired control under explicit64KiB quota retains exactly owned text and rejects another body;paused real fallback socket eventually fills byte credit;64-slot paired queue rejects its65th normal packet. Independent priority close succeeds in every case,data receives requested1001/reason,all packet/close/mailbox owners release and same Broker control remains usable. Missing peer remains a no-op. No CDP/pixel,OS buffer/Tungstenite copy or RSS claim.",
+      "brokerSha256": "3d4cd02f8b760addf2527690b29428d0e379f5d48edfd5d39e470bf8fabf6034",
+      "variants": [
+        {
+          "mode": "paired-byte",
+          "paired": true,
+          "accepted": 1,
+          "receivedBeforeClose": 0,
+          "closeCode": 1001,
+          "closeReason": "queue contract close",
+          "closeDeliveredAfterNormalPressure": true,
+          "transportPressure": null,
+          "held": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 3,
+              "bytes": 48548,
+              "denied": 1,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48548,
+              "ready": false,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": false,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "released": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 332,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 1,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48548,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "brokerPidUnchanged": true,
+          "stalePeerNoop": true
+        },
+        {
+          "mode": "fallback-byte",
+          "paired": false,
+          "accepted": 12,
+          "receivedBeforeClose": 11,
+          "closeCode": 1001,
+          "closeReason": "queue contract close",
+          "closeDeliveredAfterNormalPressure": true,
+          "transportPressure": {
+            "before": {
+              "sendBytes": 142848,
+              "state": "01"
+            },
+            "after": {
+              "sendBytes": 142848,
+              "state": "01"
+            },
+            "observationMs": 50,
+            "queuedCommandBytes": 32165,
+            "parentPaused": true,
+            "parentReadableBytes": 96120
+          },
+          "held": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 3,
+              "bytes": 48549,
+              "denied": 2,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48549,
+              "ready": false,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": false,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "released": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 332,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 2,
+              "headroom": 32768,
+              "limit": 65536,
+              "peak": 48549,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "brokerPidUnchanged": true,
+          "stalePeerNoop": true
+        },
+        {
+          "mode": "paired-count",
+          "paired": true,
+          "accepted": 64,
+          "receivedBeforeClose": 0,
+          "closeCode": 1001,
+          "closeReason": "queue contract close",
+          "closeDeliveredAfterNormalPressure": true,
+          "transportPressure": null,
+          "held": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 0,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 66,
+              "bytes": 33334,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 33599,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "released": {
+            "close": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 524288,
+              "limit": 1048576,
+              "peak": 332,
+              "ready": true,
+              "scope": "outgoing-command-close"
+            },
+            "closeSlot": "one priority slot per mailbox",
+            "mailboxReservation": 8192,
+            "maximumMessage": 32768,
+            "normal": {
+              "allocations": 0,
+              "bytes": 0,
+              "denied": 0,
+              "headroom": 8388608,
+              "limit": 33554432,
+              "peak": 33599,
+              "ready": true,
+              "scope": "outgoing-command-packets"
+            },
+            "normalSlots": 64,
+            "ready": true,
+            "scope": "outgoing-command-pool",
+            "tungsteniteCopies": "outside command owner"
+          },
+          "brokerPidUnchanged": true,
+          "stalePeerNoop": true
+        }
+      ],
+      "cleanup": [
+        {
+          "mode": "paired-byte",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "fallback-byte",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        },
+        {
+          "mode": "paired-count",
+          "childExited": true,
+          "pending": 0,
+          "requestOwners": 0,
+          "responseOwners": 0,
+          "stdoutBytes": 0,
+          "stderrBytes": 0
+        }
+      ]
+    }
+  },
+  "version": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-checkpoint-version-v2.json",
+  "publication": {
+    "at": "2026-10-17T04:43:12.925394+00:00",
+    "status": "accepted-in-stated-scope",
+    "oldSha256": "8f55ba4469331cca0c243486b889d806eeac6e62e482c6241dafdc689715432f",
+    "newSha256": "3d4cd02f8b760addf2527690b29428d0e379f5d48edfd5d39e470bf8fabf6034",
+    "previousBinary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-previous-canonical-8f",
+    "previousReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-previous-build-receipt.json",
+    "binary": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/broker-build.json",
+    "scope": "Atomic local Linuxarm64 replacement only;proof/8h processes and Chromium/Cargo caches preserved;no commit/push.",
+    "canonicalSmoke": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-canonical-smoke-v1.json",
+    "evidence": "docs/evidence/websocket-library-backing.json"
+  },
+  "fixtureCorrections": [
+    {
+      "failedLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-actual-linux-v1.log",
+      "frozenProject": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-checkpoint-project-v1",
+      "reason": "JSON.stringify compared object insertion order against sorted serde object output. Actual field semantics unchanged;fixed to assert.deepEqual and frozenv2. No production change or weaker contract."
+    },
+    {
+      "failedLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/ws-backing-freeze-v2.log",
+      "reason": "Freeze script renamed previous build/test receipt references to nonexistentv2. No snapshot created or runtime changed;retry uses actualv1 compiler/test receipts."
+    }
+  ],
+  "remaining": [
+    "Other Gateway scene/delta/notification and handler builders,persistent resource/chunk/peer indexes,asset/hash scratch.",
+    "Node active/app/VM,native recordings/RasterSource/epoch/pendingcancel,totalSession/OS/allocator/RSS/PSS/cgroup.",
+    "Comparable B4 historical performance baseline,remaining41+N1 acceptance and independent8h2585828c."
+  ],
+  "preserved": [
+    "HEAD3ff9512 unchanged;no stage/commit/push",
+    "Unrelated live/peer.mjs exactly1+/1-",
+    "Chromiumaa unchanged,34previousC++ reused explicitly",
+    "Cargo/Chromium caches,proof container and independent frozen8h untouched",
+    "Old8f binary/receipt,failed fixtures and frozen versions retained"
+  ]
+}

@@ -1,0 +1,471 @@
+{
+  "at": "2026-10-17T03:37:32.510776+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Borrowed asset-range validation/counting,typed borrowed manifest/descriptor upgrade serialization and exact final UTF8 owner;typed per-occurrence kind/id storage pre-admitted. Existing Snapshot coarse staging remains. Not whole resource builder scratch,index backing,WebSocket/VM/native or Session completion. All41+N1 stay7complete/12partial/22pending.",
+  "baseline": {
+    "at": "2026-10-17T03:29:52.638170+00:00",
+    "status": "measured",
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-baseline-layout.log",
+    "productionExtraction": "resource_manifest helper preserves prior json! graph/string construction;native_memory and upgrade_memory measured directly. Test-only allocator observes requested layouts,not usable allocation size/RSS.",
+    "nativeMemory": {
+      "ranges": 256,
+      "requestedPeak": 24576
+    },
+    "manifest": {
+      "chunks": 512,
+      "bytes": 45418,
+      "capacity": 65536,
+      "requestedPeak": 477114
+    },
+    "upgrade": {
+      "chunks": 512,
+      "bytes": 44672,
+      "capacity": 65536,
+      "requestedPeak": 476991,
+      "resourcePoolFinalAdded": 65960
+    },
+    "scope": "Resource final pool admission occurred after JSON construction. Mapper already holds separate conservative Snapshot staging reservation including1024/chunk;this probe does not prove whole-path absence of credit or RSS leakage."
+  },
+  "implementation": {
+    "sectionVisitor": "Walk borrowed already-parsed assetRanges twice for new resources. First pass validates the complete index and counts final chunks before chunk construction. native_memory only validates/counts memory with no section tuple Vec. Preserve256range limit,ordered offsets,chunking32KiB,PNG IHDR CRC/dimensions and indexed font glyph slots. This path does not parse JSON embedded in SKP.",
+    "typedOwners": "ChunkList owns immutable resource id and one-byte kind per chunk occurrence,beside existing Vec<Arc<Chunk>>. The same hashed bytes may be both font and image,so kind is not stored on shared Chunk. Reserve exact capacities plus list/id/kind metadata before allocations;field order frees typed backing before final credit. Strong cache charge includes new storage. Existing staged/persistent weak-index keys remain a separate scope.",
+    "manifest": "Borrow typed id/chunks/kinds and optional DecodeMemory directly into Serialize. Preserve schema,old sorted key order,Unicode/escaping,null/complete memory and chunk sequence. No per-chunk Value entries or cloned manifest Value graph. Count without heap allocation,admit exact UTF8 bytes+128owner,serialize without growth,transfer the same OwnedVec backing into Utf8Bytes. Final text aliases keep their own full reservation.",
+    "upgrade": "Re-serialize immutable typed metadata with new decodeMemory;no parsing/mutating old manifest JSON. New Resource metadata/text have their own admission;payload,wire,chunk list and their credits remain shared. Prior Snapshot/Resource manifests stay unchanged.",
+    "creditInterpretation": "The prior final resource text admission occurred after JSON/string construction. Mapper already holds conservative Snapshot staging including1024bytes/chunk,so these layout measurements do not establish whole-path absence of credit or RSS leakage. New changes remove the identified transient graphs and move final-buffer admission before allocation;they do not complete all asset/handler/index accounting."
+  },
+  "tests": {
+    "rustRelease": 66,
+    "rustLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-rust-final.log",
+    "newRustTests": 6,
+    "js": 178,
+    "jsLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-js-tests.log",
+    "requestedLayouts": [
+      {
+        "ranges": 256,
+        "requestedPeak": 0,
+        "case": "native-memory"
+      },
+      {
+        "chunks": 512,
+        "bytes": 45418,
+        "requestedPeak": 45466,
+        "reservation": 45546,
+        "case": "manifest"
+      },
+      {
+        "chunks": 512,
+        "bytes": 45465,
+        "requestedPeak": 45513,
+        "reservation": 45593,
+        "case": "manifest"
+      },
+      {
+        "chunks": 512,
+        "bytes": 44672,
+        "requestedPeak": 44720,
+        "finalAdded": 45096,
+        "case": "upgrade"
+      }
+    ],
+    "layoutScope": "Host requested-layout peaks for the actual old production factories and new encoder/upgrade,excluding retained prebuilt fixture/raw payload. Not allocator usable-size,RSS/PSS,natural GC or complete Source footprint.",
+    "newCases": [
+      "Exact512chunk manifest JSON including Unicode/escaping,u64 memory fields,empty lists,null profile and aliases.",
+      "256range no-allocation validation;late final font-slot rejection builds no staged chunks.",
+      "One byte short of complete text/owner credit denies before text allocation;exact admission succeeds.",
+      "Identical bytes shared under font/image occurrences keep both kinds and byte order;upgrade shares typed/payload/wire owners and old manifest stays immutable.",
+      "512chunk actual Resource upgrade requested peak below final added credit;one byte short denies before large allocation;retained text alias pins only its own credit.",
+      "Typed id and per-occurrence kind list quota denial happens before list/id/chunk allocation."
+    ],
+    "linuxFrozen": {
+      "at": "2026-10-17T03:32:37.560752+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-webgl-live.log"
+        },
+        {
+          "name": "verify-broker-cache-lru",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-broker-cache-lru.log"
+        },
+        {
+          "name": "verify-broker-mapper-transaction",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-broker-mapper-transaction.log"
+        },
+        {
+          "name": "verify-large-native-cache",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-large-native-cache.log"
+        },
+        {
+          "name": "verify-resource-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-resource-pool.log"
+        },
+        {
+          "name": "verify-source-resource-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-source-resource-pressure.log"
+        },
+        {
+          "name": "verify-viz-input-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-viz-input-pool.log"
+        },
+        {
+          "name": "verify-source-input-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-source-input-pressure.log"
+        },
+        {
+          "name": "verify-node-request-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-node-request-budget.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-control-channel.log"
+        },
+        {
+          "name": "verify-control-priority",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-control-priority.log"
+        },
+        {
+          "name": "verify-input-feedback",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-input-feedback.log"
+        },
+        {
+          "name": "verify-worker-control",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-worker-control.log"
+        },
+        {
+          "name": "verify-streaming-startup",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-streaming-startup.log"
+        },
+        {
+          "name": "verify-page-activity",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-page-activity.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-node-response-contract",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-node-response-contract.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-snapshot-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-snapshot-budget.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-rpc-output.log"
+        },
+        {
+          "name": "verify-node-stream-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-verify-node-stream-close.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-checkpoint-version-v1.json",
+      "status": "passed"
+    },
+    "canonical": {
+      "at": "2026-10-17T03:36:53.913658+00:00",
+      "source": "Live /project accepted Node stream teardown,new typed asset manifest LinuxRust candidate;isolated artifacts",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-canonical-v1-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-canonical-v1-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-canonical-v1-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-canonical-v1-verify-source-close.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-canonical-v1-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-canonical-v1-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-canonical-v1-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-rpc-output",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-canonical-v1-verify-rpc-output.log"
+        },
+        {
+          "name": "verify-node-stream-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-canonical-v1-verify-node-stream-close.log"
+        }
+      ],
+      "status": "passed"
+    },
+    "largeNative": {
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "mapperRollbackRejections": 423,
+    "resourcePool": {
+      "beforeBytes": 47447420,
+      "deniedBytes": 47447420,
+      "returnedBytes": 23723710,
+      "frames": 14,
+      "recoveredSerial": 3,
+      "finalBytes": 0
+    },
+    "readableClose": {
+      "mode": "close-blocked-stdout",
+      "waitChannel": "sock_alloc_send_pskb",
+      "transport": "unix-socket",
+      "childExitCode": 2,
+      "oldProcessIdentityExited": true,
+      "parentReadableBytesAfterClose": 0,
+      "scope": "Actual blocked stdout loses its reader;child exits2 instead of continuing a partial frame. Logical Rust counters are not queried after process exit;OS/process cleanup and separate unit write-owner checks are distinct evidence."
+    }
+  },
+  "version": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-checkpoint-version-v1.json",
+    "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-checkpoint-project-v1",
+    "rustSources": {
+      "native/broker/src/allocation_probe.rs": "ddec052782fb29d8ad7a27d2c2332a70ad9f94226ad230c7fe0923e1cea97ffb",
+      "native/broker/src/assets.rs": "c799737cd3b1577312201461b36972baa682e4201acaea040f7749de9b1a5c00",
+      "native/broker/src/budget.rs": "41bef43441a10f02c23ad0c0d6eb04bbd48436ad6d2dac0e2ed5cdf5758941e8",
+      "native/broker/src/control.rs": "020a7bc8befd37850a746a602698d8972bd2df03343534559e3cfdfed12c52eb",
+      "native/broker/src/gateway.rs": "fd3e77664463e83dcad24104ba97b36332097979e7a04739c0d823a44bab7126",
+      "native/broker/src/history.rs": "4b64273428615445d9ceb99bfd38a5004e66b2eead2d6aaf7dfadfa686578e2a",
+      "native/broker/src/input.rs": "9e56c120a1bc534fc9b9696314335af3c9ae79e16bebd4c93f9b3eb54820f42b",
+      "native/broker/src/main.rs": "58e144d7b4c98d53fc33f74d7c99688b6cde820ad2f1d2813121151cd0b9af69",
+      "native/broker/src/output.rs": "fffa7af19dcbd0ba0655261101ccf44a109d679403f6bce7534bf2c46d3d1ad4",
+      "native/broker/src/rpc.rs": "e277cc24c016dc73a9199cd4dc4375f978a1efa1ad19e5d30ab4e171790533dd",
+      "native/broker/src/scene.rs": "6246d0aed40a3840efc0c20cc384c62bc0e419bd15c76b8b04d8e2111238bc86",
+      "native/broker/src/snapshot_memory.rs": "dacd32697849b66b54089a259b93189c3c643522be81c55046a1c52400f82143",
+      "native/broker/src/viz.rs": "2392f0e14a5a38d46f28f94f396e9281fc37a7b9ba1c4b5309c414c91e1084cb",
+      "native/broker/src/writer.rs": "26fef581106539a5dc43ba9dc9324c4f6e4850863e65d7ecce8ce40f18ebbb61"
+    },
+    "brokerSha256": "2f87cf2a560d9015c6130472d6c8eb62146abcbee578c3bc8c181a375c5bcbc3",
+    "previousBrokerSha256": "066698a35df17f72c3fb926ed355a0bd613af84ee26d701ea663e7a8a38d87f5",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "browserUnchanged": true,
+    "cpp": "Unchanged browser reuses prior34 C++ tests;no new C++ rebuild claim.",
+    "artifacts": {
+      "large-native.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-artifacts/large-native.json",
+        "sha256": "9d5f2468f1d78a9cd1f94f8521eb130d7bf17348b2c6b8148742bfbf68c0a2ac"
+      },
+      "rollback.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-artifacts/rollback.json",
+        "sha256": "0860ed2649df8213dd7845bf8dbdc7ded5a4877d1153f7c98b6e69793d659610"
+      },
+      "cache-contract.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-artifacts/cache-contract.json",
+        "sha256": "8e05e8cb605c96b7e06a27a6a9260f7f8534a4ed3adb6c6b7fc37d9bb4e6d5ec"
+      },
+      "resource-pool.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-artifacts/resource-pool.json",
+        "sha256": "55142dad2176e1bf670fd57806ae4db4567571a113aa108348443a3932b8ba45"
+      },
+      "source-resource.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-artifacts/source-resource.json",
+        "sha256": "cd7e73fc38d204aab9290f6b19493ae792602dc8c32ccac9d348f1469fc9fbf2"
+      },
+      "source-input.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-artifacts/source-input.json",
+        "sha256": "146ba6f90dc3ed7a560e211ba7d0151d6368086616f5968710b46b2672c1ff77"
+      },
+      "output-contract.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-artifacts/output-contract.json",
+        "sha256": "d020726d34178eca07f108695de52c79a8fce9c066bc058ca87c5606671eafc9"
+      },
+      "node-stream-close.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-v1-artifacts/node-stream-close.json",
+        "sha256": "d552538e78eed475876715162f50d0e4542c9d51f18a0e3383c8dddef01e5b69"
+      }
+    }
+  },
+  "publication": {
+    "at": "2026-10-17T03:36:53.202150+00:00",
+    "status": "accepted-in-stated-scope",
+    "oldSha256": "066698a35df17f72c3fb926ed355a0bd613af84ee26d701ea663e7a8a38d87f5",
+    "newSha256": "2f87cf2a560d9015c6130472d6c8eb62146abcbee578c3bc8c181a375c5bcbc3",
+    "previousBinary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-previous-canonical-066",
+    "previousReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-previous-build-receipt.json",
+    "binary": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/broker-build.json",
+    "scope": "Atomic local Linuxarm64 replacement only;proof/8h processes and Chromium/Cargo caches preserved;no commit/push.",
+    "canonicalSmoke": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/asset-manifest-canonical-smoke-v1.json",
+    "evidence": "docs/evidence/asset-manifest-owners.json"
+  },
+  "remaining": [
+    "Prebuilt control/Gateway event builders,other handler scratch,WebSocket receive parsing/command queues/output copies.",
+    "Staged/persistent Mapper resource/weak-index backing and remaining asset hash/index scratch.",
+    "Node active streams/application/VM graphs,native recordings/uncached work/tiled duplication/epoch/actual cancellation and whole Session/PSS.",
+    "B4 comparable baseline,independent8h and all other41-row/N1 requirements."
+  ],
+  "eightHours": "Immutable2585828c usesa296/earlier JS and excludes this and later input/RVE/response/Snapshot/output/Node close scopes. No elapsed time carryover from old failed runs.",
+  "preserve": "No commit/push. HEAD3ff9512c/live peer1+/1-,all proof/8h processes/compiler6713 and Chromium/Cargo caches preserved;previous066 binary/receipt backed up."
+}

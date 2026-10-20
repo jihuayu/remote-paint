@@ -1,0 +1,108 @@
+{
+  "at": "2026-10-17T14:20:03.763073+00:00",
+  "status": "accepted-defaultSource-controls-consumers-only-NOT-fullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-default-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-default-checkpoint-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-checkpoint-browser-v1",
+  "browserSha256": "14bce326d2c4c8627c49926fb6a78aa003a0dc6a67f130c922b48da3c2663efa",
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "scope": "DefaultSource control-onlyNode/nativepersistentcapture/autonomousBrokerpublication,actualtypedconsumer/pixel/input/demand/navigation/resize/streaming flows. Candidatebinariesexplicitlyselected;canonicalbinariesnotpromoted. FullB1resource/pressure/transport/close acceptance remains.",
+  "changed": [
+    "capture/subscription.mjs",
+    "live/source.mjs",
+    "live/transport.mjs",
+    "live/native-peers.mjs",
+    "live/input.mjs",
+    "tests/input.test.mjs",
+    "tests/verify-source-demand.mjs",
+    "tests/verify-scene-consumers.mjs",
+    "tests/verify-streaming-startup.mjs",
+    "live/native-source.mjs"
+  ],
+  "frozenJsMac": 208,
+  "frozenJsActualLinux": 208,
+  "frozenControllerChecks": 12,
+  "frozenCreditChecks": 3,
+  "rapidCrosssiteNavigations": 24,
+  "reports": {
+    "demand": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-default-frozen-demand-v1.json",
+      "sha256": "637ddb82e857aa8633f449bd3a070f5d367a55a6e1906c4c2dd62abf39cc2c54"
+    },
+    "consumers": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-default-frozen-consumers-v1.json",
+      "sha256": "b016d4c10507cf914204dbe19936ed7fb729c89390ecba55d6382342a3495000"
+    },
+    "startup": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-default-frozen-startup-v1.json",
+      "sha256": "e15ad1d9d2e96ecc79d080b83a54108426c2da7d9acf777578968de407c90c9a"
+    },
+    "controller": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-default-frozen-controller-v1.json",
+      "sha256": "4af382ba45e8840a3ed70d2a9b061e0a46e97059634c25bb2abaef2971093618"
+    },
+    "credit": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-default-frozen-credit-v1.json",
+      "sha256": "bbc9ba2e41591237e1a86ef93f6caf2cff835f90bba5fbbc0fe0a9c95d26767b"
+    }
+  },
+  "defaultSourceProof": {
+    "nativeAutopublish": true,
+    "nodeCalls": {
+      "evaluate": 54,
+      "awaitPromise": 0,
+      "map": 0,
+      "publish": 0
+    },
+    "autonomous": {
+      "frames": 2,
+      "evaluateDelta": 0
+    },
+    "humanInput": {
+      "seq": 1,
+      "value": "Z",
+      "ordinal": 8589934596,
+      "sourceFrame": 8,
+      "minimumSourceFrame": 8
+    },
+    "sourceErrors": 0,
+    "recordingSurvivedResize": 2,
+    "recordingSurvivedNavigation": 2,
+    "activeConsumerShutdown": [
+      1001,
+      1001
+    ],
+    "coalescedResizeRequests": 16,
+    "queuedResizeRejectedOnClose": true,
+    "streamingUnfinishedResponses": 3
+  },
+  "proved": [
+    "Source withBroker usesNativeSubscription;explicitREMOTE_PAINT_DATA_PLANE=node retainslegacyNativeCapture.",
+    "Node storesfixed compact native/serial/input/viewport/resource counters;scene andpayloads properties areabsent,notfakeemptygraphs. Transport neverpublish-RPCspernativeframe.",
+    "Observationticketmint awaitsactualnativeordinalfence withoutencoding;ConsumerHello explicitlyrequestsfresh evenwithalreadyactivedisplay/unchangedtotaldemand.",
+    "ActualPNGpixels andchangedfontglyphs,managedAgentinput andacknowledgedhumanInputseq1/SourceFramefloor verifiedthroughrealGateway/CanvasKit.",
+    "Recording survivesviewportresize/newdocument/displaydisconnect;read-only inputrejected;slowrecorderevicted withoutstallingdisplay;activeconsumersclose1001.",
+    "Pause/demand0/resize control drainactualC++inflight withclockalive;16resizecalls shareonecompletionbarrier/latesttarget;queuedresize rejectsSourceclosed.",
+    "Brokerstop mayrevoke beforedisablecontrolarrives;NativeInactive isrecognized atsubscriptionpolicy,Cppstilldisabled/drained,withoutmakingGatewayclosewaitonlargecapture. Initialfailingconsumerreport preserved.",
+    "Inputtransitiongate rejectsqueuedHuman/Agent dispatchbeforeinjection;inputalreadyinjected maylegitimatelynavigate andstillreceiveACK.",
+    "Streamingdocument/slowimage/EventSource remainopenwhileactualViewerpixelsdisplay.",
+    "Frozencontroller12/credit3 and208JS eachplatformpassed;C++73/Broker156each belongtoexactunchangedparentversions."
+  ],
+  "remaining": [
+    "DefaultSource57,802,256bytes/fourSKPs/fourpixels/0hashrecoveries/non-tiled;45MiBBase64workingset and423exactMapperrollbacks.",
+    "DefaultSource64MiBpool/two7.5MiBunacked/thirdtypeddenial/ACK14framerecovery;pressure100to1000ms/independentclock/control/close.",
+    "DefaultSource9MiBtransport15s resourceprogress/control3s/ACK1.5s/close200ms and4display+2automation;WebGLblacktext+DOM/Canvas/removalrestore.",
+    "DefaultSourcefullclose/crash/inflight resource ownership andlegacyNodeactualpath regressions.",
+    "Canonicalpromotion onlyaftercomplete defaultpathacceptance. All41/N1/VM/PSS/8h/B4CPU stillunfinished."
+  ],
+  "failuresPreserved": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-consumers-failed-v1.json"
+  ],
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  }
+}

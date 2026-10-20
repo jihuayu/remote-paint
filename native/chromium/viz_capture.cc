@@ -1,5 +1,7 @@
 #include "components/remote_paint/viz_capture.h"
 #include "components/remote_paint/socket_transport.h"
+#include "components/remote_paint/viz_delivery.h"
+#include "components/remote_paint/capture_frame_marker.h"
 #include <atomic>
 #include <algorithm>
 #include "base/containers/span.h"
@@ -14,6 +16,7 @@
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -26,27 +29,57 @@
 #include "third_party/skia/include/core/SkRRect.h"
 namespace remote_paint {
 namespace {
-std::atomic<int> pending_writes{0};
+bool TraceEnabled(){
+  static const bool enabled=base::Environment::Create()->GetVar("REMOTE_PAINT_TRACE").value_or("")=="1";
+  return enabled;
+}
+struct Delivery {
+  explicit Delivery(const std::string& path) : socket(path) {}
+  base::Lock lock;
+  VizDeliveryQueue queue;
+  VizSocket socket;
+  bool scheduled = false;
+};
+void Drain(Delivery* delivery) {
+  for (;;) {
+    std::optional<VizDeliveryQueue::Packet> packet;
+    {base::AutoLock guard(delivery->lock);packet=delivery->queue.Take();if(!packet){delivery->scheduled=false;return;}}
+    bool written=delivery->socket.Send(packet->bytes);
+    // A fault is tiny and its own connection can recover after a failed scene
+    // write. Bound retry work; a genuinely unavailable endpoint still times out.
+    if(packet->fault!=VizDeliveryQueue::Fault::kNone)
+      for(int retry=0;!written&&retry<2;retry++)written=delivery->socket.Send(packet->bytes);
+    if(TraceEnabled())LOG(ERROR)<<"REMOTE_PAINT_VIZ_WRITE id="<<packet->id<<" fault="<<static_cast<int>(packet->fault)<<" bytes="<<packet->bytes.size()<<" written="<<written;
+    {base::AutoLock guard(delivery->lock);delivery->queue.Complete(written);}
+  }
+}
+void Schedule(Delivery* delivery) {
+  if(delivery->scheduled||!delivery->queue.ready())return;
+  delivery->scheduled=true;
+  base::ThreadPool::PostTask(FROM_HERE,{base::MayBlock(),base::TaskPriority::USER_VISIBLE},base::BindOnce(&Drain,delivery));
+}
 void WriteRect(BinaryWriter* wire,const gfx::Rect& rect){wire->F64(rect.x());wire->F64(rect.y());wire->F64(rect.right());wire->F64(rect.bottom());}
 void WriteMatrix(BinaryWriter* wire,const gfx::Transform& transform){for(int row:{0,1,3})for(int col:{0,1,3})wire->F64(transform.rc(row,col));}
-void WriteScene(std::string path,std::string bytes){
-  static base::NoDestructor<VizSocket> socket(path);
-  socket->Send(bytes);
-  pending_writes.fetch_sub(1);
+
 }
-}
-void EmitVizScene(const viz::AggregatedFrame& frame,const std::string& id,std::pair<uint32_t,uint32_t> ns){
+void EmitVizScene(const viz::AggregatedFrame& frame,const std::string& tag,std::pair<uint32_t,uint32_t> ns,uint32_t frame_token){
   static base::NoDestructor<std::optional<std::string>> endpoint(base::Environment::Create()->GetVar("REMOTE_PAINT_SOCKET"));
-  if(!*endpoint || id.empty())return;
-  // Viz calls this on one display sequence. Bounded deduplication also avoids
-  // repeatedly emitting the same tagged surface on unrelated display frames.
-  static base::NoDestructor<std::set<std::string>> seen;
-  if(seen->contains(id))return;
-  if(seen->size()>=256)seen->clear();seen->insert(id);
-  if(pending_writes.fetch_add(1)>=2){pending_writes.fetch_sub(1);return;}
+  if(!*endpoint || tag.empty())return;
+  const auto marker=ParseCaptureFrameMarker(tag);if(!marker)return;const auto& id=marker->id;
+  static base::NoDestructor<Delivery> delivery(**endpoint);
+  bool admitted;
+  {base::AutoLock guard(delivery->lock);admitted=delivery->queue.Reserve(id);if(!admitted)Schedule(delivery.get());}
+  if(TraceEnabled())LOG(ERROR)<<"REMOTE_PAINT_VIZ_EMIT id="<<id<<" ns="<<ns.first<<":"<<ns.second<<" admitted="<<admitted;
+  if(!admitted)return;
   BinaryWriter wire;wire.Bytes("RVB2");wire.U8(1);wire.U8(1);wire.String(id);wire.U32(ns.first);wire.U32(ns.second);
+  if(!marker->Matches(frame_token)){
+    wire.U32(0);wire.U8(1);wire.String("Captured compositor frame superseded before aggregation");
+    if(TraceEnabled())LOG(ERROR)<<"REMOTE_PAINT_VIZ_SUPERSEDED id="<<id<<" requested="<<marker->requested_token<<" actual="<<frame_token;
+    base::AutoLock guard(delivery->lock);delivery->queue.Submit(id,std::move(wire.bytes));Schedule(delivery.get());return;
+  }
   const size_t pass_count_offset=wire.size();wire.U32(0);uint32_t emitted_passes=0;size_t count=0;std::string error;
   for(const auto& pass:frame.render_pass_list){
+    if(emitted_passes>=64){error="Viz pass budget exceeded";break;}
     wire.String(base::NumberToString(pass->id.GetUnsafeValue()));WriteRect(&wire,pass->output_rect);const size_t quad_count_offset=wire.size();wire.U32(0);uint32_t emitted_quads=0;
     // Viz order is front to back. Keep it explicit; the Viewer reverses each
     // pass for painter's order and applies the actual quad clip/transform.
@@ -79,7 +112,9 @@ void EmitVizScene(const viz::AggregatedFrame& frame,const std::string& id,std::p
     if(!error.empty())break;
   }
   wire.U8(error.empty()?0:1);if(!error.empty())wire.String(error);
-  if(wire.size()>256*1024){pending_writes.fetch_sub(1);return;}
-  base::ThreadPool::PostTask(FROM_HERE,{base::MayBlock(),base::TaskPriority::USER_VISIBLE},base::BindOnce(&WriteScene,**endpoint,std::move(wire.bytes)));
+  if(wire.size()>256*1024){
+    wire.bytes.clear();wire.Bytes("RVB2");wire.U8(1);wire.U8(1);wire.String(id);wire.U32(ns.first);wire.U32(ns.second);wire.U32(0);wire.U8(1);wire.String("Viz scene byte budget exceeded");
+  }
+  {base::AutoLock guard(delivery->lock);delivery->queue.Submit(id,std::move(wire.bytes));Schedule(delivery.get());}
 }
 }

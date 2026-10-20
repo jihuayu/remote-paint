@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-17T12:29:59.756197+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Authenticated native intake only: fixed4 scopes/pairs, raw RVB and admitted RPA owners, independent aggregate root and input/document context fences, exact56byte Retry/Pause credit and revocation. Main still blocks on stdin; no autonomous production mapping/publication, no default continuous Source or B1 completion.",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-intake-checkpoint-version-v1.json",
+  "frozen": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-intake-checkpoint-project-v1",
+  "brokers": {
+    "linux": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-intake-checkpoint-project-v1/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+      "sha256": "88264992282aa0bd94977e48f6a63312df8a51dc449b696f105a597de79ec25c",
+      "canonicalUnchanged": "2385f69da5c8dd7ac4496d32292275766454ff9cbd3716a3fce6d0b4244b8e4c"
+    },
+    "mac": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-intake-checkpoint-project-v1/native/bin/remote-paint-broker",
+      "sha256": "21eb933a8517576ae6631fdcd3c21ca3147c70c405c16dfb72a6bf1e4d7fd7c5",
+      "canonicalUnchanged": "64e21c77a39eb9c11136d7202cb20fe3e7e7cf65488ed7cee14cf5dfeff11a25"
+    }
+  },
+  "rustEach": 153,
+  "jsEach": 205,
+  "negativeActualIpcEach": 6,
+  "frozenLinux": {
+    "protocol": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-intake-frozen-protocol-linux-v1.json",
+      "sha256": "7d49b0ca1ba57417560b8c8ffd2dcab89222a1770ea8ba2ca30d28bcc0efb841"
+    },
+    "input": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-intake-frozen-input-linux-v1.json",
+      "sha256": "dde1dbb684c01abf3e823140489d282e232a9e537c0b65eecb14b23baed92ac5"
+    },
+    "fault": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-intake-frozen-fault-linux-v1.json",
+      "sha256": "ace060774cff3035d48cc8ce63e10f351fcbb5bb00d9032ebcaa4cd4e57b75a2"
+    },
+    "rollback": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-intake-frozen-rollback-linux-v1.json",
+      "sha256": "bd1fa71b6ae6e6d8992114e4894bc06c390d99d17bda2188c55a283c58b41a7c"
+    },
+    "large": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-intake-frozen-large-linux-v1.json",
+      "sha256": "e8f386812e36aa54de92d626a5042e78bdd057108b8883f558c42a224b65efe3"
+    }
+  },
+  "legacy": {
+    "persistentSocketIdleSeconds": 16,
+    "inputMiB": 16,
+    "rollbacks": 423,
+    "rawSkpBytes": 57802256,
+    "actualPixels": 4,
+    "hashOnlyRecoveries": 0
+  },
+  "nativeCppUnchanged": "native-subscription-native-checkpoint-v3.json/66Cpp browser0fcunchanged",
+  "canonicalUnchanged": true,
+  "noCommitPush": true,
+  "remaining": [
+    "Single owner Mapper/history dispatcher and control fast path",
+    "Actual native publication and compact event only, no scene/resource graph in Node",
+    "Default Source document-token, demand/idle/input/resize/navigation fences",
+    "Frozen end-to-end native pixels/pressure/close and all41/N1/fullSession/eight-hour requirements"
+  ]
+}

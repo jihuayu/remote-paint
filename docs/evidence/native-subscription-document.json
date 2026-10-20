@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-17T13:11:59.786892+00:00",
+  "status": "accepted-native-document-candidate-only-NOT-B1-complete",
+  "scope": "Renderer isolated capability describe reads real Blink WebDocument::Token even before root readiness;bindDocument comparesexpected opaque token before allocating scope/generation/ordinal andreturnsNativeDocumentChanged/NotReady explicitly. Legacybind kept fordiagnostics. NativeDoc identity is now available forfutureSource epochreconciliation;defaultSource remains legacy.",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-document-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-document-checkpoint-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-document-checkpoint-browser-v1",
+  "browserSha256": "11db20066655cd50abd3389eaf5c5afdb2a14670c96b83b2ec2d25559a3bc141",
+  "cppActualLinux": 66,
+  "jsEach": 205,
+  "documentChecks": 8,
+  "rapidCrosssiteNavigations": 24,
+  "actualNativeSamples": 31,
+  "realRendererProcesses": 26,
+  "nativePublicationChecks": 4,
+  "nativeLarge": {
+    "requiredSkpBytes": 57802256,
+    "skps": 4,
+    "actualPixels": 4,
+    "resourceRecoveries": 0,
+    "mapPublishRpc": 0
+  },
+  "reports": {
+    "document": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-document-frozen-document-v1.json",
+      "sha256": "eb06a947b086e166434db3d350846c0adc94b1a85706be9f0c477fabd8b10bbd"
+    },
+    "publication": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-document-frozen-publication-v1.json",
+      "sha256": "14baffd15ef5db689736422c3c609881e105dbfb9a8ae95dffd256507833ed81"
+    },
+    "large": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-document-frozen-large-v1.json",
+      "sha256": "e8beedefa5ddc926e69be8da60778e7f2a0e2130794f5fc52b4544dd925bd680"
+    }
+  },
+  "brokerUnchanged": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "rustReuse": "Exacted9d/6b7e binaries andRust source unchanged fromaccepted156Mac/156Linux effectiveoutcome checkpoint. No newRust claims.",
+  "patch": "Append0014web_document include;0001..0013 hashes unchanged;componentextension overlay carriesAPIimplementation.",
+  "failedRunsRetained": [
+    "Initialverifier launchforced--site-per-process,whichheadlessframecontrolrejectsbeforestartup. Revisedverifier keepsproductionlaunchflags,checksdefaultcrosssite navigation andindependent-context actualrendererreplacement;24additionaldefaultcrosssitenavs pass.",
+    "Firstfreezeattempt ran before report docker-copy sessioncompleted;failed beforecreatingdirectories. Sameversionfrozenafterconfirmedcopycompletion."
+  ],
+  "noCommitPush": true,
+  "canonicalBrokerAndBrowserUnchanged": true,
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "remaining": [
+    "Native damage/interval scheduling andrenderer heartbeat,includinglatcheddamage whilethrottled/busy",
+    "DefaultSource actualDocToken-to-epoch reconciliation andcontinuouscontrol lifecycle/observationfences",
+    "Fullnativepressure/close/weaknetwork,fullSession/8h,SDK/compat/deployment andremaining41/N1"
+  ]
+}

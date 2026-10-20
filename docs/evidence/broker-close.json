@@ -1,0 +1,97 @@
+{
+  "at": "2026-10-16T22:08:00.074054+00:00",
+  "status": "partial",
+  "scope": "B10 Node Broker process/pipe/request ownership checkpoint; does not complete Source/Mapper/Session memory work.",
+  "implementation": [
+    "Complete packets no longer leave an empty subarray retaining their backing buffer.",
+    "Close and failure share one idempotent promise that waits for child close, even after failure set the closed flag.",
+    "All pending requests/timers are settled immediately; accumulated output, stderr and all three pipes are released.",
+    "Protocol/spawn/stream/timeout failures terminate the child; ignored SIGTERM escalates to SIGKILL with bounded timers, which are cleared on exit."
+  ],
+  "tests": {
+    "node": 144,
+    "actualSubprocessCases": 6,
+    "cases": [
+      "2MiB response backing allocation cleared",
+      "Partial256KiB output and pending request released on close",
+      "Malformed JSON rejects all pending requests and reaps process",
+      "Oversized packet child ignores SIGTERM and is reaped after SIGKILL",
+      "Unexpected exit retains exit-code diagnostic",
+      "Missing executable closes without pending work"
+    ],
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-node.log"
+  },
+  "regressions": {
+    "at": "2026-10-16T22:06:40.659126+00:00",
+    "tests": [
+      {
+        "name": "verify-broker",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-v2-verify-broker.log"
+      },
+      {
+        "name": "verify-broker-viz",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-v2-verify-broker-viz.log"
+      },
+      {
+        "name": "verify-broker-resources",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-v2-verify-broker-resources.log"
+      },
+      {
+        "name": "verify-broker-gateway",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-v2-verify-broker-gateway.log"
+      },
+      {
+        "name": "verify-frame-window",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-v2-verify-frame-window.log"
+      },
+      {
+        "name": "verify-live",
+        "exitCode": 0,
+        "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-v2-verify-live.log"
+      }
+    ],
+    "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+    "status": "passed"
+  },
+  "baselineFailure": {
+    "oldBrokerSha256": "d42f265e1e0cbc53c87a38a0a339cdabb134db16de9379e1efadbf598a89d1c9",
+    "newBrokerSha256": "bba9391e2581c0026198aa85e947041f4e06daee9d82f40046018dffbe30c3fb",
+    "testSha256": "0405c794f9f26ace0e130718e7ce7b072dac11cd79210d214a779d899ddfa8df",
+    "originalFailure": "Both old and new Broker wrappers failed the unchanged 3s gate at the raw9MiB first frame. Diagnostic received6127046 bytes at3s and later committed frame1 before a genuine post-commit ACK close1013.",
+    "change": "Only first/second raw9MiB waits now use the existing15s resource-progress bound. Small/control3s gates and ACK1.5s unchanged."
+  },
+  "failureLogs": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-verify-frame-window.log",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-frame-window-baseline.log",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-frame-window-diagnostic.log",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-frame-window-diagnostic-v2.log",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/broker-close-frame-window-diagnostic-v3.log"
+  ],
+  "correctedTest": {
+    "oldBrokerPassed": true,
+    "newBrokerPassed": true,
+    "adjustment": "Only two raw9MiB transfer waits use15s existing server resource-progress bound. Control/small-frame3s and post-commit ACK1.5s remain. At3s6127046 bytes were actually received; same connection later committed frame1 then closed1013 after withholding ACK. This test correction is not a product throughput improvement."
+  },
+  "sources": {
+    "native/broker.mjs": "bba9391e2581c0026198aa85e947041f4e06daee9d82f40046018dffbe30c3fb",
+    "tests/broker-lifecycle.test.mjs": "5367902468a9e440d0006c4f748411e07820201645e2bd205588fb2b164544d3",
+    "tests/verify-frame-window.mjs": "0405c794f9f26ace0e130718e7ce7b072dac11cd79210d214a779d899ddfa8df"
+  },
+  "nativeCheckpoint": "native-encoding-budget.json",
+  "nativeBrowserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+  "remaining": [
+    "Source latest/mapper reset and asynchronous-close fences",
+    "Cleanup chain after failed transport/control/capture teardown",
+    "Rust/Node transactional Mapper and all remaining B10 budgets/physical memory tests"
+  ],
+  "preserved": {
+    "committed": false,
+    "pushed": false,
+    "eightHourRunUnchanged": true
+  }
+}

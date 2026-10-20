@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-17T15:03:06.942078+00:00",
+  "status": "accepted-defaultSource-nativepool-twoSessions-andexactprotocol-NOT-fullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-pool-checkpoint-version-v2.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-pool-checkpoint-project-v2",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-timer-checkpoint-browser-v1",
+  "browserSha256": "14bce326d2c4c8627c49926fb6a78aa003a0dc6a67f130c922b48da3c2663efa",
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "changed": [
+    "tests/verify-native-source-pool.mjs",
+    "tests/verify-resource-pool.mjs"
+  ],
+  "scope": "ActualdefaultSource/64MiBpool/privateIPC/autonomousBroker/Gateway/realCanvasKitimagepixels in2independentSessions;separateexactsynthetic7.5MiBprotocolcontract. Productioncode/limits/deadlines unchanged.",
+  "cases": [
+    {
+      "tag": "native-a",
+      "producer": "221409:2",
+      "actualHeldSkpBytes": [
+        8129325,
+        8128777
+      ],
+      "nativeDenials": 3,
+      "changedPixelStates": 14,
+      "actualWireFrames": 29,
+      "controlMs": 4.35376400000132,
+      "ackCreditMs": 23.379219000000376,
+      "trialDelays": [
+        1037.087426,
+        1011.6489299999994
+      ],
+      "budgetPollMedianMs": 101.12976700000036,
+      "resumedSourceFrame": 270,
+      "minimumSourceFrame": 270,
+      "nodeCalls": {
+        "evaluate": 22,
+        "awaitPromise": 0,
+        "map": 0,
+        "publish": 0
+      },
+      "poolPeak": 65445719,
+      "releasedBytes": 0,
+      "hashRecoveries": 0
+    },
+    {
+      "tag": "native-b",
+      "producer": "221508:2",
+      "actualHeldSkpBytes": [
+        8129325,
+        8128777
+      ],
+      "nativeDenials": 3,
+      "changedPixelStates": 14,
+      "actualWireFrames": 28,
+      "controlMs": 16.829968000000008,
+      "ackCreditMs": 19.105539000000135,
+      "trialDelays": [
+        1011.933391999999,
+        1012.5859420000015
+      ],
+      "budgetPollMedianMs": 100.93226499999946,
+      "resumedSourceFrame": 253,
+      "minimumSourceFrame": 253,
+      "nodeCalls": {
+        "evaluate": 22,
+        "awaitPromise": 0,
+        "map": 0,
+        "publish": 0
+      },
+      "poolPeak": 65445719,
+      "releasedBytes": 0,
+      "hashRecoveries": 0
+    }
+  ],
+  "totalActualChangedPixelStates": 28,
+  "minimumNativeDenials": 6,
+  "exactSyntheticContract": {
+    "unackedSkpBytesEach": 7864320,
+    "frames": 14,
+    "recoveredSerial": 3,
+    "rollbackCheckedByVerifier": true,
+    "releasedBytes": 0
+  },
+  "reports": {
+    "native-a": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-pool-frozen-native-a-v2.json",
+      "sha256": "4f1c871d08606c43099f7c7b37e5740561dd708d585906aa91dbeb4c780951a1"
+    },
+    "native-b": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-pool-frozen-native-b-v2.json",
+      "sha256": "b79df54b2e2bf3e87533f5f7fa04c57eaaf2e5e60dd731197cb01f91683260ad"
+    },
+    "exact": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-pool-frozen-exact-v2.json",
+      "sha256": "23367183730a082f1fe25e8a1136184aee262f53681a77883dc3fdd8a38b5ef1"
+    }
+  },
+  "proved": [
+    "Twodistinctactualnative1536squareimageSKPs heldunackedwithinexisting16MiBwindow;actualSKPbytes8,129,325and8,128,777reportedratherthanpretendedexact7.5MiB.",
+    "Thirdactualnativeimage triggers typed64MiBpool denial;latestvalidSource/pixelsremainwhileactualC++inflightdrains/timerstops;no partialCpublication.",
+    "Independentclock andrealhumanShiftCDPinputACKs advance;control3s gatekept;latestinput2 reachesresumedactualpixelsafterSourceFrameactivationfloor.",
+    "Actual100msbudgetpolls and1sminimum notready native trials observed;trialstarttimestamps separatepolicywaitfromcapture/mapworktime.",
+    "TwoSessionseachobserveatleastthreeactualdenialsand14changedactualpixelstates,28total;unchanged15sACK/12sobservation/5screditgatesavoidracinganoverlongdeliberatehold.",
+    "Eachresume requiresactualfullresourcebytes,resourcesComplete andcorrectinput/sourceFrame;allnativeflow haszeroNode map/publish/awaitPromise.",
+    "Reset retainsrealpeerACKbase resourcecredit;peerclose releasesallresourcepool bytes. BothSessioncleanup:Brokerexited,pendingRPC/request/responseowners0.",
+    "Separateunchangedexact7.5MiBfixturelogic stilldeniesthirdtransactionwithexactrollback,recoversserial3,advances14changedprotocolframes andreturnsallcredits.",
+    "C++/Rust/productionJS/dependencies unchanged;parent208JSeach/156Ruste/73Cpp evidence retainedattheirexactversions."
+  ],
+  "failuresPreserved": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-pool-failed-v1.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-pool-frozen-failed-v1.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-pool-failed-v3.json"
+  ],
+  "probeNotes": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-pool-probe-lessons-v1.json",
+  "remaining": [
+    "Nativehash-miss/fullretryrecovery notprovenbytheseimagecycles:resourceRecoveries0. Reset-resubscribe andactualmiss testsstillneeded.",
+    "45MiBBase64/423rollbacks separatelegacyRPCcontractrevalidation;9MiBresourceprogress/control3s/ACK1.5s/close200ms;4display+2automation;WebGL/Canvas/removalrestore;fullclose/crash/Nodefallback.",
+    "Canonicalpromotion/fullB1/all41/N1/fullSession/VM/PSS/8h/B4CPU notcomplete."
+  ],
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "productionUnchanged": true,
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  }
+}

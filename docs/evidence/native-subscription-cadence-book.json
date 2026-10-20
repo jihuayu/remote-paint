@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-17T13:26:29.952555+00:00",
+  "status": "accepted-scalar-cadence-book-only-NOT-runtimecadence-orB1-complete",
+  "scope": "Scalar boundedcadence eligibility/deadlines,latcheddamagewhilethrottled/awaitingcredit,urgentinputpluscommitfloor,absoluteurgent-request safetydeadline acrossbindings. Allfixedinline metadata<=2048B;noqueue/timer/imageowner added. PrivatecadenceAPI,actualCCdamage/time andmaincoalescedtimer areunwired;runtimecadenceNOTaccepted.",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-book-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-book-checkpoint-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-book-checkpoint-browser-v1",
+  "browserSha256": "d49bce8b4a5cc035901e3e1bf4b252c3f78c5c172eec9b03331788f6350818d1",
+  "cppActualLinux": 73,
+  "newCppCases": 7,
+  "frozenDocumentChecks": 8,
+  "rapidCrosssiteNavigations": 24,
+  "frozenDocumentReport": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-book-frozen-document-v1.json",
+    "sha256": "e9c9cc8f2fd0fea41136151938108b2e5354c2dc5a503028cb8ca77464a26a98"
+  },
+  "behavior": [
+    "Noheap/frame/image/task owner added;bookstillfits original2048byteceiling andfixed4scope bound.",
+    "Lone damage withininterval remains pending andgets earliesteligibledeadline;damagewhileRecording/AwaitingCredit survives Consumed.",
+    "Urgentinput bypassesinterval whileactiveSourceFramefloor stillblocksoldtrees.",
+    "Monotonic microsecond arithmetic avoids wrap;exactinterval/heartbeat boundaries verified.",
+    "Per-entrylast_request_us preventsotherbusybindings postponing orprematurelytriggering first/urgent safetyretry.",
+    "Pause/cancel eliminate deadlines;oldunconfigured diagnosticbehavior unchanged."
+  ],
+  "notYetWired": [
+    "SetCadence/NextDelay/RequestDue arepurebook foundation. C++Control doesnotconfigureoradvertisecadence,CC hookstillpassesdefaultdamage/time,mainOneShotTimer/coalescedarm notimplemented. Runtimeidle/cadencehasNOTpassed.",
+    "Beforetimeractivation,allcapture-state wrappers mustsupplyactualmonotonicnow_us toTake/Update/SetEnabled/SetCadence/Finish;default0 onlypreservesdiagnosticcompatibility."
+  ],
+  "reusedEvidence": "Broker/Rust exacted9d/6b7e156each andproductionJS/dependencies205each unchanged;data/publication/57MBcontracts belongtoparentDoc11db candidate,not rerunonbook-onlyd49candidate.",
+  "nextDesign": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-cadence-next-design-v1.json",
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  }
+}

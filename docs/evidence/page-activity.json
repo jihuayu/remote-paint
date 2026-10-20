@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-16T19:11:48.807Z",
+  "scope": "Actual custom Linux Chromium external BeginFrame; real rAF paused/resumed under independent display and Agent leases, Agent-only resize and zero display serialization. Explicit caller-owned activity API; not automatic inference of all external CDP clients.",
+  "initial": 1,
+  "active": 14,
+  "stopped": 25,
+  "independentLeases": true,
+  "agentOnlyCaptures": 0,
+  "agentResizeResumed": true,
+  "displaySurvivesAgentRelease": true,
+  "lastDisplayStopsCaptures": true,
+  "lateReleaseAfterCloseSafe": true,
+  "stats": {
+    "mode": "begin-frame",
+    "cadence": "active",
+    "issued": 33,
+    "acked": 32,
+    "damaged": 4,
+    "errors": 0,
+    "lastError": null
+  },
+  "status": "passed",
+  "version": {
+    "at": "2026-10-16T19:12:46.326617+00:00",
+    "uncommitted": true,
+    "sha256": {
+      "live/source.mjs": "279e71e0ae2b0a514a740da4df4629b91111a465e72182668d0674b100fb176d",
+      "tests/verify-page-activity.mjs": "7e3ee85b958d975aa1ea6a9bdb5090287a1d03c63402c7e989bdfee532d008a7"
+    },
+    "sourceBrowserSha256": "e3575864b894bd557bdcc233fd997136e4fd46d8af57537eae024ea58a13d031"
+  },
+  "checks": {
+    "nodeTests": 123,
+    "actualLinuxSource": "passed"
+  }
+}

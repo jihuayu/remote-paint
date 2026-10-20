@@ -1,4 +1,5 @@
 import {randomUUID,randomBytes} from 'node:crypto';
+import {readPublicEditor,readPointerFeedback} from './feedback.mjs';
 export class InputError extends Error {constructor(code){super(code);this.code=code;}}
 const reject=code=>{throw new InputError(code);};
 const number=(n,limit=1e7)=>Number.isFinite(n)&&Math.abs(n)<=limit;
@@ -40,8 +41,10 @@ export function validateInput(event,viewport){
 export class ControlLease {
  constructor(source,cdp,{ttl=30000}={}){
   this.source=source;this.cdp=cdp;this.ttl=ttl;this.sessionId=randomUUID();this.mode='agent';this.holder=null;this.lease=null;this.version=0;
-  this.nextSeq=1;this.tail=Promise.resolve();this.queued=0;this.closed=false;this.peers=new Map();this.keys=new Map();this.buttons=new Map();this.pointer={x:0,y:0};
+  this.nextSeq=1;this.tail=Promise.resolve();this.queued=0;this.closed=false;this.peers=new Map();this.keys=new Map();this.buttons=new Map();this.pointer={x:0,y:0};this.feedbackNamespace=randomUUID();
   this.onInvalidate=()=>{this.revoke('page-changed').catch(()=>{});};source.on('invalidate',this.onInvalidate);
+  this.inputRevision=0;this.feedbackRevision=0;this.lastFeedbackAt=0;
+  this.onFrame=()=>this.scheduleFeedback();source.on('frame',this.onFrame);
  }
  attach(peer){this.peers.set(peer.id,peer);this.sendState(peer);}
  detach(id){this.peers.delete(id);if(this.holder===id)this.revoke('disconnected').catch(()=>{});}
@@ -54,6 +57,7 @@ export class ControlLease {
  }
  tags(message){
   if(message.sessionId!==this.sessionId)reject('STALE_SESSION');
+  if(this.source.transitioning)reject('PAGE_TRANSITION');
   if(message.pageEpoch!==this.source.pageEpoch)reject('STALE_EPOCH');
   if(message.viewportVersion!==this.source.viewportVersion)reject('STALE_VIEWPORT');
  }
@@ -70,9 +74,9 @@ export class ControlLease {
   await this.fence(()=>this.cleanup());
   if(this.closed||this.version!==version||this.holder!==peer)reject('HANDOFF_CANCELED');
   try{this.tags(message);}catch(error){await this.revoke('page-changed');throw error;}
-  this.mode='human';this.lease=randomBytes(24).toString('hex');this.expiresAt=Date.now()+this.ttl;this.armExpiry();this.broadcast();return this.grant();
+  this.mode='human';this.lease=randomBytes(24).toString('hex');this.feedbackSignature=null;this.expiresAt=Date.now()+this.ttl;this.armExpiry();this.broadcast();return this.grant();
  }
- grant(){return {sessionId:this.sessionId,lease:this.lease,nextSeq:this.nextSeq,expiresAt:this.expiresAt,pageEpoch:this.source.pageEpoch,viewportVersion:this.source.viewportVersion};}
+ grant(){return {sessionId:this.sessionId,lease:this.lease,feedbackEpoch:this.version,nextSeq:this.nextSeq,expiresAt:this.expiresAt,pageEpoch:this.source.pageEpoch,viewportVersion:this.source.viewportVersion};}
  renew(peer,message){this.validLease(peer,message);this.expiresAt=Date.now()+this.ttl;this.armExpiry();return this.grant();}
  async dispatch(event){
   const command=validateInput(event,this.source.viewport);await this.cdp.send(command.method,command.params);
@@ -85,40 +89,44 @@ export class ControlLease {
   }
  }
  async optimisticState(event){
-  if(event.kind==='key'&&event.type==='keyUp')return null;
-  if(!['key','text','composition'].includes(event.kind)&&!(event.kind==='mouse'&&event.type==='mousePressed'))return null;
-  try{return await this.source.page.evaluate(()=>{
-   const element=document.activeElement;
-   const editable=element instanceof HTMLInputElement||element instanceof HTMLTextAreaElement||element?.isContentEditable;
-   if(!editable)return null;
-   const rect=element.getBoundingClientRect(),style=getComputedStyle(element);
-   const text=element instanceof HTMLInputElement||element instanceof HTMLTextAreaElement?element.value:element.innerText;
-   const selectionStart=typeof element.selectionStart==='number'?element.selectionStart:text.length;
-   const selectionEnd=typeof element.selectionEnd==='number'?element.selectionEnd:selectionStart;
-   return {
-    kind:element instanceof HTMLTextAreaElement?'textarea':element instanceof HTMLInputElement?'input':'contenteditable',
-    x:rect.x,y:rect.y,width:rect.width,height:rect.height,text:text.slice(0,8192),selectionStart,selectionEnd,
-    style:{fontFamily:style.fontFamily,fontSize:style.fontSize,fontWeight:style.fontWeight,lineHeight:style.lineHeight,
-     letterSpacing:style.letterSpacing,color:style.color,backgroundColor:style.backgroundColor,border:style.border,
-     borderRadius:style.borderRadius,padding:style.padding,textAlign:style.textAlign,whiteSpace:style.whiteSpace}
-   };
-  }).catch(()=>null);
-  }catch{return null;}
+  if(!['key','text','composition'].includes(event.kind)&&!(event.kind==='mouse'&&['mousePressed','mouseReleased'].includes(event.type)))return undefined;
+  const descriptor={kind:event.kind,phase:event.phase,textLength:event.textLength??event.text?.length??0,selectionStart:event.selectionStart};
+  try{return await this.source.page.evaluate(readPublicEditor,{namespace:this.feedbackNamespace,event:descriptor}).catch(()=>null);}catch{return null;}
+ }
+ async pointerState(event){
+  if(event.kind!=='mouse')return undefined;
+  try{return await this.source.page.evaluate(readPointerFeedback,{x:event.x,y:event.y}).catch(()=>null);}catch{return null;}
+ }
+ scheduleFeedback(){
+  if(this.closed||this.mode!=='human')return;
+  const peer=this.peers.get(this.holder);
+  if(!peer?.feedback||!peer.ready||peer.closed)return;
+  this.feedbackDirty=true;if(this.feedbackReading||this.feedbackTimer)return;
+  this.feedbackTimer=setTimeout(()=>{this.feedbackTimer=null;void this.readFeedback();},Math.max(0,100-(Date.now()-this.lastFeedbackAt)));this.feedbackTimer.unref?.();
+ }
+ async readFeedback(){
+  const peer=this.peers.get(this.holder),latest=this.source.latest;
+  if(this.closed||this.mode!=='human'||!peer?.feedback||peer.closed||this.injecting||!latest||(latest.lastProcessedInputSeq??0)<this.source.inputSeq)return;
+  this.feedbackReading=true;this.feedbackDirty=false;this.lastFeedbackAt=Date.now();
+  const version=this.version,revision=this.inputRevision,pageEpoch=this.source.pageEpoch,viewportVersion=this.source.viewportVersion,afterInputSeq=this.source.inputSeq;
+  try{
+   const [editor,pointer]=await Promise.all([this.optimisticState(this.compositionEvent??{kind:'text'}),this.pointerState({kind:'mouse',...this.pointer})]);
+   if(this.closed||this.mode!=='human'||version!==this.version||revision!==this.inputRevision||this.injecting||pageEpoch!==this.source.pageEpoch||viewportVersion!==this.source.viewportVersion||peer.closed)return;
+   const signature=JSON.stringify({afterInputSeq,editor,pointer});if(signature===this.feedbackSignature)return;this.feedbackSignature=signature;
+   peer.send({type:'FeedbackState',sessionId:this.sessionId,feedbackEpoch:version,revision:++this.feedbackRevision,afterInputSeq,pageEpoch,viewportVersion,native:this.source.latest?.native??null,editor:editor??null,pointer:pointer??null});
+  }catch{this.feedbackSignature=null;}finally{this.feedbackReading=false;if(this.feedbackDirty||revision!==this.inputRevision)this.scheduleFeedback();}
  }
  input(peer,message){
   this.validLease(peer,message);if(!Number.isSafeInteger(message.seq)||message.seq!==this.nextSeq)reject('STALE_SEQUENCE');
   validateInput(message.event,this.source.viewport);const version=this.version;
   const promise=this.enqueue(async()=>{
    this.validLease(peer,message);if(this.version!==version)reject('STALE_LEASE');
-   await this.dispatch(message.event);
-   // The source paint is authoritative once CDP accepts the event. Start its
-   // capture before the optional DOM read so that editor geometry cannot sit on
-   // the input critical path. The state read still races in parallel and is
-   // returned for the Viewer overlay when it is available.
-   const optimisticPromise=this.optimisticState(message.event);
+   this.inputRevision++;this.injecting=true;
+   try{await this.dispatch(message.event);}finally{this.injecting=false;}
    this.source.inputSeq=message.seq;this.source.requestCapture?.();
-   const optimistic=await optimisticPromise;
-   return {type:'InputAck',seq:message.seq,accepted:true,lastProcessedInputSeq:this.source.inputSeq,...(optimistic?{optimistic}:{})};
+   this.compositionEvent=message.event.kind==='composition'&&['start','update'].includes(message.event.phase)?{kind:'composition',phase:message.event.phase,textLength:message.event.text.length,selectionStart:message.event.selectionStart}:null;
+   this.scheduleFeedback();
+   return {type:'InputAck',seq:message.seq,accepted:true,stage:'input-injected',lastProcessedInputSeq:this.source.inputSeq};
   });
   this.nextSeq++;return promise;
  }
@@ -134,7 +142,7 @@ export class ControlLease {
  fence(fn){const promise=this.tail.then(fn);this.tail=promise.catch(()=>{});return promise;}
  async revoke(reason='released'){
   if(this.closed)return;const version=++this.version;clearTimeout(this.expiryTimer);
-  this.mode='handoff';this.holder=null;this.lease=null;this.expiresAt=null;this.broadcast();
+  this.mode='handoff';this.holder=null;this.lease=null;this.expiresAt=null;this.feedbackSignature=null;this.compositionEvent=null;clearTimeout(this.feedbackTimer);this.feedbackTimer=null;this.broadcast();
   // Existing CDP work cannot be undone. Fence it, reject queued stale inputs,
   // clear held keys/buttons/composition, then let managed Agent work resume.
   await this.fence(()=>this.cleanup());
@@ -144,11 +152,11 @@ export class ControlLease {
  agent(event){
   if(this.mode!=='agent')reject('AGENT_PAUSED');validateInput(event,this.source.viewport);
   const epoch=this.source.pageEpoch,viewport=this.source.viewportVersion;
-  return this.enqueue(async()=>{if(this.source.pageEpoch!==epoch||this.source.viewportVersion!==viewport)reject('STALE_AGENT_PAGE');await this.dispatch(event);this.source.requestCapture?.();});
+  return this.enqueue(async()=>{if(this.source.transitioning||this.source.pageEpoch!==epoch||this.source.viewportVersion!==viewport)reject('STALE_AGENT_PAGE');const release=this.source.acquirePageRun?.();try{await this.dispatch(event);this.source.requestCapture?.();}finally{release?.();}});
  }
  async handle(peer,message){
   try{
-   if(message.type==='AcquireControl'){const grant=await this.acquire(peer.id,message);peer.send({type:'ControlGranted',...grant});}
+   if(message.type==='AcquireControl'){const grant=await this.acquire(peer.id,message);peer.send({type:'ControlGranted',...grant});this.scheduleFeedback();}
    else if(message.type==='RenewControl'){peer.send({type:'ControlGranted',...this.renew(peer.id,message)});}
    else if(message.type==='ReleaseControl'){this.validLease(peer.id,message);await this.revoke('released');}
    else if(message.type==='Input'){peer.send(await this.input(peer.id,message));}
@@ -157,9 +165,16 @@ export class ControlLease {
    if(!peer.closed)peer.send(message.type==='Input'?{type:'InputAck',seq:message.seq,accepted:false,code:error.code??'CDP_ERROR',lastProcessedInputSeq:this.source.inputSeq}:{type:'ControlDenied',code:error.code??'CDP_ERROR'});
   }
  }
- async close(){
-  this.source.off('invalidate',this.onInvalidate);clearTimeout(this.expiryTimer);
-  const closing=this.revoke('closed');this.closed=true;await closing;await this.tail;await this.cdp.detach?.();this.peers.clear();
+ close(){
+  if(this.closePromise)return this.closePromise;
+  this.source.off('invalidate',this.onInvalidate);this.source.off('frame',this.onFrame);clearTimeout(this.expiryTimer);clearTimeout(this.feedbackTimer);
+  const closing=this.revoke('closed');closing.catch(()=>{});this.closed=true;
+  return this.closePromise=(async()=>{
+   const errors=[];
+   if(this.source.targetCrashed){try{await this.source.close();}catch(error){errors.push(error);}}
+   try{await closing;await this.tail;if(!this.source.targetCrashed)await this.cdp.detach?.();}catch(error){errors.push(error);}
+   this.peers.clear();if(errors.length)throw new AggregateError(errors,'Control close failed');
+  })();
  }
 }
 export async function createControl(source){const cdp=await source.page.context().newCDPSession(source.page);return new ControlLease(source,cdp);}

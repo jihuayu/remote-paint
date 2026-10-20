@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-17T12:56:30.731449+00:00",
+  "status": "passed-in-stated-scope-NOT-B1-complete",
+  "scope": "Native Work.finish returns effective terminal status; Work.reject emits that status after boundedRetries/revocation. Thirdcachemiss must produce identicalPause event and56bytecredit; explicit resume works. Successful mapping/data/publication path unchanged.",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-checkpoint-project-v1",
+  "brokers": {
+    "linux": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-checkpoint-project-v1/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+      "sha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+      "canonicalUnchanged": "2385f69da5c8dd7ac4496d32292275766454ff9cbd3716a3fce6d0b4244b8e4c"
+    },
+    "mac": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-checkpoint-project-v1/native/bin/remote-paint-broker",
+      "sha256": "6b7e771842fd1ac6d5357ed3c75780d6dd433ebd3ed1aa146e28c95eb3128f93",
+      "canonicalUnchanged": "64e21c77a39eb9c11136d7202cb20fe3e7e7cf65488ed7cee14cf5dfeff11a25"
+    }
+  },
+  "rustEach": 156,
+  "actualFrozenDispatchEach": 4,
+  "actualFrozenIntakeEach": 6,
+  "actualFrozenCppLifecycle": 4,
+  "reports": {
+    "mac-dispatch": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-frozen-dispatch-mac-v1.json",
+      "sha256": "2a25232cf20242a0dd168c16ec04ad52e6125c888c643d9a2033a9a8317b8301"
+    },
+    "mac-intake": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-frozen-intake-mac-v1.json",
+      "sha256": "c3d786eeb3e3f817458855a7bf906f61ef935e43e7f340fcd4abd5d4ad99d95e"
+    },
+    "linux-dispatch": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-frozen-dispatch-linux-v1.json",
+      "sha256": "dcd8ffbb351d366b263cc9f6efc2987e2e0b5dde1efc04a85a43f4f60720497e"
+    },
+    "linux-intake": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-frozen-intake-linux-v1.json",
+      "sha256": "be6b31ee607d7ff157c46c0b02002439afa582b8a076643420871bdd59f7ba3a"
+    },
+    "linux-publication": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-outcome-frozen-publication-linux-v1.json",
+      "sha256": "9bff6bef929e007df5efc9ce7c4398951a246d3ce7e3ed79b23d5a5d2ed5ee79"
+    }
+  },
+  "verification": "Actual process sends three consecutive cache-miss native pairs:exact56bytecredits Retry/Retry/Pause,identicalNativeFrameRejected outcomes,unchangedMapper serial12 anddisabledscope. ExplicitnativePolicy resume maps/publishes nextframe atserial13. BothMac/Linux;fourdispatchchecks retain12Gatewayframes/actualCanvasKitpixel,controlbypass/cancel/stop andqueue resurrection fence. RealCpp lifecycle/pixels also rechecked onnewLinuxbinary.",
+  "largeContracts": "Parent frozen57,802,256B/fourpixels,423rollback,64MiB14frame,300RPC and205JS each documented ontheir ownbinary. Narrow return-status fix rechecks156Rust each,actualdispatch/intake each andrealCppsmall lifecycle;no claim those largecontracts reran onnewbinary.",
+  "canonicalUnchanged": true,
+  "noCommitPush": true,
+  "nextAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-next-audit-v1.json",
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "remaining": "DefaultSource opaqueDocumentToken/continuoussubscription integration andall demand/idle/input/nav/resize/observation/pressure/close contracts;fullSession/8h/SDK/compat/deployment/N1 andremaining41rows."
+}

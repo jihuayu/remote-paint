@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-16T14:52:53.929Z",
+  "scope": "Actual host native broker serving IPC throughout a Cargo rebuild and atomic artifact replacement; preexisting process then starts its Gateway",
+  "roundTrips": 880,
+  "preexistingProcessSurvived": true,
+  "inodeChanged": true,
+  "oldHash": "5458489d9a25688211faaafa882f865f29e7d1357420bfb3c32c1f09593e32fb",
+  "newHash": "61ee0ef3680c6983eec88c323f5e2e11ae75d196129bf124af470d29ead7e82e"
+}

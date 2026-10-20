@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-16T17:29:39.998390+00:00",
+  "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+  "uncommitted": true,
+  "scope": "C7 opted-in public text and pointer feedback, real Linux custom Chromium with both data planes and Worker/main; not physical OS IME or browser-wide compatibility",
+  "sha256": {
+    "live/input.mjs": "65d3e30e9f0b19de5166e728dbfcfd9b099dc0259d1eade2ec3393344dfb3090",
+    "live/feedback.mjs": "ad4a6b60ae3140d2da14a2a57003bbc0bed8355807219f4f3cd812488b3afb9e",
+    "live/native-peers.mjs": "1f34d85dd9ccc67e8ca2fcd6b40d257f0c18942459d71e71149381df728e2d2c",
+    "live/transport.mjs": "83999670436461db11af643d0a3f6273388e9292b17b05a555dd4dda23e742cd",
+    "viewer/input.mjs": "101181f45506ce0217d7a03683915f2c002cd49259a3e5d4805baaf67d7ba909",
+    "viewer/live.mjs": "a5dabc7ff5c70d975bc585c4d287c50b5653248fc1e275d39113ace838022ac4",
+    "viewer/stream-worker.mjs": "eb756826599bebd68599c199bfe9e41d807dc515814a157d26bc2c51b680601c",
+    "viewer/control-channel.mjs": "5f01aafc93a5e551002a52df35416568c283d7833395b029795455d2e8ab1eea",
+    "viewer/live.html": "86b7ee37815948cda5565af065a42696415188406f26209c3e056e214808b1f3",
+    "viewer/live.css": "e0282d3912a9787e51742b7ec00f77e007715790c1582479a917ff55707e3cbe",
+    "native/broker/src/gateway.rs": "bc8d927d6551eea4987a95cd9cdaf2f9dcdf9561bc24dc52626964532510371a",
+    "native/bin/remote-paint-broker": "87c032359074415e39704d9122d345514fec8056bc3c7fe35b0124074676ffdb",
+    "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": "22fe01eb7025652adda0af6f174cb1a8f4785d08fde38eff2310ca616996bcf6",
+    "tests/input.test.mjs": "f61c9b9385a2e2156dda91b07bb55398f985bcfd115c3c54b2bd1635ca8d6a65",
+    "tests/viewer-input.test.mjs": "5a0e29b2e925aa524501af964c4e25c6d78187e99d34c1d905e8f763247d1f4a",
+    "tests/verify-input-feedback.mjs": "837488605f19737916f1d2a921904d45d373c07f6f64d7df7ebb61f2050ac294",
+    "tests/fixtures/dynamic.html": "9bfa5ede38e0eaffca93c109a1a80ef79e779e3967512d3da8efe91e8dfe9bc6"
+  },
+  "checks": {
+    "nodeTests": 93,
+    "rustTests": 5,
+    "macAndLinuxBrokersBuilt": true,
+    "gatewayRustfmtCheck": "passed",
+    "wholeCrateRustfmtCheck": "preexisting main/scene/viz formatting differences; not silently reformatted",
+    "nativeFullRegression": "passed; one expected navigation invalidation preserved in report",
+    "workerStallInputAckAndRevocation": "passed"
+  },
+  "remaining": [
+    "C8 physical IME, selected-text restoration on composition cancel, accessibility semantics",
+    "C5 full memory accounting/admission and eight-hour terminal acceptance",
+    "Full 41-item backlog and N1 still active"
+  ]
+}

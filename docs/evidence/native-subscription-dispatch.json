@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-17T12:53:31.011534+00:00",
+  "status": "passed-in-stated-scope-NOT-B1-complete",
+  "scope": "Single-owner Mapper/history dispatcher, fixed4 admitted-request queue under existing4MiB RPCcontrol pool (4KiB book), separate stdin/control path and shared native wake. Native intake automatically maps/publishes real snapshots to history/Gateway; exactConsumed follows successful publication and owner release. Compact typed scalar event only, no full scene/SKP/metadata graph in Node. Default Source remains per-frame legacy.",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-checkpoint-project-v1",
+  "brokers": {
+    "linux": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-checkpoint-project-v1/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+      "sha256": "2b9a9aba9596bbf60530ce285f21dac35fcc757f06b90fc09698338047d1f4f9",
+      "canonicalUnchanged": "2385f69da5c8dd7ac4496d32292275766454ff9cbd3716a3fce6d0b4244b8e4c"
+    },
+    "mac": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-checkpoint-project-v1/native/bin/remote-paint-broker",
+      "sha256": "bf8d9f45a196fd3770f43f5798835dde74d86cb80e8a29f58d8e90a0fb9fd27b",
+      "canonicalUnchanged": "64e21c77a39eb9c11136d7202cb20fe3e7e7cf65488ed7cee14cf5dfeff11a25"
+    }
+  },
+  "cppFoundationUnchanged": "0fc8d1600f0e7a86228525aaceff1b2f189b04f4beb09f208ea09a70bea4afda",
+  "rustEach": 156,
+  "jsEach": 205,
+  "actualDispatchEach": 4,
+  "actualIntakeEach": 6,
+  "nativeLifecycle": 4,
+  "frozenReports": {
+    "dispatch": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-frozen-dispatch-linux-v1.json",
+      "sha256": "422643b45f000ef328d1a6a3e43170b58a4a1df344776543a3b105e95330eb32"
+    },
+    "intake": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-frozen-intake-linux-v1.json",
+      "sha256": "2f7e05b370a747854c8857c2daef2d43cfe47aefab50ff569b8d36fdcc9f77fc"
+    },
+    "publication": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-frozen-publication-linux-v1.json",
+      "sha256": "1fc15927cfa7b0f4d69d30f1ccbba31b48bee665e2f42f92f6aed96b0a6dd816"
+    },
+    "large": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-frozen-large-linux-v1.json",
+      "sha256": "d4ef6e37877b9cd6ddc612084b8c239001ec9eb9a17db4243e428fb56711e156"
+    },
+    "rollback": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-frozen-rollback-linux-v1.json",
+      "sha256": "4d5acbd43c5d9de2bdef3373a6faaebd3ded76929003ca2683076ea4e8e6ca4c"
+    },
+    "pool": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-frozen-pool-linux-v1.json",
+      "sha256": "7bf1241ecbd0c6585b19c151ff5022dd1362431f521c9e5fe46bdddadff514e9"
+    },
+    "rpc": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-frozen-rpc-linux-v1.json",
+      "sha256": "d36cab821faa008dc5b0f8a523993eb82cf74c71659cef899ee5963e57a5060a"
+    },
+    "fault": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-frozen-fault-linux-v1.json",
+      "sha256": "1c8709bd7de153d1ecd6fd853777b7ba52cda80e1dec4d5d110f1d899c940a85"
+    },
+    "input": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-actor-frozen-input-linux-v1.json",
+      "sha256": "9b2763937a0d1309a72ebdceb8a19aff18634d3086c2ef5bd40d45e8d83a1ef4"
+    }
+  },
+  "large": {
+    "requiredSkpBytes": 57802256,
+    "requiredSkps": 4,
+    "actualPixels": 4,
+    "resourceRecoveries": 0,
+    "rawRpaBytes": 57802481,
+    "rawRpaBlocks": 5,
+    "extraUnreferencedRecordingBytes": 225,
+    "hashOnlyRawBytes": 0,
+    "mapPublishRpc": 0
+  },
+  "legacy": {
+    "rollbacks": 423,
+    "resourcePoolMiB": 64,
+    "unackedResourceMiBEach": 7.5,
+    "recoveryFrames": 14,
+    "inputPoolMiB": 16,
+    "faultFullInputPool": true,
+    "rpcCorpus": 300,
+    "persistentIdleSeconds": 16
+  },
+  "failedRunsRetained": [
+    "v2 native navigation bind failed before host/root readiness;actual{ok:false} then real BeginFrame ACK succeeds;not a Busy retry",
+    "v3 test build attempted private sibling test helper;independent fixture fixed",
+    "v5 legacy fullInputPool failed because512B mapping marker admission;fixed inline128B ID withno allocation,thenall4faultvariants passed",
+    "v5 large verifier retained128events and failed before fullwire transfer;bounded32ring now",
+    "v6 large verifier confusedrawRPA5blocks/57,802,481B withrequiredscene4SKPs/57,802,256B;actualrequiredbytes+fourpixels werealreadycorrect. v7/frozen explicitly validateboth.",
+    "Mac Linux-only rpc-input harness rejectedplatform;no Mac RPCinput pass claimed"
+  ],
+  "candidateGap": "Before Source wiring,make Work.reject event outcome reflect effective finish outcome after thirdRetry/cancel;producer alreadyreceives correctPause butcompactevent currentlycan sayRetry. Separate narrow follow-up checkpoint required.",
+  "remaining": [
+    "DefaultSource opaqueDocumentToken/demand/idle/interval/input/resize/navigation/observationfences",
+    "Actual newnativepressure/64MiB14frame,9MiBcontrol/ACK/close,fullSession/8h andall41/N1",
+    "Canonicalpromotion only afterfullSourceintegrationverification"
+  ],
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  }
+}

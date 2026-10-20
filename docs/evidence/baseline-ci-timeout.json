@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-16T17:29:39.998390+00:00",
+  "runId": 38891606933,
+  "attempt": 1,
+  "url": "https://github.com/jihuayu/remote-paint/actions/runs/38891606933",
+  "status": "completed",
+  "conclusion": "failure",
+  "jobs": [
+    {
+      "architecture": "x64",
+      "id": 116970047125,
+      "conclusion": "failure",
+      "reason": "Compile patched Chromium step timed out after 245 minutes",
+      "incrementalOutputSaved": true,
+      "cachePreserved": true
+    },
+    {
+      "architecture": "arm64",
+      "id": 116970047295,
+      "conclusion": "failure",
+      "reason": "Compile patched Chromium step timed out after 245 minutes",
+      "incrementalOutputSaved": true,
+      "cachePreserved": true
+    }
+  ],
+  "packageSmoke": "skipped",
+  "scope": "Existing committed baseline, not current uncommitted optimization sources"
+}

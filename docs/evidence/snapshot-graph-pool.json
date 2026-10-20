@@ -1,0 +1,557 @@
+{
+  "at": "2026-10-17T02:29:30.560314+00:00",
+  "status": "passed-in-stated-scope",
+  "scope": "Per-Broker Snapshot graph/final scene JSON,Mapper logical-entry map,and per-map staging reservations. RPC/emit/Gateway output copies,asset scratch,Mapper persistent resource/weak-index backing,Node returned graphs and full Session remain incomplete. All41+N1 keep7complete/12partial/22pending.",
+  "baseline": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-retention-baseline-b5e.json",
+    "brokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+    "knownRetainedMetadataBytes": 4194304,
+    "method": "Inferred from exact metadata string lengths and Snapshot Value construction plus Gateway/latest Arc pins;not measured allocator/RSS/PSS. Object/maps/other fields and output copies add allocations beyond this lower bound.",
+    "result": "Actual Rust b5e accepted two2MiB timing Values,pinned by Gateway published serial1 and history/latest serial2. Existing resource-only pool reported0 and had no Snapshot ledger. This was a remaining-domain gap,not a contradiction of its explicit resource-only scope."
+  },
+  "implementation": {
+    "limits": {
+      "defaultBytes": 268435456,
+      "configuration": "REMOTE_PAINT_SNAPSHOT_BYTES1MiB..1GiB",
+      "headroom": "min64MiB,half configured pool",
+      "sceneJsonCap": 262144,
+      "nodes": 1000000,
+      "depth": 128
+    },
+    "preAdmission": "Walk borrowed selected input Values without cloning or building a serialized input string. Reserve separate final Snapshot,Mapper-entry and staging leases before allocating owned map/graph locals. Value/key/string costs and generated schemas are conservative;payload/Base64 bytes remain under their existing pools. Repeated sourceLocalId Values are priced per picture quad,not merely per record.",
+    "ordering": "All owned per-map staging bindings are declared after admission,so error data drops before its leases. Snapshot has no derived deep Clone;its graph lease is the last field. Arc copies share one final owner. Mapper entries have an independent last-field lease;reset replaces the HashMap with an empty new map before releasing the old capacity credit.",
+    "serialization": "First stream scene JSON into a bounded byte counter. Above256KiB rejects before allocating a serialized result. Then allocate one exact-length Vec and serialize through a writer that cannot grow;String takes that same backing. The final conservative reservation retains a256KiB allowance;it does not claim every small scene physically allocates256KiB.",
+    "pressure": "Typed RESOURCE_BUDGET_PRESSURE is returned before Mapper transaction commit when admission fails. resourceBudget.snapshots exposes graph/staging ownership and readiness. Graph-only pre-map pressure reclaims disposable history without evicting unrelated resource cache;existing control polling/reclamation and FIFO semantics remain.",
+    "aliases": "History/latest/Gateway/inflight/ACK-base share the same Arc<Snapshot>. Reclaim/reset does not release a Snapshot still held by a peer. Last graph strong-owner destruction frees Values/maps/String before returning credit. Resource Bytes/manifest aliases keep their separate accepted resource leases.",
+    "excluded": "Public scene/metadata String/Value clones made later by main RPC and Gateway are separate allocations and are not covered by the source Snapshot lease. Persistent Mapper resource/weak-index backing also remains a separate owner task. Not allocator usable-size,VM,Node application graph or physical RSS/PSS/cgroup coverage."
+  },
+  "tests": {
+    "rustRelease": 54,
+    "rustLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-rust-v3.log",
+    "js": 177,
+    "jsLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-js-tests.log",
+    "requestedLayoutCorpus": [
+      {
+        "case": "minimal",
+        "reserved": 612274,
+        "requestedPeak": 9779,
+        "liveAfterMap": 378854,
+        "sceneBytes": 218
+      },
+      {
+        "case": "long-metadata",
+        "reserved": 13215412,
+        "requestedPeak": 2110422,
+        "liveAfterMap": 4579900,
+        "sceneBytes": 218
+      },
+      {
+        "case": "dense-metadata",
+        "reserved": 31440274,
+        "requestedPeak": 1547779,
+        "liveAfterMap": 10654854,
+        "sceneBytes": 218
+      },
+      {
+        "case": "escaped-scene",
+        "reserved": 612634,
+        "requestedPeak": 10779,
+        "liveAfterMap": 378974,
+        "sceneBytes": 978
+      },
+      {
+        "case": "wide-scene",
+        "reserved": 132647782,
+        "requestedPeak": 5076632,
+        "liveAfterMap": 44390690,
+        "sceneBytes": 246827
+      },
+      {
+        "case": "oversize-scene",
+        "reserved": 155144398,
+        "requestedPeak": 5647548,
+        "liveAfterMap": 0,
+        "sceneBytes": 0
+      }
+    ],
+    "layoutScope": "Six resource-free actual Mapper graph/JSON cases isolate this scope:long2.1MiB metadata,dense nested scalar metadata,escaped scene IDs,minimal,near-cap1750quads,and rejected2048quads. Requested-layout peaks include overlapping temporary/final allocations,not allocator usable size/RSS. Resource-bearing/default contracts are verified separately.",
+    "denial": "Independent probe asserts less than4KiB requested allocation when2MiB metadata or repeated64x128KiB sourceLocalId cannot be admitted. Prior Mapper fingerprint and pool usage remain intact.",
+    "base64": "15MiB resource fixture plan does not price its20MiB Base64 as a retained graph. Existing45MiB/57.8MB real-pixel regressions remain required.",
+    "linuxFrozen": {
+      "at": "2026-10-17T02:22:17.896993+00:00",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-broker-resources",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-broker-resources.log"
+        },
+        {
+          "name": "verify-broker-gateway",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-broker-gateway.log"
+        },
+        {
+          "name": "verify-broker-tiles",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-broker-tiles.log"
+        },
+        {
+          "name": "verify-frame-window",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-frame-window.log"
+        },
+        {
+          "name": "verify-native",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-native.log"
+        },
+        {
+          "name": "verify-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-input.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-source-close.log"
+        },
+        {
+          "name": "verify-viewer-lifecycle",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-viewer-lifecycle.log"
+        },
+        {
+          "name": "verify-webgl-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-webgl-live.log"
+        },
+        {
+          "name": "verify-broker-cache-lru",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-broker-cache-lru.log"
+        },
+        {
+          "name": "verify-broker-mapper-transaction",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-broker-mapper-transaction.log"
+        },
+        {
+          "name": "verify-large-native-cache",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-large-native-cache.log"
+        },
+        {
+          "name": "verify-resource-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-resource-pool.log"
+        },
+        {
+          "name": "verify-source-resource-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-source-resource-pressure.log"
+        },
+        {
+          "name": "verify-viz-input-pool",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-viz-input-pool.log"
+        },
+        {
+          "name": "verify-source-input-pressure",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-source-input-pressure.log"
+        },
+        {
+          "name": "verify-node-request-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-node-request-budget.log"
+        },
+        {
+          "name": "verify-control-channel",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-control-channel.log"
+        },
+        {
+          "name": "verify-control-priority",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-control-priority.log"
+        },
+        {
+          "name": "verify-input-feedback",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-input-feedback.log"
+        },
+        {
+          "name": "verify-worker-control",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-worker-control.log"
+        },
+        {
+          "name": "verify-streaming-startup",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-streaming-startup.log"
+        },
+        {
+          "name": "verify-page-activity",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-page-activity.log"
+        },
+        {
+          "name": "verify-node-request-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-node-request-lifetime.log"
+        },
+        {
+          "name": "verify-memory-diagnostics",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-memory-diagnostics.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-node-response-budget.log"
+        },
+        {
+          "name": "verify-node-response-contract",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-node-response-contract.log"
+        },
+        {
+          "name": "verify-node-response-lifetime",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-node-response-lifetime.log"
+        },
+        {
+          "name": "verify-snapshot-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-verify-snapshot-budget.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-checkpoint-version-v1.json",
+      "status": "passed"
+    },
+    "canonical": {
+      "at": "2026-10-17T02:27:22.823826+00:00",
+      "source": "Live /project JS/new canonical968bb447 Linux Rust;isolated artifacts",
+      "tests": [
+        {
+          "name": "verify-broker",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-canonical-verify-broker.log"
+        },
+        {
+          "name": "verify-broker-viz",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-canonical-verify-broker-viz.log"
+        },
+        {
+          "name": "verify-rpc-input",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-canonical-verify-rpc-input.log"
+        },
+        {
+          "name": "verify-viz-fault-pairing",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-canonical-verify-viz-fault-pairing.log"
+        },
+        {
+          "name": "verify-snapshot-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-canonical-verify-snapshot-budget.log"
+        },
+        {
+          "name": "verify-node-response-budget",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-canonical-verify-node-response-budget.log"
+        }
+      ],
+      "status": "passed"
+    },
+    "actualQuotaAndPeerPins": {
+      "at": "2026-10-17T02:26:13.661Z",
+      "status": "passed",
+      "scope": "Actual Linux Rust Snapshot/Mapper-entry graph reservations and staging pre-admission;32MiB metadata quota,minimum1MiB recovery and8MiB real Gateway two-frame/ACK-base pins. Denial precedes Mapper commit and keeps prior state. Reset/reclaim cannot release peer pins early;last actual peer reference returns credit. Conservative graph/staging estimates and exact bounded scene JSON capacity,not complete allocator/RSS,Node retained graphs,RPC/Gateway output copies,asset scratch or all Session ownership.",
+      "brokerSha256": "968bb447e2b2e3c76fcc84091617c2990a338a78c1b5a8a191ad476b339e6d59",
+      "metadata": {
+        "quotaBytes": 33554432,
+        "knownRetainedMetadataBytes": 4194304,
+        "before": {
+          "allocations": 3,
+          "bytes": 9140222,
+          "denied": 0,
+          "headroom": 16777216,
+          "limit": 33554432,
+          "peak": 17772534,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "denied": {
+          "code": "RESOURCE_BUDGET_PRESSURE",
+          "message": "Snapshot allocation budget exceeded"
+        },
+        "after": {
+          "allocations": 3,
+          "bytes": 9140222,
+          "denied": 1,
+          "headroom": 16777216,
+          "limit": 33554432,
+          "peak": 17908730,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "mapperUnchanged": true,
+        "remoteAdmissionBeforeCommit": true,
+        "recoveredSerial": 3,
+        "replaced": {
+          "allocations": 2,
+          "bytes": 381954,
+          "denied": 1,
+          "headroom": 16777216,
+          "limit": 33554432,
+          "peak": 17908730,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "cleared": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 1,
+          "headroom": 16777216,
+          "limit": 33554432,
+          "peak": 17908730,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "callerStringsRemainOutsideRustPool": true
+      },
+      "minimum": {
+        "quotaBytes": 1048576,
+        "smallSceneAccepted": true,
+        "largerSceneDenied": true,
+        "before": {
+          "allocations": 2,
+          "bytes": 379902,
+          "denied": 0,
+          "headroom": 524288,
+          "limit": 1048576,
+          "peak": 615418,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "after": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 1,
+          "headroom": 524288,
+          "limit": 1048576,
+          "peak": 615418,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        }
+      },
+      "peerPins": {
+        "frames": 2,
+        "before": {
+          "allocations": 3,
+          "bytes": 882680,
+          "denied": 0,
+          "headroom": 4194304,
+          "limit": 8388608,
+          "peak": 1257456,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "afterResetWithTwoInflight": {
+          "allocations": 2,
+          "bytes": 874488,
+          "denied": 0,
+          "headroom": 4194304,
+          "limit": 8388608,
+          "peak": 1257456,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "afterAckWithBasePin": {
+          "allocations": 1,
+          "bytes": 437244,
+          "denied": 0,
+          "headroom": 4194304,
+          "limit": 8388608,
+          "peak": 1257456,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "afterPeerClose": {
+          "allocations": 0,
+          "bytes": 0,
+          "denied": 0,
+          "headroom": 4194304,
+          "limit": 8388608,
+          "peak": 1257456,
+          "ready": true,
+          "scope": "snapshot-graph-pool"
+        },
+        "errors": []
+      }
+    },
+    "largeNative": {
+      "rawBytes": 57802256,
+      "resources": 4,
+      "pixels": [
+        {
+          "x": 2,
+          "y": 2,
+          "rgba": [
+            20,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2,
+          "rgba": [
+            70,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2,
+          "y": 2050,
+          "rgba": [
+            120,
+            37,
+            199,
+            255
+          ]
+        },
+        {
+          "x": 2050,
+          "y": 2050,
+          "rgba": [
+            170,
+            37,
+            199,
+            255
+          ]
+        }
+      ],
+      "resourceRecoveries": 0,
+      "errors": []
+    },
+    "mapperRollbackRejections": 423
+  },
+  "prototype": {
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-rust-v1.log",
+    "result": "Near-cap fixture initially used1100quads,which actually serialized155177bytes and correctly failed the >200KiB test-size assertion. Replaced with1750quads/246827bytes;original size gate retained. No runtime budget failure was relabeled as a pass."
+  },
+  "version": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-checkpoint-version-v1.json",
+    "frozenProject": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-checkpoint-project-v1",
+    "rustSources": {
+      "native/broker/src/allocation_probe.rs": "ddec052782fb29d8ad7a27d2c2332a70ad9f94226ad230c7fe0923e1cea97ffb",
+      "native/broker/src/assets.rs": "dd638429baa9e8e892623a2c2ca54631b43b27abf53dc4d51b5b1bf7c6626251",
+      "native/broker/src/budget.rs": "41bef43441a10f02c23ad0c0d6eb04bbd48436ad6d2dac0e2ed5cdf5758941e8",
+      "native/broker/src/control.rs": "020a7bc8befd37850a746a602698d8972bd2df03343534559e3cfdfed12c52eb",
+      "native/broker/src/gateway.rs": "fd3e77664463e83dcad24104ba97b36332097979e7a04739c0d823a44bab7126",
+      "native/broker/src/history.rs": "4b64273428615445d9ceb99bfd38a5004e66b2eead2d6aaf7dfadfa686578e2a",
+      "native/broker/src/input.rs": "9e56c120a1bc534fc9b9696314335af3c9ae79e16bebd4c93f9b3eb54820f42b",
+      "native/broker/src/main.rs": "11fe48a1e1b9f1c7d59160a3523b993cbd14967693376355231c7b9dcb2a8390",
+      "native/broker/src/rpc.rs": "e277cc24c016dc73a9199cd4dc4375f978a1efa1ad19e5d30ab4e171790533dd",
+      "native/broker/src/scene.rs": "93a5a13ae0d5b1a86fac41b8d92723d3f290d09fed7d3a32f862c5d400ea0570",
+      "native/broker/src/snapshot_memory.rs": "dacd32697849b66b54089a259b93189c3c643522be81c55046a1c52400f82143",
+      "native/broker/src/viz.rs": "2392f0e14a5a38d46f28f94f396e9281fc37a7b9ba1c4b5309c414c91e1084cb",
+      "native/broker/src/writer.rs": "26fef581106539a5dc43ba9dc9324c4f6e4850863e65d7ecce8ce40f18ebbb61"
+    },
+    "brokerSha256": "968bb447e2b2e3c76fcc84091617c2990a338a78c1b5a8a191ad476b339e6d59",
+    "previousBrokerSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+    "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+    "browserUnchanged": true,
+    "cpp": "Prior34 C++ tests reused with unchanged browser;no native rebuild or new C++ test claim.",
+    "artifactReports": {
+      "quota-and-pins.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-artifacts/quota-and-pins.json",
+        "sha256": "f71ae74cc750c5c29c6bf693324fede3cb2fcaca26c6b6b4682fbee3a2a32e25"
+      },
+      "large-native.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-artifacts/large-native.json",
+        "sha256": "46a6836286ca9e3775bef5c27255656ec5dbb75d096b3e4e2f4a63e4119d79c1"
+      },
+      "rollback.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-artifacts/rollback.json",
+        "sha256": "99317fd1e437b6a2680a8a31372e0bc8692fb7cfb1af6807c1ce2d4ce5be8376"
+      },
+      "cache-contract.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-artifacts/cache-contract.json",
+        "sha256": "c173d94dc4b7cff29711c1d09419716d52d13c96e8913f80724a33b2d05594dc"
+      },
+      "resource-pool.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-artifacts/resource-pool.json",
+        "sha256": "575b7a9c0562ff719080b4ab6d27d587c1199dd4b090534122f761874a43eb82"
+      },
+      "source-resource.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-artifacts/source-resource.json",
+        "sha256": "d5d703dd9a6bfd2e9cf2a0dd86615d41e181af19ba1e78d059ef85fa39c78a83"
+      },
+      "source-input.json": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-v1-artifacts/source-input.json",
+        "sha256": "a83c68b516450954e8c68f700a656a19259129abfcae0b9accb5d90a3e2fd6e7"
+      }
+    }
+  },
+  "publication": {
+    "at": "2026-10-17T02:27:22.697561+00:00",
+    "status": "accepted-in-stated-scope",
+    "oldSha256": "b5e27b7d4bd489e070bb52d97e2a8b0c59efcf1a586a8f425b7c35216e0850cf",
+    "newSha256": "968bb447e2b2e3c76fcc84091617c2990a338a78c1b5a8a191ad476b339e6d59",
+    "previousBinary": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-previous-canonical-b5e",
+    "previousReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-previous-build-receipt.json",
+    "binary": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-15/q/outputs/remote-paint/native/bin/aarch64-unknown-linux-gnu/broker-build.json",
+    "scope": "Only new Linux arm64 processes pick up this atomic replacement;keep already running proof/8h processes and all caches. No Git commit/push.",
+    "canonicalSmoke": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/snapshot-pool-canonical-smoke.json",
+    "evidence": "docs/evidence/snapshot-graph-pool.json"
+  },
+  "remaining": [
+    "RPC result scene/metadata clones,emit serialized Vec and actual stdout write lifetime.",
+    "asset section/manifest/upgrade parse and JSON scratch before final resource admission.",
+    "Gateway scene/delta/message/Tungstenite copies and Mapper persistent resource/weak-index backing.",
+    "Node returned application graphs/VM,native recording/uncached work/tiled duplication/epoch,actual pending cancellation,and whole Session/PSS/cgroup.",
+    "B4 comparable baseline,independent8h,and all other41-row/N1 requirements."
+  ],
+  "eightHours": "2585828c remains immutable a296/earlier JS and does not include this Snapshot,Node-response,RPC-input or RVE-pairing checkpoint. Do not stitch earlier elapsed times.",
+  "preserve": "No commit/push. HEAD3ff9512c/live peer1+/1-,all old proof processes/compiler6713 and Chromium/Cargo caches preserved."
+}

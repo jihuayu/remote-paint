@@ -17,6 +17,16 @@ try{
  assert.equal(decodeVizScene(packet('failure-decode','native error').subarray(4)).error,'native error');
  const failure=viz.waitFor('failed');failure.catch(()=>{});await failure.registered;socket.write(packet('failed','Unsupported Viz material'));await assert.rejects(failure,/Unsupported Viz material/);
  socket.write(packet('unknown'));await new Promise(resolve=>setTimeout(resolve,30));assert.equal(viz.stats.received,3);assert.ok(viz.stats.rejected>=1);
+ const superseded=viz.waitFor('superseded-frame');superseded.catch(()=>{});await superseded.registered;socket.write(packet('superseded-frame','Captured compositor frame superseded before aggregation'));await assert.rejects(superseded,{code:'VIZ_CAPTURE_SUPERSEDED'});
+ // The C++ writer replaces queued scenes with this bounded receipt on
+ // saturation/transport failure. It must retire all unfinished expectations
+ // and native resource owners, without making them delivered or timing out.
+ for(const [reason,code]of [[1,'VIZ_OUTPUT_OVERLOAD'],[2,'VIZ_OUTPUT_TRANSPORT']]){
+  const pending=['fault-a','fault-b'].map(id=>viz.waitFor(id,{timeout:1000}));for(const value of pending)value.catch(()=>{});await Promise.all(pending.map(value=>value.registered));
+  const body=Buffer.from([82,86,69,50,1,1,reason]),head=Buffer.alloc(4);head.writeUInt32BE(body.length);socket.write(Buffer.concat([head,body]));
+  for(const value of pending)await assert.rejects(value,{code});
+  const retry=viz.waitFor('fault-retry');await retry.registered;socket.write(packet('fault-retry'));assert.equal((await retry).native,true);
+ }
  await new Promise(resolve=>setTimeout(resolve,16000));const idle=viz.waitFor('after-idle');await idle.registered;socket.write(packet('after-idle'));assert.equal((await idle).native,true,'A private persistent socket must survive a paused compositor');
  for(let i=0;i<10;i++)assert.throws(()=>decodeVizScene(a.subarray(4,10+i)),/Truncated|Invalid/);
  console.log('Native binary Viz: persistent fragmented stream, pairing without Node scene payload, error and unknown frame rejection passed');

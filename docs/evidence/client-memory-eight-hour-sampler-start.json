@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-17T09:11:21.936761+00:00",
+  "status": "running-NOT-passed",
+  "runId": "3319f9fa-46ee-4f62-9871-766fcf2f8125",
+  "startedAt": "2026-10-17T09:10:40.003Z",
+  "sourceExecSession": 31829,
+  "viewerExecSession": 50293,
+  "containerObserverExecSession": 94669,
+  "container": "remote-paint-memory-eight-hours-sampler-20261017",
+  "results": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-sampler-v1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-eight-hours-sampler-v1/frozen-version.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/memory-sampler-calibration-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/recording-index-checkpoint-browser-v2",
+  "brokerSha256": "48dfe9acc4b77437a3326855b96132803e96a685b6fbdba9ca4604be03684af7",
+  "browserSha256": "ecb176300cf9b11a2042b6a224c72b79653f8e026e467226dd0a408fd0191886",
+  "clientLedgerSha256": "b46ed2b28677e4a7db943e4a43b071c2eefe6c6255f799c319200a5869c3cb5e",
+  "viewerBuild": "ae53b8191c0fe92ab35ab22863b565490ca56c0eed0701de01018c09ed522b10",
+  "ports": [
+    39526,
+    39527
+  ],
+  "workload": {
+    "seconds": 28800,
+    "burst": 400,
+    "intervalMs": 2000,
+    "navigationEvery": 40
+  },
+  "sampler": "phase-deadline-background-v1",
+  "strictMaximumSampleGapSeconds": 90,
+  "noElapsedTimeCarried": true,
+  "failedHistoricalRunIds": [
+    "2585828c-e3d1-4175-98f9-8a8c656dcd7c",
+    "6aac0cc8-d1fb-42de-a2ef-f18696129f81"
+  ],
+  "currentSample": {
+    "at": "2026-10-17T09:10:49.630Z",
+    "elapsedSeconds": 3.8523931670000002,
+    "cycle": 0,
+    "navigations": 0,
+    "resizes": 0,
+    "inputs": 0
+  },
+  "sourceHealth": {
+    "pageCrashed": false,
+    "browserDisconnected": false,
+    "brokerExited": false
+  },
+  "evidence": "docs/evidence/client-memory-eight-hour-sampler-start.json",
+  "scope": "Fresh independent current-clientb46/Rust48dfe9/Chromiumecb run on phase-deadline/background sampler. ActualMacGPUWorker+CPUWorker+CPUMain with continuous PNG/font/nav/resize/input pixels. Strict90s memory sample interval,8h workload,logical quotas,health andcleanup retained. Previous2585828c/6aac0cc8 runs failed continuity and contribute0elapsed;future code excluded. Start only;requires final8h report andactualVM/Source/cleanup audit."
+}

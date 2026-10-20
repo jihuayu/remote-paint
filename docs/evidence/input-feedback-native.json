@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-16T17:27:49.165Z",
+  "dataPlane": "native",
+  "scope": "Real custom Chromium native capture → Gateway → CanvasKit Viewer, generated form fixtures and local input events; composition validation is synthetic, no physical OS IME claim",
+  "variants": [
+    {
+      "worker": true,
+      "privacyCases": 8,
+      "sensitiveGetterReads": 0,
+      "sourceCorrection": true,
+      "focusRaceMasked": true,
+      "ackWhileFeedbackBlocked": true,
+      "compositionMasked": true,
+      "compositionCancelPreviewCorrected": true,
+      "remoteSelectionRestoration": false,
+      "compositionCommit": true,
+      "tabInvalidation": true,
+      "pointerCleanup": true,
+      "feedback": 13,
+      "acks": 10,
+      "ackBodies": false
+    },
+    {
+      "worker": false,
+      "privacyCases": 8,
+      "sensitiveGetterReads": 0,
+      "sourceCorrection": true,
+      "focusRaceMasked": true,
+      "ackWhileFeedbackBlocked": true,
+      "compositionMasked": true,
+      "compositionCancelPreviewCorrected": true,
+      "remoteSelectionRestoration": false,
+      "compositionCommit": true,
+      "tabInvalidation": true,
+      "pointerCleanup": true,
+      "feedback": 14,
+      "acks": 10,
+      "ackBodies": false
+    }
+  ],
+  "sourceErrors": 0,
+  "status": "passed"
+}

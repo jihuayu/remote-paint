@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-16T18:27:25.060Z",
+  "scope": "Actual staged custom Chromium capture → Rust/Node data plane → complete per-resource decode estimates and CanvasKit first frame; server contract only, Viewer decode admission not claimed",
+  "variants": [
+    {
+      "mode": "native",
+      "resources": 17,
+      "imageEstimateBytes": 720000,
+      "fontEstimateBytes": 96839332,
+      "manifestMatchesFrame": true,
+      "complete": true,
+      "sourceErrors": 0,
+      "viewerFirstFrame": true
+    },
+    {
+      "mode": "node",
+      "resources": 3,
+      "imageEstimateBytes": 240000,
+      "fontEstimateBytes": 19022392,
+      "manifestMatchesFrame": false,
+      "complete": true,
+      "sourceErrors": 0,
+      "viewerFirstFrame": true
+    }
+  ],
+  "status": "passed",
+  "version": {
+    "at": "2026-10-16T18:32:13.231750+00:00",
+    "uncommitted": true,
+    "sha256": {
+      "native/chromium/serializer.h": "dcb6213497795b5361fda26d2f62e2ce0e4636b4e98d807e21cdb650e175cdde",
+      "native/chromium/serializer.cc": "f90fa4d3a6c8ea4d9ddb9a7264f6c37ffcde4719bb45e8c9450c5fc64977192a",
+      "native/chromium/font_subset.h": "a0ef6e8b07487412cf5632a8bd5b6d094beeb617cdfcdac802113286a6b7f8e8",
+      "native/chromium/font_subset.cc": "b3e1dd8c3502c97094b30d232e0c14d2f57605b98206375b63bd516fdd06f64c",
+      "native/chromium/capture_state.cc": "77b12f093b079370abbcfb7008656a1a5e8404b2fcdec803c3a0c897ad7126ef",
+      "native/chromium/serializer_unittest.cc": "4985d09b0fee842eb91df03355c2bb4e64a2381df62a630b973cc82da6030ec7",
+      "native/broker/src/assets.rs": "dc636078329cffede274db7b460090a5ee8293bc620c78d95721b75bcb994443",
+      "native/broker/src/scene.rs": "1a5865835440b85ca1b64fc018154369040166d9ff06e4f41c413d1a3ecf1485",
+      "capture/scene.mjs": "36f21ddce799e762b14683fb3a6902d5cd246fa682e046c32aed773a74a7e82b",
+      "protocol/resource-memory.mjs": "e11d23aa81829ccc523117e7f02d5ee315405b88437fa37ed859a20829b6050b",
+      "live/transport.mjs": "5cacf1911975a8dc69e189b4907f08abcad8c3f5b1f01ad7a7c5d0eb76ac7c8d",
+      "tests/resource-memory.test.mjs": "17e8df2afaea45f44df045a2ee6a7af800b74c77791fe8dfee9a015789d01ca1",
+      "tests/verify-resource-memory.mjs": "6caba7be377ffc5388cd795dde96ae3a4a031bef6f855dfc852c4c236a9c509a"
+    }
+  },
+  "checks": {
+    "nodeTests": 113,
+    "cppTests": 8,
+    "rustTests": 8,
+    "bothBrokerTargetsBuilt": true,
+    "stagedChromiumBuild": "passed; original executable was not overwritten",
+    "clientAdmission": "not implemented at this checkpoint"
+  }
+}

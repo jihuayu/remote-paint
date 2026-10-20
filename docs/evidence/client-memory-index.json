@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-16T17:36:00.655510+00:00",
+  "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+  "uncommitted": true,
+  "scope": "C5 cache/ledger JS index estimates; frozen 8-hour soak predates this change",
+  "sha256": {
+    "protocol/client-memory.mjs": "c39e76699508817ae43e6db77443f8ff453124262613c660cf9c710d7db3fced",
+    "protocol/asset-wire.mjs": "d17fbe4b51657061504ec5d974b08b56438b5827933435236c0d5d05de8e9f4d",
+    "protocol/live-wire.mjs": "16a179df6dee58b0de5d53c4a544080faf39dec53a5e13c03ff0eec9a7c6132e",
+    "viewer/scene-renderer.mjs": "da661da4a7ebf83968bc0daf512836baf8753e35bb77de301310ffcf267539ad",
+    "tests/client-memory.test.mjs": "1752a2635457b88e21b48d0a140a84ac02ac453ef0ee05c4db3fcd6314d82d76"
+  },
+  "estimatesBytes": {
+    "ledgerOwner": 512,
+    "ledgerBackingBuffer": 96,
+    "trimmerOrRetiredEntry": 128,
+    "chunkCacheIndex": "512 + 2 * hash.length",
+    "rawCacheIndex": "384 + 2 * hash.length",
+    "pictureCacheIndex": "512 + 2 * hash.length",
+    "rasterCacheIndex": "256 + 2 * hash.length"
+  },
+  "checks": {
+    "nodeTests": 96,
+    "tinyChunksEvictOnMetadataPressure": true,
+    "pinnedRawIndexesRefuseNewAllocationWithoutEvictingDependencies": true,
+    "sharedBufferStorageStillDeduplicated": true,
+    "macMainAndWorkerRuntimeRaces": "passed",
+    "realNativeFeedbackMainAndWorker": "passed",
+    "actualViewerAssetCachingAndVersionRefusal": "passed"
+  },
+  "remaining": [
+    "Retained scene graphs, pass clones/signatures and broad JS VM overhead are not fully covered",
+    "Large compressed image/font decode admission",
+    "Driver/process physical limits and 8-hour terminal acceptance"
+  ]
+}

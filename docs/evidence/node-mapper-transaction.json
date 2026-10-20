@@ -1,0 +1,126 @@
+{
+  "at": "2026-10-16T22:22:05.272648+00:00",
+  "status": "partial",
+  "scope": "B10 Node SceneMapper atomic retained-cache admission and scene validation. Rust native ingest/mapper and full Session memory remain incomplete.",
+  "implementation": [
+    "Stage only current-frame resources and decode descriptors. Existing immutable Buffer objects are reused for the same checksum, without copying the retained history.",
+    "Stage revision and epoch. Full scene/viewport/picture/dependency and256KiB metadata checks finish before any retained maps are mutated. Source supplies its actual viewport to Mapper so later Source validation cannot fail after cache commit.",
+    "Unique active raw SKPs are bounded by64MiB and individual Base64/SKP limits. Success plans history victims before committing, with128MiB raw cache and512 retained resource/descriptor keys. Returned snapshots can pin their own bytes outside this cache budget.",
+    "Same-hash and hash-only incoming memory indexes are validated; conflicting descriptors cannot alter existing accepted decode bounds."
+  ],
+  "tests": {
+    "node": 149,
+    "specific": [
+      "140 unique rejected1MiB captures keep cache/revision/epoch/buffer identities unchanged and recover original incremental resource",
+      "Wrong viewport, invalid pass IDs and oversized metadata roll back descriptor upgrades and mapping state",
+      "65MiB active resource set rejects while preserving old accepted scene and incremental recovery",
+      "Nine16MiB successful replacements exercise128MiB history eviction;520 small replacements exercise512-entry cap, with returned old snapshots still valid",
+      "Conflicting same-hash and incomplete hash-only descriptors cannot leak staged upgrades"
+    ],
+    "runtime": {
+      "at": "2026-10-16T22:19:35.939Z",
+      "status": "passed",
+      "scope": "Actual Linux native Node-data-plane Source → CPU CanvasKit Worker. A paused producer lets181 explicit invalid captures enter the real Source listener, using actual native SKP bytes with unique trailing nonces. More than128MiB cumulative rejected payloads leave the committed cache/entries/epoch/revisions and exact Buffer identities unchanged. Wrong viewport rejects before commit; genuine native capture resumes and image pixels recover. Injected failure events are counted exactly, not removed from Source diagnostics. This does not exercise Rust native resource ingestion or prove full physical memory budgets.",
+      "browserSha256": "aa084f17cc9b8e1acaafd7fb28e34fc1e2af56935e8ca1c183ffa61cf54f1a29",
+      "before": {
+        "bytes": 911187,
+        "resources": 1,
+        "descriptors": 1,
+        "entries": [
+          [
+            "1/28064:2/4:10/18",
+            {
+              "logical": "1/28064:2/4:10/18",
+              "resourceId": "8656664d455bf0cbf0c0e0836a03598e025389a3e13ee4d2a125891aaa05b119",
+              "revision": 1
+            }
+          ]
+        ],
+        "revision": 1,
+        "epoch": 1
+      },
+      "rejectedCaptures": 181,
+      "rejectedBytes": 164014380,
+      "afterRejected": {
+        "bytes": 911187,
+        "resources": 1,
+        "descriptors": 1,
+        "entries": [
+          [
+            "1/28064:2/4:10/18",
+            {
+              "logical": "1/28064:2/4:10/18",
+              "resourceId": "8656664d455bf0cbf0c0e0836a03598e025389a3e13ee4d2a125891aaa05b119",
+              "revision": 1
+            }
+          ]
+        ],
+        "revision": 1,
+        "epoch": 1
+      },
+      "recovered": {
+        "bytes": 1822374,
+        "resources": 2,
+        "descriptors": 2,
+        "entries": [
+          [
+            "1/28064:2/4:10/18",
+            {
+              "logical": "1/28064:2/4:10/18",
+              "resourceId": "2e2db3973d79483c543ab70e97ddde8e9d08ab5f51f6705420a35b2bc5527288",
+              "revision": 2
+            }
+          ]
+        ],
+        "revision": 2,
+        "epoch": 1
+      },
+      "expectedCaptureErrors": 181,
+      "unexpectedCaptureErrors": [],
+      "pageErrors": []
+    },
+    "regressions": {
+      "at": "2026-10-16T22:20:40.274247+00:00",
+      "tests": [
+        {
+          "name": "verify-scene",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-mapper-verify-scene.log"
+        },
+        {
+          "name": "verify-live",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-mapper-verify-live.log"
+        },
+        {
+          "name": "verify-resource-memory",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-mapper-verify-resource-memory.log"
+        },
+        {
+          "name": "verify-source-close",
+          "exitCode": 0,
+          "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-mapper-verify-source-close.log"
+        }
+      ],
+      "nativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/encoding-budget-staged-build.json",
+      "status": "passed"
+    }
+  },
+  "sourceHashes": {
+    "capture/scene.mjs": "026d4bc6616b23d945c44e5e57c26327122f5e0682ce0d0316fe19f961cb6845",
+    "live/source.mjs": "d698df81b7303c07ee881a734f404b9f5959e518b6c0695281c3854d5faee24f",
+    "tests/scene.test.mjs": "ec74fdd7f0a02ab8b93a31dd204eabbf2ce6089a57a52e01ee13178a810812f0",
+    "tests/verify-node-mapper-transaction.mjs": "37c14eaa995db6eaaf4c9c23075ffb5e71900a09a7b0333ac0940277c0268427"
+  },
+  "remaining": [
+    "Rust native ingest plus map must become one transaction, including chunks and epoch/serial/mapping changes",
+    "Native recordings/uncached work/page-epoch budgets and actual pending-capture cancellation",
+    "Full Session/cross-renderer/index byte and process/RSS/PSS scopes"
+  ],
+  "preserved": {
+    "committed": false,
+    "pushed": false,
+    "eightHourRunUnchanged": true
+  }
+}

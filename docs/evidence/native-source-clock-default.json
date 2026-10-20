@@ -1,0 +1,661 @@
+{
+  "at": "2026-10-17T17:29:32.641809+00:00",
+  "status": "accepted-nativeTake-clockmetadata-provenance-NOT-fullframeage-orN1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-clock-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-clock-checkpoint-project-v1",
+  "browser": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-clock-checkpoint-browser-v1",
+  "browserSha256": "c5d29a3b5a22ff27ee3914c68650feea3e342dd1c4d2dc502e9ff0e596ae1b4e",
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-network-checkpoint-v1.json",
+  "changed": [
+    "native/chromium/subscription_state.h",
+    "native/chromium/capture_state.cc",
+    "native/chromium/serializer_unittest.cc",
+    "tests/verify-native-source-clock.mjs"
+  ],
+  "scope": "FixednativeTake-starttimestamp andclockdomain travelwith4-slot job intoRPA2/publicnative.timing;privatecurrentTimeTicks/rendererPID permitsboundedcalibration. Unchanged56bytecredit. ActualdefaultSourceclock/pixel/input/pause/resume/resize/nav/resetprovenance gates;fullcalibratedViewerpixelage/N1notyetproved.",
+  "cppActualLinux": 76,
+  "fixedCreditBytes": 56,
+  "fixedRegistrySlots": 4,
+  "frozenSuite": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-clock-frozen-suite-v1/progress.json",
+    "sha256": "e7635b5cfa3631bf7cc60434684e72016a2a30aa4cd8de8c2ef23ef1eed91e1f",
+    "steps": 18
+  },
+  "clocks": [
+    {
+      "report": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-working-v1/clock.json",
+        "sha256": "63c8772350c9367f1dc1dac52a209f976664bc0f0354584cb0173e325eb63534",
+        "scope": "Actual default autonomous NativeSource/fixed native Take timestamp/private currentTimeTicks probe/real Gateway+FrameGate+CanvasKit pixels/input/pause/resume/resize/crosssite navigation/reset and cleanup. Calibration probe bounds are raw provenance,not completed frame-age measurements;no claim for Viewer Worker/physical scanout/fullN1/8h.",
+        "checks": 7
+      },
+      "witnesses": [
+        {
+          "ordinal": 2,
+          "producer": "6076:2",
+          "publicMicros": 182186761403,
+          "privateTakeMicros": 182186761403
+        },
+        {
+          "ordinal": 3,
+          "producer": "6076:2",
+          "publicMicros": 182186767442,
+          "privateTakeMicros": 182186767442
+        },
+        {
+          "ordinal": 4,
+          "producer": "6076:2",
+          "publicMicros": 182186774702,
+          "privateTakeMicros": 182186774702
+        }
+      ],
+      "frameCount": 9,
+      "clockCalibrations": [
+        {
+          "label": "initial",
+          "pid": 6076,
+          "minimumProbeRoundTripMs": 0.4252079999999978
+        },
+        {
+          "label": "paused",
+          "pid": 6076,
+          "minimumProbeRoundTripMs": 0.5972910000000411
+        },
+        {
+          "label": "resized",
+          "pid": 6076,
+          "minimumProbeRoundTripMs": 0.44891599999994014
+        },
+        {
+          "label": "new-document",
+          "pid": 6091,
+          "minimumProbeRoundTripMs": 0.36212399999999434
+        },
+        {
+          "label": "after-reset",
+          "pid": 6091,
+          "minimumProbeRoundTripMs": 0.38570800000002237
+        }
+      ],
+      "nodeCalls": {
+        "evaluate": 106,
+        "awaitPromise": 0,
+        "map": 0,
+        "publish": 0
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false
+      }
+    },
+    {
+      "report": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/clock/clock.json",
+        "sha256": "c32eaf5c492dab84744747ed8e10229c8a1d15825c5d09575cc056ba247406b9",
+        "scope": "Actual default autonomous NativeSource/fixed native Take timestamp/private currentTimeTicks probe/real Gateway+FrameGate+CanvasKit pixels/input/pause/resume/resize/crosssite navigation/reset and cleanup. Calibration probe bounds are raw provenance,not completed frame-age measurements;no claim for Viewer Worker/physical scanout/fullN1/8h.",
+        "checks": 7
+      },
+      "witnesses": [
+        {
+          "ordinal": 2,
+          "producer": "6216:2",
+          "publicMicros": 182302410945,
+          "privateTakeMicros": 182302410945
+        },
+        {
+          "ordinal": 3,
+          "producer": "6216:2",
+          "publicMicros": 182302417188,
+          "privateTakeMicros": 182302417188
+        },
+        {
+          "ordinal": 4,
+          "producer": "6216:2",
+          "publicMicros": 182302425296,
+          "privateTakeMicros": 182302425296
+        }
+      ],
+      "frameCount": 9,
+      "clockCalibrations": [
+        {
+          "label": "initial",
+          "pid": 6216,
+          "minimumProbeRoundTripMs": 0.4470410000000129
+        },
+        {
+          "label": "paused",
+          "pid": 6216,
+          "minimumProbeRoundTripMs": 0.4293330000000424
+        },
+        {
+          "label": "resized",
+          "pid": 6216,
+          "minimumProbeRoundTripMs": 0.3692079999999578
+        },
+        {
+          "label": "new-document",
+          "pid": 6231,
+          "minimumProbeRoundTripMs": 0.35116599999992104
+        },
+        {
+          "label": "after-reset",
+          "pid": 6231,
+          "minimumProbeRoundTripMs": 0.39266700000007404
+        }
+      ],
+      "nodeCalls": {
+        "evaluate": 106,
+        "awaitPromise": 0,
+        "map": 0,
+        "publish": 0
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false
+      }
+    }
+  ],
+  "reports": {
+    "working-clock": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-working-v1/clock.json",
+      "sha256": "63c8772350c9367f1dc1dac52a209f976664bc0f0354584cb0173e325eb63534",
+      "scope": "Actual default autonomous NativeSource/fixed native Take timestamp/private currentTimeTicks probe/real Gateway+FrameGate+CanvasKit pixels/input/pause/resume/resize/crosssite navigation/reset and cleanup. Calibration probe bounds are raw provenance,not completed frame-age measurements;no claim for Viewer Worker/physical scanout/fullN1/8h.",
+      "checks": 7
+    },
+    "frozen-clock": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/clock/clock.json",
+      "sha256": "c32eaf5c492dab84744747ed8e10229c8a1d15825c5d09575cc056ba247406b9",
+      "scope": "Actual default autonomous NativeSource/fixed native Take timestamp/private currentTimeTicks probe/real Gateway+FrameGate+CanvasKit pixels/input/pause/resume/resize/crosssite navigation/reset and cleanup. Calibration probe bounds are raw provenance,not completed frame-age measurements;no claim for Viewer Worker/physical scanout/fullN1/8h.",
+      "checks": 7
+    },
+    "cadence": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/cadence/cadence.json",
+      "sha256": "00601091b2b42b447da2e0f4df039d7e0ac80a3d8d5add44d7f3d78295e55463",
+      "scope": "ActualLinux nativecadence/mainOneShotTimer/CCrootdamage+monotonictime/productionBroker/Gateway/CanvasKit actualpixels. Lifecycle harness,notdefaultSource/fullSession/B4CPU orcompleteB1.",
+      "checks": 7
+    },
+    "busy-credit": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/busy-credit/busy.json",
+      "sha256": "9db638816ff06aee7030564d18c91614b19f9f023eed816892c7b43105336787",
+      "scope": "Actualnativeproducer/privateIPC/productionMapper heldin oneexplicit diagnosticmap,realpublication/credit,latchedbusydamage/nativeinputwatermark. No syntheticnativecredit;no pixels/defaultSource/physicalinputinjection/fullSessionclaim.",
+      "checks": 2
+    },
+    "controller": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/controller/controller.json",
+      "sha256": "14cc0cf17948dcad229c6520969aa625377e829c9fb7d71789ffdf7c09fdae15",
+      "scope": "Standalone production NativeSubscription controls withactualLinuxbrowser/Broker/Gateway/CanvasKitpixels/coldwake/input/resize/navigation. DefaultSource integration andfullB1contracts remainpending. Duplicate-lifecycle signals areexplicit diagnosticrefreshcalls,notinjectednetworkCDPdelay.",
+      "checks": 12
+    },
+    "controller-credit": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/controller-credit/credit.json",
+      "sha256": "dd175f80aa1a3140518d7daa36d01e033f6876af6ac001ffc1ab9cd5e8b7a856",
+      "scope": "ActualproductionNativeSubscription/privateIPC/Brokercredit/nativeordinalfence/inputwatermark/reentrantpause-resume. Twoexplicit diagnosticmapwaits;nosyntheticnativecredit. No pixels/defaultSource/fullSession claim.",
+      "checks": 3
+    },
+    "reset": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/reset/reset.json",
+      "sha256": "a15cb7da69b5a3437b1572bd21c76f4a718ded9a263132c19ceb9d4c2a752ade",
+      "scope": "ActualdefaultNativeSource/privateCppsubscription/Brokerreset/rebind/Gateway/CanvasKitpixels/input/docEpoch/resize/4queuedRPCdenial. TwoexplicitdiagnosticmapsawaitactualRPAresources;no syntheticnativecredit. Resetrecoveryisdistinctfromactualhash-missretry;nofullB1/processRSSclaim.",
+      "checks": 7
+    },
+    "hash-retry": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/hash-retry/retry.json",
+      "sha256": "d1bbe4ca2ac64769a2733ff359eb13d07b32f094797885fb90b6a8fbffb51cf8",
+      "scope": "Actual default NativeSource/real PNG/native hash-only cache miss/real Retry credit/full resend/Gateway/CanvasKit image and DOM pixels. Five explicit empty diagnostic maps and normal resourceBudget reclamation induce the fault before Gateway/peer pins exist; this is not organic workload eviction or a reset. All production limits and binaries unchanged; no full B1/process-memory claim.",
+      "checks": 4
+    },
+    "webgl-cpu": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/webgl-cpu/placeholder-live.json",
+      "sha256": "4802ec7b5be572d7f7003e3104d17d933ad3503364961d8b1704c0acf1c282df",
+      "scope": "Actual default autonomous NativeSource/custom Linux Chromium/native Rust Gateway/CanvasKit Worker pixels. Real WebGL2 green source is rendered as black with expected WebGL 无法显示 glyph pixels; DOM and Canvas2D updates plus WebGL removal/re-addition. Viewer CPU or forced SwiftShader WebGL2 is stated from actual presentation; no physical GPU/full B1/process-memory claim.",
+      "checks": 4
+    },
+    "webgl-gpu": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/webgl-gpu/placeholder-live.json",
+      "sha256": "1ee67204520a37f8552b709afbcab19336aeeb3fa47898fc50c741da469a1125",
+      "scope": "Actual default autonomous NativeSource/custom Linux Chromium/native Rust Gateway/CanvasKit Worker pixels. Real WebGL2 green source is rendered as black with expected WebGL 无法显示 glyph pixels; DOM and Canvas2D updates plus WebGL removal/re-addition. Viewer CPU or forced SwiftShader WebGL2 is stated from actual presentation; no physical GPU/full B1/process-memory claim.",
+      "checks": 4
+    },
+    "six-consumers": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/six-consumers/six.json",
+      "sha256": "46ef5e35a68256ebb7332679e3834d27f04d26662df09e1f15a3f679202dacf8",
+      "scope": "Actual default autonomous NativeSource/Chromium PNG+DOM/native Gateway/six real WebSocket+FrameGate+CanvasKit clients:4display+2read-onlyautomation slots,actual ordinal/input/target fences,real key input2,navigation/resize,default5s slow-recorder isolation and owner/clock drain. Clients run in this verifier process;not six full browser processes,physical GPU,network impairment/full B1 or SDK tenant-auth acceptance.",
+      "checks": 7
+    },
+    "pool": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/pool/pool.json",
+      "sha256": "c689b5ec3412215726f1ddab280bf0a8fa5aa8df9a71a88cfcbde55d64e35850",
+      "scope": "ActualdefaultNativeSource/real1536squarePNGSKPs/64MiBresourcepool/privateIPC/autonomousBroker/Gateway/CanvasKitpixels. RealnativeSKPbytesreported;theexact7.5MiBsyntheticprotocolcontract isseparate. No process/RSS/VM/GPU/fullB1claim.",
+      "checks": 4
+    },
+    "bulk-local": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-local/contract.json",
+      "sha256": "6e579649d7feca86e3942d3ddcf8d41aeba4d034b6eeeaf6a5dcd3ee62d3279b",
+      "scope": "Actual default autonomous NativeSource/default tiled capture/1792square Canvas texture SKPs/private native IPC/real Gateway WebSockets/FrameGate/CanvasKit pixels and paired-control CDP input. Original local raw9MiB/15s/16MiB/ACK1.5s case and separate original32KiB-chunks/default5s/800ms-paused-control/3s/200ms Gateway close case. Native32KiB socket send buffer is unchanged; positive kernel TX50ms plus>=9MiB pending-frame stats prove backpressure. No synthetic SKP padding/fake CDP; local network only,not kernel impairment/N1/full B1/whole Source200ms close/process-memory acceptance.",
+      "checks": 4
+    },
+    "live-native": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/live-native/report.json",
+      "sha256": "874122b8fbbbd583309a2e8c34b07c51a35f596a46d49660bbfb8add8b50a88c",
+      "scope": "Actual default autonomous native Source/real custom Chromium/native Gateway/CanvasKit Viewer complete dynamic fixture, pixels/private images/fonts/streaming/human input/animation reuse/slow peer/reconnect/controlled reset/navigation/3resize/dropped-resource recovery/cache drain/idle. Actual native hash-miss Retry is a separate required verifier. No weak-network/9MiB/full B1/physical-memory claim.",
+      "checks": null
+    },
+    "live-node": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/live-node/report.json",
+      "sha256": "6ebb1bd30909d8c4dad8e06f844c0c67aa6e89d1dfb91bd0545bd7097c3d452b",
+      "scope": "Actual explicit Node fallback/custom Chromium/Node SceneMapper+transport/CanvasKit Viewer complete dynamic fixture with real pixels/private images/fonts/streaming/human input/animation reuse/slow peer/reconnect/navigation/3resize/dropped-resource recovery/cache drain/idle. No autonomous-native or weak-network/full B1/physical-memory claim.",
+      "checks": null
+    },
+    "close": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/close/ownership.json",
+      "sha256": "c208d9ef433dbbb9c9e0e5c43e1ab103a6db7c3d3476fc2d8d80446f4109ffc4",
+      "scope": "Actual Linux Chromium with default autonomous native Rust Source and explicit Node fallback: ten retained closed Sources plus two Live control-cleanup failures. Native Source keeps scalar receipts, Node Mapper caches/latest reset; one explicit diagnostic map holds the real Mapper while actual C++ awaits credit, then real close rejects/drains it. Late work/reset events cannot republish, idempotent close, queued resize and injected cleanup errors propagate while all owned browser processes/Broker/fixture still exit. /proc start identities avoid PID-reuse false positives. Ownership/process-exit evidence only, not native rendered-pixel/RSS/PSS/whole-Session/eight-hour or complete B1 acceptance.",
+      "checks": null
+    },
+    "crash": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/crash/crash.json",
+      "sha256": "4716577dc2cc6bb5e8fc6c818ab074108f130f16e57ba33cd6f656ec47d654fa",
+      "scope": "Three actual Chromium Page.crash cases: active default autonomous native Source, real Mapper diagnostic resource wait with actual native C++ awaiting credit, and active explicit Node fallback. Post-crash real CDP control rejects through idempotent Live close; retained Sources stay empty, all browser PID/start identities and Broker/request/response/control owners retire. One explicit diagnostic map induces the held case; no synthetic native credit. Process/fault cleanup only, not rendered pixels,200ms bulk/network close,RSS/PSS growth,8h or full B1 acceptance.",
+      "checks": null
+    },
+    "bulk-network": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/network.json",
+      "sha256": "b23d4fca66d7e3383e49e035cd6cab9267838f7b97079861ea17a5fe23d02ff1",
+      "scope": "Actual default autonomous NativeSource/defaulttiled1792Canvas genuine>=9MiB SKP/privateIPC/nativeGateway/realViewerWorker CanvasKit pixels and16actual paired-control CDP inputs. Kernel netem matches Gateway TCP in both directions:configuredCases(default13RTT/loss/jitter20Mbit profiles plus80ms1%2Mbit). SourceCDP excluded. Default5s post-commit ACK,15s resource progress inactivity,32KiB chunks and3s input ACK gates unchanged; original network bulk90s whole-transfer gate. Local raw16MiB/ACK1.5s and200ms close are separateacceptedcontracts; cleanup removesimpairment anddoesnotclaimweaknetwork200ms close/capture-startframeage/fullN1.",
+      "checks": null
+    }
+  },
+  "sameCandidateBulkNetwork": [
+    {
+      "configuredRttMs": 0,
+      "lossPercent": 0,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 56,
+      "bulkThroughFinalPixelsMs": 5570.389639999999,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 0,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-0-0-20.json",
+      "sha256": "fdc714548191fafbad7bebb19d937f96323a8be9089874bf51f84a44e7dd90aa"
+    },
+    {
+      "configuredRttMs": 20,
+      "lossPercent": 0.5,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 47.29999998211861,
+      "bulkThroughFinalPixelsMs": 7960.055862000001,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 4,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-20-0.5-20.json",
+      "sha256": "1c1ec5e5c39b86e2ea1f702751cbd651735f1a7fdc50b26b4dc13c0c341c960b"
+    },
+    {
+      "configuredRttMs": 20,
+      "lossPercent": 1,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 39.400000005960464,
+      "bulkThroughFinalPixelsMs": 7595.749846000002,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 5,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-20-1-20.json",
+      "sha256": "b678eceb9057e6435d9b0e0c474d0c65317bd7bed16a376de345b7ee9fe3c0c3"
+    },
+    {
+      "configuredRttMs": 20,
+      "lossPercent": 2,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 52.79999998211861,
+      "bulkThroughFinalPixelsMs": 8023.263836999999,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 11,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-20-2-20.json",
+      "sha256": "4a805a67cbd8a6a3a5f0b26a327fa7c0b3046ea5c24f91e591b2f08466db39c5"
+    },
+    {
+      "configuredRttMs": 40,
+      "lossPercent": 0.5,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 73.5,
+      "bulkThroughFinalPixelsMs": 10815.824077000005,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 5,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-40-0.5-20.json",
+      "sha256": "277ebc223cd4c5b4bace8123f56288c1d0b575708a67cbbbf53d88dc4ff226f7"
+    },
+    {
+      "configuredRttMs": 40,
+      "lossPercent": 1,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 70.69999998807907,
+      "bulkThroughFinalPixelsMs": 11022.805996000003,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 6,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-40-1-20.json",
+      "sha256": "517e91e616cdf5ff9cd40cb9e9b32bc30d656aea0cc1fe95225d09b74bf6f7a1"
+    },
+    {
+      "configuredRttMs": 40,
+      "lossPercent": 2,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 64.19999998807907,
+      "bulkThroughFinalPixelsMs": 10990.832104999994,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 8,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-40-2-20.json",
+      "sha256": "59099a35bc95adc9b908cbcfa822150b50213dffbafa36c7e478b8dd90394332"
+    },
+    {
+      "configuredRttMs": 80,
+      "lossPercent": 0.5,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 370.59999999403954,
+      "bulkThroughFinalPixelsMs": 17491.980068000004,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 3,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-80-0.5-20.json",
+      "sha256": "b82323271aab49ea8a3d6235e99d260a531b75c47844c8aaff8fc6d639f13dcf"
+    },
+    {
+      "configuredRttMs": 80,
+      "lossPercent": 1,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 100.7999999821186,
+      "bulkThroughFinalPixelsMs": 17859.165525999997,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 6,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-80-1-20.json",
+      "sha256": "ea13754cd0b500a1af90344af61e123528a2a59a49d445bb825f440e672b9f1c"
+    },
+    {
+      "configuredRttMs": 80,
+      "lossPercent": 2,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 111.59999999403954,
+      "bulkThroughFinalPixelsMs": 18409.561597000007,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 12,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-80-2-20.json",
+      "sha256": "0c377aa2b464030710796b83123dab961e4bda6c11fe4ae64a3c500d347f4ddf"
+    },
+    {
+      "configuredRttMs": 150,
+      "lossPercent": 0.5,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 185.90000000596046,
+      "bulkThroughFinalPixelsMs": 30120.745771999995,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 5,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-150-0.5-20.json",
+      "sha256": "de2c919577462f29b69de2baf45d4b3f6c2c404ac0b451a7db0d9dcf5067ad07"
+    },
+    {
+      "configuredRttMs": 150,
+      "lossPercent": 1,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 175.7000000178814,
+      "bulkThroughFinalPixelsMs": 30357.488335000002,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 8,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-150-1-20.json",
+      "sha256": "c86c291604fb6a4375f5e49ffc2109ce19a8c2a6590e079374aa99e0d7ed8291"
+    },
+    {
+      "configuredRttMs": 150,
+      "lossPercent": 2,
+      "rateMbit": 20,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 178.7999999821186,
+      "bulkThroughFinalPixelsMs": 31340.611570999987,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 13,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-150-2-20.json",
+      "sha256": "673df005b727e2fc3b39207e1a389ffe7110896b3d4c5ff11da15f75a2109cc7"
+    },
+    {
+      "configuredRttMs": 80,
+      "lossPercent": 1,
+      "rateMbit": 2,
+      "genuineNativeBytes": 11059290,
+      "inputAckMaxMs": 510.5,
+      "bulkThroughFinalPixelsMs": 55108.75095699998,
+      "originalPolicies": {
+        "postCommitAckMs": 5000,
+        "resourceProgressInactivityMs": 15000,
+        "inputAckMs": 3000,
+        "wholeNetworkTransferMs": 90000,
+        "chunkBytes": 32768
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0,
+        "browserConnected": false,
+        "errors": []
+      },
+      "netemChildDrops": 14,
+      "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-bulk-runtime-v1/clock-frozen-suite-v1/bulk-network/case-80-1-2.json",
+      "sha256": "c9556b00f59b14d76af12df4fc437c651c8aa1b608cdf3f3ae752d3405245bc2"
+    }
+  ],
+  "proved": [
+    "ExactnativeTake(now_us) is immutablejobmetadata;3newC++invariants coverbusyinput/retry/rebind/admission andunchanged56bytewire.",
+    "NativeRPA2/publicnative.timing carriescaptureStartedMicros/clock;privateSchedulerclockprobeincludesnowMicros/rendererPID forcalibration. LegacyNode-pathnotfakedwithnativeTake time.",
+    "TwoactualSourceSessions each7clock/input/pixel/pause/resume/resize/crosssite/resetchecks and3exactordinalpublic/privateTake matches;newrendererPIDproperlyrecalibrated.",
+    "SamefrozenC5d browserpasses76Cpp,originalcadence/busycredit/defaultSource24nav/input/credit/reset/hashretry/fullLiveNative+Node/WebGLCPU+SwiftShader4+4/sixconsumers/64MiB14pixelstates/localactual9MiBraw+chunkedcontrol+200msGatewayclose/12closevariants/3realcrashes.",
+    "Samecandidateactual9MiB14profilekernelnetwork/224inputs/realViewerWorkertexture+inputpixels and0Sourceerrors passed. Frame-ageacceptancestillrequiresframepairedobserver/calibratedclocks andcoverage."
+  ],
+  "remaining": [
+    "ImplementboundedexactframepairedViewerpixelobserver;Node↔native andNode↔Workerclockcalibration bounds/drift/coverage pluscaptureagep50/p95/p99/max,keepphysicalscanoutunclaimed.",
+    "N1input1000/profile/fullframeage/dropmetrics andlargeresourceagecoverage;fullB1canonicalpromotion/remaining41/SDK/physicaldevices/fullSessionPSS/8h notcomplete."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "jsRustBrokersUnchanged": true,
+  "nativePatchesUnchanged": true
+}

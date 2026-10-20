@@ -1,0 +1,316 @@
+{
+  "at": "2026-10-17T15:35:45.056575+00:00",
+  "status": "accepted-actualnative-hashmiss-fullretry-NOT-fullB1",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-hash-retry-checkpoint-version-v1.json",
+  "project": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-hash-retry-checkpoint-project-v1",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-reset-checkpoint-v1.json",
+  "changed": [
+    "tests/verify-native-source-hash-retry.mjs"
+  ],
+  "productionUnchanged": true,
+  "scope": "ActualdefaultSource PNGhash-onlynativecachemiss/realRetrycredit/fullresend/backtohash-only andGateway/FrameGate/CanvasKitimage+DOMpixels in2independentSessions. Faultinducedby5explicitmetadataOnlyemptydiagnosticmapsandnormalresourceBudgetreclamationbeforeGateway/peerpins exist. ThisisnotorganicworkloadevictionorcontrolledBrokerreset. Productionlimitsandbinariesunchanged.",
+  "cases": [
+    {
+      "tag": "a",
+      "producer": "225457:2",
+      "checks": 4,
+      "actualHashMissRetries": 1,
+      "resetRequests": 0,
+      "autonomousNativeControlCalls": 0,
+      "explicitDiagnosticMaps": 5,
+      "fullResendBytes": 702,
+      "recoveredOrdinal": 5,
+      "inputSeq": 2,
+      "clockResumeToFullMs": 1035.248137,
+      "rejectionToFullMs": 26.4371000000001,
+      "actualPixels": {
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "fcc7d3803c94be041a2dbee9f9b1ce11:6",
+          "captureOrdinal": 6,
+          "frameToken": 8,
+          "namespace": [
+            4,
+            10
+          ],
+          "producer": "225457:2",
+          "sourceFrame": 8,
+          "timing": {
+            "assetCache": {
+              "fontBypasses": 0,
+              "fontBytes": 0,
+              "fontEncodes": 0,
+              "fontEntries": 0,
+              "fontEvictions": 0,
+              "fontPending": 0,
+              "fontShares": 0,
+              "imageBypasses": 0,
+              "imageBytes": 4493,
+              "imageEncodes": 1,
+              "imageEntries": 1,
+              "imageEvictions": 0,
+              "imagePending": 0,
+              "imageShares": 0
+            },
+            "base64Ms": 0,
+            "cachedLayers": 2,
+            "canvasCopies": 0,
+            "canvasGpuReadbacks": 0,
+            "canvasMappedCopies": 0,
+            "canvasPixelPool": {
+              "bytes": 0,
+              "denied": 0,
+              "limit": 268435456,
+              "owners": 0,
+              "peak": 0
+            },
+            "captureHosts": {
+              "admissionBypasses": 0,
+              "admissions": 3,
+              "byteLimit": 67108864,
+              "cacheBytes": 4131,
+              "cachedPinBytes": 2657,
+              "created": 1,
+              "damageEntries": 1,
+              "encodings": 3,
+              "entryLimit": 512,
+              "evictions": 0,
+              "hostIndexEstimateBytes": 256,
+              "hosts": 1,
+              "markerHosts": 1,
+              "oversizedBypasses": 0,
+              "ownersAlive": 1,
+              "peakResidentBytes": 4131,
+              "pinnedPressureBypasses": 0,
+              "released": 0,
+              "residentBytes": 4131,
+              "retiredPinBytes": 0,
+              "scope": "renderer-process",
+              "sharedInputBypasses": 0,
+              "staleOwnerBypasses": 0
+            },
+            "encodeTotalMs": 0.539000004529953,
+            "encodingThreads": 1,
+            "fontCacheHits": 0,
+            "fontEncodingShares": 0,
+            "fontMs": 0,
+            "glyphCollectionMs": 0,
+            "imageCacheHits": 0,
+            "imageEncodingShares": 0,
+            "imageMs": 0,
+            "parallelLayers": 2,
+            "portableMs": 0,
+            "recordingCacheHits": 2,
+            "recordingCacheMisses": 0,
+            "recordingEncodingMisses": 0,
+            "recordingIndexEnabled": true,
+            "recordingIndexEntries": 2,
+            "recordingIndexPool": {
+              "bytes": 65536,
+              "cacheCharge": 65536,
+              "caches": 1,
+              "denied": 0,
+              "limit": 8388608,
+              "peak": 65536,
+              "scope": "renderer-process-scalar-recording-index"
+            },
+            "recordingMs": 0.005,
+            "resultAssemblyMs": 0.034,
+            "serializeMs": 0
+          }
+        },
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "inputSeq": 2,
+        "imagePixel": [
+          31,
+          79,
+          191,
+          255
+        ],
+        "domPixel": [
+          43,
+          161,
+          89,
+          255
+        ],
+        "resources": 2
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0
+      }
+    },
+    {
+      "tag": "b",
+      "producer": "225545:2",
+      "checks": 4,
+      "actualHashMissRetries": 1,
+      "resetRequests": 0,
+      "autonomousNativeControlCalls": 0,
+      "explicitDiagnosticMaps": 5,
+      "fullResendBytes": 702,
+      "recoveredOrdinal": 5,
+      "inputSeq": 2,
+      "clockResumeToFullMs": 1026.4722290000002,
+      "rejectionToFullMs": 11.828641999999945,
+      "actualPixels": {
+        "native": {
+          "bitmapGlyphs": 0,
+          "captureId": "204db5bc03fd23e51235f5a5dcc4c63f:6",
+          "captureOrdinal": 6,
+          "frameToken": 7,
+          "namespace": [
+            4,
+            10
+          ],
+          "producer": "225545:2",
+          "sourceFrame": 7,
+          "timing": {
+            "assetCache": {
+              "fontBypasses": 0,
+              "fontBytes": 0,
+              "fontEncodes": 0,
+              "fontEntries": 0,
+              "fontEvictions": 0,
+              "fontPending": 0,
+              "fontShares": 0,
+              "imageBypasses": 0,
+              "imageBytes": 4493,
+              "imageEncodes": 1,
+              "imageEntries": 1,
+              "imageEvictions": 0,
+              "imagePending": 0,
+              "imageShares": 0
+            },
+            "base64Ms": 0,
+            "cachedLayers": 2,
+            "canvasCopies": 0,
+            "canvasGpuReadbacks": 0,
+            "canvasMappedCopies": 0,
+            "canvasPixelPool": {
+              "bytes": 0,
+              "denied": 0,
+              "limit": 268435456,
+              "owners": 0,
+              "peak": 0
+            },
+            "captureHosts": {
+              "admissionBypasses": 0,
+              "admissions": 3,
+              "byteLimit": 67108864,
+              "cacheBytes": 4131,
+              "cachedPinBytes": 2657,
+              "created": 1,
+              "damageEntries": 1,
+              "encodings": 3,
+              "entryLimit": 512,
+              "evictions": 0,
+              "hostIndexEstimateBytes": 256,
+              "hosts": 1,
+              "markerHosts": 1,
+              "oversizedBypasses": 0,
+              "ownersAlive": 1,
+              "peakResidentBytes": 4131,
+              "pinnedPressureBypasses": 0,
+              "released": 0,
+              "residentBytes": 4131,
+              "retiredPinBytes": 0,
+              "scope": "renderer-process",
+              "sharedInputBypasses": 0,
+              "staleOwnerBypasses": 0
+            },
+            "encodeTotalMs": 1.0329999923706057,
+            "encodingThreads": 1,
+            "fontCacheHits": 0,
+            "fontEncodingShares": 0,
+            "fontMs": 0,
+            "glyphCollectionMs": 0,
+            "imageCacheHits": 0,
+            "imageEncodingShares": 0,
+            "imageMs": 0,
+            "parallelLayers": 2,
+            "portableMs": 0,
+            "recordingCacheHits": 2,
+            "recordingCacheMisses": 0,
+            "recordingEncodingMisses": 0,
+            "recordingIndexEnabled": true,
+            "recordingIndexEntries": 2,
+            "recordingIndexPool": {
+              "bytes": 65536,
+              "cacheCharge": 65536,
+              "caches": 1,
+              "denied": 0,
+              "limit": 8388608,
+              "peak": 65536,
+              "scope": "renderer-process-scalar-recording-index"
+            },
+            "recordingMs": 0.004,
+            "resultAssemblyMs": 0.053,
+            "serializeMs": 0
+          }
+        },
+        "pageEpoch": 1,
+        "viewportVersion": 1,
+        "inputSeq": 2,
+        "imagePixel": [
+          31,
+          79,
+          191,
+          255
+        ],
+        "domPixel": [
+          43,
+          161,
+          89,
+          255
+        ],
+        "resources": 2
+      },
+      "cleanup": {
+        "brokerExited": true,
+        "pending": 0,
+        "requestOwners": 0,
+        "responseOwners": 0
+      }
+    }
+  ],
+  "reports": {
+    "a": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-hash-retry-frozen-a-v1.json",
+      "sha256": "9b7361303b7775786c91c165c0839f45fbeded6242ac6a2a630eae4007b76fd2"
+    },
+    "b": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-hash-retry-frozen-b-v1.json",
+      "sha256": "34a3ea1b8d12926115767a14125c7c5ec0dab358b2812c682922cbb7383c8aba"
+    }
+  },
+  "parentUnitEachAtExactProductionVersion": 211,
+  "proved": [
+    "Initialgenuinenativefullbytesandhash-onlyreusewithrealCDPkeyACK/input2.",
+    "StoponlyexternalclockafteractualCppcreditdrain;fixed5diagnosticmapsreplacehistoryandresourceBudgetreclaimsallstrong/weakresourceownerswhileCppsubscriptionstaysenabled/samegeneration/nofullflag.",
+    "RealnativeMapperrejectsnextincrementalframewithcachemiss/Retry;real56bytecreditforcesCppfullresourcesandordinarysubsequenthash-onlyreuse.",
+    "AutonomousretrywindowhaszeroNodeRuntime.evaluate/awaitPromise/map/publish/fresh/full/resetrequests. SameactualDocToken/binding/epoch1/viewport1/input2.",
+    "ActualGatewayresourcechecksum/FrameGate/CanvasKitshowsbluePNGandkey-updatedgreenDOMpixels,input2. Sourcekeepsnoscene/payloadgraph.",
+    "BothindependentSessionscloseBrokerandpending/request/responseowners0;resourceRecoveries1andresetRequests0ineach."
+  ],
+  "failedProbeReports": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/probe-native-source-hash-retry-v1.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/probe-native-source-hash-retry-v2.json"
+  ],
+  "remaining": [
+    "Legacy45MiBBase64/423rollbacksrevalidation,actualdefaultWebGL/Canvas/removal,4display+2automation,9MiBnetwork/close/crash/Nodefallback/fullB1.",
+    "Organicnativeworking-sethashmissthroughnaturalcacheevictionnotclaimed.",
+    "Canonicalpromotion/all41/N1/fullSession/VM/PSS/8h/B4CPU notcomplete."
+  ],
+  "all41": {
+    "completeInStatedScopes": 8,
+    "partial": 13,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "canonicalUnchanged": true,
+  "no8hPass": true
+}

@@ -1,0 +1,83 @@
+--- a/content/renderer/gpu_benchmarking_extension.cc
++++ b/content/renderer/gpu_benchmarking_extension.cc
+@@ -12,6 +12,7 @@
+ #include <tuple>
+ #include <utility>
+ #include <vector>
++#include <cmath>
+ 
+ #include "base/base64.h"
+ #include "base/task/thread_pool.h"
+@@ -656,6 +657,7 @@
+       .SetMethod("setRasterizeOnlyVisibleContent",
+                  &GpuBenchmarking::SetRasterizeOnlyVisibleContent)
+       .SetMethod("captureRemotePaint", &GpuBenchmarking::CaptureRemotePaint)
++      .SetMethod("remotePaintSubscription", &GpuBenchmarking::ControlRemotePaint)
+       .SetMethod("printToSkPicture", &GpuBenchmarking::PrintToSkPicture)
+       .SetMethod("printPagesToSkPictures",
+                  &GpuBenchmarking::PrintPagesToSkPictures)
+--- a/content/renderer/gpu_benchmarking_extension.h
++++ b/content/renderer/gpu_benchmarking_extension.h
+@@ -51,6 +51,7 @@
+   void SetNeedsDisplayOnAllLayers();
+   void SetRasterizeOnlyVisibleContent();
+   bool CaptureRemotePaint(gin::Arguments* args);
++  void ControlRemotePaint(gin::Arguments* args);
+   void PrintToSkPicture(v8::Isolate* isolate, const std::string& dirname);
+   void PrintPagesToSkPictures(v8::Isolate* isolate,
+                               const std::string& filename);
+--- a/content/renderer/render_frame_impl.cc
++++ b/content/renderer/render_frame_impl.cc
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
+ 
+ #include "content/renderer/render_frame_impl.h"
++#include "components/remote_paint/capture_state.h"
+ 
+ #include <algorithm>
+ #include <memory>
+@@ -2111,6 +2112,7 @@
+ }
+ 
+ RenderFrameImpl::~RenderFrameImpl() {
++  remote_paint::InvalidateCaptureDocument(reinterpret_cast<uintptr_t>(this));
+   TRACE_EVENT("navigation", "RenderFrameImpl::~RenderFrameImpl",
+               perfetto::TerminatingFlow::FromPointer(this));
+   for (auto& observer : observers_) {
+@@ -4087,6 +4089,8 @@
+     observer.ReadyToCommitNavigation(document_loader);
+   }
+ 
++  // Revoke the old native target before any new-document paint can start.
++  remote_paint::InvalidateCaptureDocument(reinterpret_cast<uintptr_t>(this));
+   for (auto& observer : observers_) {
+     observer.DidCreateNewDocument();
+   }
+@@ -4220,6 +4224,8 @@
+   for (auto& observer : observers_) {
+     observer.ReadyToCommitNavigation(document_loader);
+   }
++  // Revoke the old native target before any new-document paint can start.
++  remote_paint::InvalidateCaptureDocument(reinterpret_cast<uintptr_t>(this));
+   for (auto& observer : observers_) {
+     observer.DidCreateNewDocument();
+   }
+@@ -5002,6 +5008,8 @@
+ 
+ void RenderFrameImpl::WillReleaseScriptContext(v8::Local<v8::Context> context,
+                                                int world_id) {
++  remote_paint::InvalidateCaptureDocument(reinterpret_cast<uintptr_t>(this),
++      world_id == ISOLATED_WORLD_ID_GLOBAL ? std::nullopt : std::optional<int>(world_id));
+   for (auto& observer : observers_) {
+     observer.WillReleaseScriptContext(context, world_id);
+   }
+--- a/cc/trees/layer_tree_host_impl.cc
++++ b/cc/trees/layer_tree_host_impl.cc
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
+ 
+ #include "cc/trees/layer_tree_host_impl.h"
++#include <cmath>
+ #include "components/remote_paint/capture_state.h"
+ #include "components/remote_paint/canvas_capture.h"
+ #include "components/remote_paint/recording_index.h"

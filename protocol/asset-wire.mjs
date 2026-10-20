@@ -11,15 +11,29 @@ export function decodeAsset(input){
 // current SKP set. The native peer sends an ordered reset before its working
 // set can exceed these limits; resetting never changes the visible frame.
 export class AssetCache{
- constructor(){this.chunks=new Map();this.bytes=0;this.stats={receivedChunks:0,receivedBytes:0,fontBytes:0,imageBytes:0,reusedBytes:0};this.seen=new Set();}
- clear(){this.chunks.clear();this.bytes=0;this.seen.clear();}
- put(id,payload){if(!isHash(id)||!payload.byteLength||payload.byteLength>16*1024*1024)throw new Error('Invalid asset chunk');if(this.chunks.has(id))return;if(this.chunks.size>=131072||this.bytes+payload.byteLength>128*1024*1024)throw new Error('Asset cache budget exceeded');this.chunks.set(id,payload);this.bytes+=payload.byteLength;this.stats.receivedChunks++;this.stats.receivedBytes+=payload.byteLength;}
+ constructor({memory,byteLimit=memory?.policy.chunks??128*1024*1024}={}){this.memory=memory;this.byteLimit=byteLimit;this.charges=new Map();this.assemblies=new WeakMap();this.busy=false;this.chunks=new Map();this.bytes=0;this.stats={receivedChunks:0,receivedBytes:0,fontBytes:0,imageBytes:0,reusedBytes:0,evictions:0,missingManifests:0};this.seen=new Set();this.untrim=memory?.addTrimmer(()=>{if(!this.busy&&this.chunks.size){this.stats.evictions++;this.clear();}});}
+ clear(){for(const release of this.charges.values())release();this.charges.clear();this.chunks.clear();this.bytes=0;this.seen.clear();}
+ dispose(){this.clear();this.untrim?.();}
+ releaseAssembly(payload){this.assemblies.get(payload)?.();this.assemblies.delete(payload);}
+ put(id,payload){
+  if(!isHash(id)||!payload.byteLength||payload.byteLength>16*1024*1024)throw new Error('Invalid asset chunk');if(this.chunks.has(id))return;
+  // Chunk eviction is safe for the visible frame. A future missing manifest
+  // reaches the existing missing-resource/keyframe barrier, never a bad SKP.
+  if(this.memory&&(this.chunks.size>=131072||this.bytes+payload.byteLength>this.byteLimit)){this.stats.evictions++;this.clear();}
+  if(this.chunks.size>=131072||this.bytes+payload.byteLength>this.byteLimit)throw new Error('Asset cache budget exceeded');
+  const release=this.memory?.buffer('chunks',payload,{metadataBytes:512+id.length*2});if(release)this.charges.set(id,release);
+  this.chunks.set(id,payload);this.bytes+=payload.byteLength;this.stats.receivedChunks++;this.stats.receivedBytes+=payload.byteLength;
+ }
  assemble(manifest){
   if(!isHash(manifest.id)||!Number.isInteger(manifest.bytes)||manifest.bytes<28||manifest.bytes>16*1024*1024||!Array.isArray(manifest.chunks)||!manifest.chunks.length||manifest.chunks.length>2048)throw new Error('Invalid resource manifest');
   if(manifest.chunks.some(part=>!isHash(part.id)||!['font','image','skp'].includes(part.kind)))throw new Error('Invalid asset reference');
-  const parts=manifest.chunks.map(part=>this.chunks.get(part.id));if(parts.some(part=>!part))return null;
+  const parts=manifest.chunks.map(part=>this.chunks.get(part.id));if(parts.some(part=>!part)){this.stats.missingManifests++;return null;}
   if(parts.reduce((n,part)=>n+part.byteLength,0)!==manifest.bytes)throw new Error('Resource manifest length mismatch');
-  const payload=new Uint8Array(manifest.bytes);let offset=0;for(let i=0;i<parts.length;i++){const part=parts[i],entry=manifest.chunks[i];payload.set(part,offset);offset+=part.byteLength;if(entry.kind==='font')this.stats.fontBytes+=part.byteLength;if(entry.kind==='image')this.stats.imageBytes+=part.byteLength;if(this.seen.has(entry.id))this.stats.reusedBytes+=part.byteLength;this.seen.add(entry.id);}
-  if(new TextDecoder().decode(payload.subarray(0,8))!=='skiapict')throw new Error('Expected assembled SKP');return payload;
+  this.busy=true;let temporary;
+  try{
+   temporary=this.memory?.reserve('assembly',manifest.bytes);const payload=new Uint8Array(manifest.bytes);let offset=0;for(let i=0;i<parts.length;i++){const part=parts[i],entry=manifest.chunks[i];payload.set(part,offset);offset+=part.byteLength;if(entry.kind==='font')this.stats.fontBytes+=part.byteLength;if(entry.kind==='image')this.stats.imageBytes+=part.byteLength;if(this.seen.has(entry.id))this.stats.reusedBytes+=part.byteLength;this.seen.add(entry.id);}
+   if(new TextDecoder().decode(payload.subarray(0,8))!=='skiapict')throw new Error('Expected assembled SKP');
+   temporary?.();temporary=null;const release=this.memory?.buffer('assembly',payload);if(release)this.assemblies.set(payload,release);return payload;
+  }finally{temporary?.();this.busy=false;}
  }
 }
