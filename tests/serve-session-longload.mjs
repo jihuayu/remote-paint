@@ -79,7 +79,7 @@ async function operation(command){
  const owner=command.target==='primary'?primary:command.target==='secondary'?secondary:null;assert.ok(owner,'Unknown Session target');assert.equal(command.sessionId,owner.id,'Stale Session command');
  if(command.op==='update'){assert.ok(Number.isInteger(command.cycle)&&command.cycle>0&&command.cycle<=65535);await owner.update(command.cycle);}
  else if(command.op==='resize'){if(owner===primary)assert.ok(!leaseProbe||leaseProbe.completed,'Cannot invalidate an active expiry probe');await owner.resize(command.viewport);}
- else if(command.op==='navigate'){assert.equal(owner,primary);assert.ok(!leaseProbe||leaseProbe.completed,'Cannot invalidate an active expiry probe');primaryHost=primaryHost==='127.0.0.1'?'localhost':'127.0.0.1';const before=await primary.navigate(command.cycle,primaryHost);stats.crosssite++;return {before,primary:await state(primary,primaryMonitor)};}
+ else if(command.op==='navigate'){assert.equal(owner,primary);assert.ok(!leaseProbe||leaseProbe.completed,'Cannot invalidate an active expiry probe');primaryHost=primaryHost==='127.0.0.1'?'localhost':'127.0.0.1';const before=await primary.navigate(command.cycle,primaryHost);await event({kind:'navigation-old-producer-retired',session:primary.id,retirement:before.retirementFence});stats.crosssite++;return {before,primary:await state(primary,primaryMonitor)};}
  else throw new Error('Unknown Session longload operation');
  return {state:await state(owner,owner===primary?primaryMonitor:secondaryMonitor),leaseProbe:await leaseState()};
 }

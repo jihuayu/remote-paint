@@ -1,0 +1,95 @@
+{
+  "at": "2026-10-18T16:50:42.322114+00:00",
+  "task": "PSS-D2a",
+  "status": "actual-natural-crosssite-old-producer-zombie-PSS-ESRCH-reproduced",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-source-pss-crosssite-reproduction-v2/frozen-version.json",
+  "manifestSha256": "f87b0c9be77ec6907a91b218f524c96e3e9efce823a237a5d6049c19f4467bfa",
+  "sourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-source-memory-diagnostic-v2/frozen-version.json",
+  "sourceSnapshotSha256": "957210488009012edd5c231449309cecbf538ebf9d4ef436ab5d6ee4ce284f69",
+  "failureCycle": 407,
+  "completedNavigations": 181,
+  "completedSecondarySessions": 9,
+  "completedSnapshots": 236,
+  "badPid": 3425,
+  "badIdentity": {
+    "provider": "linux-proc-start-v1",
+    "pid": 3425,
+    "ppid": 27,
+    "startTicks": 25094192,
+    "uids": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "priorSourceProducer": "3425:1",
+  "priorState": "S",
+  "priorPssBytes": 151619584,
+  "failedState": "Z",
+  "failedPssCode": "ESRCH",
+  "failedTotalPss": null,
+  "failedMetricSha256": "26ac814e003abe765ebcc118691c8b08ce6c47d918a83d03a0814c3dab1701ed",
+  "diskDiagnosticCount": 2,
+  "negativeEvidenceMutationsRejected": 5,
+  "actualExits": {
+    "source": {
+      "at": "2026-10-18T16:47:46.008068+00:00",
+      "role": "source",
+      "actualExitCode": 1,
+      "manifestSha256": "f87b0c9be77ec6907a91b218f524c96e3e9efce823a237a5d6049c19f4467bfa",
+      "logSha256": "2a4b3faf8a54863052d31ddefd537ce30db54fa1dcee386b36792e371880bbe2",
+      "containerId": "1b2d65f4ac272a9e59840d03f56d6121b002a32226c4596100a636d8919760b5",
+      "imageId": "sha256:42df2c322c1c105d79aff686ebf92b0708f237788daa011186976e852b7cf66e",
+      "dockerRunning": false,
+      "dockerPid": 0,
+      "dockerExitCode": 1,
+      "oomKilled": false
+    },
+    "viewer": {
+      "at": "2026-10-18T16:47:45.861749+00:00",
+      "role": "viewer",
+      "actualExitCode": 1,
+      "manifestSha256": "f87b0c9be77ec6907a91b218f524c96e3e9efce823a237a5d6049c19f4467bfa",
+      "logSha256": "9982a9f8ad5cbf6c99528dded3b7eb33700f0c56c09a131b13690520d43e521f"
+    }
+  },
+  "freshOwnedContainerStoppedPid0": true,
+  "sourceCleanup": {
+    "formalStatus": "failed",
+    "actualSourceClosed": true,
+    "brokerExited": true,
+    "browserConnected": false,
+    "retiredPrimaryIdentities": 188,
+    "badIdentityFinallyRetired": true,
+    "finalSourcePssComplete": true,
+    "remainingKinds": [
+      "node"
+    ],
+    "stats": {
+      "created": 10,
+      "closed": 9,
+      "crosssite": 182,
+      "leaseExpired": 0
+    }
+  },
+  "rawFiles": {
+    "failure.json": "9bca9d0bdeb1a6608be4d469e62a56f4e4fe8666cfbfa4ae79505a408f9d73ee",
+    "diagnostic-report.json": "d4a4febad8ba52bd68ceb8d1c241875d0153463c8899c7b9dacca449ef2ac896",
+    "diagnostic-samples.jsonl": "fd044376f968e25f66cad49eda9305380e234d0baaafc2af0188978bfab86923",
+    "source-memory-failures.jsonl": "f509b596be4ff0af8d49765b06c1f91c200f40a91f6a0c04965b500e27421cb9",
+    "source-stopped.json": "80785723f62d281755722b49e0fcdb40d4c492388dd2d75d16ac83149548764f",
+    "diagnostic-cleanup-error.json": "08ac2e8e0df9fc67c65c4b814459664b90f5f3c85bd12098a4e3a1f9a84c8242"
+  },
+  "initialDriverFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/source-pss-crosssite-diagnostic-driver-failure-v1.json",
+  "originalEightHourV3SoleCauseProven": false,
+  "scope": "No-injection actual Native natural failure with persistent Mac GPU/CPU pixel witnesses. Last good producer is same kernel birth as failed zombie. This establishes this reproduction cause only;old8hv3 lacks failed rows.",
+  "nextTask": "PSS-D2b explicit bounded pinned-old-producer retirement fence before post-crosssite PSS,keeping original sampler/gates and positive zombies fatal.",
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  }
+}

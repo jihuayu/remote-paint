@@ -1554,3 +1554,10 @@ Linux全量JS回归先因夹具缺少可写产物挂载失败，修正后又复�
 采样失败现保留完整的有界进程指标、身份、PSS 不可用原因、原采样尝试和 cgroup 来源，私有 RPC 将同一诊断传到 Viewer failure 文件；Source 在抛出原断言前写入私有追加日志并 fsync，关闭阶段也经过同一保存路径。单份指标最多 2MiB、每次运行最多 8 份；超量、序列化或写入失败会明确标记，原失败仍然失败。没有新增 PSS 重试、替换 cohort 或零值补齐。
 
 真实 Linux 权限拒绝和未回收僵尸分别证明“身份稳定但 PSS 不完整”可以有不同原因。自有真实 Native Source 受控拒绝进一步验证私有 RPC/磁盘证据，完整回归和关闭故障路径以[诊断检查点](evidence/source-memory-diagnostic.json)指向的冻结版本及最终记录为准。这些受控故障不代表原 8 小时失败根因已定位，也不计入短测或 8 小时验收；41 项仍为 9/14/18。下一步用相同实际负载收集自然失败证据，再决定修复。
+
+
+### 自然跨站旧 producer 僵尸故障（PSS-D2a / D2b）
+
+无故障注入的固定加速实验在第407周期再次触发原 PSS 完整性断言：上一成功 producer 的同一 PID/出生标识变为 Z，smaps_rollup 返回 ESRCH，身份观察第一次仍稳定。181次导航、9次次级 Session 和236份完整 snapshot 后失败；Source/Viewer/Docker 实际退出1，正式关闭因 pin 失败保留 failed，浏览器和 broker 已实际关闭且最终仅余 Node。完整[自然复现证据](evidence/source-pss-crosssite-failure.json)证明本次直接原因，不能追认旧8小时故障唯一根因。
+
+观察器的修复候选在导航前固定旧 producer 的独立 proc 目录描述符，在既有跨站 image 的15秒等待内增加最多5秒、512次的旧身份退役检查。只读 pinned stat，只有记录消失才退役；Z 仍在就继续视为未回收，超时失败。不读 PSS、不替换群组、不过滤 Z、不补零，原采样器和三项断言保持。私有 Source 事件及导航回复保存实际退役回执。双平台合同和同一200次导航/10次次级 Session实验的逐项结果由 session-process-retirement-fence 检查点记录；未改变41项9/14/18或8小时未通过的状态。

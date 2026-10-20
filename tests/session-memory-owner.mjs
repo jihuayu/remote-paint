@@ -8,6 +8,7 @@ import {runtimeMetrics} from '../native/runtime-metrics.mjs';
 import {LinuxProcessProbe} from '../native/process-memory-linux.mjs';
 import {deadline} from './memory-soak-diagnostics.mjs';
 import {assertSessionSourceMemory,captureSourceMemoryFailure} from './source-memory-diagnostic.mjs';
+import {pinSessionProcessRetirement} from './session-process-retirement.mjs';
 async function endpointClosed(origin){const url=new URL(origin);await new Promise((resolve,reject)=>{const socket=net.createConnection({host:url.hostname,port:Number(url.port)});const finish=error=>{socket.destroy();error?reject(error):resolve();};socket.once('connect',()=>finish(new Error('Closed Session endpoint still accepts TCP')));socket.once('error',error=>finish(error.code==='ECONNREFUSED'?null:error));socket.setTimeout(2000,()=>finish(new Error('Closed Session TCP probe timed out')));});}
 function closedSource(source){
  assert.equal(source.closed,true);assert.equal(source.latest,null);assert.equal(source.producer,null);assert.equal(source.demand,0);assert.equal(source.encodeDemand,0);assert.equal(source.activityDemand,0);assert.equal(source.browser.isConnected(),false);assert.equal(source.broker.exited,true);assert.equal(source.broker.pending.size,0);assert.equal(source.broker.outputBuffer.buffer.byteLength,0);assert.equal(source.broker.requestMemory.stats().owners,0);assert.equal(source.broker.responses.stats().owners,0);assert.equal(source.capture.binding,null);
@@ -29,7 +30,11 @@ export async function createSessionMemoryOwner(fixture,{port=0,host='127.0.0.1',
   async createConsumerTicket(kind){assert.ok(!closed);return live.createConsumerTicket(kind);},
   async update(n){assert.ok(!closed);phase='update';await deadline(source.page.evaluate(n=>window.update(n),n),15000,'Session image update');source.requestCapture();},
   async resize(viewport){assert.ok(!closed);phase='resize';await deadline(source.resize(viewport),15000,'Session resize');},
-  async navigate(n,host='localhost'){assert.ok(!closed);assert.ok(navigationPins<1024,'Navigation ownership fence bound');phase='navigation';const pinned=await pin(),producerIdentity=pinned.sourceProcesses.find(row=>String(row.pid)===source.producer?.split(':')[0])?.identity;assert.ok(producerIdentity,'Current producer is not in the actual pinned Source cohort');navigationPins++;const before={epoch:source.pageEpoch,documentToken:source.nativeDocumentToken,producer:source.producer,ownershipFence:{ordinal:navigationPins,pinnedProcessIdentities:probes.size,producerIdentity}};await source.page.goto(workload.url(host,n),{waitUntil:'domcontentloaded',timeout:15000});await deadline(source.page.evaluate(()=>window.loaded),15000,'crosssite Session image');source.requestCapture();return before;},
+  async navigate(n,host='localhost'){
+   assert.ok(!closed);assert.ok(navigationPins<1024,'Navigation ownership fence bound');phase='navigation';const pinned=await pin(),producerIdentity=pinned.sourceProcesses.find(row=>String(row.pid)===source.producer?.split(':')[0])?.identity;assert.ok(producerIdentity,'Current producer is not in the actual pinned Source cohort');navigationPins++;const before={epoch:source.pageEpoch,documentToken:source.nativeDocumentToken,producer:source.producer,ownershipFence:{ordinal:navigationPins,pinnedProcessIdentities:probes.size,producerIdentity}},fence=await pinSessionProcessRetirement(producerIdentity);
+   try{await source.page.goto(workload.url(host,n),{waitUntil:'domcontentloaded',timeout:15000});let retirement;await deadline((async()=>{await source.page.evaluate(()=>window.loaded);retirement=await fence.wait();})(),15000,'crosssite Session image and old producer retirement');source.requestCapture();return {...before,retirementFence:retirement};}
+   finally{await fence.close();}
+  },
   close(){if(closePromise)return closePromise;closed=true;phase='closing';return closePromise=(async()=>{
    const cleanupErrors=[],retired=[];let before,after;try{before=await pin();}catch(error){cleanupErrors.push({step:'pin',error:error.stack});}
    try{await deadline(live.close(),15000,'Session Live close');}catch(error){cleanupErrors.push({step:'live',error:error.stack});}
