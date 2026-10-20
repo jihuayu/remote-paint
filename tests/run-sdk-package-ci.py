@@ -33,6 +33,21 @@ def main() -> None:
     stages=[]
     def save(name: str,value: object) -> None:
         with(out/name).open('x')as f:json.dump(value,f,indent=2);f.write('\n')
+    def linux_process_receipt(name: str) -> None:
+        if sys.platform!='linux':
+            return
+        rows=[]
+        for path in Path('/proc').glob('[0-9]*/stat'):
+            if len(rows)>=64:
+                break
+            try:
+                raw=path.read_text();fields=raw[raw.rfind(')')+2:].split()
+                if fields[0]=='Z' or fields[1]=='1':
+                    rows.append({'pid':int(path.parent.name),'state':fields[0],'ppid':int(fields[1]),'startTicks':int(fields[19])})
+            except (OSError,ValueError,IndexError):
+                continue
+        save(name,{'pidOneName':Path('/proc/1/comm').read_text().strip(),'observedOrphanOrZombieRows':rows,
+                   'scope':'Bounded temporal container process inventory; absence is not a retirement receipt.'})
     def run(name: str,command: list[str],timeout: int=120) -> str:
         start=time.monotonic();timed_out=False
         with(out/(name+'.log')).open('x')as log:
@@ -46,6 +61,7 @@ def main() -> None:
                  'seconds':time.monotonic()-start,'logSha256':sha(out/(name+'.log'))}
         stages.append(receipt);save(name+'-exit.json',receipt)
         if code!=0 or timed_out:
+            linux_process_receipt(name+'-processes.json')
             logs=[out/(name+'.log')]
             installed_failure=out/'installed/failed.json'
             if installed_failure.is_file():
@@ -62,6 +78,7 @@ def main() -> None:
             raise RuntimeError('Stage failed: '+name)
         return(out/(name+'.log')).read_text()
     try:
+        linux_process_receipt('initial-processes.json')
         commit=os.environ.get('GITHUB_SHA')
         if commit:
             # Checkout's temporary HOME does not carry into later container
