@@ -1905,3 +1905,8 @@ Native资源绑定四个终止事件并在Ready前重查，worker先建立停止
 ### 生产Native启动阶段死亡的7项退役与1项隔离
 
 8个精确生产事件处同步fsync并SIGKILL自有控制器；原SQLite/binding冷恢复，7项有效退役，engine-start-dispatch无有效见证项保留closing/retirement=null和配额1，不能宣称成功恢复。关闭专用真实见证不发Start、文件见证采用、私有Native Ready早于公共Ready的死亡均确认；物理7容器和13宿主PID清理不替代隔离记录退役。根实际0为声明的安全断言通过，未知启动恢复仍未完成。见[启动死亡范围](production-native-startup-recovery.md)。旧952/SDK输入保持，41项9/15/17及原8小时失败保持。
+
+
+### 实际renderer崩溃撤回Native Session授权
+
+canonical Native先Ready及公共Welcome/FrameCommit，在完整自有CID中按受限内核线程与父链/boot/ns/exe/startTicks确认唯一renderer后SIGKILL。worker-origin CHANNEL_RESOURCE_UNAVAILABLE撤回provider/Registry Ready及端点，随后有效namespace退役，根实际0。两次主线程名误判均未发信号，失败与快照保留；3容器/6宿主PID均核对退出。见[renderer故障范围](native-renderer-health.md)。原生产/SDK/108单测输入未改，继承952旧收据；未知启动隔离、SDK终止、Agent/N1/设备/原8小时继续，41项9/15/17不变。

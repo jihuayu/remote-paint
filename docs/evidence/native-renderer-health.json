@@ -1,0 +1,170 @@
+{
+  "at": "2026-10-19T12:52:42.059027+00:00",
+  "task": "production-Native-renderer-health-loss",
+  "status": "actual-owned-Native-renderer-crash-authority-revoked",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-renderer-health-v3/manifest.json",
+  "executedManifestSha256": "2dfb1f020a4a1e2e3580e3d90c2426b907d4f66ef58750472da282d84a619547",
+  "canonicalSourceFiles": 954,
+  "productionRuntimeUnchangedFrom953": true,
+  "onlyModifiedOldSourceIsOptInVerifier": true,
+  "all108FullSuiteTestInputsUnchanged": true,
+  "executionDeviations": {
+    "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": {
+      "canonicalSha256": "faa6b3b47a15e4edd659f3fb99c2ca8eb6aace5461a1f12090314e2dda8a5cb0",
+      "fixtureSha256": "4ed13b4cfe989945aab0256eb40b00d026ed74783fd39519df8903d270a61d08"
+    }
+  },
+  "canonicalNativeWorkerUsed": true,
+  "NodeAdapterUsed": false,
+  "sourceCdpTestApiUsed": false,
+  "actualRootExitCode": 0,
+  "actualRendererFaults": 1,
+  "preservedNoSignalRoleProbeFailures": 2,
+  "attempts": [
+    {
+      "attempt": 1,
+      "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-renderer-health-v1/manifest.json",
+      "manifestSha256": "c9197fcca22a9062115a8d43e872b74db663622978723f3258630c6434178e27",
+      "containerId": "1cbf6ce22d34d7d2c23746ccaefc3063f5bf61fdbec1f964ff132b6fc130ea99",
+      "actualRootExitCode": 1,
+      "rendererSignalDelivered": false,
+      "runtimeRowRetired": true,
+      "retirementKind": "container-removed",
+      "knownHostPids": [
+        91988,
+        91993
+      ]
+    },
+    {
+      "attempt": 2,
+      "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-renderer-health-v2/manifest.json",
+      "manifestSha256": "ec1b5cc4c416db3a2f0383a91860c44b4791f2fda62717409d3c1d257b1de239",
+      "containerId": "ef99c26181dc4fbcb05b7fd557bcc8c74b920a089ac55b2986ed31aeb187ca63",
+      "actualRootExitCode": 1,
+      "rendererSignalDelivered": false,
+      "runtimeRowRetired": true,
+      "retirementKind": "container-removed",
+      "knownHostPids": [
+        93053,
+        93120
+      ]
+    },
+    {
+      "attempt": 3,
+      "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-renderer-health-v3/manifest.json",
+      "manifestSha256": "2dfb1f020a4a1e2e3580e3d90c2426b907d4f66ef58750472da282d84a619547",
+      "containerId": "915694d37292c1fd3ed70c1eda61c0f5661d61043e12ac5f2d94ffb2e4746810",
+      "actualRootExitCode": 0,
+      "rendererSignalDelivered": true,
+      "runtimeRowRetired": true,
+      "retirementKind": "container-removed",
+      "knownHostPids": [
+        94911,
+        94972
+      ]
+    }
+  ],
+  "actualNativeReadyAndPublicReadonlyWelcomeFrameCommitBeforeFault": true,
+  "rendererFault": {
+    "scope": "exact owned renderer kernel identity revalidated before signal",
+    "bootId": "b4055da7-94b0-4014-a2a3-0fe10d3f843d",
+    "root": {
+      "pid": 7,
+      "ppid": 1,
+      "startTicks": "31283922",
+      "namespace": "pid:[4026535170]",
+      "exe": "/usr/local/bin/node",
+      "comm": "node"
+    },
+    "browser": {
+      "pid": 22,
+      "ppid": 7,
+      "startTicks": "31283966",
+      "namespace": "pid:[4026535170]",
+      "exe": "/browser/headless_shell",
+      "comm": "headless_shell"
+    },
+    "broker": {
+      "pid": 19,
+      "ppid": 7,
+      "startTicks": "31283964",
+      "namespace": "pid:[4026535170]",
+      "exe": "/project/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker",
+      "comm": "remote-paint-br"
+    },
+    "target": {
+      "pid": 74,
+      "ppid": 25,
+      "startTicks": "31283983",
+      "namespace": "pid:[4026535170]",
+      "exe": "/browser/headless_shell",
+      "comm": "headless_shell"
+    },
+    "rendererThreadNames": [
+      "Chrome_ChildIOT",
+      "Compositor",
+      "PerfettoTrace",
+      "ThreadPoolForeg",
+      "ThreadPoolServi",
+      "ThreadPoolSingl",
+      "headless_shell"
+    ],
+    "signal": "SIGKILL",
+    "signalDelivered": true,
+    "argvEnvironmentRead": false
+  },
+  "channelFailure": "CHANNEL_RESOURCE_UNAVAILABLE",
+  "providerAndRegistryReadyAndPrivateEndpointRevoked": true,
+  "observationBudgetMs": 2000,
+  "afterActorReceiptObservationMs": 20.524833999999828,
+  "physicalKillToRevocationLatencyClaim": false,
+  "oneNativeRuntimeTypedNamespaceRetired": true,
+  "all3AttemptContainersAbsent": true,
+  "knownHostPidsAbsent": [
+    91988,
+    91993,
+    93053,
+    93120,
+    94911,
+    94972
+  ],
+  "fullJs952BothInheritedExactProductionAnd108UnitInputs": true,
+  "inheritedFullJs": {
+    "mac": {
+      "tests": 952,
+      "pass": 937,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "83b57a3b59ab593a95b35af508ae654594addc42af3b8d374fb2ec3d7ce010dd"
+    },
+    "linux": {
+      "tests": 952,
+      "pass": 946,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "5312e57a2a74fd2426b43cc2f5be96995dd66d0aa733d1a36a19f7a155ed31c5"
+    }
+  },
+  "sdk77Node16PythonTscBothMacMypyInheritedExactInputs": true,
+  "freshFullUnitOrPackageInstallClaimed": false,
+  "nativePageRendererCrashActualQualified": true,
+  "nativeAllColdRecoveryStagesQualified": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "sdkSessionEndAutomaticRetryPolicyQualified": false,
+  "productionNativeFullyQualified": false,
+  "physicalLatencyOrN1Claim": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

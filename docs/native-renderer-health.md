@@ -1,0 +1,13 @@
+# 真实 Native renderer 崩溃后的会话撤权
+
+canonical Native worker、合格broker和固定Linux浏览器先完成实际Ready、私有端点解析、公网只读票据Welcome和Native FrameCommit；随后只对本测试完整CID内的实际renderer发送SIGKILL。原生worker发出资源不可用，channel failure为CHANNEL_RESOURCE_UNAVAILABLE，provider不可用、Registry拒绝Ready、私有端点被拒绝。根Node实际0，最终通过完整namespace退役证明删除容器，独立持久记录为retired，清理错误为空。
+
+故障actor只遍历见证绑定worker的浏览器子树，通过每个已知进程的有限task/children查找后代，限制32个进程、每进程256线程；不读取argv、cmdline、环境或私有token。实际构建的所有主进程comm均为headless_shell；renderer由唯一的Compositor与Chrome_ChildIOT线程、没有VizCompositorTh、browser→单线程zygote→renderer的父链识别。信号前重新核对boot ID、根/浏览器/broker/renderer的PID namespace、exe、startTicks与父链。该角色条件限定于本固定about:blank测试，不能当成通用生产进程发现接口。
+
+前两轮把主线程名假设为CrRendererMain，实际匹配0，测试在发信号前失败；第一轮未保存进程快照，第二轮补齐快照并确认真实线程。修正依据实际内核观察，以及本地当前Chromium的renderer、Blink compositor与ChildIOThread源码。两个失败收据、冻结输入、各自补丁源文件及清理证据保留，不能当作生产健康故障或成功renderer测试。第三轮准确定位实际renderer PID74（浏览器PID22、worker PID7），发送SIGKILL后收到上述撤权结果。每轮完整CID均独立核对消失，根测试和attach代理共6个已知宿主PID均ESRCH。
+
+撤权在actor回执后的2秒观察窗内被观察到，实际约20.525ms；这不是物理kill到撤权的端到端时延测量。FrameCommit是协议回执，本项不冒充真实SDK像素证明；像素保持前一检查点的独立范围。本项也不验证中间配额释放时刻；最终实际退役和记录关闭已核对。
+
+原953候选的生产代码、SDK、253依赖和完整108个单测输入均未改；只扩展旧opt-in故障验证器并新增actor。最终956文件含两份新增范围文档。双平台952项JS与已安装77 Node/16 Python、严格TSC和Mac Mypy按原精确输入继承，未声称新完整回归或安装。Rust、浏览器、Mac观察器及公共演示未改。
+
+未知启动的隔离恢复仍未收敛，SDK会话终止策略、全部Agent/CDP栅栏、N1/物理时延、更多设备与原8小时增长继续待验收。41项9/15/17、原8小时失败及192MiB门槛保持，未强制浏览器GC、自动重跑8小时、暂存提交推送。见[范围收据](evidence/native-renderer-health.json)。

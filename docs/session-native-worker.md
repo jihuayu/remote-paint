@@ -125,3 +125,8 @@ canonical Native实际Ready后完成自有attach代理SIGKILL和完整容器外�
 ## 启动阶段死亡边界
 
 8个生产事件处控制器实际SIGKILL；7项冷恢复退役，无有效见证的engine-start-dispatch保留隔离与配额。关闭专用采集不重放Start，原文件见证采用、公共Ready之前死亡均有实际收据。见[范围](production-native-startup-recovery.md)。未知启动恢复收敛与真实Page崩溃仍未完成。
+
+
+## 实际renderer崩溃
+
+完整自有CID中对实际renderer SIGKILL后，canonical Native资源不可用消息使provider/Registry撤回Ready与私有端点，随后有效namespace退役。角色探针两次未发信号的失败保留；不用Source CDP测试API。见[范围](native-renderer-health.md)。不宣称完整生产验收。
