@@ -1267,8 +1267,28 @@ owner.after的原metrics在finally关闭历史procFD之前采集，不能当探�
 
 ## Mac原生内存类别的独立取证
 
-使用原579文件不可变副本（不含后续退休Wasm记账修复），完成600秒请求、623.250秒实际负载：660次更新、52次resize、38次输入、6次跨站、7个secondary与7次真实30秒租约到期；三个主页面/两个Worker身份持续保留，Source创建与关闭8/8，清理无错误。
+使用原579文件不可变副本（不含后续退休Wasm记账修复），完成600秒请求、623.250秒总运行：660次更新、52次resize、38次输入、6次跨站、7个secondary与7次真实30秒租约到期；三个主页面/两个Worker身份持续保留，Source创建与关闭8/8，清理无错误。
 
 独立只读采样器围绕每次系统工具调用核验3个自有renderer的PID/start/UID/parent。6轮18份footprint有效；vmmap12份成功、6份在原1500ms上限超时，dyld/PartitionAlloc警告与错误原样保留。记录实际Mac Chrome155.0.8059.84。主要变化位于PartitionAlloc/V8标签及未标记VM_ALLOCATE，普通MALLOC_SMALL/TINY各轮不变；类别变化不能确定具体对象或独占物理内存，虚拟保留量不能计为物理占用。
 
 本轮无物理增长策略，属于归因诊断，不是C5增长通过。没有强制GC、替换主VM、放宽门槛或删除缓存；此前两次30分钟增长失败继续保留。证据见`docs/evidence/session-memory-forensics.json`；8小时与完整N1仍未通过。
+
+## 有界且不强制GC的原生分配器转储
+
+在含退休Wasm记账修复的607文件副本上完成600秒请求、612.059秒总运行。三个主页面与两个Worker身份持续保留，11份轻量转储均在5000ms请求/7000ms含结束总预算、每份32MiB上限内完成，覆盖实际自有renderer并通过前后PID/start/UID/parent核验。Mac完整JS258项250通过8平台跳过，Linux独立运行254通过4平台跳过；首次Linux可写产物目录配置错误的2项失败日志保留。
+
+显式关闭周期转储，每份独立追踪仅一次不强制GC的实际请求；保留CDP请求GUID和Perfetto导出表编号两个原值。精确Chrome155 DEPS固定的Perfetto源码确认导出编号来自快照表、periodic_interval名称为常量，因此不拿其名称推断周期请求，也不伪造GUID对应。四份初期诊断失败分别涉及错误汇总逐对象路径、请求超时、结束追踪超时及错误GUID匹配，原始副本与记录均保留。
+
+记录各分配器active/resident字段，父子层级不相加。此诊断与完整JS运行有重叠、无物理增长策略，不能代替物理增长验收；自然GC仍可能发生，未发送强制GC命令。原两次30分钟增长失败、8小时与N1组合未通过的状态不变。证据见`docs/evidence/session-memory-infra.json`。
+
+## 三个持续Mac Viewer的实际输入因果证据
+
+607文件副本独立请求180秒、总运行190.471秒，三个主页面与两个Worker身份持续保留；27次主文字输入逐次记录真实WebSocket.send序号与3000ms内的accepted/input-injected ACK，并等待GPUWorker、CPUWorker、CPUmain全部显示同epoch/viewport、lastProcessedInputSeq至少该ACK序号及对应文字数像素（共81份逐Viewer证明）。secondary另有24次相同输入检查。
+
+每页观察器保持64 pending/128 ACK环/32错误上限与单个文本探测，记录落盘后释放；主观察器nonce在采样间不变。延迟仅用发送页自身performance原点计算dispatch→测试读像素，包含轮询/读回开销，不跨页面减时间，不声称物理呈现。Source/历史ownership FD/Viewer/helper正常清理，默认30秒放弃租约仍由真实到期检测验证。首次容器相对挂载路径在启动前被拒绝，原记录保留，修正绝对路径后使用同一607文件源码。实际出现的输入epoch/viewport集合单独记录，不把跨站后没有输入的epoch算作输入验证。此轮无物理策略，也未组合连续frame-age/轻微丢包；原30分钟失败、8小时与N1未通过状态不变。证据见`docs/evidence/session-longload-input.json`。
+
+## 跨站新epoch上的三个Mac Viewer输入因果证据
+
+609文件副本独立请求180秒、总运行187.035秒，三个主页面与两个Worker身份持续保留；28次主文字输入逐次记录真实WebSocket.send序号与3000ms内的accepted/input-injected ACK，并等待GPUWorker、CPUWorker、CPUmain全部显示同epoch/viewport、lastProcessedInputSeq至少该ACK序号及对应文字数像素（共84份逐Viewer证明）。secondary另有24次相同输入检查。
+
+每页观察器保持64 pending/128 ACK环/32错误上限与单个文本探测，记录落盘后释放；主观察器nonce在采样间不变。延迟仅用发送页自身performance原点计算dispatch→测试读像素，包含轮询/读回开销，不跨页面减时间，不声称物理呈现。Source/历史ownership FD/Viewer/helper正常清理，默认30秒放弃租约仍由真实到期检测验证。前轮首epoch验收、最初挂载路径错误与其修复记录均保留。每次跨站完成后、下一次放弃租约前立即从GPU输入，实际主输入ACK至少覆盖两个epoch，并在三个Viewer分别核验新epoch/viewport、水印序号及输入像素；两个编号集合原样记录。此轮无物理策略，也未组合连续frame-age/轻微丢包；原30分钟失败、8小时与N1未通过状态不变。证据见`docs/evidence/session-longload-input-crosssite.json`。

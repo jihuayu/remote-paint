@@ -1,0 +1,179 @@
+{
+  "at": "2026-10-17T23:10:35.376480+00:00",
+  "status": "accepted-bounded-nondeterministic-allocation-attribution-only",
+  "scope": "Actual3persistentMacViewers and2Workers;lightmemory-infra onallownedrendererPIDs,oneexplicitrequest/no periodictriggers/oneexportedsnapshot,PID/start/UID/parentbefore-afterfences. NotC5physicalgrowth/8h/fullN1.",
+  "version": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/frozen-version.json",
+  "versionSha256": "1fceb0b350bbf9963da0da514e3c3755804c6ecf0ba268adf5c22062f1ec481f",
+  "workload": {
+    "requestedSeconds": 600,
+    "elapsedSeconds": 612.05946875,
+    "cycles": 660,
+    "resizes": 52,
+    "inputs": 38,
+    "navigations": 6,
+    "secondaryCompleted": 7,
+    "leaseExpired": 7,
+    "sampleCount": 11
+  },
+  "dumpCount": 11,
+  "maxDumpMs": 6324.440750000009,
+  "totalRawBytes": 27046646,
+  "maxDumpBytes": 2855630,
+  "allDumpIdentityFencesPassed": true,
+  "fullJS": {
+    "testsEach": 258,
+    "macPass": 250,
+    "macLinuxOnlySkip": 8,
+    "linuxPass": 254,
+    "linuxMacOnlySkip": 4,
+    "initialLinuxFailure": "252pass/2fail/4skip;read-only /project missingwritableartifacts. Independent unchanged-source replay useswritablecwd+container/projectsymlinks. Originalfailurelog retained."
+  },
+  "pageLifetimes": [
+    {
+      "label": "gpu-worker",
+      "nonce": "143bcf03-d686-4abd-a8ff-6abb3e7936e8",
+      "pixelProbeNonce": "e96b8580-5908-4b7f-8fe3-15494b13afd2"
+    },
+    {
+      "label": "cpu-worker",
+      "nonce": "8c41ab88-44aa-4f43-a271-3b8565ea2b35",
+      "pixelProbeNonce": "adeb0968-95e0-402d-bcda-511b14e6399d"
+    },
+    {
+      "label": "cpu-main",
+      "nonce": "13c6752f-356e-4d27-a980-f05bf42773f0",
+      "pixelProbeNonce": "57c6130d-8262-42a7-a8b7-943daf5d7224"
+    }
+  ],
+  "workerLifetimes": [
+    "326EE47BB4F50B2FE24663A1B90584B8",
+    "E33F99525C98A01536352D5AAF73679C"
+  ],
+  "browser": "155.0.8059.84",
+  "threeLargestInitialRendererPids": [
+    11415,
+    11409,
+    11426
+  ],
+  "firstWarmToFinalFieldDeltas": [
+    {
+      "pid": 11415,
+      "fromOrdinal": 2,
+      "throughOrdinal": 11,
+      "deltas": {
+        "malloc/partitions/allocator:allocated_objects_size": 968752,
+        "malloc/partitions/allocator:size": -2242576,
+        "malloc/partitions/allocator:decommittable_size": -2195456,
+        "malloc/partitions/allocator:discardable_size": -81920,
+        "partition_alloc/partitions/array_buffer:allocated_objects_size": -17917996,
+        "partition_alloc/partitions/array_buffer:size": -12713984,
+        "partition_alloc/partitions/buffer:allocated_objects_size": 44540352,
+        "partition_alloc/partitions/buffer:size": 44744704,
+        "v8:size": -485608,
+        "blink_gc/main/heap:allocated_objects_size": 2379064
+      }
+    },
+    {
+      "pid": 11409,
+      "fromOrdinal": 2,
+      "throughOrdinal": 11,
+      "deltas": {
+        "malloc/partitions/allocator:allocated_objects_size": -944288,
+        "malloc/partitions/allocator:size": -5761184,
+        "malloc/partitions/allocator:decommittable_size": -4177920,
+        "malloc/partitions/allocator:discardable_size": -901120,
+        "partition_alloc/partitions/array_buffer:allocated_objects_size": -2023804,
+        "partition_alloc/partitions/array_buffer:size": -2424832,
+        "partition_alloc/partitions/buffer:allocated_objects_size": 32952768,
+        "partition_alloc/partitions/buffer:size": 32505856,
+        "v8:size": -26662856,
+        "blink_gc/main/heap:allocated_objects_size": -438640
+      }
+    },
+    {
+      "pid": 11426,
+      "fromOrdinal": 2,
+      "throughOrdinal": 11,
+      "deltas": {
+        "malloc/partitions/allocator:allocated_objects_size": -2004368,
+        "malloc/partitions/allocator:size": -7360992,
+        "malloc/partitions/allocator:decommittable_size": -2949120,
+        "malloc/partitions/allocator:discardable_size": -671744,
+        "partition_alloc/partitions/array_buffer:allocated_objects_size": -25752236,
+        "partition_alloc/partitions/array_buffer:size": -25886720,
+        "partition_alloc/partitions/buffer:allocated_objects_size": 43937136,
+        "partition_alloc/partitions/buffer:size": 43614208,
+        "v8:size": -18740088,
+        "blink_gc/main/heap:allocated_objects_size": -145032
+      }
+    }
+  ],
+  "limits": {
+    "captureMs": 5000,
+    "totalIncludingTraceEndMs": 7000,
+    "maxRawBytesPerDump": 33554432,
+    "maxAggregatesPerProcess": 1024
+  },
+  "interpretation": [
+    "CDP requestGUID andPerfetto JSON snapshot-table-ID remain distinct unmodified fields;eventname periodic_interval ishardcodedby pinnedexporter anddoesnotproveperiodicrequest.",
+    "Per-root allocated_objects_size isactiveobject size;size isprovider-specificresident/accounted view. Parent/childmetrics overlap;do notsuminto uniquephysicalmemory.",
+    "Live tracing perturbsallocation/timing/naturalGC;fullJS verification overlapped thisseparatediagnostic. No physicalpolicy wasapplied. No forcedGC command/primaryVMreplacement/budgetrelaxation.",
+    "No solecause orsuccessful remediation forprevious30minfootprintgrowthproved. Both prior30minsamepolicyfailures remain failed."
+  ],
+  "cleanupErrors": [],
+  "sourceClosed": {
+    "created": 8,
+    "closed": 8,
+    "crosssite": 6,
+    "leaseExpired": 7
+  },
+  "preservedDiagnosticFailures": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-failure-v1.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-failure-v2.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-failure-v3.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-failure-v4.json"
+  ],
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/frozen-version.json": "1fceb0b350bbf9963da0da514e3c3755804c6ecf0ba268adf5c22062f1ec481f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/report.json": "8efcfe79d3fcf3aa42eea79eae78c875624e03658b3e2daa99ac741a1b4a7a39",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/cleanup.json": "24ab906e52b2004fa1ec8a4514205672c65f19a57e61597837f6b9f0949eefce",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/samples.jsonl": "d707af4d42ee5d3028f55bdbbd3a445dc9742d8fb3d49eb8d30d647f8a7e3ad2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/native-memory-attempts.jsonl": "9c11b673644a289153c3d67e7a7a005feab102367ee40a70d24ddab6412fa3a8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/mac-js.log": "85f7b2295564a1eb424c0c191de0847323d7d39ebc3a182045271f4ea034bbd6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/linux-js.log": "7904e653f3313eec25aac2ca92c87972abf0687e887d4db566af156e81e06ef2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/linux-js-v2.log": "e547282465b6deb544f86d1fb780132c22ff64741f7314e919c85f80b509947e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/aggregate-summary.json": "4d84e6166374af104b5a3981ae4309822a49fc14a4ff286ecfd4fd28d3074fb9",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/1.raw.jsonl": "e1cc799b1bc2e2f82b1f95ce10fea844376c46fa64a0b3a8f086d9e308b83b36",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/10.raw.jsonl": "57921d464022f2e82b5204938e6a8d65465948929aad6730da042c7a20f443e9",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/11.raw.jsonl": "8965e9b27b48c271d36b94237017067ffe2960207f0ee7f81377ca1f887eee0b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/2.raw.jsonl": "9564727d3aaf796d4028c2bc79f81f2f564a496d28fdb0e2b726bb6711ed8bed",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/3.raw.jsonl": "cfa89dfbf73da34bfd447e15ba3ae1e2069b839215a9f6f62735b0ae61679ff3",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/4.raw.jsonl": "1feecb03b753331cbd3a2e80722d37b1a8c792c682600058edad1653f5eb4dde",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/5.raw.jsonl": "2c233c1a69f20a0b6e74c035e6b664de9e95fcec93857dc6ddfa5d4563bd9753",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/6.raw.jsonl": "94ced8ae23949c624e997fe8fcf3c187f99e6884f74f0607fcf7f2092ccd7e5c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/7.raw.jsonl": "15147ada1e0928b9f50735ae67931190640a8e7312ad2390d9bc645ff404a48b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/8.raw.jsonl": "3d88f60aa185ba89fa12f34d914cb2ec8b3c10e976104b735be6bced82ee31a4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/9.raw.jsonl": "0ce3e61960529b73b461dc3417d55b53116f5ee3e85f2b65ba9c862cee6f4524",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/identities.jsonl": "9f75f0df0ec74fd74122c2ff152970fa6234fe8b5164b4ef051734e2e6505889",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-v5/results/memory-infra/receipts.jsonl": "67101367aa0d1249bc914039ee9b40f5b80af883f4846ed8d9822fd2821fe20e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/blink_gc_memory_dump_provider.cc": "d62683834625bdc6cedbe74be6ed68034f36e11e4fb84cea84a655c3767b76e4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/chrome155-DEPS": "23ef1ed90785da130901961e4f4179b4fc10adac957eee5622d7e67fe4b82ec5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/chrome155-trace_config.cc": "285160223ccfed0b3226d2d475d091f7a785cf463fda36e63a38ae7b5daa733c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/memory-export-pinned-receipt.json": "286a16519196178771c35770abbb15d42a9e6f4ae821036b00f7032fc8546eaa",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/memory-export-source-receipt.json": "51459e934fca305a4921017919c23c474eb04e6349cf5a55a56b0807d0c1313e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/memory-provider-receipt.json": "fe62c46ed3ceda6a74b7cdbffb2256e78b24017495ff0c72f0246b51cbcc84f6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/partition-page-allocator.h": "2ef57bd01707f69865a055297e6d9ef3c7f1d111d2867c9d04fcfddaf077ec99",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/perfetto-export_json.cc": "dc3a3b53cc2df3cd66be8b331b805d31331c2a8dbcf42e3f58d6fe8a05377667",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/receipt.json": "e3240b25074d2dcc74d19394801c81709a35129698ec6386e0b4c839497336f7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/tracing_handler.cc": "c576569f0105fca80343bc9cb77a4cf3e2e961fd225b19a390680b3ab45193d2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/v8_isolate_memory_dump_provider.cc": "8609f9421c4edc3462ed2c992f7fda3e772a44115520bfeb9870b71c0685caa4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-failure-v1.json": "d726326c8cebe2cc787ab20d5cf90c2600ba465ff31b0ccc35245dd6af7b75bb",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-failure-v2.json": "c00c47fd7451ddb3ffe66a7efd7ea6c04663496b01a7b155d85fc7806424d48e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-failure-v3.json": "4715f902ef229dede9309619b0a2e883a694edec740c6cbb2ae05087c318556e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-failure-v4.json": "4c3fce356b38f148c5220471dd6cf208e4b7825236f51201f58ba938aa4031e5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-infra-postprocess-failure-v1.json": "5c55ca6eb43798a763b6d5b4492e54e255edbce6fc68993860eca1f2f0803aa4"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "noEightHourActive": true
+}

@@ -1,0 +1,126 @@
+{
+  "at": "2026-10-17T23:20:16.983022+00:00",
+  "status": "accepted-three-persistent-Mac-Viewer-postcrosssite-causal-input",
+  "scope": "Actual MacGPUWorker+CPUWorker+CPUmain;successfultextWSsend/ACK under3s followedby sameepoch/viewport/nativeinputwatermark+actualinputpixel onall3persistentViewers;secondaryCPUmain samechecks. Same-page dispatch-to-testread only,notcross-page clock subtraction orphysicalpresentation. Notcontinuousframe-age/N1/full8h/physicalgrowthacceptance.",
+  "version": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-pilot-v3/frozen-version.json",
+  "versionSha256": "883305ff3b29b1c3e770a9ae4e426c0f9917206b9c55e25ac6c195687611ed58",
+  "sourceFiles": 609,
+  "timingScope": {
+    "totalDriverElapsedSeconds": 187.03458583399998,
+    "firstToLastSampleSpanSeconds": 184.24885625,
+    "scope": "Totaldriverelapsedincludesinitialsetup;workloop independentlyenforcesrequested180swithrealperformance.now."
+  },
+  "previousFirstEpochAcceptance": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-acceptance-v1.json",
+  "workload": {
+    "requestedSeconds": 180,
+    "elapsedSeconds": 187.03458583399998,
+    "cycles": 461,
+    "resizes": 39,
+    "inputs": 28,
+    "navigations": 1,
+    "secondaryCompleted": 2,
+    "leaseExpired": 2,
+    "sampleCount": 5
+  },
+  "inputCounts": {
+    "primary": 28,
+    "secondary": 24
+  },
+  "actualPrimaryInputEpochs": [
+    1,
+    2
+  ],
+  "actualPrimaryInputViewportVersions": [
+    2,
+    3,
+    5,
+    6,
+    8,
+    9,
+    11,
+    12,
+    14,
+    15,
+    17,
+    18,
+    19,
+    21,
+    22,
+    24,
+    25,
+    27,
+    28,
+    30,
+    31,
+    33,
+    34,
+    35,
+    37,
+    39
+  ],
+  "causalPrimaryViewerPixelProofs": 84,
+  "maxAckMs": 86.5,
+  "inputObservationTotals": {
+    "primaryTexts": 28,
+    "secondaryTexts": 24,
+    "maxAckMs": 86.5,
+    "maxSenderTestReadMs": 143.60000038146973
+  },
+  "pageLifetimes": [
+    {
+      "label": "gpu-worker",
+      "nonce": "ab896928-eb75-4353-a319-056a5ea50877",
+      "pixelProbeNonce": "f40b2e89-288a-449f-a3e7-502ed7f9b9c6",
+      "inputObserverNonce": "3a2268e9-e757-47ef-8278-163b2c188bdb"
+    },
+    {
+      "label": "cpu-worker",
+      "nonce": "346da023-ec7e-4118-9d12-4313cd59b37b",
+      "pixelProbeNonce": "e3df0280-8033-48d0-b7e1-37b33e527ce6",
+      "inputObserverNonce": "342c354b-aec8-4344-83d4-f1ebe0123677"
+    },
+    {
+      "label": "cpu-main",
+      "nonce": "9afc7623-671c-46d6-b752-dc19e9ed6ff7",
+      "pixelProbeNonce": "5ac2c80e-1c08-4d8f-9a42-91f193d5bb57",
+      "inputObserverNonce": "780dfa99-c755-49bd-b62b-c671931a3071"
+    }
+  ],
+  "workerLifetimes": [
+    "963EA21CF7A1D60C3D498C0A62DEC151",
+    "D18D993EEC2C4F633296D26E98EC792B"
+  ],
+  "boundedObservers": {
+    "pending": 64,
+    "ackRing": 128,
+    "errors": 32,
+    "oneActiveTextProbePerPage": true
+  },
+  "sourceClosed": {
+    "created": 3,
+    "closed": 3,
+    "crosssite": 1,
+    "leaseExpired": 2
+  },
+  "controllerFds": {
+    "baseline": 20,
+    "after": 19,
+    "allowedOverBaseline": 8,
+    "scope": "This Source controller after allSource/fixture/network/observer cleanup;baseline already included fixture. Counts actualFDs after ownership probes closed,not earlier metrics taken while history FDs were intentionally held."
+  },
+  "preservedSetupFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-pilot-setup-failure-v1.json",
+  "cleanupErrors": [],
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-pilot-v3/frozen-version.json": "883305ff3b29b1c3e770a9ae4e426c0f9917206b9c55e25ac6c195687611ed58",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-pilot-v3/results/report.json": "53c75bbf36c2e2848ad4f255c533558c6a5bb93345d235fef2d4ec8358dca18f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-pilot-v3/results/cleanup.json": "a437e997687aa95b011d05ca697b0d1a5e397fed8263dfdf14ee10e308d4a7d1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-pilot-v3/results/samples.jsonl": "e739671acbbdab6f78cc91af519a4808102566ba41819662162729eba9fdda53",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-pilot-v3/results/session-input-observations.jsonl": "ecadef9f9ff753131f77ca72316540b8562b4034df2c47bfea00ed1e6495824e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-pilot-v3/results/secondary-results.jsonl": "56e054449718412181976c955635e4564f5cc813934d840d2c22b6d79d4a55a2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-pilot-v3/results/closed-sessions.jsonl": "2c048736bc8507653b388ce575bf6fbcfd146205e873573edf2444daaf268fc0",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-input-pilot-setup-failure-v1.json": "901fd33ccbe14e3d5d12e034347678361ab82cac77061577d1552427e73791cd"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "noEightHourActive": true
+}
