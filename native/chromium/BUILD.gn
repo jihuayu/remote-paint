@@ -52,6 +52,7 @@ test("download_file_tests") {
     "download_task_settlement_unittest.cc",
     "download_request_owner_unittest.cc",
     "download_admission_unittest.cc",
+    "download_bridge_descriptor_unittest.cc",
     "//components/download/internal/common/base_file_unittest.cc",
   ]
   deps = [

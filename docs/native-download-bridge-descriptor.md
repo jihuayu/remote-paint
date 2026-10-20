@@ -1,0 +1,17 @@
+# Native Page 下载桥的版本发现与守卫
+
+第22个顺序补丁增加`Page.getRemotePaintDownloadBridge`，第23补丁将该浏览器命令排除在Blink renderer后端之外。它同步返回descriptorVersion=1、transfersReady=false、当前documentToken及常规下载的4份额度/每份4MiB上限。该入口用于后续版本协商，不创建、读取或释放下载。Source尚未接线，也没有启用下载预算第二开关；arm/info/read/release仍待实现。
+
+Page handler直接使用自身的受信客户端字段、AssureTopLevelActiveFrame结果和真实RenderFrameHostImpl.GetDocumentToken。请求只携带进程密钥及预期documentToken，不接收调用者伪造的frame/trust ID。密钥与双开关在handler持有的descriptor构造时快照，密钥要求32–256字节；当前documentToken非空、最多64字节并与预期一致。失败统一返回无descriptor的错误，不返回当前文档身份。描述符只报告当前DevTools Page target的真实主文档；原Source Page的实际接线、隔离世界/订阅/租户绑定及浏览器运行拒绝测试仍待完成。
+
+8个新增策略用例使用实际进程命令行和UnguessableToken值，验证正确版本/未就绪标志、错误和过长密钥、两个显式开关、受信/活动主frame策略输入、不同文档token不重标记旧预期、文档长度边界、配置快照及无效进程密钥。它们没有使用真实RFH或进行浏览器导航，不能替代Page/frame/导航端到端验收。描述符不分配下载lease，测试同时核对真实全局下载额度仍为零。
+
+实际ARM64 ELF无过滤337项全部RUN/COMPLETED、零失败/禁用，编译列表与结果完全相同：8新增策略、53既有Native、276上游及竞态；既有失败清理合同另有实际子进程1项。Mac和Linux专项各13项通过。测试runner预检一度读取旧夹具路径，校验脚本替换一度把337误写为347；两次均在执行/生成成功凭据前拒绝，记录保留，修正路径与准确算式329+8后才形成最终验证。没有绕过实际用例或重跑全1435项JS/SDK。
+
+Chromium自己的协议兼容性检查、版本及Page协议生成通过。复查补齐第23顺序补丁，不改写已应用22的收据；实际生成Blink的Page.h及Page.cc，确认私有命令在renderer后端和分发代码中均不存在，避免新增renderer抽象接口要求。第二候选首次GN构建触发原32GiB空间保护，真实停止143，未运行旧ELF；Data卷随后曾降至425799680字节，再恢复至36554223616及40866758656。保持余量门槛和缓存，以新构建记录续跑同一候选后GN/Ninja成功（C++源码未变，Ninja无须重新编译），再实际执行337项；该候选双平台专项也各13通过。真实PageHandler和生成Page分发代码均按实际GN/Ninja命令单独编译成ARM64对象，content/browser:browser的GN依赖检查通过。缺失生成头只在所选专用输出中按明确目标生成，所有尝试保留。这里没有整浏览器链接或运行，也没有把对象编译称为实际导航、客户端受信状态或下载验收。
+
+23补丁完整回放与46个实际修改路径、34个Native组件逐项一致。原浏览器包19文件哈希和采样器哈希/文件身份保持一致。自有容器实际终态后删除，专用输出及Go缓存保留；未访问禁止的旧输出或演示，未提交、推送或使用子代理。
+
+下一步必须在浏览器拥有的请求开始/导航拦截点保留原发起文档见证，再连接有界ticket与原下载lease；仅在响应到达时用当前frame ID查文档，会把旧文档迟到响应错归新文档。随后完成真实arm/info/read/release的文件任务所有权、Playwright原会话下载事件与元数据清理、Source私有目录及unarmed策略，最后再显式启用Source并做整浏览器验收。早期IO、远端网络服务物理退休、原8小时增长失败及其他全局门槛仍未通过。K6部分，41项仍10完成/17部分/14待办。
+
+见[结构化证据](evidence/native-download-bridge-descriptor.json)、[下载准入](native-download-admission.md)及[进度](optimization-progress.md)。

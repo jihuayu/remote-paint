@@ -1,0 +1,192 @@
+--- a/components/download/public/common/BUILD.gn
++++ b/components/download/public/common/BUILD.gn
+@@ -61,6 +61,8 @@
+     "download_url_parameters.h",
+     "download_utils.h",
+     "in_progress_download_manager.h",
++    "native_download_bridge_descriptor.cc",
++    "native_download_bridge_descriptor.h",
+     "native_download_budget.cc",
+     "native_download_budget.h",
+     "input_stream.cc",
+--- /dev/null
++++ b/components/download/public/common/native_download_bridge_descriptor.cc
+@@ -0,0 +1,31 @@
++#include "components/download/public/common/native_download_bridge_descriptor.h"
++
++#include "base/command_line.h"
++#include "components/download/public/common/native_download_budget.h"
++
++namespace download {
++
++NativeDownloadBridgeDescriptor::NativeDownloadBridgeDescriptor()
++    : enabled_(base::CommandLine::ForCurrentProcess()->HasSwitch("remote-paint-token") &&
++               base::CommandLine::ForCurrentProcess()->HasSwitch("remote-paint-download-budget-v1")),
++      token_(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("remote-paint-token")) {}
++NativeDownloadBridgeDescriptor::~NativeDownloadBridgeDescriptor() = default;
++
++std::optional<NativeDownloadBridgeDescriptor::Snapshot>
++NativeDownloadBridgeDescriptor::Describe(std::string_view token,
++                                         std::string_view expected_document,
++                                         std::string_view current_document,
++                                         bool trusted_client,
++                                         bool active_top_frame) const {
++  if (!enabled_ || !trusted_client || !active_top_frame || token_.size() < 32 ||
++      token_.size() > 256 || token != token_ || current_document.empty() ||
++      current_document.size() > 64 || expected_document != current_document)
++    return std::nullopt;
++  // Do not advertise arm/read/release before those operations exist and have
++  // the required file, URL-owner and metadata settlement contracts.
++  return Snapshot{1, false, std::string(current_document),
++                  static_cast<int>(NativeDownloadBudget::kMaxItems),
++                  static_cast<int>(NativeDownloadBudget::kFileBytes)};
++}
++
++}  // namespace download
+--- /dev/null
++++ b/components/download/public/common/native_download_bridge_descriptor.h
+@@ -0,0 +1,42 @@
++#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_BRIDGE_DESCRIPTOR_H_
++#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_BRIDGE_DESCRIPTOR_H_
++
++#include <optional>
++#include <string>
++#include <string_view>
++
++#include "components/download/public/common/download_export.h"
++
++namespace download {
++
++// The Page handler supplies its actual trust, top-frame and document witnesses.
++// This descriptor is discovery only; it does not admit or read a download.
++class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadBridgeDescriptor {
++ public:
++  struct Snapshot {
++    int descriptor_version;
++    bool transfers_ready;
++    std::string document_token;
++    int max_items;
++    int max_file_bytes;
++  };
++
++  NativeDownloadBridgeDescriptor();
++  ~NativeDownloadBridgeDescriptor();
++  NativeDownloadBridgeDescriptor(const NativeDownloadBridgeDescriptor&) = delete;
++  NativeDownloadBridgeDescriptor& operator=(const NativeDownloadBridgeDescriptor&) = delete;
++
++  std::optional<Snapshot> Describe(std::string_view token,
++                                   std::string_view expected_document,
++                                   std::string_view current_document,
++                                   bool trusted_client,
++                                   bool active_top_frame) const;
++
++ private:
++  const bool enabled_;
++  const std::string token_;
++};
++
++}  // namespace download
++
++#endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_BRIDGE_DESCRIPTOR_H_
+--- a/content/browser/devtools/protocol/page_handler.cc
++++ b/content/browser/devtools/protocol/page_handler.cc
+@@ -528,6 +528,30 @@
+ }
+ 
+ PageHandler::~PageHandler() = default;
++
++Response PageHandler::GetRemotePaintDownloadBridge(
++    const std::string& token,
++    const std::string& document_token,
++    int* descriptor_version,
++    bool* transfers_ready,
++    std::string* current_document_token,
++    int* max_items,
++    int* max_file_bytes) {
++  // These are browser-owned witnesses, never caller-provided frame/trust IDs.
++  const bool active_top_frame = AssureTopLevelActiveFrame().IsSuccess();
++  const std::string actual_document = active_top_frame
++      ? host_->GetDocumentToken().ToString() : std::string();
++  const auto descriptor = remote_paint_download_bridge_.Describe(
++      token, document_token, actual_document, is_trusted_, active_top_frame);
++  if (!descriptor)
++    return Response::ServerError("Remote Paint download bridge unavailable");
++  *descriptor_version = descriptor->descriptor_version;
++  *transfers_ready = descriptor->transfers_ready;
++  *current_document_token = descriptor->document_token;
++  *max_items = descriptor->max_items;
++  *max_file_bytes = descriptor->max_file_bytes;
++  return Response::Success();
++}
+ 
+ // static
+ std::vector<PageHandler*> PageHandler::EnabledForWebContents(
+--- a/content/browser/devtools/protocol/page_handler.h
++++ b/content/browser/devtools/protocol/page_handler.h
+@@ -18,6 +18,7 @@
+ #include "base/scoped_observation.h"
+ #include "build/build_config.h"
+ #include "cc/trees/render_frame_metadata.h"
++#include "components/download/public/common/native_download_bridge_descriptor.h"
+ #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
+ #include "content/browser/devtools/devtools_video_consumer.h"
+ #include "content/browser/devtools/protocol/devtools_domain_handler.h"
+@@ -129,6 +130,15 @@
+       std::optional<bool> enable_file_chooser_opened_event) override;
+   Response Disable() override;
+ 
++  Response GetRemotePaintDownloadBridge(
++      const std::string& token,
++      const std::string& document_token,
++      int* descriptor_version,
++      bool* transfers_ready,
++      std::string* current_document_token,
++      int* max_items,
++      int* max_file_bytes) override;
++
+   Response Crash() override;
+   Response Close() override;
+   void Reload(std::optional<bool> bypassCache,
+@@ -270,6 +280,7 @@
+   const bool is_trusted_;
+   const std::optional<url::Origin> navigation_initiator_origin_;
+   const bool may_read_local_files_;
++  const download::NativeDownloadBridgeDescriptor remote_paint_download_bridge_;
+ 
+   bool enabled_;
+   bool bypass_csp_ = false;
+--- a/content/browser/devtools/protocol_config.json
++++ b/content/browser/devtools/protocol_config.json
+@@ -157,7 +157,7 @@
+             },
+             {
+                 "domain": "Page",
+-                "include": ["enable", "disable", "reload", "navigate", "stopLoading", "getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "captureScreenshot",
++                "include": ["enable", "disable", "reload", "navigate", "stopLoading", "getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "getRemotePaintDownloadBridge", "captureScreenshot",
+                     "startScreencast", "stopScreencast", "startScreenRecording", "stopScreenRecording", "screencastFrameAck", "handleJavaScriptDialog", "setColorPickerEnabled",
+                     "bringToFront", "setDownloadBehavior", "getAppManifest", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "setBypassCSP", "getAppId", "addCompilationCache", "setPrerenderingAllowed", "getAnnotatedPageContent",
+                     "addScriptToEvaluateOnNewDocument", "removeScriptToEvaluateOnNewDocument", "addScriptToEvaluateOnLoad", "removeScriptToEvaluateOnLoad"],
+--- a/third_party/blink/public/devtools_protocol/domains/Page.pdl
++++ b/third_party/blink/public/devtools_protocol/domains/Page.pdl
+@@ -11,6 +11,21 @@
+   depends on IO
+   depends on Network
+   depends on Runtime
++
++  # Remote Paint private bridge discovery, available only with explicit Native
++  # download staging and a trusted client holding the process capability.
++  # No download is created or read. transfersReady remains false until the
++  # versioned transfer operations and their ownership contracts are available.
++  experimental command getRemotePaintDownloadBridge
++    parameters
++      string token
++      string documentToken
++    returns
++      integer descriptorVersion
++      boolean transfersReady
++      string currentDocumentToken
++      integer maxItems
++      integer maxFileBytes
+ 
+   # Unique frame identifier.
+   type FrameId extends string

@@ -1,0 +1,183 @@
+{
+  "at": "2026-10-20T04:20:47.085270+00:00",
+  "qualifiedWithinScope": true,
+  "scope": "Private staged Page bridge discovery/authentication policy, real Page target/document witness plumbing compiled with actual generated dispatch; no browser runtime or transfer operations accepted.",
+  "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-bridge-descriptor-candidate-v2/frozen-version.json",
+  "candidateManifestSha256": "1e9f94a3d40679de07dc5c85c69487b463a73fad74276af816ce12c55ec7b1de",
+  "candidateSourceFiles": 1162,
+  "method": "Page.getRemotePaintDownloadBridge",
+  "descriptorVersion": 1,
+  "transfersReady": false,
+  "requiredProcessSwitches": [
+    "remote-paint-token",
+    "remote-paint-download-budget-v1"
+  ],
+  "processPolicyAndCapabilitySnapshotted": true,
+  "configuredCapabilityBytes": {
+    "minimum": 32,
+    "maximum": 256
+  },
+  "maximumDocumentTokenBytes": 64,
+  "actualHandlerTrustFieldUsed": true,
+  "actualHandlerAssureTopLevelActiveFrameUsed": true,
+  "actualRenderFrameHostDocumentTokenUsed": true,
+  "failureReturnsGenericErrorWithoutDescriptor": true,
+  "noCallerProvidedTargetOrTrustWitness": true,
+  "descriptorAllocatesDownloadLease": false,
+  "cpp": {
+    "at": "2026-10-20T04:18:29.999376+00:00",
+    "actualExitCode": 0,
+    "totalTests": 337,
+    "failures": 0,
+    "disabled": 0,
+    "newTests": 8,
+    "previousNativeTests": 53,
+    "upstreamBaseFileTests": 35,
+    "suites": {
+      "RemotePaintDownloadWriteTest": 10,
+      "RemotePaintDownloadDeletionTest": 7,
+      "RemotePaintDownloadTaskTest": 13,
+      "RemotePaintRequestOwnerTest": 9,
+      "RemotePaintDownloadBudgetTest": 14,
+      "RemotePaintDownloadBridgeTest": 8,
+      "BaseFileTest": 35,
+      "DownloadFileTest": 16,
+      "DownloadFileTestWithObfuscation": 5,
+      "DownloadItemTest": 64,
+      "DownloadFile/DownloadFileTestWithRename": 6,
+      "Success/DownloadItemDestinationUpdateRaceTest": 105,
+      "Failure/DownloadItemDestinationUpdateRaceTest": 45
+    },
+    "gtestSha256": "4694ed60bced8d1ae5e594b2f170e5565df222b5c8acd4978878ebf71eb308b0",
+    "gtestListSha256": "501cd4c934cef1db812bffe5be7ac3f50e6fd3544a985f057cc2865d3c91d154",
+    "testManifestSha256": "72869a5b50065148b878e4da35ba087c3db6bd9591a36148127e1fff84545107",
+    "runtimeBrowserQualified": false
+  },
+  "categories": {
+    "newDescriptorPolicy": 8,
+    "previousNative": 53,
+    "upstreamAndRaces": 276
+  },
+  "compiledCaseCoverageSha256": "1c8a23cbb652d944354349dd76b1de2bd26470754250c03ceaf1afe8a2fa4e47",
+  "cppTestManifestSha256": "72869a5b50065148b878e4da35ba087c3db6bd9591a36148127e1fff84545107",
+  "cppLogSha256": "e296372dbce7ebd6ba2eb25de918f6556e630e63fb1588ca0b08afd0dd14b384",
+  "binarySha256": "a2c82745e686e419b2f4d9253e5d9b137fd1ed55738a81ea21f2179de10fa6eb",
+  "childProcessCases": 1,
+  "childGtestSha256": "cceded61baff15d348d09ffbe0be62ec8b5d4099b3e8443d51f04857383f79a8",
+  "policyTestsUseActualProcessCommandLineAndUnguessableTokenValues": true,
+  "policyTestsUseRealBrowserFramesOrNavigation": false,
+  "browserTrustRuntimeTested": false,
+  "rendererProtocolExclusion": {
+    "rendererProtocolFiles": {
+      "page.h": "153f0e68ccf070753343ac04bcc4276eb90c1f20507f483a9ab5f3fc24c47f6d",
+      "page.cc": "edf86364d383770592041a23b5d2dd9b2f59b62c09bdf269c0125a501bfc8aa6"
+    },
+    "privateCommandAbsentFromActualGeneratedRendererBackendAndDispatcher": true
+  },
+  "rendererProtocolGenerationActualExit": 0,
+  "pageCompilation": {
+    "at": "2026-10-20T04:19:36.608082+00:00",
+    "actualExit": 0,
+    "sourceBuildManifestSha256": "cff8e5c10fb2494f4037fde172f031271c67208b885bd5e2838df3638b44fb29",
+    "targets": {
+      "handler": {
+        "actualExit": 0,
+        "compilerAttempts": 1,
+        "objectSha256": "31582d7ef41cbd7aa4b6fc8d47681f42433b79540f0e8c7842e773d152964d2c",
+        "objectBytes": 421928,
+        "machine": "aarch64"
+      },
+      "generated": {
+        "actualExit": 0,
+        "compilerAttempts": 1,
+        "objectSha256": "225ae7388b8f5eb6ce44cfd0f56abd1cecc45b4b52182186d92d5e7a566ac165",
+        "objectBytes": 311816,
+        "machine": "aarch64"
+      }
+    },
+    "noBrowserLinkOrRuntime": true,
+    "rendererExclusion": {
+      "rendererProtocolFiles": {
+        "page.h": "153f0e68ccf070753343ac04bcc4276eb90c1f20507f483a9ab5f3fc24c47f6d",
+        "page.cc": "edf86364d383770592041a23b5d2dd9b2f59b62c09bdf269c0125a501bfc8aa6"
+      },
+      "privateCommandAbsentFromActualGeneratedRendererBackendAndDispatcher": true
+    },
+    "gnBrowserCheckActualExit": 0,
+    "generatedProtocolFiles": {
+      "page.h": "5658f97ca8616a74539346217f0db30e9f0dbfa9f56a5b24a87c9b40b735c07f",
+      "page.cc": "1c2bb43a894be8492b940a9a48f2ed6c8de448e1e7c20499be124be5ba30ee76"
+    }
+  },
+  "pageRuntimeReceiptSha256": "99cdb24820ebd7d64094e19672ee277f8da68a36b4bf507027bd744e5ce9f668",
+  "protocolCompatibilityAndGenerationActualExit": 0,
+  "scopedJsEach": 13,
+  "scopedJs": {
+    "mac": {
+      "actualExit": 0,
+      "logSha256": "34120530332c1e734ea777119b6054a7d3bdeba3614defd5870e069260dcf98b"
+    },
+    "linux": {
+      "actualExit": 0,
+      "logSha256": "bad08ea034304239adb78287736ba537127699feb594a4466a6af44ff2f7decf"
+    }
+  },
+  "buildManifestSha256": "cff8e5c10fb2494f4037fde172f031271c67208b885bd5e2838df3638b44fb29",
+  "buildActualExit": 0,
+  "priorSameCandidateProtectedDiskStopActualExit": 143,
+  "priorDiskStopReceiptSha256": "a038b0afbcd76cb3c25169515a897f4207a83e9a84e05dae82e430a23ccf59ee",
+  "diskMinimumFreeBytesUnchanged": 34359738368,
+  "retryOnlyAfterAuthoritativeSpaceRecovery": true,
+  "inputValidation": {
+    "at": "2026-10-20T04:20:47.069209+00:00",
+    "nativeSourceCopies": 34,
+    "patches": 23,
+    "patchedSources": 46,
+    "actualSourceCopiesAndFullReplayMatch": true,
+    "inputApiActualExit": 0,
+    "inputOnlyReceiptSha256": "5b258bd5f8a4de985e0732bd94f4f87b62aea22f935b8769027f0ce0b1fe67d2",
+    "patchStateSha256": "263e969c89b60fafb13660083c699b978a3b7b4648048aa25849a952fc6458d6",
+    "outputDirectory": "out/RemotePaintDownloadBudget20261020v1",
+    "argsSha256": "b62b6f08a29354eb0e06f69cc2fb633ae9b787af0e24b13768d9f32707ee5335",
+    "noBinaryBuildReceiptProduced": true,
+    "cacheAfter": {
+      ".ninja_log": {
+        "sha256": "bbf31420277e8fb6a18788bc12e26658f05a06e1e0900e4fbefb8ab0e04afd96",
+        "bytes": 5803652
+      },
+      ".ninja_deps": {
+        "sha256": "ecb277e8ff60b28f4a2c85bb916878f02dac98cafb74dee01491ab5b9f35550c",
+        "bytes": 18146332
+      }
+    },
+    "cacheChangesExpectedFromBuildAndTargetedProtocolGeneration": true,
+    "pageHandlerAndGeneratedDispatcherCompiled": true,
+    "gnBrowserDependencyCheckActualExit": 0
+  },
+  "preservedInputsReceiptSha256": "c67a0d571a667846e42d18fdaf1f12bceb072a76040313c33252f83462ca34e8",
+  "runnerAndValidatorPreflightFailuresRetained": true,
+  "allOwnedContainersRemoved": true,
+  "ownOutputAndGoCacheRetained": true,
+  "sourceBridgeWired": false,
+  "sourceDownloadBudgetActivated": false,
+  "armInfoReadReleaseImplemented": false,
+  "initiatingDocumentWitnessCapturedBeforeNetworkResponse": false,
+  "playwrightDownloadMetadataPhysicalBoundQualified": false,
+  "earlierIoAdmissionQualified": false,
+  "networkServicePhysicalRetirementQualified": false,
+  "browserDownloadSpoolPrewriteHardCapQualified": false,
+  "browserRebuiltOrRun": false,
+  "freshWholeJsRun": false,
+  "sdkTestsRerun": false,
+  "K6Complete": false,
+  "productionNativeFullyQualified": false,
+  "eightHourPassed": false,
+  "wholeGoalQualified": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true,
+  "noSubagents": true
+}

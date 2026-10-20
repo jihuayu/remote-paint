@@ -1,0 +1,11 @@
+--- a/third_party/blink/renderer/core/inspector/inspector_protocol_config.json
++++ b/third_party/blink/renderer/core/inspector/inspector_protocol_config.json
+@@ -91,7 +91,7 @@
+             },
+             {
+                 "domain": "Page",
+-                "exclude": ["getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "captureScreenshot", "startScreencast", "stopScreencast", "screencastFrameAck", "handleJavaScriptDialog", "setColorPickerEnabled",
++                "exclude": ["getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "getRemotePaintDownloadBridge", "captureScreenshot", "startScreencast", "stopScreencast", "screencastFrameAck", "handleJavaScriptDialog", "setColorPickerEnabled",
+                             "getAppManifest", "getAnnotatedPageContent", "setControlNavigations", "processNavigation", "printToPDF", "bringToFront", "setDownloadBehavior", "navigate", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "getAppId", "setSPCTransactionMode", "setRPHRegistrationMode", "setPrerenderingAllowed", "startScreenRecording", "stopScreenRecording"],
+                 "pass_associated_data": [
+                     "addScriptToEvaluateOnNewDocument",
