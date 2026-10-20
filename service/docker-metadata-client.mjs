@@ -68,6 +68,12 @@ export class DockerMetadataClient {
   const context=this.#context(signal);await this.#assertDaemon(context);const {value}=await this.#json('/images/'+encodeURIComponent(imageId)+'/json',context);const daemon=await this.#assertDaemon(context);
   if(value.Id!==imageId||value.Os!=='linux'||arch(value.Architecture)!==this.#arch)throw fault('ENGINE_IMAGE_CHANGED');return {daemon,document:value};
  }
+ async inspectNetwork(networkId,{signal}={}){
+  if(typeof networkId!=='string'||!/^[a-f0-9]{64}$/.test(networkId))throw new TypeError('A complete network ID is required');
+  const context=this.#context(signal);await this.#assertDaemon(context);const result=await this.#json('/networks/'+networkId,context,{absent:true});const daemon=await this.#assertDaemon(context);
+  if(result.status===404)return {found:false,daemon,networkId};const value=result.value;if(value.Id!==networkId)throw fault('ENGINE_NETWORK_CHANGED');
+  if(typeof value.Name!=='string'||value.Name.length<1||value.Name.length>128||typeof value.Driver!=='string'||value.Driver.length<1||value.Driver.length>64||typeof value.Scope!=='string'||value.Scope.length<1||value.Scope.length>64)throw fault('ENGINE_RESPONSE_INVALID');return {found:true,daemon,document:value};
+ }
  // Candidate IDs require full inspection before any ownership or effect decision.
  // No server-side limit: a truncated inventory must never look complete.
  async listRuntimeCandidates({deploymentId,region,signal}={}){

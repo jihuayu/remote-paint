@@ -1,0 +1,145 @@
+{
+  "at": "2026-10-19T11:02:29.213514+00:00",
+  "task": "endpoint-metadata-contract",
+  "status": "endpoint-metadata-Node-scoped-qualified",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/owned-endpoint-metadata-v2/frozen-version.json",
+  "executedManifestSha256": "d3eec25bcc94e8fee3d56fd6ffbe8fdec10767f61a88c96d38706ee3208fed13",
+  "sourceFilesExecuted": 918,
+  "fullJs": {
+    "mac": {
+      "tests": 919,
+      "pass": 904,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "5f72714ed0571148a2886c7fb4f63494420bc7ef1b0dc601dc8eaf69f4cc93cd"
+    },
+    "linux": {
+      "tests": 919,
+      "pass": 913,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "c5a08a1f97a8ce5cf46800d5e26823e413ca5a8f1eeb96aaeb1c673586ff2a4b"
+    }
+  },
+  "testFiles": 106,
+  "newContracts": 19,
+  "relatedContracts": 51,
+  "initialBeforeFix": {
+    "tests": 16,
+    "pass": 0,
+    "fail": 16,
+    "actualExitCode": 1
+  },
+  "additionalEngineFlagsBeforeFix": {
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "actualExitCode": 1
+  },
+  "inspectNetwork": {
+    "fullIdOnly": true,
+    "pinnedDaemonBeforeAfter": true,
+    "existingFiniteDeadlineAdmissionAndBodyCap": true,
+    "actualUnixHttpFixture": true
+  },
+  "projectionScope": "metadata-only; structural Engine/kernel fixtures and actual fsynced witness file reads; not live route or provider authority",
+  "projectionFields": 15,
+  "origin": "http://127.0.0.1:4175",
+  "streamPort": 4176,
+  "bindings": [
+    "owned Native plan and fullCID/spec",
+    "durable Ready/version and effective typed startDispatch",
+    "current witness/evidence byte hashes",
+    "Engine running/nonpaused/nonrestarting/nondead/nonOOM and exact StartedAt",
+    "one bridge attachment and full sandbox/network/endpoint IDs",
+    "independent network owned member/IP/prefix/gateway/subnet"
+  ],
+  "deprecatedTopLevelAddressIgnored": true,
+  "configurableBenchmarkSubnetAccepted": true,
+  "rawKeyOrNetworkSnapshotReturned": false,
+  "priorFailedFullRun": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v13/manifest.json",
+    "manifestSha256": "06149b3b80c43fe6cc6de42f452de77ae2702265c92c875488884ee0792bad6c",
+    "stats": {
+      "mac": {
+        "tests": 919,
+        "pass": 903,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 15,
+        "actualExitCode": 1,
+        "logSha256": "48a250775f7c8e3b6350344fb4622dbf5e7e6d626dfb7d5bf669b3ca6c44f628"
+      },
+      "linux": {
+        "tests": 919,
+        "pass": 913,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 6,
+        "actualExitCode": 0,
+        "logSha256": "af066079c867b954870585f2b3acf38b9548beaa2613ff3414506eee5043a237"
+      }
+    },
+    "errorCode": "CHANNEL_INPUT_CLOSED",
+    "startSent": false,
+    "elapsedMs": 2010.479917,
+    "productionAttachInputsUnchanged": true,
+    "uniqueCauseProven": false
+  },
+  "followupChange": "failure-only finite test diagnostics; original attach production code/deadlines/assertions unchanged",
+  "independentProbe": {
+    "at": "2026-10-19T11:00:06.093323+00:00",
+    "status": "all-12-recorded-cases-passed-and-proxy-children-reaped",
+    "recordsSha256": "1c168ec15a6b59e4d18805718d21759bad23c31464b88ba64bfbf4a30a1c8f8c",
+    "cases": 12,
+    "caseProxyActualExitCodes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "allKnownProxyPidsAbsent": true,
+    "maxUpgradeMs": 62.64866699999999,
+    "maxElapsedMs": 67.18062500000002,
+    "rootNodeActualExitCode": null,
+    "rootNodeExitReceiptCaptured": false,
+    "originalFullLoadFailureUniqueCauseProven": false,
+    "connectTimeoutMs": 2000,
+    "serialFixtureProbeNotNativeOrFullLoad": true
+  },
+  "initialProbeSocketPathFailurePreserved": true,
+  "repeatPassingRunProvesUniqueOriginalFailureCause": false,
+  "actualEngineStateShapeObservation": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/owned-endpoint-engine-state-shape-v1.json",
+  "actualEngineStateShapeIsStoppedOwnedContainerNotEndpointProof": true,
+  "sdkBytesAndAllRecordedInstalledContractInputsUnchanged": true,
+  "inheritedSdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "eba83b1de6afd850d86bbf719673fcf04d6d55fdbe09672874dc8b8cba6a1bda",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "cabbac864439e1e8d66bf644f9b20326e9b3544c20d01746963cae4fb21fd6da"
+  },
+  "sdkInstalled77Node16PythonTscBothMacMypyInherited": true,
+  "providerResolverIntegrated": false,
+  "actualOwnedContainerRouteQualified": false,
+  "productionNativeProviderQualified": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}
