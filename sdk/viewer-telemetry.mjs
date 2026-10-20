@@ -36,7 +36,7 @@ function measurements(value){
 // renderer/memory objects, Source identities and editor content are never kept.
 export class ViewerTelemetry {
  #notify;#now;#set;#clear;#timer=null;#binding=null;#latest=null;#first=null;#performance=empty;#closed=false;#highest=0;#started=null;#phase='connection-attempt';#count=0;#lastPublish=-Infinity;#windowAt=0;#windowCount=0;
- constructor({notify=()=>{},now=()=>performance.now(),setTimeout:setTimer=globalThis.setTimeout,clearTimeout:clearTimer=globalThis.clearTimeout}={}){if([notify,now,setTimer,clearTimer].some(v=>typeof v!=='function'))throw new TypeError('Invalid Viewer telemetry scheduler');this.#notify=notify;this.#now=now;this.#set=setTimer;this.#clear=clearTimer;}
+ constructor({notify=()=>{},now=()=>performance.now(),setTimeout:setTimer=globalThis.setTimeout,clearTimeout:clearTimer=globalThis.clearTimeout}={}){if([notify,now,setTimer,clearTimer].some(v=>typeof v!=='function'))throw new TypeError('Invalid Viewer telemetry scheduler');this.#notify=notify;this.#now=now;this.#set=(callback,ms)=>setTimer(callback,ms);this.#clear=id=>clearTimer(id);}
  get performance(){return this.#performance;}
  get firstFrame(){return this.#first;}
  envelope(name){const snapshot=name==='performance'?this.#performance:name==='first-frame'?this.#first:null;return this.#binding&&snapshot&&snapshot.stage==='scene-submitted'?Object.freeze({grantId:this.#binding.grantId,snapshot}):null;}

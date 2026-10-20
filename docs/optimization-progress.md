@@ -1812,3 +1812,12 @@ Frame与DOM公开只读performance/firstFrame、有限回调/订阅；内部信�
 新增13项（最初10项实现前全失败，另补3项初始化/重入边界）与相关214项通过。103文件885项Mac870/15平台跳过、Linux879/6平台跳过，无失败取消；新16文件私有包双平台离线安装77 Node/16 Python、严格TSC及Mac Mypy实际0。实际MessageChannel/NodeSource与保存Window/Worker验收，DOM/CanvasKit/故障为明确夹具。见[公开性能和首帧合同](viewer-telemetry-host.md)。
 
 下一步新API实际Native三渲染路径；此前视口短周期证据不冒充本次遥测。41项9/15/17，生产Native/所有Agent栅栏/N1轻微丢包/原8小时仍未完成；失败门槛、演示/采样器不变，未暂存提交推送。
+
+
+### K2a2b3c3c1：真实浏览器失败后的计时器修复
+
+新API首次真实Native GPU Worker运行在改尺寸性能等待处失败，浏览器Illegal invocation；Source实际0/Viewer1，Source七身份、Mac采样PID/Worker/服务清理通过，原907候选/日志/失败ZIP保留。定位计时器作为私有方法调用时收到采集器this，Node夹具原本没有品牌约束。
+
+新增安排/取消接收者检查，14项中1项先失败；词法包装修复后相关215项通过。103文件886项Mac871/15平台跳过、Linux880/6平台跳过，实际均0；新16文件包双平台77 Node/16 Python、严格TSC及Mac Mypy通过。见[浏览器计时器修复及验收边界](viewer-telemetry-timer.md)。
+
+此Node范围检查点不覆盖或取消真实Native失败，下一步必须以新安装包重跑三模式。41项9/15/17，原8小时失败/192MiB门槛、演示/采样器不变，未自动重跑/强制浏览器GC/暂存提交推送。

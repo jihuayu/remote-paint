@@ -1,0 +1,64 @@
+{
+  "at": "2026-10-19T10:06:19.970309+00:00",
+  "task": "K2a2b3c3c1",
+  "status": "browser-timer-receiver-fix-Node-scoped-qualified",
+  "executedManifestSha256": "0faed26c17ea765b594e3ca981e4702c95d7cbb34c27ae3231c134ddbd5fe9b6",
+  "sourceFilesExecuted": 907,
+  "fullJs": {
+    "mac": {
+      "tests": 886,
+      "pass": 871,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "64dd58b736c3b659ade3078f83c7084973f12442044e2f70e613e2a7fa0b8caa"
+    },
+    "linux": {
+      "tests": 886,
+      "pass": 880,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "a9cc3fbea2e348446e893f16c7a89770d690beb1e0a930f65ec42733fc48b7e6"
+    }
+  },
+  "testFiles": 103,
+  "newContracts": 1,
+  "beforeImplementation": {
+    "tests": 14,
+    "pass": 13,
+    "fail": 1,
+    "actualExitCode": 1
+  },
+  "relatedContracts": 215,
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "eba83b1de6afd850d86bbf719673fcf04d6d55fdbe09672874dc8b8cba6a1bda",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "cabbac864439e1e8d66bf644f9b20326e9b3544c20d01746963cae4fb21fd6da"
+  },
+  "installedSdk": {
+    "nodeMembers": 16,
+    "nodeTestsEachPlatform": 77,
+    "pythonTestsEachPlatform": 16,
+    "strictTypeScriptBothActual0": true,
+    "installedPythonMypyMacActual0": true
+  },
+  "preservedNativeFailureCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-telemetry-native-failure-checkpoint-v1.json",
+  "preservedNativeFailureCheckpointSha256": "7ca9628ee5be445febf806782919325783e6f7c6f51efce4fcf2457d2987b46c",
+  "rootCause": "Raw default Window timer functions called as collector private methods received the collector as this; native Window rejects; Node did not",
+  "fix": "Lexical wrappers invoke supplied set/cancel functions as ordinary calls without collector receiver",
+  "actualNativeTelemetryQualified": false,
+  "physicalLatencyClaim": false,
+  "productionNativeProviderQualified": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}
