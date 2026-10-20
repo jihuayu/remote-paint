@@ -8,8 +8,12 @@ import {parseMetadataJson} from '/protocol/metadata-json.mjs';
 import {ControlLink} from '/control-channel.mjs';
 import {ViewerLifecycle} from '/lifecycle.mjs';
 import {ViewerConnection,ViewerTicketSource,ViewerConnectionError} from '/connection.mjs';
+import {loadPublicViewerConfig,PublicViewerConfigError} from '/public-config.mjs';
 const VIEWER_BUILD='__REMOTE_PAINT_VIEWER_BUILD__',EXPECTED_WASM_SHA='__REMOTE_PAINT_WASM_SHA__';
 const $=id=>document.getElementById(id),status=text=>$('status').textContent=text;
+const publicMode=document.querySelector?.('meta[name="remote-paint-mode"]')?.content==='public',configController=new AbortController();let bootConfig=null;
+const publicReady=publicMode?loadPublicViewerConfig({origin:location.origin,fetch,signal:configController.signal}).then(config=>{if(config.viewerBuild!==VIEWER_BUILD)throw new PublicViewerConfigError('VIEWER_CONFIG_INVALID');bootConfig=config;return config;}):Promise.resolve(null);
+void publicReady.catch(error=>{if(window.remotePaintConnection?.state==='waiting'){fail(new Error('Viewer 配置暂不可用'));connectionState({state:'failed',code:error instanceof PublicViewerConfigError?error.code:'VIEWER_CONFIG_INVALID'});}});
 const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
 const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$('control'),label:$('controlState'),feedbackLabel:$('feedbackState'),overlay:$('optimisticOverlay'),pointerOverlay:$('pointerOverlay'),send:message=>{if(controlLink.send(message))return;if(streamWorker)streamWorker.postMessage({type:'send',message});else if(socket?.readyState===1)socket.send(JSON.stringify(message));}});
 let ticketSource=null,publicSettings=null,publicConnection=null;const workerTickets=new Map();
@@ -184,17 +188,20 @@ $('reconnect').onclick=()=>lifecycle.restart('manual');
 document.addEventListener('visibilitychange',()=>lifecycle.visibility(document.hidden));
 document.addEventListener('freeze',()=>lifecycle.freeze());
 document.addEventListener('resume',()=>{if(stopped)return;lifecycle.hidden=document.hidden;lifecycle.resume();});
-window.addEventListener('pagehide',event=>{if(event.persisted)lifecycle.freeze();else{stopped=true;lifecycle.close();ticketSource?.destroy();}});
+window.addEventListener('pagehide',event=>{if(event.persisted)lifecycle.freeze();else{stopped=true;configController.abort();lifecycle.close();ticketSource?.destroy();}});
 window.addEventListener('pageshow',()=>{if(stopped)return;lifecycle.hidden=document.hidden;lifecycle.resume();});
 window.addEventListener('online',()=>{if(lifecycle.runnable)lifecycle.restart('online');});
 window.remotePaintViewer=Object.freeze({
+ ready:publicReady,
  connect(options){
   if(ticketSource?.busy)throw new ViewerConnectionError('VIEWER_TICKET_BUSY');
   if(!options||typeof options!=='object'||Array.isArray(options)||Object.getPrototypeOf(options)!==null&&Object.getPrototypeOf(Object.getPrototypeOf(options))!==null||Reflect.ownKeys(options).some(k=>!Object.hasOwn(Object.getOwnPropertyDescriptor(options,k),'value')))throw new ViewerConnectionError('VIEWER_INVALID_CONFIG');
+  if(publicMode&&(!bootConfig||options.gatewayOrigin!==bootConfig.gatewayOrigin))throw new ViewerConnectionError('VIEWER_INVALID_CONFIG');
   const next=new ViewerTicketSource({...options,audience:location.origin});
   ticketSource?.destroy();ticketSource=next;publicSettings=next.settings;stopped=false;lifecycle.frozen=false;lifecycle.restart('public-ticket');
  },
  disconnect(){const state=window.remotePaintConnection??{...publicSettings};stopped=true;ticketSource?.destroy();lifecycle.freeze();connectionState({...state,state:'paused'});},
  get state(){return window.remotePaintConnection??{state:'paused'};}
 });
-if(document.hidden)lifecycle.suspend('hidden');else void lifecycle.run();
+if(publicMode){stopped=true;lifecycle.freeze();status('等待宿主授权');connectionState({state:'waiting'});}
+else if(document.hidden)lifecycle.suspend('hidden');else void lifecycle.run();

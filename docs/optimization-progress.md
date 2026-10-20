@@ -1676,3 +1676,14 @@ Worker 通道新增明确 closeOnly 模式，必须启用有效内核见证且�
 12条新增连接合同测试使用实际HTTP/WebSocket/SQLite/Node Source；4条保存入口脚本测试证明主线程/Worker实际取得帧、刷新和释放夹具呈现器，DOM/CanvasKit/Worker调度为明确夹具，不能替代真实浏览器资源验收。初期跨realm对象与Socket Origin夹具失败日志均保留。私有SDK归档/安装消费者及严格类型检查一并复核，结果见[运行时检查点](evidence/viewer-ticket-runtime.json)。
 
 K2由待实现改为部分实现，41项计数为9完成/15部分/17待实现；iframe/CSP/宿主API、真实Native桥接、Agent/CDP栅栏及原8小时/整份全量回归仍未完成。未额外启动浏览器，未暂存、提交或推送。
+
+
+### K2a2a：公开资源服务、配置与授权前等待
+
+独立公开资源服务只提供固定Viewer资源和无凭据/viewer-config；精确父Origin allowlist与指定网关connect-src生成CSP，无私有session-config/管理路由/WebSocket升级。公开启动标记只改变no-store入口，保持同版本私有网关的模块/Wasm/build完全一致，严格版本检查不绕过。公开页先冻结呈现器/Worker，加载有界同源配置并等待显式授权；私有hash key和自动resume不能触发连接。
+
+新HTTP测试覆盖配置、CSP、原数组变更隔离、gzip/ETag/HEAD/304/410、拒绝私有路由和重定向，以及公开build通过实际Node Source严格Hello。保存主线程/Worker脚本另验等待/授权、网关固定和build错误停止。DOM/CanvasKit/realm调度仍为夹具；真实浏览器CSP和Native未据此完成。
+
+复核发现旧帧龄观察器复制资源清单缺少两个新增模块，且连接诊断引用已移动局部config；保留2条build失配和1条config is not defined失败后修正。新增Node核对当前生产基线、故障/streaming provenance及插桩Worker实际取得帧，原始门槛和正在运行的783文件8小时副本均未改变。最终结果见[公开资源检查点](evidence/viewer-public-assets.json)。
+
+K2仍部分实现，41项仍9/15/17。后续继续真实父子消息桥与宿主组件；真实浏览器/Native及整份全量回归待原始长测退出。未暂存、提交或推送。

@@ -2,13 +2,14 @@
 
 现有 `viewer/live.mjs` 和 `viewer/stream-worker.mjs` 已共享 `sdk/viewer-connection.mjs` 的公共票据连接。它们继续使用原 FrameGate、资源校验、CanvasKit 渲染和输入租约，不再为公共连接拼接私有 Source key。原本地演示链接仍可使用私有密钥路径。
 
-这个阶段提供票据连接与生命周期接线。iframe 宿主组件、父子消息协议、公开静态资源服务及 CSP/嵌入 allowlist、resize/接管公共 API 和完整渲染验收仍待完成；不能将这些接线测试当作 K2 全部完成。
+这个阶段提供票据连接与生命周期接线，以及独立[公开资源服务](session-viewer-assets.md)的 CSP/allowlist 配置。iframe 宿主组件、父子消息协议、resize/接管公共 API 及真实浏览器的 CSP/资源验收仍待完成；不能将这些接线测试当作 K2 全部完成。
 
 ## 当前 Viewer 入口
 
 在 Viewer 自己的 Window 内调用：
 
 ```js
+await window.remotePaintViewer.ready;
 window.remotePaintViewer.connect({
   gatewayOrigin: 'https://viewer-gateway.example',
   sessionId: 'ses_your_session',
@@ -25,6 +26,8 @@ window.remotePaintViewer.connect({
   },
 });
 ```
+
+公开入口必须先 await ready 加载无凭据的同源配置；gatewayOrigin 还必须与资源服务配置完全一致。原本地入口的 ready 返回 null，保留原行为。
 
 浏览器中不配置管理 API key。应用后端负责认证自己的用户、核对目标 Session/角色，并通过[票据接口](session-viewer-access.md)签发或刷新；不能信任浏览器自行提供的租户或权限。当前 Window API 将 audience 固定为 Viewer frame 的 `location.origin`。跨域宿主页面需等后续安全父子消息桥接，不能直接调用另一个 Origin 的 Window。
 

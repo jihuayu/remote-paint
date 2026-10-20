@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-18T23:01:25.298636+00:00",
+  "task": "K2a2a",
+  "scope": "Dedicated public Viewer asset/config service with exact parent/gateway CSP and pre-authorization waiting state;not complete iframe component or realbrowser acceptance.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-public-assets-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-public-assets-checkpoint-v1.json",
+  "contract": {
+    "publicAssets": "No Registry or Source resolver/key;explicit HTTPS/loopback gateway and parentOrigins,32parents/8192Originbytes;GET/HEAD static map+viewer-config only;no private config/management/upgrade.",
+    "build": "Public no-store entry variant uses separate ETag but identical immutable modules/Wasm/build to same-version private gateway;strict Hello remains enforced.",
+    "bootstrap": "Public mode freezes renderer/Worker before configuration and explicit connect. Fixed same-origin/no-credentials/no-redirect/no-store metadata,16KiB/max5s default. ready rejects invalidbuild;gateway fixed to server configuration. Hash key/resume do not start private connections.",
+    "caching": "Hashedimmutable year,logicalnocache,root/confignostore;gzipETags,HEAD/304/stale410 preserved.",
+    "observers": "Copied module map updated to current production;SocketStart targetport read from actualWebSocketURL. Existing original8hsource783/pin and alloriginalgates unchanged."
+  },
+  "tests": {
+    "newHttpConfigCases": 11,
+    "addedSavedEntryCases": 4,
+    "newObserverAssetCases": 2,
+    "actualNetwork": "HTTP,Node Source strictHello,metadata fetch/redirect,publicticketdata and FrameGate are actual.",
+    "realmFixtures": "DOM/CanvasKit/presenter/Worker realm scheduling are explicit fixtures;no actualCSPbrowserenforcement/pixel-age/native qualification.",
+    "preliminary24ActualExitCode": 0,
+    "beforeObserverFixActualExitCode": 1,
+    "beforeObserverFixTests": 10,
+    "beforeObserverFixPass": 7,
+    "beforeObserverFixFail": 3,
+    "failureLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-public-assets-observer-before-fix.log",
+    "beforeObserverFixSource": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-public-assets-observer-before-fix.json"
+  },
+  "remaining": [
+    "Secureiframeparent/childmessagebridge and fullnativeJScomponent;readonly/control/resize/lease/errors/performance API.",
+    "ActualbrowserCSP/allowlist/sandbox and repeatedmount/unmount resource proof afteroriginal8hterminal.",
+    "ActualNativeworkerownedendpoint bridge,independentAgent/CDPpermissions/managedwritefences.",
+    "Original8hterminal physicalgates and wholecandidatefullregression;all41/N1finalrequirementaudit."
+  ],
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "wholeFullJsQualified": false,
+  "nativeProductionProviderComplete": false,
+  "eightHourPassed": false,
+  "noCommitPush": true
+}

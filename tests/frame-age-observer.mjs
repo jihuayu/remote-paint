@@ -80,13 +80,14 @@ self.onmessage=async event=>{try{`);
     }
 ${marker}`);
   body=replaceOnce(body,' ws.onclose=event=>{'," ws.onclose=event=>{ui('__rpAgeSocketClose',{code:event.code,reason:event.reason,connectionGeneration:current,window:__rpAge.window,enabled:__rpAge.enabled,workerMs:performance.now()});");
-  body=replaceOnce(body,"socket=ws;ws.binaryType='arraybuffer';","socket=ws;ws.binaryType='arraybuffer';ui('__rpAgeSocketStart',{connectionGeneration:current,window:__rpAge.window,enabled:__rpAge.enabled,workerMs:performance.now(),host:new URL(ws.url).host,path:new URL(ws.url).pathname,keyChars:new URL(ws.url).searchParams.get('key')?.length,keyMatchesArgument:new URL(ws.url).searchParams.get('key')===key,origin:self.origin,locationOrigin:location.origin,nativePort:config.nativePort});");
+  body=replaceOnce(body,"socket=ws;ws.binaryType='arraybuffer';","socket=ws;ws.binaryType='arraybuffer';ui('__rpAgeSocketStart',{connectionGeneration:current,window:__rpAge.window,enabled:__rpAge.enabled,workerMs:performance.now(),host:new URL(ws.url).host,path:new URL(ws.url).pathname,keyChars:new URL(ws.url).searchParams.get('key')?.length,keyMatchesArgument:new URL(ws.url).searchParams.get('key')===key,origin:self.origin,locationOrigin:location.origin,nativePort:Number(new URL(ws.url).port||(new URL(ws.url).protocol==='wss:'?443:80))});");
  return body;
 }
-async function prepareFrameAgeAssets(points,diagnosticFaults,streaming){
+export async function prepareFrameAgeAssets(points,diagnosticFaults,streaming){
  const root=new URL('../',import.meta.url),files=new Map([
   ['/', ['viewer/live.html','text/html; charset=utf-8']],['/live.mjs',['viewer/live.mjs','text/javascript']],
   ['/input.mjs',['viewer/input.mjs','text/javascript']],['/control-channel.mjs',['viewer/control-channel.mjs','text/javascript']],
+  ['/connection.mjs',['sdk/viewer-connection.mjs','text/javascript']],['/public-config.mjs',['viewer/public-config.mjs','text/javascript']],
   ['/lifecycle.mjs',['viewer/lifecycle.mjs','text/javascript']],['/frame-presenter.mjs',['viewer/frame-presenter.mjs','text/javascript']],
   ['/renderer-runtime.mjs',['viewer/renderer-runtime.mjs','text/javascript']],['/damage.mjs',['viewer/damage.mjs','text/javascript']],
   ['/live.css',['viewer/live.css','text/css']],['/scene-renderer.mjs',['viewer/scene-renderer.mjs','text/javascript']],

@@ -19,13 +19,13 @@ function inbox(ws){
  ws.on('close',()=>{closed=true;for(const item of waiters.splice(0)){clearTimeout(item.timer);item.reject(new Error('Socket closed'));}});
  return {messages,wait(predicate,after=0){const found=messages.slice(after).find(predicate);if(found)return Promise.resolve(found);if(closed)return Promise.reject(new Error('Socket closed'));return new Promise((resolve,reject)=>{const item={predicate,resolve,reject};item.timer=setTimeout(()=>{waiters.splice(waiters.indexOf(item),1);reject(new Error('Message deadline'));},2000);waiters.push(item);});}};
 }
-export async function fixture(t,{accessOptions={},resolveSource,ttlSeconds=30,wasmSha256=renderer.wasmSha256}={}){
+export async function fixture(t,{accessOptions={},resolveSource,ttlSeconds=30,wasmSha256=renderer.wasmSha256,viewerBuild='fixture'}={}){
  const directory=await mkdtemp(join(tmpdir(),'remote-paint-viewer-access-'));let access,registry,server,transport,store;const clients=new Set(),calls=[],resolutions=[];
  t.after(async()=>{for(const ws of clients)ws.terminate();access?.close();if(server){server.closeAllConnections();if(server.listening)await new Promise(r=>server.close(r));}try{await registry?.shutdown();await transport?.close();await source.control?.close();}finally{store?.close();await rm(directory,{recursive:true,force:true});}});
  const source=new EventEmitter();source.viewport={cssWidth:100,cssHeight:100,deviceScaleFactor:1};source.pageEpoch=1;source.viewportVersion=1;source.inputSeq=0;source.setDemand=()=>{};source.requestCapture=()=>{};source.page={evaluate:async()=>null};
  source.latest={pageEpoch:1,viewportVersion:1,viewport:source.viewport,lastProcessedInputSeq:0,native:{},payloads:new Map(),scene:{rootPass:'root',passes:[{id:'root',output:[0,0,100,100],quads:[]}]}};
  source.control=new ControlLease(source,{send:async(method,params)=>{calls.push({method,params});}});
- transport=await startLiveTransport(source,{port:0,preparedAssets:{wasmSha256,build:'fixture',get:()=>null}});
+ transport=await startLiveTransport(source,{port:0,preparedAssets:{wasmSha256,build:viewerBuild,get:()=>null}});
  store=new SqliteSessionStore({path:join(directory,'session.sqlite')});registry=new SessionRegistry({providers:new Map([['test',{create:async()=>({version:'viewer-source-v1'}),close:async()=>({status:'closed'})}]]),defaultRegion:'test',store});
  access=new ViewerAccess({registry,resolveSource:async args=>{resolutions.push(args);if(resolveSource)return resolveSource(args,{transport,source});return {tenantId:args.tenantId,sessionId:args.sessionId,region:args.region,version:args.version,...transport};},...accessOptions});
  const auth=createApiKeyAuthenticator([{apiKey:KEY,tenantId:'a',scopes:['sessions:create','sessions:read','sessions:release','viewers:read','viewers:control']},{apiKey:READ,tenantId:'a',scopes:['sessions:read','viewers:read']},{apiKey:OTHER,tenantId:'b',scopes:['viewers:read','viewers:control']}]);
