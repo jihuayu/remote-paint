@@ -1,0 +1,99 @@
+{
+  "at": "2026-10-19T11:27:46.952831+00:00",
+  "task": "owned-Node-endpoint-route",
+  "status": "actual-owned-Node-endpoint-route-qualified",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/owned-node-endpoint-v1/manifest.json",
+  "executedManifestSha256": "cb2d74c0ef685e966b5165c1efae525f57fd6deecf115d0f5196025d2ad3fe36",
+  "canonicalSourceFiles": 926,
+  "productionRuntimeSourcesUnchangedFrom924": true,
+  "executionDeviations": {
+    "service/native-session-worker.mjs": {
+      "canonicalSha256": "5d5ad0aed44779b050fb49ec14354ab64c707d13a28d41a6a97b7b8482303568",
+      "fixtureSha256": "5b54373ada7d6f40435a26245b6bd8eeea8484d62d898909edb6e174815c9fe3"
+    },
+    "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": {
+      "canonicalSha256": "faa6b3b47a15e4edd659f3fb99c2ca8eb6aace5461a1f12090314e2dda8a5cb0",
+      "fixtureSha256": "4ed13b4cfe989945aab0256eb40b00d026ed74783fd39519df8903d270a61d08"
+    }
+  },
+  "canonicalNativeWorkerModified": false,
+  "fixtureCanonicalAbiShimOnlyInsideExecutionProject": true,
+  "qualifiedBrokerStagedOnlyInsideExecutionProjectNotExecuted": true,
+  "actualBrowserTreePinnedNotExecuted": true,
+  "actualEngineDaemon": "b3aeb5ec-7295-44f7-8576-aa9dc5b40dad",
+  "imageId": "sha256:42df2c322c1c105d79aff686ebf92b0708f237788daa011186976e852b7cf66e",
+  "actualRootNodeExitCode": 0,
+  "actualContainerSessions": 4,
+  "actualRetirementKinds": [
+    "container-removed",
+    "container-removed",
+    "container-removed",
+    "container-absent"
+  ],
+  "actualPrivateRoute": "Engine-owned per-network IPv4; no host published ports",
+  "directHttpSessionConfigAndProbe": true,
+  "privateWsCorrectKeyAndOriginAccepted": true,
+  "privateWsWrongKeyAndOrigin403": true,
+  "publicReadonlyAndControllerTickets": 2,
+  "actualPublicTicketConnections": 5,
+  "installedBackendSdkUsedForCreateReadRelease": true,
+  "installedSdkArchiveSha256": "eba83b1de6afd850d86bbf719673fcf04d6d55fdbe09672874dc8b8cba6a1bda",
+  "allInstalledSdk16FilesHashVerified": true,
+  "oldSessionKeyRejectedByNewOwnedNamespaceAtReusedAddress": true,
+  "actualNetworkResultTestOnlyDelayAcrossReleaseFenced": true,
+  "actualTtlExpiryAndExternalRemovalPropagate": true,
+  "actualImmutableKernelWitnessAndStartedAtJournalAndRetirement": true,
+  "independentRuntimeReopenAll4Retired": true,
+  "knownOwnedHostPidsAbsent": [
+    97595,
+    97688,
+    97692,
+    97699,
+    97755
+  ],
+  "actualEngineExactIdsAbsent": [
+    "2699432f31e3a2cda3fcab469ae15d4eb87ea236888cf814ccd39d40e3539ab0",
+    "1a7d23654d9d6d0e265af1433c0d9e365cda10155fb1dabc56e97fc48203e93b",
+    "2815a284c85329d813dace3d14d8fbae0a660b278d01dcffaa2113ac5e2c2c5e",
+    "e4ab2936be06f0f49b230b5438f9ad56f60d7dc5095b18f5d5614bddc941e364"
+  ],
+  "actualArtifactsScannedForKnownStreamAndApiSecrets": true,
+  "fullJs938BothInheritedOnlyAfterAllOldCanonicalInputsMatched": true,
+  "inheritedFullJs": {
+    "mac": {
+      "tests": 938,
+      "pass": 923,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "0373cce71bf8f3c0b8d62c1a8074c068acb2d5af1f3e7ee2bb1df6af3deeaf1e"
+    },
+    "linux": {
+      "tests": 938,
+      "pass": 932,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "cec428411f61b8b5176e802c6c160aaed86532202d902d62d5d4c7b80d227934"
+    }
+  },
+  "sdk77Node16PythonTscBothMacMypyInheritedExactInputs": true,
+  "freshFullUnitOrPackageInstallClaimed": false,
+  "NodeAdapterOnly": true,
+  "actualOwnedContainerRouteQualified": true,
+  "productionNativeProviderQualified": false,
+  "nativeHealthLossPropagationQualified": false,
+  "fullRecoveryFaultMatrixQualifiedByThisRun": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

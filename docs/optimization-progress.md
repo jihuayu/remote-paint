@@ -1851,3 +1851,10 @@ SDK所有已记录输入字节未变，继承原精确安装/类型收据。下�
 provider持有当前Native派生密钥，关闭/不可用/存储故障/shutdown同步清除；完整CID/Engine代次/网络/持久见证文件绑定，逐await和最终生命周期栅栏，有限全局并发与整体期限；恢复入口没有能力。真实Viewer ticket撤销取消已接入，实际Engine/attach/内核仍为结构夹具。新增19合同、相关118项及双平台938项完整回归通过；早期引用比较、夹具等待和账本owner测试错误完整保留。见[解析器范围](provider-resolver.md)。
 
 接下来实际自有Node容器HTTP/WS路由，再真实Native健康与生命周期。SDK精确输入未变，继承既有收据；41项9/15/17和原8小时失败保持，未自动重跑或提交推送。
+
+
+### 自有Node端点实际直连路由
+
+生产provider/Registry/ViewerAccess及已安装后端SDK创建4个真实命名空间；完整CID/Engine代次/内核见证/网络绑定，实际HTTP+私有WS、readonly/controller ticket代理、IP复用时旧密钥拒绝、迟到查找释放栅栏、TTL和外部删除通过。4组退役、精确CID消失及5个已知宿主PID回收均确认。执行项目独立shim明确只运行Node，真实Native未验收，生产worker未改。见[实际Node路由范围](owned-node-endpoint-route.md)。
+
+旧生产/测试/SDK输入字节未变，精确继承938项双平台及既有安装/类型收据；不冒充新重跑。下一步真正Native worker健康与生命周期/公开SDK像素。41项9/15/17和原8小时失败保持，未自动重跑或提交推送。
