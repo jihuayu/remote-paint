@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | Node/Python原页面下载SDK五入口均验收；Python同步捕获、冻结slots模型/不可变bytes、严格原context/header/摘要和独立cap、真实Task/body/aclose/end。23新合同，138文件1421项JS双平台零失败；70输入离线175Node/118Python/类型通过。新11成员Pythonwheel独立进程真实Native下载/人控/unknown/408与取消槽/end、6Run及namespace退休首轮通过。写盘前/Playwright元数据物理预算及完整定位仍待，见[范围](python-page-download-sdk.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | DOM/AX/截图/原页面下载与Node/PythonSDK既有范围保留。新增已完成文件被拒后的实际Artifact.delete、完成文件不重复cancel、未确认取消失败阻断release/end；4新合同，138文件1425JS双平台零失败，70输入175Node/118Python/类型通过。Native v4的13文件含8重复超限及元数据故障均恰好一次删除、文件和通道消失，5进程退休；公共安装Python Native回归通过。前三版验证失败及误诊更正保留。写盘前/Download集合及Chromiumitem物理预算、完整定位仍待，见[范围](download-artifact-cleanup.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -2060,3 +2060,8 @@ Python新增受管七工具、冻结模型、判别类型、不可变prepare与u
 ### Python 原页面下载 SDK
 
 arm_download/info/chunk/release/file 同步捕获完整context和输入，冻结slots模型、独立max_download_bytes、严格JSON/头/摘要/空文件，真实Task/body/aclose与独立end完成。23专项、新11成员wheel双平台70输入175Node/118Python/类型及138文件1421项JS零失败；独立安装Python进程真实Native原文件/人控/unknown/408/CLIENT_CANCELLED/6Run及namespace退休首轮通过。immutable bytes转换短暂两份文件缓冲，物理前置门槛及完整K6待验收，41项10/17/14不变，见[范围](python-page-download-sdk.md)。
+
+
+### 下载拒绝后的 Artifact 清理
+
+成功path文件即使超限/校验拒绝也等待真实delete，完成文件不再重复cancel；未确认取消失败阻断release/rearm/end成功。4新合同、23下载专项通过，138文件1425项JS双平台零失败，70输入175Node/118Python/类型与公共安装Python Native通过。Source Native v4的13文件/8重复超限/元数据故障证明恰好一次实际删除、文件和通道消失，5进程退休；前三版因验证器无界事件等待/原生10下载每秒限制未通过，误诊已明确更正。Playwright Download集合、Chromium item/partial spool及写盘前物理预算待做，41项10/17/14不变，见[范围](download-artifact-cleanup.md)。

@@ -1,0 +1,549 @@
+{
+  "at": "2026-10-19T22:05:05.953229+00:00",
+  "task": "Download rejected successful-path Artifact cleanup",
+  "status": "download-successful-path-artifact-cleanup-qualified-within-scope",
+  "scope": "Successful original browser path proves completion even when intake cap/context/file metadata rejects. Always await actual Playwright delete/Artifact channel disposal after unlink, avoid redundant cancel of finished browser files, retain failed-cancel cleanup when no successful path proof exists. Four new fault contracts; actual Native13files including8repeatedovercap and metadatafailure, exactone delete/channelabsence/spoolabsence with Page alive. Failed/cancelled path partialspools, BrowserContext Download set/Chromium item totals and prewrite physical limits remain pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-page-download-sdk-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "df840be3e019276029221cd28384365f9c4e8a4f8d549a4473e3a9a083465e84",
+  "productExecutedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/download-artifact-cleanup-candidate-v1/frozen-version.json",
+  "productExecutedManifestSha256": "c423ccbf1291f64f0c85da865c292aa2b60362eb6bf023d515012de7d9741ab6",
+  "sourceNativeVerifierManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/download-artifact-cleanup-candidate-v4/frozen-version.json",
+  "sourceNativeVerifierManifestSha256": "563f5f6821c37dd931b77975ca0b821b4fd7cf36278a10f962f963cb621906d3",
+  "verifierOnlyChange": "tests/verify-download-artifact-cleanup-native.mjs",
+  "allProductAll138RootTestsAll70SdkInputsEqualAcrossVerifierVariants": true,
+  "newContracts": 4,
+  "newTestNames": [
+    "over-cap completed artifact disposal holds release until actual delete and never cancels a finished browser file",
+    "a failed completed artifact delete prevents release rearm and successful Run retirement",
+    "failed cancellation with failed browser path cannot claim cleanup or release the original ticket",
+    "confirmed completed path and disposal can retire a failed cancel without retaining a false cleanup failure"
+  ],
+  "downloadScopedContracts": 23,
+  "scopedActualExitCode": 0,
+  "scopedLogSha256": "1fa6a037084ddf32ecda6ebc7014fd4cebb99bd6be3f9d4287be4059632f8d65",
+  "initialScopedFailure": {
+    "actualExitCode": 1,
+    "tests": 23,
+    "passed": 21,
+    "failed": 2,
+    "logSha256": "c7c15f4572dfb556f5b22265af9d2bc81b3c0cccce402410645586cb53fe8e59",
+    "cause": "Fault contracts correctly observed Run.close rejection but common fixture teardown repeated that rejected close without an expected-error assertion. Fixture now explicitly asserts configured close error and always closes control."
+  },
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v60/manifest.json",
+  "fullJsManifestSha256": "13fada1928edcb14b085e1e61e3b982c01fbd4105f298fbb8ef62b6eb914a998",
+  "fullJs": {
+    "mac": {
+      "tests": 1425,
+      "passed": 1410,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "26f79bb9e876f5e42b3234b5eaded6996926e2861427dbeaf9900e7286f5b487"
+    },
+    "linux": {
+      "tests": 1425,
+      "passed": 1419,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "523225c4a2a7ae5cf4b130fefc2e5e13ddefe7675e13c2ada46326745da4fb63"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 175,
+      "pythonTests": 118,
+      "typescriptActual0": true,
+      "mypyMacInstalledAndSource": true,
+      "inputs": 70,
+      "actualExitCode": 0,
+      "resultSha256": "de5a25cb6adf62ab94353a03585bf2076adfae4639007d3350e078ec12d44bce",
+      "sourceMapSha256": "6cccf32216fabe654729ff327ed874374a9ce3ed39db63478e55a46e7a1a8485",
+      "runnerLogSha256": "9da94a893206328c1814d8be5e9f76e52a10f204533ad1a02d626a2220f738be"
+    },
+    "linux": {
+      "nodeTests": 175,
+      "pythonTests": 118,
+      "typescriptActual0": true,
+      "mypyMacInstalledAndSource": false,
+      "inputs": 70,
+      "actualExitCode": 0,
+      "resultSha256": "5a2663cc84ffd8f4862dd2b57067af7321bf6f2ef18364bc0d8682778c6c6faa",
+      "sourceMapSha256": "6cccf32216fabe654729ff327ed874374a9ce3ed39db63478e55a46e7a1a8485",
+      "runnerLogSha256": "8948afc2e6faed5237ee05392671f0a4fa69c75be2bbfa90c5eb2ff7365cac04"
+    }
+  },
+  "archives": {
+    "node": {
+      "sha256": "1c125f6044e72f82d34d6d12f9e0557ec39333cd8001138a3dbd458654e44b3d",
+      "members": [
+        "package/README.md",
+        "package/agent-download.mjs",
+        "package/agent-observation.mjs",
+        "package/agent.d.mts",
+        "package/agent.mjs",
+        "package/backend-transport.mjs",
+        "package/backend.d.mts",
+        "package/backend.mjs",
+        "package/package.json",
+        "package/viewer-channel.d.mts",
+        "package/viewer-channel.mjs",
+        "package/viewer-connection.d.mts",
+        "package/viewer-connection.mjs",
+        "package/viewer-control.d.mts",
+        "package/viewer-control.mjs",
+        "package/viewer-frame.d.mts",
+        "package/viewer-frame.mjs",
+        "package/viewer-telemetry.d.mts",
+        "package/viewer-telemetry.mjs",
+        "package/viewer.d.mts",
+        "package/viewer.mjs"
+      ],
+      "version": "0.0.0-dev.0"
+    },
+    "python": {
+      "sha256": "d10813e8dfe82657cc77e0a944c1c02cfb241a6eca8ee1b4a5ab1e759d1b0823",
+      "members": [
+        "remote_paint_session-0.0.0.dev0.dist-info/METADATA",
+        "remote_paint_session-0.0.0.dev0.dist-info/RECORD",
+        "remote_paint_session-0.0.0.dev0.dist-info/WHEEL",
+        "remote_paint_session-0.0.0.dev0.dist-info/top_level.txt",
+        "remote_paint_session/__init__.py",
+        "remote_paint_session/_agent.py",
+        "remote_paint_session/_client.py",
+        "remote_paint_session/_download.py",
+        "remote_paint_session/_observation.py",
+        "remote_paint_session/_transport.py",
+        "remote_paint_session/py.typed"
+      ],
+      "version": "0.0.0.dev0"
+    }
+  },
+  "nodeAndPythonSdkArchivesUnchanged": true,
+  "sourceNative": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/download-artifact-cleanup-source-native-v4/manifest.json",
+    "manifestSha256": "79100b6cad7954eb0799d8263e65a0abc31cdbe3b758a02235745f9ab244e9e9",
+    "actualExitCode": 0,
+    "logSha256": "b89a10ee399bc9ffba597954a5c6995d39a1ecee7d986d284d07f5104332880c",
+    "qualifiedVersion": 4,
+    "firstPass": false,
+    "acceptedCompletedArtifacts": 13,
+    "allActualDeletesExactlyOnce": true,
+    "repeatedOversize": 8,
+    "metadataFailure": true,
+    "observations": {
+      "network": {
+        "actualOriginalPageDownload": true,
+        "cookiePreserved": true,
+        "requests": 1,
+        "byteLength": 8999,
+        "sha256": "2fb4ebc93e3c8ef0d2a86c97203a9cd33ee2cbf4e5e8e6ac69e8c9ceb50ebdfc",
+        "spoolAbsentBeforeReturn": true,
+        "noRefetch": true,
+        "writerFenceUnchanged": true,
+        "releaseInvalidates": true
+      },
+      "blob": {
+        "actualBrowserBlobDownload": true,
+        "byteLength": 5001,
+        "sha256": "1e4adf95716dd1a137204d50d66166329e034b081146ac37b9a43605acb6e494"
+      },
+      "empty": {
+        "zeroByteActualDownload": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "overCap": {
+        "retainedBytesRejected": true,
+        "spoolAbsentAfterRelease": true,
+        "actualArtifactDeleteExactlyOnce": true,
+        "artifactChannelDisposed": true,
+        "pageStillOpen": true,
+        "prewriteHardCapClaim": false
+      },
+      "repeatedRejected": {
+        "actualCompletedOversizedFiles": 8,
+        "spoolsAbsent": true,
+        "artifactChannelsDisposed": true,
+        "browserPageAndDocumentPreserved": true
+      },
+      "filenameValidationFailure": {
+        "actualCompletedOriginalPageFile": true,
+        "deliberateTrustedMetadataFailure": true,
+        "spoolAbsent": true,
+        "artifactChannelDisposed": true,
+        "deleteExactlyOnce": true
+      },
+      "navigation": {
+        "oldEpoch": 1,
+        "newEpoch": 2,
+        "originalContextRejected": true,
+        "actualSlowRequestClosed": true,
+        "runClosed": true
+      },
+      "end": {
+        "actualDownloadCancelled": true,
+        "actualSlowRequestClosed": true,
+        "listenersRemoved": true,
+        "explicitOldTicket": "dl_48a45c28-b637-48b8-91bc-92cba4d273df"
+      },
+      "human": {
+        "actualHumanClickDownload": true,
+        "byteLength": 8999,
+        "sha256": "2fb4ebc93e3c8ef0d2a86c97203a9cd33ee2cbf4e5e8e6ac69e8c9ceb50ebdfc",
+        "observeDuringHumanLease": true,
+        "readReleaseEndPreserveGrant": true
+      }
+    },
+    "knownProcesses": 5,
+    "knownProcessIdentitiesRetired": true,
+    "pinnedPrivateDriverRegistryReadUsedOnlyInTest": true,
+    "publicDownloadPathCapturedInEventBeforeOwnerCleanup": true,
+    "nativeBurstGuardUnchanged": true,
+    "testClickPacingMs": 150,
+    "testDownloadEventDeadlineMs": 15000
+  },
+  "failedSourceNativeVersions": [
+    {
+      "version": 1,
+      "manifestSha256": "672c3b1f69ee9265ee4a071b6e3d06e01ba9d3fef621d5d8c55c663716323a00",
+      "actualExitCode": 143,
+      "identifiedFailure": {
+        "at": "2026-10-19T21:58:01.320954+00:00",
+        "classification": "identified-verifier-bug-not-observation-timeout",
+        "containerId": "77a728dfba06bceb5c6e9e2aa49f081358fdbce61298c1fed48705859226daa5",
+        "beforeState": {
+          "Status": "running",
+          "Running": true,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 1721276,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-19T21:55:19.451690989Z",
+          "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "runtimeName": "remote-paint-download-artifact-cleanup-source-native-20261020-v1",
+        "command": [
+          "node",
+          "tests/verify-download-artifact-cleanup-native.mjs"
+        ],
+        "pinnedBundleSha256": "829521b67ed7be90c7d6d6098ff39f2241562d47e4ad7ccab13710924a56001d",
+        "identifiedCode": "DispatcherConnection.dispatch sends unknown-guid error synchronously before in-process Connection.sendMessageToServer installs callbacks, so calling path() after ArtifactDispatcher.delete disposal can leave an unfulfilled local callback. Current verifier performs precisely that call. Do not call disposed APIs in verifier. Product cleanup implementation does not call this disposed API.",
+        "action": "Terminate this exact test-owned init/entrypoint with SIGTERM and retain actual143/nonzero; do not report v1 as qualified."
+      },
+      "retired": {
+        "at": "2026-10-19T21:58:25.154197+00:00",
+        "containerId": "77a728dfba06bceb5c6e9e2aa49f081358fdbce61298c1fed48705859226daa5",
+        "actualState": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 143,
+          "Error": "",
+          "StartedAt": "2026-10-19T21:55:19.451690989Z",
+          "FinishedAt": "2026-10-19T21:58:25.071971859Z"
+        },
+        "initialSignal": "SIGTERM",
+        "boundedRetirementEscalationSeconds": 5,
+        "qualified": false,
+        "reason": "DispatcherConnection.dispatch sends unknown-guid error synchronously before in-process Connection.sendMessageToServer installs callbacks, so calling path() after ArtifactDispatcher.delete disposal can leave an unfulfilled local callback. Current verifier performs precisely that call. Do not call disposed APIs in verifier. Product cleanup implementation does not call this disposed API."
+      }
+    },
+    {
+      "version": 2,
+      "manifestSha256": "b6a59af7365d9691e3221d666add1c31be3d8919d109fcbe9bbbee8111d709c4",
+      "actualExitCode": 137,
+      "identifiedFailure": {
+        "at": "2026-10-19T22:00:01.824891+00:00",
+        "classification": "identified-verifier-bug-not-observation-timeout",
+        "containerId": "5e78e5d0b5556b2fc8c100775ac1e434c6eb9eb3e60f14464a913bdc4180a54d",
+        "beforeState": {
+          "Status": "running",
+          "Running": true,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 1745367,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-19T21:58:59.503886993Z",
+          "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "stageReceipts": [
+          "stage-over-cap.json",
+          "stage-repeated.json"
+        ],
+        "identifiedCode": "Same known in-process missing-guid response ordering bug; repeated-download loop still begins its initial download.path() after await click. Fast rejection can dispose Artifact before that first path call. Capture path promise synchronously in original Page event before Agent owner starts cleanup. Product code never calls the disposed object.",
+        "action": "Retire this exact test-owned container and preserve actual nonzero result."
+      },
+      "retired": {
+        "at": "2026-10-19T22:00:06.978747+00:00",
+        "containerId": "5e78e5d0b5556b2fc8c100775ac1e434c6eb9eb3e60f14464a913bdc4180a54d",
+        "actualState": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 137,
+          "Error": "",
+          "StartedAt": "2026-10-19T21:58:59.503886993Z",
+          "FinishedAt": "2026-10-19T22:00:06.895304852Z"
+        },
+        "qualified": false
+      }
+    },
+    {
+      "version": 3,
+      "manifestSha256": "68edb85f92b80f9ae94c76579fb6691a597d52c1c2389a06089618aff29e7445",
+      "actualExitCode": 137,
+      "identifiedFailure": {
+        "at": "2026-10-19T22:02:38.050041+00:00",
+        "classification": "identified-verifier-workload-bug-not-observation-timeout",
+        "containerId": "a34d86e4bdeed56336ed3788f97ea2fe65e17e3cd76fa40f796f529499a8e70c",
+        "beforeState": {
+          "Status": "running",
+          "Running": true,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 1753713,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-19T22:00:20.909927934Z",
+          "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "acceptedCountBeforeSilence": 10,
+        "completedRepeatedIterations": 6,
+        "localSource": "/Users/jihuayu/Documents/Codex/2026-10-15/q/work/linux-build/chromium/src/third_party/blink/renderer/core/frame/local_frame.cc",
+        "sourceSha256": "f314885f156e923a88eed7087b00c99aa0f55d13787aebb15398fc88fa5a9d7f",
+        "identifiedCode": "LocalFrame::ShouldThrottleDownload silently returns for the11th download request inside1second, kBurstDownloadLimit=10. Test completes4 initial files and6 repeated before waiting forever on an unbounded once(download). The next fresh verifier paces requests150ms and bounds event observation15s, preserving native download limits and no replay.",
+        "priorDiagnosisCorrection": "v1/v2 claims of a demonstrated in-process reply race were too strong. Source inspection alone did not demonstrate it, and matching accepted-count10 in v2/v3 supports browser burst throttle. Keep original records as historical hypotheses; superseding correction must be included in final checkpoint."
+      },
+      "retired": {
+        "at": "2026-10-19T22:02:43.231586+00:00",
+        "containerId": "a34d86e4bdeed56336ed3788f97ea2fe65e17e3cd76fa40f796f529499a8e70c",
+        "actualState": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 137,
+          "Error": "",
+          "StartedAt": "2026-10-19T22:00:20.909927934Z",
+          "FinishedAt": "2026-10-19T22:02:43.130650697Z"
+        },
+        "qualified": false
+      }
+    }
+  ],
+  "supersedingDiagnosisCorrection": {
+    "at": "2026-10-19T22:02:38.050041+00:00",
+    "classification": "identified-verifier-workload-bug-not-observation-timeout",
+    "containerId": "a34d86e4bdeed56336ed3788f97ea2fe65e17e3cd76fa40f796f529499a8e70c",
+    "beforeState": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 1753713,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-19T22:00:20.909927934Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "acceptedCountBeforeSilence": 10,
+    "completedRepeatedIterations": 6,
+    "localSource": "/Users/jihuayu/Documents/Codex/2026-10-15/q/work/linux-build/chromium/src/third_party/blink/renderer/core/frame/local_frame.cc",
+    "sourceSha256": "f314885f156e923a88eed7087b00c99aa0f55d13787aebb15398fc88fa5a9d7f",
+    "identifiedCode": "LocalFrame::ShouldThrottleDownload silently returns for the11th download request inside1second, kBurstDownloadLimit=10. Test completes4 initial files and6 repeated before waiting forever on an unbounded once(download). The next fresh verifier paces requests150ms and bounds event observation15s, preserving native download limits and no replay.",
+    "priorDiagnosisCorrection": "v1/v2 claims of a demonstrated in-process reply race were too strong. Source inspection alone did not demonstrate it, and matching accepted-count10 in v2/v3 supports browser burst throttle. Keep original records as historical hypotheses; superseding correction must be included in final checkpoint."
+  },
+  "investigation": {
+    "at": "2026-10-19T21:59:28.073639+00:00",
+    "status": "local-source-investigation",
+    "facts": [
+      {
+        "source": "node_modules/playwright-core/lib/coreBundle.js",
+        "sha256": "829521b67ed7be90c7d6d6098ff39f2241562d47e4ad7ccab13710924a56001d",
+        "facts": [
+          "ArtifactDispatcher.delete awaits Artifact.delete then _dispose, removing the live transport channel. Successful download.path proves browser completion.",
+          "Download constructor inserts into BrowserContext._downloads; successful Artifact deletion does not remove the Download from that set.",
+          "Artifact._delete awaits _localPathAfterFinished; that throws for failed/cancelled downloads. Public delete therefore cannot currently provide a successful Artifact retirement receipt for that path.",
+          "Pinned-driver disposal should be checked via test-only read-only registry identity; initial claimed in-process missing-guid race was not demonstrated and is superseded by the verified Chromium burst-throttle finding."
+        ]
+      },
+      {
+        "source": "/Users/jihuayu/Documents/Codex/2026-10-15/q/work/linux-build/chromium/src/content/browser/devtools/protocol/browser_handler.cc",
+        "sha256": "8fe7be266c100e544ada7f909415e49af87d99051c4d25de5f9961a69a12b961",
+        "facts": [
+          "Browser.cancelDownload calls DownloadItem::Cancel(true), not Remove.",
+          "Download progress removes BrowserHandler observer/pending set at terminal status; that is not a DownloadManager item disposal proof.",
+          "eventsEnabled belongs to the BrowserHandler session. Another session enabling/disabling events does not change the original Playwright session flag."
+        ]
+      },
+      {
+        "source": "service/docker-runtime-spec.mjs",
+        "sha256": "4198849138a6f58e7879241a847c50463a92999e7a5d80355545aacb070e7a5d",
+        "facts": [
+          "Existing /tmp tmpfs size268435456 and cgroup2GiB are whole-session outer limits. They are not a per-download prewrite cap."
+        ]
+      },
+      {
+        "source": "/Users/jihuayu/Documents/Codex/2026-10-15/q/work/linux-build/chromium/src/components/download/internal/common/download_file_impl.cc",
+        "sha256": "215d42c88b80c8ec4ec5f950cd5b7fb4dbf657a6a30f3962d38bd21c6ddb0775",
+        "facts": [
+          "Native write admission must cover actual append/sparse parallel paths, offsets, retries and final rename; a Node progress timer can only observe after writes."
+        ]
+      },
+      {
+        "source": "/Users/jihuayu/Documents/Codex/2026-10-15/q/work/linux-build/chromium/src/third_party/blink/renderer/core/frame/local_frame.cc",
+        "sha256": "f314885f156e923a88eed7087b00c99aa0f55d13787aebb15398fc88fa5a9d7f",
+        "facts": [
+          "kBurstDownloadLimit=10; ShouldThrottleDownload silently blocks further requests until a subsequent request occurs after one second. A blocked request is not deferred and does not produce a download event.",
+          "Repeated-lifecycle verifier must respect native burst policy and bound download event waits; no product limit change or same-action replay is allowed."
+        ]
+      }
+    ],
+    "immediateFix": "Successful path always awaits delete across rejection; avoid cancelling a confirmed finished file; failed cancel without successful path proof keeps cleanup failed.",
+    "notClaimed": [
+      "per-file prewrite disk hard cap",
+      "failed/cancelled partial spool retirement",
+      "total Playwright Download set / Chromium DownloadManager item physical bound"
+    ],
+    "nextDesignRequirements": [
+      "Native admission before write, byte and item budgets attached to original BrowserContext/Page and original private capability; no public raw CDP/URL/refetch or browser-context replacement.",
+      "Kernel dedicated spool budget may add an outer bound but cannot be relabelled as per-arm prewrite cap.",
+      "Acknowledge both Chromium item retirement and Playwright metadata lifecycle, including failed and unarmed downloads.",
+      "If replacing browser launch/connect transport to prevent Playwright retaining Download objects, preserve same controlled Page/Native witness/realm/cookies, process ownership and shutdown; no host-published debugging port.",
+      "Fixed narrow versioned private protocol, fail closed on unsupported browser version; physical proof with burst/oversize/failed/cancel/navigation/end/unknown/human cases and actual allocation accounting.",
+      "Preserve existing sampler pins and build caches; new browser artifacts must use isolated build/output paths, never modify the pinned canonical browser or forbidden existing output tree."
+    ],
+    "productionNativeFullyQualified": false,
+    "K6Complete": false
+  },
+  "publicPythonNative": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/download-artifact-cleanup-public-native-v1/manifest.json",
+    "manifestSha256": "0b1ea6ef782046f8409810b0e02e5ff3dfb1eb71b77d9de84708457a88ed691e",
+    "actualExitCode": 0,
+    "logSha256": "8195e2aabbe94a4ea035cd27f4ec66cd476de7add64742eeb3842011caf44681",
+    "observations": {
+      "network": {
+        "installedPythonDownloadSdk": true,
+        "actualImmutableBytesAndFrozenModelAssertedInPython": true,
+        "publicHttpExecutorPrivateWorkerNative": true,
+        "originalCookiePreserved": true,
+        "oneRequestNoRefetch": true,
+        "byteLength": 8999,
+        "sha256": "2fb4ebc93e3c8ef0d2a86c97203a9cd33ee2cbf4e5e8e6ac69e8c9ceb50ebdfc",
+        "chunksAndBinaryMatch": true,
+        "correlatedHeaders": true,
+        "writerFenceUnchanged": true,
+        "releaseInvalidates": true
+      },
+      "blob": {
+        "byteLength": 5001,
+        "sha256": "1e4adf95716dd1a137204d50d66166329e034b081146ac37b9a43605acb6e494"
+      },
+      "empty": {
+        "publicBinaryZeroByte": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "bounds": {
+        "overCap413": true,
+        "foreignTenant404": true,
+        "scopesIndependent403": true,
+        "deniedBeforeSource": true
+      },
+      "navigation": {
+        "oldDocumentRejected": true,
+        "oldRunFileRejected": true,
+        "newEpoch": 2
+      },
+      "activeDownloadEnd": {
+        "actualSlowRequestClosed": true,
+        "durableRunClosed": true
+      },
+      "human": {
+        "publicDownloadDuringHumanGrant": true,
+        "readReleaseEndPreservedHeldKeyAndGrant": true,
+        "byteLength": 8999
+      },
+      "unknown": {
+        "actualInputOnce": true,
+        "fileObservedAndDelivered": true,
+        "unknownHistoryUnchanged": true,
+        "writerRemainedQuarantined": true,
+        "sameKeyNotReplayed": true,
+        "freshInputDenied": true,
+        "explicitEndClosed": true
+      },
+      "timeout": {
+        "actualNativeMetadataBlocked": true,
+        "fixtureBusyMs": 1000,
+        "httpObserverOnly": true,
+        "backendActualSlotRetained": true,
+        "independentEnd202": true,
+        "lateResultCouldNotAdoptClosedRun": true
+      },
+      "disconnect": {
+        "actualNativeMetadataBlocked": true,
+        "fixtureBusyMs": 1000,
+        "httpObserverOnly": true,
+        "backendActualSlotRetained": true,
+        "independentEnd202": true,
+        "lateResultCouldNotAdoptClosedRun": true
+      },
+      "retired": {
+        "managementSessionClosed": true,
+        "holdsQuota": false
+      }
+    },
+    "closedRuns": 6,
+    "injected": 8,
+    "unknown": 1,
+    "rejected": 0,
+    "namespaceRetirement": "container-removed",
+    "retirementEvidenceSha256": "19dd42a464d5392a95c55749b218574cb243723e1d33c31b58add11c70ed4020"
+  },
+  "mappedInputs": 70,
+  "nodeTestsEach": 175,
+  "pythonTestsEach": 118,
+  "typescriptBothActual0": true,
+  "macMypyPublic2Source6Actual0": true,
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/download-artifact-cleanup-cleanup-v1.json",
+  "cleanupAuditSha256": "65ea27792d2af1ff78c57e13fc4717b0b8e838e4e2eed9bd5c1e0befdb68e352",
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "nextRequired": "Implement original-browser download resource admission and complete lifecycle retirement across native writes/partialspools/Chromiumitems/PlaywrightDownloadmetadata. Use pinned local source investigation and narrow versioned trusted capability, no public rawCDP/URL/refetch/context replacement. Preserve caches and existing canonical/out artifacts; any new browser build uses isolated paths and independent Native evidence. Keep Source/private/public/Node/Python qualification; fullK6 locators/frame/write-by-handle,K10upload/Profile,K7/K8/K4,unknownEngineStart,remaining41/N1/device/original failed8h remain; no automatic8h restart/policy relaxation/forcedbrowserGC/sampler changes.",
+  "downloadSuccessfulPathArtifactCleanupQualified": true,
+  "pageDownloadSourceCoreQualified": true,
+  "pageDownloadPrivateRpcQualified": true,
+  "pageDownloadPublicQualified": true,
+  "pageDownloadSdkQualified": true,
+  "nodePageDownloadSdkQualified": true,
+  "pythonPageDownloadSdkQualified": true,
+  "browserDownloadSpoolPrewriteHardCapQualified": false,
+  "playwrightDownloadMetadataPhysicalBoundQualified": false,
+  "K6Complete": false,
+  "productionNativeFullyQualified": false,
+  "eightHourPassed": false,
+  "noCommitPush": true,
+  "noSubagents": true
+}
