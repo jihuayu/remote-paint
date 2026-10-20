@@ -58,10 +58,24 @@ interface AgentAccessibilityBase extends AgentObservationContext {
  readonly stage:'accessibility-observed';readonly scope:'main-document-element-accessibility';readonly observationId:AgentObservationId;readonly revision:number;readonly observedAt:string;readonly elementId:AgentElementId;readonly limits:Required<AgentAccessibilityLimits>;readonly url:string;readonly title:string;readonly truncated:boolean;
 }
 export type AgentAccessibilityObservation=AgentAccessibilityBase&({readonly redacted:true;readonly ax:null}|{readonly redacted:false;readonly ax:AgentAccessibilityProjection});
+export type AgentScreenshotId=`shot_${string}`;
+export interface AgentScreenshotLimits {readonly maxBytes?:number;}
+export interface AgentScreenshotInput {readonly limits?:AgentScreenshotLimits;readonly rpcTimeoutMs?:number;}
+export interface AgentScreenshotFileInput {readonly screenshotId:AgentScreenshotId;readonly rpcTimeoutMs?:number;}
+export interface AgentScreenshotChunkInput extends AgentScreenshotFileInput {readonly offset:number;readonly maxBytes?:number;}
+export interface AgentScreenshotDownloadInput extends AgentScreenshotFileInput {readonly sha256:string;readonly byteLength:number;readonly observedAt:string;}
+export interface AgentScreenshotObservation extends AgentObservationContext {
+ readonly stage:'screenshot-observed';readonly scope:'main-frame-viewport-source-pixels';readonly observationId:AgentObservationId;readonly revision:number;readonly observedAt:string;
+ readonly limits:Required<AgentScreenshotLimits>;readonly url:string;readonly title:string;readonly truncated:boolean;readonly screenshotId:AgentScreenshotId;readonly mimeType:'image/png';readonly width:number;readonly height:number;readonly byteLength:number;readonly sha256:string;
+}
+export interface AgentScreenshotChunk extends AgentObservationContext {readonly stage:'screenshot-chunk';readonly screenshotId:AgentScreenshotId;readonly sha256:string;readonly observedAt:string;readonly offset:number;readonly byteLength:number;readonly totalBytes:number;readonly data:string;readonly complete:boolean;}
+export interface AgentScreenshotReleased extends AgentObservationContext {readonly stage:'screenshot-released';readonly screenshotId:AgentScreenshotId;}
+/** Metadata is frozen. bytes is a new caller-owned mutable allocation, not a transport/Source alias. */
+export interface AgentScreenshotDownload extends AgentObservationContext {readonly stage:'screenshot-downloaded';readonly screenshotId:AgentScreenshotId;readonly mimeType:'image/png';readonly byteLength:number;readonly sha256:string;readonly observedAt:string;readonly width:number;readonly height:number;readonly bytes:Uint8Array;}
 export interface AgentCreateOptions extends RequestOptions {readonly idempotencyKey:string;}
 export interface PreparedAgentRun {send(options?:RequestOptions):Promise<ApiResult<AgentRun>>;}
 export interface PreparedAgentInvocation {send(options?:RequestOptions):Promise<ApiResult<AgentInvocation>>;}
-export interface AgentClientConfig extends SessionClientConfig {readonly maxConcurrentEndRequests?:number;}
+export interface AgentClientConfig extends SessionClientConfig {readonly maxConcurrentEndRequests?:number;readonly maxScreenshotBytes?:number;}
 export class AgentClientError extends SessionClientError {}
 export class AgentClient {
  constructor(config:AgentClientConfig);
@@ -73,6 +87,10 @@ export class AgentClient {
   readonly end:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentRun>>;
  };
  readonly observations:{
+  readonly screenshot:(context:AgentObservationContext,input?:AgentScreenshotInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentScreenshotObservation>>;
+  readonly screenshotChunk:(context:AgentObservationContext,input:AgentScreenshotChunkInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentScreenshotChunk>>;
+  readonly releaseScreenshot:(context:AgentObservationContext,input:AgentScreenshotFileInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentScreenshotReleased>>;
+  readonly downloadScreenshot:(context:AgentObservationContext,input:AgentScreenshotDownloadInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentScreenshotDownload>>;
   readonly accessibility:(context:AgentObservationContext,input:AgentAccessibilityInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentAccessibilityObservation>>;
   readonly context:(run:AgentObservationReference,options?:AgentObservationOptions)=>Promise<ApiResult<AgentObservationContext>>;
   readonly read:(context:AgentObservationContext,input:AgentObservationInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentObservation>>;

@@ -1,4 +1,4 @@
-import {captureObservationReference,captureObservationContext,captureObservationRequest,captureObservationOptions,validateObservationReply,captureAccessibilityRequest,validateAccessibilityReply} from './agent-observation.mjs';
+import {captureObservationReference,captureObservationContext,captureObservationRequest,captureObservationOptions,validateObservationReply,captureAccessibilityRequest,validateAccessibilityReply,captureScreenshotRequest,captureScreenshotFileRequest,validateScreenshotReply,readScreenshotBinary} from './agent-observation.mjs';
 import {SessionClientError,createBackendTransport,freezeBackendData} from './backend-transport.mjs';
 export class AgentClientError extends SessionClientError {constructor(code,options){super(code,options);this.name='AgentClientError';this.message=code==='CLIENT_INVALID_REQUEST'?'Invalid Agent client request':'Agent API request failed';}}
 const invalid=()=>{throw new AgentClientError('CLIENT_INVALID_REQUEST',{outcome:'not-dispatched'});};
@@ -34,6 +34,7 @@ function invocation(v){
  return v.receipt===null&&error(v.error)&&(v.state==='unknown'?v.dispatchStarted&&v.error.outcome==='unknown':v.error.outcome==='not-dispatched');
 }
 function validate(status,value,expect,headers){
+ if(['agent-screenshot','agent-screenshot-chunk','agent-screenshot-released'].includes(expect.kind))return validateScreenshotReply(status,value,expect,headers);
  if(expect.kind==='agent-accessibility')return validateAccessibilityReply(status,value,expect,headers);
  if(['agent-observation-context','agent-observation'].includes(expect.kind))return validateObservationReply(status,value,expect,headers);
  if(expect.kind==='agent-context')return status===200&&exact(value,['binding','fence'])&&isBinding(value.binding)&&isFence(value.fence)&&value.binding.sessionId===expect.sessionId;
@@ -65,7 +66,7 @@ function action(value){
 export class AgentClient {
  #transport;
  constructor(config){
-  this.#transport=createBackendTransport(config,{validate,ErrorClass:AgentClientError,agentErrors:true,endKind:'agent-end'});
+  this.#transport=createBackendTransport(config,{validate,ErrorClass:AgentClientError,agentErrors:true,endKind:'agent-end',binaryKind:'agent-screenshot-download',readBinary:readScreenshotBinary});
   const call=(method,path,payload,key,expect,options)=>this.#transport.request(method,path,payload,key,expect,options);
   const prepared=(path,payload,key,expect)=>{let originalId=null,originalCreatedAt=null;return Object.freeze({send:async(options={})=>{const result=await call('POST',path,payload,key,expect,requestOptions(options)),id=result.data.agentRunId&&expect.kind==='agent-run-create'?result.data.agentRunId:result.data.invocationId;if(originalId!==null&&originalId!==id||originalCreatedAt!==null&&originalCreatedAt!==result.data.createdAt)throw new AgentClientError('CLIENT_INVALID_RESPONSE',{requestId:result.requestId});originalId=id;originalCreatedAt=result.data.createdAt;return result;}});};
   const prepareRun=(sessionId,input,options)=>{if(!id(sessionId,'ses_'))invalid();const v=data(input,['region','version','rpcTimeoutMs'],['region','version']),r=data(options,['idempotencyKey']);if(!string(v.region,64)||!string(v.version,256))invalid();timeout(v.rpcTimeoutMs);requestOptions(r,true);return prepared('/v1/sessions/'+sessionId+'/agent-runs',body(v),r.idempotencyKey,{kind:'agent-run-create',sessionId,region:v.region,version:v.version});};
@@ -77,7 +78,12 @@ export class AgentClient {
    context:async(run,options={})=>{const r=reference(run),result=await call('GET','/v1/agent-runs/'+r.agentRunId+'/context',null,null,{kind:'agent-context',sessionId:r.sessionId},requestOptions(options));return freezeBackendData({data:{agentRunId:r.agentRunId,...result.data},requestId:result.requestId});},
    end:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return call('POST','/v1/agent-runs/'+agentRunId+'/end',null,null,{kind:'agent-end',id:agentRunId},requestOptions(options));}
   })});
+  const screenshotCall=(kind,suffix,supplied,input,options={})=>{const ctx=captureObservationContext(supplied,invalid),request=kind==='agent-screenshot'?captureScreenshotRequest(input,invalid):captureScreenshotFileRequest(input,kind==='agent-screenshot-chunk'?'chunk':kind==='agent-screenshot-download'?'download':'release',invalid,this.#transport.screenshotMaxBytes),opts=captureObservationOptions(options,invalid);return call('POST','/v1/agent-runs/'+ctx.agentRunId+'/screenshot-'+suffix,body({context:ctx,...request}),null,{kind,context:ctx,request},opts);};
   Object.defineProperty(this,'observations',{enumerable:true,value:Object.freeze({
+   screenshot:(context,input={},options={})=>screenshotCall('agent-screenshot','observations',context,input,options),
+   screenshotChunk:(context,input,options={})=>screenshotCall('agent-screenshot-chunk','chunks',context,input,options),
+   releaseScreenshot:(context,input,options={})=>screenshotCall('agent-screenshot-released','releases',context,input,options),
+   downloadScreenshot:(context,input,options={})=>screenshotCall('agent-screenshot-download','downloads',context,input,options),
    context:(run,options={})=>{const reference=captureObservationReference(run,invalid),opts=captureObservationOptions(options,invalid);return call('GET','/v1/agent-runs/'+reference.agentRunId+'/observation-context',null,null,{kind:'agent-observation-context',reference},opts);},
    accessibility:(supplied,input,options={})=>{const ctx=captureObservationContext(supplied,invalid),request=captureAccessibilityRequest(input,invalid),opts=captureObservationOptions(options,invalid);return call('POST','/v1/agent-runs/'+ctx.agentRunId+'/accessibility-observations',body({context:ctx,...request}),null,{kind:'agent-accessibility',context:ctx,request},opts);},
    read:(supplied,input,options={})=>{const ctx=captureObservationContext(supplied,invalid),request=captureObservationRequest(input,invalid),opts=captureObservationOptions(options,invalid);return call('POST','/v1/agent-runs/'+ctx.agentRunId+'/observations',body({context:ctx,...request}),null,{kind:'agent-observation',context:ctx,request},opts);}

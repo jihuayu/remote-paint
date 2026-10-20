@@ -8,14 +8,15 @@ const exact=(v,keys)=>plain(v)&&Object.keys(v).length===keys.length&&keys.every(
 const code=v=>typeof v==='string'&&/^[A-Z][A-Z0-9_]{0,63}$/.test(v)&&!v.startsWith('CLIENT_');
 const retryStatus=status=>status===408||status===429||status>=500;
 export function freezeBackendData(value){if(value&&typeof value==='object'){for(const child of Object.values(value))freezeBackendData(child);Object.freeze(value);}return value;}
-export function createBackendTransport(config,{validate,ErrorClass=SessionClientError,agentErrors=false,endKind=null}={}){
+export function createBackendTransport(config,{validate,ErrorClass=SessionClientError,agentErrors=false,endKind=null,binaryKind=null,readBinary=null}={}){
  const fail=(code,options)=>{throw new ErrorClass(code,options);},invalid=()=>fail('CLIENT_INVALID_REQUEST',{outcome:'not-dispatched'});
  const options=(value,allowed)=>{if(!plain(value)||Reflect.ownKeys(value).some(k=>!allowed.includes(k)||!Object.hasOwn(Object.getOwnPropertyDescriptor(value,k),'value')))invalid();return Object.fromEntries(Object.keys(value).map(k=>[k,value[k]]));};
- const captured=options(config,['baseUrl','apiKey','fetch','timeoutMs','retries','maxResponseBytes','maxConcurrentRequests',...(endKind?['maxConcurrentEndRequests']:[])]);
+ const captured=options(config,['baseUrl','apiKey','fetch','timeoutMs','retries','maxResponseBytes','maxConcurrentRequests',...(endKind?['maxConcurrentEndRequests']:[]),...(binaryKind?['maxScreenshotBytes']:[])]);
  if(typeof window!=='undefined'||typeof process==='undefined'||process.release?.name!=='node')throw TypeError('Management clients require a Node.js backend');
  let url;try{url=new URL(captured.baseUrl);}catch{invalid();}if(url.username||url.password||url.search||url.hash||url.pathname!=='/'||!(url.protocol==='https:'||url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)))invalid();
  const timeout=captured.timeoutMs??10000,retries=captured.retries??0,maxBytes=captured.maxResponseBytes??65536,max=captured.maxConcurrentRequests??64,maxEnd=captured.maxConcurrentEndRequests??8,fetch=captured.fetch??globalThis.fetch,apiKey=captured.apiKey,base=url.origin;
  if(typeof apiKey!=='string'||!/^[A-Za-z0-9_-]{32,256}$/.test(apiKey)||!integer(timeout,50,60000)||!integer(retries,0,3)||!integer(maxBytes,1024,1048576)||!integer(max,1,256)||!integer(maxEnd,1,64)||typeof fetch!=='function'||typeof validate!=='function')invalid();
+ const screenshotMaxBytes=captured.maxScreenshotBytes??1048576;if(binaryKind&&(!integer(screenshotMaxBytes,57,4194304)||typeof readBinary!=='function'))invalid();
  const ordinary=new Set(),ending=new Set();
  const cancelled=signal=>{if(signal?.aborted)fail('CLIENT_ABORTED',{outcome:'not-dispatched'});};
  async function read(response,signal){
@@ -38,7 +39,8 @@ export function createBackendTransport(config,{validate,ErrorClass=SessionClient
    if(controller.signal.aborted)fail('CLIENT_ABORTED',{outcome:'not-dispatched'});dispatched=true;
    const response=await fetch(base+path,{method,headers:{authorization:'Bearer '+apiKey,...(body===null?{}:{'content-type':'application/json'}),...(key===null?{}:{'idempotency-key':key})},body:body??undefined,signal:controller.signal,redirect:'error',credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer'});
    if(controller.signal.aborted){try{await response.body?.cancel();}catch{}fail('CLIENT_TIMEOUT');}
-   const status=response.status;if(!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(response.headers.get('content-type')??'')){try{await response.body?.cancel();}catch{}fail(status>=400?'CLIENT_HTTP_ERROR':'CLIENT_INVALID_RESPONSE',{status,retryable:status>=400&&retryStatus(status)});}
+   const status=response.status;if(binaryKind&&expect.kind===binaryKind&&status<400)return readBinary(response,expect,{signal:controller.signal,maxBytes:screenshotMaxBytes,isClientError:error=>error instanceof ErrorClass,fail:(code,options={})=>fail(code,{status,...options})});
+   if(!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(response.headers.get('content-type')??'')){try{await response.body?.cancel();}catch{}fail(status>=400?'CLIENT_HTTP_ERROR':'CLIENT_INVALID_RESPONSE',{status,retryable:status>=400&&retryStatus(status)});}
    let value;try{value=await read(response,controller.signal);}catch(error){if(status>=400)fail('CLIENT_HTTP_ERROR',{status,retryable:retryStatus(status)});throw error;}
    const requestId=value?.requestId;if(typeof requestId!=='string'||!/^req_[A-Za-z0-9_-]{1,124}$/.test(requestId)||response.headers.get('x-request-id')!==requestId)fail('CLIENT_INVALID_RESPONSE',{status});
    if(status>=400){
@@ -57,6 +59,7 @@ export function createBackendTransport(config,{validate,ErrorClass=SessionClient
    const request=options(value,['signal','retries']);if(request.signal!==undefined&&!(request.signal instanceof AbortSignal)||request.retries!==undefined&&!integer(request.retries,0,3))invalid();const signal=request.signal,count=request.retries??retries;let uncertain=false;
    for(let n=0;;n++){try{return await attempt(method,path,body,key,expect,signal);}catch(error){if(!(error instanceof ErrorClass))throw error;if(uncertain&&error.outcome!=='unknown')error=new ErrorClass(error.code,{status:error.status,requestId:error.requestId,outcome:'unknown',retryable:error.retryable});uncertain||=error.outcome==='unknown';if(!error.retryable||n>=count||signal?.aborted)throw error;}}
   },
+  screenshotMaxBytes,
   status:()=>Object.freeze({ordinary:ordinary.size,ending:ending.size})
  });
 }

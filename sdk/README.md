@@ -88,7 +88,7 @@ Queries are `snapshot`, `locate` by `id`/`tag`/`testId`, or `element` with an op
 
 Each call captures its input before awaiting and makes exactly one HTTP attempt, even if the client config enables mutation retries. Observation options accept only `signal`; no idempotency key or `retries`. Cancellation/deadline ends the local wait while actual fetch/body/cancellation work retains bounded ordinary admission until settled. Independently scoped end has its own transport pool. This does not cancel or undo an admitted Source operation.
 
-Read context is fetched only when the caller asks. Stale document/element errors do not fetch a new fence, rebind a selector or replay input. A known, confirmed same-owner input Run in `recovery-required` can be inspected, but observing actual DOM never upgrades an unknown invocation or clears writer quarantine. Each fresh snapshot replaces the bounded handle registry; GC and selected metadata/document changes can also expire handles. Observations carry a snapshot revision and time, not a global DOM mutation counter. Computed AX is available for exact main-document elements through the method below. Screenshots/downloads, cross-frame/full locators and write-by-handle remain pending; The Python backend also provides frozen observation models and single-attempt reads; see the repository `sdk/python/README.md` and its independent qualification evidence.
+Read context is fetched only when the caller asks. Stale document/element errors do not fetch a new fence, rebind a selector or replay input. A known, confirmed same-owner input Run in `recovery-required` can be inspected, but observing actual DOM never upgrades an unknown invocation or clears writer quarantine. Each fresh snapshot replaces the bounded handle registry; GC and selected metadata/document changes can also expire handles. Observations carry a snapshot revision and time, not a global DOM mutation counter. Computed AX is available for exact main-document elements through the method below. The Node screenshot and PNG download methods are described below; actual page downloads, cross-frame/full locators and write-by-handle remain pending; The Python backend also provides frozen observation models and single-attempt reads; see the repository `sdk/python/README.md` and its independent qualification evidence.
 
 ### Computed accessibility for an existing element
 
@@ -182,3 +182,35 @@ The first frame has `stage: 'scene-submitted'` and `clock: 'viewer-ui-receipt'`.
 Performance samples are separated by at least 250ms in the child, including reconnects. They report local submitted throughput/receipt age, render time, received/resource bytes and count, observed Wasm heap and GPU/resident estimates. Missing optional measurements are null; memory is explicitly `client-estimate`, not process physical usage. No Source-clock frame age is inferred. Paused/failed/reloading/role-changing/destroyed lifetimes clear current metrics and first frame; empty reset notifications describe unavailability, not another measurement sample.
 
 The authenticated bridge carries only a finite private grant envelope and a sanitized fixed-field snapshot. The host checks the grant it actually issued and drops old grants/generations/frame namespaces. Unknown fields or malformed snapshots close the channel with a fixed code. Renderer initialization/replay failures surface fixed `VIEWER_PROTOCOL_ERROR` through existing state/error APIs; private diagnostic text is not forwarded. No raw scenes, Source identity, URLs, tickets, renderer or memory objects enter these public snapshots. Actual Native/browser telemetry, physical latency and long resource/growth acceptance remain separate pending gates.
+
+
+Source viewport screenshots and PNG file reads use the original observation context:
+
+```js
+const client = new AgentClient({ baseUrl, apiKey, maxScreenshotBytes: 4 * 1024 * 1024 });
+const shot = (await client.observations.screenshot(context, { limits: { maxBytes: 1048576 } })).data;
+const file = (await client.observations.downloadScreenshot(context, {
+  screenshotId: shot.screenshotId, sha256: shot.sha256,
+  byteLength: shot.byteLength, observedAt: shot.observedAt,
+})).data;
+// file.bytes is a new caller-owned Uint8Array; metadata is frozen.
+await client.observations.releaseScreenshot(context, { screenshotId: shot.screenshotId });
+```
+
+`screenshotChunk(context, { screenshotId, offset, maxBytes? })` returns an immutable
+base64 chunk, at most 3072 decoded bytes. Each method synchronously captures its
+context/input, accepts `{ signal? }`, and makes one HTTP attempt, independently of
+mutation retry configuration. It never refreshes context or recreates an expired
+file. `rpcTimeoutMs?` remains a separate 50..120000 private deadline.
+
+The PNG download cap `maxScreenshotBytes` defaults to 1 MiB and permits 57..4 MiB,
+independent of the JSON `maxResponseBytes` cap. An oversized file reference fails
+before fetch. Headers must match the requested file length/hash/time/context and
+safe PNG attachment; the bounded streamed body must match length, SHA256, signature,
+IHDR and dimensions. Partial or corrupt files are never returned. The result object,
+context and metadata are frozen; its byte array is explicitly caller-owned and
+mutable, with no transport or Source buffer alias. Actual fetch/body/cancellation
+capacity stays held until settlement even after caller abort/timeout, and end has
+independent capacity. No Node screenshot method grants Python screenshot SDK,
+actual page download/upload/Profile, complete locators/frame access, raw CDP receiver
+preallocation or browser physical-memory qualification.

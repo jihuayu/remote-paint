@@ -1,0 +1,280 @@
+{
+  "at": "2026-10-19T20:28:23.997563+00:00",
+  "task": "Node screenshot and PNG download SDK installed Native checkpoint",
+  "status": "Node-screenshot-SDK-qualified-within-scope",
+  "scope": "Installed Node screenshot/chunk/release and PNG download SDK with synchronous immutable request capture/strict correlated DTOs and headers/context/file/time/hash/PNG validation. Shared transport real fetch/body/cancel capacity and separate end, separate bounded screenshot cap, no retry/refence/rebind/replay. Frozen metadata plus new caller-owned mutable Uint8Array. Actual installed SDK-to-publicHTTP-to-canonicalNative PNG/pixels/hash/lifecycle/408/abort/end proof. Python screenshot SDK and raw receiver/physical/full K6 remain pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/public-agent-screenshot-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "8bed2fcbf44db7d0e23a1ed93b2af37d8a1d48580a10175de5fe2493f2de1fe2",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-screenshot-sdk-candidate-v3/frozen-version.json",
+  "executedManifestSha256": "7cc11067d020b4890389e16f99afdf83ad2781e69a905426aea23feb707eb9e8",
+  "newNodeContracts": 20,
+  "testNames": [
+    "Node screenshot SDK captures context limits deadline before await and freezes correlated metadata",
+    "Node screenshot chunk and release capture exact file arithmetic and return immutable records",
+    "Node screenshot rejects invalid shapes raw scripts clip paths ids limits getters write context and retry options before fetch",
+    "Node screenshot validates logical Source document version file metadata phase fields and record byte caps",
+    "Node screenshot JSON envelope status Location request correlation and outer budget remain strict",
+    "Node PNG download captures original context file bytes time and deadline before awaiting fetch",
+    "Node PNG result metadata is frozen and bytes are a new mutable caller allocation without body aliases",
+    "Node PNG headers enforce status media encoding length digest file time request context and safe attachment",
+    "Node PNG rejects truncation overrun bad digest signature IHDR or dimensions without returning partial bytes",
+    "Node PNG uses separate bounded screenshot budget while preserving JSON cap and validates config before fetch",
+    "Node screenshot and PNG reads send once despite mutation retries with sanitized structured errors",
+    "Node PNG timeout retains noncooperative fetch capacity and permits independent end",
+    "Node PNG pending body cancellation retains actual capacity until its real cleanup resolves",
+    "Node PNG invalid-header cancellation and caller abort retain real work without retry or Source signal substitution",
+    "Node PNG handles arbitrarily fragmented bytes with bounded final storage and strict decoded JSON errors",
+    "Node screenshot actual HTTP metadata chunk release and PNG download use independent observe scope with no ledger writes",
+    "Node screenshot actual HTTP known unknown input remains quarantined after PNG download without replay",
+    "Node PNG actual HTTP408 retains backend Source slot and independent end remains available",
+    "Node PNG actual HTTP cancellation observes only caller while actual Source and closed Run identity remain fenced",
+    "Node screenshot actual replacement and release expire old file references without automatic recapture"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v51/manifest.json",
+  "fullJsManifestSha256": "7873d3274a587169405774fe3d51af9723b26d2d60f0fd97ed2cad336c07a789",
+  "fullJs": {
+    "mac": {
+      "tests": 1339,
+      "pass": 1324,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "ad8cc2cda1a7cec4aac23f3847ce27a7393fe80ee246e434355b01bab4d7f42e"
+    },
+    "linux": {
+      "tests": 1339,
+      "pass": 1333,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "e14d47be977385a25fca7b0b07a24ce45755a01974b0f124050d90e76545ad12"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 152,
+      "pythonTests": 73,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 61,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "nodeArchiveNew": true,
+      "pythonArchiveBytesUnchanged": true
+    },
+    "linux": {
+      "nodeTests": 152,
+      "pythonTests": 73,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 61,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "nodeArchiveNew": true,
+      "pythonArchiveBytesUnchanged": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "63265ccf9b62bf17d3cb24a4cc29281fb45c02257539a025b413ea42718ecaca",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "bb674dfc56f968f0b364843f20516abc0ca3ec1c584b2e8c6b4ab8edb60bb5e7"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-screenshot-sdk-native-v2/manifest.json",
+  "nativeManifestSha256": "458b8c4f76d41cb7cffb79d844055cbb5a823ba8a57d15b41a2a2a5671b7caed",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "authorization": {
+      "independentObserveScope": true,
+      "tenantIsolation": true,
+      "noWriterFenceOrMutationOrEndOrSessionReleaseOrViewerMint": true,
+      "forgedLogicalContextRejectedBeforeSource": true
+    },
+    "metadata": {
+      "actualDOM": true,
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "targetId": "target_f956cb35-27e8-4f8f-835d-cd08290f3779",
+      "epoch": 1,
+      "observedAt": "2026-10-19T20:26:50.734Z",
+      "passwordRedacted": true,
+      "mainDocumentLightDomOnly": true,
+      "readDoesNotRefreshWriterFence": true
+    },
+    "accessibility": {
+      "browserComputedRoleNameDescriptionValue": true,
+      "readonlyRequiredChecked": true,
+      "nestedTextAndExternalLabelSemantics": true,
+      "sameHandleDifferentBudgets": true,
+      "originalElementReplacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "computedLabelChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLabel": "Shipping changed",
+      "unicodeNameChars": 512,
+      "truncated": true,
+      "oversizedBrowserReplyRejected": {
+        "code": "AGENT_OBSERVATION_LIMIT",
+        "outcome": "not-dispatched"
+      },
+      "passwordFullyRedacted": true,
+      "explicitDomainAndObjectCleanupConfirmedByCompletedSourceRead": true,
+      "noPhysicalPreallocationClaim": true,
+      "publicHttp": true,
+      "sourcePrivateCapabilityRequired": true,
+      "readDuringHumanLease": true,
+      "oldDocumentRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "knownUnknownInputAXObservedWithoutRecovery": true
+    },
+    "screenshot": {
+      "actualPublicHttp": true,
+      "actualPrivateProvider": true,
+      "binaryDownloadVerified": true,
+      "actualPNGDecoded": true,
+      "pixels": [
+        17,
+        83,
+        151,
+        255
+      ],
+      "width": 960,
+      "height": 640,
+      "byteLength": 26685,
+      "sha256": "9912f9adf3968478b0c6b7e506192c40ea6861267fb8eb2729b3cf652363e007",
+      "chunkMax": 3072,
+      "maxControlRecordBytes": 6144,
+      "failedCapturePreservedPrior": true,
+      "replacementInvalidatedPrior": true,
+      "explicitReleaseInvalidated": true,
+      "noSourceFilesystemWrite": true,
+      "noRawReceiverPhysicalClaim": true,
+      "readDuringHumanLease": true,
+      "oldDocumentAndRunRejected": true,
+      "knownUnknownInputInspectable": true,
+      "knownUnknownDownloadPreservedQuarantine": true
+    },
+    "unicode": {
+      "sourceChars": 4000,
+      "returnedChars": 1024,
+      "truncated": true,
+      "handleStillResolvable": true
+    },
+    "elements": {
+      "replacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "selectedMetadataChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLocatorGetsDistinctHandle": true,
+      "noAutomaticSelectorRebind": true
+    },
+    "human": {
+      "readDuringHumanLease": true,
+      "writeStillPaused": true,
+      "readAndAgentEndPreservedOriginalHumanGrant": true,
+      "fieldValue": "OBSHF"
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "oldReadContextRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "oldHandleRejectedInNewDocument": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "oldWriteFenceRejected": true,
+      "samePageTarget": true
+    },
+    "bounds": {
+      "largeFixtureNodes": 3000,
+      "visitedCap": 32,
+      "truncated": true,
+      "maxSerializedBytes": 8192,
+      "actualSnapshotBytes": 3314,
+      "noScriptOrArbitraryCdp": true
+    },
+    "unknown": {
+      "actualSlowClickOnce": true,
+      "observedActualDOMAfterUnknown": true,
+      "historyRemainedUnknown": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "httpTimeout": {
+      "http408": true,
+      "actualExecutorSlotRetained": true,
+      "writerRemainedActive": true,
+      "inputAfterActualSettlement": true
+    },
+    "disconnect": {
+      "actualExecutorSlotRetained": true,
+      "priorityEndWithIndependentScope": true,
+      "lateReadCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativeJournal": {
+    "logicalRunsClosed": 4,
+    "injected": 10,
+    "unknown": 1,
+    "rejected": 2
+  },
+  "decodedAxCdpReplyByteCap": 32768,
+  "rawCdpReceiverPreallocationQualified": false,
+  "browserAxPhysicalMemoryQualified": false,
+  "privateAxResultByteCap": 6144,
+  "maxAxTextUnits": 512,
+  "publicObservationResultByteCap": 8192,
+  "privateReadResultByteCap": 6144,
+  "standardProviderFrameByteCap": 8192,
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-screenshot-sdk-cleanup-v1.json",
+  "cleanupAuditSha256": "ea0b4815fcda5ccd81bb916dd251659b9f430d890943e3ea4e7546644bda362e",
+  "trustedNativeObservationCoreQualified": true,
+  "publicObservationQualified": true,
+  "nodeObservationSdkQualified": true,
+  "pythonObservationSdkQualified": true,
+  "observationSdkQualified": true,
+  "computedAxPrivateQualified": true,
+  "computedAxPublicQualified": true,
+  "nodeComputedAxSdkQualified": true,
+  "pythonComputedAxSdkQualified": true,
+  "computedAxSdkQualified": true,
+  "sourceScreenshotQualified": true,
+  "publicScreenshotQualified": true,
+  "nodeScreenshotSdkQualified": true,
+  "pythonScreenshotSdkQualified": false,
+  "screenshotSdkQualified": false,
+  "K6Complete": false,
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": true,
+  "publicAgentSdkQualified": true,
+  "agentSdkScope": "Node screenshot/chunk/release/download newly qualified; Node/Python prior input/DOM/AX retained. New20member Node archive, unchanged10member Python wheel;61 current inputs and frozen ws/pngjs test dependencies, no SDK runtime dependency. Python screenshot pending.",
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true
+}

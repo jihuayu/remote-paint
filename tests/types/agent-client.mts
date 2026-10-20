@@ -1,7 +1,7 @@
-import {AgentClient as RootAgentClient,AgentClientError,type AgentContext,type AgentInvocation,type AgentAction,type AgentRunId,type AgentInvocationId,type AgentObservationContext,type AgentObservation,type AgentAccessibilityObservation,type AgentAccessibilityStates} from '../../sdk/backend.mjs';
+import {AgentClient as RootAgentClient,AgentClientError,type AgentContext,type AgentInvocation,type AgentAction,type AgentRunId,type AgentInvocationId,type AgentObservationContext,type AgentObservation,type AgentAccessibilityObservation,type AgentAccessibilityStates,type AgentScreenshotObservation,type AgentScreenshotId,type AgentScreenshotChunk,type AgentScreenshotDownload,type AgentScreenshotReleased} from '../../sdk/backend.mjs';
 import {AgentClient,type AgentAccessibilityInput} from '../../sdk/agent.mjs';
 const same:typeof AgentClient=RootAgentClient;void same;
-const client=new AgentClient({baseUrl:'https://api.example.test',apiKey:'backend-secret-from-environment',maxConcurrentRequests:2,maxConcurrentEndRequests:1});
+const client=new AgentClient({baseUrl:'https://api.example.test',apiKey:'backend-secret-from-environment',maxConcurrentRequests:2,maxConcurrentEndRequests:1,maxScreenshotBytes:4194304});
 const created=await client.runs.prepareCreate('ses_example',{region:'test',version:'pinned-version',rpcTimeoutMs:5000},{idempotencyKey:'run-key'}).send();
 const runId:AgentRunId=created.data.agentRunId;
 const ctx:AgentContext=(await client.runs.context(created.data)).data;
@@ -95,3 +95,21 @@ client.observations.accessibility(readContext,axInput,{retries:1});
 axResult.document.pageEpoch=2;
 // @ts-expect-error AX observations do not expose business success
 axResult.businessSuccess;
+
+const screenshot:AgentScreenshotObservation=(await client.observations.screenshot(readContext,{limits:{maxBytes:1048576}})).data;
+const screenshotId:AgentScreenshotId=screenshot.screenshotId;
+const chunk:AgentScreenshotChunk=(await client.observations.screenshotChunk(readContext,{screenshotId,offset:0,maxBytes:3072})).data;
+const file:AgentScreenshotDownload=(await client.observations.downloadScreenshot(readContext,{screenshotId,sha256:screenshot.sha256,byteLength:screenshot.byteLength,observedAt:screenshot.observedAt})).data;
+const bytes:Uint8Array=file.bytes;bytes[0]=1;
+const released:AgentScreenshotReleased=(await client.observations.releaseScreenshot(readContext,{screenshotId})).data;
+void chunk;void released;
+// @ts-expect-error screenshot IDs cannot be logical Run IDs
+client.observations.screenshotChunk(readContext,{screenshotId:runId,offset:0});
+// @ts-expect-error screenshot reads do not retry
+client.observations.screenshot(readContext,{}, {retries:1});
+// @ts-expect-error downloads require original hash length and time
+client.observations.downloadScreenshot(readContext,{screenshotId});
+// @ts-expect-error metadata remains readonly
+file.sha256='changed';
+// @ts-expect-error input fence context cannot replace observation context
+client.observations.screenshot(ctx);
