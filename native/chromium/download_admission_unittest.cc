@@ -31,6 +31,7 @@
 #include "components/download/public/common/native_download_budget.h"
 #include "components/download/public/common/native_download_request_context.h"
 #include "components/download/public/common/native_download_read_session.h"
+#include "components/download/public/common/native_download_transfer_registry.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
@@ -641,6 +642,190 @@ TEST_F(RemotePaintDownloadReadTest, TwelveReadSessionsAcrossDownloadsReuseActual
     EXPECT_EQ("xxxxxxx", Read(*reader).bytes); reader->Close(); tasks_.RunUntilIdle(); model.RetireAll();
     EXPECT_EQ(0u, Budget::ReservedItems()); EXPECT_TRUE(model.delegate.items.empty()); EXPECT_TRUE(base::IsDirectoryEmpty(model.directory.GetPath()));
   }
+}
+
+
+using Registry = download::NativeDownloadTransferRegistry;
+using TransferState = Registry::State;
+using TransferError = Registry::Error;
+class RemotePaintDownloadTransferTest : public RemotePaintDownloadReadTest {
+ protected:
+  std::string Arm(Registry& registry, uint64_t maximum = Budget::kFileBytes, base::TimeDelta timeout = base::Seconds(10)) {
+    auto ticket = registry.Arm(maximum, timeout); EXPECT_TRUE(ticket); return ticket.value_or("");
+  }
+  Registry::Snapshot Info(Registry& registry, const std::string& ticket) {
+    auto info = registry.Info(ticket); EXPECT_TRUE(info);
+    return info.value_or(Registry::Snapshot{TransferState::kIdle, TransferError::kUnavailable, 0, {}});
+  }
+  void Start(Model& model, Registry& registry, scoped_refptr<download::NativeDownloadRequestContext> owner,
+             size_t bytes = 7) {
+    model.Start(true, bytes, true, std::move(owner));
+    ASSERT_TRUE(registry.Offer(LeaseFor(model))); model.Drain();
+  }
+  void Release(Model& model, Registry& registry, const std::string& ticket) {
+    base::test::TestFuture<bool> done; EXPECT_TRUE(registry.Release(ticket, done.GetCallback()));
+    model.Drain(); EXPECT_TRUE(done.IsReady()); if (done.IsReady()) EXPECT_TRUE(done.Take());
+    EXPECT_TRUE(model.delegate.items.empty()); EXPECT_EQ(0u, Budget::ReservedItems());
+  }
+};
+TEST_F(RemotePaintDownloadTransferTest, ArmBoundsProcessFlagAndOriginalOwner) {
+  auto owner = RequestContext(); Registry registry(owner);
+  EXPECT_FALSE(registry.Arm(0, base::Seconds(10))); EXPECT_FALSE(registry.Arm(Budget::kFileBytes + 1, base::Seconds(10)));
+  EXPECT_FALSE(registry.Arm(1, base::TimeDelta())); EXPECT_FALSE(registry.Arm(1, base::Seconds(31)));
+  Registry unknown(nullptr); EXPECT_FALSE(unknown.Arm(1, base::Seconds(1)));
+  command_.GetProcessCommandLine()->RemoveSwitch("remote-paint-download-budget-v1");
+  Registry disabled(owner); EXPECT_FALSE(disabled.Arm(1, base::Seconds(1)));
+  EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadTransferTest, OneTicketRetainedUntilExplicitRelease) {
+  Model model(tasks_); Registry registry(RequestContext()); const auto ticket = Arm(registry);
+  EXPECT_TRUE(ticket.starts_with("dl_")); EXPECT_EQ(39u, ticket.size()); EXPECT_FALSE(registry.Arm(1, base::Seconds(1)));
+  EXPECT_EQ(TransferState::kArmed, Info(registry, ticket).state); EXPECT_EQ(0u, Budget::ReservedItems());
+  Release(model, registry, ticket); EXPECT_FALSE(registry.Info(ticket));
+  const auto second = Arm(registry); EXPECT_NE(ticket, second); Release(model, registry, second);
+}
+TEST_F(RemotePaintDownloadTransferTest, UnknownAndOtherPageAdmissionsAreRejected) {
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry);
+  model.Start(); EXPECT_FALSE(registry.Offer(LeaseFor(model))); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+  model.Start(false, 7, true, RequestContext()); EXPECT_FALSE(registry.Offer(LeaseFor(model)));
+  EXPECT_EQ(TransferState::kArmed, Info(registry, ticket).state); model.RetireAll(); Release(model, registry, ticket);
+}
+TEST_F(RemotePaintDownloadTransferTest, AdmissionBeforeArmCannotBeReplayedIntoNewWindow) {
+  Model model(tasks_); auto owner = RequestContext(); model.Start(true, 7, true, owner); model.Drain(); auto lease = LeaseFor(model);
+  tasks_.FastForwardBy(base::Milliseconds(1)); Registry registry(owner); const auto ticket = Arm(registry);
+  EXPECT_FALSE(registry.Offer(lease)); EXPECT_FALSE(lease->retiring()); model.RetireAll(); Release(model, registry, ticket);
+}
+TEST_F(RemotePaintDownloadTransferTest, OriginalPageAcceptsSubframeTargetAndInitiator) {
+  using Context = download::NativeDownloadRequestContext;
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry);
+  const Context::Frame subframe{9, 10, base::UnguessableToken::Create().ToString()};
+  auto context = Context::Create(Context::Origin::kRendererNavigation, subframe, subframe, owner->page()); ASSERT_TRUE(context);
+  Start(model, registry, context); EXPECT_EQ(TransferState::kReady, Info(registry, ticket).state);
+  EXPECT_EQ(context, LeaseFor(model)->request_context()); Release(model, registry, ticket);
+}
+TEST_F(RemotePaintDownloadTransferTest, OneLifetimeClaimAcrossTwoRegistries) {
+  Model model(tasks_); auto owner = RequestContext(); Registry first(owner), second(owner);
+  const auto a = Arm(first), b = Arm(second); model.Start(true, 7, true, owner); auto lease = LeaseFor(model);
+  EXPECT_TRUE(first.Offer(lease)); EXPECT_FALSE(first.Offer(lease)); EXPECT_FALSE(second.Offer(lease)); model.Drain();
+  Release(model, first, a); EXPECT_TRUE(lease->finished()); EXPECT_FALSE(second.Offer(lease)); Release(model, second, b);
+}
+TEST_F(RemotePaintDownloadTransferTest, PendingCreatorThenActualReadyHashAndChunks) {
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry);
+  model.Start(true, 7000, true, owner); EXPECT_TRUE(registry.Offer(LeaseFor(model)));
+  EXPECT_EQ(TransferState::kPending, Info(registry, ticket).state); model.Drain();
+  const auto info = Info(registry, ticket); EXPECT_EQ(TransferState::kReady, info.state); EXPECT_EQ(7000u, info.byte_length);
+  EXPECT_EQ(base::HexEncodeLower(crypto::hash::Sha256(std::string(7000, 'x'))), info.sha256);
+  base::test::TestFuture<Reader::Chunk> done; EXPECT_TRUE(registry.Read(ticket, 3072, 3072, done.GetCallback()));
+  tasks_.RunUntilIdle(); ASSERT_TRUE(done.IsReady()); const auto chunk = done.Take();
+  EXPECT_EQ(ReadError::kNone, chunk.error); EXPECT_EQ(3072u, chunk.offset); EXPECT_EQ(std::string(3072, 'x'), chunk.bytes); EXPECT_FALSE(chunk.complete);
+  Release(model, registry, ticket);
+}
+TEST_F(RemotePaintDownloadTransferTest, StaleTicketCannotReadOrReleaseOwnedData) {
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry); Start(model, registry, owner);
+  base::test::TestFuture<Reader::Chunk> read; base::test::TestFuture<bool> release;
+  EXPECT_FALSE(registry.Info("dl_00000000-0000-4000-8000-000000000000"));
+  EXPECT_FALSE(registry.Read("bad", 0, 7, read.GetCallback())); EXPECT_FALSE(registry.Release("bad", release.GetCallback()));
+  EXPECT_FALSE(read.IsReady()); EXPECT_FALSE(release.IsReady()); EXPECT_EQ(1u, Budget::ReservedItems()); Release(model, registry, ticket);
+}
+TEST_F(RemotePaintDownloadTransferTest, SingleReadAdmissionIncludesCallbackDelivery) {
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry); Start(model, registry, owner);
+  bool reentrant = true; base::test::TestFuture<Reader::Chunk> done;
+  EXPECT_TRUE(registry.Read(ticket, 0, 7, base::BindOnce(
+      [](Registry* registry, std::string ticket, bool* accepted, Reader::ReadCallback done, Reader::Chunk chunk) {
+        *accepted = registry->Read(ticket, 0, 7, base::BindOnce([](Reader::Chunk) {})); std::move(done).Run(std::move(chunk));
+      }, base::Unretained(&registry), ticket, base::Unretained(&reentrant), done.GetCallback())));
+  EXPECT_FALSE(registry.Read(ticket, 0, 7, base::BindOnce([](Reader::Chunk) {})));
+  tasks_.RunUntilIdle(); ASSERT_TRUE(done.IsReady()); EXPECT_EQ("xxxxxxx", done.Take().bytes); EXPECT_FALSE(reentrant); Release(model, registry, ticket);
+}
+TEST_F(RemotePaintDownloadTransferTest, ReleaseWaitsActualFileClosureAndItemMapAck) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry);
+  Start(model, registry, owner); const auto id = Identity(PathFor(model)); auto lease = LeaseFor(model);
+  EXPECT_EQ(1, OwnedReferences(id)); base::test::TestFuture<bool> done; EXPECT_TRUE(registry.Release(ticket, done.GetCallback())); model.Drain();
+  EXPECT_EQ(0, OwnedReferences(id)); EXPECT_TRUE(model.delegate.items.empty()); EXPECT_EQ(1u, model.delegate.metadata_acks.size());
+  EXPECT_FALSE(done.IsReady()); EXPECT_FALSE(lease->finished()); EXPECT_EQ(1u, Budget::ReservedItems());
+  EXPECT_FALSE(registry.Release(ticket, base::BindOnce([](bool) {}))); EXPECT_FALSE(registry.Arm(1, base::Seconds(1)));
+  for (auto& ack : model.delegate.metadata_acks) ack->MetadataRetired(); model.delegate.metadata_acks.clear(); model.Drain();
+  ASSERT_TRUE(done.IsReady()); EXPECT_TRUE(done.Take()); EXPECT_TRUE(lease->finished()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadTransferTest, ReleaseWaitsActualUrlOwnerAcknowledgement) {
+  Model model(tasks_); model.hold_requests = true; auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry);
+  model.Start(false, 7, true, owner); ASSERT_TRUE(registry.Offer(LeaseFor(model))); model.Drain();
+  base::test::TestFuture<bool> done; EXPECT_TRUE(registry.Release(ticket, done.GetCallback())); model.Drain();
+  EXPECT_FALSE(done.IsReady()); EXPECT_EQ(1u, Budget::ReservedItems());
+  model.hold_requests = false; model.CompleteRequests(); model.Drain(); ASSERT_TRUE(done.IsReady()); EXPECT_TRUE(done.Take()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadTransferTest, ReleaseReplyDeadlineKeepsUnsettledLeaseAndTicket) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry);
+  Start(model, registry, owner); auto lease = LeaseFor(model); base::test::TestFuture<bool> done;
+  EXPECT_TRUE(registry.Release(ticket, done.GetCallback())); model.Drain(); tasks_.FastForwardBy(base::Seconds(31));
+  ASSERT_TRUE(done.IsReady()); EXPECT_FALSE(done.Take()); EXPECT_FALSE(lease->finished()); EXPECT_EQ(1u, Budget::ReservedItems());
+  EXPECT_TRUE(registry.Info(ticket)); EXPECT_FALSE(registry.Arm(1, base::Seconds(1)));
+  for (auto& ack : model.delegate.metadata_acks) ack->MetadataRetired(); model.delegate.metadata_acks.clear(); model.Drain();
+  EXPECT_TRUE(lease->finished()); EXPECT_EQ(0u, Budget::ReservedItems()); EXPECT_FALSE(registry.Info(ticket));
+  const auto next = Arm(registry); Release(model, registry, next);
+}
+TEST_F(RemotePaintDownloadTransferTest, UnusedArmExpiresAndNeedsExplicitRelease) {
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry, 7, base::Seconds(1));
+  tasks_.FastForwardBy(base::Seconds(2)); EXPECT_EQ(TransferState::kFailed, Info(registry, ticket).state);
+  EXPECT_EQ(TransferError::kTimeout, Info(registry, ticket).error); EXPECT_FALSE(registry.Arm(1, base::Seconds(1)));
+  model.Start(true, 7, true, owner); EXPECT_FALSE(registry.Offer(LeaseFor(model))); model.RetireAll(); Release(model, registry, ticket);
+}
+TEST_F(RemotePaintDownloadTransferTest, ReadyDeadlineClosesOwnedFileAndRetiresActualLease) {
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry, 7, base::Seconds(1));
+  Start(model, registry, owner); const auto id = Identity(PathFor(model)); EXPECT_EQ(1, OwnedReferences(id));
+  tasks_.FastForwardBy(base::Seconds(2)); model.Drain(); EXPECT_EQ(0, OwnedReferences(id)); EXPECT_EQ(0u, Budget::ReservedItems());
+  EXPECT_EQ(TransferError::kTimeout, Info(registry, ticket).error); Release(model, registry, ticket);
+}
+TEST_F(RemotePaintDownloadTransferTest, InvalidateCannotRebindTicketToAnotherDocument) {
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry); Start(model, registry, owner);
+  registry.Invalidate(); model.Drain(); EXPECT_EQ(TransferError::kUnavailable, Info(registry, ticket).error);
+  EXPECT_FALSE(registry.Read(ticket, 0, 7, base::BindOnce([](Reader::Chunk) {}))); Release(model, registry, ticket);
+  EXPECT_FALSE(registry.Arm(7, base::Seconds(10)));
+}
+TEST_F(RemotePaintDownloadTransferTest, DroppingRegistryClosesActualReaderBeforeQuotaReuse) {
+  Model model(tasks_); auto owner = RequestContext(); auto registry = std::make_unique<Registry>(owner); const auto ticket = Arm(*registry);
+  Start(model, *registry, owner); auto lease = LeaseFor(model); const auto id = Identity(PathFor(model)); EXPECT_EQ(1, OwnedReferences(id));
+  registry.reset(); model.Drain(); EXPECT_EQ(0, OwnedReferences(id)); EXPECT_TRUE(lease->finished()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadTransferTest, RequestedLimitAutoretiresOversizeActualFile) {
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry, 6);
+  Start(model, registry, owner, 7); EXPECT_EQ(TransferError::kLimit, Info(registry, ticket).error);
+  model.Drain(); EXPECT_EQ(0u, Budget::ReservedItems()); Release(model, registry, ticket);
+}
+TEST_F(RemotePaintDownloadTransferTest, TwelveCompletedCyclesReuseActualQuotaAndDistinctTickets) {
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); std::string prior;
+  for (int i = 0; i < 12; ++i) {
+    const auto ticket = Arm(registry); EXPECT_NE(prior, ticket); prior = ticket; Start(model, registry, owner);
+    EXPECT_EQ(TransferState::kReady, Info(registry, ticket).state); Release(model, registry, ticket);
+    EXPECT_TRUE(base::IsDirectoryEmpty(model.directory.GetPath()));
+  }
+}
+TEST_F(RemotePaintDownloadTransferTest, AcceptedReadPastDeadlineDiscardsActualContent) {
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry); Start(model, registry, owner);
+  auto gate = BlockFileSequence(); auto unblock = ReleaseOnExit(gate); base::test::TestFuture<Reader::Chunk> done;
+  ASSERT_TRUE(registry.Read(ticket, 0, 7, done.GetCallback())); tasks_.AdvanceClock(base::Seconds(11));
+  gate->allow.Signal(); tasks_.RunUntilIdle(); ASSERT_TRUE(done.IsReady()); const auto chunk = done.Take();
+  EXPECT_EQ(ReadError::kClosed, chunk.error); EXPECT_TRUE(chunk.bytes.empty()); model.Drain();
+  EXPECT_EQ(TransferError::kTimeout, Info(registry, ticket).error); Release(model, registry, ticket);
+}
+TEST_F(RemotePaintDownloadTransferTest, FailedPhysicalCleanupNeverReportsReleaseSuccess) {
+  const auto* current = base::CommandLine::ForCurrentProcess();
+  if (!current->HasSwitch("native-transfer-failure-child")) {
+    auto child = *current; child.AppendSwitch("native-transfer-failure-child"); child.RemoveSwitch("gtest_filter");
+    child.AppendSwitchASCII("gtest_filter", "RemotePaintDownloadTransferTest.FailedPhysicalCleanupNeverReportsReleaseSuccess");
+    const auto output = current->GetSwitchValueASCII("gtest_output"); child.RemoveSwitch("gtest_output");
+    if (output.starts_with("json:")) child.AppendSwitchASCII("gtest_output", "json:" + base::FilePath::FromUTF8Unsafe(output.substr(5)).DirName().AppendASCII("transfer-child-failure.json").AsUTF8Unsafe());
+    auto process = base::LaunchProcess(child, base::LaunchOptions()); ASSERT_TRUE(process.IsValid()); int code = -1;
+    { base::ScopedAllowBaseSyncPrimitivesForTesting allow; ASSERT_TRUE(process.WaitForExitWithTimeout(base::Seconds(30), &code)); }
+    EXPECT_EQ(0, code); EXPECT_EQ(0u, Budget::ReservedItems()); return;
+  }
+  Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry); Start(model, registry, owner);
+  const auto path = PathFor(model); auto lease = LeaseFor(model); const auto id = Identity(path);
+  ASSERT_TRUE(base::Move(path, model.directory.GetPath().AppendASCII("moved-transfer"))); ASSERT_TRUE(base::CreateDirectory(path));
+  ASSERT_TRUE(base::WriteFile(path.AppendASCII("keep"), "keep")); base::test::TestFuture<bool> done;
+  EXPECT_TRUE(registry.Release(ticket, done.GetCallback())); model.Drain(); ASSERT_TRUE(done.IsReady()); EXPECT_FALSE(done.Take());
+  EXPECT_EQ(0, OwnedReferences(id)); EXPECT_TRUE(lease->failed()); EXPECT_FALSE(lease->finished()); EXPECT_EQ(1u, Budget::ReservedItems());
+  EXPECT_TRUE(registry.Info(ticket)); EXPECT_FALSE(registry.Arm(7, base::Seconds(10)));
 }
 
 TEST_F(RemotePaintDownloadBudgetTest, FailedCleanupHoldsQuotaUntilActualProcessExit) {

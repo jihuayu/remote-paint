@@ -1,0 +1,21 @@
+# Native 单 ticket 传输核心
+
+第26顺序补丁增加NativeDownloadTransferRegistry的origin序列核心。每个实例只保留一个39字节dl_UUID ticket、一份原始Page不可变见证、一份实际lease/reader及最多一个释放回调；没有下载历史扫描或URL重取。浏览器后续仍必须为每个真实WebContents只拥有一个实例、观察真实新下载并验证受信任Page命令；本步骤尚未接这些入口，不是可用的完整传输桥。
+
+Arm仅在Native双开关和有效owner下接受，内容上限1字节至4MiB、期限大于0且最多30秒。重复arm在原ticket清除前拒绝。lease在首次准入时记录一次TimeTicks；Offer只接受arm之后准入、已绑定真实item、具有相同原Page process/routing/document见证的lease。unknown、不同Page及早于arm的lease均拒绝，拒绝不替别的owner退休其下载。同Page的真实请求记录可来自不同target/initiator子frame；不会以当前frame重建来源。每份lease终生最多一次传输认领，已读过、已失败/退休或已完成退休的lease不可重新认领。这个组件合同不等于实际浏览器历史/导航验收。
+
+接收后观察实际DownloadItem，等待已完成、creator与文件任务可读条件结算，再创建已有NativeDownloadReadSession。读取沿用固定8192字节流式hash、3072字节chunk和单在途含回调交付，登记核心只保留有界元数据。过期或Invalidate发起实际关闭/取消，迟到读取内容丢弃。Invalidate永久清除该实例的owner，原ticket不能改归另一文档；新的真实文档需要新的浏览器owner，仍受原lease额度清理约束。
+
+Release的bool只表示接收请求；成功回调必须等NativeDownloadLease.finished，而该门槛包含完整文件owner/FD销毁及origin ACK、所有已接收URL owner回执、实际item和map删除回执。文件关闭或OnDownloadDestroyed均不能单独视为释放。释放失败或等待回调超过30秒返回false，同时保留未结算ticket和全局预约；若之后实际结算，再清除ticket，不发送第二次成功回复。这个回复期限不延长原下载或操作期限。每实例至多一个释放请求回调；销毁实例也先关闭reader并发起lease退休，缺失结算不能在进程内重置额度。
+
+新增20项组件用例覆盖开关/owner/参数、单ticket、未知/不同Page与旧准入拒绝、同Page子frame、跨实例单认领、真实item/creator到ready的hash/chunk、stale ticket、单在途及回调重入、释放等待文件与真实item/map ACK、等待真实URL owner ACK、释放回复超时仍保留、未使用/ready期限、Invalidate、销毁实例、请求上限、12次下载复用及迟到读取丢弃。期限使用mock time；文件、线程、Mojo、manager和item真实。Page/frame见证是合成值，不是真实RFH/浏览器导航。
+
+新增故障子进程把已打开文件路径移走并换成非空目录，真实FD关闭后Native删除失败；Release返回false、lease未finished，ticket与全局预约保持。父进程等待子进程实际退出，未在进程内清零。它不证明Source私有目录或外部文件竞争已处理。加上既有三份子进程，本轮共四份各1项通过。
+
+最终Linux ARM64 ELF无过滤385项（20新传输核心、89既有Native、276上游及竞态）全部RUN/COMPLETED，零失败/禁用，与编译列表逐项相同。新增20项从父版本源码差分确认、无移除、全部执行。Mac/Linux JS专项各13项通过，未重跑全1435项或SDK。GN/Ninja12步首次通过。真实DownloadManagerImpl和NavigationRequest的实际命令编译出ARM64对象，content/browser:browser依赖检查通过；未链接或运行整浏览器，也未验证Native Mac。
+
+26补丁全回放和57实际路径、35个Native组件逐一一致；自有容器实际终态/PID0/无OOM后删除，专用输出与Go缓存保留，原浏览器包19文件和观察器hash/身份保持。未改写已应用补丁收据，未访问禁止旧输出或演示，未提交、推送或使用子代理。
+
+Source预算第二开关仍未启用，描述符transfersReady=false。下一步接每WebContents唯一owner、实际manager新下载观察、原文档失效及受信任版本化Page arm/info/read/release，再处理原Playwright会话元数据、Source私有目录和unarmed策略，最后做完整浏览器验收。早期IO、远端网络服务物理退休、未知启动和原8小时增长失败等门槛仍未通过，K6部分，41项保持10完成/17部分/14待办。
+
+见[结构化证据](evidence/native-download-transfer-registry.json)、[读取会话](native-download-read-session.md)、[请求原始见证](native-download-request-context.md)与[进度](optimization-progress.md)。

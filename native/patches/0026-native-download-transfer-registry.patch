@@ -1,0 +1,330 @@
+--- a/components/download/public/common/BUILD.gn
++++ b/components/download/public/common/BUILD.gn
+@@ -65,6 +65,8 @@
+     "native_download_bridge_descriptor.h",
+     "native_download_read_session.cc",
+     "native_download_read_session.h",
++    "native_download_transfer_registry.cc",
++    "native_download_transfer_registry.h",
+     "native_download_request_context.cc",
+     "native_download_request_context.h",
+     "native_download_budget.cc",
+--- a/components/download/public/common/native_download_budget.cc
++++ b/components/download/public/common/native_download_budget.cc
+@@ -90,7 +90,8 @@
+ 
+ NativeDownloadLease::NativeDownloadLease(
+     base::RepeatingCallback<void(NativeDownloadLease*)> done)
+-    : done_(std::move(done)), deadline_(base::TimeTicks::Now() + kActiveLifetime) {}
++    : done_(std::move(done)), created_at_(base::TimeTicks::Now()),
++      deadline_(created_at_ + kActiveLifetime) {}
+ NativeDownloadLease::~NativeDownloadLease() = default;
+ 
+ bool NativeDownloadLease::AddAttempt(
+@@ -208,6 +209,16 @@
+   reader_seen_ = true; reader_ = reader->GetWeakPtr(); reader->Start(std::move(done)); return reader;
+ }
+ 
++bool NativeDownloadLease::ClaimTransfer() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (finished_ || failed_ || retiring_ || transfer_claimed_ || reader_seen_ || !item_) return false;
++  transfer_claimed_ = true; return true;
++}
++DownloadItem* NativeDownloadLease::transfer_item() const {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  return item_;
++}
++
+ void NativeDownloadLease::Fail() {
+   failed_ = true;
+   timer_.Stop();
+--- a/components/download/public/common/native_download_budget.h
++++ b/components/download/public/common/native_download_budget.h
+@@ -38,6 +38,10 @@
+   const std::string& guid() const { return guid_; }
+   bool failed() const { return failed_; }
+   bool retiring() const { return retiring_; }
++  bool finished() const { return finished_; }
++  base::TimeTicks created_at() const { return created_at_; }
++  bool ClaimTransfer();
++  DownloadItem* transfer_item() const;
+   const scoped_refptr<NativeDownloadRequestContext>& request_context() const { return request_context_; }
+   void OnDownloadUpdated(DownloadItem* item) override;
+   void OnDownloadDestroyed(DownloadItem* item) override;
+@@ -66,12 +70,14 @@
+   scoped_refptr<NativeDownloadRequestContext> request_context_;
+   base::WeakPtr<NativeDownloadReadSession> reader_;
+   bool reader_seen_ = false;
++  bool transfer_claimed_ = false;
+   std::array<scoped_refptr<UrlDownloadHandlerCleanupState>, 4> requests_;
+   scoped_refptr<UrlDownloadHandlerCleanupState> current_request_;
+   scoped_refptr<base::RefCountedData<base::OnceCallback<void(bool)>>> cancel_;
+   std::array<base::FilePath, 8> paths_;
+   std::string guid_;
+   base::OneShotTimer timer_;
++  const base::TimeTicks created_at_;
+   base::TimeTicks deadline_;
+   size_t pending_creators_ = 0;
+   bool context_seen_ = false;
+--- /dev/null
++++ b/components/download/public/common/native_download_transfer_registry.cc
+@@ -0,0 +1,171 @@
++#include "components/download/public/common/native_download_transfer_registry.h"
++
++#include <algorithm>
++#include <utility>
++#include "base/functional/bind.h"
++#include "base/uuid.h"
++#include "components/download/public/common/native_download_budget.h"
++#include "components/download/public/common/native_download_request_context.h"
++
++namespace download {
++namespace {
++constexpr auto kPoll = base::Milliseconds(50);
++constexpr auto kMaximumTimeout = base::Seconds(30);
++}
++NativeDownloadTransferRegistry::NativeDownloadTransferRegistry(
++    scoped_refptr<NativeDownloadRequestContext> owner)
++    : enabled_(NativeDownloadRequestContext::EnabledForProcess()), owner_(std::move(owner)) {}
++NativeDownloadTransferRegistry::~NativeDownloadTransferRegistry() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  weak_.InvalidateWeakPtrs(); timer_.Stop();
++  if (item_) item_->RemoveObserver(this);
++  item_ = nullptr;
++  reader_.reset();
++  if (lease_) lease_->BeginRetire();
++}
++std::optional<std::string> NativeDownloadTransferRegistry::Arm(uint64_t maximum_bytes, base::TimeDelta timeout) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (!enabled_ || !owner_ || !ticket_.empty() || !maximum_bytes ||
++      maximum_bytes > NativeDownloadBudget::kFileBytes || timeout <= base::TimeDelta() || timeout > kMaximumTimeout)
++    return std::nullopt;
++  ticket_ = "dl_" + base::Uuid::GenerateRandomV4().AsLowercaseString();
++  maximum_bytes_ = maximum_bytes; armed_at_ = base::TimeTicks::Now();
++  deadline_ = armed_at_ + timeout; state_ = State::kArmed;
++  Schedule(); return ticket_;
++}
++bool NativeDownloadTransferRegistry::Matches(std::string_view ticket) const {
++  return !ticket_.empty() && ticket.size() == ticket_.size() && ticket == ticket_;
++}
++bool NativeDownloadTransferRegistry::Offer(scoped_refptr<NativeDownloadLease> lease) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  Expire();
++  if (state_ != State::kArmed || !lease || lease->created_at() < armed_at_ ||
++      !lease->request_context() || !owner_->SamePageDocument(*lease->request_context()) || !lease->ClaimTransfer())
++    return false;
++  lease_ = std::move(lease); item_ = lease_->transfer_item();
++  item_->AddObserver(this); state_ = State::kPending;
++  Poll(); return true;
++}
++std::optional<NativeDownloadTransferRegistry::Snapshot> NativeDownloadTransferRegistry::Info(std::string_view ticket) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (!Matches(ticket)) return std::nullopt;
++  Expire();
++  return Snapshot{state_, error_, metadata_.byte_length, metadata_.sha256};
++}
++bool NativeDownloadTransferRegistry::Read(std::string_view ticket, uint64_t offset, uint32_t maximum_bytes,
++    NativeDownloadReadSession::ReadCallback done) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (!Matches(ticket)) return false;
++  Expire();
++  if (state_ != State::kReady || !reader_ || !done) return false;
++  return reader_->Read(offset, maximum_bytes, base::BindOnce(
++      &NativeDownloadTransferRegistry::OnRead, weak_.GetWeakPtr(), std::move(done)));
++}
++bool NativeDownloadTransferRegistry::Release(std::string_view ticket, base::OnceCallback<void(bool)> done) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (!Matches(ticket) || !done || release_requested_) return false;
++  release_requested_ = true; release_callback_ = std::move(done);
++  release_deadline_ = base::TimeTicks::Now() + kMaximumTimeout;
++  BeginRetire(Error::kCancelled);
++  Poll(); return true;
++}
++void NativeDownloadTransferRegistry::Invalidate() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  // Invalidation is permanent for this document. A later browser document must
++  // get a new owned registry; it cannot rebind a retained ticket to itself.
++  owner_.reset();
++  if (!ticket_.empty()) { BeginRetire(Error::kUnavailable); Poll(); }
++}
++void NativeDownloadTransferRegistry::Expire() {
++  if ((state_ == State::kArmed || state_ == State::kPending || state_ == State::kReady) &&
++      base::TimeTicks::Now() >= deadline_) {
++    BeginRetire(Error::kTimeout); Schedule();
++  }
++}
++void NativeDownloadTransferRegistry::BeginRetire(Error error) {
++  if (error_ == Error::kNone) error_ = error;
++  state_ = State::kRetiring;
++  if (reader_) reader_->Close();
++  if (lease_) lease_->BeginRetire();
++}
++void NativeDownloadTransferRegistry::Poll() {
++  auto self = weak_.GetWeakPtr();
++  Step();
++  if (self) self->Schedule();
++}
++void NativeDownloadTransferRegistry::Step() {
++  if (ticket_.empty()) return;
++  Expire();
++  if (!lease_ || lease_->finished()) {
++    if (release_requested_) { ReplyRelease(true); return; }
++    if (state_ == State::kRetiring) state_ = State::kFailed;
++    return;
++  }
++  if (lease_->failed()) {
++    state_ = State::kFailed;
++    if (error_ == Error::kNone) error_ = Error::kUnavailable;
++    if (reader_) reader_->Close();
++    ReplyRelease(false); return;
++  }
++  if (state_ == State::kRetiring) {
++    if (release_callback_ && base::TimeTicks::Now() >= release_deadline_) ReplyRelease(false);
++    return;
++  }
++  if (lease_->retiring() || !item_) { BeginRetire(Error::kUnavailable); return; }
++  if (state_ == State::kPending && !reader_) {
++    if (item_->GetState() == DownloadItem::CANCELLED || item_->GetState() == DownloadItem::INTERRUPTED) {
++      BeginRetire(Error::kUnavailable); return;
++    }
++    if (item_->GetState() == DownloadItem::COMPLETE)
++      reader_ = lease_->OpenReader(maximum_bytes_, base::BindOnce(
++          &NativeDownloadTransferRegistry::OnReady, weak_.GetWeakPtr()));
++  }
++}
++void NativeDownloadTransferRegistry::Schedule() {
++  timer_.Stop();
++  if (ticket_.empty() || state_ == State::kFailed) return;
++  auto delay = deadline_ - base::TimeTicks::Now();
++  if (state_ == State::kRetiring || (state_ == State::kPending && !reader_))
++    delay = kPoll;
++  timer_.Start(FROM_HERE, std::max(delay, base::TimeDelta()),
++      base::BindOnce(&NativeDownloadTransferRegistry::Poll, weak_.GetWeakPtr()));
++}
++void NativeDownloadTransferRegistry::OnReady(NativeDownloadReadSession::Metadata metadata) {
++  if (state_ != State::kPending || base::TimeTicks::Now() >= deadline_) {
++    if (state_ == State::kPending) BeginRetire(Error::kTimeout);
++    Poll(); return;
++  }
++  if (metadata.error != NativeDownloadReadSession::Error::kNone) {
++    BeginRetire(metadata.error == NativeDownloadReadSession::Error::kLimit ? Error::kLimit : Error::kIo);
++  } else { metadata_ = std::move(metadata); state_ = State::kReady; }
++  Poll();
++}
++void NativeDownloadTransferRegistry::OnRead(NativeDownloadReadSession::ReadCallback done,
++    NativeDownloadReadSession::Chunk chunk) {
++  Expire();
++  if (state_ != State::kReady) chunk = {NativeDownloadReadSession::Error::kClosed, chunk.offset, {}, false};
++  if (chunk.error != NativeDownloadReadSession::Error::kNone && state_ == State::kReady) {
++    BeginRetire(Error::kIo); Schedule();
++  }
++  std::move(done).Run(std::move(chunk));
++}
++void NativeDownloadTransferRegistry::OnDownloadUpdated(DownloadItem*) { Poll(); }
++void NativeDownloadTransferRegistry::OnDownloadDestroyed(DownloadItem*) {
++  item_ = nullptr;
++  if (state_ != State::kRetiring) BeginRetire(Error::kUnavailable);
++  // Destruction notification is never item/map retirement success.
++  Schedule();
++}
++void NativeDownloadTransferRegistry::ReplyRelease(bool success) {
++  auto done = std::move(release_callback_);
++  if (success) Clear();
++  if (done) std::move(done).Run(success);
++}
++void NativeDownloadTransferRegistry::Clear() {
++  timer_.Stop();
++  if (item_) item_->RemoveObserver(this);
++  item_ = nullptr; reader_.reset(); lease_.reset(); ticket_.clear();
++  state_ = State::kIdle; error_ = Error::kNone; metadata_ = {};
++  maximum_bytes_ = 0; release_requested_ = false;
++}
++}  // namespace download
+--- /dev/null
++++ b/components/download/public/common/native_download_transfer_registry.h
+@@ -0,0 +1,85 @@
++#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_TRANSFER_REGISTRY_H_
++#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_TRANSFER_REGISTRY_H_
++
++#include <memory>
++#include <optional>
++#include <string>
++#include <string_view>
++#include "base/functional/callback.h"
++#include "base/memory/raw_ptr.h"
++#include "base/memory/ref_counted.h"
++#include "base/memory/weak_ptr.h"
++#include "base/sequence_checker.h"
++#include "base/time/time.h"
++#include "base/timer/timer.h"
++#include "components/download/public/common/download_export.h"
++#include "components/download/public/common/download_item.h"
++#include "components/download/public/common/native_download_read_session.h"
++
++namespace download {
++class NativeDownloadLease;
++class NativeDownloadRequestContext;
++
++// One origin-sequence ticket. The browser must own exactly one of these per
++// WebContents, authenticate commands and offer actual new manager admissions.
++// This core never scans history or reconstructs request provenance.
++class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadTransferRegistry : public DownloadItem::Observer {
++ public:
++  enum class State { kIdle, kArmed, kPending, kReady, kRetiring, kFailed };
++  enum class Error { kNone, kCancelled, kTimeout, kUnavailable, kIo, kLimit };
++  struct Snapshot {
++    State state;
++    Error error;
++    uint64_t byte_length;
++    std::string sha256;
++  };
++  explicit NativeDownloadTransferRegistry(scoped_refptr<NativeDownloadRequestContext> owner);
++  ~NativeDownloadTransferRegistry() override;
++  NativeDownloadTransferRegistry(const NativeDownloadTransferRegistry&) = delete;
++  NativeDownloadTransferRegistry& operator=(const NativeDownloadTransferRegistry&) = delete;
++  std::optional<std::string> Arm(uint64_t maximum_bytes, base::TimeDelta timeout);
++  // A single claim is retained for the lease lifetime, including repeated
++  // observer notifications. Rejected unrelated leases remain their owner's job.
++  bool Offer(scoped_refptr<NativeDownloadLease> lease);
++  std::optional<Snapshot> Info(std::string_view ticket);
++  bool Read(std::string_view ticket, uint64_t offset, uint32_t maximum_bytes,
++            NativeDownloadReadSession::ReadCallback done);
++  // Acceptance is not retirement. At most one release callback, true only after
++  // the actual lease has finished all file/URL/item/map settlement. A 30s reply
++  // deadline or failure reports false and keeps the ticket/reservation held.
++  bool Release(std::string_view ticket, base::OnceCallback<void(bool)> done);
++  void Invalidate();
++  void OnDownloadUpdated(DownloadItem* item) override;
++  void OnDownloadDestroyed(DownloadItem* item) override;
++ private:
++  bool Matches(std::string_view ticket) const;
++  void Expire();
++  void BeginRetire(Error error);
++  void Poll();
++  void Step();
++  void Schedule();
++  void OnReady(NativeDownloadReadSession::Metadata metadata);
++  void OnRead(NativeDownloadReadSession::ReadCallback done, NativeDownloadReadSession::Chunk chunk);
++  void ReplyRelease(bool success);
++  void Clear();
++  const bool enabled_;
++  scoped_refptr<NativeDownloadRequestContext> owner_;
++  scoped_refptr<NativeDownloadLease> lease_;
++  raw_ptr<DownloadItem> item_ = nullptr;
++  std::unique_ptr<NativeDownloadReadSession> reader_;
++  std::string ticket_;
++  State state_ = State::kIdle;
++  Error error_ = Error::kNone;
++  uint64_t maximum_bytes_ = 0;
++  NativeDownloadReadSession::Metadata metadata_;
++  base::TimeTicks armed_at_;
++  base::TimeTicks deadline_;
++  base::TimeTicks release_deadline_;
++  bool release_requested_ = false;
++  base::OnceCallback<void(bool)> release_callback_;
++  base::OneShotTimer timer_;
++  SEQUENCE_CHECKER(sequence_checker_);
++  base::WeakPtrFactory<NativeDownloadTransferRegistry> weak_{this};
++};
++}  // namespace download
++#endif
