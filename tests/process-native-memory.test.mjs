@@ -2,32 +2,32 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn,fork} from 'node:child_process';
 import {once} from 'node:events';
+import {withOwnedTestChild,stopOwnedTestChild as stop} from './owned-test-child.mjs';
 import {fileURLToPath} from 'node:url';
 import {createNativeProcessMemorySampler,decodeNativeMemoryReply,NATIVE_MEMORY_LIMITS} from './process-native-memory.mjs';
 const native={skip:process.platform!=='darwin'},own=[{id:process.pid,type:'test-node'}],fixture=fileURLToPath(new URL('./fixtures/native-memory-child.mjs',import.meta.url));
 const launch=mode=>()=>spawn(process.execPath,[fixture,mode],{stdio:['pipe','pipe','pipe']});
 const receive=async(child,event)=>{for(;;){const[m]=await once(child,'message');if(m.event===event)return m;}};
-async function stop(child){if(child.exitCode===null&&child.signalCode===null){const done=once(child,'close');child.kill('SIGKILL');await done;}}
 test('native sampler reads actual RSS/virtual/physical footprint repeatedly through one owned persistent helper',native,async t=>{
  const s=await createNativeProcessMemorySampler(),helper=s.child.pid;try{
   const rows=[];for(let n=0;n<10;n++){const value=await s.sample(own);assert.equal(value.sampling.helperPid,helper);assert.equal(value.sampling.requestId,n+1);assert.ok(value.sampling.elapsedMs<5000);const p=value.processes[0];assert.equal(p.pid,process.pid);assert.equal(p.identity.uid,process.getuid());assert.ok(p.rssBytes>0&&p.physicalFootprintBytes>0&&p.virtualBytes>=p.rssBytes);assert.equal(p.bytes,p.rssBytes);assert.equal(p.pssBytes,undefined);rows.push(p);}
   assert.ok(rows.every(p=>p.identity.startSeconds===rows[0].identity.startSeconds&&p.identity.startMicroseconds===rows[0].identity.startMicroseconds));t.diagnostic(JSON.stringify({scope:'ActualDarwinlibproc',helper,sample:rows[0]}));
  }finally{const end=await s.close();assert.equal(end.exited,true);assert.equal(end.exitCode,0);}
 });
-test('actual touched 64MiB child allocation increases native RSS and physical footprint without inventing release semantics',native,async t=>{
- const child=fork(fixture,['allocate'],{execArgv:['--expose-gc'],stdio:['ignore','ignore','pipe','ipc']}),ready=receive(child,'ready'),s=await createNativeProcessMemorySampler();try{
+test('actual touched 64MiB child allocation increases native RSS and physical footprint without inventing release semantics',native,async t=>withOwnedTestChild(()=>fork(fixture,['allocate'],{execArgv:['--expose-gc'],stdio:['ignore','ignore','pipe','ipc']}),async child=>{
+ const ready=receive(child,'ready');ready.catch(()=>{});const s=await createNativeProcessMemorySampler();try{
   await ready;const info=[{id:child.pid,type:'allocation-child'}],before=(await s.sample(info)).processes[0],allocated=receive(child,'allocated');child.send('allocate');const nativeChild=await allocated,after=(await s.sample([{...info[0],identity:before.identity}])).processes[0];
   const rssGrowth=after.rssBytes-before.rssBytes,footprintGrowth=after.physicalFootprintBytes-before.physicalFootprintBytes;assert.ok(rssGrowth>=48*1024*1024,JSON.stringify({before,after}));assert.ok(footprintGrowth>=48*1024*1024);assert.ok(Math.abs(after.rssBytes-nativeChild.rssBytes)<8*1024*1024);assert.equal(after.identity.ppid,process.pid);
   const released=receive(child,'released');child.send('release');await released;const final=(await s.sample(info)).processes[0];assert.ok(final.rssBytes>=0);t.diagnostic(JSON.stringify({scope:'Actual64MiBdirtyallocation;releaseRSSnotpromised',before,after,final,rssGrowth,footprintGrowth}));
- }finally{await stop(child);await s.close();}
-});
-test('terminated target is a failed fresh batch and never becomes a zero or a cached positive row',native,async()=>{
- const child=fork(fixture,['allocate'],{stdio:['ignore','ignore','pipe','ipc']}),ready=receive(child,'ready'),s=await createNativeProcessMemorySampler();try{
+ }finally{await s.close();}
+}));
+test('terminated target is a failed fresh batch and never becomes a zero or a cached positive row',native,async()=>withOwnedTestChild(()=>fork(fixture,['allocate'],{stdio:['ignore','ignore','pipe','ipc']}),async child=>{
+ const ready=receive(child,'ready');ready.catch(()=>{});const s=await createNativeProcessMemorySampler();try{
   await ready;const original=(await s.sample([{id:child.pid,type:'child'}])).processes[0];await stop(child);
   await assert.rejects(s.sample([{id:child.pid,type:'child',identity:original.identity}]),e=>['NATIVE_MEMORY_OS_READ','NATIVE_MEMORY_IDENTITY_CHANGED'].includes(e.code)&&e.failedPid===child.pid);
   const fresh=await s.sample(own);assert.equal(fresh.processes.length,1);assert.equal(fresh.processes[0].pid,process.pid);assert.equal(fresh.sampling.requestId,3);
- }finally{await stop(child);await s.close();}
-});
+ }finally{await s.close();}
+}));
 test('expected start identity and bounded single pending request prevent stale PID attribution and unbounded queues',native,async()=>{
  const s=await createNativeProcessMemorySampler();try{
   const first=(await s.sample(own)).processes[0];await assert.rejects(s.sample([{...own[0],identity:{...first.identity,startSeconds:first.identity.startSeconds+1}}]),e=>e.code==='NATIVE_MEMORY_IDENTITY_CHANGED');

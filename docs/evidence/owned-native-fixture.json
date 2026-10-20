@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-18T07:26:18.875117+00:00",
+  "status": "owned-test-fixture-setup-failure-cleanup-fixed",
+  "previousFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7-js-failure-checkpoint-v1.json",
+  "change": "Own both real allocation IPC fixtures before asynchronous Native sampler initialization; setup rejection still reaps the fixture. Sampler readiness failure remains a failure. No production Source/Viewer/Gateway or sampler deadlines changed.",
+  "targetedContracts": {
+    "passed": 3,
+    "failed": 0,
+    "scope": "Two sampling-cadence/cohort contracts plus asynchronous setup-rejection ownership contract."
+  },
+  "actualIPCRegression": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/owned-native-fixture-regression-v1.json",
+  "actualIPCRegressionSha256": "0c443c289a4a22402a2a020cbec2f8f8bf112b1b3a0735734b618d6efaaaf619",
+  "actualIPC": {
+    "elapsedMs": 36.754917000000006,
+    "signal": "SIGKILL",
+    "connected": false
+  },
+  "sourceFiles": {
+    "tests/owned-test-child.mjs": "f6cefb9eb52638cce3efc3d56862bacf5367aeeb0d8bbeb3c673710c7f691f89",
+    "tests/owned-test-child.test.mjs": "e16b63475a8ac5af2e7ebaa4eef4aaad3dbe56a05a1164b6f97bffab6a4a4cff",
+    "tests/process-native-memory.test.mjs": "2d242e6b0502a810df472ecd37d878aceba8b736c856005754d82de70bdae1de",
+    "tests/session-sampling-cadence.mjs": "948be96f662282a1a9637dd7c2c67d9b9f723219de962f36cd83136f4d36e062",
+    "tests/session-sampling-cadence.test.mjs": "033834d17a1471e25d809c70a29173bd50bbf9360a17963ed2674205a06c455c",
+    "tests/verify-session-longload.mjs": "3874f21f40fec05e8536c4b7ee53846a4cf14c650d988ae773a6bf3d026d523a"
+  },
+  "full272BothPlatformsPending": true,
+  "newCandidatePilotsPending": true,
+  "eightHourPassed": false,
+  "noCommitPush": true
+}

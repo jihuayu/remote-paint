@@ -1,0 +1,62 @@
+{
+  "at": "2026-10-18T07:21:44.368944+00:00",
+  "status": "Mac-full271-failed-three-contracts",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7/baseline-frozen-version.json",
+  "manifestSha256": "523d7e6ee385f002e52ed23242ce0481e7ac6b01aab0013619dab0541c700514",
+  "fullJS": {
+    "testsEach": 271,
+    "mac": {
+      "pass": 260,
+      "fail": 3,
+      "skip": 8,
+      "actualExitCode": 1
+    },
+    "linux": {
+      "pass": 267,
+      "fail": 0,
+      "skip": 4,
+      "actualExitCode": 0
+    }
+  },
+  "failures": [
+    {
+      "test": "Broker close promptly rejects pending work and discards incomplete output",
+      "reason": "Did not observe partial subprocess output within original5s wait; whole test7007.883ms."
+    },
+    {
+      "test": "native sampler reads actual RSS/virtual/physical footprint repeatedly",
+      "code": "NATIVE_MEMORY_READY_TIMEOUT",
+      "helperPid": 2481,
+      "helperKilledAndReaped": true
+    },
+    {
+      "test": "actual touched64MiB child allocation",
+      "code": "NATIVE_MEMORY_READY_TIMEOUT",
+      "helperPid": 2536,
+      "helperKilledAndReaped": true
+    }
+  ],
+  "testFixtureLeak": "Allocation fixture2535 was forked before await createNativeProcessMemorySampler outside try/finally. Setup rejection bypassed cleanup, leaving IPC alive. After recording owned ancestry/stall, explicitly terminated that fixture to allow failed runner to finish.",
+  "manualFixtureCleanup": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7/js-results/orphan-fixture-cleanup-action.json",
+  "allRecordedOwnedPidsGone": [
+    2089,
+    2168,
+    2480,
+    2481,
+    2535,
+    2536
+  ],
+  "timingScope": "Suite423.889s includes waiting for manually cleaned orphan fixture, not normal test throughput. Startup/readiness failures remain failures; no deadlines/concurrency/OS security/signing changed. Underlying slow process startup not yet attributed.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7/baseline-frozen-version.json": "523d7e6ee385f002e52ed23242ce0481e7ac6b01aab0013619dab0541c700514",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7/js-results/mac.log": "445b92e830939e99c49a1f19a1807c8b7067c890ef7c82a4f23faac902b7b1b0",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7/js-results/linux.log": "9994400ade80c1be40f57431cdd037ea8c46ec0116b08a371266667515f8fede",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7/js-results/mac-exit.json": "e153f5bd2ee7416d77570b30ba1de5bb9196c55f8d145e34df9dab12190ffe43",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7/js-results/linux-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7/js-results/stalled-processes-before-cleanup.json": "5fc1e6265ae26fe1391f2fbcd091c076707ad99b30b60e5054dcd24170b562c8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7/js-results/orphan-fixture-cleanup-action.json": "ba2e5bd8669fe9db455a7d2ba2d6aca0705e99efbd84f794e16c2074e530041e"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "noEightHourActive": true
+}
