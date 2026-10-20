@@ -1,3 +1,4 @@
+import {AgentEventHttpError,agentEventAfter,agentEventPage,agentEventStreamOptions,streamAgentEvents} from './agent-event-http.mjs';
 import {createAgentDownloadHttpSink} from './agent-download-http.mjs';
 import {createScreenshotHttpSink} from './agent-screenshot-http.mjs';
 import {createServer} from 'node:http';
@@ -78,8 +79,11 @@ function body(req,maxBytes,signal){
 }
 function route(req){
  const path=req.url;
- if(typeof path!=='string'||path.length>2048||/[?#%]/.test(path))fail('ROUTE_NOT_FOUND');
- const agent=agentHttpRoute(path);if(agent)return agent;
+ if(typeof path!=='string'||path.length>2048||/[#%]/.test(path))fail('ROUTE_NOT_FOUND');
+ const [resource,query,...extra]=path.split('?'),agent=agentHttpRoute(resource);
+ if(query!==undefined){if(extra.length||!agent||!['agent-events','agent-event-stream'].includes(agent.kind)||!/^after=aec1\.arun_[a-f0-9-]{36}\.(?:0|[1-9][0-9]{0,15})$/.test(query))fail('ROUTE_NOT_FOUND');agent.eventCursor=query.slice(6);}
+ if(agent)return agent;
+ if(query!==undefined)fail('ROUTE_NOT_FOUND');
  let match;
  if(path==='/v1/sessions')return {method:'POST',scope:'sessions:create',kind:'create'};
  if((match=/^\/v1\/sessions\/(ses_[A-Za-z0-9_-]{1,124})\/viewer-tickets$/.exec(path)))return {method:'POST',scope:'viewers:read',kind:'viewer-issue',id:match[1]};
@@ -92,25 +96,26 @@ function route(req){
 // An unbound backend HTTP server. The caller owns TLS/proxy binding, ledger,
 // Registry recovery and shutdown. Disconnection never cancels accepted creation.
 // HTTP options follow Node22: https://r2.nodejs.org/docs/latest-jod/api/http.html
-export function createSessionControlServer({registry,authenticate,viewerAccess=null,agentExecutor=null,maxBodyBytes=16384,maxAgentBodyBytes=32768,maxConcurrentRequests=64,maxAgentEndRequests=8,requestTimeoutMs=10000}={}){
+export function createSessionControlServer({registry,authenticate,viewerAccess=null,agentExecutor=null,maxBodyBytes=16384,maxAgentBodyBytes=32768,maxConcurrentRequests=64,maxAgentEndRequests=8,maxAgentEventStreams=8,agentEventStream={},requestTimeoutMs=10000}={}){
  if(!(registry instanceof SessionRegistry)||typeof authenticate!=='function')throw new TypeError('Configure an explicit Registry and trusted authenticator');
  if(viewerAccess!==null&&(!(viewerAccess instanceof ViewerAccess)||!viewerAccess.usesRegistry(registry)))throw new TypeError('Viewer access must use this Registry');
- const agentAccess=createAgentHttpAccess(agentExecutor,registry);
- if(!integer(maxBodyBytes,128,1048576)||!integer(maxAgentBodyBytes,128,32768)||!integer(maxConcurrentRequests,1,10000)||!integer(maxAgentEndRequests,1,256)||!integer(requestTimeoutMs,50,60000))throw new TypeError('Invalid HTTP request bounds');
- confirmed(registry);let active=0,activeEnds=0,authenticating=0,authenticatingEnds=0;
+ const agentAccess=createAgentHttpAccess(agentExecutor,registry),eventOptions=agentEventStreamOptions(agentEventStream);
+ if(!integer(maxBodyBytes,128,1048576)||!integer(maxAgentBodyBytes,128,32768)||!integer(maxConcurrentRequests,1,10000)||!integer(maxAgentEndRequests,1,256)||!integer(maxAgentEventStreams,1,64)||!integer(requestTimeoutMs,50,60000))throw new TypeError('Invalid HTTP request bounds');
+ confirmed(registry);let active=0,activeEnds=0,activeEvents=0,authenticating=0,authenticatingEnds=0,authenticatingEvents=0;
  const handle=async(req,res)=>{
   const requestId='req_'+randomUUID();let held=false,controller,timer,onAbort,onClose,selected,screenshotSink,downloadSink;
   try{
    if(req.rawHeaders.length>128)fail('INVALID_REQUEST');
    if(header(req,'origin')!==undefined)fail('MANAGEMENT_ORIGIN_FORBIDDEN');
    if(header(req,'expect')!==undefined)fail('INVALID_REQUEST');
-   selected=route(req);const priority=selected.kind==='agent-end'&&req.method===selected.method;
+   selected=route(req);const priority=selected.kind==='agent-end'&&req.method===selected.method,eventReader=['agent-events','agent-event-stream'].includes(selected.kind)&&req.method===selected.method;
    if(priority){if(activeEnds>=maxAgentEndRequests)fail('SERVICE_BUSY');activeEnds++;held='end';}
+   else if(eventReader){if(activeEvents>=maxAgentEventStreams)fail('SERVICE_BUSY');activeEvents++;held='event';}
    else{if(active>=maxConcurrentRequests)fail('SERVICE_BUSY');active++;held='ordinary';}
    controller=new AbortController();const {signal}=controller;
    timer=setTimeout(()=>controller.abort(new SessionApiError('REQUEST_TIMEOUT','Request deadline exceeded',408)),requestTimeoutMs);timer.unref();
    onAbort=()=>controller.abort(new SessionApiError('INVALID_REQUEST','Request disconnected',400));onClose=()=>{if(!res.writableFinished)onAbort();};
-   req.once('aborted',onAbort);res.once('close',onClose);req.on('error',onAbort);
+   req.once('aborted',onAbort);res.once('close',onClose);req.on('error',onAbort);res.on('error',onAbort);
    if(req.method!==selected.method){res.setHeader('allow',selected.allow??selected.method);fail('METHOD_NOT_ALLOWED');}
    const length=header(req,'content-length'),transfer=header(req,'transfer-encoding'),encoding=header(req,'content-encoding'),contentType=header(req,'content-type');
    if(length!==undefined&&(!/^(0|[1-9][0-9]*)$/.test(length)||!Number.isSafeInteger(Number(length))))fail('INVALID_REQUEST');
@@ -121,10 +126,10 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
    if(needsBody&&(encoding!==undefined||!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(contentType??'')))fail('UNSUPPORTED_MEDIA_TYPE');
    const authorization=header(req,'authorization'),match=/^Bearer ([A-Za-z0-9_-]{32,256})$/i.exec(authorization??'');if(!match)fail('UNAUTHENTICATED');
    let authenticated;
-   if(priority?authenticatingEnds>=maxAgentEndRequests:authenticating>=maxConcurrentRequests)fail('SERVICE_BUSY');
-   if(priority)authenticatingEnds++;else authenticating++;
+   if(priority?authenticatingEnds>=maxAgentEndRequests:eventReader?authenticatingEvents>=maxAgentEventStreams:authenticating>=maxConcurrentRequests)fail('SERVICE_BUSY');
+   if(priority)authenticatingEnds++;else if(eventReader)authenticatingEvents++;else authenticating++;
    const attempt=Promise.resolve().then(()=>{aborted(signal);return authenticate({token:match[1],signal});});
-   const authDone=()=>{if(priority)authenticatingEnds--;else authenticating--;};void attempt.then(authDone,authDone);
+   const authDone=()=>{if(priority)authenticatingEnds--;else if(eventReader)authenticatingEvents--;else authenticating--;};void attempt.then(authDone,authDone);
    try{authenticated=await wait(attempt,signal);}catch(error){if(signal.aborted)throw signal.reason;fail('AUTHENTICATION_UNAVAILABLE');}
    aborted(signal);if(authenticated===null||authenticated===undefined)fail('UNAUTHENTICATED');const principal=identity(authenticated);
    if(!principal.scopes.has(selected.scope))fail('FORBIDDEN');confirmed(registry);
@@ -132,6 +137,17 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
     const needsKey=['agent-create','agent-invocations'].includes(selected.kind),idempotencyKey=needsKey?header(req,'idempotency-key'):undefined;
     if(needsKey&&(typeof idempotencyKey!=='string'||!/^[\x21-\x7e]{1,128}$/.test(idempotencyKey)))fail('INVALID_IDEMPOTENCY_KEY');
     const input=needsBody?await body(req,bodyLimit,signal):undefined;aborted(signal);confirmed(registry);
+    if(eventReader){
+     if(!agentAccess)throw new AgentEventHttpError('AGENT_NOT_CONFIGURED');
+     const last=header(req,'last-event-id');if(last!==undefined&&selected.eventCursor!==undefined)throw new AgentEventHttpError('AGENT_EVENT_CURSOR_INVALID');
+     const reference={tenantId:principal.tenantId,agentRunId:selected.id};
+     // Authorize the exact Run before interpreting its public cursor. A cursor
+     // from another tenant is neither a capability nor an existence oracle.
+     agentAccess.getRun(reference);const after=agentEventAfter(selected.id,last??selected.eventCursor),page=agentAccess.events({...reference,after});
+     if(selected.kind==='agent-events'){send(res,requestId,200,{data:agentEventPage(page)});return;}
+     agentEventPage(page);clearTimeout(timer);timer=null;
+     await streamAgentEvents({res,requestId,signal,access:agentAccess,reference,initial:page,options:eventOptions});return;
+    }
     if(selected.kind==='agent-screenshot-downloads'){if(header(req,'range')!==undefined||header(req,'if-range')!==undefined)fail('INVALID_REQUEST');screenshotSink=createScreenshotHttpSink(res,requestId,signal);}
     if(selected.kind==='agent-download-files'){if(header(req,'range')!==undefined||header(req,'if-range')!==undefined)fail('INVALID_REQUEST');downloadSink=createAgentDownloadHttpSink(res,requestId,signal);}
     const response=await handleAgentHttp({selected,principal,input,idempotencyKey,access:agentAccess,registry,wait,signal,screenshotSink:screenshotSink?{start:screenshotSink.start,write:screenshotSink.write,finish:screenshotSink.finish}:undefined,downloadSink:downloadSink?{start:downloadSink.start,write:downloadSink.write,finish:downloadSink.finish}:undefined});if(response.binary)return;
@@ -158,17 +174,17 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
    send(res,requestId,operation&&result.status==='pending'?202:200,{data:result},operation?{location:'/v1/operations/'+result.operationId}:{});
   }catch(error){
    const agentError=selected?.agent?agentHttpError(error):null;
-   if(agentError)send(res,requestId,agentError.status,{error:{code:agentError.code,message:agentError.message,outcome:agentError.outcome}});
+   if(agentError)send(res,requestId,agentError.status,{error:{code:agentError.code,message:agentError.message,outcome:agentError.outcome,...(agentError.details?{details:agentError.details}:{})}});
    else{const code=error instanceof SessionApiError&&Object.hasOwn(ERRORS,error.code)?error.code:'INTERNAL_ERROR',entry=ERRORS[code];send(res,requestId,entry[0],{error:{code,message:entry[1]}});}
   }finally{
    if(screenshotSink)await screenshotSink.cleanup();
    if(downloadSink)await downloadSink.cleanup();
-   if(timer)clearTimeout(timer);if(onAbort){req.off('aborted',onAbort);req.off('error',onAbort);res.off('close',onClose);}
-   if(held==='end')activeEnds--;else if(held)active--;
+   if(timer)clearTimeout(timer);if(onAbort){req.off('aborted',onAbort);req.off('error',onAbort);res.off('close',onClose);if(res.closed)res.off('error',onAbort);else res.once('close',()=>res.off('error',onAbort));}
+   if(held==='end')activeEnds--;else if(held==='event')activeEvents--;else if(held)active--;
   }
  };
  const server=createServer({maxHeaderSize:16384,headersTimeout:requestTimeoutMs,requestTimeout:requestTimeoutMs,connectionsCheckingInterval:1000,keepAliveTimeout:1000},(req,res)=>{void handle(req,res);});
- server.maxHeadersCount=64;server.maxRequestsPerSocket=1;server.maxConnections=Math.min(20000,(maxConcurrentRequests+maxAgentEndRequests)*2);
+ server.maxHeadersCount=64;server.maxRequestsPerSocket=1;server.maxConnections=Math.min(20000,(maxConcurrentRequests+maxAgentEndRequests+maxAgentEventStreams)*2);
  server.on('checkContinue',(req,res)=>{void handle(req,res);});server.on('checkExpectation',(req,res)=>{void handle(req,res);});
  server.on('upgrade',(req,socket,head)=>{if(viewerAccess)viewerAccess.handleUpgrade(req,socket,head);else socket.destroy();});server.on('connect',(req,socket)=>socket.destroy());
  server.once('close',()=>viewerAccess?.close());

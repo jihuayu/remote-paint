@@ -1,3 +1,4 @@
+import {AgentEventHttpError} from './agent-event-http.mjs';
 import {capturePublicDownloadArmed,capturePublicDownloadInfo,capturePublicDownloadChunk,capturePublicDownloadReleased} from './agent-download-access.mjs';
 import {capturePublicScreenshot,capturePublicScreenshotChunk,capturePublicScreenshotReleased} from './agent-screenshot-access.mjs';
 import {DurableAgentExecutor,AgentExecutionError} from './agent-executor.mjs';
@@ -7,6 +8,7 @@ import {InputError} from '../live/input.mjs';
 
 export const AGENT_HTTP_SCOPES=Object.freeze(['agents:read','agents:write','agents:end','agents:observe']);
 const errors={
+ AGENT_EVENT_CURSOR_INVALID:[400,'Invalid Agent event cursor'],AGENT_EVENT_GAP:[409,'Agent event history is no longer retained'],AGENT_EVENT_STREAM_STALLED:[504,'Agent event reader did not drain'],
  STALE_AGENT_DOWNLOAD:[409,'Agent download handle is stale'],AGENT_DOWNLOAD_BUSY:[409,'Agent download is in flight'],AGENT_DOWNLOAD_LIMIT:[413,'Agent download exceeds the allowed limit'],AGENT_DOWNLOAD_FAILED:[502,'Agent download could not be confirmed'],AGENT_DOWNLOAD_TIMEOUT:[504,'Agent download window expired'],AGENT_DOWNLOAD_CANCELLED:[409,'Agent download was cancelled'],
  STALE_AGENT_SCREENSHOT:[409,'Agent screenshot handle is stale'],INVALID_AGENT_OBSERVATION:[400,'Invalid Agent observation'],STALE_AGENT_ELEMENT:[409,'Agent element handle is stale'],STALE_AGENT_PAGE:[409,'Agent document context is stale'],
  AGENT_OBSERVATION_UNAVAILABLE:[409,'Agent observation is unavailable'],AGENT_OBSERVATION_BUSY:[409,'Agent observation is in flight'],AGENT_OBSERVATION_LIMIT:[413,'Agent observation exceeds the allowed limit'],AGENT_OBSERVATION_FAILED:[502,'Agent observation could not be confirmed'],
@@ -22,22 +24,22 @@ const errors={
 };
 class AgentHttpError extends Error {constructor(code){super('Agent HTTP access is unavailable');this.code=code;this.outcome='not-dispatched';}}
 export function agentHttpError(error){
- if(!(error instanceof AgentHttpError||error instanceof AgentExecutionError||error instanceof AgentRpcError||error instanceof InputError))return null;
- const code=Object.hasOwn(errors,error.code)?error.code:'AGENT_INPUT_FAILED',[status,message]=errors[code];return {code,status,message,outcome:error.outcome==='unknown'?'unknown':'not-dispatched'};
+ if(!(error instanceof AgentEventHttpError||error instanceof AgentHttpError||error instanceof AgentExecutionError||error instanceof AgentRpcError||error instanceof InputError))return null;
+ const code=Object.hasOwn(errors,error.code)?error.code:'AGENT_INPUT_FAILED',[status,message]=errors[code];return {code,status,message,outcome:error.outcome==='unknown'?'unknown':'not-dispatched',...(error instanceof AgentEventHttpError&&error.code==='AGENT_EVENT_GAP'?{details:error.details}:{})};
 }
 const uuid='[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
-const runPath=new RegExp('^/v1/agent-runs/(arun_'+uuid+')(?:/(context|invocations|end|observation-context|observations|accessibility-observations|screenshot-observations|screenshot-chunks|screenshot-releases|screenshot-downloads|download-arms|download-observations|download-chunks|download-releases|download-files))?$');
+const runPath=new RegExp('^/v1/agent-runs/(arun_'+uuid+')(?:/(events/stream|events|context|invocations|end|observation-context|observations|accessibility-observations|screenshot-observations|screenshot-chunks|screenshot-releases|screenshot-downloads|download-arms|download-observations|download-chunks|download-releases|download-files))?$');
 const invocationPath=new RegExp('^/v1/agent-invocations/(ainv_'+uuid+')$');
 const createPath=new RegExp('^/v1/sessions/(ses_'+uuid+')/agent-runs$');
 export function agentHttpRoute(path){
  let match;if((match=createPath.exec(path)))return {agent:true,method:'POST',scope:'agents:write',kind:'agent-create',id:match[1],needsBody:true};
  if((match=invocationPath.exec(path)))return {agent:true,method:'GET',scope:'agents:read',kind:'agent-invocation',id:match[1]};
- if((match=runPath.exec(path))){const suffix=match[2],observation=['observations','observation-context','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix);return {agent:true,method:['invocations','end','observations','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix)?'POST':'GET',scope:observation?'agents:observe':suffix==='invocations'?'agents:write':suffix==='end'?'agents:end':'agents:read',kind:'agent-'+(suffix??'run'),id:match[1],needsBody:['invocations','observations','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix)};}
+ if((match=runPath.exec(path))){const suffix=match[2],observation=['observations','observation-context','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix);return {agent:true,method:['invocations','end','observations','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix)?'POST':'GET',scope:observation?'agents:observe':suffix==='invocations'?'agents:write':suffix==='end'?'agents:end':'agents:read',kind:'agent-'+(suffix==='events/stream'?'event-stream':suffix??'run'),id:match[1],needsBody:['invocations','observations','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix)};}
  return null;
 }
 export function createAgentHttpAccess(executor,registry){
  if(executor===null)return null;if(!(executor instanceof DurableAgentExecutor)||!executor.usesRegistry(registry))throw TypeError('Agent executor must use the exact HTTP Registry');
- return Object.freeze(Object.fromEntries(['create','getRun','getInvocation','context','observationContext','observe','observeAccessibility','screenshot','readScreenshot','releaseScreenshot','downloadScreenshot','armDownload','downloadInfo','readDownload','releaseDownload','downloadFile','perform','end'].map(name=>[name,executor[name].bind(executor)])));
+ return Object.freeze(Object.fromEntries(['create','getRun','getInvocation','events','context','observationContext','observe','observeAccessibility','screenshot','readScreenshot','releaseScreenshot','downloadScreenshot','armDownload','downloadInfo','readDownload','releaseDownload','downloadFile','perform','end'].map(name=>[name,executor[name].bind(executor)])));
 }
 function data(value,allowed,required=allowed){
  if(!value||![Object.prototype,null].includes(Object.getPrototypeOf(value)))throw new AgentExecutionError('AGENT_INVALID_REQUEST');

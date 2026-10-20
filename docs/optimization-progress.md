@@ -1,5 +1,7 @@
 # Remote Paint 优化实施进度
 
+2026-10-20 K8b1增加[公开事件页与SSE](agent-event-http.md)：可信后端agents:read、精确Run游标与稳定eventId，过旧游标409/流中gap均不自动跳过；独立有限配额、心跳、串行背压与真实HTTP finish，断连不取消实际Source工作。22项新合同与真实SQLite冷重开后新HTTP服务重连通过，最终双平台完整1535项原时限零失败（macOS1520通过/15跳过、Linux1529通过/6跳过），22新项均运行无跳过，完整资格见独立文档。取消副作用说明、流SDK、签名Webhook及真实Native验收仍待，K8部分和41项10/18/13保持；完整浏览器v2已因资源争用退出143并移除，缓存输出保留，原8小时失败不变。
+
 2026-10-20 K8a新增实际Run/Invocation状态事务内的持久事件日志及受信后端分页读取；稳定event ID、每Run序号、64条窗口和明确游标缺口，不保存动作/页面内容，不把input-injected当业务成功。17新增实际SQLite/执行器合同及5个真实自有SIGKILL通过，扩展113项通过，最终双平台完整1513项原时限零失败（macOS1498通过/15跳过、Linux1507通过/6跳过），完整双平台结果见[持久事件内核](agent-event-journal.md)。HTTP流、心跳/缺口恢复、SDK、取消与签名Webhook仍待，K8仅改列部分，41项10完成/18部分/13待办；原8小时失败及Native物理门槛保持。
 
 2026-10-20 原Source Native下载接线增加仅后端布尔opt-in、原Page模式注册和初始化后原capture/CDP/token绑定；默认关闭，发现未就绪明确失败。Source占位必须等整个observer及实际对象组退休，Native end全阶段30秒失败保留未知状态，迟到回复不返占位。17项真实Run/observer及Source关闭编排夹具与两平台各1496项完整JS通过（macOS1481通过/15跳过、Linux1490通过/6跳过，原时限零失败），完整双平台结果与未完成真实浏览器验收见[范围](source-native-download-wiring.md)。独立完整浏览器v2仍构建，预算/readiness未激活，41项10/17/14及原8小时失败保持。
@@ -65,7 +67,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
 | K6 | 结构化观察与结果 | 部分实现 | 原观察/SDK范围保留。Native请求创建时arm ID、4个可复用窗口及实际准入前unarmed/旧窗口拒绝已接；原item无RFH续传见证与弱lease引用，旧事件隔离保留。436项（21新+139既有Native+276上游）及4子进程、双平台专项各13、实际依赖五TU/GN通过。Source私有目录/桥接、真实RFH/PW/cookies/整浏览器仍待，transfersReady=false；见[范围](native-download-arm-window.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
-| K8 | 取消与长任务事件 | 部分实现 | 实际状态写入与事件/游标/64条保留同事务，受信后端分页独立于Source普通请求，旧账本明确快照而不补造历史。17项SQLite/执行器及5个真实SIGKILL通过；HTTP流/心跳/缺口恢复、Node/Python SDK、公开取消及签名Webhook仍待，见[范围](agent-event-journal.md)。 |
+| K8 | 取消与长任务事件 | 部分实现 | [持久事件事务](agent-event-journal.md)及[公开HTTP/SSE](agent-event-http.md)已实现，稳定ID、每Run序号、64条窗口/显式缺口、鉴权游标与心跳/背压/独立end配额；22项新合同与完整双平台资格见证据。完整取消副作用报告、Node/Python流SDK、签名Webhook及原Native端到端仍待。 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
 | K10 | Agent 与文件集成 | 待实现 | 按原清单验收，记录实际证据 |
 | B1 | 原生持续采集与按需订阅 | 已完成（Linux ARM64 受管 Source） | 浏览器原生订阅/真实document与frame token、输入水位及credit交给Rust自主Mapper/Gateway；正式浏览器与双平台Broker已更新并保存旧产物。[正式路径验收](evidence/native-source-default-acceptance.json)含76项C++、Mac/Linux各221项JS、当前57MiB/2MiB压力/45MiB旧RPC/423回滚、完整直播/Node回退/WebGL文字占位/真实9MiB及200ms Gateway关闭、12 Source/48进程身份清理；24次跨站导航、重置/实际Retry/64MiB压力/六消费与完整内核矩阵保留精确版本证据。Linux BeginFrame页面时钟仍由Node驱动，取消逐帧捕获登记/map/publish/Runtime.awaitPromise。标准构建图/双架构发布、其他平台兼容、完整Session/PSS及长时N1分别继续。 |
