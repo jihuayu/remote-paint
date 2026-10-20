@@ -1186,3 +1186,11 @@ v1把异步图片和DOM标记所有过渡帧强制视为相等，错误断言导
 v1因基础runtime没有tc在施加损伤前失败，保留原记录；另建runtime-netem镜像只安装iproute2并记录镜像ID/构建日志，未改基础镜像或清理缓存。v2的ACK门槛断言失败；旧代码用Source已处理计数寻找ACK，不能保证对应刚发送文本，且当时未保存具体失败数值。v3改为实际send(seq)/text匹配并先保存每条ACK再断言，未放宽3s门槛。旧失败副本均保留。
 
 此项只完成Mac路径网络测试适配与独立pilot；长期连续帧龄、长时丢包/8小时仍待验收，41项计数仍9/12/20。
+
+## Linux跨渲染进程单调时钟前置核验
+
+为连续观测跨站窗口补充测试专用Linux clock probe：真实当前Native scheduler戳必须处于Linux controller hrtime的调用区间内，仅允许整数微秒1us舍入；proc目录FD固定renderer PID/startTicks/parent/UID，前后两次身份核验且renderer/controller time namespace一致，boot ID与namespace组成域哈希。单次5s、并发1，FD始终关闭；未知/变更/跨域/超界时间均不能得到共享时钟声明。源码依据保留实际本地Chromium time_now_posix/time.h/time.cc的SHA与快照并对照已提交对象内容，Linux TimeTicks底层为CLOCK_MONOTONIC、IsConsistentAcrossProcesses返回true。原Capture/Broker/浏览器二进制未改。
+
+真实硬件pilot通过：35.323秒、跨站前后两个实际renderer、72个Native戳全部通过同Linux单调区间及固定身份/namespace检查，一个Worker持续存活，三旧式严格窗口仍独立按PID验收。新增1个区间门槛契约通过；此前12个时钟契约沿用父检查点。此步只是共享时钟前置依据，尚未允许跨PID连续帧龄验收，也不证明任意后续时钟覆盖/非线性漂移或其他平台。Source与Viewer实际exit0、8个已知Source身份退出、清理错误0。
+
+冻结时read-only git diff触发长时索引刷新，仅终止本次自建git子进程；随后直接读取3个HEAD对象并与工作文件/快照SHA对照完成核验，未清理缓存或修改Git索引。8小时/N1长时仍未通过。

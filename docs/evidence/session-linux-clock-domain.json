@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-17T21:42:00.731895+00:00",
+  "status": "passed-real-two-renderer-Linux-shared-monotonic-prerequisite",
+  "scope": "72 actual current renderer native scheduler probes across actual crosssite replacement;every stamp inside Linux controller hrtime interval with1us integer allowance,pinned-proc before/after PID/startTicks/parent/UID and equal controller/renderer time namespace. Strict legacy per-PID frame-age windows still retained. Shared interpretation supported by pinned Chromium Linux CLOCK_MONOTONIC code audit;not continuous cross-PID age/8h/arbitrary future override proof.",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-linux-clock-domain-v1/frozen-version.json",
+    "sha256": "5bbfc3ea1ec87caa6921eef4d95f5f93daf25e2b8a3a5ed91d5c52c6658b051b"
+  },
+  "codeBasis": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-linux-clock-domain-v1/clock-code-basis.json",
+    "sha256": "3e62e232585ad9fc667f44b2e25b7c585f4b23b230ddb4710e5142dcf49f102b"
+  },
+  "elapsedSeconds": 35.322502082999996,
+  "probes": 72,
+  "rendererPids": [
+    79,
+    103
+  ],
+  "domainId": "e75f21b6b5d72c594521fcd422ed1a7d23d5891c766ccf0a0baa3e79eebc4b5c",
+  "timeNamespace": "time:[4026531834]",
+  "maxNativeProbeRoundtripMs": 2.698415,
+  "pairedStrictWindowSamples": 205,
+  "workerTargets": [
+    "37D80A9EDA67798D30EDFE916FF98A18"
+  ],
+  "retiredIdentities": 8,
+  "intervalGateUnitTestsPassed": 1,
+  "clockUnitTestsPassedAtParent": 12,
+  "artifacts": {
+    "report": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-linux-clock-domain-v1/results/frame-age-remote-report.json",
+      "sha256": "f869bbdb0c224bb797211fd4685cf1ac768987bd1ea4e3df620ece5239064807"
+    }
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "continuousCrossPidAgeAccepted": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}

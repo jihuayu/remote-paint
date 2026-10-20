@@ -8,6 +8,7 @@ import {startSessionMemoryFixture} from './session-memory-fixture.mjs';
 import {createSessionMemoryOwner} from './session-memory-owner.mjs';
 import {atomicJson,deadline} from './memory-soak-diagnostics.mjs';
 import {createSessionNetworkProfile} from './session-network-profile.mjs';
+import {createLinuxSourceClockProbe} from './linux-source-clock.mjs';
 assert.equal(process.platform,'linux');assert.notEqual(process.env.REMOTE_PAINT_DATA_PLANE,'node');
 const directory=resolve(process.env.REMOTE_PAINT_SESSION_LONG_DIR??'artifacts/session-longload'),port=Number(process.env.REMOTE_PAINT_SESSION_LONG_PORT??39546),runId=randomUUID();assert.ok(Number.isInteger(port)&&port>=1024&&port<65532);await mkdir(directory,{recursive:true,mode:0o700});for(const name of ['requests','responses'])await mkdir(join(directory,name),{recursive:true});
 const frameAge=process.env.REMOTE_PAINT_SESSION_LONG_FRAME_AGE==='1',networkProfile=process.env.REMOTE_PAINT_SESSION_LONG_NETEM==='1'?createSessionNetworkProfile(port+1):null;
@@ -19,7 +20,7 @@ function monitor(owner){
  const revoke=source.control.revoke.bind(source.control),renew=source.control.renew.bind(source.control);source.control.revoke=async(reason,...args)=>{const value=await revoke(reason,...args),key=reason??'released';revokes[key]=(revokes[key]??0)+1;records.push({at:Date.now(),reason:key,mode:source.control.mode,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion});if(records.length>32)records.shift();return value;};source.control.renew=(...args)=>{const value=renew(...args);renews++;return value;};
  return {health,revokes,records,get renews(){return renews;},closing(){health.closing=true;}};
 }
-let primaryMonitor,secondaryMonitor;
+let primaryMonitor,secondaryMonitor;const linuxClockProbe=createLinuxSourceClockProbe(()=>primary.source);
 async function state(owner,monitor){if(!owner)return null;const source=owner.source;return {id:owner.id,number:owner.number,workload:owner.stats(),pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,viewport:source.viewport,producer:source.producer,nativeDocumentToken:source.nativeDocumentToken,inputSeq:source.inputSeq,stats:source.stats,control:source.control.state(),health:{...monitor.health},...await deadline(source.page.evaluate(()=>({cycle:window.cycle,inputLength:document.querySelector('input').value.length,sessionNumber:window.sessionNumber})),2000,'Session state').catch(error=>({pageStateError:error.message}))};}
 async function leaseState(){
  if(!leaseProbe)return null;const source=primary.source,records=primaryMonitor.records.filter(r=>r.at>=leaseProbe.startedAt&&r.reason==='expired');
@@ -46,6 +47,7 @@ async function operation(command){
   if(command.op==='network-start')value=await networkProfile.start();else if(command.op==='network-snapshot')value=await networkProfile.snapshot();else if(command.op==='network-stop')value=await networkProfile.close();else throw new Error('Unknown network operation');
   await appendFile(join(directory,'network-profile.jsonl'),JSON.stringify({at:new Date().toISOString(),op:command.op,...value})+'\n');return {network:value};
  }
+ if(command.op==='clock-probe-shared'){assert.equal(frameAge,true);return {nativeProbe:await linuxClockProbe()};}
  if(command.op==='clock-probe'){
   assert.equal(frameAge,true);const source=primary.source,binding=source.capture.binding?.config.id,epoch=source.pageEpoch,version=source.viewportVersion,document=source.nativeDocumentToken;assert.ok(binding);
   const reply=await source.capture.command('scheduler',binding);assert.equal(source.capture.binding?.config.id,binding);assert.equal(source.pageEpoch,epoch);assert.equal(source.viewportVersion,version);assert.equal(source.nativeDocumentToken,document);assert.equal(reply.ok,true);
