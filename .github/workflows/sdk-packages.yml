@@ -1,0 +1,65 @@
+name: SDK package contracts
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'sdk/**'
+      - 'tests/**'
+      - 'service/**'
+      - 'live/**'
+      - 'protocol/**'
+      - 'package*.json'
+      - '.github/workflows/sdk-packages.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sdk-packages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  linux-arm64:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    container: node:22.23.3-bookworm@sha256:0e5f906573693feaa1e21057ebdcfdb5bd5021f050b2dc7c9deceb629c7da2a8
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Prepare build tools and fixture dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends python3 python3-venv
+          npm ci --ignore-scripts --no-audit --no-fund
+          python3 -m venv "$RUNNER_TEMP/sdk-bootstrap"
+          "$RUNNER_TEMP/sdk-bootstrap/bin/python" -m pip install --no-compile --target "$RUNNER_TEMP/sdk-tooling" -r tests/sdk-ci-tooling.txt
+          mkdir -p "$RUNNER_TEMP/sdk-wheelhouse"
+          "$RUNNER_TEMP/sdk-bootstrap/bin/python" -m pip download --only-binary=:all: --no-deps --require-hashes -r tests/sdk-runtime-wheels.txt --dest "$RUNNER_TEMP/sdk-wheelhouse"
+          npm install --prefix "$RUNNER_TEMP/sdk-typescript" --ignore-scripts --no-audit --no-fund --package-lock=false --save-exact typescript@5.9.3
+      - name: Verify complete JS suite and isolated installed SDKs
+        run: |
+          python3 tests/run-sdk-package-ci.py \
+            --work-dir "$RUNNER_TEMP/sdk-validation" \
+            --tooling "$RUNNER_TEMP/sdk-tooling" \
+            --wheelhouse "$RUNNER_TEMP/sdk-wheelhouse" \
+            --typescript "$RUNNER_TEMP/sdk-typescript/node_modules/typescript/bin/tsc"
+      - name: Preserve actual receipts, archives and failure logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-contracts-linux-arm64-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/sdk-validation/*.json
+            ${{ runner.temp }}/sdk-validation/*.log
+            ${{ runner.temp }}/sdk-validation/archives/*
+            ${{ runner.temp }}/sdk-validation/installed/*.json
+            ${{ runner.temp }}/sdk-validation/installed/*.log
+          if-no-files-found: warn
+          retention-days: 14
