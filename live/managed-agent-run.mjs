@@ -12,7 +12,7 @@ function data(value,allowed,required=allowed,code='AGENT_INVALID_REQUEST'){
   return Object.fromEntries(keys.map(key=>[key,descriptors[key].value]));
  }catch{fail(code);}
 }
-function action(tool,params){
+export function captureManagedAgentAction(tool,params){
  if(!MANAGED_AGENT_TOOLS.includes(tool))fail('AGENT_ACTION_FORBIDDEN');
  const fields={move:[['x','y','modifiers'],['x','y']],click:[['x','y','button','modifiers'],['x','y']],drag:[['fromX','fromY','toX','toY','steps','button','modifiers'],['fromX','fromY','toX','toY']],scroll:[['x','y','deltaX','deltaY','modifiers'],['x','y','deltaX','deltaY']],press:[['key','code','text','modifiers','windowsVirtualKeyCode','nativeVirtualKeyCode'],['key','code']],insertText:[['text'],['text']],composition:[['text','selectionStart','selectionEnd'],['text','selectionStart','selectionEnd']]}[tool];
  const value=data(params,...fields);
@@ -60,7 +60,7 @@ export function createManagedAgentRun(control,configuration){
     allowed();const request=data(context,['binding','fence'],undefined,'AGENT_INVALID_CONTEXT'),supplied=data(request.binding,bindingKeys,undefined,'AGENT_INVALID_CONTEXT');
     if(bindingKeys.some(key=>supplied[key]!==binding[key]))fail('AGENT_INVALID_CONTEXT');
     const fence=captureAgentFence(request.fence),current=capture();if(Object.keys(current).some(key=>current[key]!==fence[key]))fail('STALE_AGENT_FENCE');
-    const captured=action(tool,params),sequence=events(captured);for(const event of sequence)validateInput(event,source.viewport);allowed(captured);submitted=true;
+    const captured=captureManagedAgentAction(tool,params),sequence=events(captured);for(const event of sequence)validateInput(event,source.viewport);allowed(captured);submitted=true;
     return Promise.resolve(batch(sequence,{fence},()=>allowed(captured))).then(()=>Object.freeze({stage:'input-injected',binding,fence,inputs:sequence.length}),error=>{throw failure(error,true);});
    }catch(error){return Promise.reject(failure(error,submitted));}
   },

@@ -165,3 +165,8 @@ createManagedAgentRun(source.control,{tenantId,sessionId,authorize}) 绑定实�
 ## Agent 结束与人工租约分离
 
 本地 run.close 在 human/handoff 模式不调用 revoke，只停止该 run 并等待已有队列/交接；人的租约、交接与按键按钮继续由人控流程拥有。仅 agent 模式撤销和清理 Agent。3 合同、真实 Native 前1后0及原组合工具重新通过，双平台完整999项零失败，见[范围](agent-run-human-priority.md)。这项是 worker 远端 Agent 接线前的优先级修复，真实 Agent 授权传输尚待实现。
+
+
+## 标准 Native worker 私有 Agent RPC
+
+AgentCall/AgentResult沿原有私有owner通道关联四种操作，固定worker租户/Session，NativeResource受管run绑定实际Page；可信provider三次current Ready栅栏。私有Ready声明agent-rpc-v1，公开Ready仍只version；不支持的旧worker在发送前拒绝Agent。普通调用+优先end各一个，已发送超时/取消保留实际名额，worker关闭等待真实RPC或报cleanup-incomplete。活动run独立拥有页面时钟，无Viewer不编码仍可滚动。37合同、真实标准worker/public controller同页及内核namespace退役、最终双平台完整1036项通过；失败和边界见[证据说明](private-agent-rpc.md)。此为可信内部入口，公开HTTP Agent scope/SDK、持久Run和完整工具仍未实现。

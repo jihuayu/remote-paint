@@ -1,5 +1,6 @@
 import {createHash} from 'node:crypto';
 import {validateLinuxRuntimeWitness,runtimeWitnessSha256} from './linux-runtime-witness.mjs';
+import {AgentRpcError,captureAgentRequest,agentReplyExpectation,captureAgentResult,captureAgentFailure,agentFailure} from './agent-rpc.mjs';
 const protocol='session-worker-v1',sink=()=>{};
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const plain=v=>v!==null&&typeof v==='object'&&Object.getPrototypeOf(v)===Object.prototype;
@@ -29,11 +30,13 @@ export class SessionWorkerChannel {
  #helloTimer;#readyTimer=null;#closeTimer=null;#heartbeat=null;#helloMs;#readyMs;#closeMs;#heartbeatMs;
  #requireWitness;#closeOnly;#witnessReady=deferred();#onWitness;#binding;#witnessReceipt=null;#witnessController=new AbortController();#helloDeadline;
  #buffer;#bytes=0;#frames=0;#data;#outputEnd;#streamError;#inputClose;
- constructor({sessionId,region,ownerKey=null,input,output,clientDone,closeOnly=false,onUnavailable=sink,requireRuntimeWitness=false,onRuntimeWitness=null,runtimeBinding=null,
+ #tenant;#agentSupported=false;#agentActive=null;#agentEnding=null;#nextAgentId=1;#queuedAgent=null;#queuedAgentEnd=null;
+ constructor({sessionId,region,tenantId=null,ownerKey=null,input,output,clientDone,closeOnly=false,onUnavailable=sink,requireRuntimeWitness=false,onRuntimeWitness=null,runtimeBinding=null,
   helloTimeoutMs=5000,readyTimeoutMs=65000,closeTimeoutMs=12000,heartbeatMs=5000,maxFrameBytes=2048}={}){
   if(!session(sessionId)||typeof region!=='string'||!region.length||region.length>64||typeof closeOnly!=='boolean'||(closeOnly?ownerKey!==null:typeof ownerKey!=='string'||!/^[a-f0-9]{64}$/.test(ownerKey))||typeof input?.write!=='function'||typeof input?.end!=='function'||typeof input?.on!=='function'||typeof input?.off!=='function'||typeof output?.on!=='function'||typeof output?.off!=='function'||typeof output?.pause!=='function'||typeof output?.resume!=='function'||typeof clientDone?.then!=='function'||typeof onUnavailable!=='function')throw new TypeError('Configure explicit private streams, identity and actual client close observation');
   for(const [v,min,max]of [[helloTimeoutMs,50,30000],[readyTimeoutMs,50,125000],[closeTimeoutMs,50,35000],[heartbeatMs,10,10000],[maxFrameBytes,512,8192]])if(!integer(v,min,max))throw new TypeError('Invalid worker channel bounds');
   if(typeof requireRuntimeWitness!=='boolean'||closeOnly&&!requireRuntimeWitness||requireRuntimeWitness&&(typeof onRuntimeWitness!=='function'||!exact(runtimeBinding,['containerId','daemonId','specDigest'])||!/^[a-f0-9]{64}$/.test(runtimeBinding.containerId)||!/^[a-f0-9]{64}$/.test(runtimeBinding.specDigest)||typeof runtimeBinding.daemonId!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/.test(runtimeBinding.daemonId))||!requireRuntimeWitness&&(onRuntimeWitness!==null||runtimeBinding!==null))throw new TypeError('Configure a bound private runtime witness gate');
+  if(tenantId!==null&&(typeof tenantId!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(tenantId)))throw new TypeError('Configure a fixed Agent tenant');this.#tenant=tenantId;
   this.#requireWitness=requireRuntimeWitness;this.#closeOnly=closeOnly;this.#onWitness=onRuntimeWitness;this.#binding=runtimeBinding?Object.freeze(structuredClone(runtimeBinding)):null;
   this.#session=sessionId;this.#region=region;this.#key=ownerKey;this.#input=input;this.#output=output;this.#onUnavailable=onUnavailable;
   this.#helloMs=helloTimeoutMs;this.#readyMs=readyTimeoutMs;this.#closeMs=closeTimeoutMs;this.#heartbeatMs=heartbeatMs;this.#buffer=Buffer.alloc(maxFrameBytes);
@@ -47,6 +50,46 @@ export class SessionWorkerChannel {
  get runtimeWitnessReceipt(){return this.#witnessReceipt;}
  status(){return Object.freeze({phase:this.#phase,closeOnly:this.#closeOnly,startSent:this.#startSent,available:this.#phase==='ready',workerClose:this.#workerAck?.type==='Closed'?'confirmed':'unconfirmed',transportExited:this.#exit!==null,closeTimedOut:this.#closeExpired,runtimeWitness:this.#requireWitness?(this.#witnessReceipt?'confirmed':'unconfirmed'):'not-required',failure:this.#failure});}
  waitForRuntimeWitness(){if(!this.#requireWitness)throw new SessionWorkerChannelError('CHANNEL_RUNTIME_WITNESS_NOT_REQUIRED');return this.#witnessReady.promise;}
+ agentStatus(){return Object.freeze({active:this.#agentActive!==null,ending:this.#agentEnding!==null});}
+ agent(value,{signal,timeoutMs=5000}={}){
+  let slot;
+  try{
+   if(this.#phase!=='ready'||!this.#agentSupported||this.#closing||this.#closeOnly)throw new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched');
+   if(!integer(timeoutMs,50,120000)||signal!==undefined&&!(signal instanceof AbortSignal))throw new AgentRpcError('AGENT_INVALID_REQUEST','not-dispatched');
+   if(signal?.aborted)throw new AgentRpcError('AGENT_RPC_CANCELLED','not-dispatched');
+   const request=captureAgentRequest(value),ending=request.op==='end';if(ending?this.#agentEnding:this.#agentActive||this.#agentEnding)throw new AgentRpcError('AGENT_RPC_BUSY','not-dispatched');
+   if(this.#nextAgentId>Number.MAX_SAFE_INTEGER)throw new AgentRpcError('AGENT_RPC_LIMIT','not-dispatched');const requestId=this.#nextAgentId++;
+   const frame=Buffer.from(JSON.stringify({type:'AgentCall',sessionId:this.#session,ownerKey:this.#key,requestId,request})+'\n');if(frame.length-1>32768){frame.fill(0);throw new AgentRpcError('AGENT_INVALID_REQUEST','not-dispatched');}
+   const pending=deferred();slot={requestId,expected:agentReplyExpectation(request),pending,sent:false,settled:false,timer:null,signal:signal??null,abort:null};if(ending)this.#agentEnding=slot;else this.#agentActive=slot;
+   slot.timer=setTimeout(()=>this.#expireAgent(slot,'AGENT_RPC_TIMEOUT'),timeoutMs);
+   if(signal){slot.abort=()=>this.#expireAgent(slot,'AGENT_RPC_CANCELLED');signal.addEventListener('abort',slot.abort,{once:true});if(signal.aborted)slot.abort();}
+   if(slot.settled){frame.fill(0);return pending.promise;}
+   // A priority end cannot overtake an older ID and then send that unsent
+   // ordinary request afterwards. Cancel it before writing the newer end ID.
+   if(ending&&this.#queuedAgent)this.#retireAgent(this.#queuedAgent.slot,new AgentRpcError('AGENT_RUN_CLOSED','not-dispatched'));
+   const queued={slot,frame};if(this.#writing){if(ending)this.#queuedAgentEnd=queued;else this.#queuedAgent=queued;}else this.#writeAgent(queued);
+   return pending.promise;
+  }catch(error){if(slot)this.#retireAgent(slot,agentFailure(error,slot.sent?'unknown':'not-dispatched'));const promise=Promise.reject(agentFailure(error,'not-dispatched'));void promise.catch(sink);return promise;}
+ }
+ #clearAgentObserver(slot){clearTimeout(slot.timer);slot.timer=null;if(slot.abort)slot.signal.removeEventListener('abort',slot.abort);slot.abort=null;slot.signal=null;}
+ #retireAgent(slot,error=null,result=null){
+  this.#clearAgentObserver(slot);if(!slot.settled){slot.settled=true;if(error)slot.pending.reject(error);else slot.pending.resolve(result);}
+  if(this.#agentActive===slot)this.#agentActive=null;if(this.#agentEnding===slot)this.#agentEnding=null;
+  if(this.#queuedAgent?.slot===slot){this.#queuedAgent.frame.fill(0);this.#queuedAgent=null;}if(this.#queuedAgentEnd?.slot===slot){this.#queuedAgentEnd.frame.fill(0);this.#queuedAgentEnd=null;}slot.expected=null;
+ }
+ #expireAgent(slot,code){
+  if(slot.settled)return;this.#clearAgentObserver(slot);slot.settled=true;slot.pending.reject(new AgentRpcError(code,slot.sent?'unknown':'not-dispatched'));
+  // An observer leaving is not actual completion. A sent call keeps its slot
+  // until the correlated reply or channel teardown; end can still preempt it.
+  if(!slot.sent)this.#retireAgent(slot);
+ }
+ #writeAgent(queued){if(this.#closing||this.#tornDown){queued.frame.fill(0);this.#retireAgent(queued.slot,new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched'));return;}queued.slot.sent=true;this.#write(queued.frame);}
+ #drainWrites(){
+  if(this.#queuedClose){const frame=this.#queuedClose;this.#queuedClose=null;this.#write(frame);return;}
+  if(this.#closing)return;
+  if(this.#queuedAgentEnd){const next=this.#queuedAgentEnd;this.#queuedAgentEnd=null;this.#writeAgent(next);return;}
+  if(this.#queuedAgent){const next=this.#queuedAgent;this.#queuedAgent=null;this.#writeAgent(next);}
+ }
  start(request,{signal}={}){
   if(this.#closeOnly)throw new SessionWorkerChannelError('CHANNEL_CLOSE_ONLY');
   const body=capture(request,this.#region),fingerprint=createHash('sha256').update(body).digest('hex');
@@ -77,7 +120,7 @@ export class SessionWorkerChannel {
   try{this.#input.write(frame,error=>{
    frame.fill(0);if(this.#writing===frame)this.#writing=null;
    if(error){this.#fault('CHANNEL_WRITE_FAILED');this.#endInput();return;}
-   if(this.#queuedClose){const next=this.#queuedClose;this.#queuedClose=null;this.#write(next);}
+   this.#drainWrites();
   });}catch{frame.fill(0);this.#writing=null;this.#fault('CHANNEL_WRITE_FAILED');this.#endInput();}
  }
  #endInput(){if(this.#endedInput)return;this.#endedInput=true;try{this.#input.end();}catch{}}
@@ -102,13 +145,19 @@ export class SessionWorkerChannel {
    try{message=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(this.#buffer.subarray(0,this.#bytes)));}
    catch{this.#buffer.fill(0);this.#bytes=0;this.#fault('CHANNEL_INVALID_FRAME');this.#output.pause();this.#endInput();return;}
    this.#buffer.fill(0,0,this.#bytes);this.#bytes=0;
-   if(++this.#frames>8){this.#fault('CHANNEL_FRAME_COUNT_LIMIT');this.#output.pause();this.#endInput();return;}
+   if(message?.type!=='AgentResult'&&++this.#frames>8){this.#fault('CHANNEL_FRAME_COUNT_LIMIT');this.#output.pause();this.#endInput();return;}
    this.#message(message);offset=end+1;
   }
  }
  #message(message){
   if(exact(message,['type','protocol','code'])&&message.type==='WorkerConfigurationFailed'&&message.protocol===protocol&&message.code==='WORKER_CONFIGURATION_FAILED'&&!this.#hello){this.#fault('CHANNEL_WORKER_CONFIGURATION_FAILED');this.#endInput();return;}
   if(!plain(message)||message.protocol!==protocol||message.sessionId!==this.#session){this.#fault('CHANNEL_PROTOCOL_MISMATCH');return;}
+  if(message.type==='AgentResult'){
+   const slot=[this.#agentActive,this.#agentEnding].find(s=>s?.requestId===message.requestId);
+   if(!slot||!slot.sent||!integer(message.requestId,1,Number.MAX_SAFE_INTEGER)||typeof message.ok!=='boolean'||!exact(message,message.ok?['type','protocol','sessionId','requestId','ok','result']:['type','protocol','sessionId','requestId','ok','error'])){this.#fault('CHANNEL_INVALID_AGENT_REPLY');this.#output.pause();this.#endInput();return;}
+   if(this.#closing){this.#retireAgent(slot,new AgentRpcError('AGENT_UNAVAILABLE','unknown'));return;}
+   try{if(message.ok)this.#retireAgent(slot,null,captureAgentResult(message.result,slot.expected,{sessionId:this.#session,...(this.#tenant===null?{}:{tenantId:this.#tenant})}));else this.#retireAgent(slot,captureAgentFailure(message.error));}catch{this.#fault('CHANNEL_INVALID_AGENT_REPLY');this.#output.pause();this.#endInput();}return;
+  }
   if(message.type==='WorkerHello'&&!this.#hello&&!this.#startSent){
    if(this.#closing)return;
    if(performance.now()>=this.#helloDeadline){this.#fault('CHANNEL_HELLO_TIMEOUT');return;}
@@ -124,9 +173,10 @@ export class SessionWorkerChannel {
     this.#witnessReceipt=Object.freeze({...receipt});this.#witnessReady.resolve(this.#witnessReceipt);clearTimeout(this.#helloTimer);if(this.#closeOnly)this.#phase='witness-confirmed';else this.#dispatchStart();
    },()=>{if(!this.#closing)this.#fault('CHANNEL_RUNTIME_WITNESS_FAILED');});return;
   }
-  if(message.type==='Ready'&&exact(message,['type','protocol','sessionId','version'])&&this.#hello&&this.#startSent&&!this.#everReady&&typeof message.version==='string'&&message.version.length>0&&message.version.length<=256){
+  const readyFields=['type','protocol','sessionId','version'];if(Object.hasOwn(message,'capabilities'))readyFields.push('capabilities');const agentCapabilities=Object.hasOwn(message,'capabilities')?message.capabilities:[];
+  if(message.type==='Ready'&&exact(message,readyFields)&&Array.isArray(agentCapabilities)&&agentCapabilities.length<=1&&agentCapabilities.every(v=>v==='agent-rpc-v1')&&this.#hello&&this.#startSent&&!this.#everReady&&typeof message.version==='string'&&message.version.length>0&&message.version.length<=256){
    this.#everReady=true;if(this.#closing)return;
-   clearTimeout(this.#readyTimer);this.#phase='ready';this.#ready.resolve(Object.freeze({version:message.version}));return;
+   this.#agentSupported=agentCapabilities.includes('agent-rpc-v1');clearTimeout(this.#readyTimer);this.#phase='ready';this.#ready.resolve(Object.freeze({version:message.version}));return;
   }
   if(message.type==='Unavailable'&&exact(message,['type','protocol','sessionId','code'])&&message.code==='WORKER_RESOURCE_UNAVAILABLE'&&this.#hello&&this.#startSent){if(!this.#closing)this.#fault('CHANNEL_RESOURCE_UNAVAILABLE');return;}
   if(['Closed','CleanupIncomplete'].includes(message.type)&&exact(message,['type','protocol','sessionId','reason','code'])&&this.#workerAck===null&&reasons.has(message.reason)&&(message.code===null||typeof message.code==='string'&&/^WORKER_[A-Z0-9_]{1,64}$/.test(message.code))){
@@ -148,6 +198,8 @@ export class SessionWorkerChannel {
   if(this.#closePromise)return this.#closePromise;
   this.#closing=true;if(this.#exit===null)this.#phase='closing';
   this.#closePromise=new Promise(resolve=>{this.#closeResolve=resolve;});this.#witnessController.abort();
+  for(const slot of [this.#agentActive,this.#agentEnding])if(slot){this.#clearAgentObserver(slot);if(!slot.settled){slot.settled=true;slot.pending.reject(new AgentRpcError('AGENT_UNAVAILABLE',slot.sent?'unknown':'not-dispatched'));}if(!slot.sent)this.#retireAgent(slot);}
+  this.#queuedAgent?.frame.fill(0);this.#queuedAgent=null;this.#queuedAgentEnd?.frame.fill(0);this.#queuedAgentEnd=null;
   clearTimeout(this.#helloTimer);clearTimeout(this.#readyTimer);clearInterval(this.#heartbeat);
   this.#pendingStart?.fill(0);this.#pendingStart=null;
   this.#ready.reject(new SessionWorkerChannelError(this.#failure??'CHANNEL_CLOSED',this.#startSent));this.#witnessReady.reject(new SessionWorkerChannelError(this.#failure??'CHANNEL_CLOSED',this.#startSent));
@@ -163,6 +215,7 @@ export class SessionWorkerChannel {
   this.#input.on('error',sink);this.#output.on('error',sink);this.#output.pause();
   if(this.#abort)this.#signal.removeEventListener('abort',this.#abort);this.#signal=null;this.#abort=null;
   this.#pendingStart?.fill(0);this.#pendingStart=null;this.#queuedClose?.fill(0);this.#queuedClose=null;this.#writing?.fill(0);this.#writing=null;this.#key='';this.#buffer.fill(0);this.#onUnavailable=sink;this.#onWitness=null;this.#binding=null;
+  for(const slot of [this.#agentActive,this.#agentEnding])if(slot)this.#retireAgent(slot,new AgentRpcError('AGENT_UNAVAILABLE',slot.sent?'unknown':'not-dispatched'));this.#tenant=null;this.#agentSupported=false;
   this.#closeResolve(Object.freeze({workerClose:this.#workerAck?.type==='Closed'?'confirmed':'unconfirmed',workerCode:this.#workerAck?.code??null,transportExit:this.#exit,closeTimedOut:this.#closeExpired,startSent:this.#startSent,failure:this.#failure}));
  }
 }

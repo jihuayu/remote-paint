@@ -1,5 +1,6 @@
 import {createHash,timingSafeEqual} from 'node:crypto';
 import {validateLinuxRuntimeWitness} from './linux-runtime-witness.mjs';
+import {AgentRpcError,captureAgentRequest,agentReplyExpectation,captureAgentResult,agentFailure} from './agent-rpc.mjs';
 
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const plain=v=>v!==null&&typeof v==='object'&&Object.getPrototypeOf(v)===Object.prototype;
@@ -24,11 +25,14 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
  identity=structuredClone(identity);
  const expected=Buffer.from(identity.ownerKeyHash,'hex'),controller=new AbortController(),frameBuffer=Buffer.alloc(maxFrameBytes);
  let bytes=0,resource=null,started=false,starting=Promise.resolve(),startSettled=true,initializing=false,invalidOwner=false,stopping=false,finished=false,closeTask=null,
-  failure=null,reason=null,leaseTimer=null,initializeTimer=null,startTimer,outputAvailable=true,resolveDone,resourceUnsubscribe=null;
+  failure=null,reason=null,leaseTimer=null,initializeTimer=null,startTimer,outputAvailable=true,resolveDone,resourceUnsubscribe=null,
+  resourceReady=false,agentActive=null,agentEnding=null,lastAgentRequestId=0,pendingOutputBytes=0;
  const done=new Promise(resolve=>{resolveDone=resolve;});
  const emit=value=>{
   if(!outputAvailable||output.destroyed)return;
-  try{output.write(JSON.stringify({protocol:'session-worker-v1',sessionId:identity.sessionId,...value})+'\n',error=>{if(error)lost();});}catch{lost();}
+  let frame;try{frame=JSON.stringify({protocol:'session-worker-v1',sessionId:identity.sessionId,...value})+'\n';}catch{lost();return;}const size=Buffer.byteLength(frame);
+  if(size>8192||pendingOutputBytes+size>32768){lost();return;}pendingOutputBytes+=size;
+  try{output.write(frame,error=>{pendingOutputBytes-=size;if(error)lost();});}catch{pendingOutputBytes-=size;lost();}
  };
  const detachResource=()=>{const unsubscribe=resourceUnsubscribe;resourceUnsubscribe=null;try{unsubscribe?.();}catch{failure??='WORKER_HEALTH_UNSUBSCRIBE_FAILED';}};
  const cleanup=()=>{
@@ -52,7 +56,7 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
   let resolveClose;closeTask=new Promise(resolve=>{resolveClose=resolve;});
   const timeout=setTimeout(()=>{failure??='WORKER_CLOSE_TIMEOUT';finish('cleanup-incomplete',1);resolveClose();},closeTimeoutMs);
   detachResource();
-  if(code==='WORKER_RESOURCE_UNAVAILABLE')emit({type:'Unavailable',code:'WORKER_RESOURCE_UNAVAILABLE'});
+  if(why==='resource-unavailable')emit({type:'Unavailable',code:'WORKER_RESOURCE_UNAVAILABLE'});
   controller.abort(why);
   void Promise.resolve().then(async()=>{
    let closed=false;
@@ -62,9 +66,9 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
      // A factory cannot acknowledge a close while initialization can still
      // acquire resources. NativeLiveResource waits for that actual outcome.
      const early=initializing&&!startSettled;
-     await starting;
+     await starting;await Promise.allSettled([agentActive?.done,agentEnding?.done].filter(Boolean));
      closed=receipt?.status==='closed'&&!early;if(early)failure??='WORKER_EARLY_CLOSE_RECEIPT';
-    }else{await starting;closed=!invalidOwner;}
+    }else{await starting;await Promise.allSettled([agentActive?.done,agentEnding?.done].filter(Boolean));closed=!invalidOwner;}
    }catch{closed=false;failure??='WORKER_CLOSE_FAILED';}
    clearTimeout(timeout);finish(closed?'closed':'cleanup-incomplete',closed&&!failure?0:1);resolveClose();
   });
@@ -100,9 +104,26 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
     initializing=true;
     const ready=await resource.initialize();startSettled=true;
     if(!ready||typeof ready.version!=='string'||!ready.version.length||ready.version.length>256)throw new TypeError('Invalid resource version');
-    if(!stopping){clearTimeout(initializeTimer);emit({type:'Ready',version:ready.version});}
+    if(!stopping){resourceReady=true;clearTimeout(initializeTimer);emit({type:'Ready',version:ready.version,...(typeof resource.agent==='function'?{capabilities:['agent-rpc-v1']}:{})});}
    }).catch(()=>{if(!stopping)void stop('startup-failed','WORKER_START_FAILED');}).finally(()=>{startSettled=true;});
    initializeTimer=setTimeout(()=>{void stop('startup-expired','WORKER_START_TIMEOUT');},initializationTimeoutMs);
+  }else if(value.type==='AgentCall'){
+   if(!exact(value,['type','sessionId','ownerKey','requestId','request'])||!integer(value.requestId,1,Number.MAX_SAFE_INTEGER)||value.requestId<=lastAgentRequestId){void stop('protocol-rejected','WORKER_INVALID_AGENT_MESSAGE');return;}
+   lastAgentRequestId=value.requestId;let captured;
+   const replyError=error=>{if(!stopping){const safe=agentFailure(error);emit({type:'AgentResult',requestId:value.requestId,ok:false,error:{code:safe.code,outcome:safe.outcome}});}};
+   try{captured=captureAgentRequest(value.request);}catch(error){replyError(agentFailure(error,'not-dispatched'));return;}
+   if(!resourceReady||typeof resource?.agent!=='function'){replyError(new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched'));return;}
+   const ending=captured.op==='end';if(ending?agentEnding:agentActive||agentEnding){replyError(new AgentRpcError('AGENT_RPC_BUSY','not-dispatched'));return;}
+   let resolveWork,rejectWork;const slot={done:new Promise((resolve,reject)=>{resolveWork=resolve;rejectWork=reject;})};void slot.done.catch(()=>{});if(ending)agentEnding=slot;else agentActive=slot;
+   // Install ownership before invoking the synchronous resource entry: it may
+   // reenter stop(), and end must fence a running composite immediately.
+   try{Promise.resolve(resource.agent(captured)).then(resolveWork,rejectWork);}catch(error){rejectWork(error);}
+   const retire=()=>{if(agentActive===slot)agentActive=null;if(agentEnding===slot)agentEnding=null;};
+   void slot.done.then(result=>{
+    if(stopping){retire();return;}
+    let capturedResult;try{capturedResult=captureAgentResult(result,agentReplyExpectation(captured),identity);}catch{replyError(new AgentRpcError('AGENT_INPUT_FAILED','unknown'));void stop('resource-unavailable','WORKER_AGENT_RESULT_INVALID');return;}
+    retire();emit({type:'AgentResult',requestId:value.requestId,ok:true,result:capturedResult});
+   },error=>{retire();replyError(agentFailure(error));});
   }else if((value.type==='OwnerHeartbeat'||value.type==='Close')&&started&&exact(value,['type','sessionId','ownerKey'])){
    if(value.type==='OwnerHeartbeat')armLease();else void stop('released');
   }else void stop('protocol-rejected','WORKER_INVALID_MESSAGE');

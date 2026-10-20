@@ -1,0 +1,218 @@
+{
+  "at": "2026-10-19T15:24:36.829910+00:00",
+  "task": "K5-private-owned-Native-Agent-RPC",
+  "status": "trusted-backend-Native-Agent-RPC-qualified",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-run-human-priority-qualified-v1/frozen-version.json",
+  "parentSha256": "f4eae3a53c91508c2ef7c2ce06dc60487293bf9e29ea30d7d6c0eafe83b959e1",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/private-agent-rpc-native-v4/manifest.json",
+  "executedManifestSha256": "34c231c2ed2875652a14cd71c0e294bc308aef657eed41bd3b37bb909548c0e3",
+  "executedSourceFiles": 988,
+  "operations": [
+    "begin",
+    "context (optional runId for explicit current lookup)",
+    "perform",
+    "end"
+  ],
+  "trustedProviderApi": "DockerSessionProvider.agent({tenantId,sessionId,region,version,command,signal?,timeoutMs?})",
+  "privateOwnerAuthenticatedEveryCall": true,
+  "monotonicCorrelatedIdsNotIdempotencyKeys": true,
+  "privateCapability": "agent-rpc-v1",
+  "legacyNoCapabilityAgentCallRejectedBeforeWrite": true,
+  "publicReadyAndSdkStillVersionOnly": true,
+  "maxOrdinaryInFlight": 1,
+  "maxPreemptiveEndInFlight": 1,
+  "maxRequestLineBytes": 32768,
+  "workerOutputPendingBytes": 32768,
+  "observerTimeoutOrCancelAfterSend": "unknown; keep slot until actual reply or channel terminal; no replay",
+  "unsentEndPreemption": "cancel older queued ordinary call as not-dispatched to avoid ID inversion",
+  "typedTenantSessionTargetRunAndOriginalFenceReplies": true,
+  "workerStopWaitsActualCallsOrCleanupIncomplete": true,
+  "nativeRunOwnsPageClockWithoutEncodingDemand": true,
+  "providerChecksCurrentDurableReadyBeforeAndAfter": true,
+  "noRawPageCdpOrSourceEndpointKeyInAgentResults": true,
+  "newContracts": 37,
+  "newContractsPassBothInFinalFullRun": true,
+  "freshFullJs": {
+    "mac": {
+      "tests": 1036,
+      "pass": 1021,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "e0af4cf0ec2dd2c816671a962616df61d6ecfecb04d4dbba26d90bec48e12a0f"
+    },
+    "linux": {
+      "tests": 1036,
+      "pass": 1030,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "cd5297d98a02da7166922ad0b44a3c35496dad1d3f1f9b6725250c09daec887d",
+      "containerId": "3085695fbf6ac5132d88431820c970ff1d536e8cc4cb693a0f1b2c9871d90f60"
+    }
+  },
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v26/manifest.json",
+  "fullJsManifestSha256": "c51915a7455adb338e3b70ae1ea83b562a6ba6a20e190fe7bea7e1d852cdf90c",
+  "nativeObservations": {
+    "tools": {
+      "normalButtonClicks": 1,
+      "compositionValue": "B拼",
+      "drag": {
+        "x": 430,
+        "y": 130
+      },
+      "scroll": 80,
+      "concurrentCallDenied": {
+        "ok": false,
+        "code": "AGENT_RPC_BUSY",
+        "outcome": "not-dispatched"
+      },
+      "moreThanEightRpcResults": true
+    },
+    "timeout": {
+      "timeout": {
+        "ok": false,
+        "code": "AGENT_RPC_TIMEOUT",
+        "outcome": "unknown"
+      },
+      "occupied": {
+        "ok": false,
+        "code": "AGENT_RPC_BUSY",
+        "outcome": "not-dispatched"
+      },
+      "endedStage": "run-closed",
+      "oneActualSlowPress": true,
+      "ordinaryButtonNotActivated": true,
+      "noReplay": true,
+      "newRunDistinct": true,
+      "fixtureMainThreadBusyLoopMs": 400,
+      "physicalLatencyClaim": false
+    },
+    "human": {
+      "actualPublicControllerWelcome": true,
+      "paused": {
+        "ok": false,
+        "code": "AGENT_PAUSED",
+        "outcome": "not-dispatched"
+      },
+      "sameGrantKeyup": {
+        "seq": 2,
+        "accepted": true,
+        "stage": "input-injected"
+      },
+      "agentEndPreservedHumanAuthority": true,
+      "beginWhileHuman": {
+        "ok": false,
+        "code": "AGENT_PAUSED",
+        "outcome": "not-dispatched"
+      },
+      "staleRun": {
+        "ok": false,
+        "code": "AGENT_RUN_NOT_FOUND",
+        "outcome": "not-dispatched"
+      },
+      "finalPageValue": "B拼XHFZ"
+    },
+    "retired": {
+      "managementSessionClosed": true,
+      "holdsQuota": false,
+      "oldAgentRouteDenied": {
+        "ok": false,
+        "code": "AGENT_UNAVAILABLE",
+        "outcome": "not-dispatched"
+      }
+    }
+  },
+  "nativeScope": "actual canonical worker/provider plus existing public Viewer human control; management SDK for Session lifecycle only",
+  "failedNativeV2Preserved": {
+    "actualExitCode": 1,
+    "containerId": "4b3e93a407df7fc646bf2f1ab54135d267cc06205d3f8ce2563fdb9a599b0f24",
+    "reason": "wheel injection ACK did not cause scroll with no Viewer because run did not own page clock",
+    "namespaceRetired": true
+  },
+  "causalUnitReceipts": [
+    {
+      "case": "priority-before-v2",
+      "actualExitCode": 1,
+      "receiptSha256": "51b40c0273a12775d237033e59e2a628826e39391ad547504d3e47c08507c053"
+    },
+    {
+      "case": "priority-after-v2",
+      "actualExitCode": 0,
+      "receiptSha256": "27cf28e0fd57afc60ca3071fe7a89cee71d0362c613a83050d1c738cd84d2216"
+    },
+    {
+      "case": "legacy-before-v1",
+      "actualExitCode": 1,
+      "receiptSha256": "d4508629635d2269d198dd4303fcfa9548c9d5631e223fa4c36c3fc8b24dac84"
+    },
+    {
+      "case": "legacy-after-v1",
+      "actualExitCode": 0,
+      "receiptSha256": "f26f7a434e4e4df55f83667ab8f5049613a976a690fd7a769900db44d81f5d37"
+    },
+    {
+      "case": "clock-before-v1",
+      "actualExitCode": 1,
+      "receiptSha256": "5f19eb96126d7f27996a3a1a38acaab8ff25f34f111bf344f23dae60e9cdd6af"
+    },
+    {
+      "case": "clock-after-v1",
+      "actualExitCode": 0,
+      "receiptSha256": "823d11ea22337c98e673614e3f9a83827fc5afdd9d7feaa124ae8b7f3d15b8f8"
+    },
+    {
+      "case": "capability-before-v1",
+      "actualExitCode": 1,
+      "receiptSha256": "e824bb54d68649ec94d34fcc901ed2f17799a62f78e3fe7fbf89b95240cfb52d"
+    },
+    {
+      "case": "capability-after-v1",
+      "actualExitCode": 0,
+      "receiptSha256": "60fb9251f31a11fa6bdcd9e562b02ab7c6512539492c59594c7e2b5dcf958040"
+    }
+  ],
+  "actualNativeV3AndV4Root0NamespaceRetired": true,
+  "sdkInheritedExactUnchangedInputs": {
+    "mac": {
+      "mappedUnchangedInputs": 27,
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true
+    },
+    "linux": {
+      "mappedUnchangedInputs": 27,
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true
+    }
+  },
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "a93654f41a1ac70756220d24eb5e6d4ff5a447fa0a3050714ecafdb92ed1354c",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "d21a3f6d707ba6f778ad2c4c1a0372e01f710d3a6d7ab123790487b26513a669"
+  },
+  "sdkMacMypyInheritedActual0": true,
+  "freshSdkPackagingClaimed": false,
+  "trustedBackendNativeAgentRpcQualified": true,
+  "privateUpstreamAgentFenceQualified": true,
+  "publicTenantAgentAuthorizationQualified": false,
+  "publicAgentSdkQualified": false,
+  "durableRunInvocationRecoveryQualified": false,
+  "managedPlaywrightCdpFacadeQualified": false,
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "renderedPublicViewerPixelsNewlyVerified": false,
+  "physicalLatencyOrN1Claim": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 16,
+    "pending": 16
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

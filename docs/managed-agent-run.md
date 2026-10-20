@@ -22,3 +22,6 @@ K5 从表中的待实现更新为部分实现；41 项当前 9 项在既定范�
 
 
 补充修复：结束 Agent run 时若处于 human 或 handoff，只停止该 run 并等待现有队列/交接栅栏，不撤销人的租约、不取消交接、不释放人持有的键/按钮。只有 agent 模式主动撤销和清理 Agent 状态。三个合同和真实 Native 前1后0、原组合工具重新通过，见[人工优先级](agent-run-human-priority.md)。
+
+
+标准 Native worker 的私有四操作 RPC 与可信 provider 接线现已验证，同一 Source 中保留 run/租户/Session/target/fence，并在 Native 资源层持有活动 run 的独立页面时钟。已测试无 Viewer 进度、超时在途占用、优先 end 与公共人控同页，见[私有 RPC](private-agent-rpc.md)。该接口仍非公共 Agent 用户授权/SDK，持久任务及完整 Playwright 继续待做。

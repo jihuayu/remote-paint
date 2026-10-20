@@ -1,0 +1,32 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {sessionStoreSupported} from '../service/session-store.mjs';
+import {AgentRpcError} from '../service/agent-rpc.mjs';
+import {fixture,pending,wait,turn} from './fixtures/docker-provider-resolver.mjs';
+const enabled={skip:!sessionStoreSupported,timeout:10000},targetId='target_00000000-0000-4000-8000-000000000002',runId='run_00000000-0000-4000-8000-000000000003',fence={controlSessionId:'00000000-0000-4000-8000-000000000004',controlVersion:0,pageEpoch:1,viewportVersion:1};
+const reject=(promise,code,outcome='not-dispatched')=>assert.rejects(promise,e=>e instanceof AgentRpcError&&e.code===code&&e.outcome===outcome);
+function handler(h,args){const context={binding:{tenantId:args.tenantId,sessionId:args.sessionId,targetId,runId},fence};h.hooks.agent=({request})=>({ok:true,result:request.op==='begin'||request.op==='context'?context:request.op==='end'?{stage:'run-closed',binding:context.binding}:{stage:'input-injected',...context,inputs:1}});return context;}
+test('trusted provider Agent route uses the current owned worker and returns no Source endpoint/key',enabled,async t=>{
+ const h=await fixture(t),args=await h.ready(),expected=handler(h,args);const context=await h.provider.agent({...args,command:{op:'begin'}});assert.deepEqual(context,expected);const receipt=await h.provider.agent({...args,command:{op:'perform',runId,tool:'insertText',params:{text:'value'},context}});assert.equal(receipt.stage,'input-injected');assert.ok(Object.isFrozen(receipt));assert.doesNotMatch(JSON.stringify(receipt),/ownerKey|streamOrigin|origin|198\.19|private/);assert.equal((await h.provider.agent({...args,command:{op:'end',runId}})).stage,'run-closed');
+});
+test('wrong tenant/Session/region/version and mismatched context cannot invoke a worker command',enabled,async t=>{
+ const h=await fixture(t),args=await h.ready(),context=handler(h,args);let calls=0,reads=0;h.hooks.agent=()=>{calls++;return {ok:true,result:context};};const command=new Proxy({op:'begin'},{getOwnPropertyDescriptor(){reads++;throw Error('private');}});for(const wrong of [{tenantId:'other'},{sessionId:'ses_other'},{version:'other'}])await reject(h.provider.agent({...args,...wrong,command}),'AGENT_UNAVAILABLE');await reject(h.provider.agent({...args,region:'other',command}),'AGENT_INVALID_REQUEST');assert.equal(reads,0);await reject(h.provider.agent({...args,command:{op:'perform',runId,tool:'insertText',params:{text:'no'},context:{...context,binding:{...context.binding,tenantId:'other'}}}}),'AGENT_INVALID_CONTEXT');assert.equal(calls,0);
+});
+test('durable Ready disagreement or recovery/generic runtimes cannot grant the Agent route',enabled,async t=>{
+ const h=await fixture(t),args=await h.ready();handler(h,args);h.durablePatch=s=>{s.allocations[0].version='changed';return s;};try{await reject(h.provider.agent({...args,command:{op:'begin'}}),'AGENT_UNAVAILABLE');}finally{h.durablePatch=null;}const recovered=await fixture(t,{recovered:true});await reject(recovered.provider.agent({...recovered.recoveredArgs,command:{op:'begin'}}),'AGENT_UNAVAILABLE');const generic=await fixture(t,{generic:true}),genericArgs=await generic.ready();await reject(generic.provider.agent({...genericArgs,command:{op:'begin'}}),'AGENT_UNAVAILABLE');
+});
+test('provider rechecks durable authority after the reply and reports a possibly dispatched call as unknown',enabled,async t=>{
+ const h=await fixture(t),args=await h.ready(),context=handler(h,args);h.hooks.agent=()=>{h.durablePatch=s=>{s.allocations[0].version='changed';return s;};return {ok:true,result:context};};try{await reject(h.provider.agent({...args,command:{op:'begin'}}),'AGENT_UNAVAILABLE','unknown');}finally{h.durablePatch=null;}
+});
+test('caller cancellation retains actual channel occupancy, with no replay before late worker completion',enabled,async t=>{
+ const h=await fixture(t),args=await h.ready(),context=handler(h,args),gate=pending(),entered=pending(),controller=new AbortController();let calls=0;h.cleanup.push(gate.resolve);h.hooks.agent=async()=>{calls++;entered.resolve();await gate.promise;return {ok:true,result:context};};const operation=reject(h.provider.agent({...args,command:{op:'begin'},signal:controller.signal}),'AGENT_RPC_CANCELLED','unknown');await wait(entered.promise);controller.abort();await operation;await reject(h.provider.agent({...args,command:{op:'context',runId}}),'AGENT_RPC_BUSY');assert.equal(calls,1);gate.resolve();await turn();handler(h,args);assert.equal((await h.provider.agent({...args,command:{op:'context',runId}})).binding.runId,runId);
+});
+test('shutdown/owner loss revoke a pending Agent capability and late replies do not restore it',enabled,async t=>{
+ const h=await fixture(t),args=await h.ready(),gate=pending(),entered=pending(),context=handler(h,args);h.cleanup.push(gate.resolve);h.hooks.agent=async()=>{entered.resolve();await gate.promise;return {ok:true,result:context};};const call=reject(h.provider.agent({...args,command:{op:'begin'}}),'AGENT_UNAVAILABLE','unknown');await wait(entered.promise);h.proxies.get(args.sessionId).lose();await call;gate.resolve();await turn();await reject(h.provider.agent({...args,command:{op:'begin'}}),'AGENT_UNAVAILABLE');assert.equal(h.provider.sessionStatus(args).available,false);
+});
+test('provider rejects accessor envelopes and pre-aborted calls before invoking the worker',enabled,async t=>{
+ const h=await fixture(t),args=await h.ready();handler(h,args);let reads=0;const value=Object.defineProperty({...args,command:{op:'begin'}},'tenantId',{enumerable:true,get(){reads++;return args.tenantId;}});await reject(h.provider.agent(value),'AGENT_INVALID_REQUEST');assert.equal(reads,0);const controller=new AbortController();controller.abort();await reject(h.provider.agent({...args,command:{op:'begin'},signal:controller.signal}),'AGENT_RPC_CANCELLED');
+});
+test('closing reentrantly during request capture is fenced before the private command is sent',enabled,async t=>{
+ const h=await fixture(t),args=await h.ready();let closing,calls=0;h.hooks.agent=()=>{calls++;return {ok:false,error:{code:'AGENT_UNAVAILABLE',outcome:'not-dispatched'}};};const command=new Proxy({op:'begin'},{getOwnPropertyDescriptor(target,key){closing??=h.provider.close({...args,reason:'released'});return Reflect.getOwnPropertyDescriptor(target,key);}});await reject(h.provider.agent({...args,command}),'AGENT_UNAVAILABLE');assert.equal(calls,0);assert.equal((await closing).status,'closed');
+});
