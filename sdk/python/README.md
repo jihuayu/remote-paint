@@ -211,3 +211,21 @@ coroutine. Cancel the calling asyncio Task to stop waiting. Actual unfinished se
 close work remains counted under the existing transport rules, including after a local
 deadline. This checkpoint covers finite JSON methods; the bounded Python SSE iterator,
 signed Webhooks and original Native end-to-end event/cancel acceptance remain pending.
+
+
+### SSE message models and parser checkpoint
+
+Frozen `AgentEventReady`, `AgentEventHeartbeat`, `AgentEventCheckpoint` and the
+`AgentEventMessage` union describe ready/event/heartbeat/checkpoint envelopes. Event
+messages carry `event`; control messages carry their typed `data`, with the exact
+request ID and original Run cursor. `AgentClientError.cursor` is optional metadata for
+the last delivered cursor. Consumers must still persist an event cursor after processing.
+
+The private incremental decoder now retains one raw chunk, one <=4096-byte frame and
+one pending message, with at most8192 scanned bytes per pull. It captures the original
+cursor/eventId and advances only after acknowledgement of that exact pending object.
+Discarding an undelivered message preserves the prior cursor. Byte/event/identity budgets
+span windows; malformed input and gaps remain terminal. Logical decoder-window completion
+is not an HTTP close or Source retirement receipt. This parser checkpoint does not add
+`runs.events`: independent HTTPX pool ownership, absolute timers, reconnect authentication
+and noncooperative read/close cleanup remain the next separate implementation task.

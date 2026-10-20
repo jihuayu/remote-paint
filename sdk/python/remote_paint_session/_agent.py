@@ -22,9 +22,10 @@ DispatchPhase = Literal['not-requested','requested','confirmed']
 Button = Literal['left','middle','right']
 
 class AgentClientError(SessionClientError):
-    def __init__(self, code: str, *, details: AgentEventGap | None = None, **options: Any) -> None:
+    def __init__(self, code: str, *, details: AgentEventGap | None = None, cursor: AgentEventCursor | None = None, **options: Any) -> None:
         super().__init__(code, **options)
         self.details = details
+        self.cursor = cursor
         self.args = ('Invalid Agent client request' if code == 'CLIENT_INVALID_REQUEST' else 'Agent API request failed',)
 class AgentClientCancelledError(SessionClientCancelledError):
     def __init__(self, outcome: Outcome) -> None:

@@ -204,6 +204,14 @@ def decode_event(v: Any,run: AgentRunId) -> AgentEvent:
         return AgentInvocationEvent(AgentEventId(v['eventId']),run,SessionId(v['sessionId']),v['region'],v['version'],v['sequence'],v['observedAt'],v['type'],cast(AgentEventInvocation,_invocation_data(v['data'])))
     _fail()
 
+def decode_event_gap(v: Any,run: AgentRunId,after_cursor: AgentEventCursor) -> AgentEventGap:
+    if not _exact(v,['schema','agentRunId','historyOrigin','after','oldestCursor','latestCursor','missingHistory']) or v['schema']!='agent-event-gap-v1' or v['missingHistory'] is not True or _size(v)>2048:
+        _fail()
+    after,oldest,_=_bounds(v,run)
+    if after>=oldest or v['after']!=after_cursor:
+        _fail()
+    return AgentEventGap(run,v['historyOrigin'],AgentEventCursor(v['after']),AgentEventCursor(v['oldestCursor']),AgentEventCursor(v['latestCursor']))
+
 def capture_event_error_details(error: dict[str,Any],expected: Any,status: int) -> AgentEventGap | None:
     if not isinstance(expected,EventExpected) or expected.kind!='event-page' or status!=409 or error['code']!='AGENT_EVENT_GAP' or error.get('outcome')!='not-dispatched':
         return None
@@ -211,12 +219,7 @@ def capture_event_error_details(error: dict[str,Any],expected: Any,status: int) 
     if type(v) is not dict:
         return None
     try:
-        if not _exact(v,['schema','agentRunId','historyOrigin','after','oldestCursor','latestCursor','missingHistory']) or v['schema']!='agent-event-gap-v1' or v['missingHistory'] is not True or _size(v)>2048:
-            return None
-        after,oldest,_=_bounds(v,expected.id)
-        if after>=oldest or v['after']!=(expected.after if expected.after is not None else event_cursor(expected.id,0)):
-            return None
-        return AgentEventGap(expected.id,v['historyOrigin'],AgentEventCursor(v['after']),AgentEventCursor(v['oldestCursor']),AgentEventCursor(v['latestCursor']))
+        return decode_event_gap(v,expected.id,AgentEventCursor(expected.after) if expected.after is not None else event_cursor(expected.id,0))
     except AgentClientError:
         return None
 

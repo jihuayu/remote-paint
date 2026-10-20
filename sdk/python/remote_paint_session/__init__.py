@@ -84,3 +84,8 @@ __all__ += ['AgentEventId','AgentEventCursor','AgentCancellationCursor','AgentHi
     'AgentRunEventData','AgentInvocationProjection','AgentEventInvocation','AgentCancellationInvocation',
     'AgentRunEvent','AgentInvocationEvent','AgentEvent','AgentEventPage','AgentEventGap',
     'AgentCancellationWork','AgentCancellationPage','AgentCancellation']
+
+from ._event_stream_parser import (AgentEventReady,AgentEventHeartbeat,AgentEventCheckpoint,
+    AgentEventItem,AgentReadyMessage,AgentHeartbeatMessage,AgentCheckpointMessage,AgentEventMessage)
+__all__ += ['AgentEventReady','AgentEventHeartbeat','AgentEventCheckpoint','AgentEventItem',
+    'AgentReadyMessage','AgentHeartbeatMessage','AgentCheckpointMessage','AgentEventMessage']
