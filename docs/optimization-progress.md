@@ -1234,3 +1234,9 @@ v1因基础runtime没有tc在施加损伤前失败，保留原记录；另建run
 22个纯契约通过。实际Linux Native hash retry正例与legacy各一轮通过：5次明确诊断空map与正常resourceBudget回收触发真正同scope原生cache miss，真实Retry后自动full resend，蓝PNG/绿DOM及input2经Gateway/CanvasKit验证；drain模式首窗口1条、后空窗口0条且累计仍1，legacy保留1条。这是显式诊断故障，不算自然丢包；对应Node map5仅诊断阶段，retry没有额外控制evaluate。
 
 实际Source actor长期控制合约也通过：3个CPU主VM保持、附加Session400图片/>64MiB、真实30s废弃租约、跨站、关闭与stale命令拒绝；两工作窗口及Source实际关闭后的第三尾部窗口ordinal连续，未漏Native拒绝事件，创建/销毁2/2。Parent测试Viewer在Source actor cohort之外是既定边界，未声称它们已在Source receipt时消失。3个独立容器均实际exit0。完整三VM/N1合并、物理增长门槛和8小时仍未完成。
+
+## 历史身份探针真正关闭后的控制器FD门槛
+
+owner.after的原metrics在finally关闭历史procFD之前采集，不能当探针关闭后的FD回落证明。Source actor现在在Source/历史探针/fixture/network/拒绝observer全部清理后，重新实读自身/proc/self/fd，与创建Source前（已有fixture）的baseline比较，最多允许8额外FD；失败写入正常清理错误，不忽略。
+
+一次独立真实Source actor7项合约通过，三CPU主VM保持/第二Session400图片/>64MiB/真实30s租约/跨站/3拒绝窗口与正常销毁全部完成；控制器baseline20→after19，进程实际exit0。此次只重复Source actor合约，冻结manifest继承父任务的retry工作负载说明另写clarification，未宣称此次重跑Native hash retry。未改生产文件、未修改旧失败记录或放宽物理策略。

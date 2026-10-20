@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-17T22:20:21.109045+00:00",
+  "status": "passed-controller-FDs-after-history-probes-actually-closed",
+  "scope": "Controller FD gate measured after allSource ownership-probe FDs/fixture/network/loss-observer cleanup;not the earlier source metrics captured while historical procFDs were intentionally held. Existing8FD headroom selected explicitly;no forcedGC orbudget relaxation. Actual Source actor7checks/3persistentCPUViewers/secondary400images/default30slease/crosssite/lossdrains/cleanup. Not8h/fullN1/physicalgrowthpass.",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-controller-fd-v1/frozen-version.json",
+    "sha256": "7dfcefe60081de3b1c97b11a34f259e3f1e1469e3b810fcdb36c3c4741c53478"
+  },
+  "actualRuns": [
+    {
+      "name": "source-actor",
+      "exitCode": 0,
+      "at": "2026-10-17T22:19:21.100353+00:00"
+    }
+  ],
+  "inheritedManifestScopeClarification": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-controller-fd-v1/run-clarification.json",
+    "sha256": "40afbcd1edf4f70a17b6b5579e7e743189934b2a975d267e71cd9cf1ea8d36ce"
+  },
+  "controllerFds": {
+    "baseline": 20,
+    "after": 19,
+    "allowedOverBaseline": 8,
+    "scope": "This Source controller after allSource/fixture/network/observer cleanup;baseline already included fixture. Counts actualFDs after ownership probes closed,not earlier metrics taken while history FDs were intentionally held."
+  },
+  "sourceCreatedClosed": {
+    "created": 2,
+    "closed": 2,
+    "crosssite": 1,
+    "leaseExpired": 1
+  },
+  "actualDefaultLeaseExpiryMs": 30002,
+  "secondaryImageBytes": 90014739,
+  "navigationFence": 1,
+  "sourceLossWindows": 3,
+  "artifact": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-controller-fd-v1/results/source-actor/contract.json",
+    "sha256": "74d2c460e8eba2449197e32c450b01497c73e07c2ea1f3b85e9858d00b900c86"
+  },
+  "allProcessesExited": true,
+  "noCommitPush": true,
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}
