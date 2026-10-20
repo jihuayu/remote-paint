@@ -241,3 +241,42 @@ automatic rearm, context refresh or replay. Fetch/body/cancellation work remains
 actual settlement, and end uses its separate pool. A timeout or abort only ends the caller's wait.
 These are completed-file/client-buffer bounds, not Chromium pre-spool, raw-receiver or physical
 memory limits. Actual Page download Python SDK parity is still pending in this checkpoint.
+
+
+### Run events and explicit cancellation (Node backend)
+
+`runs.eventPage(agentRunId, {after?, signal?, retries?})` reads at most four immutable
+public state events. `after` is a canonical `aec1.<original Run>.<sequence>` cursor.
+`AGENT_EVENT_GAP` exposes validated, frozen `error.details` and never skips missing history.
+
+`runs.events(agentRunId, {after?, signal?, reconnects?})` returns a lazy async iterator of
+`ready`, `event`, `heartbeat` and `checkpoint` messages. Only `event` carries a new state
+event. Save its cursor after your own processing; receiving an event does not acknowledge
+business success. Each new connection authenticates again. Reconnects default to three
+(0–3; at most four connections) after actual previous cleanup, with a 50ms delay and the
+last delivered event cursor. Gaps, malformed data and revoked authority are terminal.
+A finite iterator ending normally can be resumed by creating a new iterator with a saved cursor.
+
+`maxConcurrentEventStreams` defaults to8 (1–64), `eventStreamTimeoutMs` to60000ms
+(100–120000ms), and `maxEventStreamBytes` to262144 (4096–1048576). Duration and raw bytes
+span all reconnects. Frames are at most4096 bytes, with64 events per connection and256
+per iterator. Reading is demand driven with one concurrent pull and no background event queue.
+`eventTransportStatus()` separately reports actual unsettled streams. A deadline also
+cleans up an iterator paused between pulls. Abort, iterator return and for-await break close
+the reader; they never end the Source Run. Noncooperative fetch/read/cancel work retains its
+stream slot after the caller stops waiting. Failed cancellation/release retains uncertain
+capacity; an observation timeout is not retirement evidence.
+
+`runs.cancel(agentRunId, {signal?, retries?})` explicitly requests the existing idempotent
+end operation and returns an `agent-cancellation-v1` report. It shares the independent end
+pool with `runs.end`, leaving ordinary requests and stream admission separate.
+`runs.cancellation(agentRunId, {after?, signal?, retries?})` reads reports in pages of four
+original invocations. `acc1` report cursors differ from event cursors and bind one Run event
+generation. `AGENT_CANCELLATION_CHANGED` requires an explicit restart of report pagination;
+the SDK does not combine different generations. `completeRun` applies only to a complete
+first page. A closed Run with actual pending work reports `settling`; injected and unknown
+effects stay distinct. Rollback and business-success flags remain false. These methods
+require `agents:read` or, for cancel, `agents:end` backend authority.
+
+This checkpoint targets Node, actual HTTP/SQLite contracts and isolated private packages.
+Python event parity, signed Webhooks and full original Native runtime qualification remain pending.

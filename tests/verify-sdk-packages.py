@@ -22,7 +22,7 @@ def sha(path: Path) -> str:
 
 
 def inspect_archives(project: Path, node: Path, wheel: Path) -> dict:
-    node_names={'package/package.json','package/backend.mjs','package/backend.d.mts','package/backend-transport.mjs','package/agent.mjs','package/agent-observation.mjs','package/agent-download.mjs','package/agent.d.mts','package/viewer-connection.mjs','package/viewer-connection.d.mts','package/viewer-frame.mjs','package/viewer-frame.d.mts','package/viewer-channel.mjs','package/viewer-channel.d.mts','package/viewer-control.mjs','package/viewer-control.d.mts','package/viewer-telemetry.mjs','package/viewer-telemetry.d.mts','package/viewer.mjs','package/viewer.d.mts','package/README.md'}
+    node_names={'package/package.json','package/backend.mjs','package/backend.d.mts','package/backend-transport.mjs','package/agent.mjs','package/agent-observation.mjs','package/agent-download.mjs','package/agent-events.mjs','package/agent.d.mts','package/viewer-connection.mjs','package/viewer-connection.d.mts','package/viewer-frame.mjs','package/viewer-frame.d.mts','package/viewer-channel.mjs','package/viewer-channel.d.mts','package/viewer-control.mjs','package/viewer-control.d.mts','package/viewer-telemetry.mjs','package/viewer-telemetry.d.mts','package/viewer.mjs','package/viewer.d.mts','package/README.md'}
     with tarfile.open(node,'r:gz') as archive:
         members=archive.getmembers()
         assert {x.name for x in members}==node_names and len(members)==len(node_names)
@@ -95,16 +95,35 @@ def main() -> None:
                'tests/owned-test-child.mjs','tests/fixtures/session-store-child.mjs','tests/fixtures/session-store-records.mjs',
                'tests/fixtures/session-registry-child.mjs','tests/fixtures/session-python-http.mjs',
                'tests/python/test_agent_client.py','tests/fixtures/agent-python-http.mjs','tests/types/agent_client.py','tests/python/test_session_client.py','tests/types/session-client.mts','tests/types/session_client.py']
+        files.extend(['tests/node-agent-events-client.test.mjs','tests/types/agent-events-client.mts'])
+        # The real control-service fixtures acquire dependencies as features
+        # grow. Copy their explicit relative import closure with hashes while
+        # deliberately withholding sdk/: consumers must use installed exports.
+        pending=list(files);seen=set(files)
+        while pending:
+            name=pending.pop()
+            if Path(name).suffix not in ['.mjs','.mts']:
+                continue
+            source=args.project/name
+            for specifier in re.findall(r'''(?:from\s*|import\s*\(\s*|import\s*)['"](\.{1,2}/[^'"]+)['"]''',source.read_text()):
+                target=(source.parent/specifier).resolve()
+                assert target.is_relative_to(args.project),name
+                relative=target.relative_to(args.project).as_posix()
+                if relative.startswith('sdk/'):
+                    continue
+                assert target.is_file(),relative
+                if relative not in seen:
+                    seen.add(relative);files.append(relative);pending.append(relative)
         copied={}
         for name in files:
             source=args.project/name;target=consumer/name;target.parent.mkdir(parents=True,exist_ok=True)
             text=source.read_text();before=sha(source)
             if name=='tests/session-client.test.mjs':
                 token="from '../sdk/backend.mjs'";assert text.count(token)==1;text=text.replace(token,"from '@remote-paint/session-client'")
-            elif name in ['tests/node-agent-download-client.test.mjs','tests/node-agent-client.test.mjs','tests/node-agent-observation-client.test.mjs','tests/node-agent-accessibility-client.test.mjs','tests/node-agent-screenshot-client.test.mjs']:
+            elif name in ['tests/node-agent-events-client.test.mjs','tests/node-agent-download-client.test.mjs','tests/node-agent-client.test.mjs','tests/node-agent-observation-client.test.mjs','tests/node-agent-accessibility-client.test.mjs','tests/node-agent-screenshot-client.test.mjs']:
                 for source,installed in [("from '../sdk/agent.mjs'","from '@remote-paint/session-client/agent'"),("from '../sdk/backend.mjs'","from '@remote-paint/session-client'")]:
                     assert text.count(source)==1;text=text.replace(source,installed)
-            elif name=='tests/types/agent-client.mts':
+            elif name in ['tests/types/agent-client.mts','tests/types/agent-events-client.mts']:
                 for source,installed in [("'../../sdk/agent.mjs'","'@remote-paint/session-client/agent'"),("'../../sdk/backend.mjs'","'@remote-paint/session-client'")]:
                     assert text.count(source)>=1;text=text.replace(source,installed)
             elif name=='tests/types/viewer.mts':
@@ -126,7 +145,7 @@ def main() -> None:
                    NPM_CONFIG_GLOBALCONFIG=str(out/'empty-global.npmrc'))
         run('npm-install',[args.npm,'install','--offline','--ignore-scripts','--no-audit','--no-fund','--package-lock=false',str(args.node_archive)],cwd=consumer,env=env)
         expected=consumer/'node_modules/@remote-paint/session-client'
-        for name in ['backend.mjs','backend.d.mts','backend-transport.mjs','agent.mjs','agent-observation.mjs','agent-download.mjs','agent.d.mts','viewer-connection.mjs','viewer-connection.d.mts','viewer-frame.mjs','viewer-frame.d.mts','viewer-channel.mjs','viewer-channel.d.mts','viewer-control.mjs','viewer-control.d.mts','viewer-telemetry.mjs','viewer-telemetry.d.mts','viewer.mjs','viewer.d.mts','README.md','package.json']:assert sha(expected/name)==sha(args.project/'sdk'/name)
+        for name in ['backend.mjs','backend.d.mts','backend-transport.mjs','agent.mjs','agent-observation.mjs','agent-download.mjs','agent-events.mjs','agent.d.mts','viewer-connection.mjs','viewer-connection.d.mts','viewer-frame.mjs','viewer-frame.d.mts','viewer-channel.mjs','viewer-channel.d.mts','viewer-control.mjs','viewer-control.d.mts','viewer-telemetry.mjs','viewer-telemetry.d.mts','viewer.mjs','viewer.d.mts','README.md','package.json']:assert sha(expected/name)==sha(args.project/'sdk'/name)
         # ws is a private control-service fixture dependency, not an SDK
         # dependency. Copy its frozen bytes explicitly, with no source symlink.
         fixture_dependencies={}
@@ -136,6 +155,15 @@ def main() -> None:
                 relative=source.relative_to(args.project);target=consumer/relative
                 target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
                 assert sha(source)==sha(target);fixture_dependencies[str(relative)]=sha(source)
+        # Importing the real Source fixture checks the installed driver's
+        # pinned version. Only its package metadata is needed; this does not
+        # add Playwright as an SDK runtime dependency or launch a browser.
+        relative=Path('node_modules/playwright-core/package.json')
+        source=args.project/relative;target=consumer/relative
+        assert json.loads(source.read_text())['version']=='1.64.1'
+        assert source.is_file() and not source.is_symlink()
+        target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
+        assert sha(source)==sha(target);fixture_dependencies[str(relative)]=sha(source)
         assert fixture_dependencies
         (out/'fixture-dependencies.json').write_text(json.dumps(fixture_dependencies,indent=2)+'\n')
         (consumer/'tests/package-exports.test.mjs').write_text("""import test from 'node:test';
@@ -174,15 +202,16 @@ test('installed DOM component owns and destroys its pending iframe without backe
 test('unsupported internal and CommonJS exports are predictably refused',async()=>{
  await assert.rejects(import('@remote-paint/session-client/agent-observation.mjs'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
  await assert.rejects(import('@remote-paint/session-client/agent-download.mjs'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
+ await assert.rejects(import('@remote-paint/session-client/agent-events.mjs'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
  await assert.rejects(import('@remote-paint/session-client/backend-transport.mjs'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
  await assert.rejects(import('@remote-paint/session-client/backend.mjs'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
  assert.throws(()=>createRequire(import.meta.url)('@remote-paint/session-client'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
 });
 """)
-        names=['node-agent-download-client.test.mjs','node-agent-screenshot-client.test.mjs','node-agent-accessibility-client.test.mjs','node-agent-observation-client.test.mjs','node-agent-client.test.mjs','session-client.test.mjs','session-http.test.mjs','session-registry.test.mjs','session-registry-lifecycle.test.mjs','session-registry-durable.test.mjs','session-store.test.mjs','package-exports.test.mjs']
+        names=['node-agent-events-client.test.mjs','node-agent-download-client.test.mjs','node-agent-screenshot-client.test.mjs','node-agent-accessibility-client.test.mjs','node-agent-observation-client.test.mjs','node-agent-client.test.mjs','session-client.test.mjs','session-http.test.mjs','session-registry.test.mjs','session-registry-lifecycle.test.mjs','session-registry-durable.test.mjs','session-store.test.mjs','package-exports.test.mjs']
         raw=run('node-unit',[args.node,'--test','--test-concurrency=4',*[str(consumer/'tests'/n)for n in names]],cwd=consumer,env=env)
-        for label,value in [('tests',175),('pass',175),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
-        run('typescript',[args.node,str(args.tsc),'--noEmit','--strict','--exactOptionalPropertyTypes','--module','NodeNext','--moduleResolution','NodeNext','--target','ES2022','--lib','ES2022,DOM',str(consumer/'tests/types/agent-client.mts'),str(consumer/'tests/types/session-client.mts'),str(consumer/'tests/types/viewer-connection.mts'),str(consumer/'tests/types/viewer-frame.mts'),str(consumer/'tests/types/viewer.mts')],cwd=consumer,env=env)
+        for label,value in [('tests',202),('pass',202),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
+        run('typescript',[args.node,str(args.tsc),'--noEmit','--strict','--exactOptionalPropertyTypes','--module','NodeNext','--moduleResolution','NodeNext','--target','ES2022','--lib','ES2022,DOM',str(consumer/'tests/types/agent-events-client.mts'),str(consumer/'tests/types/agent-client.mts'),str(consumer/'tests/types/session-client.mts'),str(consumer/'tests/types/viewer-connection.mts'),str(consumer/'tests/types/viewer-frame.mts'),str(consumer/'tests/types/viewer.mts')],cwd=consumer,env=env)
         python=out/'venv/bin/python';venv.EnvBuilder(with_pip=False,symlinks=True).create(out/'venv')
         purelib=Path(subprocess.check_output([str(python),'-c',"import sysconfig;print(sysconfig.get_path('purelib'))"],env=env,text=True).strip())
         assert purelib.is_relative_to(out/'venv')
@@ -199,7 +228,7 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
             source_types=run('python-source-types',[str(python),'-m','mypy','--strict','--python-version','3.11','--no-incremental','--cache-dir=/dev/null','--python-executable',str(python),'-p','remote_paint_session'],cwd=consumer,env=typed)
             assert 'Success: no issues found in 6 source files' in source_types
         runtime=run('runtime',[sys.executable,'-c',"import sys,platform,json,subprocess;print(json.dumps({'python':platform.python_version(),'platform':sys.platform,'arch':platform.machine(),'node':subprocess.check_output([sys.argv[1],'--version'],text=True).strip(),'npm':subprocess.check_output([sys.argv[2],'--version'],text=True).strip()}))",args.node,args.npm],env=env)
-        result={'status':'passed','nodeTests':175,'nodeSkips':0,'pythonTests':118,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
+        result={'status':'passed','nodeTests':202,'nodeSkips':0,'pythonTests':118,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
                 'archives':archives,'runtime':json.loads(runtime),'stages':stages,'sourceFallbackUnavailable':True,'publicPublishing':False}
         (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps({k:result[k]for k in ['status','nodeTests','pythonTests','typescriptActual0','pythonInstalledTypeCheckActual0']}))

@@ -1,7 +1,8 @@
+import {captureEventOptions,validateAgentEventReply,captureEventErrorDetails,createAgentEventStreams} from './agent-events.mjs';
 import {captureDownloadRequest,validateDownloadReply,readDownloadBinary} from './agent-download.mjs';
 import {captureObservationReference,captureObservationContext,captureObservationRequest,captureObservationOptions,validateObservationReply,captureAccessibilityRequest,validateAccessibilityReply,captureScreenshotRequest,captureScreenshotFileRequest,validateScreenshotReply,readScreenshotBinary} from './agent-observation.mjs';
 import {SessionClientError,createBackendTransport,freezeBackendData} from './backend-transport.mjs';
-export class AgentClientError extends SessionClientError {constructor(code,options){super(code,options);this.name='AgentClientError';this.message=code==='CLIENT_INVALID_REQUEST'?'Invalid Agent client request':'Agent API request failed';}}
+export class AgentClientError extends SessionClientError {constructor(code,options={}){super(code,options);if(options.details!==undefined)this.details=freezeBackendData(options.details);if(options.cursor!==undefined)this.cursor=options.cursor;this.name='AgentClientError';this.message=code==='CLIENT_INVALID_REQUEST'?'Invalid Agent client request':'Agent API request failed';}}
 const invalid=()=>{throw new AgentClientError('CLIENT_INVALID_REQUEST',{outcome:'not-dispatched'});};
 const plain=v=>!!v&&Object.getPrototypeOf(v)===Object.prototype;
 function data(value,allowed,required=allowed){if(!plain(value))invalid();const descriptors=Object.getOwnPropertyDescriptors(value),keys=Reflect.ownKeys(value);if(keys.some(k=>!allowed.includes(k)||!Object.hasOwn(descriptors[k],'value'))||required.some(k=>!Object.hasOwn(descriptors,k)))invalid();return Object.fromEntries(keys.filter(k=>descriptors[k].value!==undefined).map(k=>[k,descriptors[k].value]));}
@@ -35,6 +36,7 @@ function invocation(v){
  return v.receipt===null&&error(v.error)&&(v.state==='unknown'?v.dispatchStarted&&v.error.outcome==='unknown':v.error.outcome==='not-dispatched');
 }
 function validate(status,value,expect,headers){
+ if(['agent-event-page','agent-cancel','agent-cancellation'].includes(expect.kind))return validateAgentEventReply(status,value,expect,headers);
  if(['agent-download-armed','agent-download-info','agent-download-chunk','agent-download-released'].includes(expect.kind))return validateDownloadReply(status,value,expect,headers);
  if(['agent-screenshot','agent-screenshot-chunk','agent-screenshot-released'].includes(expect.kind))return validateScreenshotReply(status,value,expect,headers);
  if(expect.kind==='agent-accessibility')return validateAccessibilityReply(status,value,expect,headers);
@@ -68,7 +70,7 @@ function action(value){
 export class AgentClient {
  #transport;
  constructor(config){
-  this.#transport=createBackendTransport(config,{validate,ErrorClass:AgentClientError,agentErrors:true,endKind:'agent-end',binaryKind:'agent-screenshot-download',readBinary:readScreenshotBinary,downloadKind:'agent-download-file',readDownloadBinary});
+  this.#transport=createBackendTransport(config,{validate,ErrorClass:AgentClientError,agentErrors:true,endKind:'agent-end',endKinds:['agent-cancel'],createEventStreams:createAgentEventStreams,validateErrorDetails:captureEventErrorDetails,binaryKind:'agent-screenshot-download',readBinary:readScreenshotBinary,downloadKind:'agent-download-file',readDownloadBinary});
   const call=(method,path,payload,key,expect,options)=>this.#transport.request(method,path,payload,key,expect,options);
   const prepared=(path,payload,key,expect)=>{let originalId=null,originalCreatedAt=null;return Object.freeze({send:async(options={})=>{const result=await call('POST',path,payload,key,expect,requestOptions(options)),id=result.data.agentRunId&&expect.kind==='agent-run-create'?result.data.agentRunId:result.data.invocationId;if(originalId!==null&&originalId!==id||originalCreatedAt!==null&&originalCreatedAt!==result.data.createdAt)throw new AgentClientError('CLIENT_INVALID_RESPONSE',{requestId:result.requestId});originalId=id;originalCreatedAt=result.data.createdAt;return result;}});};
   const prepareRun=(sessionId,input,options)=>{if(!id(sessionId,'ses_'))invalid();const v=data(input,['region','version','rpcTimeoutMs'],['region','version']),r=data(options,['idempotencyKey']);if(!string(v.region,64)||!string(v.version,256))invalid();timeout(v.rpcTimeoutMs);requestOptions(r,true);return prepared('/v1/sessions/'+sessionId+'/agent-runs',body(v),r.idempotencyKey,{kind:'agent-run-create',sessionId,region:v.region,version:v.version});};
@@ -78,6 +80,10 @@ export class AgentClient {
    create:(sessionId,input,options)=>{const r=requestOptions(options,true);return prepareRun(sessionId,input,{idempotencyKey:r.idempotencyKey}).send({signal:r.signal,retries:r.retries});},
    get:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return call('GET','/v1/agent-runs/'+agentRunId,null,null,{kind:'agent-run-get',id:agentRunId},requestOptions(options));},
    context:async(run,options={})=>{const r=reference(run),result=await call('GET','/v1/agent-runs/'+r.agentRunId+'/context',null,null,{kind:'agent-context',sessionId:r.sessionId},requestOptions(options));return freezeBackendData({data:{agentRunId:r.agentRunId,...result.data},requestId:result.requestId});},
+   events:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return this.#transport.events(agentRunId,captureEventOptions(options,agentRunId,invalid,'stream'));},
+   eventPage:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();const {after,...request}=captureEventOptions(options,agentRunId,invalid,'page');return call('GET','/v1/agent-runs/'+agentRunId+'/events'+(after===undefined?'':'?after='+after),null,null,{kind:'agent-event-page',id:agentRunId,after},request);},
+   cancellation:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();const {after,...request}=captureEventOptions(options,agentRunId,invalid,'cancellation');return call('GET','/v1/agent-runs/'+agentRunId+'/cancellation'+(after===undefined?'':'?after='+after),null,null,{kind:'agent-cancellation',id:agentRunId,after},request);},
+   cancel:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return call('POST','/v1/agent-runs/'+agentRunId+'/cancel',null,null,{kind:'agent-cancel',id:agentRunId},requestOptions(options));},
    end:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return call('POST','/v1/agent-runs/'+agentRunId+'/end',null,null,{kind:'agent-end',id:agentRunId},requestOptions(options));}
   })});
   const screenshotCall=(kind,suffix,supplied,input,options={})=>{const ctx=captureObservationContext(supplied,invalid),request=kind==='agent-screenshot'?captureScreenshotRequest(input,invalid):captureScreenshotFileRequest(input,kind==='agent-screenshot-chunk'?'chunk':kind==='agent-screenshot-download'?'download':'release',invalid,this.#transport.screenshotMaxBytes),opts=captureObservationOptions(options,invalid);return call('POST','/v1/agent-runs/'+ctx.agentRunId+'/screenshot-'+suffix,body({context:ctx,...request}),null,{kind,context:ctx,request},opts);};
@@ -103,4 +109,5 @@ export class AgentClient {
   })});
  }
  transportStatus(){return this.#transport.status();}
+ eventTransportStatus(){return this.#transport.eventStatus();}
 }

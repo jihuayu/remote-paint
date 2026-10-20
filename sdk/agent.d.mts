@@ -1,4 +1,4 @@
-import {SessionClientError,type SessionClientConfig,type ApiResult,type SessionId,type RequestOptions} from './backend.mjs';
+import {SessionClientError,type SessionClientConfig,type ApiResult,type SessionId,type RequestOptions,type RequestId,type RequestOutcome} from './backend.mjs';
 export type AgentRunId=`arun_${string}`;
 export type AgentInvocationId=`ainv_${string}`;
 export type AgentTool='move'|'click'|'drag'|'scroll'|'press'|'insertText'|'composition';
@@ -13,13 +13,14 @@ export interface AgentRun extends AgentRunReference {
  readonly beginDispatch:'not-requested'|'requested'|'confirmed';readonly endDispatch:'not-requested'|'requested'|'confirmed';readonly createdAt:string;readonly updatedAt:string;readonly error:AgentFailure|null;
 }
 interface InvocationBase {readonly invocationId:AgentInvocationId;readonly agentRunId:AgentRunId;readonly sessionId:SessionId;readonly tool:AgentTool;readonly fence:AgentFence;readonly createdAt:string;readonly updatedAt:string;}
-export type AgentInvocation=InvocationBase&(
+type InvocationState=(
  {readonly state:'intent';readonly dispatchStarted:false;readonly receipt:null;readonly error:null}|
  {readonly state:'requested';readonly dispatchStarted:true;readonly receipt:null;readonly error:null}|
  {readonly state:'injected';readonly dispatchStarted:true;readonly receipt:{readonly stage:'input-injected';readonly inputs:number};readonly error:null}|
  {readonly state:'rejected';readonly dispatchStarted:boolean;readonly receipt:null;readonly error:{readonly code:string;readonly outcome:'not-dispatched'}}|
  {readonly state:'unknown';readonly dispatchStarted:true;readonly receipt:null;readonly error:{readonly code:string;readonly outcome:'unknown'}}
 );
+export type AgentInvocation=InvocationBase&InvocationState;
 type Modifiers={readonly modifiers?:number};
 type Point={readonly x:number;readonly y:number}&Modifiers;
 export type AgentAction=(
@@ -90,8 +91,46 @@ export interface AgentDownloadChunk extends AgentObservationContext {readonly st
 export interface AgentDownloadReleased extends AgentObservationContext {readonly stage:'download-released';readonly downloadId:AgentDownloadId;}
 /** Metadata is frozen; bytes are a new mutable caller-owned allocation. */
 export interface AgentDownloadFile extends AgentObservationContext {readonly stage:'download-delivered';readonly downloadId:AgentDownloadId;readonly mimeType:'application/octet-stream';readonly byteLength:number;readonly sha256:string;readonly completedAt:string;readonly bytes:Uint8Array;}
-export interface AgentClientConfig extends SessionClientConfig {readonly maxConcurrentEndRequests?:number;readonly maxScreenshotBytes?:number;readonly maxDownloadBytes?:number;}
-export class AgentClientError extends SessionClientError {}
+/** Cursors bind one original Run. Runtime validation also enforces canonical safe integers. */
+export type AgentEventCursor=`aec1.${AgentRunId}.${number}`;
+export type AgentCancellationCursor=`acc1.${AgentRunId}.${number}.${AgentInvocationId}`;
+export type AgentHistoryOrigin='created'|'migration-snapshot';
+export interface AgentEventOptions {readonly after?:AgentEventCursor;readonly signal?:AbortSignal;readonly reconnects?:0|1|2|3;}
+export interface AgentEventPageOptions extends RequestOptions {readonly after?:AgentEventCursor;}
+export interface AgentCancellationOptions extends RequestOptions {readonly after?:AgentCancellationCursor;}
+export type AgentRunProjection=Pick<AgentRun,'state'|'holdsWriter'|'beginDispatch'|'endDispatch'|'error'>&{readonly closeEvidenceKind:'never-dispatched'|'begin-rejected'|'worker-run-closed'|'session-terminal'|null};
+export type AgentEventInvocation=Pick<InvocationBase,'invocationId'|'tool'>&InvocationState&{readonly stateUpdatedAt:string};
+interface AgentEventBase extends AgentRunReference {readonly schema:'agent-event-v1';readonly eventId:`aevt_${string}`;readonly region:string;readonly version:string;readonly sequence:number;readonly observedAt:string;}
+export type AgentEvent=AgentEventBase&(
+ {readonly type:'run.updated'|'run.snapshot';readonly data:AgentRunProjection&{readonly stateUpdatedAt:string}}|
+ {readonly type:'invocation.updated'|'invocation.snapshot';readonly data:AgentEventInvocation}
+);
+export interface AgentEventReady {readonly schema:'agent-event-stream-v1';readonly agentRunId:AgentRunId;readonly historyOrigin:AgentHistoryOrigin;readonly after:AgentEventCursor;readonly oldestCursor:AgentEventCursor;readonly latestCursor:AgentEventCursor;readonly cursor:AgentEventCursor;}
+export interface AgentEventHeartbeat {readonly schema:'agent-heartbeat-v1';readonly agentRunId:AgentRunId;readonly cursor:AgentEventCursor;readonly observedAt:string;}
+export interface AgentEventCheckpoint {readonly schema:'agent-event-checkpoint-v1';readonly agentRunId:AgentRunId;readonly cursor:AgentEventCursor;readonly reason:'duration'|'events'|'bytes';}
+export type AgentEventMessage={readonly cursor:AgentEventCursor;readonly requestId:RequestId}&(
+ {readonly kind:'event';readonly event:AgentEvent}|
+ {readonly kind:'ready';readonly data:AgentEventReady}|
+ {readonly kind:'heartbeat';readonly data:AgentEventHeartbeat}|
+ {readonly kind:'checkpoint';readonly data:AgentEventCheckpoint}
+);
+export interface AgentEventPage extends AgentRunReference {readonly schema:'agent-event-http-page-v1';readonly region:string;readonly version:string;readonly historyOrigin:AgentHistoryOrigin;readonly after:AgentEventCursor;readonly oldestSequence:number;readonly latestSequence:number;readonly gap:false;readonly events:readonly AgentEvent[];readonly nextCursor:AgentEventCursor;readonly hasMore:boolean;readonly oldestCursor:AgentEventCursor;readonly latestCursor:AgentEventCursor;}
+export interface AgentEventGap {readonly schema:'agent-event-gap-v1';readonly agentRunId:AgentRunId;readonly historyOrigin:AgentHistoryOrigin;readonly after:AgentEventCursor;readonly oldestCursor:AgentEventCursor;readonly latestCursor:AgentEventCursor;readonly missingHistory:true;}
+type CancellationState<T=InvocationState>=T extends InvocationState?T&{readonly effect:T['state'] extends 'intent'?'not-dispatched-yet':T['state'] extends 'injected'?'input-injected':T['state'] extends 'rejected'?'not-dispatched':'unknown'}:never;
+export type AgentCancellationInvocation=Pick<InvocationBase,'invocationId'|'tool'>&CancellationState&{readonly updatedAt:string};
+export interface AgentCancellation extends AgentRunReference {
+ readonly schema:'agent-cancellation-v1';readonly region:string;readonly version:string;readonly observedAt:string;
+ readonly status:'not-requested'|'pending'|'settling'|'closed'|'reconciliation-required';readonly run:AgentRunProjection;
+ readonly work:{readonly ordinaryPending:boolean;readonly endPending:boolean;readonly recoveryRequired:boolean;readonly executorStopping:boolean};
+ readonly scope:'original-agent-run';readonly rollbackSupported:false;readonly rollbackPerformed:false;readonly businessSuccessConfirmed:false;
+ readonly page:{readonly generation:AgentEventCursor;readonly historyOrigin:AgentHistoryOrigin;readonly after:AgentCancellationCursor|null;readonly nextCursor:AgentCancellationCursor|null;readonly hasMore:boolean;readonly completeRun:boolean};
+ readonly invocations:readonly AgentCancellationInvocation[];
+}
+export interface AgentClientConfig extends SessionClientConfig {readonly maxConcurrentEndRequests?:number;readonly maxScreenshotBytes?:number;readonly maxDownloadBytes?:number;readonly maxConcurrentEventStreams?:number;readonly eventStreamTimeoutMs?:number;readonly maxEventStreamBytes?:number;}
+export class AgentClientError extends SessionClientError {
+ readonly details?:AgentEventGap;readonly cursor?:AgentEventCursor;
+ constructor(code:string,options?:{status?:number|null;requestId?:RequestId|null;outcome?:RequestOutcome;retryable?:boolean;details?:AgentEventGap;cursor?:AgentEventCursor});
+}
 export class AgentClient {
  constructor(config:AgentClientConfig);
  readonly runs:{
@@ -99,6 +138,10 @@ export class AgentClient {
   readonly create:(sessionId:SessionId,input:CreateAgentRunInput,options:AgentCreateOptions)=>Promise<ApiResult<AgentRun>>;
   readonly get:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentRun>>;
   readonly context:(run:AgentRunReference,options?:RequestOptions)=>Promise<ApiResult<AgentContext>>;
+  readonly events:(agentRunId:AgentRunId,options?:AgentEventOptions)=>AsyncIterableIterator<AgentEventMessage>;
+  readonly eventPage:(agentRunId:AgentRunId,options?:AgentEventPageOptions)=>Promise<ApiResult<AgentEventPage>>;
+  readonly cancellation:(agentRunId:AgentRunId,options?:AgentCancellationOptions)=>Promise<ApiResult<AgentCancellation>>;
+  readonly cancel:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentCancellation>>;
   readonly end:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentRun>>;
  };
  readonly observations:{
@@ -121,4 +164,5 @@ export class AgentClient {
   readonly get:(invocationId:AgentInvocationId,options?:RequestOptions)=>Promise<ApiResult<AgentInvocation>>;
  };
  transportStatus():Readonly<{ordinary:number;ending:number}>;
+ eventTransportStatus():Readonly<{streams:number}>;
 }
