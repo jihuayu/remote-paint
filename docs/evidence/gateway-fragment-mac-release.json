@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-18T12:51:53.548845+00:00",
+  "status": "current-canonical-Mac-release4-Gateway-contracts-passed",
+  "brokerSha256": "47441b608170d4a33646a76d1908abba79c858ecd288857421ff1024af06c038",
+  "tests": [
+    {
+      "name": "verify-broker-gateway",
+      "actualExitCode": 0,
+      "logSha256": "2f6a723376b931479625a26842252bd2f6d8dcde91bfe3b84e40181b3744fea1"
+    },
+    {
+      "name": "verify-frame-window",
+      "actualExitCode": 0,
+      "logSha256": "f1243c242d120a7f9af4699aca4c6d25ae5b7c4d9a2c273d66877a83a40b6189"
+    },
+    {
+      "name": "verify-websocket-backing",
+      "actualExitCode": 0,
+      "logSha256": "8aa60f13a912302e2fb07df6845b3f1853bf42cfa624f56a0345723d4fc16f0a"
+    },
+    {
+      "name": "verify-gateway-packets",
+      "actualExitCode": 0,
+      "logSha256": "439d8286a9dc4f9d59bd5d8fc08e9153eed53c332c5e713ef660bf707873d849"
+    }
+  ],
+  "scope": "Actual publishedMacarm64releaseBroker plusMacChromeCanvasKitViewer/syntheticcaptureSource:Gatewaypixel/recovery,framewindow,websocketbacking,packetbudgets. NotactualMacNativeSource,physicalGPU/scanout/600s/8h/all41 acceptance. Frozen717runtime/depsunchanged.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-mac-release-v1/progress.json": "2f7e3cfaa23608ced17242d672886c9ed7274b9524a93962f43306c5510c56b1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/run-gateway-fragment-mac-release-v1.py": "9440d5192e32d344da78656788d359ca386e520b66abdac2472093101830e6bc",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-mac-release-v1/verify-gateway-packets.log": "439d8286a9dc4f9d59bd5d8fc08e9153eed53c332c5e713ef660bf707873d849",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-mac-release-v1/verify-frame-window.log": "f1243c242d120a7f9af4699aca4c6d25ae5b7c4d9a2c273d66877a83a40b6189",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-mac-release-v1/verify-broker-gateway.log": "2f6a723376b931479625a26842252bd2f6d8dcde91bfe3b84e40181b3744fea1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-mac-release-v1/verify-websocket-backing.log": "8aa60f13a912302e2fb07df6845b3f1853bf42cfa624f56a0345723d4fc16f0a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-mac-release-v1/runtime/artifacts/websocket-backing/contract.json": "e9bfb8310c4d697728f755d9bbc834c48bc8669952f5117b924470a3b1c08f83",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-mac-release-v1/runtime/artifacts/broker/report.json": "652c1ba7beb2598656f464fa9a13eb23ccf731abbcf6dcd546dc9336c2db2292",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-mac-release-v1/runtime/artifacts/gateway-packets/contract.json": "b44e202454f90971646a8007112a25a66d17c61b23c605523c5c2cd719d5cfa8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-mac-release-v1/runtime/artifacts/network/frame-window.json": "b6e566f1b5148673c87e1119e49d428870962927091c199ef526769cbe2d25c4"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

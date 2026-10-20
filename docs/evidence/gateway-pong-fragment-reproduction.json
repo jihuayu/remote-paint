@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-18T12:03:16.338630+00:00",
+  "status": "current-Rust-codec-partial-large-resource-pong-starvation-reproduced",
+  "actualRustTestExitCode": 101,
+  "failedTest": "writer::tests::pong_precedes_completion_of_a_partially_sent_large_resource_without_corrupting_message_order",
+  "scope": "Actual current Rust ws_memory Socket+tungstenite codec with deterministic4KiB write admission per turn and real masked Ping. A1MiB logical Binary occupies one unfragmented frame;Pong is not decodable in first48KiB output while resource remains incomplete. This proves codec ordering mechanism;not exact sole cause of original kernelnetem timeout,realNativeSource transport or completed fix. No timeout/consumer/network changes.",
+  "relatedNetemFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v11-netem-failure-checkpoint-v1.json",
+  "sourceVersion": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-pong-fragment-before-v1/source-version.json",
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-pong-fragment-before-v1/source-version.json": "b2a1406d5a78642036b2c21892dda1f8a7c707b1a83ebe34b20516850f17b6e8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-pong-fragment-before-v1/test.log": "138bd4f820cda0f0023773ef4dc114efdc2581b384a75fbfe543cf500b39dfdc",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-pong-fragment-before-v1/exit.json": "1fce87add0b38f08c0ba347cb8ab1a9b492898d725fe665697019d531f831412"
+  }
+}

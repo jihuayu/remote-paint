@@ -1,0 +1,93 @@
+{
+  "at": "2026-10-18T12:17:35.724553+00:00",
+  "status": "actual-old-Rust-Gateway-large-raw-resource-ping-deadline-reproduced",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-before-v3/frozen-version.json",
+  "manifestSha256": "4b4d4220666bf11bdcfec890cdcc7b52d80a4a8cc9769dea79919094b9a7ef7a",
+  "actualTerminal": [
+    0,
+    1,
+    0
+  ],
+  "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c",
+  "payloadBytes": 8388608,
+  "pingStartedAtWireBytes": 3269,
+  "pingWriteCallbackMs": 0.7099169999999901,
+  "originalPingDeadlineMs": 3000,
+  "pingExpired": true,
+  "pongObserved": false,
+  "wireBytesBeforeDisconnect": 7626989,
+  "kernelCounters": {
+    "bytes": 7975012,
+    "packets": 5271,
+    "drops": 32,
+    "overlimits": 0,
+    "requeues": 0,
+    "backlog": 66,
+    "qlen": 1
+  },
+  "sourceEvents": [
+    {
+      "consumerKind": "recording",
+      "event": "PeerReady",
+      "inputFeedback": false,
+      "peerId": "native-0"
+    },
+    {
+      "event": "PeerStats",
+      "peerId": "native-0",
+      "stats": {
+        "bytes": 0,
+        "coalesced": 0,
+        "delta": 0,
+        "full": 0,
+        "maxInflight": 0,
+        "maxPendingBytes": 8389670,
+        "pendingBytes": 8389670,
+        "resources": 0,
+        "slowDisconnects": 0
+      }
+    },
+    {
+      "event": "PeerStats",
+      "peerId": "native-0",
+      "stats": {
+        "bytes": 0,
+        "coalesced": 0,
+        "delta": 0,
+        "full": 0,
+        "maxInflight": 0,
+        "maxPendingBytes": 8389670,
+        "pendingBytes": 8389670,
+        "resources": 0,
+        "slowDisconnects": 1
+      }
+    },
+    {
+      "event": "PeerClosed",
+      "peerId": "native-0"
+    }
+  ],
+  "cleanup": {
+    "brokerExited": true,
+    "pending": 0,
+    "requestOwners": 0,
+    "responseOwners": 0
+  },
+  "scope": "Actual unmodified qualified Linux Rust Broker/read-onlyrecording/nochunk orframe-window capability,owned40ms/2ms/1%/20Mbit egress. Ping starts after3269actualTCPbytes and writes promptly;noPong before original3s. Large8MiB message was still incomplete when original15s resource watchdog disconnected despite partial transport. Deterministic codec gate separately proves Pong behind whole raw frame. SyntheticSKPheader transport fixture,not decodedpixels/NativeSource/solecause oforiginal416failure or acceptance. First2fixture preparation failures retained separately.",
+  "beforeFixtures": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-before-v1/fixture-failure-receipt.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-before-v2/fixture-failure-receipt.json"
+  ],
+  "codecReproduction": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-pong-fragment-reproduction-checkpoint-v1.json",
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-before-v3/frozen-version.json": "4b4d4220666bf11bdcfec890cdcc7b52d80a4a8cc9769dea79919094b9a7ef7a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-before-v3/client-exit.json": "e5a29f606e7dbb622fe977ff996b3d2040fac37c312b3cf155e44bb06111bb58",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-before-v3/source-exit.json": "faf063ba2897b1b75d2a5e1c423a6427ef521a4b3e3e9f4b72599d36099b341f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-before-v3/client.log": "fc94c6a9b6cec57db7fc8fbc8224479d1f35d59b3737eb1e3eb0d351d44b66ae",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-before-v3/source.log": "737f0a3fa902831e679710ce9830ff3d99d37449ccc3780c34b8ff7a10fdd2fa",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-before-v3/results/client-report.json": "57be7bdd88a6d967450aac80106caca43d03abfbd020f9e60c520562f4148545",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-before-v3/results/source-report.json": "206937986770ca5bb4531bc5cace0a283496894d31e4daf2427328062c54bcba"
+  }
+}

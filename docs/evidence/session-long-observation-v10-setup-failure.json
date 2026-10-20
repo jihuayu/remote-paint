@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-18T11:30:19.253571+00:00",
+  "status": "v10-launch-configuration-name-collision-no-runtime-started",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/baseline-frozen-version.json",
+  "manifestSha256": "76fcaa6957561fd2d3d386464460416b47aae18f69af1db9d8a7f08a6cef20a5",
+  "sourceActualExitCode": 125,
+  "viewerStarted": false,
+  "browserWorkloadStarted": false,
+  "reason": "Generated v10 manifest retained v9 container name; Docker rejected creation. Existing named container is the already terminal v9 baseline,not a newv10runtime. Do not adopt its terminal status or overwrite/restart the attempt.",
+  "collision": {
+    "name": "remote-paint-session-long-observation-baseline-20261018-v9",
+    "existingId": "7c07613c78e074e48f6112b5703ac5036f382e0f8c63a6c316e1c896073f376e",
+    "existingCreated": "2026-10-18T11:06:33.417734326Z",
+    "existingTerminal": true
+  },
+  "sourceBytesStillQualifiedBy394Tests": true,
+  "eightHourPassed": false,
+  "noCommitPush": true,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/baseline-frozen-version.json": "76fcaa6957561fd2d3d386464460416b47aae18f69af1db9d8a7f08a6cef20a5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/baseline-source.log": "e9c9d8b07962d56e8ab96e4d14a525f87d1c27c6125a686252c2354b083f4e26",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/baseline-source-exit.json": "7e3ebe6564f6f59f032f3d379b24709c17ea52fe2c989615012ce6682bbd22db"
+  }
+}

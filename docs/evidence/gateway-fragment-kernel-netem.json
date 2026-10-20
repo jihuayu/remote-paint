@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-18T12:31:21.560082+00:00",
+  "status": "candidate-actual-Gateway-kernel-netem-passed",
+  "scope": "Same8MiB synthetic SKP-header/recording-only consumer/no asset-chunks,Source egress40ms jitter2ms loss1percent20Mbit,reverse unshaped;real Rust Gateway,not NativeSource/pixels/N1/600s/8h/all41 acceptance",
+  "oldFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-reproduction-checkpoint-v1.json",
+  "pongMs": 131.71670799999998,
+  "resourceCompleteMs": 10846.670417,
+  "pingDeadlineMs": 3000,
+  "pongBeforeFullMessage": true,
+  "resourceBytes": 8388608,
+  "resourceContentAndCommitPreserved": true,
+  "networkCounters": {
+    "bytes": 8774306,
+    "packets": 5800,
+    "drops": 21,
+    "overlimits": 0,
+    "requeues": 0,
+    "backlog": 66,
+    "qlen": 1
+  },
+  "cleanup": {
+    "brokerExited": true,
+    "pending": 0,
+    "requestOwners": 0,
+    "responseOwners": 0
+  },
+  "actualSourceExitCode": 0,
+  "actualClientExitCode": 0,
+  "dockerExitCode": 0,
+  "sources": {
+    "native/broker/src/ws_memory.rs": "e59240ac67a29570e14ed282008abbda659e7012126dce737a54bae1d29662e2",
+    "native/broker/src/writer.rs": "fe37b34464aa9eb197d970b483c136ff0bcfbe8bca6141bf4b375aa92312491f",
+    "native/broker/src/gateway.rs": "f3cb727514b8acd12f935b94b10aec6c85e2f0cafa6cc5b60daad0eb3e5afe82",
+    "tests/serve-gateway-raw-ping.mjs": "941d5f0157111dae288a4324c08c1aaad5b07453d3d62c3ef64f1e82cc6db671",
+    "tests/verify-gateway-raw-ping.mjs": "4f9638362b4842c67835bbd528aacee60b075ff4beaa2c48e0bba360742ac0d8"
+  },
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-v1/frozen-version.json": "16a275f33819b71ebc7238d2eac71da7bf040b48d875a4bc0fb6c699f1a05bdb",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-v1/source-exit.json": "65ae088273795a80879a834aeb93d27a44bcf6f2dd2a38682a04aa94002c0143",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-v1/client-exit.json": "66c61b0731b6ba6de953388cee17727ebd03ec4c836d59d82c0ee96f334d59f8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-v1/results/client-report.json": "764f7bcc1e2277216a9dbd6a9688175ab3782836f0179799a9634bb320197697",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-v1/results/source-report.json": "b29cc453fbf76a9e98a9a35430bc97ec506090138a653dfb93dcef269af65a5e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-raw-ping-v1/docker-state.json": "f35c1d38e1dde5cdf7973b162abd8d48cad2fb04fb50dd96fa29901bdab3b79a"
+  },
+  "noCommitPush": true,
+  "canonicalBinariesPublished": false,
+  "eightHourPassed": false
+}

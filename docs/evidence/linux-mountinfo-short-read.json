@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-18T12:38:40.100453+00:00",
+  "status": "bounded-mountinfo-continuation-scoped20-tests-Mac-Linux-passed",
+  "mac": {
+    "tests": 20,
+    "passed": 11,
+    "skipped": 9,
+    "failed": 0,
+    "actualExitCode": 0
+  },
+  "linux": {
+    "tests": 20,
+    "passed": 20,
+    "skipped": 0,
+    "failed": 0,
+    "at": "2026-10-18T12:37:41.723133+00:00",
+    "actualExitCode": 0,
+    "dockerExitCode": 0,
+    "dockerRunning": false,
+    "imageId": "sha256:42df2c322c1c105d79aff686ebf92b0708f237788daa011186976e852b7cf66e"
+  },
+  "originalReproduction": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-mountinfo-short-read-reproduction-checkpoint-v1.json",
+  "preservedFailures": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-linux-js-memory-failure-checkpoint-v1.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-mountinfo-short-read-mac-unit-v1.log"
+  ],
+  "fixtureCorrection": "Initial newUTF8test incorrectly supplied EOF after8of9bytes;corrected finitechunk vector to endafterall9,no productlogic change. Initial failedlog preserved.",
+  "scope": "Only dedicated /proc/self/mountinfo wrapper permits continuation on one openFD through EOF,retains64KiB+onebyte detection and original5s AbortSignal. cgroup now rejects mismatching complete before/after mount tables. Process/smaps strictsingle-read path unchanged,partialtext neveraccepted onoverlimit/readerror/abort. Actual Linux PSS/cgroup/FDcleanup/deadline+SIGSTOP tests pass. No currentfull400/N1/600s/8h/all41 acceptance yet.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-mountinfo-short-read-v2/frozen-version.json": "6db70e00e68493c1a20115451e17155086edb9f094b245fd777edeec77dbe30f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-mountinfo-short-read-v2/linux-unit.log": "6a3600c25b4769ff91c59632337e958af869c5bf7cff78fdd4b95c1c5925c111",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-mountinfo-short-read-v2/linux-unit-exit.json": "b0ec24a01dbf7ea85b451f5455d7425153b48baa5b69335cd990d1720d6a0333",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-mountinfo-short-read-mac-unit-v2.log": "d30db77a1a6dc3bb6eef2aeeb0abe7b4bf867441160932bcc33342be02dfcbf1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-mountinfo-short-read-mac-unit-v1.log": "f2126b475d51eec5eb4246f55e1f4e884eab7a98ae9406dcd1fb9aef05957909"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

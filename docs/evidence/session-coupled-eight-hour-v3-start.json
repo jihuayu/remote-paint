@@ -1,0 +1,87 @@
+{
+  "at": "2026-10-18T13:08:32.816990+00:00",
+  "status": "current-independent28800s-started-not-accepted",
+  "activeRun": {
+    "mode": "independent-eight-hour-v3",
+    "requestedSeconds": 28800,
+    "sourceSession": 71679,
+    "viewerSession": 16586,
+    "container": "remote-paint-session-coupled-eight-hour-20261018-v3",
+    "containerId": "d2e8650b2d46a86b13dfca1c10b45d0063a1de05e5a3e78f86de736c9db5b0ff",
+    "imageId": "sha256:42df2c322c1c105d79aff686ebf92b0708f237788daa011186976e852b7cf66e",
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v3/frozen-version.json",
+    "manifestSha256": "2ccec8079ff04a962d53051538c6e4f23058a3d3ccd16f78bf845b096783b03e",
+    "sourceReady": true,
+    "lastObservedStatus": {
+      "status": "running",
+      "elapsedSeconds": 126.06907425,
+      "requestedSeconds": 28800,
+      "cycle": 164
+    },
+    "terminalNotYetObserved": true
+  },
+  "sourceFiles": 720,
+  "qualifiedRuntimeSourceFiles": 717,
+  "additionalEvidenceDocs": 3,
+  "physicalPolicy": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v3/limits.json",
+    "sha256": "49254837e00ab4c39afd6b284fb66637988797ab6f781f45f69ccfc7b022bcbf"
+  },
+  "sampling": {
+    "osProcessMemory": "darwin-libproc-v1+LinuxPSS/cgroup",
+    "nativeAllocationSampling": false,
+    "memoryInfra": false,
+    "forcedGC": false
+  },
+  "prerequisites": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-checkpoint-v1.json": "ff05c260d6e5c2ab581c2ab76af2800c22c94d7d8187d000a00ee8208c7448dc",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-full400-checkpoint-v1.json": "be024a92903eee8006c6cee9eaefa646cc91354ec0247f35f1cb3a0ff06d9030",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v12-baseline-checkpoint-v1.json": "44fd708b8549d9a4ffa2c14fbab2ebb5cd683ba883c9555adf3093768873464a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v12-netem-checkpoint-v1.json": "b788acdd23a9f254cdb83d3b02094ca41f79b82369ed8121c9a55f3269c454e3",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-checkpoint-v1.json": "bc4e172ae8f702b7376444c9c2601104bc382f8fb1bc3feacce6ffbaed42bd1f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-failure-checkpoint-v1.json": "1b288f6ae3558682fb5ec2d72c1ea517d096879ffebc6d57a7b1b2ab34ceb58c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-failure-checkpoint-v2.json": "bcf5123249dd7752857de89ecfb723a1637dc3045a52d66d355e0853f5d80a99",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/stream-aborted-window-checkpoint-v1.json": "ba4430f534594b1c3c5274f8b0b55d3b8f2aad16708a994b6dbd8dc42a1b7dcd",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-checkpoint-v1.json": "2663c29df1f9703194d5149b8c3bfd1ccb7243ab0ffc87bfd6e459a2f0f92130",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-checkpoint-v1.json": "a9989dc9da6e3dcfdbfdae5c24802584a8899e3205a4bc2b1e6080b92a1abf94",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-cohort-verifier-checkpoint-v1.json": "75894155e7303d994d5f82969ae8e2cdbbe258ff2e81fe71d82abf67f6731945",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v12-verifier-checkpoint-v1.json": "806f04cc3ea556b1835fa2fa96f031df06d4ed5fe9ce166e56455c704504347c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/owned-native-fixture-checkpoint-v1.json": "5b4229cff5dd8db525642c2852868e92373ebefb19c4063a86f0129bb78f0fa2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-secondary-sampling-failure-checkpoint-v1.json": "17fe543bd34f2b631b1a88a4ee926fe6a0a4149118361720a54daca9dc17c37b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7-js-failure-checkpoint-v1.json": "d835485902d5bce44f5827921b8271545660177f4fabf7dc63e9e1457796173a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9-baseline-failure-checkpoint-v1.json": "f2c2040231562871247b3ee2800573ff0b69cf1c77d8465eea1341adcebe1a0d",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10-setup-failure-checkpoint-v1.json": "0288c8e30a765edab870e15cca02347def82f80c49bec8110581e5ba127c6f04",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-kernel-netem-checkpoint-v1.json": "15da9dad8eff2fec67cd3c616c909278edd17fa55b2ccb9e242f288d9c81fef7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-staged-build-checkpoint-v1.json": "486d08f6b00818298cd0123780c7b4082b6fa9e2e4572831ee8506d7851ffffc",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-native-checkpoint-v1.json": "a752c20d223a48fe3eb4c850ef0de821b54f2a018c37be92665b644ab5018ef2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-mountinfo-short-read-checkpoint-v1.json": "94d53700ae11207595f18fbdb5cece53bbc5b53ee72e8b91406acb4761beea67",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-canonical-publication-checkpoint-v1.json": "6c4984fd408dd2cc8079785db54c6e4a6b14f454a2014aa84e7c916fff91d1ef",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v11-netem-failure-checkpoint-v1.json": "cd2dd159683ff500c2e3d65c0db47cfe02dcf5b463204fb9caf37b92e83ad852",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-linux-js-setup-failure-checkpoint-v1.json": "7a45e5b44208a96065f67b7975b1ce801b15c7e57e38408d02c2dae79121314e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-linux-js-memory-failure-checkpoint-v1.json": "727d8adaca4ed26bb43a8f68b29a221a5ab85be7e69e0de0c15313c2c64b77c1"
+  },
+  "verifiers": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/checkpoint-session-long-observation-pilot-v8.py": "33912a9440ab1af9800ea9193b3731e76839602df1e1f3b0d0cf5bde8d2350a8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser_native_cohort_validation_v1.py": "11370773e6a0fd3f35754614f3b4d34c1db5c856fbd86def23808bb92ef47336",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/checkpoint-session-coupled-eight-hour-v5.py": "58f90e63cc41f4d646f89ff5269fc9e3cadf6d2419aa452ffcd28ad3b5823cf9",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/run-session-coupled-eight-hour-v5.py": "ede792c772ef3e706beb65ffccff51fc7f33cdfb5ac48745f06444af4866d64a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/freeze-session-coupled-eight-hour-v6.py": "c4536bcae2aaeaac568c943dfadad9ba41ac2d48262e7e832eb02a9676a939de"
+  },
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v3/frozen-version.json": "2ccec8079ff04a962d53051538c6e4f23058a3d3ccd16f78bf845b096783b03e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v3/preflight.json": "8d156a806a1938c2b379f7aa2938d4fa276027c3a5ad255e43e8bfab0f6e84bc",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v3/source-start.json": "846b4c93d0ff48ec4112e3ad6a6a50fe0f8d777ba68d7eab8e33977caade7423",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v3/viewer-start.json": "56ca64aef2cfdc6b4dc6f34f77c0d4c2c0c8a98707753bf1beb0afece25f96c6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v3-freeze-v1.log": "4e138fd25119ceb9d7e4244f64a5b62f406568355ec6cdd57b8123a32f06f1a6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v3-preflight-ready-v1.log": "dddab91fad0287eadc19781ad63337d781a6e161954ec3013eff8a5d18156e23"
+  },
+  "previousFailedTimesNotAccumulated": true,
+  "eightHourPassed": false,
+  "fullN1Passed": false,
+  "all41": {
+    "complete": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "noCommitPush": true
+}

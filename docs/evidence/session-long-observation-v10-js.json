@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-18T11:26:48.493373+00:00",
+  "status": "current-full394-tests-each-Mac-Linux-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/baseline-frozen-version.json",
+  "manifestSha256": "76fcaa6957561fd2d3d386464460416b47aae18f69af1db9d8a7f08a6cef20a5",
+  "sourceFiles": 714,
+  "testFiles": 57,
+  "testfileConcurrency": 4,
+  "platforms": {
+    "mac": {
+      "tests": 394,
+      "pass": 386,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 8,
+      "at": "2026-10-18T11:25:12.049634+00:00",
+      "exitCode": 0,
+      "testFiles": 57,
+      "concurrency": 4,
+      "skipLines": [
+        "\ufe63 actual unified cgroup memory verifies own membership,mount provenance,anon/file counters and one pending read (0.045167ms) # SKIP",
+        "\ufe63 actual runtime bridge keeps simple caller fields and reports separately scoped complete observed PSS,cgroup and identities (0.045084ms) # SKIP",
+        "\ufe63 actual touched64MiB Linux child raises PSS/private dirty/RSS and keeps the same pinned process identity (0.094125ms) # SKIP",
+        "\ufe63 actual dead process stays dead through its pinned proc FD;no cached row or fresh PID substitution (0.063167ms) # SKIP",
+        "\ufe63 actual parent/child temporal inventories,PSS coverage,expected-root identity and one pending sample stay bounded (0.040834ms) # SKIP",
+        "\ufe63 actual same-UID undumpable target reports unavailable PSS and null complete total instead of a fabricated zero (0.045917ms) # SKIP",
+        "\ufe63 actual repeated probes close proc and data FDs on success and on expected-identity rejection (0.031458ms) # SKIP",
+        "\ufe63 actual sampler-host SIGSTOP beyond5s is a deadline failure after resume and never a late successful sample (0.0545ms) # SKIP"
+      ]
+    },
+    "linux": {
+      "tests": 394,
+      "pass": 390,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 4,
+      "at": "2026-10-18T11:25:08.496624+00:00",
+      "exitCode": 0,
+      "testFiles": 57,
+      "concurrency": 4,
+      "container": "remote-paint-session-long-observation-js-20261018-v10",
+      "dockerRunning": false,
+      "dockerExitCode": 0,
+      "skipLines": [
+        "ok 172 - native sampler reads actual RSS/virtual/physical footprint repeatedly through one owned persistent helper # SKIP",
+        "ok 173 - actual touched 64MiB child allocation increases native RSS and physical footprint without inventing release semantics # SKIP",
+        "ok 174 - terminated target is a failed fresh batch and never becomes a zero or a cached positive row # SKIP",
+        "ok 175 - expected start identity and bounded single pending request prevent stale PID attribution and unbounded queues # SKIP"
+      ]
+    }
+  },
+  "repairPrerequisites": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/stream-aborted-window-checkpoint-v1.json": "ba4430f534594b1c3c5274f8b0b55d3b8f2aad16708a994b6dbd8dc42a1b7dcd",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-checkpoint-v1.json": "2663c29df1f9703194d5149b8c3bfd1ccb7243ab0ffc87bfd6e459a2f0f92130",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-checkpoint-v1.json": "a9989dc9da6e3dcfdbfdae5c24802584a8899e3205a4bc2b1e6080b92a1abf94"
+  },
+  "scope": "Fresh full current JS tests after complete browser native-memory census acquisition repair; identical relevant inputs to actual Mac kernel/census and persistent lifetime proof. Original2s native request/5s total and other assertions remain. Additional retirement observation cadence must independently qualify600s baseline/netem and8h; no component or unit pass implies all41.",
+  "previousFailedPilot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9-baseline-failure-checkpoint-v1.json",
+  "hardwareCandidatePilotsAccepted": false,
+  "noCommitPush": true,
+  "unrelatedPeerPreserved": true,
+  "indexEmpty": true,
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/baseline-frozen-version.json": "76fcaa6957561fd2d3d386464460416b47aae18f69af1db9d8a7f08a6cef20a5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/netem-frozen-version.json": "f3f144d52668e0e34c42236dabcf9de56def25b5549eb21272e2742b96961dc8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/js-results/mac.log": "78c7e9a26d71f6fe03559638bb61d9ff3375e73de5993eeb986b1e2cb1761c62",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/js-results/linux.log": "7d4798bcab4b4f3492a93a2e73c8d464a1d83be4f151f5fc95a0947abe504be5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/js-results/mac-exit.json": "69bedd3c518f4808ace509bf05b58780f33fab3f6e72adff6e4065e1ec37a1ce",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v10/js-results/linux-exit.json": "17ad2a9620580116749f023cc68eca7e9bac5cad41f88dacf4332497298fb9ba"
+  }
+}
