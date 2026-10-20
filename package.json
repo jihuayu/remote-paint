@@ -12,7 +12,7 @@
     "verify:fonts": "node tests/verify-fonts.mjs",
     "start": "node server.mjs",
     "demo": "node live.mjs",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test --test-concurrency=4 tests/*.test.mjs",
     "verify": "node tests/verify.mjs",
     "native:chromium": "node native/build-chromium.mjs",
     "verify:native": "node tests/verify-native.mjs",

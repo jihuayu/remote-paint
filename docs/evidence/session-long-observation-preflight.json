@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-18T00:29:51.461051+00:00",
+  "status": "additional-preflight-contract-passed-independent-hardware-pilots-still-pending",
+  "preflight": {
+    "at": "2026-10-18T00:26:12.521Z",
+    "status": "passed-real-local-WebSocket-synthetic-controller-failure-path",
+    "connections": 1,
+    "gracefulClosed": 1,
+    "actualFrameAcks": 1,
+    "actualPingPongs": 10,
+    "syntheticNetworkRemovedExactlyOnce": 1,
+    "workerNeverEnabled": true,
+    "cleanup": {
+      "at": "2026-10-18T00:26:12.520Z",
+      "failures": [],
+      "errors": [],
+      "activeStream": false,
+      "networkActive": false,
+      "echoState": 3
+    },
+    "scope": "Actual local TCP/WebSocket ACK-only peer and10pingpongs;synthetic Source/network commands prove calibration-startup failure removes owned profile and closes peer. NotrealRust/netem/browser/N1acceptance."
+  },
+  "preflightReceiptSha256": "2837f88b37895d9c3ddbb844131cc6c2ecfd79e6b0268685c2dbba94d34ab691",
+  "durationPlan": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-duration-plan-v2.json",
+  "durationPlanSha256": "4bf92812fc2c703070abfdb05536b0950b5fa6ef9e2fe4b10554ae7c3d0dd54d",
+  "physicalRunActive": true,
+  "physicalViewerSession": 60118,
+  "scope": "Evidence for failurecleanup only;syntheticSource/netem operations andreal localTCP/WS. FullLinuxSource/actualMac3Viewer/netem verification remainsunexecuted. Bothunstartedpilotplans increased from180s to600s underidenticalfrozenruntimecode/normal deadlines toexercisechurnafterslow400-updateburst.",
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

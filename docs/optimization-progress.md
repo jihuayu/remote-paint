@@ -1318,3 +1318,27 @@ owner.after的原metrics在finally关闭历史procFD之前采集，不能当探�
 逐Viewer记录修复前后约11MB（Wasm Base64长度加StringImpl头）大块采样数量及实际arena重建数：`[{"label": "gpu-worker", "beforeFinalLargeSamples": 8, "beforeArenaRecycles": 8, "afterFinalLargeSamples": 0, "afterMaxLargeSamples": 0, "afterArenaRecycles": 8}, {"label": "cpu-worker", "beforeFinalLargeSamples": 9, "beforeArenaRecycles": 9, "afterFinalLargeSamples": 0, "afterMaxLargeSamples": 0, "afterArenaRecycles": 9}, {"label": "cpu-main", "beforeFinalLargeSamples": 9, "beforeArenaRecycles": 9, "afterFinalLargeSamples": 0, "afterMaxLargeSamples": 0, "afterArenaRecycles": 9}]`。该比较是采样分配证据，不能直接换算为独占物理内存或替代物理增长门槛；统计、原始数据和实例重建均未省略。
 
 原两次30分钟增长失败继续保留；接下来独立使用同一492548策略和192MiB增长上限复测，停用原生分配/内存转储诊断，不合并此前运行时长。8小时和完整N1尚未通过。证据见`docs/evidence/wasm-binary-handoff-profile.json`。
+
+## 三主Viewer连续帧龄、输入与丢包窗口的合并实现
+
+长载驱动新增可选观测：CPUWorker的四点提交像素与原生时钟连续配对，主GPU实际文本ACK经epoch、viewport、输入水位及文本像素连接到该CPUWorker帧。主输入与窗口轮换使用既有生命周期互斥，先保存ACK和原始窗口；128条输入待配对上限、4096帧/512协议/32连接事件窗口、256条原生拒绝窗口及6组时钟历史保持有界。Source/Gateway计数、原生拒绝事件与内核丢包按各自边界保存，不拼成原子丢帧账本，不跨页面减时钟。基线与netem都使用相同第四个ACK-only peer测真实RTT。
+
+兼容新的CanvasKit胶水服务字节后，观察器仍先检查完整资产包与生产构建一致；实际disable回复后立即标记停止，即使后续校准或落盘失败也不重复发送disable，仍保留失败。五项纯逻辑合同通过，覆盖陈旧scope/水位/像素、缺失提交、写盘失败、队列边界及停止后时钟不可用；这些合同不是实际浏览器验收。
+
+冻结620文件的两份180秒试跑清单，尚未启动。独立30分钟物理增长复测正在运行旧的冻结副本，保持492548策略与192MiB上限；新试跑脚本要求其实际结束后才可启动。后续仍须双平台完整JS、实际Mac基线与丢包合并试跑、物理增长及8小时；41项保持9完成/12部分/20待做。证据见`docs/evidence/session-long-observation-implementation.json`。
+
+## 合并观测的启动失败清理与试跑时长修正
+
+新增独立启动失败合同：实际本地TCP/WebSocket完成1次FrameAck和10次ping/pong，随后合成Source scheduler不可用；Worker尚未enable，合成网络配置仅撤销一次、连接正常关闭、清理错误0，输出没有保存测试key。Source与网络命令为明确合成夹具，因此不是Rust Gateway、真实netem或浏览器/N1验收。
+
+两份180秒计划尚未启动即被600秒计划替代，固定620文件源码完全相同；20Mbit单向瓶颈需承载三个Viewer及相同第四ACK-only peer，400次256KiB更新可能占满180秒，导致预热后调度的附加Session和导航未被覆盖。增加两组相同的请求运行时长，未放宽3秒输入ACK、5秒采样阶段、默认30秒租约或额度。600秒基线与netem、完整JS均准备完毕但未启动，等待独立原策略物理复测真实结束。证据见`docs/evidence/session-long-observation-preflight.json`。
+
+## 字节交接修复后的原物理增长策略复验
+
+独立使用固定616文件、原492548策略及192MiB footprint增长上限运行1800秒；关闭原生分配与memory-infra诊断，不强制GC或替换主VM。本次通过。三个页面与两个Worker身份、4×1测试画布、Source跨站历史身份与关闭、附加Session400图像及默认30秒放弃租约均单独核验，Python直接从原始样本复算全部10个域的早晚中位数并与驱动报告逐字段一致。
+
+primary-only：burst后16个样本，footprint前后中位数1499643480→1353121416bytes，增长-146522064bytes，原允许201326592bytes。
+
+with-secondary：burst后14个样本，footprint前后中位数1878544520→1926418736bytes，增长47874216bytes，原允许201326592bytes。
+
+原两次30分钟增长失败和旧助手启动超时保留，不累计时长。此项仅验证列明的物理增长策略；连续帧龄/输入/网络合并试跑、独立8小时和其余41项仍需后续证据，状态保持9完成/12部分/20待做。证据见`docs/evidence/wasm-binary-handoff-physical.json`。

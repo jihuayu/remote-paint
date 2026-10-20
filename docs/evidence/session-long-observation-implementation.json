@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-18T00:22:29.539227+00:00",
+  "status": "implemented-and-pure-contracts-passed-hardware-pilots-not-started",
+  "manifests": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v1/baseline-frozen-version.json": "a617494a9bc365adbf104452175b4ee1f7571ca74e69170d5cd9f0302820a8d9",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v1/netem-frozen-version.json": "93ea1e726c8668c1c292e2ebf23eab3f560237d5cb0a8f9fbe0f1d3b0712910e"
+  },
+  "sourceFiles": 620,
+  "scope": "Optional3Viewer longdriver:single continuous CPUWorker exactcommit4point ages,primaryGPU actualtextACK joined byepoch/viewport/inputwatermark/textpixel,Source/Gateway/native/kernel independent windows,actualsameGateway ACK-onlypeerRTT inbothvariants. Notactualcoupledhardware acceptance orfullN1/8h.",
+  "boundedRetention": {
+    "inputPending": 128,
+    "frameWindow": 4096,
+    "protocolWindow": 512,
+    "socketWindow": 32,
+    "nativeRejectionWindow": 256,
+    "clockHistory": 6,
+    "producerProofs": 1024
+  },
+  "inputOrdering": "Primaryinput enqueue and all3Viewer pixelverification are serialized againstsample/windowdrain usingexistinglifecycle gate;ACK raw persists before derivedproof. No crosspageclock subtraction.",
+  "stopCorrection": "A successful disable reply retires stream before persistence/calibration;postcalibrationfailure remainsfailure and cannot send a second disable.",
+  "assetCompatibility": "Observerasset builder now uses exactsameSHA-guardedCanvasKitglue adaptation asproduction beforeassertingwholebundleequivalence.",
+  "pureContracts": {
+    "tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "scope": "Synthetic boundary/input/lifetime/clock-unavailable contracts;notbrowserproof.",
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v1/contracts/tests.log",
+    "logSha256": "4432ae8abc331a0090b0e0acdda56008dc839a55b1fc35ad3393d7b9933fad22",
+    "exit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v1/contracts/exit.json"
+  },
+  "syntaxChecked": [
+    "tests/session-long-observation.mjs",
+    "tests/verify-session-longload.mjs",
+    "tests/serve-session-longload.mjs",
+    "tests/frame-age-observer.mjs",
+    "tests/frame-age-stream.mjs"
+  ],
+  "noBrowserPilotStarted": true,
+  "physicalRunSeparate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/frozen-version.json",
+  "next": "AfterexactownedphysicalSource/Viewerterminalreceipts,runbaseline thennetempilots separately withsame frozen620files,original3sACK/5sphase/30slease/creditbounds;preserveanyfailure. FullJS afterphysical.",
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

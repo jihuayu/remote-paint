@@ -1,0 +1,198 @@
+{
+  "at": "2026-10-18T00:46:56.314961+00:00",
+  "status": "passed-original-physical-growth-policy",
+  "scope": "Independent1800s run onfixed616file bytehandoffcandidate;3persistentMacViewers/2Workers,400burst/2s/crosssite40/secondary40x400/default30slease. Allrawsamples independentlyrecomputed underoriginal492548policy,not8h/N1/physicalIME/scanout acceptance. No forcedGC,VMreplacement,nativeallocationtracing orpolicyrelaxation.",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/frozen-version.json",
+  "manifestSha256": "e364cced9f879c3c75c87656b0ae60b01d520a9dfbec30fa696c267172c49c9a",
+  "policySha256": "49254837e00ab4c39afd6b284fb66637988797ab6f781f45f69ccfc7b022bcbf",
+  "sourceFiles": 616,
+  "workload": {
+    "requestedSeconds": 1800,
+    "elapsedSeconds": 1822.134016333,
+    "cycles": 1220,
+    "resizes": 84,
+    "inputs": 86,
+    "navigations": 20,
+    "secondaryCompleted": 21,
+    "leaseExpired": 21,
+    "sampleCount": 31
+  },
+  "sampleTimeCoverageSeconds": 1814.584,
+  "maximumSampleGapSeconds": 62.24399999999997,
+  "secondaryUpdates": 8400,
+  "sourceCreatedClosed": {
+    "created": 22,
+    "closed": 22,
+    "crosssite": 20,
+    "leaseExpired": 21
+  },
+  "pinnedSourceIdentitiesRetired": 27,
+  "navigationIdentityPins": 20,
+  "stableThreePagesAndTwoWorkers": true,
+  "absolutePhysicalCapsPassed": true,
+  "physicalGrowth": {
+    "states": {
+      "primary-only": {
+        "postWarmSamples": 16,
+        "earlyCycles": [
+          433,
+          462,
+          519,
+          547,
+          633
+        ],
+        "lateCycles": [
+          1029,
+          1114,
+          1142,
+          1199,
+          1220
+        ],
+        "domains": {
+          "viewerFootprintBytes": {
+            "firstMedianBytes": 1499643480,
+            "lastMedianBytes": 1353121416,
+            "growthBytes": -146522064,
+            "allowedGrowthBytes": 201326592,
+            "passed": true
+          },
+          "viewerRssSumBytes": {
+            "firstMedianBytes": 3108732928,
+            "lastMedianBytes": 2404974592,
+            "growthBytes": -703758336,
+            "allowedGrowthBytes": 268435456,
+            "passed": true
+          },
+          "sourcePssBytes": {
+            "firstMedianBytes": 682912768,
+            "lastMedianBytes": 680359936,
+            "growthBytes": -2552832,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceAnonBytes": {
+            "firstMedianBytes": 473350144,
+            "lastMedianBytes": 481857536,
+            "growthBytes": 8507392,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceNodePssBytes": {
+            "firstMedianBytes": 177761280,
+            "lastMedianBytes": 191789056,
+            "growthBytes": 14027776,
+            "allowedGrowthBytes": 67108864,
+            "passed": true
+          }
+        }
+      },
+      "with-secondary": {
+        "postWarmSamples": 14,
+        "earlyCycles": [
+          404,
+          490,
+          576,
+          604,
+          689
+        ],
+        "lateCycles": [
+          972,
+          1000,
+          1057,
+          1085,
+          1170
+        ],
+        "domains": {
+          "viewerFootprintBytes": {
+            "firstMedianBytes": 1878544520,
+            "lastMedianBytes": 1926418736,
+            "growthBytes": 47874216,
+            "allowedGrowthBytes": 201326592,
+            "passed": true
+          },
+          "viewerRssSumBytes": {
+            "firstMedianBytes": 3911860224,
+            "lastMedianBytes": 3365142528,
+            "growthBytes": -546717696,
+            "allowedGrowthBytes": 268435456,
+            "passed": true
+          },
+          "sourcePssBytes": {
+            "firstMedianBytes": 1082275840,
+            "lastMedianBytes": 1094036480,
+            "growthBytes": 11760640,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceAnonBytes": {
+            "firstMedianBytes": 771289088,
+            "lastMedianBytes": 786956288,
+            "growthBytes": 15667200,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceNodePssBytes": {
+            "firstMedianBytes": 183744512,
+            "lastMedianBytes": 191718400,
+            "growthBytes": 7973888,
+            "allowedGrowthBytes": 67108864,
+            "passed": true
+          }
+        }
+      }
+    },
+    "passed": true
+  },
+  "nativeObserverCleanup": {
+    "pid": 75260,
+    "exited": true,
+    "exitCode": 0,
+    "signal": null
+  },
+  "cleanupErrors": [],
+  "actualTerminalObservation": {
+    "sourceDockerState": {
+      "Status": "exited",
+      "Running": false,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 0,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-18T00:13:36.688309797Z",
+      "FinishedAt": "2026-10-18T00:46:44.034445477Z"
+    },
+    "sourceRunnerExit": 0,
+    "viewerRunnerExit": 0
+  },
+  "oldFailuresPreserved": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-physical-failure-checkpoint-v1.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-reuse-probe-failure-checkpoint-v1.json"
+  ],
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/frozen-version.json": "e364cced9f879c3c75c87656b0ae60b01d520a9dfbec30fa696c267172c49c9a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/source-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/viewer-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-physical-v1/limits.json": "49254837e00ab4c39afd6b284fb66637988797ab6f781f45f69ccfc7b022bcbf",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/results/status.json": "d71d7aba3f99ef23218b8456d7952558586260f656e217c4787bd9b1049ba55c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/results/cleanup.json": "0d4a75f9ee8febe05bac087128dfdcaa626186400221c94a7c090929b922a94e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/results/source-stopped.json": "78adb9633a8605dbfd5f18b6d62b01937705a38f7c545919919db0677924a143",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/results/samples.jsonl": "bf242182a33dc5a0dc08ae667b25d8cc502e315086c54b1d1b43333fafed448a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/results/physical-growth.json": "d2e584e141a5634e7ba658a1079444e22a570114fe531741b3eb04d586fd78b8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/results/secondary-results.jsonl": "38f9f9ab7701e41bb55e468fdfe7d93e4cdc3e8c83bfca7dd95486c1d90a8d46",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/results/session-input-observations.jsonl": "950d16228eb0e9dc9445bf71e2699750eb7c986f99c4a9b4a80d62bb5cd7f771",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/results/native-memory-attempts.jsonl": "0d9b25a6556b3169bd0d7bc01c0b602d1f5e9432e2879a0bf26b4ecbef3c45ea",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/results/sampling-phases.jsonl": "86108184272467f8de6d771f450389c1ad6985c8d0764efc105d5dc5761bd233",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-v1/results/report.json": "3963f323ba6f3c3d49fc9d286df699881eba2338c308014b19a2a25cc58640f2"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "noEightHourActive": true,
+  "all41": {
+    "complete": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}
