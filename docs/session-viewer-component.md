@@ -21,7 +21,7 @@ await viewer.disconnect();
 await viewer.destroy();
 ```
 
-`viewerOrigin` 是精确规范化 Origin，使用其 `/` 根入口，拒绝路径、query、hash、用户名和密码。HTTPS 可用，HTTP 只允许 loopback 开发。`gatewayOrigin` 必须与公开资源服务的固定网关一致；服务端父 Origin allowlist 还必须包含实际宿主。短票据 audience 由 Viewer Origin 派生，管理 key 不进入浏览器配置。角色默认只读，Session/角色和版本在实例中固定。
+`viewerOrigin` 是精确规范化 Origin，使用其 `/` 根入口，拒绝路径、query、hash、用户名和密码。HTTPS 可用，HTTP 只允许 loopback 开发。`gatewayOrigin` 必须与公开资源服务的固定网关一致；服务端父 Origin allowlist 还必须包含实际宿主。短票据 audience 由 Viewer Origin 派生，管理 key 不进入浏览器配置。角色默认只读，Session 和版本在实例中固定；[角色切换](session-viewer-roles.md)显式重建连接并重新取得匹配票据。
 
 组件追加一个独立宿主，保留容器原有子节点。宿主使用 closed ShadowRoot，内部 iframe 占满容器，设置 `no-referrer` 和 `sandbox="allow-scripts allow-same-origin"`。本地尺寸来自容器布局，当前没有修改远端 Source viewport 的 API。iframe 资源、渲染器、FrameGate 和输入队列均沿用原 Viewer。真实浏览器 CSS、sandbox 和 CSP 行为仍待验收。
 
@@ -45,4 +45,4 @@ iframe load/reload 会关闭旧端口、生成新 nonce，旧状态不能更新�
 
 12 条组件合同通过真实 MessageChannel 转移、HTTP/WebSocket、SQLite 和 Node Source 执行保存的主线程/Worker 入口，覆盖刷新、重载、撤销、取消、迟到回调、加载/connect/断开/destroy 界限、宿主移除和 8 次重复挂载卸载。既有 14 条保存入口合同在提取共享夹具后保留原语义。DOM、ShadowRoot、MutationObserver、CanvasKit、呈现器及 realm 调度是明确夹具，不能替代真实跨域浏览器、GPU 或 Native 资源退役证据。
 
-冻结版本、双平台范围回归和私有离线安装包结果记录在[组件检查点](evidence/viewer-dom-component.json)。完整 Agent/CDP 写栅栏、角色切换、resize/性能事件、Native 私有端点桥接及真实浏览器验收继续下一阶段；41 项仍为 9 完成、15 部分、17 待实现。
+冻结版本、双平台范围回归和私有离线安装包结果记录在[组件检查点](evidence/viewer-dom-component.json)。完整 Agent/CDP 写栅栏、resize/性能事件、Native 私有端点桥接及真实浏览器验收继续下一阶段；41 项仍为 9 完成、15 部分、17 待实现。

@@ -1714,3 +1714,12 @@ Window/Worker 的真实 ViewerInput 已通过有限父子 RPC 接入 Frame/DOM S
 17 条合同执行保存的主线程/Worker 及真实 ViewerInput，经实际 Node HTTP/WebSocket/SQLite/MessageChannel 验证双持有者、旧 token 拒绝、等待 Agent/清理、取消/超时、页面失效和 4 次持有租约后销毁。DOM/CanvasKit/realm、Session provider 与 CDP 结果仍为明确夹具，不能外推全部 Agent/CDP 写路径或真实 Native/browser 验收。双平台范围回归与私有安装包/类型结果见[公开控制检查点](evidence/viewer-public-control.json)。
 
 角色切换、resize/性能事件、实际 Native 端点、所有 Agent/CDP 权限与栅栏、原 8 小时/整份候选验收仍待完成；41 项仍 9/15/17。未额外启动 Native 浏览器，原 783 文件长测源未动，未暂存、提交或推送。
+
+
+### K2a2b3b：显式角色/只读切换
+
+createViewer 的 setRole/setReadonly 先使旧代次失效并停止/移除旧 iframe，重新取得目标角色票据再接入新 Frame。中心来源保留唯一实际回调额度、已验证版本和 grant/previousRole 历史；旧回调不响应取消也不能借换角色绕过额度。暂停或失败时只换角色不自动授权，同角色无副作用，进行中不排队，取消/disconnect/destroy 不回退旧权限。后端仍负责用户授权、旧 grant 撤销和新票据签发，客户端切换不替代全局服务端策略。
+
+16 条合同覆盖实际 Window/Worker/ViewerInput/Node Source/MessageChannel 的持有租约降级、旧票据拒绝、刷新历史、回调额度、版本/角色错误、并发与取消。保留初期夹具“已撤销 grant 再删返回404”的1条失败；另实际复现并修正立即销毁后新建 ready Promise 永不完成的竞态，失败/修正日志均留存。详情及双平台安装包结果见[角色检查点](evidence/viewer-role-transition.json)。
+
+新只读连接成功不代替 Source 在途工具/清理栅栏完成，相关 Agent 路径仍由原 ControlLease 暂停；全部 Agent/CDP 写路径、真实 browser/CSP/Native、resize/性能 API、原 8 小时和整份候选验收仍待完成。41 项仍 9/15/17，原783文件长测源未动，未额外启动 Native 浏览器，未暂存、提交或推送。

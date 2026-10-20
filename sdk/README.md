@@ -35,7 +35,7 @@ Keep the management key on your Node backend. The client refuses browser executi
 
 ## Browser connection module (experimental)
 
-Import `ViewerTicketSource`, `ViewerConnection` and `ViewerConnectionError` from `@remote-paint/session-client/viewer-connection`. This entry imports no backend code or management credentials. Configure a fixed gateway Origin, Viewer Origin, Session ID and role, and provide `getTicket({signal, reason, previousGrantId})`. Your application backend mints or refreshes the grant; the browser callback receives only that short grant. An API key option is rejected.
+Import `ViewerTicketSource`, `ViewerConnection` and `ViewerConnectionError` from `@remote-paint/session-client/viewer-connection`. This entry imports no backend code or management credentials. Configure a fixed gateway Origin, Viewer Origin, Session ID and role, and provide `getTicket({signal, reason, role, previousGrantId, previousRole})`. Your application backend mints or refreshes the grant; the browser callback receives only that short grant. An API key option is rejected.
 
 `ViewerTicketSource` validates the exact destination/Session/role/audience/expiry and pins the version. A timed-out non-cooperative callback continues to hold its one admission. `ViewerConnection` adds socket lifetime, pre-expiry refresh, bounded consecutive retries, stop/destroy and Welcome binding checks. Its `onSocket` hook uses the existing display protocol; it is not a complete embedded renderer. State/error callbacks contain no ticket URLs.
 
@@ -55,7 +55,7 @@ Import `createViewer` from `@remote-paint/session-client/viewer`. Pass an HTMLEl
 
 `disconnect()` pauses authorization and preserves central callback/version/grant history. iframe reload creates a new port but keeps that central admission, including cancelled non-cooperative callbacks. Public failure remains latched until explicit connect. `destroy()` is idempotent, bounds its child acknowledgement wait, removes its DOM and listeners and leaves the RemoteSession backend/TTL-owned. Host removal and pagehide also dispose or pause the component. State and fixed-code error subscriptions use `on('state'|'error', listener)` and return unsubscribe functions.
 
-Defaults: load 20s, connect total 45s, disconnect acknowledgement 1s, destroy wait 250ms. The child retains the existing render/input pipeline. Role changes, full Agent/CDP write fencing and explicit resize/performance APIs remain pending. DOM/shadow/renderer scheduler fixtures and real Node network/MessageChannel tests do not prove actual browser/CSP/Native resource acceptance. See `docs/session-viewer-component.md`.
+Defaults: load 20s, connect total 45s, disconnect acknowledgement 1s, destroy wait 250ms. The child retains the existing render/input pipeline. Role changes are connected within their Node contract scope; full Agent/CDP write fencing and explicit resize/performance APIs remain pending. DOM/shadow/renderer scheduler fixtures and real Node network/MessageChannel tests do not prove actual browser/CSP/Native resource acceptance. See `docs/session-viewer-component.md`.
 
 
 ## Public takeover and lease (experimental)
@@ -65,3 +65,12 @@ Controller-ticket connections expose `takeControl({signal?,timeoutMs?})`, `relea
 Takeover resolves on actual Source ControlGranted, after prior managed Agent work and cleanup. Release stops local queued input immediately and resolves only when Source cleanup returns to Agent mode. The eight fixed snapshot fields are mode, holder (none/self/other), held, lease, fencingToken, expiresAt, pageEpoch, viewportVersion. Only the current holder receives its lease and Source control-version fence; private Source Session/peer identity, keys and editor content are omitted. Fences are scoped to the current Source instance and do not substitute for the pending all-Agent/CDP authorization work.
 
 One pending action, default 5s (50ms–10s). Pre-cancelled calls have no effect; cancellation/deadline after dispatch closes the connection/port to fence late grants. Source disconnect cleanup still waits for prior dispatched tools; cancellation is not business rollback. Explicit connect is required after terminal failure. Malformed control events/replies close the port. Real ViewerInput/Node Source/MessageChannel tests use explicit DOM/renderer/CDP-result fixtures; actual browser/Native qualification remains pending. See `docs/session-viewer-control.md`.
+
+
+## Role and readonly transitions (experimental)
+
+The DOM component exposes `setRole('readonly'|'controller', {signal?})` and `setReadonly(boolean, options?)`. Same role has no effect. A real change invalidates/stops/removes the old iframe before requesting a fresh matching grant in a new channel. It resumes prior explicit connection intent; paused/failed viewers change role while staying paused until explicit connect. One transition, no queue; concurrent role/connect/control operations reject with CHANNEL_BUSY.
+
+Ticket callbacks receive immutable requested `role`, `previousRole` and `previousGrantId` alongside signal/reason. The application backend authorizes the user and Session, revokes the old grant and mints the requested role (same-role refresh may be used). The existing refresh endpoint keeps its original role. A client role switch is not a global server permission change or revocation; no management key enters this module. Version/history and the one actual unsettled callback admission survive every role switch; late old results cannot create a socket or replace history.
+
+Standalone `ViewerTicketSource.setRole` only changes callback/validation policy and aborts old waiting; the caller owns external socket retirement. FrameConnection instances remain fixed-role. The DOM component owns the complete old/new lifetime. Cancellation/disconnect/destroy stops a transition without restoring old authority; state.role shows the committed role. Source cleanup still fences prior submitted tools even if new readonly display connects first. Real browser/Native and all Agent/CDP paths remain pending. See `docs/session-viewer-roles.md`.

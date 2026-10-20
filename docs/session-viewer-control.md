@@ -51,4 +51,4 @@ fencingToken 在当前 Source 控制实例中递增，续租不改变它；应�
 
 17 条公开控制合同使用真实 MessageChannel、HTTP/WebSocket、SQLite、Node Source 与原 ControlLease，执行保存的主线程/Worker 入口及真实 ViewerInput。覆盖双控制者、旧租约拒绝、只读拒绝、续租、等待 Agent/清理栅栏、取消/超时、页面失效、异常协议回复及 4 次持有租约后销毁。DOM/ShadowRoot/MutationObserver/CanvasKit/呈现器/realm 调度、Session provider 和 CDP 执行结果仍为明确夹具。
 
-双平台范围回归、私有安装包及类型结果见[公开控制检查点](evidence/viewer-public-control.json)。实际跨域浏览器、CSP、Native 端点、物理资源退役、角色切换、resize/性能事件、全部 Agent/CDP 写栅栏和整份候选回归继续后续验收；41 项仍为 9 完成、15 部分、17 待实现。
+双平台范围回归、私有安装包及类型结果见[公开控制检查点](evidence/viewer-public-control.json)。实际跨域浏览器、CSP、Native 端点、物理资源退役、[角色切换](session-viewer-roles.md)已完成 Node 合同范围接线，resize/性能事件、全部 Agent/CDP 写栅栏和整份候选回归继续后续验收；41 项仍为 9 完成、15 部分、17 待实现。

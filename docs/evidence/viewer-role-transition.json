@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-19T00:23:21.395867+00:00",
+  "task": "K2a2b3b",
+  "scope": "Actual DOM setRole/setReadonly old/new lifetime;central ticket role/history/admission;not global backend permission/revocation or realbrowser/Native qualification.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-role-transition-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-role-transition-checkpoint-v1.json",
+  "contract": {
+    "lifetime": "Invalidate oldgeneration,stop/disconnect/remove oldiframe before newrolecallback;one transition,concurrentrole/connect/control reject;paused/failed no automaticreauthorization;cancel/disconnect/destroy stop without oldauthorityrollback.",
+    "callback": "Frozen role/previousRole/previousGrantId,uniqueactualadmission and pinnedversion retained;lateoldgrant cannot createoldsockets/history. Backendauthorizes,revokeold,mintfreshmatchingrole.",
+    "lowlevel": "TicketSource.setRole policy only,Frameinstance fixedrole;DOM owns socket/port/iframe lifetime.",
+    "fence": "Oldinputqueues stop;Sourcecleanup still fences prior submitted tools even if newreadonly displayconnected first."
+  },
+  "tests": {
+    "roleCases": 16,
+    "initialFixtureFailure": {
+      "tests": 13,
+      "pass": 12,
+      "fail": 1,
+      "actualExitCode": 1,
+      "cause": "Fixture required200 forrevoke ofalreadyrevokedgrant;actual404 per ViewerAccess.#find/#drop. Corrected applicationfixture accepts200/404,notpermissionerrors."
+    },
+    "afterFixtureFix": {
+      "tests": 13,
+      "pass": 13,
+      "actualExitCode": 0
+    },
+    "boundaries": {
+      "tests": 15,
+      "pass": 15,
+      "actualExitCode": 0
+    },
+    "destroyReadyBeforeFix": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "actualExitCode": 1,
+      "cause": "Role runner created freshpendingready afterdestroy while awaitingdisconnect."
+    },
+    "destroyReadyAfterFix": {
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "actualExitCode": 0
+    },
+    "broaderPreliminary": {
+      "tests": 104,
+      "pass": 104,
+      "actualExitCode": 0
+    },
+    "typesActualExitCode": 0,
+    "real": "Savedmain/Worker+ViewerInput,MessageChannel,HTTP/WS/SQLite/NodeSource/ControlLease.",
+    "fixtures": "DOM/shadow/CanvasKit/presenter/realm,Sessionprovider/CDPresults."
+  },
+  "remaining": [
+    "Explicitlocalresize versus Sourceviewport and sanitizedperformance/firstframe/error API.",
+    "Actualbrowser/CSP/sandbox/repeatmount physicalresource acceptance afteroriginal8hterminal.",
+    "Nativeownedendpointbridge and allAgent/CDPindependentpermissions/managedwritefences.",
+    "Original8hterminal physicalgates,wholecandidatefullregression and all41/N1audit."
+  ],
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "wholeFullJsQualified": false,
+  "nativeProductionProviderComplete": false,
+  "allAgentCdpFenced": false,
+  "eightHourPassed": false,
+  "noCommitPush": true
+}

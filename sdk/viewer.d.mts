@@ -21,6 +21,8 @@ export interface Viewer {
  /** Resolves on authenticated network connection, independently of first paint. */
  connect(options?:{signal?:AbortSignal}):Promise<ViewerState>;
  disconnect():Promise<void>;destroy():Promise<void>;
+ setRole(role:ViewerRole,options?:{signal?:AbortSignal}):Promise<ViewerState>;
+ setReadonly(value:boolean,options?:{signal?:AbortSignal}):Promise<ViewerState>;
  on(name:'state',listener:(state:ViewerState)=>void):()=>void;
  on(name:'error',listener:(error:ViewerChannelError)=>void):()=>void;
  on(name:'control',listener:(state:ViewerControlState)=>void):()=>void;

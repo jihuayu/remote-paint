@@ -12,10 +12,12 @@ function options(value){
 function deferred(){let resolve,reject;const record={done:false,promise:new Promise((yes,no)=>{resolve=yes;reject=no;})};void record.promise.catch(()=>{});record.resolve=value=>{if(!record.done){record.done=true;resolve(value);}};record.reject=error=>{if(!record.done){record.done=true;reject(error);}};return record;}
 function wait(promise,signal){if(signal.aborted)return Promise.reject(new ViewerChannelError('CHANNEL_ABORTED'));return new Promise((resolve,reject)=>{const abort=()=>reject(new ViewerChannelError('CHANNEL_ABORTED'));signal.addEventListener('abort',abort,{once:true});promise.then(resolve,reject).finally(()=>signal.removeEventListener('abort',abort));});}
 function settle(promise,ms){return new Promise(resolve=>{let done=false;const finish=value=>{if(done)return;done=true;clearTimeout(timer);resolve(value);},timer=setTimeout(()=>finish(false),ms);timer.unref?.();Promise.resolve(promise).then(()=>finish(true),()=>finish(false));});}
+function roleSignal(value={}){if(!value||typeof value!=='object'||Array.isArray(value)||Object.getPrototypeOf(value)!==null&&Object.getPrototypeOf(Object.getPrototypeOf(value))!==null||!Object.hasOwn(value,'signal')&&Object.getPrototypeOf(value)!==null&&Object.hasOwn(Object.getPrototypeOf(value),'signal')||Reflect.ownKeys(value).some(k=>k!=='signal'||!Object.hasOwn(Object.getOwnPropertyDescriptor(value,k),'value'))||value.signal!==undefined&&!(value.signal instanceof AbortSignal))fail('VIEWER_INVALID_CONFIG');return value.signal;}
 
 // Owns one iframe browsing context. Rendering, resources and input remain in
 // the existing child Viewer. The application callback owner outlives reloads.
 class Viewer {
+ #roleChange=null;#roleAbort=null;
  #control=emptyViewerControl();
  #config;#tickets;#document;#owner;#host;#root;#iframe=null;#frame=null;#frameDead=false;#generation=0;#ready=deferred();#loadTimer;#frameListeners;#pagehide;#observer;#wasConnected=false;#events={state:new Set(),error:new Set()};#desired=false;#paused=false;#failure=null;#operation=null;#connecting=null;#disconnecting=null;#destroying=null;#destroyed=false;#state;
  constructor(container,value){
@@ -77,7 +79,8 @@ class Viewer {
  #failed(error){
   if(this.#destroyed||this.#failure)return;const failure=error instanceof ViewerChannelError?error:new ViewerChannelError(error?.code);this.#failure=failure;this.#desired=false;this.#operation?.abort();this.#ready.reject(failure);this.#generation++;this.#removeFrame();this.#frameDead=true;this.#publish('failed',failure.code);for(const listener of [...this.#events.error])try{listener(failure);}catch{}
  }
- connect({signal}={}){
+ connect(options){if(this.#roleChange)return Promise.reject(new ViewerChannelError('CHANNEL_BUSY'));return this.#connect(options);}
+ #connect({signal}={}){
   if(this.#destroyed)return Promise.reject(new ViewerChannelError('VIEWER_CLOSED'));if(signal!==undefined&&!(signal instanceof AbortSignal))return Promise.reject(new ViewerChannelError('VIEWER_INVALID_CONFIG'));if(signal?.aborted)return Promise.reject(new ViewerChannelError('CHANNEL_ABORTED'));
   if(this.#connecting&&this.#desired)return signal?wait(this.#connecting,signal):this.#connecting;
   const previous=this.#connecting,disconnecting=this.#disconnecting,controller=this.#operation=new AbortController();this.#desired=true;this.#paused=false;this.#failure=null;
@@ -96,17 +99,36 @@ class Viewer {
    finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
   })();this.#connecting=work;void work.finally(()=>{if(this.#connecting===work)this.#connecting=null;}).catch(()=>{});return work;
  }
- disconnect(){
+ disconnect(){this.#roleAbort?.abort();return this.#disconnect();}
+ #disconnect(){
   if(this.#destroyed)return this.#destroying??Promise.resolve();this.#desired=false;this.#paused=true;this.#failure=null;this.#operation?.abort();this.#publishControl(emptyViewerControl());if(this.#disconnecting)return this.#disconnecting;const frame=this.#frame;
   const work=(async()=>{const complete=await settle(frame?.disconnect(),this.#config.disconnectTimeoutMs);if(this.#destroyed)return;if(!complete&&frame===this.#frame){this.#generation++;this.#removeFrame();this.#frameDead=true;}if(!this.#desired)this.#publish('paused');})();
   this.#disconnecting=work;void work.finally(()=>{if(this.#disconnecting===work)this.#disconnecting=null;}).catch(()=>{});return work;
  }
  destroy(){
-  if(this.#destroying)return this.#destroying;const done=deferred();this.#destroying=done.promise;this.#destroyed=true;this.#desired=false;this.#operation?.abort();this.#tickets.destroy();this.#ready.reject(new ViewerChannelError('VIEWER_CLOSED'));clearTimeout(this.#loadTimer);this.#owner.removeEventListener('pagehide',this.#pagehide);this.#observer?.disconnect();this.#generation++;
+  if(this.#destroying)return this.#destroying;const done=deferred();this.#destroying=done.promise;this.#destroyed=true;this.#desired=false;this.#roleAbort?.abort();this.#operation?.abort();this.#tickets.destroy();this.#ready.reject(new ViewerChannelError('VIEWER_CLOSED'));clearTimeout(this.#loadTimer);this.#owner.removeEventListener('pagehide',this.#pagehide);this.#observer?.disconnect();this.#generation++;
   const frame=this.#frame;this.#frame=null;this.#publishControl(emptyViewerControl());this.#publish('destroyed');
   void(async()=>{try{await settle(frame?.disconnect(),this.#config.destroyTimeoutMs);}finally{frame?.close();this.#removeFrame();this.#host.remove();for(const group of Object.values(this.#events))group.clear();done.resolve();}})();return this.#destroying;
  }
- async #controlRequest(method,options){if(this.#destroyed)fail('VIEWER_CLOSED');const frame=this.#frame,generation=this.#generation;if(!frame||!this.#desired||this.#state.state!=='connected')fail('VIEWER_CONTROL_UNAVAILABLE');const value=await frame[method](options);if(generation!==this.#generation||frame!==this.#frame)fail('CHANNEL_ABORTED');return value;}
+ setRole(role,options){
+  let signal;try{if(this.#destroyed)fail('VIEWER_CLOSED');if(!['readonly','controller'].includes(role))fail('VIEWER_INVALID_CONFIG');signal=roleSignal(options);if(signal?.aborted)fail('CHANNEL_ABORTED');if(this.#roleChange)fail('CHANNEL_BUSY');}catch(error){return Promise.reject(error);}
+  if(role===this.#tickets.settings.role)return Promise.resolve(this.#state);
+  const done=deferred(),controller=new AbortController(),resume=this.#desired,previous=this.#connecting;this.#roleChange=done.promise;this.#roleAbort=controller;this.#generation++;
+  const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});
+  const work=(async()=>{
+   try{
+    await this.#disconnect();if(this.#destroyed)fail('CHANNEL_ABORTED');this.#generation++;this.#removeFrame();this.#frameDead=true;if(this.#destroyed)fail('CHANNEL_ABORTED');this.#ready.reject(new ViewerChannelError('CHANNEL_ABORTED'));this.#ready=deferred();if(previous)await previous.catch(()=>{});
+    if(controller.signal.aborted||this.#destroyed)fail('CHANNEL_ABORTED');this.#tickets.setRole(role);
+    if(!resume){this.#publish('paused');return this.#state;}
+    return await this.#connect({signal:controller.signal});
+   }catch(error){
+    if(this.#destroyed)throw new ViewerChannelError('CHANNEL_ABORTED');this.#desired=false;this.#operation?.abort();this.#ready.reject(error);this.#generation++;this.#removeFrame();this.#frameDead=true;
+    if(controller.signal.aborted){this.#paused=true;if(!this.#failure)this.#publish('paused');throw new ViewerChannelError('CHANNEL_ABORTED');}if(!this.#failure)this.#failed(error);throw this.#failure;
+   }finally{signal?.removeEventListener('abort',abort);if(this.#roleAbort===controller)this.#roleAbort=null;}
+  })();const clear=()=>{if(this.#roleChange===done.promise)this.#roleChange=null;};void work.then(value=>{clear();done.resolve(value);},error=>{clear();done.reject(error);});return done.promise;
+ }
+ setReadonly(value,options){if(typeof value!=='boolean')return Promise.reject(new ViewerChannelError('VIEWER_INVALID_CONFIG'));return this.setRole(value?'readonly':'controller',options);}
+ async #controlRequest(method,options){if(this.#destroyed)fail('VIEWER_CLOSED');if(this.#roleChange)fail('CHANNEL_BUSY');const frame=this.#frame,generation=this.#generation;if(!frame||!this.#desired||this.#state.state!=='connected')fail('VIEWER_CONTROL_UNAVAILABLE');const value=await frame[method](options);if(generation!==this.#generation||frame!==this.#frame)fail('CHANNEL_ABORTED');return value;}
  takeControl(options){return this.#controlRequest('takeControl',options);}
  releaseControl(options){return this.#controlRequest('releaseControl',options);}
 }

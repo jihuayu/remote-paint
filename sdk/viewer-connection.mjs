@@ -33,22 +33,23 @@ function grant(value,settings,version){
 // Browser-safe callback boundary. No management credentials, imports or fetch.
 // Cancellation ends this wait; a non-cooperative callback retains its slot.
 export class ViewerTicketSource {
- #settings;#get;#version;#previous=null;#pending=null;#abort=null;#closed=false;
+ #settings;#get;#version;#previous=null;#previousRole=null;#epoch=0;#pending=null;#abort=null;#closed=false;
  constructor(options){this.#settings=config(options);this.#get=options.getTicket;this.#version=options.version??null;}
  get settings(){return Object.freeze({...this.#settings,...(this.#version===null?{}:{version:this.#version})});}
  get busy(){return this.#pending!==null;}
+ setRole(role){if(this.#closed)fail('VIEWER_CLOSED');if(!roles.has(role))fail('VIEWER_INVALID_CONFIG');if(role!==this.#settings.role){this.#settings=Object.freeze({...this.#settings,role});this.#epoch++;this.#abort?.abort();}return this.settings;}
  async getTicket({signal,reason='connect'}={}){
   if(this.#closed)fail('VIEWER_CLOSED');if(signal!==undefined&&!(signal instanceof AbortSignal)||!['connect','reconnect','refresh'].includes(reason))fail('VIEWER_INVALID_CONFIG');
   if(signal?.aborted)fail('VIEWER_ABORTED');if(this.#pending)fail('VIEWER_TICKET_BUSY');
-  const controller=new AbortController();this.#abort=controller;let timedOut=false,timer;
+  const settings=this.#settings,epoch=this.#epoch,controller=new AbortController();this.#abort=controller;let timedOut=false,timer;
   const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});
   const deadline=new Promise((_,reject)=>{controller.signal.addEventListener('abort',()=>reject(new ViewerConnectionError(timedOut?'VIEWER_TICKET_TIMEOUT':'VIEWER_ABORTED')),{once:true});timer=setTimeout(()=>{timedOut=true;controller.abort();},this.#settings.requestTimeoutMs);});
-  const request=Object.freeze({signal:controller.signal,reason,previousGrantId:this.#previous});
-  const pending=this.#pending=Promise.resolve().then(()=>{if(controller.signal.aborted)fail('VIEWER_ABORTED');return this.#get(request);});
+  const request=Object.freeze({signal:controller.signal,reason,role:settings.role,previousGrantId:this.#previous,previousRole:this.#previousRole});
+  const pending=this.#pending=Promise.resolve().then(()=>{if(controller.signal.aborted||epoch!==this.#epoch)fail('VIEWER_ABORTED');return this.#get(request);});
   void pending.then(()=>{if(this.#pending===pending)this.#pending=null;},()=>{if(this.#pending===pending)this.#pending=null;});
   try{
-   const value=await Promise.race([pending,deadline]);if(controller.signal.aborted||this.#closed)fail('VIEWER_ABORTED');
-   const ticket=grant(value,this.#settings,this.#version);this.#version=ticket.version;this.#previous=ticket.grantId;return ticket;
+   const value=await Promise.race([pending,deadline]);if(controller.signal.aborted||this.#closed||epoch!==this.#epoch)fail('VIEWER_ABORTED');
+   const ticket=grant(value,settings,this.#version);this.#version=ticket.version;this.#previous=ticket.grantId;this.#previousRole=ticket.role;return ticket;
   }catch(error){if(error instanceof ViewerConnectionError)throw error;fail('VIEWER_TICKET_UNAVAILABLE');}
   finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);if(this.#abort===controller)this.#abort=null;}
  }

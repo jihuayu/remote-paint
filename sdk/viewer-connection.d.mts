@@ -6,7 +6,7 @@ export interface ViewerGrant {
  readonly role:ViewerRole;readonly audience:string;readonly expiresAt:string;
  readonly ticket:`vwt1.${string}`;readonly streamPath:string;
 }
-export interface ViewerTicketRequest {readonly signal:AbortSignal;readonly reason:'connect'|'reconnect'|'refresh';readonly previousGrantId:`vgr_${string}`|null;}
+export interface ViewerTicketRequest {readonly signal:AbortSignal;readonly reason:'connect'|'reconnect'|'refresh';readonly role:ViewerRole;readonly previousGrantId:`vgr_${string}`|null;readonly previousRole:ViewerRole|null;}
 export interface ViewerTicketConfig {
  readonly gatewayOrigin:string;readonly audience:string;readonly sessionId:`ses_${string}`;readonly role:ViewerRole;readonly version?:string;
  readonly getTicket:(request:ViewerTicketRequest)=>ViewerGrant|PromiseLike<ViewerGrant>;readonly requestTimeoutMs?:number;
@@ -15,6 +15,7 @@ export interface ViewerTicketSettings {readonly gatewayOrigin:string;readonly au
 export class ViewerTicketSource {
  constructor(options:ViewerTicketConfig);readonly settings:ViewerTicketSettings;readonly busy:boolean;
  getTicket(options?:{signal?:AbortSignal;reason?:ViewerTicketRequest['reason']}):Promise<ViewerGrant>;
+ setRole(role:ViewerRole):ViewerTicketSettings;
  destroy():void;
 }
 export interface ViewerConnectionState {

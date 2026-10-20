@@ -1,5 +1,5 @@
 import {createViewer,ViewerChannelError,type ViewerConfig,type ViewerState} from '../../sdk/viewer.mjs';
-const config:ViewerConfig={viewerOrigin:'https://viewer.example',gatewayOrigin:'https://gateway.example',sessionId:'ses_fixture',getTicket:async request=>{const signal:AbortSignal=request.signal;void signal;return {grantId:'vgr_fixture',sessionId:'ses_fixture',version:'v1',role:'readonly',audience:'https://viewer.example',expiresAt:new Date().toISOString(),ticket:'vwt1.fixture',streamPath:'/v1/viewer/stream?ticket=vwt1.fixture'};}};
+const config:ViewerConfig={viewerOrigin:'https://viewer.example',gatewayOrigin:'https://gateway.example',sessionId:'ses_fixture',getTicket:async request=>{const signal:AbortSignal=request.signal;void signal;return {grantId:'vgr_fixture',sessionId:'ses_fixture',version:'v1',role:request.role,audience:'https://viewer.example',expiresAt:new Date().toISOString(),ticket:'vwt1.fixture',streamPath:'/v1/viewer/stream?ticket=vwt1.fixture'};}};
 const viewer=createViewer(document.body,config);const element:HTMLElement=viewer.element;void element;
 const ready=await viewer.ready;const origin:string=ready.gatewayOrigin;void origin;
 const state:ViewerState=await viewer.connect({signal:new AbortController().signal});const role:'readonly'|'controller'=state.role;void role;
@@ -19,3 +19,9 @@ const error:unknown=new Error();if(error instanceof ViewerChannelError){const co
 const lease=await viewer.takeControl({signal:new AbortController().signal,timeoutMs:5000});const fence:number|null=lease.fencingToken;void fence;const held:boolean=lease.held;void held;await viewer.releaseControl();
 // @ts-expect-error lease snapshots are immutable
 lease.lease="private";
+
+const changedRole=await viewer.setRole("controller",{signal:new AbortController().signal});const readonlyResult=await viewer.setReadonly(true);void[changedRole,readonlyResult];
+// @ts-expect-error Agent execution permission cannot be selected as a Viewer role
+await viewer.setRole("agent");
+// @ts-expect-error readonly switch is boolean
+await viewer.setReadonly("true");
