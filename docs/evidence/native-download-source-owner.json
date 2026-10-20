@@ -1,0 +1,104 @@
+{
+  "scope": "Unwired private Native Source download owner with asynchronous protocol fixtures",
+  "newTests": 23,
+  "firstMacScopedTests": {
+    "tests": 21,
+    "pass": 21,
+    "fail": 0,
+    "skip": 0
+  },
+  "fullJsBothExecutedForThisCandidate": true,
+  "sourceDownloadBridgeWired": false,
+  "sourceDownloadBudgetActivated": false,
+  "downloadTransferReady": false,
+  "actualBrowserNativeProtocolRuntimeQualified": false,
+  "wholeCdpIngressAllocationBoundQualified": false,
+  "nativeCppTestsInherited": 470,
+  "nativeCppTestsRerun": false,
+  "sdkTestsRerun": false,
+  "fullBrowserBuildAttemptStoppedAtOriginal32GiBFloor": true,
+  "fullBrowserBuildExitCode": 143,
+  "fullBrowserOwnContainerRemoved": true,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "K6Complete": false,
+  "eightHourPassed": false,
+  "wholeGoalQualified": false,
+  "noCommitPush": true,
+  "noSubagents": true,
+  "currentMacScopedTests": {
+    "tests": 23,
+    "pass": 23,
+    "fail": 0,
+    "skip": 0
+  },
+  "previous21TestCandidateFullJs": {
+    "mac": {
+      "tests": 1477,
+      "pass": 1462,
+      "skip": 15,
+      "fail": 0
+    },
+    "linux": {
+      "tests": 1477,
+      "pass": 1471,
+      "skip": 6,
+      "fail": 0
+    }
+  },
+  "additionalCoverage": "Actual read rejection retains original end/navigation reason; close timeout with actual pending arm cannot forget late original ticket.",
+  "at": "2026-10-20T10:14:05.827333+00:00",
+  "fullJs": {
+    "mac": {
+      "tests": 1479,
+      "pass": 1464,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "todo": 0,
+      "actualExitCode": 0,
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-source-owner-validation-v2/mac-full-js.log",
+      "logSha256": "3de73c8cbe86dae81d69847b863da2a50beadd998eae307e2133f3fc20617ab2",
+      "receiptSha256": "316fa89fc34ae65a0c76a2b823a3f8d3cd06bd5a6b49d19a5f7d3603376bc411",
+      "all23NewCasesRanWithoutSkip": true,
+      "all1477PriorNamesRetained": true
+    },
+    "linux": {
+      "tests": 1479,
+      "pass": 1473,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "todo": 0,
+      "actualExitCode": 0,
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-source-owner-validation-v2/linux-full-js.log",
+      "logSha256": "1967c3d5b0cd8d4580c0cc341fe104ea61a96edfa0dd07f44492c84d65ad26c6",
+      "receiptSha256": "9ff6ab7ce42e04bcd1371b6c757f74e46b1dac8f37ee63f6eb59227d97c358c7",
+      "all23NewCasesRanWithoutSkip": true,
+      "all1477PriorNamesRetained": true
+    }
+  },
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-source-owner-candidate-v2/frozen-version.json",
+  "executedManifestSha256": "49e0d3569d62638fce358683ca1adbf14380e5624f66068236e0302ee93a5cc0",
+  "sourceNativeDownloadOwnerFixtureQualified": true,
+  "allPrior1477NamesRetainedBoth": true,
+  "all23NewTestsRanWithoutSkipBoth": true,
+  "linuxInitialMountFailure": {
+    "exitCode": 125,
+    "testProcessStarted": false,
+    "containerRemoved": true,
+    "repair": "Create missing empty artifacts mountpoint before read-only source mount; source byte content unchanged."
+  },
+  "cpp105InputsUnchanged": true,
+  "canonical19HashesVerifiedWithoutExecution": true,
+  "samplerOriginalIdentityVerifiedWithoutExecution": true,
+  "ownContainersAbsent": [
+    "369be5c5f439a0d40398ed897fff433edd8c1c16360933a43d095af49fc872cc",
+    "cc3ea6a154b24bac5e92cf6b0e05ee5b4470596362f9890a31344047f0a0673d",
+    "7bcc206280f3971bf3c4b981db03ab3d3deb1d07355cce2f4ce0259c7f68012b",
+    "dfd8c87c61f6575a5fb9d9192dc12f776ca26364222beccdb02d54262dfa9956"
+  ]
+}

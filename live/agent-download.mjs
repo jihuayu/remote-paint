@@ -18,6 +18,7 @@ export function captureManagedAgentDownloadId(value){if(!downloadId(value))fail(
 export function captureManagedAgentDownloadRead(id,offset,maxBytes=AGENT_DOWNLOAD_LIMITS.chunkBytes){captureManagedAgentDownloadId(id);if(!integer(offset,0,AGENT_DOWNLOAD_LIMITS.maxBytes)||!integer(maxBytes,1,AGENT_DOWNLOAD_LIMITS.chunkBytes))fail();return Object.freeze({downloadId:id,offset,maxBytes});}
 function result(value){if(Buffer.byteLength(JSON.stringify(value))>6144)fail('AGENT_OBSERVATION_LIMIT');return Object.freeze(value);}
 function name(value){if(typeof value!=='string')fail('AGENT_DOWNLOAD_FAILED');const base=value.slice(0,512).split(/[\\/]/).at(-1).normalize('NFC').replace(/[\x00-\x1f\x7f\u202a-\u202e\u2066-\u2069]/g,'').replace(/^\.+|[ .]+$/g,'');return Array.from(base).slice(0,64).join('')||'download.bin';}
+export const captureAgentDownloadFileName=name;
 const baseFields=['stage','binding','document','version','downloadId'],metadataFields=[...baseFields,'scope','armedAt','limits'];
 function reply(value,fields){try{const v=data(value,fields);if(Reflect.ownKeys(v).length!==fields.length)fail('AGENT_INVALID_REPLY');return v;}catch{fail('AGENT_INVALID_REPLY');}}
 const time=v=>typeof v==='string'&&v.length<=32&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString()===v;

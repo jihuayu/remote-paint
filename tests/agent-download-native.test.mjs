@@ -1,0 +1,90 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {EventEmitter} from 'node:events';
+import {createHash,randomUUID} from 'node:crypto';
+import {AgentInputError} from '../live/input.mjs';
+import {createNativeAgentDownloadOwner} from '../live/agent-download-native.mjs';
+import {captureManagedAgentDownload,captureManagedAgentDownloadRead} from '../live/agent-download.mjs';
+
+const error=code=>e=>e.code===code;
+const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};
+const turn=()=>new Promise(setImmediate);
+async function until(fn){for(let n=0;n<500;n++){if(fn())return;await new Promise(r=>setTimeout(r,2));}assert.fail('fixture deadline');}
+function fixture(t,{bytes=Buffer.from([0,255,128,1,2,3])}={}){
+ const page=new EventEmitter(),calls=[],binding={tenantId:'tenant',sessionId:'ses_'+randomUUID(),targetId:'target_'+randomUUID(),runId:'run_'+randomUUID()},context={binding,document:{controlSessionId:randomUUID(),pageEpoch:1,viewportVersion:1}},nativeDocument='original-native-document',token='c'.repeat(64),version='chromium:fixture',hash=createHash('sha256').update(bytes).digest('hex');
+ const h={page,calls,binding,context,nativeDocument,token,bytes,phase:'pending',nativeError:'',suggestedFilename:'../../\u202ereport\u0000.bin',handler:null,guardError:null,cleanupFailureExpected:false,ticket:'dl_'+randomUUID(),gates:[]};
+ h.envelope=(fields={})=>({descriptorVersion:1,currentDocumentToken:nativeDocument,...fields});
+ h.send=async(method,params)=>{
+  calls.push({method,params});if(h.handler){const value=await h.handler(method,params);if(value!==undefined)return value;}
+  if(method==='Page.getRemotePaintDownloadBridge')return h.envelope({transfersReady:true,maxItems:4,maxFileBytes:4194304});
+  if(method==='Page.armRemotePaintDownload')return h.envelope({ticket:h.ticket});
+  if(method==='Page.getRemotePaintDownloadInfo')return h.envelope({ticket:h.ticket,phase:h.phase,error:h.nativeError,byteLength:h.phase==='ready'?bytes.length:0,sha256:h.phase==='ready'?hash:'',suggestedFilename:h.suggestedFilename});
+  if(method==='Page.readRemotePaintDownload'){const end=Math.min(params.offset+params.maxBytes,bytes.length);return h.envelope({ticket:h.ticket,offset:params.offset,nextOffset:end,eof:end===bytes.length,data:bytes.subarray(params.offset,end).toString('base64')});}
+  if(method==='Page.releaseRemotePaintDownload')return h.envelope({ticket:h.ticket,released:true});
+  assert.fail('unexpected method '+method);
+ };
+ h.owner=createNativeAgentDownloadOwner({page,binding,version,token,send:h.send});
+ h.arm=(limits={})=>h.owner.arm(context,captureManagedAgentDownload(limits),()=>{if(h.guardError)throw new AgentInputError(h.guardError,'not-dispatched');},nativeDocument);
+ h.info=()=>h.owner.info(h.ticket,context);
+ h.read=(offset=0,maxBytes=3072)=>h.owner.read(captureManagedAgentDownloadRead(h.ticket,offset,maxBytes),context);
+ h.release=()=>h.owner.release(h.ticket,context);
+ h.gate=()=>{const gate=deferred();h.gates.push(gate);return gate;};
+ t.after(async()=>{h.gates.forEach(g=>g.resolve());if(h.cleanupFailureExpected)await assert.rejects(h.owner.close());else await h.owner.close();assert.equal(page.listenerCount('download'),0);assert.equal(page.listenerCount('framenavigated'),0);assert.equal(page.listenerCount('close'),0);});
+ return h;
+}
+
+test('Native owner projects the existing SDK DTOs from bounded original CDP replies without retaining file bytes',async t=>{
+ const h=fixture(t,{bytes:Buffer.alloc(8000,177)}),a=await h.arm();assert.equal(a.stage,'download-armed');assert.equal(a.downloadId,h.ticket);assert.equal((await h.info()).stage,'download-pending');
+ h.phase='ready';const ready=await h.info();assert.equal(ready.fileName,'report.bin');assert.equal(ready.mimeType,'application/octet-stream');assert.equal(ready.byteLength,8000);
+ const parts=[];for(let at=0;at<8000;){const c=await h.read(at,2000);assert.ok(Buffer.byteLength(JSON.stringify(c))<=6144);assert.equal(c.sha256,ready.sha256);parts.push(Buffer.from(c.data,'base64'));at+=c.byteLength;}
+ assert.deepEqual(Buffer.concat(parts),h.bytes);assert.equal((await h.read(8000)).complete,true);assert.equal(h.owner.status().bytes,0);assert.equal(h.page.listenerCount('download'),0);
+ assert.equal((await h.release()).stage,'download-released');assert.equal(h.owner.status().tickets,0);
+ for(const {method,params} of h.calls){assert.ok(method.startsWith('Page.'));assert.equal(params.token,h.token);assert.equal(params.documentToken,h.nativeDocument);assert.equal(Object.hasOwn(params,'url'),false);assert.equal(Object.hasOwn(params,'path'),false);assert.ok(Object.isFrozen(params));}
+});
+test('Native empty completed file uses the existing empty SHA and canonical EOF contract',async t=>{const h=fixture(t,{bytes:Buffer.alloc(0)});await h.arm();h.phase='ready';assert.equal((await h.info()).byteLength,0);const c=await h.read();assert.equal(c.data,'');assert.equal(c.byteLength,0);assert.equal(c.complete,true);});
+test('Native bridge readiness stays fail closed and never arms or installs a Playwright download listener',async t=>{const h=fixture(t);h.handler=method=>method==='Page.getRemotePaintDownloadBridge'?h.envelope({transfersReady:false,maxItems:4,maxFileBytes:4194304}):undefined;await assert.rejects(h.arm(),error('AGENT_OBSERVATION_UNAVAILABLE'));assert.equal(h.calls.length,1);assert.equal(h.owner.status().tickets,0);h.handler=null;await h.arm();});
+test('Native discovery validates exact own fields without invoking response getters',async t=>{const h=fixture(t);let getterCalls=0;h.handler=()=>Object.defineProperty(h.envelope({maxItems:4,maxFileBytes:4194304}),'transfersReady',{get(){getterCalls++;return true;}});await assert.rejects(h.arm(),error('AGENT_DOWNLOAD_FAILED'));assert.equal(getterCalls,0);assert.equal(h.owner.status().tickets,0);});
+test('Native discovery rejects unknown version document limits and extra fields before arm',async t=>{for(const patch of [{descriptorVersion:2},{currentDocumentToken:'other'},{maxItems:5},{maxFileBytes:4194305},{extra:true}]){const h=fixture(t);h.handler=()=>h.envelope({transfersReady:true,maxItems:4,maxFileBytes:4194304,...patch});await assert.rejects(h.arm());assert.equal(h.calls.length,1);assert.equal(h.owner.status().tickets,0);}});
+test('Native second ordinary request is rejected without clearing or cancelling the actual first read',async t=>{
+ const h=fixture(t);await h.arm();h.phase='ready';await h.info();const hold=h.gate();h.handler=async method=>{if(method==='Page.readRemotePaintDownload')await hold.promise;};
+ const pending=h.read();await until(()=>h.calls.some(c=>c.method==='Page.readRemotePaintDownload'));assert.throws(()=>h.read(),error('AGENT_DOWNLOAD_BUSY'));assert.throws(()=>h.info(),error('AGENT_DOWNLOAD_BUSY'));assert.equal(h.calls.filter(c=>c.method==='Page.readRemotePaintDownload').length,1);assert.equal(h.calls.some(c=>c.method==='Page.releaseRemotePaintDownload'),false);assert.equal(h.owner.status().actualPending,true);hold.resolve();await pending;
+});
+test('Native end sends independent old-ticket cleanup while the actual read remains pending',async t=>{
+ const h=fixture(t);await h.arm();h.phase='ready';await h.info();const hold=h.gate();h.handler=async method=>{if(method==='Page.readRemotePaintDownload')await hold.promise;};
+ const pending=assert.rejects(h.read(),error('AGENT_RUN_CLOSED'));await until(()=>h.calls.some(c=>c.method==='Page.readRemotePaintDownload'));let ended=false;const close=h.owner.close().then(()=>ended=true);await until(()=>h.calls.some(c=>c.method==='Page.releaseRemotePaintDownload'));assert.equal(ended,false);assert.equal(h.owner.status().tickets,1);assert.equal(h.owner.status().actualPending,true);hold.resolve();await pending;await close;assert.equal(ended,true);assert.equal(h.owner.status().tickets,0);
+});
+test('Native false retirement receipt retains exclusivity and polls only one actual cleanup at a time',async t=>{
+ const h=fixture(t);await h.arm();const hold=h.gate();let releases=0,active=0,maximum=0;
+ h.handler=async method=>{if(method==='Page.releaseRemotePaintDownload'){active++;maximum=Math.max(maximum,active);releases++;try{if(releases===1)return h.envelope({ticket:h.ticket,released:false});await hold.promise;return h.envelope({ticket:h.ticket,released:true});}finally{active--;}}};
+ let done=false;const release=h.release().then(()=>done=true);await until(()=>releases===2);assert.equal(done,false);assert.equal(h.owner.status().tickets,1);assert.equal(h.owner.status().spoolCleanupPending,true);assert.throws(()=>h.arm(),error('AGENT_DOWNLOAD_BUSY'));assert.equal(h.release(),h.owner.release(h.ticket,h.context));assert.equal(maximum,1);hold.resolve();await release;assert.equal(h.owner.status().tickets,0);
+});
+test('Native navigation and Page close retire the immutable original ticket without guard or document adoption',async t=>{for(const event of ['framenavigated','close']){const h=fixture(t);await h.arm();h.guardError='STALE_AGENT_PAGE';h.page.emit(event,{});await until(()=>h.calls.some(c=>c.method==='Page.releaseRemotePaintDownload'));const p=h.calls.find(c=>c.method==='Page.releaseRemotePaintDownload').params;assert.equal(p.documentToken,h.nativeDocument);assert.equal(p.ticket,h.ticket);await h.owner.close();assert.equal(h.owner.status().tickets,0);}});
+test('Native arm reply is retained before the stale post-reply guard and cleaned with its original slot',async t=>{const h=fixture(t);h.handler=method=>{if(method==='Page.armRemotePaintDownload')h.guardError='STALE_AGENT_PAGE';};await assert.rejects(h.arm(),error('STALE_AGENT_PAGE'));await until(()=>h.calls.some(c=>c.method==='Page.releaseRemotePaintDownload'));assert.equal(h.owner.status().tickets,1);await h.owner.close();assert.equal(h.owner.status().tickets,0);});
+test('Native end during discovery never sends arm after discovery eventually replies',async t=>{const h=fixture(t),hold=h.gate();h.handler=async method=>{if(method==='Page.getRemotePaintDownloadBridge')await hold.promise;};const arm=assert.rejects(h.arm(),error('AGENT_RUN_CLOSED'));await until(()=>h.calls.length===1);let done=false;const close=h.owner.close().then(()=>done=true);await turn();assert.equal(done,false);hold.resolve();await arm;await close;assert.equal(h.calls.some(c=>c.method==='Page.armRemotePaintDownload'),false);});
+test('Native end during actual arm cleans a late real ticket instead of retrying or forgetting it',async t=>{const h=fixture(t),hold=h.gate();h.handler=async method=>{if(method==='Page.armRemotePaintDownload')await hold.promise;};const arm=assert.rejects(h.arm(),error('AGENT_RUN_CLOSED'));await until(()=>h.calls.some(c=>c.method==='Page.armRemotePaintDownload'));const close=h.owner.close();hold.resolve();await arm;await close;assert.equal(h.calls.filter(c=>c.method==='Page.armRemotePaintDownload').length,1);assert.equal(h.calls.filter(c=>c.method==='Page.releaseRemotePaintDownload').length,1);});
+test('Native unknown arm outcome holds one unknown record and cannot rearm or claim clean end',async t=>{const h=fixture(t);h.cleanupFailureExpected=true;h.handler=method=>{if(method==='Page.armRemotePaintDownload')throw Error('transport lost after dispatch');};await assert.rejects(h.arm(),error('AGENT_DOWNLOAD_FAILED'));assert.equal(h.owner.status().tickets,1);assert.equal(h.owner.status().spoolCleanupPending,true);assert.throws(()=>h.arm(),error('AGENT_DOWNLOAD_BUSY'));await assert.rejects(h.owner.close());assert.equal(h.calls.filter(c=>c.method==='Page.armRemotePaintDownload').length,1);assert.equal(h.calls.some(c=>c.method==='Page.releaseRemotePaintDownload'),false);});
+test('Native malformed arm outcome cannot install a foreign ticket or discover a replacement',async t=>{const h=fixture(t);h.cleanupFailureExpected=true;h.handler=method=>method==='Page.armRemotePaintDownload'?h.envelope({ticket:'dl_'+randomUUID(),currentDocumentToken:'other'}):undefined;await assert.rejects(h.arm());assert.equal(h.owner.status().tickets,1);await assert.rejects(h.owner.close());assert.equal(h.calls.length,2);});
+test('Native deadline cancels admission and preserves the actual independent retirement request',async t=>{const h=fixture(t),hold=h.gate();await h.arm({timeoutMs:50});h.handler=async method=>{if(method==='Page.releaseRemotePaintDownload')await hold.promise;};await until(()=>h.calls.some(c=>c.method==='Page.releaseRemotePaintDownload'));assert.throws(()=>h.info(),error('AGENT_DOWNLOAD_TIMEOUT'));assert.equal(h.owner.status().tickets,1);assert.equal(h.owner.status().actualPending,true);hold.resolve();await h.release();});
+test('Native canonical Base64 and chunk arithmetic are checked against the immutable ready metadata',async t=>{for(const patch of [{data:'Zh=='},{offset:1},{nextOffset:999},{eof:false},{data:'A'.repeat(4100)},{extra:true}]){const h=fixture(t);await h.arm();h.phase='ready';await h.info();h.handler=(method,p)=>method==='Page.readRemotePaintDownload'?h.envelope({ticket:h.ticket,offset:0,nextOffset:6,eof:true,data:h.bytes.toString('base64'),...patch}):undefined;await assert.rejects(h.read());assert.equal(h.owner.status().tickets,1);await h.owner.close();}});
+test('Native ready metadata cannot change digest size or sanitized filename after exposure',async t=>{for(const field of ['sha256','byteLength','suggestedFilename']){const h=fixture(t);await h.arm();h.phase='ready';await h.info();h.handler=method=>method==='Page.getRemotePaintDownloadInfo'?h.envelope({ticket:h.ticket,phase:'ready',error:'',byteLength:h.bytes.length,sha256:createHash('sha256').update(h.bytes).digest('hex'),suggestedFilename:h.suggestedFilename,[field]:field==='sha256'?'a'.repeat(64):field==='byteLength'?1:'other.bin'}):undefined;await assert.rejects(h.info());await h.owner.close();}});
+test('Native error strings map to the existing SDK errors and never treat an enum name as success',async t=>{for(const [nativeError,expected] of [['timeout','AGENT_DOWNLOAD_TIMEOUT'],['cancelled','AGENT_DOWNLOAD_CANCELLED'],['limit','AGENT_DOWNLOAD_LIMIT'],['io','AGENT_DOWNLOAD_FAILED'],['unavailable','AGENT_DOWNLOAD_FAILED'],['none','AGENT_DOWNLOAD_FAILED']]){const h=fixture(t);await h.arm();h.phase='failed';h.nativeError=nativeError;await assert.rejects(h.info(),error(expected));await h.owner.close();}});
+test('Native release rejects an unknown or malformed physical receipt and keeps the original ticket',async t=>{for(const result of [{released:'true'},{released:true,ticket:'dl_'+randomUUID()},{released:true,currentDocumentToken:'other'}]){const h=fixture(t);h.cleanupFailureExpected=true;await h.arm();h.handler=method=>method==='Page.releaseRemotePaintDownload'?h.envelope({ticket:h.ticket,...result}):undefined;await assert.rejects(h.release());assert.equal(h.owner.status().tickets,1);assert.throws(()=>h.arm(),error('AGENT_DOWNLOAD_BUSY'));await assert.rejects(h.owner.close());}});
+test('Native foreign SDK binding document ticket and invalid offsets never send a CDP request',async t=>{const h=fixture(t);await h.arm();h.phase='ready';await h.info();const count=h.calls.length;assert.throws(()=>h.owner.info('dl_'+randomUUID(),h.context),error('STALE_AGENT_DOWNLOAD'));assert.throws(()=>h.owner.info(h.ticket,{...h.context,binding:{...h.binding,runId:'run_'+randomUUID()}}),error('STALE_AGENT_DOWNLOAD'));assert.throws(()=>h.owner.info(h.ticket,{...h.context,document:{...h.context.document,pageEpoch:2}}),error('STALE_AGENT_DOWNLOAD'));assert.throws(()=>h.read(7),error('INVALID_AGENT_OBSERVATION'));assert.equal(h.calls.length,count);});
+test('Native cleanup observation deadline fails unknown without clearing actual request admission',async t=>{
+ t.mock.timers.enable({apis:['setTimeout']});const h=fixture(t),hold=h.gate();h.cleanupFailureExpected=true;await h.arm();h.handler=async method=>{if(method==='Page.releaseRemotePaintDownload')await hold.promise;};
+ const closing=assert.rejects(h.owner.close(),error('AGENT_DOWNLOAD_FAILED'));await turn();assert.equal(h.owner.status().actualPending,true);t.mock.timers.tick(30000);await closing;assert.equal(h.owner.status().tickets,1);assert.equal(h.owner.status().actualPending,true);assert.equal(h.owner.status().spoolCleanupPending,true);assert.equal(h.calls.filter(c=>c.method==='Page.releaseRemotePaintDownload').length,1);hold.resolve();await turn();assert.equal(h.owner.status().tickets,1);assert.equal(h.owner.status().actualPending,false);
+});
+test('Native actual read rejection after end or navigation preserves the original cancellation reason',async t=>{
+ for(const mode of ['end','navigation']){
+  const h=fixture(t),hold=h.gate();await h.arm();h.phase='ready';await h.info();h.handler=async method=>{if(method==='Page.readRemotePaintDownload')await hold.promise;};
+  const pending=assert.rejects(h.read(),error(mode==='end'?'AGENT_RUN_CLOSED':'STALE_AGENT_PAGE'));await until(()=>h.calls.some(c=>c.method==='Page.readRemotePaintDownload'));
+  let close;if(mode==='end')close=h.owner.close();else h.page.emit('framenavigated',{});
+  await until(()=>h.calls.some(c=>c.method==='Page.releaseRemotePaintDownload'));hold.reject(Error('actual Native read rejected during retirement'));await pending;if(close)await close;
+ }
+});
+test('Native close deadline cannot forget an actual pending arm or credit its late retirement reply',async t=>{
+ t.mock.timers.enable({apis:['setTimeout']});const h=fixture(t),hold=h.gate();h.cleanupFailureExpected=true;h.handler=async method=>{if(method==='Page.armRemotePaintDownload')await hold.promise;};
+ const arm=assert.rejects(h.arm(),error('AGENT_RUN_CLOSED'));await turn();await turn();assert.equal(h.calls.filter(c=>c.method==='Page.armRemotePaintDownload').length,1);
+ const closing=assert.rejects(h.owner.close());t.mock.timers.tick(30000);await closing;assert.equal(h.owner.status().tickets,1);assert.equal(h.owner.status().actualPending,true);
+ hold.resolve();await arm;await turn();await turn();assert.equal(h.calls.filter(c=>c.method==='Page.releaseRemotePaintDownload').length,1);assert.equal(h.owner.status().tickets,1);assert.equal(h.owner.status().spoolCleanupPending,false);
+});

@@ -1,0 +1,13 @@
+# Source Native下载owner：独立适配器
+
+本检查点仅增加尚未接入Source的私有适配器及真实异步Promise边界夹具。现有Source仍选择原Playwright路径；Native预算开关关闭，浏览器描述符仍为`transfersReady=false`，新适配器会在该状态拒绝arm。Source原Page、capture、CDP及实际document token的选路与身份绑定属于下一独立任务。
+
+适配器只通过构造时绑定的send发送五个私有Page命令。一个Run最多保留一个原ticket，一个实际普通请求和一个独立清理请求；读取未返回时end可立即发送原ticket release。仅实际Promise结算清除对应请求占位。发现阶段验证版本、文档、固定4项/4MiB上限与ready；实际arm发出后，未知或畸形结果保留未知记录，不能重试、重新发现或退回Playwright。
+
+有效arm回复在权限/文档复查前保存原ticket，导航、Page关闭、超时或end仍用原document/token/ticket清理。release的false代表尚未得到物理退休回执，保留ticket并串行查询；true才允许释放。30秒观察期限失败保持实际请求占位和未知清理状态，迟到回复不能自行腾出Run记录。Source随后仍需关闭实际浏览器并由外层namespace证据完成最终退休。
+
+SDK既有DTO、1MiB默认/4MiB最大、3072字节chunk、6144字节序列化上限、SHA256、文件名清理及标准Base64复用原验证函数。Native协议error成功值在实际PageHandler中是空字符串，不能误认作`none`。适配器只保留有界ready元数据，`status.bytes`为0；这不是CDP接收分配前上限、Node进程内存或完整下载spool物理上限证明。
+
+新增23项夹具覆盖真实未结算读取与独立清理、false回执、未知arm、end期间迟到arm、旧文档清理、观察期限、严格字段/无getter、错误枚举、元数据不变与chunk算术。首次macOS专项21项及双平台完整1477项通过后，补充实际read拒绝的原取消原因和close超时后的迟到arm两项边界；第二轮macOS专项23项通过，最终执行候选的macOS完整1479项中1464通过/15平台跳过，Linux完整1479项中1473通过/6平台跳过，两端零失败/取消，23新项均实际运行且无跳过，原1477名称全部保留。Linux初轮125为缺少空挂载目录、未启动测试；补目录后同源通过，原失败日志保留。完整双平台JS结果见[结构化证据](evidence/native-download-source-owner.json)。夹具不执行真实RFH、Playwright或Native浏览器；Native470项与五个ARM64调用方编译结果继承前一检查点，本轮不重跑。
+
+独立完整浏览器构建在原32GiB磁盘门槛触发后主动停止，容器退出143/PID0、无OOM且移除，输出和缓存保留。22799个计划动作未完成；不能算构建或运行通过。已挂载SMB NAS虽有空间，尚未验证适合构建。正式浏览器及采样器不执行/改写，禁止目录和演示容器不访问。Source接线、真实原CDP/RFH、网络envelope、cookies/Blob/resume/PW对象缺席与远端服务物理退休仍待；K6部分、41项10/17/14及原8小时失败不变。未提交/推送。
