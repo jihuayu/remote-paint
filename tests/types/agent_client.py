@@ -90,3 +90,25 @@ async def screenshots(client: AgentClient, context: AgentObservationContext) -> 
     await client.observations.screenshot(context,retries=1)  # type: ignore[call-arg]
     file.sha256 = 'changed'  # type: ignore[misc]
     file.content[0] = 1  # type: ignore[index]
+
+
+from remote_paint_session import (AgentDownloadId,AgentDownloadArmInput,AgentDownloadLimits,AgentDownloadTicketInput,
+    AgentDownloadChunkInput,AgentDownloadFileInput,AgentDownloadArmed,AgentDownloadInfo,AgentDownloadReady,AgentDownloadFile,AgentDownloadChunk)
+
+async def downloads(client: AgentClient, context: AgentObservationContext) -> None:
+    armed: AgentDownloadArmed = (await client.observations.arm_download(context,AgentDownloadArmInput(AgentDownloadLimits(1048576,10000)))).data
+    download_id: AgentDownloadId = armed.download_id
+    info: AgentDownloadInfo = (await client.observations.download_info(context,AgentDownloadTicketInput(download_id))).data
+    if isinstance(info,AgentDownloadReady):
+        file: AgentDownloadFile = (await client.observations.download_file(context,AgentDownloadFileInput(download_id,info.sha256,info.byte_length,info.completed_at))).data
+        content: bytes = file.content
+        file.content[0] = 1  # type: ignore[index]
+        file.sha256 = 'changed'  # type: ignore[misc]
+        _ = content
+    else:
+        _ = info.byte_length  # type: ignore[attr-defined]
+    part: AgentDownloadChunk = (await client.observations.download_chunk(context,AgentDownloadChunkInput(download_id,0))).data
+    await client.observations.release_download(context,AgentDownloadTicketInput(download_id))
+    _ = part
+    _ = AgentDownloadTicketInput(context.agent_run_id)  # type: ignore[arg-type]
+    await client.observations.arm_download(context,retries=1)  # type: ignore[call-arg]

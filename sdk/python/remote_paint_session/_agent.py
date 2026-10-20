@@ -10,6 +10,7 @@ from ._transport import ApiResult, BackendTransport, Outcome, RetryCount, Sessio
 
 if TYPE_CHECKING:
     from ._observation import ObservationExpected, AccessibilityExpected, ScreenshotExpected
+    from ._download import DownloadExpected
 
 AgentRunId = NewType('AgentRunId', str)
 AgentInvocationId = NewType('AgentInvocationId', str)
@@ -230,8 +231,11 @@ class _Expected:
     fence: AgentFence | None = None
     inputs: int | None = None
 
-def _validate(status: int, v: Any, e: _Expected | ObservationExpected | AccessibilityExpected | ScreenshotExpected, headers: httpx.Headers) -> Any:
+def _validate(status: int, v: Any, e: _Expected | ObservationExpected | AccessibilityExpected | ScreenshotExpected | DownloadExpected, headers: httpx.Headers) -> Any:
     from ._observation import ObservationExpected, AccessibilityExpected, ScreenshotExpected, validate_observation, validate_accessibility, validate_screenshot
+    from ._download import DownloadExpected,validate_download
+    if isinstance(e,DownloadExpected):
+        return validate_download(status,v,e,headers)
     if isinstance(e,ScreenshotExpected):
         return validate_screenshot(status,v,e,headers)
     if isinstance(e,AccessibilityExpected):
@@ -384,12 +388,13 @@ class _Invocations:
 
 class AgentClient:
     def __init__(self, *, base_url: str, api_key: str, timeout_seconds: float = 10, retries: RetryCount = 0,
-                 max_response_bytes: int = 65536, max_concurrent_requests: int = 64, max_concurrent_end_requests: int = 8, max_screenshot_bytes: int = 1048576,
+                 max_response_bytes: int = 65536, max_concurrent_requests: int = 64, max_concurrent_end_requests: int = 8, max_screenshot_bytes: int = 1048576, max_download_bytes: int = 1048576,
                  transport: httpx.AsyncBaseTransport | None = None) -> None:
-        if not _integer(max_concurrent_end_requests,1,64) or not _integer(max_screenshot_bytes,57,4194304):
+        if not _integer(max_concurrent_end_requests,1,64) or not _integer(max_screenshot_bytes,57,4194304) or not _integer(max_download_bytes,1,4194304):
             _invalid()
+        from ._download import is_download_file,read_download_binary
         from ._observation import is_screenshot_download, read_screenshot_binary
-        self._transport = BackendTransport(base_url=base_url,api_key=api_key,timeout_seconds=timeout_seconds,retries=retries,max_response_bytes=max_response_bytes,max_concurrent_requests=max_concurrent_requests,max_concurrent_end_requests=max_concurrent_end_requests,transport=transport,validate=_validate,error_type=AgentClientError,cancelled_type=AgentClientCancelledError,agent_errors=True,max_screenshot_bytes=max_screenshot_bytes,binary_expected=is_screenshot_download,read_binary=read_screenshot_binary)
+        self._transport = BackendTransport(base_url=base_url,api_key=api_key,timeout_seconds=timeout_seconds,retries=retries,max_response_bytes=max_response_bytes,max_concurrent_requests=max_concurrent_requests,max_concurrent_end_requests=max_concurrent_end_requests,transport=transport,validate=_validate,error_type=AgentClientError,cancelled_type=AgentClientCancelledError,agent_errors=True,max_screenshot_bytes=max_screenshot_bytes,binary_expected=is_screenshot_download,read_binary=read_screenshot_binary,max_download_bytes=max_download_bytes,download_expected=is_download_file,read_download=read_download_binary)
         from ._observation import _Observations
         self.runs,self.invocations,self.observations = _Runs(self._transport),_Invocations(self._transport),_Observations(self._transport)
     async def __aenter__(self) -> AgentClient:

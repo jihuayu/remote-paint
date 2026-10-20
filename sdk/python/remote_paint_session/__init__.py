@@ -70,3 +70,6 @@ from ._observation import (AgentScreenshotId,AgentScreenshotLimits,AgentScreensh
 __all__ += ['AgentScreenshotId','AgentScreenshotLimits','AgentScreenshotInput','AgentScreenshotFileInput',
     'AgentScreenshotChunkInput','AgentScreenshotDownloadInput','AgentScreenshotObservation',
     'AgentScreenshotChunk','AgentScreenshotReleased','AgentScreenshotDownload']
+
+from ._download import (AgentDownloadId,AgentDownloadLimits,AgentDownloadArmInput,AgentDownloadTicketInput,AgentDownloadChunkInput,AgentDownloadFileInput,AgentDownloadTicket,AgentDownloadArmed,AgentDownloadPending,AgentDownloadReady,AgentDownloadInfo,AgentDownloadChunk,AgentDownloadReleased,AgentDownloadFile)
+__all__ += ['AgentDownloadId', 'AgentDownloadLimits', 'AgentDownloadArmInput', 'AgentDownloadTicketInput', 'AgentDownloadChunkInput', 'AgentDownloadFileInput', 'AgentDownloadTicket', 'AgentDownloadArmed', 'AgentDownloadPending', 'AgentDownloadReady', 'AgentDownloadInfo', 'AgentDownloadChunk', 'AgentDownloadReleased', 'AgentDownloadFile']

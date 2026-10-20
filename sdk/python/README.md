@@ -149,3 +149,32 @@ counted after timeout/cancellation, with independent end capacity and the existi
 single-flight bounded aclose observation. Qualification still excludes actual page
 download/upload/Profile, full locator/frame control, raw receiver preallocation,
 browser physical memory and whole K6 completion.
+
+
+### Actual Page downloads
+
+`client.observations.arm_download(context, AgentDownloadArmInput(...))` returns a frozen
+`AgentDownloadArmed` for the original Page's next download event. `download_info` takes
+`AgentDownloadTicketInput` and returns `AgentDownloadPending | AgentDownloadReady`; only
+ready has size/hash/completion/name metadata. `download_chunk` takes `AgentDownloadChunkInput`
+and returns up to3072 raw bytes as canonical base64. `release_download` takes the original
+ticket input; release the one Run-owned ticket before arming another window.
+
+`download_file(context, AgentDownloadFileInput(download_id, sha256, byte_length, completed_at))`
+returns a frozen/slotted `AgentDownloadFile` whose `content` is immutable `bytes`. All entrypoints
+are normal methods that capture exact typed inputs and context before returning their coroutine.
+They use one HTTP attempt regardless of mutation retries, with no automatic rearm/context refresh
+or replay. `rpc_timeout_ms` is optional on each input and remains50..120000.
+
+`max_download_bytes` defaults to1MiB and allows1..4MiB independently of JSON and screenshot
+budgets. Zero-byte files remain valid. Headers must exactly match original full context, ticket,
+size/hash/completion, binary media, UUID attachment, no-store/nosniff and request/digest metadata.
+The reader uses one bounded bytearray, incremental SHA and periodic event-loop yielding, then
+converts to immutable bytes only after full length/hash verification; conversion transiently holds
+two file-sized allocations. No partial bytes or transport-buffer alias is returned. HTTPX mock
+prebuffered responses still receive size/hash checks. This does not claim pre-spool/browser/raw
+receiver or total physical memory bounds.
+
+Timeout/Task cancellation only stops the waiter. Real Task/body/aclose work remains counted;
+end owns its separate pool. Existing single-flight aclose waits up to1s and reports
+CLIENT_CLOSE_PENDING while noncooperative work continues, rather than pretending it retired.

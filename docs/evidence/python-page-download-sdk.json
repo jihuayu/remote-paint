@@ -1,0 +1,276 @@
+{
+  "at": "2026-10-19T21:50:27.662041+00:00",
+  "task": "Python actual Page download SDK installed Native checkpoint",
+  "status": "python-page-download-sdk-qualified-within-scope",
+  "scope": "Python SDK arm_download/download_info/download_chunk/release_download/download_file with frozen/slotted typed discriminated models, synchronous before-coroutine exact context/input capture, oneHTTPattempt, strict JSON Source6KiB/public8KiB and correlated original-context binary headers/ticket/hash/size/time,empty file and immutablebytes. Independent max_download_bytes default1MiB max4MiB, shared actualTask/body/aclose and independentend. Incremental SHA into bounded bytearray then immutablebytes; transient2file-sized buffers disclosed. Fresh11member Python wheel installed separate process publicHTTP canonicalNative5methods,download/human/knownunknown/HTTP408/CLIENT_CANCELLED/backendactualslot/end/namespace proof. Browser pre-spool/Playwrightmetadata physical/fullK6 remain pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-page-download-sdk-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "4d50b6a586f8d52011544ff112abd5173d1a2bdc6454b201aed636855730ebbc",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-page-download-sdk-candidate-v1/frozen-version.json",
+  "executedManifestSha256": "335b96231a2f5aacb40fa0d6aa96a50a27b9ae0d6b6960c5894eed6cf3aba7ae",
+  "newContracts": 23,
+  "newTestNames": [
+    "test_arm_context_limits_and_deadline_are_captured_before_coroutine",
+    "test_armed_pending_ready_chunk_and_released_models_are_frozen_slotted",
+    "test_invalid_typed_inputs_ids_limits_getters_context_and_retries_reject_before_send",
+    "test_json_context_metadata_phase_filename_time_limits_and_identity_are_strict",
+    "test_chunk_canonical_base64_arithmetic_eof_and_empty_digest_are_strict",
+    "test_json_envelope_request_status_media_location_and_source_budgets",
+    "test_file_request_capture_precedes_await_and_returns_frozen_metadata_and_immutable_bytes",
+    "test_file_headers_require_exact_media_status_encoding_length_digest_ticket_context_and_attachment",
+    "test_file_empty_and_single_byte_are_valid_without_png_assumptions",
+    "test_file_truncation_overrun_digest_corruption_and_bad_empty_hash_return_no_partial_data",
+    "test_separate_download_cap_rejects_synchronously_and_does_not_widen_json_or_screenshot_budget",
+    "test_all_methods_send_once_even_with_mutation_retries_and_errors_are_redacted",
+    "test_noncooperative_fetch_timeout_holds_actual_task_and_end_remains_independent",
+    "test_caller_cancel_holds_noncooperative_task_until_actual_settlement",
+    "test_bad_header_waits_actual_slow_close_and_close_failure_fences_client",
+    "test_aclose_is_single_flight_pending_until_noncooperative_task_retires",
+    "test_prebuffered_fragmented_streams_and_empty_prebuffer_are_checked",
+    "test_http_models_bytes_release_and_independent_observe_scope",
+    "test_http_empty_file_metadata_and_delivery",
+    "test_http_known_unknown_history_quarantine_and_input_count_remain",
+    "test_http_408_retains_backend_source_and_independent_end",
+    "test_http_task_cancel_does_not_release_actual_source_or_replay",
+    "test_http_stale_ticket_is_not_automatically_rearmed"
+  ],
+  "scopedLogSha256": "fe2a5ad01614060f9871fa7c6c3f6c1e311aa42f263943c3af6a3fdeac8936d2",
+  "scopedActualExitCode": 0,
+  "initialScopedFailure": {
+    "logSha256": "8cdcee90b818fa671549cc5a54ea3259b36167fc509c9da399645bf44f99ecad",
+    "tests": 23,
+    "errors": 23,
+    "actualExitCode": 1,
+    "cause": "Runtime cast evaluated models imported only under TYPE_CHECKING. Quoted forward type references fix the actual implementation error; final scope, fresh installations and Native passed. Failure log preserved."
+  },
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v59/manifest.json",
+  "fullJsManifestSha256": "f0a42188aac7b53ee706bc50a85af3f8604a1a762208473fff61cc01c657d555",
+  "fullJs": {
+    "mac": {
+      "tests": 1421,
+      "passed": 1406,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "2b341c2de76b55d709de6ffc859dd415969bdc9f92c070a676b0de3a3efab42e"
+    },
+    "linux": {
+      "tests": 1421,
+      "passed": 1415,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "fec2342646121cdb12eebc31ca9656551be3bf31865746f7c458f14a23c073fb"
+    }
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-page-download-sdk-native-v1/manifest.json",
+  "nativeManifestSha256": "ee56d43dac1ae3bacf6140921e49fc4f6d5ee828d8bdfa92b92c7bdfb8615c0d",
+  "nativeActualExitCode": 0,
+  "nativeLogSha256": "796c88d25114135127e9bc182f1596edd536fd7282412f2adad6cca559ae7717",
+  "nativeFirstPass": true,
+  "nativeObservations": {
+    "network": {
+      "installedPythonDownloadSdk": true,
+      "actualImmutableBytesAndFrozenModelAssertedInPython": true,
+      "publicHttpExecutorPrivateWorkerNative": true,
+      "originalCookiePreserved": true,
+      "oneRequestNoRefetch": true,
+      "byteLength": 8999,
+      "sha256": "2fb4ebc93e3c8ef0d2a86c97203a9cd33ee2cbf4e5e8e6ac69e8c9ceb50ebdfc",
+      "chunksAndBinaryMatch": true,
+      "correlatedHeaders": true,
+      "writerFenceUnchanged": true,
+      "releaseInvalidates": true
+    },
+    "blob": {
+      "byteLength": 5001,
+      "sha256": "1e4adf95716dd1a137204d50d66166329e034b081146ac37b9a43605acb6e494"
+    },
+    "empty": {
+      "publicBinaryZeroByte": true,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bounds": {
+      "overCap413": true,
+      "foreignTenant404": true,
+      "scopesIndependent403": true,
+      "deniedBeforeSource": true
+    },
+    "navigation": {
+      "oldDocumentRejected": true,
+      "oldRunFileRejected": true,
+      "newEpoch": 2
+    },
+    "activeDownloadEnd": {
+      "actualSlowRequestClosed": true,
+      "durableRunClosed": true
+    },
+    "human": {
+      "publicDownloadDuringHumanGrant": true,
+      "readReleaseEndPreservedHeldKeyAndGrant": true,
+      "byteLength": 8999
+    },
+    "unknown": {
+      "actualInputOnce": true,
+      "fileObservedAndDelivered": true,
+      "unknownHistoryUnchanged": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "timeout": {
+      "actualNativeMetadataBlocked": true,
+      "fixtureBusyMs": 1000,
+      "httpObserverOnly": true,
+      "backendActualSlotRetained": true,
+      "independentEnd202": true,
+      "lateResultCouldNotAdoptClosedRun": true
+    },
+    "disconnect": {
+      "actualNativeMetadataBlocked": true,
+      "fixtureBusyMs": 1000,
+      "httpObserverOnly": true,
+      "backendActualSlotRetained": true,
+      "independentEnd202": true,
+      "lateResultCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "managementSessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativePythonOrigin": {
+    "module": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-page-download-sdk-candidate-v1/sdk-mac/venv/lib/python3.14/site-packages/remote_paint_session/__init__.py",
+    "prefix": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-page-download-sdk-candidate-v1/sdk-mac/venv",
+    "installedPageDownloadSdk": true,
+    "installedScreenshotSdk": true,
+    "installedObservationSdk": true,
+    "installedAccessibilitySdk": true,
+    "pid": 59990
+  },
+  "nativePythonExit": {
+    "pid": 59990,
+    "code": 0,
+    "signal": null
+  },
+  "nativeJournal": {
+    "closedRuns": 6,
+    "injected": 8,
+    "unknown": 1,
+    "rejected": 0
+  },
+  "nativeRetirementKind": "container-removed",
+  "nativeRetirementEvidenceSha256": "6a4ac7177ea458b0041b896f33fcf66244d7c2de971607f4bd316842862d2dc8",
+  "sdk": {
+    "mac": {
+      "nodeTests": 175,
+      "pythonTests": 118,
+      "typescriptActual0": true,
+      "mypyMacInstalledAndSource": true,
+      "inputs": 70,
+      "actualExitCode": 0,
+      "resultSha256": "bd80efbb2fc8733b0fb22ccd0a772e91cf75841ecb570b8ff20b443fb2db3efb",
+      "sourceMapSha256": "1785be85bf3425f9b671f3ffe69959f5bca157d2b730760d33fa83855a0df277",
+      "runnerLogSha256": "9da94a893206328c1814d8be5e9f76e52a10f204533ad1a02d626a2220f738be"
+    },
+    "linux": {
+      "nodeTests": 175,
+      "pythonTests": 118,
+      "typescriptActual0": true,
+      "mypyMacInstalledAndSource": false,
+      "inputs": 70,
+      "actualExitCode": 0,
+      "resultSha256": "7c80676222837af7647fe0781af37d269914e0c962b45399541f7056cc48110f",
+      "sourceMapSha256": "1785be85bf3425f9b671f3ffe69959f5bca157d2b730760d33fa83855a0df277",
+      "runnerLogSha256": "8948afc2e6faed5237ee05392671f0a4fa69c75be2bbfa90c5eb2ff7365cac04"
+    }
+  },
+  "archives": {
+    "node": {
+      "sha256": "1c125f6044e72f82d34d6d12f9e0557ec39333cd8001138a3dbd458654e44b3d",
+      "members": [
+        "package/README.md",
+        "package/agent-download.mjs",
+        "package/agent-observation.mjs",
+        "package/agent.d.mts",
+        "package/agent.mjs",
+        "package/backend-transport.mjs",
+        "package/backend.d.mts",
+        "package/backend.mjs",
+        "package/package.json",
+        "package/viewer-channel.d.mts",
+        "package/viewer-channel.mjs",
+        "package/viewer-connection.d.mts",
+        "package/viewer-connection.mjs",
+        "package/viewer-control.d.mts",
+        "package/viewer-control.mjs",
+        "package/viewer-frame.d.mts",
+        "package/viewer-frame.mjs",
+        "package/viewer-telemetry.d.mts",
+        "package/viewer-telemetry.mjs",
+        "package/viewer.d.mts",
+        "package/viewer.mjs"
+      ],
+      "version": "0.0.0-dev.0"
+    },
+    "python": {
+      "sha256": "d10813e8dfe82657cc77e0a944c1c02cfb241a6eca8ee1b4a5ab1e759d1b0823",
+      "members": [
+        "remote_paint_session-0.0.0.dev0.dist-info/METADATA",
+        "remote_paint_session-0.0.0.dev0.dist-info/RECORD",
+        "remote_paint_session-0.0.0.dev0.dist-info/WHEEL",
+        "remote_paint_session-0.0.0.dev0.dist-info/top_level.txt",
+        "remote_paint_session/__init__.py",
+        "remote_paint_session/_agent.py",
+        "remote_paint_session/_client.py",
+        "remote_paint_session/_download.py",
+        "remote_paint_session/_observation.py",
+        "remote_paint_session/_transport.py",
+        "remote_paint_session/py.typed"
+      ],
+      "version": "0.0.0.dev0"
+    }
+  },
+  "nodePackageMembers": 21,
+  "pythonPackageMembers": 11,
+  "nodeSdkAndArchiveUnchanged": true,
+  "mappedInputs": 70,
+  "freshBothPlatforms": true,
+  "nodeTestsEach": 175,
+  "pythonTestsEach": 118,
+  "typescriptBothActual0": true,
+  "macMypyPublic2AndSource6Actual0": true,
+  "clientLimits": {
+    "maxDownloadBytesDefault": 1048576,
+    "maxDownloadBytesRange": [
+      1,
+      4194304
+    ],
+    "emptyFileAccepted": true,
+    "maxJsonBytesIndependent": true,
+    "screenshotBudgetIndependent": true,
+    "immutableContent": true,
+    "assemblyBytearrayThenImmutableBytes": true,
+    "transientTwoFileSizedBuffers": true,
+    "rawReceiverPhysicalMemoryClaim": false
+  },
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-page-download-sdk-cleanup-v1.json",
+  "cleanupAuditSha256": "be1042b353205605b85fe982dd708997767cffe391aacde7eeee36441739e0bc",
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "nextRequired": "Resolve actual Page download browser pre-spool disk budget/cancellation partial spool retirement and Playwright retained Download metadata physical bound with explicit design and independently frozen evidence. Current completed-file cap is not a pre-write disk bound. Keep Source/private/public/Node/Python qualification; continue K6 full locators/frame/write-by-handle,K10upload/Profile,K7/K8/K4,unknownEngineStart,remaining41/N1/device/original failed8h. No automatic8h restart/policy relaxation/forced browserGC/sampler changes.",
+  "pageDownloadSourceCoreQualified": true,
+  "pageDownloadPrivateRpcQualified": true,
+  "pageDownloadPublicQualified": true,
+  "pageDownloadSdkQualified": true,
+  "nodePageDownloadSdkQualified": true,
+  "pythonPageDownloadSdkQualified": true,
+  "browserDownloadSpoolPrewriteHardCapQualified": false,
+  "playwrightDownloadMetadataPhysicalBoundQualified": false,
+  "K6Complete": false,
+  "productionNativeFullyQualified": false,
+  "eightHourPassed": false,
+  "noCommitPush": true,
+  "noSubagents": true
+}

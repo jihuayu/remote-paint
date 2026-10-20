@@ -59,7 +59,8 @@ class BackendTransport:
                  error_type: type[SessionClientError] = SessionClientError,
                  cancelled_type: type[SessionClientCancelledError] = SessionClientCancelledError,
                  max_concurrent_end_requests: int = 0, agent_errors: bool = False, max_screenshot_bytes: int = 1048576,
-                 binary_expected: Callable[[Any],bool] | None = None, read_binary: Callable[[httpx.Response,Any,int],Awaitable[ApiResult[Any]]] | None = None) -> None:
+                 binary_expected: Callable[[Any],bool] | None = None, read_binary: Callable[[httpx.Response,Any,int],Awaitable[ApiResult[Any]]] | None = None, max_download_bytes: int = 1048576,
+                 download_expected: Callable[[Any],bool] | None = None, read_download: Callable[[httpx.Response,Any,int],Awaitable[ApiResult[Any]]] | None = None) -> None:
         self._error, self._cancelled, self._validate, self._agent_errors = error_type, cancelled_type, validate, agent_errors
         if type(base_url) is not str or len(base_url) > 8192:
             self.invalid()
@@ -82,6 +83,9 @@ class BackendTransport:
         if read_binary is not None and (type(max_screenshot_bytes) is not int or not 57 <= max_screenshot_bytes <= 4194304 or binary_expected is None):
             self.invalid()
         self.screenshot_max_bytes,self._binary_expected,self._read_binary = max_screenshot_bytes,binary_expected,read_binary
+        if read_download is not None and (type(max_download_bytes) is not int or not 1 <= max_download_bytes <= 4194304 or download_expected is None):
+            self.invalid()
+        self.download_max_bytes,self._download_expected,self._read_download = max_download_bytes,download_expected,read_download
         self._api_key, self._timeout, self._max_bytes = api_key, timeout_seconds, max_response_bytes
         self._retries, self._max, self._max_end = self.retry_count(retries), max_concurrent_requests, max_concurrent_end_requests
         # End uses its own actual connection pool, not just a local counter.
@@ -201,6 +205,8 @@ class BackendTransport:
                 self.fail('CLIENT_REDIRECT_REJECTED', status=status)
             if self._read_binary is not None and self._binary_expected is not None and self._binary_expected(expect) and status < 300:
                 return await self._read_binary(response,expect,self.screenshot_max_bytes)
+            if self._read_download is not None and self._download_expected is not None and self._download_expected(expect) and status < 300:
+                return await self._read_download(response,expect,self.download_max_bytes)
             if response.headers.get('content-encoding', 'identity').lower() != 'identity' or re.fullmatch(r'application/json(?:\s*;\s*charset=utf-8)?', response.headers.get('content-type',''), re.I) is None:
                 self.fail('CLIENT_HTTP_ERROR' if status >= 400 else 'CLIENT_INVALID_RESPONSE', status=status, retryable=status >= 400 and retryable)
             length = response.headers.get('content-length')

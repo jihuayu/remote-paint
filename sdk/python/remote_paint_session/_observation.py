@@ -7,11 +7,14 @@ import base64
 import hashlib
 import json
 import re
-from typing import Any, Coroutine, Literal, NewType, NoReturn, cast
+from typing import TYPE_CHECKING, Any, Coroutine, Literal, NewType, NoReturn, cast
 import httpx
 from ._agent import AgentBinding, AgentClientError, AgentRun, AgentRunId, _binding, _body, _exact, _fail, _id, _invalid, _text, _timeout, _uuid
 from ._client import SessionId, _integer
 from ._transport import ApiResult, BackendTransport, RequestId
+
+if TYPE_CHECKING:
+    from ._download import (DownloadKind,DownloadInput,AgentDownloadArmInput,AgentDownloadTicketInput,AgentDownloadChunkInput,AgentDownloadFileInput,AgentDownloadArmed,AgentDownloadInfo,AgentDownloadChunk,AgentDownloadReleased,AgentDownloadFile)
 
 AgentElementId = NewType('AgentElementId', str)
 AgentObservationId = NewType('AgentObservationId', str)
@@ -511,3 +514,18 @@ class _Observations:
         return cast(Coroutine[Any,Any,ApiResult[AgentScreenshotReleased]],self._screenshot('release',context,value))
     def download_screenshot(self, context: AgentObservationContext, value: AgentScreenshotDownloadInput) -> Coroutine[Any,Any,ApiResult[AgentScreenshotDownload]]:
         return cast(Coroutine[Any,Any,ApiResult[AgentScreenshotDownload]],self._screenshot('download',context,value))
+
+    def _download(self, kind: DownloadKind, context: AgentObservationContext, value: DownloadInput) -> Coroutine[Any,Any,ApiResult[Any]]:
+        from ._download import send_download
+        return send_download(self._transport,kind,context,value)
+    def arm_download(self, context: AgentObservationContext, value: AgentDownloadArmInput | None = None) -> Coroutine[Any,Any,ApiResult[AgentDownloadArmed]]:
+        from ._download import AgentDownloadArmInput
+        return cast('Coroutine[Any,Any,ApiResult[AgentDownloadArmed]]',self._download('armed',context,AgentDownloadArmInput() if value is None else value))
+    def download_info(self, context: AgentObservationContext, value: AgentDownloadTicketInput) -> Coroutine[Any,Any,ApiResult[AgentDownloadInfo]]:
+        return cast('Coroutine[Any,Any,ApiResult[AgentDownloadInfo]]',self._download('info',context,value))
+    def download_chunk(self, context: AgentObservationContext, value: AgentDownloadChunkInput) -> Coroutine[Any,Any,ApiResult[AgentDownloadChunk]]:
+        return cast('Coroutine[Any,Any,ApiResult[AgentDownloadChunk]]',self._download('chunk',context,value))
+    def release_download(self, context: AgentObservationContext, value: AgentDownloadTicketInput) -> Coroutine[Any,Any,ApiResult[AgentDownloadReleased]]:
+        return cast('Coroutine[Any,Any,ApiResult[AgentDownloadReleased]]',self._download('release',context,value))
+    def download_file(self, context: AgentObservationContext, value: AgentDownloadFileInput) -> Coroutine[Any,Any,ApiResult[AgentDownloadFile]]:
+        return cast('Coroutine[Any,Any,ApiResult[AgentDownloadFile]]',self._download('file',context,value))
