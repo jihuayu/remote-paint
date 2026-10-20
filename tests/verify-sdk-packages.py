@@ -85,7 +85,7 @@ def main() -> None:
         (out/'archives.json').write_text(json.dumps(archives,indent=2)+'\n')
         consumer=out/'consumer';consumer.mkdir()
         (consumer/'package.json').write_text(json.dumps({'name':'sdk-installed-consumer','version':'0.0.0','private':True,'type':'module'})+'\n')
-        files=['live/agent-observation.mjs','live/agent-observation-realm.mjs','service/agent-http.mjs','service/agent-executor.mjs','service/agent-rpc.mjs','live/input.mjs','live/feedback.mjs','live/managed-agent-run.mjs','service/session-registry.mjs','service/session-store.mjs','service/session-http.mjs',
+        files=['service/agent-observation-access.mjs','live/agent-observation.mjs','live/agent-observation-realm.mjs','service/agent-http.mjs','service/agent-executor.mjs','service/agent-rpc.mjs','live/input.mjs','live/feedback.mjs','live/managed-agent-run.mjs','service/session-registry.mjs','service/session-store.mjs','service/session-http.mjs',
                'service/session-runtime-journal.mjs','service/session-agent-journal.mjs','service/runtime-witness-binding.mjs','service/viewer-access.mjs',
                'protocol/live-wire.mjs','protocol/wire.mjs','protocol/client-memory.mjs','protocol/resource-memory.mjs',
                'tests/types/agent-client.mts','tests/node-agent-client.test.mjs','tests/fixtures/node-agent-sdk-records.mjs','tests/fixtures/agent-executor-fixture.mjs',

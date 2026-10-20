@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | Source受管DOM/直接文本、id/tag/testId定位和精确节点WeakRef句柄，经独立读授权与认证私有RPC绑定target/document/version/time；旧节点/导航/字段变化拒绝，固定遍历/文本/字节/句柄和实际任务名额。26新合同、双平台1165项与安装包97Node/37Python/类型通过。真实Native中文截断、替换/导航、人工读与原grant、3000节点/32访问及namespace退役通过；首轮2KiB帧失败保留。公共观察API/SDK、AX/截图/下载/完整定位及业务后置条件仍待做，见[范围](agent-observation-core.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | Source DOM/直接文本与 id/tag/testId/精确句柄核心已接公共 agents:observe，绑定逻辑 Run/Registry/版本并隔离写 fence；已确认原 worker 的 unknown 输入可观察，输入/历史仍隔离且不重放。22 新合同、双平台125文件1187项、旧包44输入重装97Node/37Python/类型通过；真实公开HTTP→Native导航/句柄/人控、unknown 后实际DOM、超时/断开槽保留及独立end、4 Run/namespace退役通过。观察SDK、AX/截图/下载/完整定位及业务后置条件仍待做，见[公共观察范围](public-agent-observation.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -1980,3 +1980,8 @@ Python新增受管七工具、冻结模型、判别类型、不可变prepare与u
 ### Source 结构化观察核心与私有 RPC
 
 增加独立读上下文/agent:observe、固定可信隔离环境原生document token检查、受限DOM/文本/定位/精确节点句柄；不更新写fence。26新合同、双平台123文件1165项零失败；原SDK43输入重装97Node/37Python/TSC及Mac Mypy通过。真实Native中文按字节截断、替换/改文/导航旧句柄拒绝、人控期间读/写暂停且end保留grant、3000节点只访问32和namespace退役通过。首次大快照2KiB通道拒绝保留，修复标准provider固定8KiB帧及事前拒绝小缓冲后新Native通过。K6转为部分，41项10/17/14；公共观察/SDK、AX/截图/下载/业务观察及其他完整目标仍未完成，见[证据范围](agent-observation-core.md)。
+
+
+### 公共 Agent DOM 观察 API
+
+新增 agents:observe 的独立读取通道，固定逻辑 Run/Registry/原 worker/版本；读 context 与写 fence 分离，同 owner 已确认 worker 的 unknown 输入可观察而不清隔离或重放。22 新合同、Mac/Linux 各1187项零失败，旧SDK44输入重装97Node/37Python/类型通过。真实公开HTTP到Native验证观察授权、导航/句柄、人控原grant、unknown后实际DOM且历史unknown、HTTP超时/断开持有实际槽和独立end；重开账本4closed Run、7injected/2rejected/1unknown与namespace退役。K6仍部分，41项10/17/14；Node/Python观察SDK及其余完整目标待完成，见[范围与证据](public-agent-observation.md)。

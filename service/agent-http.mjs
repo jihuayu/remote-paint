@@ -1,9 +1,12 @@
 import {DurableAgentExecutor,AgentExecutionError} from './agent-executor.mjs';
 import {AgentRpcError,captureAgentContext} from './agent-rpc.mjs';
+import {capturePublicObservationContext,capturePublicObservation} from './agent-observation-access.mjs';
 import {InputError} from '../live/input.mjs';
 
-export const AGENT_HTTP_SCOPES=Object.freeze(['agents:read','agents:write','agents:end']);
+export const AGENT_HTTP_SCOPES=Object.freeze(['agents:read','agents:write','agents:end','agents:observe']);
 const errors={
+ INVALID_AGENT_OBSERVATION:[400,'Invalid Agent observation'],STALE_AGENT_ELEMENT:[409,'Agent element handle is stale'],STALE_AGENT_PAGE:[409,'Agent document context is stale'],
+ AGENT_OBSERVATION_UNAVAILABLE:[409,'Agent observation is unavailable'],AGENT_OBSERVATION_BUSY:[409,'Agent observation is in flight'],AGENT_OBSERVATION_LIMIT:[413,'Agent observation exceeds the allowed limit'],AGENT_OBSERVATION_FAILED:[502,'Agent observation could not be confirmed'],
  AGENT_NOT_CONFIGURED:[503,'Agent access is unavailable'],AGENT_INVALID_REQUEST:[400,'Invalid Agent request'],AGENT_INVALID_CONTEXT:[400,'Invalid Agent context'],
  INVALID_AGENT_FENCE:[400,'Invalid Agent fence'],AGENT_ACTION_FORBIDDEN:[403,'Agent action is not allowed'],AGENT_METHOD_FORBIDDEN:[403,'Agent method is not allowed'],
  AGENT_RUN_NOT_FOUND:[404,'Agent run not found'],AGENT_INVOCATION_NOT_FOUND:[404,'Agent invocation not found'],
@@ -20,18 +23,18 @@ export function agentHttpError(error){
  const code=Object.hasOwn(errors,error.code)?error.code:'AGENT_INPUT_FAILED',[status,message]=errors[code];return {code,status,message,outcome:error.outcome==='unknown'?'unknown':'not-dispatched'};
 }
 const uuid='[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
-const runPath=new RegExp('^/v1/agent-runs/(arun_'+uuid+')(?:/(context|invocations|end))?$');
+const runPath=new RegExp('^/v1/agent-runs/(arun_'+uuid+')(?:/(context|invocations|end|observation-context|observations))?$');
 const invocationPath=new RegExp('^/v1/agent-invocations/(ainv_'+uuid+')$');
 const createPath=new RegExp('^/v1/sessions/(ses_'+uuid+')/agent-runs$');
 export function agentHttpRoute(path){
  let match;if((match=createPath.exec(path)))return {agent:true,method:'POST',scope:'agents:write',kind:'agent-create',id:match[1],needsBody:true};
  if((match=invocationPath.exec(path)))return {agent:true,method:'GET',scope:'agents:read',kind:'agent-invocation',id:match[1]};
- if((match=runPath.exec(path))){const suffix=match[2];return {agent:true,method:['invocations','end'].includes(suffix)?'POST':'GET',scope:suffix==='invocations'?'agents:write':suffix==='end'?'agents:end':'agents:read',kind:'agent-'+(suffix??'run'),id:match[1],needsBody:suffix==='invocations'};}
+ if((match=runPath.exec(path))){const suffix=match[2],observation=['observations','observation-context'].includes(suffix);return {agent:true,method:['invocations','end','observations'].includes(suffix)?'POST':'GET',scope:observation?'agents:observe':suffix==='invocations'?'agents:write':suffix==='end'?'agents:end':'agents:read',kind:'agent-'+(suffix??'run'),id:match[1],needsBody:['invocations','observations'].includes(suffix)};}
  return null;
 }
 export function createAgentHttpAccess(executor,registry){
  if(executor===null)return null;if(!(executor instanceof DurableAgentExecutor)||!executor.usesRegistry(registry))throw TypeError('Agent executor must use the exact HTTP Registry');
- return Object.freeze(Object.fromEntries(['create','getRun','getInvocation','context','perform','end'].map(name=>[name,executor[name].bind(executor)])));
+ return Object.freeze(Object.fromEntries(['create','getRun','getInvocation','context','observationContext','observe','perform','end'].map(name=>[name,executor[name].bind(executor)])));
 }
 function data(value,allowed,required=allowed){
  if(!value||![Object.prototype,null].includes(Object.getPrototypeOf(value)))throw new AgentExecutionError('AGENT_INVALID_REQUEST');
@@ -47,6 +50,10 @@ export async function handleAgentHttp({selected,principal,input,idempotencyKey,a
   result=run(access.create({tenantId,sessionId:selected.id,region:body.region,version:body.version,idempotencyKey},options));status=['intent','starting','closing'].includes(result.state)?202:200;location='/v1/agent-runs/'+result.agentRunId;
  }else if(selected.kind==='agent-invocations'){
   const body=data(input,['tool','params','context','rpcTimeoutMs'],['tool','params','context']);result=invocation(access.perform({...reference,idempotencyKey,tool:body.tool,params:body.params,context:body.context},rpcOptions(body)));status=['intent','requested'].includes(result.state)?202:200;location='/v1/agent-invocations/'+result.invocationId;
+ }else if(selected.kind==='agent-observation-context'){
+  result=capturePublicObservationContext(await wait(access.observationContext(reference),signal),{tenantId,agentRunId:selected.id},'AGENT_INVALID_REPLY');
+ }else if(selected.kind==='agent-observations'){
+  const body=data(input,['context','query','limits','rpcTimeoutMs'],['context','query']);result=capturePublicObservation(await wait(access.observe({...reference,context:body.context,query:body.query,...(Object.hasOwn(body,'limits')?{limits:body.limits}:{})},rpcOptions(body)),signal),{tenantId,agentRunId:selected.id});
  }else if(selected.kind==='agent-run')result=run(access.getRun(reference));
  else if(selected.kind==='agent-invocation')result=invocation(access.getInvocation({tenantId,invocationId:selected.id}));
  else if(selected.kind==='agent-context'){
