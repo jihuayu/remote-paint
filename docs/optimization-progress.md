@@ -1625,3 +1625,14 @@ Session 日志升级为 v3，runtime 新增明确的启动请求历史。新 int
 未启动退役分支改为消费持久 not-requested 历史，并仍要求实际 created/PID0/零 StartedAt、删除204和新鲜完整CID404；调用方的内存布尔值不能替代该历史。真实提供器在完整 CID 保存后、Start 标记前进程死亡，恢复原日志与绑定后只清理原容器、保存并回读退役证据再释放配额，全程不重放创建/启动/Ready。标记提交后进程死亡、旧 v2 缺少历史两条实际负例均不猜测未启动：对象删除后仍保留 closing 与配额，等待有效命名空间证明。最终双平台与真实路径结果见[启动历史检查点](evidence/runtime-start-history.json)。
 
 这没有完成全部恢复要求。已请求/未知但缺少内核见证、已知 CID 提前消失的历史证明、取消及清理重试仍需推进；Native 提供器、当前候选整份全量回归及 Viewer 角色/HTTP/SDK 待验收。原8小时仍独立运行，41项保持9/14/18，未提交或推送。
+
+
+### 已知 CID 缺失的历史内核退役证明（B1c1b2c2）
+
+Start 历史新增明确版本的见证确认，绑定实际 EngineStartedAt、内核见证摘要和原私有文件完整摘要。只有原 owner 能在 requested 后、created/父 creating 阶段确认一次，且发生在见证文件 fsync/回读后、私有 Start/Ready 前。原字符串历史不会自动得到此确认。历史读取同时匹配日志确认、完整 CID、owner/spec/source/启动代次和两个摘要；私有目录固定 inode，文件有界读取并检查前后身份与模式，受限子进程 umask 也不能发布非0600记录。它不代表当前实例仍为 Ready。
+
+已知 CID 的退役新增独立 container-absent/v2 证明，保存带 closing 修订的一次性“已不存在、未执行删除”的404探测，以及另一次固定 daemon 的完整CID404和绑定的有效历史内核见证。原删除204/v1证明的门槛未放宽，未知 requested 分配不能从命名404退役。保存与独立回读后才写 runtime retired，再释放 Registry 配额。Linux init/命名空间生命周期见[原始语义](https://man7.org/linux/man-pages/man7/pid_namespaces.7.html)；本结论来自已记录代次的有效内核见证与具体对象退役的推断，实际 Node 夹具另保留主进程/脱离 session 后代的 TCP 关闭旁证，不是全主机进程普查。
+
+真实外部删除最初两次触发 Engine409，Ready 已即时撤销而配额继续保留；已保留失败记录、原SQL快照和随后只清理恢复。修复仅有界等待完整CID缺失，最多32次只读查询共享5秒上限；第二个操作必须先确认 alreadyAbsent，因而不重发DELETE，再保存新鲜404。实际活跃提供器路径和提供器 Ready 后 SIGKILL、原日志/绑定重开路径均验证；缺失或错代次见证保留配额。最终双平台与所有真实路径见[已知缺失检查点](evidence/runtime-known-absence.json)。
+
+见证前启动不确定性、取消、文件已发布但日志确认尚未提交的崩溃窗口、显式清理重试仍需完成。Native 实际提供器、当前候选整份全量回归、Viewer角色/HTTP/SDK及原8小时终验尚未完成，41项保持9/14/18，未暂存、提交或推送。

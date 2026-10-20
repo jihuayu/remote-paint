@@ -1,3 +1,4 @@
+import {removeOwnedFixture} from './fixtures/docker-external-removal.mjs';
 // Opt-in real Engine fixture for the actual provider and durable Registry.
 // Node main/leaf processes only; this does not qualify Native or Viewer roles.
 import assert from 'node:assert/strict';
@@ -17,12 +18,12 @@ import {SessionRegistry} from '../service/session-registry.mjs';
 import {planDockerRuntime} from '../service/docker-runtime-spec.mjs';
 const socketPath=process.env.REMOTE_PAINT_DOCKER_SOCKET,daemonId=process.env.REMOTE_PAINT_DOCKER_DAEMON,imageId=process.env.REMOTE_PAINT_DOCKER_IMAGE;
 assert.ok(socketPath&&daemonId&&imageId&&process.env.REMOTE_PAINT_DOCKER_EFFECT_OUTPUT);
-const mode=process.env.REMOTE_PAINT_DOCKER_PROVIDER_MODE??'normal';assert.ok(['normal','cancel-intent','cancel-created','cancel-witness','proxy-lost','ttl','source-changed','closing-capacity'].includes(mode));
+const mode=process.env.REMOTE_PAINT_DOCKER_PROVIDER_MODE??'normal';assert.ok(['normal','cancel-intent','cancel-created','cancel-witness','proxy-lost','ttl','source-changed','closing-capacity','runtime-removed'].includes(mode));
 const output=resolve(process.env.REMOTE_PAINT_DOCKER_EFFECT_OUTPUT);await mkdir(output,{mode:0o700});
 const sha=v=>createHash('sha256').update(v).digest('hex'),region='provider-fixture',deploymentId='provider-'+randomUUID(),tenantId='provider-fixture',nonce=randomBytes(32).toString('hex');
 async function save(name,value){const f=await open(join(output,name),'wx',0o600);try{await f.writeFile(JSON.stringify(value,null,2)+'\n');await f.sync();}finally{await f.close();}const dir=await open(output,'r');try{await dir.sync();}finally{await dir.close();}return sha(await readFile(join(output,name)));}
 async function waitFor(check,ms=15000){const end=performance.now()+ms;while(!check()){assert.ok(performance.now()<end,'Actual provider observation deadline exceeded');await new Promise(r=>setTimeout(r,20));}}
-const events=[],witnesses=new Map(),sockets=new Set(),observerErrors=[],eventErrors=[];let registry,provider,operation,configuration,containerId=null,witnessConfirmed=false,ready=null,immediateLossFence=null,secondOperation=null,terminal=null,retirement=null,error=null,shutdown=null,providerShutdown=null;
+const events=[],witnesses=new Map(),sockets=new Set(),observerErrors=[],eventErrors=[];let registry,provider,operation,configuration,containerId=null,witnessConfirmed=false,ready=null,immediateLossFence=null,secondOperation=null,externalRemoval=null,terminal=null,retirement=null,error=null,shutdown=null,providerShutdown=null;
 const server=createServer((req,res)=>{
  if(req.method!=='POST'||req.url!=='/witness'||req.headers.authorization!=='Bearer '+nonce||sockets.size>2){res.writeHead(403);res.end();return;}
  let pending='',role=null,count=0;req.setEncoding('utf8');res.writeHead(200,{'content-type':'text/plain'});res.flushHeaders();
@@ -45,7 +46,7 @@ try{
   if(event.type===cancel){try{registry.release(tenantId,event.sessionId);assert.notEqual(registry.getSession(tenantId,event.sessionId).state,'ready');}catch(e){eventErrors.push({name:e.name,code:e.code??null,message:e.message});}}
  }});
  assert.equal((await provider.initialize()).available,true);registry=new SessionRegistry({providers:new Map([[region,provider]]),defaultRegion:region,store,globalQuota:2,tenantQuota:2});
- provider.subscribeUnavailable(event=>{if(mode==='proxy-lost'){try{immediateLossFence=registry.getSession(tenantId,event.sessionId);assert.equal(immediateLossFence.state,'closing');assert.throws(()=>registry.requireReady(tenantId,event.sessionId),{code:'SESSION_NOT_READY'});}catch(e){eventErrors.push({name:e.name,code:e.code??null,message:e.message});}}});
+ provider.subscribeUnavailable(event=>{if(['proxy-lost','runtime-removed'].includes(mode)){try{immediateLossFence=registry.getSession(tenantId,event.sessionId);assert.equal(immediateLossFence.state,'closing');assert.throws(()=>registry.requireReady(tenantId,event.sessionId),{code:'SESSION_NOT_READY'});}catch(e){eventErrors.push({name:e.name,code:e.code??null,message:e.message});}}});
  if(mode==='source-changed')await writeFile(join(output,'project/worker.mjs'),'throw new Error("fixture-source-changed");');
  operation=registry.create(tenantId,{url:'https://fixture.invalid/#private-provider-start',ttlSeconds:mode==='ttl'?2:60},{idempotencyKey:'provider-lifecycle-1'});
  if(!mode.startsWith('cancel-')&&mode!=='source-changed'){
@@ -60,13 +61,13 @@ try{
    // Listener registration precedes this fixture listener, so this snapshot is
    // taken in the same event dispatch, before the async cleanup can complete.
    // The observer was installed before Registry creation was requested.
-  }else if(['normal','closing-capacity'].includes(mode))registry.release(tenantId,operation.sessionId);
+  }else if(mode==='runtime-removed'){const inspection=await metadata.inspectContainer(containerId),plan=planDockerRuntime({sessionId:operation.sessionId,tenantId,region,ownerKeyHash:inspection.document.Config.Labels['org.remote-paint.runtime.owner-hash']},configuration);externalRemoval=await removeOwnedFixture({plan,inspection,containerId,socketPath});}else if(['normal','closing-capacity'].includes(mode))registry.release(tenantId,operation.sessionId);
  }
  // No polling is used to trigger TTL or transport-loss cleanup. Polling only
  // observes persisted state after provider events/the real Registry timer act.
  await waitFor(()=>registry.stats().reservedSessions===0);
  terminal=registry.getSession(tenantId,operation.sessionId);assert.ok((mode==='source-changed'?['failed']:['closed','expired']).includes(terminal.state),JSON.stringify({terminal,events,eventErrors}));assert.equal(terminal.holdsQuota,false);assert.equal(registry.stats().reservedSessions,0);assert.equal(provider.sessionStatus({sessionId:operation.sessionId,tenantId}).retirementConfirmed,true);
- if(mode==='ttl')assert.equal(terminal.closeReason,'ttl-expired');if(mode==='proxy-lost'){assert.equal(terminal.closeReason,'worker-unavailable');assert.equal(immediateLossFence?.state,'closing');}
+ if(mode==='ttl')assert.equal(terminal.closeReason,'ttl-expired');if(['proxy-lost','runtime-removed'].includes(mode)){assert.equal(terminal.closeReason,'worker-unavailable');assert.equal(immediateLossFence?.state,'closing');}
  if(mode.startsWith('cancel-')){assert.equal(registry.getOperation(tenantId,operation.operationId).error.code,'SESSION_CREATE_CANCELLED');assert.equal(witnesses.has('leaf'),false);assert.equal(events.some(x=>x.type==='ready'),false);}
  if(mode==='source-changed'){assert.equal(containerId,null);assert.equal(events.some(x=>x.type==='created'),false);assert.equal(registry.getOperation(tenantId,operation.operationId).error.code,'SESSION_START_FAILED');}
  if(mode==='closing-capacity'){assert.ok(secondOperation);assert.equal(registry.getOperation(tenantId,secondOperation.operationId).status,'failed');assert.equal(events.filter(x=>x.type==='intent').length,1);assert.equal(registry.getSession(tenantId,secondOperation.sessionId).holdsQuota,false);}
@@ -77,10 +78,10 @@ try{
  await save('terminal.json',{terminal,events,witnesses:Object.fromEntries(witnesses),provider:provider.sessionStatus({sessionId:operation.sessionId,tenantId})});
  shutdown=await registry.shutdown();assert.equal(shutdown.status,'closed');const snapshot=store.load(),row=snapshot.sessions.find(x=>x.sessionId===operation.sessionId);assert.equal(row.reserved,false);assert.equal(row.state,mode==='ttl'?'expired':mode==='source-changed'?'failed':'closed');await save('session-ledger.json',snapshot);providerShutdown=await provider.shutdown();assert.equal(providerShutdown.status,'closed');await assert.rejects(provider.initialize(),{code:'PROVIDER_CLOSED'});assert.equal(provider.status().available,false);
  const owner=Symbol('independent-runtime-inspector');store.claimRuntimeProvider(owner,{region,deploymentId,daemonId,createdAt:new Date().toISOString()});const runtime=store.loadRuntime({owner});store.releaseRuntimeProvider(owner);assert.equal(runtime.allocations.length,1);const allocation=runtime.allocations[0];assert.equal(allocation.state,'retired');
- const plan=planDockerRuntime({sessionId:operation.sessionId,tenantId,region,ownerKeyHash:allocation.ownerKeyHash},configuration);retirement=new RuntimeRetirementStore({directory:join(output,'retirement-evidence')}).read({plan,containerId,expectedSha256:allocation.retirement.evidenceSha256});assert.equal(retirement.receipt.evidenceSha256,sha(await readFile(join(output,'retirement-evidence',operation.sessionId+'-'+(containerId??'not-dispatched')+'.retirement.json'))));await save('retirement-reopened.json',{runtime,retirement});
+ const plan=planDockerRuntime({sessionId:operation.sessionId,tenantId,region,ownerKeyHash:allocation.ownerKeyHash},configuration);retirement=new RuntimeRetirementStore({directory:join(output,'retirement-evidence')}).read({plan,containerId,expectedSha256:allocation.retirement.evidenceSha256});assert.equal(retirement.receipt.evidenceSha256,sha(await readFile(join(output,'retirement-evidence',operation.sessionId+'-'+(containerId??'not-dispatched')+'.retirement.json'))));if(mode==='runtime-removed'){assert.equal(retirement.receipt.kind,'container-absent');assert.equal(retirement.record.proof.absenceProbe.httpStatus,404);assert.equal(retirement.record.proof.absenceProbe.effectAttempted,false);}await save('retirement-reopened.json',{runtime,retirement});
 }catch(e){error={name:e.name,code:e.code??null,message:e.message};}
 finally{
  try{shutdown??=await registry?.shutdown();}catch(e){error??={code:e.code??null,message:e.message};}try{providerShutdown??=await provider?.shutdown();}catch(e){error??={code:e.code??null,message:e.message};}
  await attach.close();await effects.close();await metadata.close();for(const socket of sockets)socket.destroy();await new Promise(r=>server.close(r));try{store.close();}catch(e){error??={code:e.code??null,message:e.message};}
 }
-const report={at:new Date().toISOString(),status:error?'failed':'passed',scope:'Actual DockerSessionProvider plus actual durable SessionRegistry;real Node Worker/private channel/namespace evidence and immutable retirement. Does not qualify Native,Viewer roles,HTTP/SDK,known-CID historical absence recovery or all41/8h.',mode,daemonId,imageId,containerId,operation,secondOperation,ready,terminal,immediateLossFence,retirement,events,witnesses:Object.fromEntries(witnesses),observerErrors,eventErrors,shutdown,providerShutdown,error};await save('report.json',report);console.log(JSON.stringify({status:report.status,mode,containerId,error,shutdown,providerShutdown}));assert.equal(report.status,'passed');
+const report={at:new Date().toISOString(),status:error?'failed':'passed',scope:'Actual DockerSessionProvider plus actual durable SessionRegistry;real Node Worker/private channel/namespace evidence and immutable retirement. Includes historical known-CID absence when runtime-removed is selected;does not qualify Native,Viewer roles,HTTP/SDK,the full recovery fault matrix or all41/8h.',mode,daemonId,imageId,containerId,operation,secondOperation,externalRemoval,ready,terminal,immediateLossFence,retirement,events,witnesses:Object.fromEntries(witnesses),observerErrors,eventErrors,shutdown,providerShutdown,error};await save('report.json',report);console.log(JSON.stringify({status:report.status,mode,containerId,error,shutdown,providerShutdown}));assert.equal(report.status,'passed');

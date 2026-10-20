@@ -13,9 +13,12 @@ const [output,target]=process.argv.slice(2),configuration=JSON.parse(readFileSyn
 let registry;
 const provider=new DockerSessionProvider({store,configuration,deploymentBinding:new RuntimeDeploymentBindingStore({directory:join(output,'deployment-binding')}),metadata,effects,attach,witnessStore,retirementStore,projectManifest:join(output,'project-manifest.json'),browserManifest:join(output,'browser-manifest.json'),onEvent:event=>{
  if(event.type!==target)return;
- const fd=openSync(join(output,'writer-death-marker.json'),'wx',0o600);try{writeFileSync(fd,JSON.stringify({pid:process.pid,event,identity:store.identity(),registry:registry.stats(),at:new Date().toISOString()})+'\n');fsyncSync(fd);}finally{closeSync(fd);}
- const dir=openSync(output,'r');try{fsyncSync(dir);}finally{closeSync(dir);}
- process.kill(process.pid,'SIGKILL');Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0);
+ const record=()=>{
+  const fd=openSync(join(output,'writer-death-marker.json'),'wx',0o600);try{writeFileSync(fd,JSON.stringify({pid:process.pid,event,identity:store.identity(),registry:registry.stats(),session:registry.getSession('recovery-fixture',event.sessionId),at:new Date().toISOString()})+'\n');fsyncSync(fd);}finally{closeSync(fd);}
+  const dir=openSync(output,'r');try{fsyncSync(dir);}finally{closeSync(dir);}
+ };
+ if(target==='ready'){setImmediate(()=>{record();process.send({event:'ready-for-owner-death',pid:process.pid,containerId:event.containerId});});return;}
+ record();process.kill(process.pid,'SIGKILL');Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0);
 }});
 await provider.initialize();registry=new SessionRegistry({providers:new Map([[configuration.region,provider]]),defaultRegion:configuration.region,store});registry.create('recovery-fixture',{},{idempotencyKey:'writer-death'});
 setTimeout(()=>{process.exitCode=2;void registry.shutdown().then(()=>provider.shutdown()).then(()=>process.exit(2));},15000);

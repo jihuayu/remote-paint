@@ -1,3 +1,4 @@
+import {isRuntimeWitnessBinding,copyRuntimeWitnessBinding} from './runtime-witness-binding.mjs';
 import {mkdirSync,lstatSync,openSync,fstatSync,writeFileSync,readSync,fsyncSync,closeSync,linkSync,unlinkSync,constants} from 'node:fs';
 import {join,dirname,isAbsolute} from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
@@ -17,7 +18,7 @@ const allocationKeys=['sessionId','tenant','region','deploymentId','daemonId','o
 const reasons=['released','ttl-expired','registry-shutdown','registry-recovery','registry-storage-fault','startup-failed','startup-cancelled','worker-unavailable'];
 function identity(plan,containerId){dockerRuntimeCreateBody(plan);if(containerId!==null&&!hash(containerId))throw fail('RETIREMENT_BINDING');return Object.fromEntries(keys.map(k=>[k,k==='containerId'?containerId:plan[k]]));}
 function closingReceipt(plan,receipt,requested){
- const row=receipt?.allocation;if(!Number.isSafeInteger(receipt?.revision)||receipt.revision<1||!exact(row,allocationKeys)||row.state!=='closing'||row.requestStarted!==requested||row.retirement!==null||!['not-requested','requested','legacy-unknown'].includes(row.startDispatch)||!reasons.includes(row.closeReason)||!date(row.createdAt)||!date(row.updatedAt)||row.updatedAt<row.createdAt||!(row.version===null||typeof row.version==='string'&&row.version.length>0&&row.version.length<=256))throw fail('RETIREMENT_JOURNAL');
+ const row=receipt?.allocation;if(!Number.isSafeInteger(receipt?.revision)||receipt.revision<1||!exact(row,allocationKeys)||row.state!=='closing'||row.requestStarted!==requested||row.retirement!==null||!['not-requested','requested','legacy-unknown'].includes(row.startDispatch)&&!isRuntimeWitnessBinding(row.startDispatch)||!reasons.includes(row.closeReason)||!date(row.createdAt)||!date(row.updatedAt)||row.updatedAt<row.createdAt||!(row.version===null||typeof row.version==='string'&&row.version.length>0&&row.version.length<=256))throw fail('RETIREMENT_JOURNAL');
  const binding=identity(plan,row.containerId);if(requested?!hash(row.containerId):row.containerId!==null||row.version!==null)throw fail('RETIREMENT_JOURNAL');
  for(const [key,value]of Object.entries({...binding,tenant:binding.tenantId})){if(key==='tenantId'||key==='projectManifestSha256'||key==='browserManifestSha256')continue;if(row[key]!==value)throw fail('RETIREMENT_JOURNAL');}
  return {binding,revision:receipt.revision,allocationSha256:sha(stable(row))};
@@ -30,7 +31,17 @@ function validateNamespace(value,binding,before){
  validateLinuxRuntimeWitness(value.record.witness);const digest=runtimeWitnessSha256(value.record.witness);if(value.record.witnessSha256!==digest||value.receipt.witnessSha256!==digest||!hash(value.receipt.evidenceSha256))throw fail('RETIREMENT_NAMESPACE');
  for(const key of ['sessionId','containerId','daemonId','specDigest'])if(value.receipt[key]!==binding[key])throw fail('RETIREMENT_NAMESPACE');
 }
+const absenceProofKeys=['kind','origin','journalRevision','allocationSha256','startWitness','absenceProbe','absence','namespace'];
+const effectKeys=['kind','containerId','daemonId','connectionId','httpStatus','authorizationRevision','effectAttempted','alreadyAbsent'];
+function validateAbsentProof(proof,binding){
+ if(!exact(proof,absenceProofKeys)||proof.kind!=='container-absent'||proof.origin!=='historical-namespace'||!hash(binding.containerId)||!Number.isSafeInteger(proof.journalRevision)||proof.journalRevision<1||!hash(proof.allocationSha256)||!isRuntimeWitnessBinding(proof.startWitness)||!exact(proof.absenceProbe,effectKeys)||!exact(proof.absence,['found','daemonId','selector']))throw fail('RETIREMENT_FORMAT');
+ const probe=proof.absenceProbe,absent=proof.absence;
+ if(probe.kind!=='remove'||probe.containerId!==binding.containerId||probe.daemonId!==binding.daemonId||typeof probe.connectionId!=='string'||!/^[a-f0-9-]{36}$/.test(probe.connectionId)||probe.httpStatus!==404||probe.authorizationRevision!==proof.journalRevision||probe.effectAttempted!==false||probe.alreadyAbsent!==true||absent.found!==false||absent.daemonId!==binding.daemonId||absent.selector!==binding.containerId)throw fail('RETIREMENT_ABSENCE');
+ validateNamespace(proof.namespace,binding,{startedAt:proof.startWitness.engineStartedAt});
+ if(proof.namespace.receipt.witnessSha256!==proof.startWitness.witnessSha256||proof.namespace.receipt.evidenceSha256!==proof.startWitness.evidenceSha256)throw fail('RETIREMENT_NAMESPACE');
+}
 function validateProof(proof,binding){
+ if(proof?.kind==='container-absent')return validateAbsentProof(proof,binding);
  if(!exact(proof,proofKeys)||!Number.isSafeInteger(proof.journalRevision)||proof.journalRevision<1||!hash(proof.allocationSha256))throw fail('RETIREMENT_FORMAT');
  if(proof.kind==='not-dispatched'){
   if(binding.containerId!==null||proof.origin!=='not-dispatched'||proof.startDispatched!==false||[proof.beforeRemoval,proof.removal,proof.absence,proof.namespace].some(v=>v!==null))throw fail('RETIREMENT_FORMAT');return;
@@ -60,7 +71,7 @@ export class RuntimeRetirementStore {
  #path(binding){return join(this.#directory,binding.sessionId+'-'+(binding.containerId??'not-dispatched')+'.retirement.json');}
  #receipt(record,digest){return Object.freeze({sessionId:record.identity.sessionId,containerId:record.identity.containerId,daemonId:record.identity.daemonId,specDigest:record.identity.specDigest,kind:record.proof.kind,evidenceSha256:digest});}
  #publish(binding,proof){
-  validateProof(proof,binding);const record={schema:'session-runtime-retirement-v1',at:new Date().toISOString(),identity:binding,proof,proofSha256:sha(stable(proof))},bytes=Buffer.from(JSON.stringify(record)+'\n');if(bytes.length>RUNTIME_RETIREMENT_MAX_BYTES)throw fail('RETIREMENT_LIMIT');const temp=join(this.#directory,'.pending-'+randomUUID());let fd;
+  validateProof(proof,binding);const record={schema:proof.kind==='container-absent'?'session-runtime-retirement-v2':'session-runtime-retirement-v1',at:new Date().toISOString(),identity:binding,proof,proofSha256:sha(stable(proof))},bytes=Buffer.from(JSON.stringify(record)+'\n');if(bytes.length>RUNTIME_RETIREMENT_MAX_BYTES)throw fail('RETIREMENT_LIMIT');const temp=join(this.#directory,'.pending-'+randomUUID());let fd;
   try{this.#sync();fd=openSync(temp,constants.O_WRONLY|constants.O_CREAT|constants.O_EXCL|constants.O_NOFOLLOW,0o600);const stat=fstatSync(fd);if(!stat.isFile()||(stat.mode&0o777)!==0o600||typeof process.getuid==='function'&&stat.uid!==process.getuid())throw fail('RETIREMENT_FILE');writeFileSync(fd,bytes);fsyncSync(fd);closeSync(fd);fd=undefined;this.#sync();linkSync(temp,this.#path(binding));this.#sync();unlinkSync(temp);this.#sync();return this.#receipt(record,sha(bytes));}
   catch(e){throw e instanceof RuntimeRetirementStoreError?e:fail(e.code==='EEXIST'?'RETIREMENT_EXISTS':'RETIREMENT_WRITE');}finally{bytes.fill(0);if(fd!==undefined)closeSync(fd);try{unlinkSync(temp);}catch{}}
  }
@@ -68,19 +79,25 @@ export class RuntimeRetirementStore {
   const value=closingReceipt(plan,closing,false);return this.#publish(value.binding,{kind:'not-dispatched',origin:'not-dispatched',journalRevision:value.revision,allocationSha256:value.allocationSha256,startDispatched:false,beforeRemoval:null,removal:null,absence:null,namespace:null});
  }
  persistRemoved({plan,closing,inspection,removal,absence,startDispatched:claimedStart}={}){
-  const value=closingReceipt(plan,closing,true),runtime=verifyDockerRuntime(plan,inspection,{containerId:value.binding.containerId});const startDispatched=closing.allocation.startDispatch==='not-requested'?false:closing.allocation.startDispatch==='requested'?true:null;if(claimedStart!==undefined&&claimedStart!==startDispatched)throw fail('RETIREMENT_JOURNAL');const state=inspection.document.State;
+  const value=closingReceipt(plan,closing,true),runtime=verifyDockerRuntime(plan,inspection,{containerId:value.binding.containerId});const startDispatched=closing.allocation.startDispatch==='not-requested'?false:closing.allocation.startDispatch==='requested'||isRuntimeWitnessBinding(closing.allocation.startDispatch)?true:null;if(claimedStart!==undefined&&claimedStart!==startDispatched)throw fail('RETIREMENT_JOURNAL');const state=inspection.document.State;
   const beforeRemoval={status:runtime.state,running:runtime.running,pid:runtime.pid,startedAt:state.StartedAt,inspectionSha256:sha(stable(inspection))},origin=startDispatched===false?'unstarted':'namespace';
   // Durable not-requested history plus an actual never-started inspection
   // permits the unstarted branch; migrated unknown history cannot supply it.
-  const namespace=origin==='namespace'?this.#witnessStore?.read({plan,inspection}):null;if(origin==='namespace'&&!namespace)throw fail('RETIREMENT_NAMESPACE');
+  const namespace=origin==='namespace'?this.#witnessStore?.read({plan,inspection}):null;if(origin==='namespace'&&!namespace)throw fail('RETIREMENT_NAMESPACE');if(namespace&&isRuntimeWitnessBinding(closing.allocation.startDispatch)){const saved=closing.allocation.startDispatch;if(saved.engineStartedAt!==state.StartedAt||saved.witnessSha256!==namespace.receipt.witnessSha256||saved.evidenceSha256!==namespace.receipt.evidenceSha256)throw fail('RETIREMENT_NAMESPACE');}
   const remove=removal&&Object.fromEntries(['kind','containerId','daemonId','connectionId','httpStatus','authorizationRevision','effectAttempted','alreadyAbsent'].map(k=>[k,removal[k]]));
   return this.#publish(value.binding,{kind:'container-removed',origin,journalRevision:value.revision,allocationSha256:value.allocationSha256,startDispatched,beforeRemoval,removal:remove,absence:{found:absence?.found,daemonId:absence?.daemon?.id,selector:absence?.selector},namespace});
+ }
+ persistAbsent({plan,closing,absenceProbe,absence}={}){
+  const value=closingReceipt(plan,closing,true);if(!isRuntimeWitnessBinding(closing.allocation.startDispatch)||!this.#witnessStore)throw fail('RETIREMENT_NAMESPACE');
+  const startWitness=copyRuntimeWitnessBinding(closing.allocation.startDispatch),namespace=this.#witnessStore.readHistorical({plan,containerId:value.binding.containerId,startWitness});
+  const probe=absenceProbe&&Object.fromEntries(effectKeys.map(k=>[k,absenceProbe[k]]));
+  return this.#publish(value.binding,{kind:'container-absent',origin:'historical-namespace',journalRevision:value.revision,allocationSha256:value.allocationSha256,startWitness,absenceProbe:probe,absence:{found:absence?.found,daemonId:absence?.daemon?.id,selector:absence?.selector},namespace});
  }
  read({plan,containerId=null,expectedSha256=null}={}){
   const binding=identity(plan,containerId);if(expectedSha256!==null&&!hash(expectedSha256))throw fail('RETIREMENT_DIGEST');const bytes=Buffer.alloc(RUNTIME_RETIREMENT_MAX_BYTES+1);let fd;
   try{this.#sync();fd=openSync(this.#path(binding),constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK);const before=fstatSync(fd);if(!before.isFile()||(before.mode&0o777)!==0o600||before.size<1||before.size>RUNTIME_RETIREMENT_MAX_BYTES||typeof process.getuid==='function'&&before.uid!==process.getuid())throw fail('RETIREMENT_FILE');let used=0;
    while(used<bytes.length){const n=readSync(fd,bytes,used,bytes.length-used,null);if(!n)break;used+=n;}if(used!==before.size||!same(fingerprint(before),fingerprint(fstatSync(fd))))throw fail('RETIREMENT_CHANGED');const digest=sha(bytes.subarray(0,used));if(expectedSha256!==null&&digest!==expectedSha256)throw fail('RETIREMENT_DIGEST');
-   const record=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(0,used)));if(!exact(record,['schema','at','identity','proof','proofSha256'])||record.schema!=='session-runtime-retirement-v1'||!date(record.at)||!same(record.identity,binding))throw fail('RETIREMENT_BINDING');validateProof(record.proof,binding);if(record.proofSha256!==sha(stable(record.proof)))throw fail('RETIREMENT_DIGEST');this.#sync();return Object.freeze({record:frozen(record),receipt:this.#receipt(record,digest)});
+   const record=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(0,used)));if(!exact(record,['schema','at','identity','proof','proofSha256'])||record.schema!==(record.proof?.kind==='container-absent'?'session-runtime-retirement-v2':'session-runtime-retirement-v1')||!date(record.at)||!same(record.identity,binding))throw fail('RETIREMENT_BINDING');validateProof(record.proof,binding);if(record.proofSha256!==sha(stable(record.proof)))throw fail('RETIREMENT_DIGEST');this.#sync();return Object.freeze({record:frozen(record),receipt:this.#receipt(record,digest)});
   }catch(e){throw e instanceof RuntimeRetirementStoreError?e:fail(e.code==='ENOENT'?'RETIREMENT_MISSING':'RETIREMENT_READ');}finally{bytes.fill(0);if(fd!==undefined)closeSync(fd);}
  }
 }

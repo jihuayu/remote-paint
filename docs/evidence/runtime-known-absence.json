@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-18T21:14:09.142849+00:00",
+  "task": "B1c1b2c2",
+  "scope": "Actual provider historical effective-witness plus known fullCID absence retirement;includes live external-removal race and original-ledger recovery after provider SIGKILL.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/runtime-known-absence-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/runtime-known-absence-checkpoint-v1.json",
+  "contract": {
+    "durableBinding": "Explicit runtime-start-witness-v1 variant of v3 Start history binds EngineStartedAt and witness/fileSHA;original owner may acknowledge once after requested while created/parentcreating,after witness fsync/read and before private Start/Ready. Existing unbound histories remain unknown for absence.",
+    "historicalFile": "Require durable typed binding and known fullCID;strict owner/spec/source/generation/digests,private0600/pinned0700directory,bounded8KiB and before/afterfile/path identity. Historical read is not a live Ready witness.",
+    "retirement": "Distinct container-absent kind and retirement-v2 record:actual no-effect404 probe with closing authorization plus separate fresh fixed-daemon fullCID404 and the bound recorded namespace. Original204 persistRemoved and v1 proof remain strict.",
+    "race": "On uncertain/409 removal with typed witness,at most32 read-only checks under one5s signal. A second remove-session must inspect alreadyAbsent before perform,therefore sends noDELETE;then separatefresh404. No Create/Start or mutation retry.",
+    "quota": "Independent immutable retirement read before runtime retired before Registry quota release;unknownCID or unbound/missing/bad-generation witness stays reserved."
+  },
+  "evidenceScope": "Linux namespace init lifetime is inferred from the effective recorded kernel witness,owned full-CID retirement and independent main/leaf TCP closures in real Node fixtures;not a host-wide census.",
+  "references": [
+    "https://man7.org/linux/man-pages/man7/pid_namespaces.7.html",
+    "https://docs.docker.com/reference/api/engine/version/v1.45/"
+  ],
+  "qualification": "Dual-platform Node contracts;all original8 lifecycle+3parentdeath cases rerun,live runtime-removed and Ready parentdeath/external-removal success plus missing/wrong-generation witness negatives. Final checkpoint independently reads originalSQL/bindings/proofs and fresh404.",
+  "initialFailure": "Two live external-delete fixtures revoked Ready but retained quota when Engine returned409 during removal;original failure/SQL snapshot and successful later close-only recovery retained. Bounded read-only reconciliation fixes the race.",
+  "remaining": [
+    "Start-dispatched but pre-effective-witness cancellation/recovery and published-file-before-journal-binding crash gap remain pending.",
+    "Explicit bounded retry after unconfirmed cleanup and remaining recovery fault matrix.",
+    "ActualNative provider,whole-source full regression,Viewer roles,HTTP/SDK,original8h/all41/N1 final acceptance."
+  ],
+  "nativeProductionProviderComplete": false,
+  "wholeFullJsQualified": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "noCommitPush": true
+}
