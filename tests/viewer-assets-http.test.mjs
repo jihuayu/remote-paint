@@ -24,6 +24,15 @@ test('public no-store entry keeps the exact private gateway module/Wasm build an
  assert.ok(assets.get('/live.mjs').bytes.includes(Buffer.from(assets.prefix+'/public-config.mjs')));
 });
 
+test('public module dependency graph resolves every static import to one canonical hashed HTTP module',async t=>{
+ const base=await server(t),queue=[assets.prefix+'/live.mjs',assets.prefix+'/stream-worker.mjs'],visited=new Map();
+ while(queue.length){const path=queue.shift();if(visited.has(path))continue;assert.ok(path.startsWith(assets.prefix+'/'),path);assert.ok(visited.size<64);const result=await raw(base,path);assert.equal(result.status,200,path);assert.match(result.headers['content-type'],/javascript/);const source=result.bytes.toString('utf8'),dependencies=[];
+  for(const match of source.matchAll(/(?:import|export)[^;\n]*?\bfrom\s*(['"])([^'"]+)\1/g)){const url=new URL(match[2],base+path);assert.equal(url.origin,base);assert.ok(url.pathname.startsWith(assets.prefix+'/'),url.pathname);assert.equal(url.search,'');assert.equal(url.hash,'');dependencies.push(url.pathname);queue.push(url.pathname);}
+  visited.set(path,dependencies);
+ }
+ assert.ok(visited.has(assets.prefix+'/embed-bridge.mjs'));assert.ok(visited.has(assets.prefix+'/viewer-control.mjs'));assert.ok(visited.has(assets.prefix+'/viewer-channel.mjs'));assert.ok(visited.get(assets.prefix+'/embed-bridge.mjs').includes(assets.prefix+'/viewer-control.mjs'));assert.ok(visited.get(assets.prefix+'/viewer-control.mjs').every(path=>path===assets.prefix+'/viewer-channel.mjs'));
+});
+
 test('public factory requires exact bounded Origins and public prepared assets',async()=>{
  for(const options of [{gatewayOrigin:'*'},{gatewayOrigin:'https://gateway.example/path'},{gatewayOrigin:'http://public.example'},{allowedParentOrigins:['*']},{allowedParentOrigins:['https://user:password@example.test']},{allowedParentOrigins:[audience,audience]},{allowedParentOrigins:Array(33).fill(audience)},{allowedParentOrigins:undefined},{preparedAssets:local},{requestTimeoutMs:0},{maxConnections:0}])await assert.rejects(createPublicViewerServer({...config,...options}),TypeError);
  await assert.rejects(prepareViewerAssets({mode:'unknown'}),TypeError);

@@ -1,8 +1,8 @@
 import {ViewerTicketSource} from './viewer-connection.mjs';
 import {ViewerFrameConnection} from './viewer-frame.mjs';
-import {emptyViewerControl} from './viewer-control.mjs';
-import {ViewerChannelError,viewerOrigin} from './viewer-channel.mjs';
-export {ViewerChannelError} from './viewer-channel.mjs';
+import {emptyViewerControl,viewerViewportSize,viewerControlOptions} from './viewer-control.mjs';
+import {ViewerChannelError,ViewerViewportError,viewerOrigin} from './viewer-channel.mjs';
+export {ViewerChannelError,ViewerViewportError} from './viewer-channel.mjs';
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const fail=code=>{throw new ViewerChannelError(code);};
 function options(value){
@@ -145,6 +145,13 @@ class Viewer {
  async #controlRequest(method,options){if(this.#destroyed)fail('VIEWER_CLOSED');if(this.#roleChange)fail('CHANNEL_BUSY');const frame=this.#frame,generation=this.#generation;if(!frame||!this.#desired||this.#state.state!=='connected')fail('VIEWER_CONTROL_UNAVAILABLE');const value=await frame[method](options);if(generation!==this.#generation||frame!==this.#frame)fail('CHANNEL_ABORTED');return value;}
  takeControl(options){return this.#controlRequest('takeControl',options);}
  releaseControl(options){return this.#controlRequest('releaseControl',options);}
+ async resizeViewport(size,options){
+  if(this.#destroyed)throw new ViewerViewportError('VIEWER_CLOSED','not-applied');
+  let settings;try{size=viewerViewportSize(size);settings=viewerControlOptions(options);}catch{throw new ViewerViewportError('VIEWER_INVALID_CONFIG','not-applied');}
+  if(settings.signal?.aborted)throw new ViewerViewportError('CHANNEL_ABORTED','not-applied');if(this.#roleChange)throw new ViewerViewportError('CHANNEL_BUSY','not-applied');
+  const frame=this.#frame,generation=this.#generation;if(!frame||!this.#desired||this.#state.state!=='connected')throw new ViewerViewportError('VIEWER_CONTROL_UNAVAILABLE','not-applied');
+  const value=await frame.resizeViewport(size,settings);if(generation!==this.#generation||frame!==this.#frame)throw new ViewerViewportError('CHANNEL_ABORTED','unknown');return value;
+ }
 }
 
 export function createViewer(container,config){return new Viewer(container,config);}

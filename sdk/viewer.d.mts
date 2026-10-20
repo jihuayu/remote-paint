@@ -1,8 +1,9 @@
 import type {ViewerTicketConfig,ViewerRole} from './viewer-connection.mjs';
 import type {ViewerChannelCode,ViewerChannelError} from './viewer-channel.mjs';
-import type {ViewerControlState,ViewerControlOptions} from './viewer-control.mjs';
-export type {ViewerControlState,ViewerControlOptions} from './viewer-control.mjs';
-export {ViewerChannelError} from './viewer-channel.mjs';
+import type {ViewerControlState,ViewerControlOptions,ViewerViewportSize,ViewerViewportResult} from './viewer-control.mjs';
+export type {ViewerControlState,ViewerControlOptions,ViewerViewportSize,ViewerViewportResult} from './viewer-control.mjs';
+export type {ViewerViewportOutcome} from './viewer-channel.mjs';
+export {ViewerChannelError,ViewerViewportError} from './viewer-channel.mjs';
 export type ViewerDisplaySize=Readonly<{scope:'display';mode:'container';width:null;height:null}|{scope:'display';mode:'fixed';width:number;height:number}>;
 export interface ViewerState {
  readonly state:'loading'|'ready'|'paused'|'connecting'|'connected'|'refreshing'|'reconnecting'|'failed'|'destroyed';
@@ -22,6 +23,8 @@ export interface Viewer {
  readonly displaySize:ViewerDisplaySize;
  /** Sets requested host CSS size; omitted input restores 100% container sizing. */
  resize(size?:{width:number;height:number}):ViewerDisplaySize;
+ /** Requires a held controller lease; changes Source CSS viewport (integer 1–4096), not host CSS. */
+ resizeViewport(size:ViewerViewportSize,options?:ViewerControlOptions):Promise<ViewerViewportResult>;
  /** Resolves on authenticated network connection, independently of first paint. */
  connect(options?:{signal?:AbortSignal}):Promise<ViewerState>;
  disconnect():Promise<void>;destroy():Promise<void>;

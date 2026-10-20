@@ -1,12 +1,10 @@
-import {ViewerChannelError} from './viewer-channel.mjs';
+import {ViewerChannelError,ViewerViewportError} from './viewer-channel.mjs';
+export {ViewerViewportError} from './viewer-channel.mjs';
 const integer=(v,min=0)=>Number.isSafeInteger(v)&&v>=min;
 const fail=code=>{throw new ViewerChannelError(code);};
 const empty=Object.freeze({mode:'unavailable',holder:'none',held:false,lease:null,fencingToken:null,expiresAt:null,pageEpoch:null,viewportVersion:null});
 const dataRecord=(value,names)=>!!value&&typeof value==='object'&&!Array.isArray(value)&&(Object.getPrototypeOf(value)===null||Object.getPrototypeOf(Object.getPrototypeOf(value))===null)&&Reflect.ownKeys(value).length===names.length&&names.every(k=>Object.hasOwn(value,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(value,k),'value'));
 const viewportInputCodes=new Set(['INVALID_VIEWPORT_REQUEST','UNSUPPORTED_VIEWPORT','VIEWPORT_BUSY','STALE_VIEWPORT_REQUEST','STALE_SESSION','PAGE_TRANSITION','STALE_EPOCH','STALE_VIEWPORT','STALE_LEASE','INPUT_QUEUE_FULL','SESSION_CLOSED','VIEWPORT_INPUT_RESET_FAILED','VIEWPORT_RESIZE_FAILED','VIEWPORT_SUPERSEDED','VIEWPORT_CONTROL_UNAVAILABLE','VIEWPORT_PROTOCOL','VIEWPORT_CONNECTION_LOST']);
-export class ViewerViewportError extends ViewerChannelError {
- constructor(code,outcome='unknown'){super(code);this.name='ViewerViewportError';this.outcome=outcome==='not-applied'?'not-applied':'unknown';}
-}
 export function viewerViewportSize(value){
  if(!dataRecord(value,['width','height'])||![value.width,value.height].every(v=>integer(v,1)&&v<=4096))fail('VIEWER_INVALID_CONFIG');return Object.freeze({width:value.width,height:value.height});
 }

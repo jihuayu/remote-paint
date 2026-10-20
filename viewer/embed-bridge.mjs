@@ -1,4 +1,5 @@
-import {ViewerPort,ViewerChannelError,readViewerHello,viewerOrigin,viewerPort} from '../sdk/viewer-channel.mjs';
+import {ViewerPort,ViewerChannelError,ViewerViewportError,readViewerHello,viewerOrigin,viewerPort} from '../sdk/viewer-channel.mjs';
+import {viewerViewportSize} from '../sdk/viewer-control.mjs';
 import {ViewerConnectionError} from '../sdk/viewer-connection.mjs';
 const fail=code=>{throw new ViewerChannelError(code);};
 function fields(value,names){if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!names.includes(k)))fail('VIEWER_INVALID_CONFIG');}
@@ -29,6 +30,11 @@ export function attachViewerChild({targetWindow=globalThis.window,ready,api}={})
    }
    if(method==='disconnect'){if(data!==null)fail('CHANNEL_PROTOCOL');api.disconnect();return {disconnected:true};}
    if(method==='take-control'||method==='release-control'){if(!data||typeof data!=='object'||Object.keys(data).length!==1||!Number.isSafeInteger(data.timeoutMs)||data.timeoutMs<50||data.timeoutMs>10000)fail('CHANNEL_PROTOCOL');return await api[method==='take-control'?'takeControl':'releaseControl']({signal,timeoutMs:data.timeoutMs});}
+   if(method==='resize-viewport'){
+    if(!data||typeof data!=='object'||Array.isArray(data)||Object.keys(data).length!==3||!['width','height','timeoutMs'].every(k=>Object.hasOwn(data,k))||!Number.isSafeInteger(data.timeoutMs)||data.timeoutMs<50||data.timeoutMs>10000)throw new ViewerViewportError('CHANNEL_PROTOCOL','not-applied');
+    let size;try{size=viewerViewportSize({width:data.width,height:data.height});}catch{throw new ViewerViewportError('CHANNEL_PROTOCOL','not-applied');}
+    if(signal.aborted)throw new ViewerViewportError('CHANNEL_ABORTED','not-applied');return await api.resizeViewport(size,{signal,timeoutMs:data.timeoutMs});
+   }
    if(method==='state'){if(data!==null)fail('CHANNEL_PROTOCOL');return state(api.state);}
    fail('CHANNEL_PROTOCOL');
   },onClose:()=>{if(endpoint===current){endpoint=null;api.disconnect();}}});

@@ -9,3 +9,5 @@ Source 的有限拒绝被映射为固定公开 code 与 `not-applied`/`unknown`�
 协议错误在同步回收连接前向动作层发有限通知，避免 Worker 的 teardown 将已知协议失败覆盖成普通取消。原始错误消息和未知 code 不外传；无法验证的输入错误即使声称 not-applied，也按 unknown 处理。
 
 15 条新合同覆盖实际 Node HTTP/WebSocket/SQLite/ControlLease、保存的 Window/Worker 及真实 ViewerInput：等待屏障、no-op、权限/配置、排队和进入 Source 后的取消/超时、断线、异常成功与异常回执回收。DOM/CanvasKit/调度、Source.resize/CDP 仍是明确夹具。Frame/DOM SDK 的父子协议和公开 resizeViewport API 尚未接入，实际 Native viewport、像素及控制优先级仍待验收。见[动作层证据](evidence/viewer-viewport-actions.json)。
+
+后续公开父子桥已接入，当前API及剩余验收范围见[SDK视口说明](viewer-viewport-sdk.md)；上文描述本动作层检查点的独立范围。

@@ -1,4 +1,4 @@
-import {createViewer,ViewerChannelError,type ViewerConfig,type ViewerState} from '../../sdk/viewer.mjs';
+import {createViewer,ViewerChannelError,ViewerViewportError,type ViewerConfig,type ViewerState,type ViewerViewportResult} from '../../sdk/viewer.mjs';
 const config:ViewerConfig={viewerOrigin:'https://viewer.example',gatewayOrigin:'https://gateway.example',sessionId:'ses_fixture',getTicket:async request=>{const signal:AbortSignal=request.signal;void signal;return {grantId:'vgr_fixture',sessionId:'ses_fixture',version:'v1',role:request.role,audience:'https://viewer.example',expiresAt:new Date().toISOString(),ticket:'vwt1.fixture',streamPath:'/v1/viewer/stream?ticket=vwt1.fixture'};}};
 const viewer=createViewer(document.body,config);const element:HTMLElement=viewer.element;void element;
 const ready=await viewer.ready;const origin:string=ready.gatewayOrigin;void origin;
@@ -31,3 +31,18 @@ const display=viewer.resize({width:640,height:360});const scope:"display"=displa
 viewer.resize({width:640,height:360,deviceScaleFactor:2});
 // @ts-expect-error display snapshots are immutable
 display.width=800;
+
+const viewport:ViewerViewportResult=await viewer.resizeViewport({width:320,height:240},{signal:new AbortController().signal,timeoutMs:5000});const remoteScope:'viewport'=viewport.scope;const epoch:number=viewport.pageEpoch;void[remoteScope,epoch];
+const viewportError=new ViewerViewportError('VIEWER_VIEWPORT_FAILED','unknown');if(error instanceof ViewerViewportError){const outcome:'not-applied'|'unknown'=error.outcome;const base:ViewerChannelError=error;void[outcome,base];}
+// @ts-expect-error viewport error outcome is immutable
+viewportError.outcome='not-applied';
+// @ts-expect-error unknown Source outcome cannot be described as rollback
+new ViewerViewportError('VIEWER_VIEWPORT_FAILED','rolled-back');
+// @ts-expect-error remote viewport dimensions are required
+await viewer.resizeViewport();
+// @ts-expect-error arbitrary CDP/viewport fields cannot enter the API
+await viewer.resizeViewport({width:320,height:240,deviceScaleFactor:2});
+// @ts-expect-error options are finite and never accept CDP commands
+await viewer.resizeViewport({width:320,height:240},{execute:'Runtime.evaluate'});
+// @ts-expect-error applied viewport metadata is immutable
+viewport.pageEpoch=100;

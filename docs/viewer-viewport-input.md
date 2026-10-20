@@ -9,3 +9,5 @@
 拒绝只保留固定 code 和 `not-applied` / `unknown`。not-applied 后交还旧租约；unknown、断线或异常回执保持输入暂停。匹配异常或未来 requestId 在主线程及 Worker 路径均关闭旧公共连接；迟到的旧 requestId 不可完成新请求。内部方法的总超时、取消及公共错误类型仍由下一步 ControlActions/SDK 集成完成，不能直接当作完整公开 API 使用。
 
 Window/Worker 和独立 ControlLink 的 viewport 回执走原有有界控制元数据通道，绕过场景处理队列。19 条新合同包括真实 Node HTTP/WebSocket/SQLite/ControlLease 的主线程/Worker 请求、严格清理、no-op 续租及异常回执回收。DOM、CanvasKit、呈现器、Worker realm 调度、Source.resize/CDP 为明确夹具，没有启动浏览器或测量像素。真实 Native、公共控制优先级、全量取消/未知结果与性能事件仍须后续验收。
+
+后续动作层与公开父子桥已接入，当前API及剩余验收范围见[SDK视口说明](viewer-viewport-sdk.md)；上文描述本输入模块检查点的独立范围。

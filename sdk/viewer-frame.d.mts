@@ -1,8 +1,9 @@
 import type {ViewerTicketConfig,ViewerRole} from './viewer-connection.mjs';
 import type {ViewerChannelCode,ViewerChannelError} from './viewer-channel.mjs';
-import type {ViewerControlState,ViewerControlOptions} from './viewer-control.mjs';
-export type {ViewerControlState,ViewerControlOptions} from './viewer-control.mjs';
-export {ViewerChannelError} from './viewer-channel.mjs';
+import type {ViewerControlState,ViewerControlOptions,ViewerViewportSize,ViewerViewportResult} from './viewer-control.mjs';
+export type {ViewerControlState,ViewerControlOptions,ViewerViewportSize,ViewerViewportResult} from './viewer-control.mjs';
+export type {ViewerViewportOutcome} from './viewer-channel.mjs';
+export {ViewerChannelError,ViewerViewportError} from './viewer-channel.mjs';
 export interface ViewerFrameState {
  readonly state:'waiting'|'paused'|'connecting'|'connected'|'refreshing'|'reconnecting'|'failed'|'closed';
  readonly sessionId?:`ses_${string}`;readonly role?:ViewerRole;readonly attempt?:number;readonly version?:string|null;readonly code?:ViewerChannelCode;
@@ -19,4 +20,6 @@ export class ViewerFrameConnection {
  connect(options?:{signal?:AbortSignal}):Promise<ViewerFrameState>;
  disconnect():Promise<void>;getState():Promise<ViewerFrameState>;close():void;
  takeControl(options?:ViewerControlOptions):Promise<ViewerControlState>;releaseControl(options?:ViewerControlOptions):Promise<ViewerControlState>;
+ /** Requires a held controller lease; confirms Source application, independently of Viewer pixels. */
+ resizeViewport(size:ViewerViewportSize,options?:ViewerControlOptions):Promise<ViewerViewportResult>;
 }

@@ -1,7 +1,7 @@
 import {ViewerTicketSource} from './viewer-connection.mjs';
-import {emptyViewerControl,viewerControlState,viewerControlOptions} from './viewer-control.mjs';
-import {ViewerPort,ViewerChannelError,viewerOrigin,viewerNonce,viewerHello,channelCode} from './viewer-channel.mjs';
-export {ViewerChannelError} from './viewer-channel.mjs';
+import {emptyViewerControl,viewerControlState,viewerControlOptions,viewerViewportSize,viewerViewportResult} from './viewer-control.mjs';
+import {ViewerPort,ViewerChannelError,ViewerViewportError,viewerOrigin,viewerNonce,viewerHello,channelCode} from './viewer-channel.mjs';
+export {ViewerChannelError,ViewerViewportError} from './viewer-channel.mjs';
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const fail=code=>{throw new ViewerChannelError(code);};
 const states=new Set(['waiting','paused','connecting','connected','refreshing','reconnecting','failed','closed']);
@@ -26,6 +26,7 @@ function state(value,settings){
 // owns iframe creation/removal; this class owns only this authenticated port.
 export class ViewerFrameConnection {
  #control=emptyViewerControl();#onControl;#terminalControlCode=null;
+ #viewportRequest=null;
  #tickets;#settings;#port;#readyResolve;#readyReject;#readyTimer;#readyDone=false;#closed=false;#ownClose=false;#closedError=null;#active=false;#issued=false;#abort=null;#connectPromise=null;#connectWaiter=null;#onState;#onError;#timeout;#state=Object.freeze({state:'waiting'});
  constructor(value){
   const config=options(value),frameOrigin=viewerOrigin(config.frameOrigin);
@@ -60,7 +61,7 @@ export class ViewerFrameConnection {
    if(value.mode!=='unavailable'&&(!this.#active||!this.#issued||this.#state.state!=='connected'))return;
    this.#publishControl(value);return;
   }
-  if(name!=='state'||!this.#readyDone)fail('CHANNEL_PROTOCOL');const value=state(data,this.#tickets.settings);if(value.state==='connected'&&(!this.#active||!this.#issued))return;if(value.state==='failed')this.#terminalControlCode=value.code;else if(value.state==='connected')this.#terminalControlCode=null;this.#publish(value);
+  if(name!=='state'||!this.#readyDone)fail('CHANNEL_PROTOCOL');const value=state(data,this.#tickets.settings);if(value.state==='connected'&&(!this.#active||!this.#issued))return;if(value.state==='failed'){this.#terminalControlCode=value.code;if(this.#viewportRequest)this.#viewportRequest.terminalError=new ViewerViewportError(value.code??'CHANNEL_HANDLER_FAILED','unknown');}else if(value.state==='connected')this.#terminalControlCode=null;this.#publish(value);
   if(value.state==='connected')this.#connectWaiter?.resolve(value);
   if(value.state==='failed'){
    this.#active=false;const error=new ViewerChannelError(value.code??'CHANNEL_HANDLER_FAILED');if(this.#connectWaiter)this.#connectWaiter.reject(error);else this.#abort?.abort();try{this.#onError?.(error);}catch{}
@@ -95,6 +96,7 @@ export class ViewerFrameConnection {
  async getState(){if(this.#closed)fail('CHANNEL_CLOSED');const value=state(await this.#port.request('state',null),this.#tickets.settings);this.#publish(value);return value;}
  async #controlRequest(method,options){
   if(this.#closed)fail('CHANNEL_CLOSED');if(this.#settings.role!=='controller'||!this.#active||this.#state.state!=='connected')fail('VIEWER_CONTROL_UNAVAILABLE');
+  if(this.#viewportRequest)fail('VIEWER_CONTROL_BUSY');
   const {signal,timeoutMs}=viewerControlOptions(options);if(signal?.aborted)fail('CHANNEL_ABORTED');
   try{
    const value=viewerControlState(await this.#port.request(method,{timeoutMs},{signal,timeoutMs:timeoutMs+1000}));
@@ -103,5 +105,20 @@ export class ViewerFrameConnection {
  }
  takeControl(options){return this.#controlRequest('take-control',options);}
  releaseControl(options){return this.#controlRequest('release-control',options);}
+ async resizeViewport(size,options){
+  let signal,timeoutMs;try{size=viewerViewportSize(size);({signal,timeoutMs}=viewerControlOptions(options));}catch{throw new ViewerViewportError('VIEWER_INVALID_CONFIG','not-applied');}
+  if(this.#closed)throw new ViewerViewportError('CHANNEL_CLOSED','not-applied');
+  if(signal?.aborted)throw new ViewerViewportError('CHANNEL_ABORTED','not-applied');
+  if(this.#settings.role!=='controller'||!this.#active||this.#state.state!=='connected')throw new ViewerViewportError('VIEWER_CONTROL_UNAVAILABLE','not-applied');
+  if(this.#viewportRequest||!this.#control.held)throw new ViewerViewportError('VIEWER_CONTROL_BUSY','not-applied');
+  const record={pageEpoch:this.#control.pageEpoch,viewportVersion:this.#control.viewportVersion,terminalError:null};this.#viewportRequest=record;
+  try{
+   const result=viewerViewportResult(await this.#port.request('resize-viewport',{...size,timeoutMs},{signal,timeoutMs:timeoutMs+1000}));
+   if(this.#closed||!this.#active)throw new ViewerViewportError('CHANNEL_ABORTED','unknown');
+   if(result.width!==size.width||result.height!==size.height||result.changed&&(result.pageEpoch<record.pageEpoch||result.viewportVersion<=record.viewportVersion)||!result.changed&&(result.pageEpoch!==record.pageEpoch||result.viewportVersion!==record.viewportVersion))fail('CHANNEL_PROTOCOL');
+   return result;
+  }catch(error){const failure=record.terminalError??(error instanceof ViewerViewportError?error:new ViewerViewportError(error.code,'unknown'));if(failure.outcome==='unknown')this.#port.close(failure.code);throw failure;}
+  finally{if(this.#viewportRequest===record)this.#viewportRequest=null;}
+ }
  close(){if(this.#closed)return;this.#ownClose=true;this.#port.close('CHANNEL_CLOSED');}
 }

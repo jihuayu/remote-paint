@@ -1767,3 +1767,11 @@ Child动作层等待Source相关回执，允许屏障完成前合法的epoch/ver
 15条新合同与原输入/控制相关共83项通过，覆盖真实Node数据链路及保存Window/Worker，异常协议在同步teardown前保留固定错误结果。原始诊断和私有身份不外传；DOM/CanvasKit/调度及Source.resize/CDP为明确夹具。见[动作说明](viewer-viewport-actions.md)和[范围证据](evidence/viewer-viewport-actions.json)。
 
 Frame/DOM SDK父子桥和公开resizeViewport/跨端口outcome仍须下一步实现，不能把Child入口视为完整SDK。真实Native viewport/像素/公开控制优先级与性能事件、原8小时和全部41项仍未验收；计数9/15/17。未改原长测/采样器/演示实例，未暂存提交推送。
+
+### K2a2b3c2b3：公开 resizeViewport 与跨端口结果
+
+Frame和DOM组件公开有限resizeViewport，要求已持有controller租约；新有限端口动词把固定code与not-applied/unknown传过父子桥。成功只返回六字段scope=viewport，保持本地显示CSS和票据不变。取消/超时/断线后保留真实Source未结束工作；普通控制回执不能携带额外outcome，迟到有限视口回执不维护无界历史。Source失败通知在同步iframe销毁前保留视口固定错误，防止被普通close覆盖。实际HTTP模块图还复现并修正桥接SDK相对导入的指纹路径遗漏；错误URL实际410，初步404判断不准确并保留诊断。
+
+最初23条合同实现前全失败，新增30条（含实际HTTP模块依赖图）与相关156项通过，涵盖实际MessageChannel/Node HTTP/WebSocket/SQLite/ControlLease、保存Window/Worker与真实ViewerInput。严格类型及安装包合同补充公开API、readonly结果和有限错误outcome。DOM/CanvasKit/调度、Source.resize/CDP及故意异常回执为明确夹具；API应用Source屏障不代表提交新像素。见[SDK说明](viewer-viewport-sdk.md)与[范围证据](evidence/viewer-viewport-sdk.json)。
+
+实际Native viewport/捕获/像素、公开控制优先级与性能/首帧事件仍须继续验收，不能据协议合同完成K2整体；原8小时失败与增长策略保持。41项9/15/17，未自动重跑8小时、未改采样器/演示实例，未暂存提交推送。
