@@ -1,14 +1,16 @@
 """Concurrent line-RPC test adapter; all Agent HTTP uses the installed Python SDK."""
 from __future__ import annotations
 import asyncio
+import base64
 from dataclasses import asdict, is_dataclass, FrozenInstanceError
 import json
 from pathlib import Path
 import sys
 import remote_paint_session as sdk
 
-_RENAME={'agent_run_id':'agentRunId','session_id':'sessionId','invocation_id':'invocationId','holds_writer':'holdsWriter','begin_dispatch':'beginDispatch','end_dispatch':'endDispatch','created_at':'createdAt','updated_at':'updatedAt','dispatch_started':'dispatchStarted','tenant_id':'tenantId','target_id':'targetId','run_id':'runId','control_session_id':'controlSessionId','control_version':'controlVersion','page_epoch':'pageEpoch','viewport_version':'viewportVersion','request_id':'requestId','element_id':'elementId','observation_id':'observationId','observed_at':'observedAt','max_nodes':'maxNodes','max_chars':'maxChars','max_visited':'maxVisited'}
+_RENAME={'agent_run_id':'agentRunId','session_id':'sessionId','invocation_id':'invocationId','holds_writer':'holdsWriter','begin_dispatch':'beginDispatch','end_dispatch':'endDispatch','created_at':'createdAt','updated_at':'updatedAt','dispatch_started':'dispatchStarted','tenant_id':'tenantId','target_id':'targetId','run_id':'runId','control_session_id':'controlSessionId','control_version':'controlVersion','page_epoch':'pageEpoch','viewport_version':'viewportVersion','request_id':'requestId','element_id':'elementId','observation_id':'observationId','observed_at':'observedAt','max_nodes':'maxNodes','max_chars':'maxChars','max_visited':'maxVisited','max_bytes':'maxBytes','screenshot_id':'screenshotId','byte_length':'byteLength','total_bytes':'totalBytes','mime_type':'mimeType'}
 def output(v):
+ if isinstance(v,bytes):return base64.b64encode(v).decode('ascii')
  if isinstance(v,sdk.AgentAccessibilityStates):return {k:value for k,value in asdict(v).items()if value is not None}
  if isinstance(v,(sdk.AgentAccessibilityVisible,sdk.AgentAccessibilityRedacted)):
   value=asdict(v)
@@ -59,6 +61,18 @@ async def main():
      try:result.data.ax.states.required=False
      except FrozenInstanceError:pass
      else:raise AssertionError('AX states not frozen')
+   elif op=='screenshot':
+    v=a['input'];result=await client.observations.screenshot(context(a['context']),sdk.AgentScreenshotInput(sdk.AgentScreenshotLimits(v.get('limits',{}).get('maxBytes',1048576)),v.get('rpcTimeoutMs')))
+   elif op=='screenshot-chunk':
+    v=a['input'];result=await client.observations.screenshot_chunk(context(a['context']),sdk.AgentScreenshotChunkInput(sdk.AgentScreenshotId(v['screenshotId']),v['offset'],v.get('maxBytes',3072),v.get('rpcTimeoutMs')))
+   elif op=='screenshot-release':
+    v=a['input'];result=await client.observations.release_screenshot(context(a['context']),sdk.AgentScreenshotFileInput(sdk.AgentScreenshotId(v['screenshotId']),v.get('rpcTimeoutMs')))
+   elif op=='screenshot-download':
+    v=a['input'];result=await client.observations.download_screenshot(context(a['context']),sdk.AgentScreenshotDownloadInput(sdk.AgentScreenshotId(v['screenshotId']),v['sha256'],v['byteLength'],v['observedAt'],v.get('rpcTimeoutMs')))
+    assert isinstance(result.data.content,bytes) and not hasattr(result.data,'__dict__')
+    try:result.data.sha256='mutated'
+    except FrozenInstanceError:pass
+    else:raise AssertionError('Screenshot metadata not frozen')
    elif op=='status':result=client.transport_status()
    else:raise AssertionError('Unknown test driver operation')
    emit({'id':rid,'value':output(result)})
@@ -68,7 +82,7 @@ async def main():
   while line:=await asyncio.to_thread(sys.stdin.readline):
    command=json.loads(line);rid=command['id'];op=command['op']
    if op=='init':
-    assert not clients;location=Path(sdk.__file__).resolve();assert location.is_relative_to(Path(sys.prefix).resolve());assert location.with_name('_observation.py').is_file();assert location.with_name('py.typed').is_file();clients={role:sdk.AgentClient(base_url=command['base'],api_key=key)for role,key in command['keys'].items()};emit({'id':rid,'value':{'module':str(location),'prefix':sys.prefix,'installedObservationSdk':True,'installedAccessibilitySdk':hasattr(sdk.AgentClient,'__init__') and hasattr(sdk,'AgentAccessibilityObservation')}})
+    assert not clients;location=Path(sdk.__file__).resolve();assert location.is_relative_to(Path(sys.prefix).resolve());assert location.with_name('_observation.py').is_file();assert location.with_name('py.typed').is_file();clients={role:sdk.AgentClient(base_url=command['base'],api_key=key,max_screenshot_bytes=4194304)for role,key in command['keys'].items()};emit({'id':rid,'value':{'module':str(location),'prefix':sys.prefix,'installedScreenshotSdk':hasattr(sdk,'AgentScreenshotDownload'),'installedObservationSdk':True,'installedAccessibilitySdk':hasattr(sdk.AgentClient,'__init__') and hasattr(sdk,'AgentAccessibilityObservation')}})
    elif op=='cancel':
     task=tasks.get(command['args']['target']);
     if task is not None:task.cancel()

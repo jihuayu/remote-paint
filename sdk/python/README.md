@@ -94,7 +94,7 @@ Queries are frozen `AgentSnapshotQuery()`, `AgentLocateQuery(by, value)` by `id`
 
 A successful response must match the captured logical Run/Session/version/Source binding/document/query/limits, be HTTP 200 without Location, and satisfy metadata, UTF-16 text, node/visit and Source/public UTF-8 bounds. `scope` is main-document light DOM; role/name are limited DOM attributes, not computed accessibility data. Password/hidden values are redacted. Snapshot revision/time are not a global DOM mutation counter. A fresh snapshot, GC, document or selected metadata changes can expire handles; no automatic selector rebind or context/fence refresh occurs.
 
-Known-bound same-owner `recovery-required` input can be inspected. Observing its actual DOM does not upgrade unknown invocation history, clear writer quarantine or replay input. Screenshots/downloads, full locators/frame traversal and write-by-handle remain pending. Computed AX is described below. Qualification is limited by the matching repository evidence and installed Native tests.
+Known-bound same-owner `recovery-required` input can be inspected. Observing its actual DOM does not upgrade unknown invocation history, clear writer quarantine or replay input. Source screenshots and PNG downloads are described below; actual page downloads, full locators/frame traversal and write-by-handle remain pending. Computed AX is described below. Qualification is limited by the matching repository evidence and installed Native tests.
 
 Computed AX of an existing observed element uses the same explicit read context:
 
@@ -121,3 +121,31 @@ retains actual transport/body/close admission until settlement; end uses its own
 capacity. Source raw CDP preallocation and browser AX physical memory remain
 separate unfinished gates, as do whole-tree/frame, screenshot/download and
 business postconditions.
+
+
+Source viewport screenshots and their PNG downloads use the same original read context:
+
+```python
+from remote_paint_session import AgentScreenshotDownloadInput, AgentScreenshotFileInput
+
+shot = (await client.observations.screenshot(context)).data
+file = (await client.observations.download_screenshot(context, AgentScreenshotDownloadInput(
+    shot.screenshot_id, shot.sha256, shot.byte_length, shot.observed_at
+))).data
+# file.content is immutable bytes; all metadata models are frozen/slotted.
+await client.observations.release_screenshot(context, AgentScreenshotFileInput(shot.screenshot_id))
+```
+
+`screenshot_chunk` accepts an `AgentScreenshotChunkInput` with offset and up to3072
+raw bytes per base64 chunk. All four methods capture copied typed inputs before
+returning a coroutine and send once, with no retry/context refresh/recapture.
+`max_screenshot_bytes` on AgentClient defaults to1MiB and accepts57..4MiB, separate
+from the JSON response cap. File references above that cap fail before HTTP.
+The binary response must match exact status/headers/context/file/length/time/hash,
+PNG signature/IHDR and bounded dimensions; incomplete or corrupt data is rejected.
+Assembly uses a bounded bytearray and a final immutable bytes copy (at most two
+file-sized SDK allocations during conversion). Actual Task/body/aclose work stays
+counted after timeout/cancellation, with independent end capacity and the existing
+single-flight bounded aclose observation. Qualification still excludes actual page
+download/upload/Profile, full locator/frame control, raw receiver preallocation,
+browser physical memory and whole K6 completion.

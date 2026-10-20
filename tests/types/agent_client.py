@@ -74,3 +74,19 @@ async def accessibility(client: AgentClient, context: AgentObservationContext, e
     await client.observations.accessibility(context,AgentAccessibilityInput(context.agent_run_id))  # type: ignore[arg-type]
     await client.observations.accessibility(context,AgentAccessibilityInput(element),retries=1)  # type: ignore[call-arg]
     _ = observed.ax.backend_node_id  # type: ignore[union-attr]
+
+from remote_paint_session import (AgentScreenshotId,AgentScreenshotInput,AgentScreenshotLimits,AgentScreenshotFileInput,
+    AgentScreenshotChunkInput,AgentScreenshotDownloadInput,AgentScreenshotObservation,AgentScreenshotChunk,AgentScreenshotDownload)
+
+async def screenshots(client: AgentClient, context: AgentObservationContext) -> None:
+    shot: AgentScreenshotObservation = (await client.observations.screenshot(context,AgentScreenshotInput(AgentScreenshotLimits(1048576)))).data
+    screenshot_id: AgentScreenshotId = shot.screenshot_id
+    chunk: AgentScreenshotChunk = (await client.observations.screenshot_chunk(context,AgentScreenshotChunkInput(screenshot_id,0))).data
+    file: AgentScreenshotDownload = (await client.observations.download_screenshot(context,AgentScreenshotDownloadInput(screenshot_id,shot.sha256,shot.byte_length,shot.observed_at))).data
+    content: bytes = file.content
+    _ = (chunk,content)
+    await client.observations.release_screenshot(context,AgentScreenshotFileInput(screenshot_id))
+    _ = AgentScreenshotFileInput(context.agent_run_id)  # type: ignore[arg-type]
+    await client.observations.screenshot(context,retries=1)  # type: ignore[call-arg]
+    file.sha256 = 'changed'  # type: ignore[misc]
+    file.content[0] = 1  # type: ignore[index]

@@ -63,3 +63,10 @@ from ._observation import (AgentAccessibilityLimits, AgentAccessibilityInput,
 __all__ += ['AgentAccessibilityLimits', 'AgentAccessibilityInput', 'AgentAccessibilityStates',
     'AgentAccessibilityProjection', 'AgentAccessibilityVisible', 'AgentAccessibilityRedacted',
     'AgentAccessibilityObservation']
+
+from ._observation import (AgentScreenshotId,AgentScreenshotLimits,AgentScreenshotInput,
+    AgentScreenshotFileInput,AgentScreenshotChunkInput,AgentScreenshotDownloadInput,
+    AgentScreenshotObservation,AgentScreenshotChunk,AgentScreenshotReleased,AgentScreenshotDownload)
+__all__ += ['AgentScreenshotId','AgentScreenshotLimits','AgentScreenshotInput','AgentScreenshotFileInput',
+    'AgentScreenshotChunkInput','AgentScreenshotDownloadInput','AgentScreenshotObservation',
+    'AgentScreenshotChunk','AgentScreenshotReleased','AgentScreenshotDownload']

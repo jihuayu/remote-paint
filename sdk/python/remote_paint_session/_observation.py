@@ -2,13 +2,16 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
+import asyncio
+import base64
+import hashlib
 import json
 import re
-from typing import Any, Coroutine, Literal, NewType, cast
+from typing import Any, Coroutine, Literal, NewType, NoReturn, cast
 import httpx
-from ._agent import AgentBinding, AgentRun, AgentRunId, _binding, _body, _exact, _fail, _id, _invalid, _text, _timeout, _uuid
+from ._agent import AgentBinding, AgentClientError, AgentRun, AgentRunId, _binding, _body, _exact, _fail, _id, _invalid, _text, _timeout, _uuid
 from ._client import SessionId, _integer
-from ._transport import ApiResult, BackendTransport
+from ._transport import ApiResult, BackendTransport, RequestId
 
 AgentElementId = NewType('AgentElementId', str)
 AgentObservationId = NewType('AgentObservationId', str)
@@ -286,6 +289,192 @@ def validate_observation(status: int, v: Any, e: ObservationExpected, headers: h
         _fail()
     return AgentObservation(ctx.agent_run_id,ctx.session_id,ctx.version,ctx.binding,ctx.document,AgentObservationId(v['observationId']),v['revision'],v['observedAt'],q,l,v['url'],v['title'],tuple(nodes),v['visited'],v['truncated'])
 
+AgentScreenshotId = NewType('AgentScreenshotId',str)
+@dataclass(frozen=True, slots=True)
+class AgentScreenshotLimits:
+    max_bytes: int = 1048576
+@dataclass(frozen=True, slots=True)
+class AgentScreenshotInput:
+    limits: AgentScreenshotLimits = field(default_factory=AgentScreenshotLimits)
+    rpc_timeout_ms: int | None = None
+@dataclass(frozen=True, slots=True)
+class AgentScreenshotFileInput:
+    screenshot_id: AgentScreenshotId
+    rpc_timeout_ms: int | None = None
+@dataclass(frozen=True, slots=True)
+class AgentScreenshotChunkInput:
+    screenshot_id: AgentScreenshotId
+    offset: int
+    max_bytes: int = 3072
+    rpc_timeout_ms: int | None = None
+@dataclass(frozen=True, slots=True)
+class AgentScreenshotDownloadInput:
+    screenshot_id: AgentScreenshotId
+    sha256: str
+    byte_length: int
+    observed_at: str
+    rpc_timeout_ms: int | None = None
+@dataclass(frozen=True, slots=True)
+class AgentScreenshotObservation(AgentObservationContext):
+    observation_id: AgentObservationId
+    revision: int
+    observed_at: str
+    limits: AgentScreenshotLimits
+    url: str
+    title: str
+    truncated: bool
+    screenshot_id: AgentScreenshotId
+    width: int
+    height: int
+    byte_length: int
+    sha256: str
+    stage: Literal['screenshot-observed'] = field(default='screenshot-observed',init=False)
+    scope: Literal['main-frame-viewport-source-pixels'] = field(default='main-frame-viewport-source-pixels',init=False)
+    mime_type: Literal['image/png'] = field(default='image/png',init=False)
+@dataclass(frozen=True, slots=True)
+class AgentScreenshotChunk(AgentObservationContext):
+    screenshot_id: AgentScreenshotId
+    sha256: str
+    observed_at: str
+    offset: int
+    byte_length: int
+    total_bytes: int
+    data: str
+    complete: bool
+    stage: Literal['screenshot-chunk'] = field(default='screenshot-chunk',init=False)
+@dataclass(frozen=True, slots=True)
+class AgentScreenshotReleased(AgentObservationContext):
+    screenshot_id: AgentScreenshotId
+    stage: Literal['screenshot-released'] = field(default='screenshot-released',init=False)
+@dataclass(frozen=True, slots=True)
+class AgentScreenshotDownload(AgentObservationContext):
+    screenshot_id: AgentScreenshotId
+    sha256: str
+    observed_at: str
+    byte_length: int
+    width: int
+    height: int
+    content: bytes
+    stage: Literal['screenshot-downloaded'] = field(default='screenshot-downloaded',init=False)
+    mime_type: Literal['image/png'] = field(default='image/png',init=False)
+ScreenshotInput = AgentScreenshotInput | AgentScreenshotFileInput | AgentScreenshotChunkInput | AgentScreenshotDownloadInput
+@dataclass(frozen=True, slots=True)
+class ScreenshotExpected:
+    context: AgentObservationContext
+    request: ScreenshotInput
+    kind: Literal['screenshot','chunk','release','download']
+
+def _hash(v: Any) -> bool:
+    return type(v) is str and re.fullmatch(r'[a-f0-9]{64}',v) is not None
+
+def _capture_screenshot(v: ScreenshotInput, kind: str, max_bytes: int) -> tuple[ScreenshotInput,dict[str,Any]]:
+    wire: dict[str,Any]
+    if kind=='screenshot':
+        if type(v) is not AgentScreenshotInput or type(v.limits) is not AgentScreenshotLimits or not _integer(v.limits.max_bytes,1,4194304):
+            _invalid()
+        captured: ScreenshotInput = AgentScreenshotInput(AgentScreenshotLimits(v.limits.max_bytes),v.rpc_timeout_ms)
+        wire = dict(limits=dict(maxBytes=v.limits.max_bytes))
+    else:
+        cls = {'chunk':AgentScreenshotChunkInput,'release':AgentScreenshotFileInput,'download':AgentScreenshotDownloadInput}.get(kind)
+        if type(v) is not cls:
+            _invalid()
+        assert isinstance(v,(AgentScreenshotFileInput,AgentScreenshotChunkInput,AgentScreenshotDownloadInput))
+        if not _id(v.screenshot_id,'shot_'):
+            _invalid()
+        wire = dict(screenshotId=v.screenshot_id)
+        if isinstance(v,AgentScreenshotChunkInput):
+            if not _integer(v.offset,0,4194304) or not _integer(v.max_bytes,1,3072):
+                _invalid()
+            captured = AgentScreenshotChunkInput(v.screenshot_id,v.offset,v.max_bytes,v.rpc_timeout_ms);wire.update(offset=v.offset,maxBytes=v.max_bytes)
+        elif isinstance(v,AgentScreenshotDownloadInput):
+            if not _hash(v.sha256) or not _integer(v.byte_length,57,max_bytes) or not _canonical_date(v.observed_at):
+                _invalid()
+            captured = AgentScreenshotDownloadInput(v.screenshot_id,v.sha256,v.byte_length,v.observed_at,v.rpc_timeout_ms);wire.update(sha256=v.sha256,byteLength=v.byte_length,observedAt=v.observed_at)
+        else:
+            captured = AgentScreenshotFileInput(v.screenshot_id,v.rpc_timeout_ms)
+    _timeout(v.rpc_timeout_ms)
+    if v.rpc_timeout_ms is not None:
+        wire['rpcTimeoutMs'] = v.rpc_timeout_ms
+    return captured,wire
+
+_SHOT = ['agentRunId','sessionId','stage','binding','document','observationId','revision','observedAt','version','scope','limits','url','title','truncated','screenshotId','mimeType','width','height','byteLength','sha256']
+_CHUNK = ['agentRunId','sessionId','stage','binding','document','version','screenshotId','sha256','observedAt','offset','byteLength','totalBytes','data','complete']
+_RELEASED = ['agentRunId','sessionId','stage','binding','document','version','screenshotId']
+def _shot_context(v: Any, e: ScreenshotExpected) -> AgentObservationContext:
+    ctx = _decode_context({k:v[k]for k in _CONTEXT})
+    if ctx!=e.context or not _id(v['screenshotId'],'shot_'):
+        _fail()
+    if not isinstance(e.request,AgentScreenshotInput) and v['screenshotId']!=e.request.screenshot_id:
+        _fail()
+    if _byte_length(v)>8192 or _byte_length({k:value for k,value in v.items()if k not in ('agentRunId','sessionId')})>6144:
+        _fail()
+    return ctx
+
+def validate_screenshot(status: int, v: Any, e: ScreenshotExpected, headers: httpx.Headers) -> AgentScreenshotObservation | AgentScreenshotChunk | AgentScreenshotReleased:
+    if status!=200 or 'location'in headers or not _exact(v,_SHOT if e.kind=='screenshot'else _CHUNK if e.kind=='chunk'else _RELEASED):
+        _fail()
+    ctx = _shot_context(v,e);args: dict[str,Any] = dict(agent_run_id=ctx.agent_run_id,session_id=ctx.session_id,version=ctx.version,binding=ctx.binding,document=ctx.document,screenshot_id=AgentScreenshotId(v['screenshotId']))
+    if e.kind=='release':
+        if v['stage']!='screenshot-released':
+            _fail()
+        return AgentScreenshotReleased(**args)
+    if not _hash(v['sha256']) or not _canonical_date(v['observedAt']):
+        _fail()
+    args.update(sha256=v['sha256'],observed_at=v['observedAt'])
+    if e.kind=='screenshot':
+        assert isinstance(e.request,AgentScreenshotInput)
+        if v['stage']!='screenshot-observed' or v['scope']!='main-frame-viewport-source-pixels' or not _id(v['observationId'],'obs_') or not _integer(v['revision'],1,2**53-1) or not _exact(v['limits'],['maxBytes']) or not _integer(v['limits']['maxBytes'],1,4194304) or v['limits']['maxBytes']!=e.request.limits.max_bytes or not _text(v['url'],1024,0) or not _text(v['title'],256,0) or type(v['truncated']) is not bool or v['mimeType']!='image/png' or not _integer(v['width'],1,2048) or not _integer(v['height'],1,2048) or v['width']*v['height']>4194304 or not _integer(v['byteLength'],57,e.request.limits.max_bytes):
+            _fail()
+        return AgentScreenshotObservation(**args,observation_id=AgentObservationId(v['observationId']),revision=v['revision'],limits=AgentScreenshotLimits(v['limits']['maxBytes']),url=v['url'],title=v['title'],truncated=v['truncated'],width=v['width'],height=v['height'],byte_length=v['byteLength'])
+    assert isinstance(e.request,AgentScreenshotChunkInput)
+    if v['stage']!='screenshot-chunk' or not _integer(v['offset'],0,4194304) or v['offset']!=e.request.offset or not _integer(v['totalBytes'],57,4194304) or v['offset']>v['totalBytes'] or not _integer(v['byteLength'],0,3072) or v['byteLength']!=min(e.request.max_bytes,v['totalBytes']-v['offset']) or type(v['data']) is not str or len(v['data'])>4096 or len(v['data'])%4!=0 or re.fullmatch(r'[A-Za-z0-9+/]*={0,2}',v['data']) is None or type(v['complete']) is not bool or v['complete']!=(v['offset']+v['byteLength']==v['totalBytes']):
+        _fail()
+    try:
+        if len(base64.b64decode(v['data'],validate=True))!=v['byteLength']:
+            _fail()
+    except ValueError:
+        _fail()
+    return AgentScreenshotChunk(**args,offset=v['offset'],byte_length=v['byteLength'],total_bytes=v['totalBytes'],data=v['data'],complete=v['complete'])
+
+def is_screenshot_download(e: Any) -> bool:
+    return isinstance(e,ScreenshotExpected) and e.kind=='download'
+
+async def read_screenshot_binary(response: httpx.Response, e: Any, max_bytes: int) -> ApiResult[AgentScreenshotDownload]:
+    assert isinstance(e,ScreenshotExpected) and isinstance(e.request,AgentScreenshotDownloadInput)
+    r,h = e.request,response.headers
+    def reject() -> NoReturn:
+        raise AgentClientError('CLIENT_INVALID_RESPONSE',status=response.status_code) from None
+    request_id = h.get('x-request-id','')
+    if response.status_code!=200 or 'location'in h or 'content-encoding'in h or h.get('content-type','').lower()!='image/png' or h.get('content-length')!=str(r.byte_length) or r.byte_length>max_bytes or h.get('cache-control')!='no-store' or h.get('x-content-type-options')!='nosniff' or h.get('content-disposition')!='attachment; filename="'+r.screenshot_id+'.png"' or h.get('content-digest')!='sha-256=:'+base64.b64encode(bytes.fromhex(r.sha256)).decode('ascii')+':' or h.get('x-screenshot-id')!=r.screenshot_id or h.get('x-screenshot-sha256')!=r.sha256 or h.get('x-screenshot-observed-at')!=r.observed_at or re.fullmatch(r'req_[A-Za-z0-9_-]{1,124}',request_id) is None:
+        reject()
+    encoded = h.get('x-agent-observation-context','')
+    if len(encoded)>4096 or re.fullmatch(r'[A-Za-z0-9_-]+',encoded) is None:
+        reject()
+    try:
+        raw = base64.b64decode(encoded+'='*((4-len(encoded)%4)%4),altchars=b'-_',validate=True)
+        if base64.urlsafe_b64encode(raw).rstrip(b'=').decode('ascii')!=encoded or _decode_context(json.loads(raw.decode('utf-8')))!=e.context:
+            reject()
+    except (ValueError,UnicodeError,RecursionError,AgentClientError):
+        reject()
+    buffer = bytearray(r.byte_length);digest = hashlib.sha256();size = 0;chunks = 0
+    def consume(chunk: bytes) -> None:
+        nonlocal size
+        if type(chunk) is not bytes or size+len(chunk)>len(buffer):
+            reject()
+        end = size+len(chunk);buffer[size:end] = chunk;digest.update(memoryview(buffer)[size:end]);size = end
+    if response.is_stream_consumed:
+        consume(response.content)
+    else:
+        async for chunk in response.aiter_raw():
+            consume(chunk);chunks += 1
+            if chunks%128==0:
+                await asyncio.sleep(0)
+    width,height = int.from_bytes(buffer[16:20],'big'),int.from_bytes(buffer[20:24],'big')
+    if size!=r.byte_length or digest.hexdigest()!=r.sha256 or buffer[:8]!=b'\x89PNG\r\n\x1a\n' or int.from_bytes(buffer[8:12],'big')!=13 or buffer[12:16]!=b'IHDR' or not _integer(width,1,2048) or not _integer(height,1,2048) or width*height>4194304:
+        reject()
+    ctx = e.context
+    return ApiResult(AgentScreenshotDownload(ctx.agent_run_id,ctx.session_id,ctx.version,ctx.binding,ctx.document,r.screenshot_id,r.sha256,r.observed_at,size,width,height,bytes(buffer)),RequestId(request_id))
+
 class _Observations:
     def __init__(self, transport: BackendTransport) -> None:
         self._transport = transport
@@ -306,3 +495,19 @@ class _Observations:
         async def send() -> ApiResult[AgentAccessibilityObservation]:
             return cast(ApiResult[AgentAccessibilityObservation],await self._transport.request('POST','/v1/agent-runs/'+ctx.agent_run_id+'/accessibility-observations',payload,None,expected,0))
         return send()
+
+    def _screenshot(self, kind: Literal['screenshot','chunk','release','download'], context: AgentObservationContext, value: ScreenshotInput) -> Coroutine[Any,Any,ApiResult[Any]]:
+        ctx = _capture_context(context);request,wire = _capture_screenshot(value,kind,self._transport.screenshot_max_bytes)
+        payload = _body(dict(context=_context_wire(ctx),**wire));expected = ScreenshotExpected(ctx,request,kind)
+        async def send() -> ApiResult[Any]:
+            suffix = {'screenshot':'observations','chunk':'chunks','release':'releases','download':'downloads'}[kind]
+            return await self._transport.request('POST','/v1/agent-runs/'+ctx.agent_run_id+'/screenshot-'+suffix,payload,None,expected,0)
+        return send()
+    def screenshot(self, context: AgentObservationContext, value: AgentScreenshotInput = AgentScreenshotInput()) -> Coroutine[Any,Any,ApiResult[AgentScreenshotObservation]]:
+        return cast(Coroutine[Any,Any,ApiResult[AgentScreenshotObservation]],self._screenshot('screenshot',context,value))
+    def screenshot_chunk(self, context: AgentObservationContext, value: AgentScreenshotChunkInput) -> Coroutine[Any,Any,ApiResult[AgentScreenshotChunk]]:
+        return cast(Coroutine[Any,Any,ApiResult[AgentScreenshotChunk]],self._screenshot('chunk',context,value))
+    def release_screenshot(self, context: AgentObservationContext, value: AgentScreenshotFileInput) -> Coroutine[Any,Any,ApiResult[AgentScreenshotReleased]]:
+        return cast(Coroutine[Any,Any,ApiResult[AgentScreenshotReleased]],self._screenshot('release',context,value))
+    def download_screenshot(self, context: AgentObservationContext, value: AgentScreenshotDownloadInput) -> Coroutine[Any,Any,ApiResult[AgentScreenshotDownload]]:
+        return cast(Coroutine[Any,Any,ApiResult[AgentScreenshotDownload]],self._screenshot('download',context,value))

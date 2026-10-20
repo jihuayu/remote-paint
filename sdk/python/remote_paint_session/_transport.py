@@ -4,7 +4,7 @@ import asyncio
 import json
 import re
 from dataclasses import dataclass
-from typing import Any, AsyncIterator, Callable, Generic, Literal, NewType, NoReturn, TypeVar, cast
+from typing import Any, AsyncIterator, Awaitable, Callable, Generic, Literal, NewType, NoReturn, TypeVar, cast
 from urllib.parse import urlsplit
 import httpx
 
@@ -58,7 +58,8 @@ class BackendTransport:
                  transport: httpx.AsyncBaseTransport | None, validate: Callable[[int, Any, Any, httpx.Headers], Any],
                  error_type: type[SessionClientError] = SessionClientError,
                  cancelled_type: type[SessionClientCancelledError] = SessionClientCancelledError,
-                 max_concurrent_end_requests: int = 0, agent_errors: bool = False) -> None:
+                 max_concurrent_end_requests: int = 0, agent_errors: bool = False, max_screenshot_bytes: int = 1048576,
+                 binary_expected: Callable[[Any],bool] | None = None, read_binary: Callable[[httpx.Response,Any,int],Awaitable[ApiResult[Any]]] | None = None) -> None:
         self._error, self._cancelled, self._validate, self._agent_errors = error_type, cancelled_type, validate, agent_errors
         if type(base_url) is not str or len(base_url) > 8192:
             self.invalid()
@@ -78,6 +79,9 @@ class BackendTransport:
             self.invalid()
         if transport is not None and not isinstance(transport, httpx.AsyncBaseTransport):
             self.invalid()
+        if read_binary is not None and (type(max_screenshot_bytes) is not int or not 57 <= max_screenshot_bytes <= 4194304 or binary_expected is None):
+            self.invalid()
+        self.screenshot_max_bytes,self._binary_expected,self._read_binary = max_screenshot_bytes,binary_expected,read_binary
         self._api_key, self._timeout, self._max_bytes = api_key, timeout_seconds, max_response_bytes
         self._retries, self._max, self._max_end = self.retry_count(retries), max_concurrent_requests, max_concurrent_end_requests
         # End uses its own actual connection pool, not just a local counter.
@@ -195,6 +199,8 @@ class BackendTransport:
             status, retryable = response.status_code, response.status_code in (408, 429) or response.status_code >= 500
             if 300 <= status < 400:
                 self.fail('CLIENT_REDIRECT_REJECTED', status=status)
+            if self._read_binary is not None and self._binary_expected is not None and self._binary_expected(expect) and status < 300:
+                return await self._read_binary(response,expect,self.screenshot_max_bytes)
             if response.headers.get('content-encoding', 'identity').lower() != 'identity' or re.fullmatch(r'application/json(?:\s*;\s*charset=utf-8)?', response.headers.get('content-type',''), re.I) is None:
                 self.fail('CLIENT_HTTP_ERROR' if status >= 400 else 'CLIENT_INVALID_RESPONSE', status=status, retryable=status >= 400 and retryable)
             length = response.headers.get('content-length')

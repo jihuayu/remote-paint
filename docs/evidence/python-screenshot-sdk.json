@@ -1,0 +1,282 @@
+{
+  "at": "2026-10-19T20:40:01.098604+00:00",
+  "task": "Python frozen screenshot and PNG download SDK installed Native checkpoint",
+  "status": "Python-screenshot-SDK-qualified-within-scope",
+  "scope": "Installed Python screenshot/chunk/release/download SDK frozen slotted models/immutable bytes and synchronous before-coroutine input/context capture. Strict original logical/Source/document/file identity, JSON Source-public caps and binary headers/context/time/length/hash/PNG with independent screenshot cap. Shared actual Task/body/aclose tracking and separate end pool, one HTTP attempt, no automatic recapture/refence/replay. Actual installed Python SDK-to-publicHTTP-to-canonicalNative PNG and 408/cancel/end retirement proof; Node screenshot SDK retained. Actual page downloads/full locators/frame/rawphysical/fullK6 pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-screenshot-sdk-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "8627ab2b8dd0dd2220720222f73d8987f172c0c1b6ed31284fb158787283caff",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-screenshot-sdk-candidate-v1/frozen-version.json",
+  "executedManifestSha256": "e5d518eda0ab4117db9e639384b6aae15c4a11fe955b9c4283d68804a5b11a7d",
+  "newPythonContracts": 22,
+  "testNames": [
+    "test_shot_context_limits_deadline_captured_before_coroutine_await",
+    "test_shot_chunk_release_and_results_are_frozen_slotted_models",
+    "test_shot_invalid_typed_inputs_limits_ids_getters_context_and_retries_do_not_send",
+    "test_shot_response_logical_source_document_version_metadata_and_budget_correlation",
+    "test_shot_source_public_and_outer_json_budgets_status_location_and_correlation",
+    "test_png_download_captures_context_file_length_time_hash_before_await",
+    "test_png_download_content_and_nested_models_are_immutable_frozen_slotted",
+    "test_png_headers_exact_status_encoding_length_file_time_digest_request_and_context",
+    "test_png_corruption_truncation_overrun_signature_ihdr_and_dimensions_return_no_partial_file",
+    "test_png_separate_cap_rejects_before_http_without_widening_json_budget",
+    "test_shot_and_png_single_attempt_despite_mutation_retries_and_error_redaction",
+    "test_png_noncooperative_fetch_timeout_retains_actual_task_and_separate_end",
+    "test_png_caller_cancel_retains_noncooperative_task_and_never_retries",
+    "test_png_actual_body_close_remains_counted_after_local_timeout",
+    "test_png_invalid_header_still_waits_actual_close_and_failure_fences_client",
+    "test_png_aclose_is_single_flight_and_pending_until_actual_task_settles",
+    "test_png_prebuffered_and_byte_fragmented_httpx_streams_validate_content_and_size",
+    "test_shot_http_full_metadata_chunk_download_release_and_independent_scope",
+    "test_shot_http_unknown_input_keeps_history_quarantine_and_single_capture",
+    "test_shot_http_408_retains_backend_actual_slot_and_end_is_independent",
+    "test_shot_http_caller_cancel_does_not_release_source_work_and_end_remains_available",
+    "test_shot_http_replacement_and_release_do_not_automatically_recapture_stale_file"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v52/manifest.json",
+  "fullJsManifestSha256": "1cebe2c4b44ce95ebc005a9404c2f3428778014d5dcac218add31be92d179003",
+  "fullJs": {
+    "mac": {
+      "tests": 1339,
+      "pass": 1324,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "8f2112fc5b30814488828a112449ef54b2b69b138a44e7d159dc5e7f11c798fa"
+    },
+    "linux": {
+      "tests": 1339,
+      "pass": 1333,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "89257597b2c7e42f8265a40ac12101917ac3c1e0e8b88f886627ff88529054f1"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 152,
+      "pythonTests": 95,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 63,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "nodeArchiveBytesUnchanged": true,
+      "pythonArchiveNew": true
+    },
+    "linux": {
+      "nodeTests": 152,
+      "pythonTests": 95,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 63,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "nodeArchiveBytesUnchanged": true,
+      "pythonArchiveNew": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "63265ccf9b62bf17d3cb24a4cc29281fb45c02257539a025b413ea42718ecaca",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "e3e5b67ca262060af07df3337463dca826c240a8b013ad9b329c47646c20564b"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-screenshot-sdk-native-v1/manifest.json",
+  "nativeManifestSha256": "5d3c960debf41c22d0cd818dd07df0278a03ad92356dd6fa0f6195c6dd57aff8",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "authorization": {
+      "independentObserveScope": true,
+      "tenantIsolation": true,
+      "noWriterFenceOrMutationOrEndOrSessionReleaseOrViewerMint": true,
+      "forgedLogicalContextRejectedBeforeSource": true
+    },
+    "metadata": {
+      "actualDOM": true,
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "targetId": "target_f2f40147-88ce-4e1a-9e58-dc2e35f9ca08",
+      "epoch": 1,
+      "observedAt": "2026-10-19T20:37:04.183Z",
+      "passwordRedacted": true,
+      "mainDocumentLightDomOnly": true,
+      "readDoesNotRefreshWriterFence": true
+    },
+    "accessibility": {
+      "browserComputedRoleNameDescriptionValue": true,
+      "readonlyRequiredChecked": true,
+      "nestedTextAndExternalLabelSemantics": true,
+      "sameHandleDifferentBudgets": true,
+      "originalElementReplacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "computedLabelChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLabel": "Shipping changed",
+      "unicodeNameChars": 512,
+      "truncated": true,
+      "oversizedBrowserReplyRejected": {
+        "code": "AGENT_OBSERVATION_LIMIT",
+        "outcome": "not-dispatched"
+      },
+      "passwordFullyRedacted": true,
+      "explicitDomainAndObjectCleanupConfirmedByCompletedSourceRead": true,
+      "noPhysicalPreallocationClaim": true,
+      "publicHttp": true,
+      "sourcePrivateCapabilityRequired": true,
+      "readDuringHumanLease": true,
+      "oldDocumentRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "knownUnknownInputAXObservedWithoutRecovery": true
+    },
+    "screenshot": {
+      "actualPublicHttp": true,
+      "actualPrivateProvider": true,
+      "binaryDownloadVerified": true,
+      "actualPNGDecoded": true,
+      "pixels": [
+        17,
+        83,
+        151,
+        255
+      ],
+      "width": 960,
+      "height": 640,
+      "byteLength": 26685,
+      "sha256": "9912f9adf3968478b0c6b7e506192c40ea6861267fb8eb2729b3cf652363e007",
+      "chunkMax": 3072,
+      "maxControlRecordBytes": 6144,
+      "failedCapturePreservedPrior": true,
+      "replacementInvalidatedPrior": true,
+      "explicitReleaseInvalidated": true,
+      "noSourceFilesystemWrite": true,
+      "noRawReceiverPhysicalClaim": true,
+      "readDuringHumanLease": true,
+      "oldDocumentAndRunRejected": true,
+      "knownUnknownInputInspectable": true,
+      "knownUnknownDownloadPreservedQuarantine": true
+    },
+    "unicode": {
+      "sourceChars": 4000,
+      "returnedChars": 1024,
+      "truncated": true,
+      "handleStillResolvable": true
+    },
+    "elements": {
+      "replacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "selectedMetadataChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLocatorGetsDistinctHandle": true,
+      "noAutomaticSelectorRebind": true
+    },
+    "human": {
+      "readDuringHumanLease": true,
+      "writeStillPaused": true,
+      "readAndAgentEndPreservedOriginalHumanGrant": true,
+      "fieldValue": "OBSHF"
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "oldReadContextRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "oldHandleRejectedInNewDocument": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "oldWriteFenceRejected": true,
+      "samePageTarget": true
+    },
+    "bounds": {
+      "largeFixtureNodes": 3000,
+      "visitedCap": 32,
+      "truncated": true,
+      "maxSerializedBytes": 8192,
+      "actualSnapshotBytes": 3314,
+      "noScriptOrArbitraryCdp": true
+    },
+    "unknown": {
+      "actualSlowClickOnce": true,
+      "observedActualDOMAfterUnknown": true,
+      "historyRemainedUnknown": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "httpTimeout": {
+      "http408": true,
+      "actualExecutorSlotRetained": true,
+      "writerRemainedActive": true,
+      "inputAfterActualSettlement": true
+    },
+    "disconnect": {
+      "actualExecutorSlotRetained": true,
+      "priorityEndWithIndependentScope": true,
+      "lateReadCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativeJournal": {
+    "logicalRunsClosed": 4,
+    "injected": 10,
+    "unknown": 1,
+    "rejected": 2
+  },
+  "decodedAxCdpReplyByteCap": 32768,
+  "rawCdpReceiverPreallocationQualified": false,
+  "browserAxPhysicalMemoryQualified": false,
+  "privateAxResultByteCap": 6144,
+  "maxAxTextUnits": 512,
+  "publicObservationResultByteCap": 8192,
+  "privateReadResultByteCap": 6144,
+  "standardProviderFrameByteCap": 8192,
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-screenshot-sdk-cleanup-v1.json",
+  "cleanupAuditSha256": "f1adf6c1f7e32eb718a34d42588449672a0b0a05717ee3dbba58092e9e01e696",
+  "trustedNativeObservationCoreQualified": true,
+  "publicObservationQualified": true,
+  "nodeObservationSdkQualified": true,
+  "pythonObservationSdkQualified": true,
+  "observationSdkQualified": true,
+  "computedAxPrivateQualified": true,
+  "computedAxPublicQualified": true,
+  "nodeComputedAxSdkQualified": true,
+  "pythonComputedAxSdkQualified": true,
+  "computedAxSdkQualified": true,
+  "sourceScreenshotQualified": true,
+  "publicScreenshotQualified": true,
+  "nodeScreenshotSdkQualified": true,
+  "pythonScreenshotSdkQualified": true,
+  "screenshotSdkQualified": true,
+  "K6Complete": false,
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": true,
+  "publicAgentSdkQualified": true,
+  "agentSdkScope": "Python screenshot/chunk/release/download newly qualified; Node screenshot plus Node/Python input/DOM/AX retained. Unchanged20member Node archive,new10member Python wheel;63 current inputs and frozen ws/pngjs fixture deps. HTTPX0.28.1 runtime dependency unchanged.",
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true
+}

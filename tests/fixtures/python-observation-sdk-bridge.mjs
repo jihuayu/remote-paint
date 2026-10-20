@@ -14,7 +14,7 @@ export async function pythonObservationBridge({python,script,base,keys}){
  return {pid:child.pid,origin,agent:role=>Object.freeze({
   runs:Object.freeze({create:(sessionId,input,{idempotencyKey})=>rpc('run-create',role,{sessionId,input,key:idempotencyKey}),get:id=>rpc('run-get',role,{id}),context:run=>rpc('context',role,{run}),end:id=>rpc('end',role,{id})}),
   invocations:Object.freeze({create:(context,action,{idempotencyKey})=>rpc('invocation-create',role,{context,action,key:idempotencyKey}),get:id=>rpc('invocation-get',role,{id})}),
-  observations:Object.freeze({context:run=>rpc('observation-context',role,{run}),read:(context,input,{signal}={})=>rpc('observe',role,{context,input},signal),accessibility:(context,input,{signal}={})=>rpc('accessibility',role,{context,input},signal)}),
+  observations:Object.freeze({context:run=>rpc('observation-context',role,{run}),read:(context,input,{signal}={})=>rpc('observe',role,{context,input},signal),accessibility:(context,input,{signal}={})=>rpc('accessibility',role,{context,input},signal),screenshot:(context,input={},options={})=>rpc('screenshot',role,{context,input},options.signal),screenshotChunk:(context,input,options={})=>rpc('screenshot-chunk',role,{context,input},options.signal),releaseScreenshot:(context,input,options={})=>rpc('screenshot-release',role,{context,input},options.signal),downloadScreenshot:(context,input,options={})=>rpc('screenshot-download',role,{context,input},options.signal)}),
   transportStatus:()=>rpc('status',role)
 
  }),close:async()=>{if(!closed){closed=true;await rpc('close');child.stdin.end();}await completion;assert.deepEqual(actualExit,{code:0,signal:null});return actualExit;}};
