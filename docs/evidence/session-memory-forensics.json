@@ -1,0 +1,712 @@
+{
+  "at": "2026-10-17T22:50:40.241673+00:00",
+  "status": "accepted-read-only-native-category-diagnostic-with-partial-vmmap-availability",
+  "scope": "Old immutable579file probe-reuse source;does not include the subsequent retiredWasm backing-accounting fix. Native category attribution only;no physicalpolicy/growthacceptance/no8h/fullN1.",
+  "version": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/frozen-version.json",
+  "versionSha256": "99e5d3c5ec2f9c274b82f07a234f29ecc2220b5a2fab155024ba4111d571c63b",
+  "requestedSeconds": 600,
+  "actualExerciseSeconds": 623.2502814999999,
+  "workload": {
+    "cycles": 660,
+    "resizes": 52,
+    "inputs": 38,
+    "navigations": 6,
+    "secondaryCompleted": 7,
+    "leaseExpired": 7,
+    "sampleCount": 12
+  },
+  "persistentPages": [
+    {
+      "label": "gpu-worker",
+      "nonce": "73bc2ee3-c042-4e62-8724-94fffba6f6fa",
+      "pixelProbeNonce": "33972b84-53c7-4d40-bf9e-36645c1e7b6c"
+    },
+    {
+      "label": "cpu-worker",
+      "nonce": "52758a71-71c1-481e-9397-ab4769fb3f9b",
+      "pixelProbeNonce": "82eb7d3d-e352-456f-af8a-c595c96fc72f"
+    },
+    {
+      "label": "cpu-main",
+      "nonce": "bbd2beb6-933f-4bdf-a2d1-7269a11584d3",
+      "pixelProbeNonce": "a5dba71d-8880-4d25-b320-c089752a7271"
+    }
+  ],
+  "persistentWorkers": [
+    "9552F04BB2980F8E0046058C819E7498",
+    "FAB4AE33FA7ED96228D36C6841B70BE8"
+  ],
+  "viewerBrowser": "155.0.8059.84",
+  "targets": [
+    {
+      "id": 91932,
+      "type": "renderer",
+      "identity": {
+        "provider": "darwin-bsd-start-v1",
+        "startSeconds": 1792276598,
+        "startMicroseconds": 104136,
+        "ppid": 91767,
+        "uid": 501
+      }
+    },
+    {
+      "id": 91898,
+      "type": "renderer",
+      "identity": {
+        "provider": "darwin-bsd-start-v1",
+        "startSeconds": 1792276597,
+        "startMicroseconds": 264028,
+        "ppid": 91767,
+        "uid": 501
+      }
+    },
+    {
+      "id": 91937,
+      "type": "renderer",
+      "identity": {
+        "provider": "darwin-bsd-start-v1",
+        "startSeconds": 1792276599,
+        "startMicroseconds": 522518,
+        "ppid": 91767,
+        "uid": 501
+      }
+    }
+  ],
+  "collectorExit": {
+    "sessionId": 83858,
+    "observedExitCode": 0
+  },
+  "toolOutcomes": [
+    {
+      "kind": "footprint",
+      "status": "read",
+      "count": 18
+    },
+    {
+      "kind": "vmmap",
+      "status": "read",
+      "count": 12
+    },
+    {
+      "kind": "vmmap",
+      "status": "unavailable",
+      "count": 6
+    }
+  ],
+  "measurements": [
+    {
+      "ordinal": 1,
+      "pid": 91898,
+      "cycle": 0,
+      "state": "primary-only",
+      "footprintBytes": 217630664,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 85950464,
+        "app-specific tag 16": 109428736,
+        "untagged (VM_ALLOCATE)": 2244608,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 1,
+      "pid": 91932,
+      "cycle": 0,
+      "state": "primary-only",
+      "footprintBytes": 203392896,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 82493440,
+        "app-specific tag 16": 97419264,
+        "untagged (VM_ALLOCATE)": 3620864,
+        "MALLOC_SMALL": 737280,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 1,
+      "pid": 91937,
+      "cycle": 0,
+      "state": "primary-only",
+      "footprintBytes": 204146344,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 70270976,
+        "app-specific tag 16": 110510080,
+        "untagged (VM_ALLOCATE)": 3571712,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 2,
+      "pid": 91898,
+      "cycle": 433,
+      "state": "primary-only",
+      "footprintBytes": 401672520,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 136937472,
+        "app-specific tag 16": 102940672,
+        "untagged (VM_ALLOCATE)": 141574144,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 2,
+      "pid": 91932,
+      "cycle": 433,
+      "state": "primary-only",
+      "footprintBytes": 452233568,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 176078848,
+        "app-specific tag 16": 71204864,
+        "untagged (VM_ALLOCATE)": 184745984,
+        "MALLOC_SMALL": 737280,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 2,
+      "pid": 91937,
+      "cycle": 433,
+      "state": "primary-only",
+      "footprintBytes": 428918896,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 149536768,
+        "app-specific tag 16": 72515584,
+        "untagged (VM_ALLOCATE)": 186793984,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 3,
+      "pid": 91898,
+      "cycle": 489,
+      "state": "with-secondary",
+      "footprintBytes": 388172080,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 149749760,
+        "app-specific tag 16": 117735424,
+        "untagged (VM_ALLOCATE)": 100483072,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 3,
+      "pid": 91932,
+      "cycle": 489,
+      "state": "with-secondary",
+      "footprintBytes": 419154248,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 184778752,
+        "app-specific tag 16": 73449472,
+        "untagged (VM_ALLOCATE)": 140738560,
+        "MALLOC_SMALL": 737280,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 3,
+      "pid": 91937,
+      "cycle": 489,
+      "state": "with-secondary",
+      "footprintBytes": 390875224,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 153911296,
+        "app-specific tag 16": 73072640,
+        "untagged (VM_ALLOCATE)": 143818752,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 4,
+      "pid": 91898,
+      "cycle": 546,
+      "state": "primary-only",
+      "footprintBytes": 381520176,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 160301056,
+        "app-specific tag 16": 144310272,
+        "untagged (VM_ALLOCATE)": 56688640,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 4,
+      "pid": 91932,
+      "cycle": 546,
+      "state": "primary-only",
+      "footprintBytes": 409045272,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 203620352,
+        "app-specific tag 16": 81362944,
+        "untagged (VM_ALLOCATE)": 103907328,
+        "MALLOC_SMALL": 737280,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 4,
+      "pid": 91937,
+      "cycle": 546,
+      "state": "primary-only",
+      "footprintBytes": 379357224,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 164528128,
+        "app-specific tag 16": 88195072,
+        "untagged (VM_ALLOCATE)": 106594304,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 5,
+      "pid": 91898,
+      "cycle": 603,
+      "state": "with-secondary",
+      "footprintBytes": 413174136,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 157548544,
+        "app-specific tag 16": 67321856,
+        "untagged (VM_ALLOCATE)": 168034304,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 5,
+      "pid": 91932,
+      "cycle": 603,
+      "state": "with-secondary",
+      "footprintBytes": 306022680,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 171032576,
+        "app-specific tag 16": 52641792,
+        "untagged (VM_ALLOCATE)": 62193664,
+        "MALLOC_SMALL": 737280,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 5,
+      "pid": 91937,
+      "cycle": 603,
+      "state": "with-secondary",
+      "footprintBytes": 279660608,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 155910144,
+        "app-specific tag 16": 38305792,
+        "untagged (VM_ALLOCATE)": 65388544,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 6,
+      "pid": 91898,
+      "cycle": 659,
+      "state": "with-secondary",
+      "footprintBytes": 405637472,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 170180608,
+        "app-specific tag 16": 88064000,
+        "untagged (VM_ALLOCATE)": 127139840,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 6,
+      "pid": 91932,
+      "cycle": 659,
+      "state": "with-secondary",
+      "footprintBytes": 305039640,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 194658304,
+        "app-specific tag 16": 62029824,
+        "untagged (VM_ALLOCATE)": 28196864,
+        "MALLOC_SMALL": 737280,
+        "MALLOC_TINY": 65536
+      }
+    },
+    {
+      "ordinal": 6,
+      "pid": 91937,
+      "cycle": 659,
+      "state": "with-secondary",
+      "footprintBytes": 281348136,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 172621824,
+        "app-specific tag 16": 55132160,
+        "untagged (VM_ALLOCATE)": 33538048,
+        "MALLOC_SMALL": 868352,
+        "MALLOC_TINY": 65536
+      }
+    }
+  ],
+  "firstToFinalCategoryDeltas": [
+    {
+      "pid": 91898,
+      "footprintBytes": 188006808,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 84230144,
+        "app-specific tag 16": -21364736,
+        "untagged (VM_ALLOCATE)": 124895232,
+        "MALLOC_SMALL": 0,
+        "MALLOC_TINY": 0
+      }
+    },
+    {
+      "pid": 91932,
+      "footprintBytes": 101646744,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 112164864,
+        "app-specific tag 16": -35389440,
+        "untagged (VM_ALLOCATE)": 24576000,
+        "MALLOC_SMALL": 0,
+        "MALLOC_TINY": 0
+      }
+    },
+    {
+      "pid": 91937,
+      "footprintBytes": 77201792,
+      "dirtyCategoriesBytes": {
+        "app-specific tag 14": 102350848,
+        "app-specific tag 16": -55377920,
+        "untagged (VM_ALLOCATE)": 29966336,
+        "MALLOC_SMALL": 0,
+        "MALLOC_TINY": 0
+      }
+    }
+  ],
+  "preservedToolErrors": {
+    "1-91932-vmmap.error.json": {
+      "code": 255,
+      "killed": true,
+      "signal": null,
+      "message": "Command failed: /usr/bin/vmmap -summary 91932\n",
+      "stdout": "",
+      "stderr": ""
+    },
+    "2-91932-vmmap.error.json": {
+      "code": 255,
+      "killed": true,
+      "signal": null,
+      "message": "Command failed: /usr/bin/vmmap -summary 91932\nCan't examine target process's malloc zone PartitionAlloc_0x1328f3828, so memory analysis will be incomplete or incorrect.\nReason: failed to resolve canonical path for /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.84/Google Chrome Framework in dyld shared cache.\n\n",
+      "stdout": "",
+      "stderr": "Can't examine target process's malloc zone PartitionAlloc_0x1328f3828, so memory analysis will be incomplete or incorrect.\nReason: failed to resolve canonical path for /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.84/Google Chrome Framework in dyld shared cache.\n\n"
+    },
+    "2-91937-vmmap.error.json": {
+      "code": 255,
+      "killed": true,
+      "signal": null,
+      "message": "Command failed: /usr/bin/vmmap -summary 91937\nCan't examine target process's malloc zone PartitionAlloc_0x13591b828, so memory analysis will be incomplete or incorrect.\nReason: failed to resolve canonical path for /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.84/Google Chrome Framework in dyld shared cache.\n\n",
+      "stdout": "",
+      "stderr": "Can't examine target process's malloc zone PartitionAlloc_0x13591b828, so memory analysis will be incomplete or incorrect.\nReason: failed to resolve canonical path for /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.84/Google Chrome Framework in dyld shared cache.\n\n"
+    },
+    "4-91932-vmmap.error.json": {
+      "code": 255,
+      "killed": true,
+      "signal": null,
+      "message": "Command failed: /usr/bin/vmmap -summary 91932\nCan't examine target process's malloc zone PartitionAlloc_0x1328f3828, so memory analysis will be incomplete or incorrect.\nReason: failed to resolve canonical path for /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.84/Google Chrome Framework in dyld shared cache.\n\n",
+      "stdout": "",
+      "stderr": "Can't examine target process's malloc zone PartitionAlloc_0x1328f3828, so memory analysis will be incomplete or incorrect.\nReason: failed to resolve canonical path for /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.84/Google Chrome Framework in dyld shared cache.\n\n"
+    },
+    "5-91932-vmmap.error.json": {
+      "code": 255,
+      "killed": true,
+      "signal": null,
+      "message": "Command failed: /usr/bin/vmmap -summary 91932\nCan't examine target process's malloc zone PartitionAlloc_0x1328f3828, so memory analysis will be incomplete or incorrect.\nReason: failed to resolve canonical path for /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.84/Google Chrome Framework in dyld shared cache.\n\n",
+      "stdout": "",
+      "stderr": "Can't examine target process's malloc zone PartitionAlloc_0x1328f3828, so memory analysis will be incomplete or incorrect.\nReason: failed to resolve canonical path for /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.84/Google Chrome Framework in dyld shared cache.\n\n"
+    },
+    "6-91932-vmmap.error.json": {
+      "code": 255,
+      "killed": true,
+      "signal": null,
+      "message": "Command failed: /usr/bin/vmmap -summary 91932\nCan't examine target process's malloc zone PartitionAlloc_0x1328f3828, so memory analysis will be incomplete or incorrect.\nReason: failed to resolve canonical path for /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.84/Google Chrome Framework in dyld shared cache.\n\n",
+      "stdout": "",
+      "stderr": "Can't examine target process's malloc zone PartitionAlloc_0x1328f3828, so memory analysis will be incomplete or incorrect.\nReason: failed to resolve canonical path for /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.84/Google Chrome Framework in dyld shared cache.\n\n"
+    }
+  },
+  "interpretation": [
+    "Main ordinaryMALLOC_SMALL/TINY dirty categories remain constant in these18snapshots;PartitionAlloc/V8 tags anduntaggedVM_ALLOCATE vary substantially.",
+    "Pinned Chrome155page_allocator.h mapsVM253PartitionAlloc/255V8;actualvmmap records contain those tags. footprintapp-specific labels alone do not identify individual allocation owners.",
+    "Virtual reservation is not physical footprint. Reclaimable/clean fields mustnot beaddedto dirty footprint asanother disjoint total.",
+    "Snapshots are live/non-atomic;footprint/vmmap canperturb timings.6vmmap attempts hit the fixed1500ms limit;dyld/PartitionAlloc inspection warnings are preserved. No timeout relaxation.",
+    "No unique object/allocator-retention/Wasmmemory cause proved. Original andprobe-reuse30min growthfailures remain failed. No forcedGC/VMreplacement/cachepurge."
+  ],
+  "sourceClosed": {
+    "created": 8,
+    "closed": 8,
+    "crosssite": 6,
+    "leaseExpired": 7
+  },
+  "cleanupErrors": [],
+  "nativeHelperCleanup": {
+    "pid": 91763,
+    "exited": true,
+    "exitCode": 0,
+    "signal": null
+  },
+  "artifacts": {
+    "session-memory-forensics-v1/frozen-version.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/frozen-version.json",
+      "sha256": "99e5d3c5ec2f9c274b82f07a234f29ecc2220b5a2fab155024ba4111d571c63b"
+    },
+    "diagnose-mac-memory-v1.mjs": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/diagnose-mac-memory-v1.mjs",
+      "sha256": "8a83a53d48105308506bbd5c5b9896b4efd6277874e43ff7f3214ef0c470d869"
+    },
+    "session-memory-forensics-v1/source-exit.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/source-exit.json",
+      "sha256": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e"
+    },
+    "session-memory-forensics-v1/viewer-exit.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/viewer-exit.json",
+      "sha256": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e"
+    },
+    "session-memory-forensics-v1/results/status.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/status.json",
+      "sha256": "997a3f48fdcc2f30e1c74d442229e91f7529267a02caf364c39274035d5cdb6d"
+    },
+    "session-memory-forensics-v1/results/report.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/report.json",
+      "sha256": "ff6939ba75734b96cdfea3ad441aa77066be2d7ba85752949fb3debed9cfaf2e"
+    },
+    "session-memory-forensics-v1/results/cleanup.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/cleanup.json",
+      "sha256": "b9819659efd7e9210766f945b7402b4a09487120c3fffdfec3a9240fb116fe93"
+    },
+    "session-memory-forensics-v1/results/mac-map/attempts.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/attempts.jsonl",
+      "sha256": "828ebd0b924e25bce9f5229e1a9076b0016ff40bad0cde7b23d89d484fefb321"
+    },
+    "session-memory-forensics-v1/results/mac-map/collector-cleanup.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/collector-cleanup.json",
+      "sha256": "66ce063c8ab605bfd4230e8e17a6199e70a79fe6afe9b156ca9dc9a760a828b5"
+    },
+    "session-memory-forensics-v1/results/mac-map/1-91898-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/1-91898-footprint.json",
+      "sha256": "0ef1521ba155bba191dbc2940d71dbd8230ef77799df91e06b39f553c7eb22a2"
+    },
+    "session-memory-forensics-v1/results/mac-map/1-91932-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/1-91932-footprint.json",
+      "sha256": "941b46349ef189f97b4091ad8fa6c2761cc8bf0ff23666b94fd2b91684a45b82"
+    },
+    "session-memory-forensics-v1/results/mac-map/1-91937-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/1-91937-footprint.json",
+      "sha256": "12294db48c38a12cbc9d91697c9d4a07a789664508e635a6fd78da5a3a113d33"
+    },
+    "session-memory-forensics-v1/results/mac-map/2-91898-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/2-91898-footprint.json",
+      "sha256": "dd700f1c041fe93192c0426abd64c71bfe1a71ca3dacee3f8d994062d7a8e082"
+    },
+    "session-memory-forensics-v1/results/mac-map/2-91932-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/2-91932-footprint.json",
+      "sha256": "4dbe310f4226136da2ee13e44fcebe2c35d7c91726365e985ec190a963fb06ec"
+    },
+    "session-memory-forensics-v1/results/mac-map/2-91937-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/2-91937-footprint.json",
+      "sha256": "f0314e8078e1734490f2f4806b0270cfb4d762c365f16ab95097b5afb507cbf4"
+    },
+    "session-memory-forensics-v1/results/mac-map/3-91898-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/3-91898-footprint.json",
+      "sha256": "dbddefe50211cd6d4f6a93b316319eaba88318de1e9be07c93f58a1b1850488a"
+    },
+    "session-memory-forensics-v1/results/mac-map/3-91932-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/3-91932-footprint.json",
+      "sha256": "7d7aa913adc871283b2187040700c5b4de6893f1354213887a621f1e692d8b9c"
+    },
+    "session-memory-forensics-v1/results/mac-map/3-91937-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/3-91937-footprint.json",
+      "sha256": "a767e9e99879b7c7e6c3659cf354d1cc7916dde3a4e78b16e82aaa93edd6a03e"
+    },
+    "session-memory-forensics-v1/results/mac-map/4-91898-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/4-91898-footprint.json",
+      "sha256": "831670a4a21110645143f9c214ee5dbb6f1185e64bbf017eba3f69c5fd44c1ff"
+    },
+    "session-memory-forensics-v1/results/mac-map/4-91932-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/4-91932-footprint.json",
+      "sha256": "2dc6b3edf9c69bd3fa106e3e3cf6d2edf61a397c226c83a269f193bdc19089b2"
+    },
+    "session-memory-forensics-v1/results/mac-map/4-91937-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/4-91937-footprint.json",
+      "sha256": "61f0f5ef543c68b99bd2607e877179c5bf9c4fcb10e886b71cca60f7cfbccfd7"
+    },
+    "session-memory-forensics-v1/results/mac-map/5-91898-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/5-91898-footprint.json",
+      "sha256": "4da29a94dd690166dc86ec6bd5d544335b42c8b49b61ab4536449a5712f17702"
+    },
+    "session-memory-forensics-v1/results/mac-map/5-91932-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/5-91932-footprint.json",
+      "sha256": "1fa623f681f09adc95e84c7f2d4f1209abecac5263ddda051eca56a6ea7a799f"
+    },
+    "session-memory-forensics-v1/results/mac-map/5-91937-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/5-91937-footprint.json",
+      "sha256": "32fb1c9a414bc4e5a780671929dcab96687a2e4510fd4621b92358ff2e569b25"
+    },
+    "session-memory-forensics-v1/results/mac-map/6-91898-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/6-91898-footprint.json",
+      "sha256": "daa01faeaaececee0784404fd6dd936be3ee51cf110f78c0ab36818cbb5bbc5c"
+    },
+    "session-memory-forensics-v1/results/mac-map/6-91932-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/6-91932-footprint.json",
+      "sha256": "d677448e0c5021c4c521d3d4e621c65253d7436b3ffd539d8c6066e4546cec7c"
+    },
+    "session-memory-forensics-v1/results/mac-map/6-91937-footprint.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/6-91937-footprint.json",
+      "sha256": "b7e86be861270f22005e6a117ca41d41bbff2184283bd47548d8c0dfacef62ea"
+    },
+    "session-memory-forensics-v1/results/mac-map/1-91898-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/1-91898-vmmap.stderr.txt",
+      "sha256": "714dcb57bf2a782a3f67f63a0f34ec85e178905142ea625140fa32f9972eaee5"
+    },
+    "session-memory-forensics-v1/results/mac-map/1-91898-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/1-91898-vmmap.txt",
+      "sha256": "f3b039608b86f2f07a4e7f56f5d3ce3cd3d4d8094dad36cce71aacb78015ca73"
+    },
+    "session-memory-forensics-v1/results/mac-map/1-91932-vmmap.error.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/1-91932-vmmap.error.json",
+      "sha256": "1979d44001f536dcba42b93e66ce2104c0dca779fabb35b09dddd32b038762ba"
+    },
+    "session-memory-forensics-v1/results/mac-map/1-91937-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/1-91937-vmmap.stderr.txt",
+      "sha256": "3322625c90f845e7b61b1434688d75a1b9f1aedb4ca44a71aba2797ba271b2cc"
+    },
+    "session-memory-forensics-v1/results/mac-map/1-91937-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/1-91937-vmmap.txt",
+      "sha256": "9fd7929b410c07a5654f424b7a21045ad4ee7c74051c163284a0e98d0d779687"
+    },
+    "session-memory-forensics-v1/results/mac-map/2-91898-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/2-91898-vmmap.stderr.txt",
+      "sha256": "714dcb57bf2a782a3f67f63a0f34ec85e178905142ea625140fa32f9972eaee5"
+    },
+    "session-memory-forensics-v1/results/mac-map/2-91898-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/2-91898-vmmap.txt",
+      "sha256": "5a7442f43a8b688d26f01701bc6a3de1295ee4faf443a13b2751f63bb17c45cd"
+    },
+    "session-memory-forensics-v1/results/mac-map/2-91932-vmmap.error.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/2-91932-vmmap.error.json",
+      "sha256": "b9208c0051ba08950c93bb38b1938cb1f61b2d863af6504e8345f8bed9ee8908"
+    },
+    "session-memory-forensics-v1/results/mac-map/2-91937-vmmap.error.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/2-91937-vmmap.error.json",
+      "sha256": "8d5476298bfb32572e2e05d06c100b5a0b539219edfd15f4ee5f8e90edd34619"
+    },
+    "session-memory-forensics-v1/results/mac-map/3-91898-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/3-91898-vmmap.stderr.txt",
+      "sha256": "714dcb57bf2a782a3f67f63a0f34ec85e178905142ea625140fa32f9972eaee5"
+    },
+    "session-memory-forensics-v1/results/mac-map/3-91898-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/3-91898-vmmap.txt",
+      "sha256": "e6435e13c4714d1507e0eba920ca88d151978157aca7caf3f373e9f07a7fcaf1"
+    },
+    "session-memory-forensics-v1/results/mac-map/3-91932-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/3-91932-vmmap.stderr.txt",
+      "sha256": "ff53861d7c8f94984fb443427d2712f5a7e1df53422050904beda3a71d92a058"
+    },
+    "session-memory-forensics-v1/results/mac-map/3-91932-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/3-91932-vmmap.txt",
+      "sha256": "b97f205897cbbfe5a7616ffd167224baf2f750d7cc5289f237da10650ac752e5"
+    },
+    "session-memory-forensics-v1/results/mac-map/3-91937-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/3-91937-vmmap.stderr.txt",
+      "sha256": "3322625c90f845e7b61b1434688d75a1b9f1aedb4ca44a71aba2797ba271b2cc"
+    },
+    "session-memory-forensics-v1/results/mac-map/3-91937-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/3-91937-vmmap.txt",
+      "sha256": "f3c81bcfcfe0ae26fbfbe05f494c61f985756e108ea141d5f5f3ac6c49246042"
+    },
+    "session-memory-forensics-v1/results/mac-map/4-91898-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/4-91898-vmmap.stderr.txt",
+      "sha256": "714dcb57bf2a782a3f67f63a0f34ec85e178905142ea625140fa32f9972eaee5"
+    },
+    "session-memory-forensics-v1/results/mac-map/4-91898-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/4-91898-vmmap.txt",
+      "sha256": "78194f3e54b1ed5ddd6d46f3382f653c26c29d3e1e5536c4d929d8087c9b1349"
+    },
+    "session-memory-forensics-v1/results/mac-map/4-91932-vmmap.error.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/4-91932-vmmap.error.json",
+      "sha256": "b9208c0051ba08950c93bb38b1938cb1f61b2d863af6504e8345f8bed9ee8908"
+    },
+    "session-memory-forensics-v1/results/mac-map/4-91937-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/4-91937-vmmap.stderr.txt",
+      "sha256": "3322625c90f845e7b61b1434688d75a1b9f1aedb4ca44a71aba2797ba271b2cc"
+    },
+    "session-memory-forensics-v1/results/mac-map/4-91937-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/4-91937-vmmap.txt",
+      "sha256": "ecfdb5d8a45f104fc7b1060e083e4a8af79f4b8478f790dfb4b84459cee00ef0"
+    },
+    "session-memory-forensics-v1/results/mac-map/5-91898-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/5-91898-vmmap.stderr.txt",
+      "sha256": "714dcb57bf2a782a3f67f63a0f34ec85e178905142ea625140fa32f9972eaee5"
+    },
+    "session-memory-forensics-v1/results/mac-map/5-91898-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/5-91898-vmmap.txt",
+      "sha256": "6ed93b9cf84d535c6788457135b3a08ba0457b072aa3f4adfea534211ec26b8a"
+    },
+    "session-memory-forensics-v1/results/mac-map/5-91932-vmmap.error.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/5-91932-vmmap.error.json",
+      "sha256": "b9208c0051ba08950c93bb38b1938cb1f61b2d863af6504e8345f8bed9ee8908"
+    },
+    "session-memory-forensics-v1/results/mac-map/5-91937-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/5-91937-vmmap.stderr.txt",
+      "sha256": "3322625c90f845e7b61b1434688d75a1b9f1aedb4ca44a71aba2797ba271b2cc"
+    },
+    "session-memory-forensics-v1/results/mac-map/5-91937-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/5-91937-vmmap.txt",
+      "sha256": "a8cd81d743982a0e5734a7519449a20ebe843cc5d4d873db33e057c549bba9fd"
+    },
+    "session-memory-forensics-v1/results/mac-map/6-91898-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/6-91898-vmmap.stderr.txt",
+      "sha256": "714dcb57bf2a782a3f67f63a0f34ec85e178905142ea625140fa32f9972eaee5"
+    },
+    "session-memory-forensics-v1/results/mac-map/6-91898-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/6-91898-vmmap.txt",
+      "sha256": "6085f7e503239e9db4ae87a05d63c33c5615a71c9ca7dc4db61b2cdf160c0217"
+    },
+    "session-memory-forensics-v1/results/mac-map/6-91932-vmmap.error.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/6-91932-vmmap.error.json",
+      "sha256": "b9208c0051ba08950c93bb38b1938cb1f61b2d863af6504e8345f8bed9ee8908"
+    },
+    "session-memory-forensics-v1/results/mac-map/6-91937-vmmap.stderr.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/6-91937-vmmap.stderr.txt",
+      "sha256": "3322625c90f845e7b61b1434688d75a1b9f1aedb4ca44a71aba2797ba271b2cc"
+    },
+    "session-memory-forensics-v1/results/mac-map/6-91937-vmmap.txt": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/results/mac-map/6-91937-vmmap.txt",
+      "sha256": "f8b3aad82ab155392eee6a60d1e6b385196d88a988435114a6591991ff995483"
+    },
+    "session-memory-forensics-v1/tag-sources/blink_gc_memory_dump_provider.cc": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/blink_gc_memory_dump_provider.cc",
+      "sha256": "d62683834625bdc6cedbe74be6ed68034f36e11e4fb84cea84a655c3767b76e4"
+    },
+    "session-memory-forensics-v1/tag-sources/memory-provider-receipt.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/memory-provider-receipt.json",
+      "sha256": "fe62c46ed3ceda6a74b7cdbffb2256e78b24017495ff0c72f0246b51cbcc84f6"
+    },
+    "session-memory-forensics-v1/tag-sources/partition-page-allocator.h": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/partition-page-allocator.h",
+      "sha256": "2ef57bd01707f69865a055297e6d9ef3c7f1d111d2867c9d04fcfddaf077ec99"
+    },
+    "session-memory-forensics-v1/tag-sources/receipt.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/receipt.json",
+      "sha256": "e3240b25074d2dcc74d19394801c81709a35129698ec6386e0b4c839497336f7"
+    },
+    "session-memory-forensics-v1/tag-sources/tracing_handler.cc": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/tracing_handler.cc",
+      "sha256": "c576569f0105fca80343bc9cb77a4cf3e2e961fd225b19a390680b3ab45193d2"
+    },
+    "session-memory-forensics-v1/tag-sources/v8_isolate_memory_dump_provider.cc": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-forensics-v1/tag-sources/v8_isolate_memory_dump_provider.cc",
+      "sha256": "8609f9421c4edc3462ed2c992f7fda3e772a44115520bfeb9870b71c0685caa4"
+    }
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "noEightHourActive": true
+}

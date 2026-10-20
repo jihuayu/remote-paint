@@ -1264,3 +1264,11 @@ owner.after的原metrics在finally关闭历史procFD之前采集，不能当探�
 完整Mac首次运行再次触发既有helper新路径2s ready超时，pid95392被SIGKILL后真实回收；原失败保留，相同代码/门槛独立复验通过，原因仍未查明，不宣称修复启动问题。Linux首次失败为自建测试工作目录的宿主绝对链接在容器内无效，修正容器工作目录链接后通过，冻结代码未改。
 
 此修复确保内存账不会因wrapper提前收集而少计，不证明前两次footprint增长全部由此造成，也不代表内存已物理归还。独立VM分类取证仍运行旧579文件副本，结果不会被此改动混淆。8小时与N1完整组合仍未通过。
+
+## Mac原生内存类别的独立取证
+
+使用原579文件不可变副本（不含后续退休Wasm记账修复），完成600秒请求、623.250秒实际负载：660次更新、52次resize、38次输入、6次跨站、7个secondary与7次真实30秒租约到期；三个主页面/两个Worker身份持续保留，Source创建与关闭8/8，清理无错误。
+
+独立只读采样器围绕每次系统工具调用核验3个自有renderer的PID/start/UID/parent。6轮18份footprint有效；vmmap12份成功、6份在原1500ms上限超时，dyld/PartitionAlloc警告与错误原样保留。记录实际Mac Chrome155.0.8059.84。主要变化位于PartitionAlloc/V8标签及未标记VM_ALLOCATE，普通MALLOC_SMALL/TINY各轮不变；类别变化不能确定具体对象或独占物理内存，虚拟保留量不能计为物理占用。
+
+本轮无物理增长策略，属于归因诊断，不是C5增长通过。没有强制GC、替换主VM、放宽门槛或删除缓存；此前两次30分钟增长失败继续保留。证据见`docs/evidence/session-memory-forensics.json`；8小时与完整N1仍未通过。
