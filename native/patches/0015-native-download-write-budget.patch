@@ -1,0 +1,91 @@
+--- a/components/download/internal/common/base_file.cc
++++ b/components/download/internal/common/base_file.cc
+@@ -7,6 +7,7 @@
+ #include <memory>
+ #include <utility>
+ 
++#include "base/command_line.h"
+ #include "base/compiler_specific.h"
+ #include "base/containers/heap_array.h"
+ #include "base/files/file.h"
+@@ -43,6 +44,10 @@
+ namespace download {
+ 
+ namespace {
++// Fixed outer file-extent bound for the trusted Remote Paint browser process.
++// This does not bound network buffers, total spool bytes or Download metadata.
++constexpr int64_t kRemotePaintDownloadMaxBytes = 4 * 1024 * 1024;
++
+ class FileErrorData : public base::trace_event::ConvertableToTraceFormat {
+  public:
+   FileErrorData(const char* operation,
+@@ -106,7 +111,11 @@
+ 
+ }  // namespace
+ 
+-BaseFile::BaseFile(uint32_t download_id) : download_id_(download_id) {
++BaseFile::BaseFile(uint32_t download_id)
++    : download_id_(download_id),
++      remote_paint_write_limited_(
++          base::CommandLine::ForCurrentProcess()->HasSwitch(
++              "remote-paint-token")) {
+   DETACH_FROM_SEQUENCE(sequence_checker_);
+ }
+ 
+@@ -203,6 +212,16 @@
+                               DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
+   }
+ 
++  // Reject the entire range before sparse bookkeeping, hashing or any OS write.
++  // Subtraction after the offset check cannot overflow, even for INT64_MAX.
++  if (remote_paint_write_limited_ &&
++      (offset < 0 || offset > kRemotePaintDownloadMaxBytes ||
++       data.size() >
++           static_cast<uint64_t>(kRemotePaintDownloadMaxBytes - offset))) {
++    return LogInterruptReason("Remote Paint download write budget", 0,
++                              DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE);
++  }
++
+   // TODO(phajdan.jr): get rid of this check.
+   if (data.size() == 0) {
+     return DOWNLOAD_INTERRUPT_REASON_NONE;
+@@ -465,6 +484,26 @@
+   CONDITIONAL_TRACE(BEGIN(
+       "download", "DownloadFileOpen", perfetto::Track(download_id_),
+       "file_name", full_path_.AsUTF8Unsafe(), "bytes_so_far", bytes_so_far_));
++
++  // Check both the resume cursor and the actual file before hashing, seeking
++  // or truncating it. A prior oversized artifact is not silently admitted by
++  // supplying a smaller cursor. Initialize still owns its normal cleanup.
++  if (remote_paint_write_limited_) {
++    const int64_t size = file_.GetLength();
++    if (size < 0) {
++      const auto error = logging::GetLastSystemErrorCode();
++      ClearFile();
++      return LogSystemError("Remote Paint download file size", error);
++    }
++    if (bytes_so_far_ < 0 || bytes_so_far_ > kRemotePaintDownloadMaxBytes ||
++        size > kRemotePaintDownloadMaxBytes) {
++      *bytes_wasted = size;
++      ClearFile();
++      return LogInterruptReason("Remote Paint download resume budget", 0,
++                                DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE);
++    }
++  }
++
+ 
+   // For sparse file, skip hash validation.
+   if (is_sparse_file_) {
+--- a/components/download/public/common/base_file.h
++++ b/components/download/public/common/base_file.h
+@@ -314,6 +314,10 @@
+   // ID of the download, used for trace events.
+   uint32_t download_id_;
+ 
++  // Snapshot once: a later command-line mutation cannot widen an owned file.
++  // The fixed cap applies only when launched as a Remote Paint browser.
++  const bool remote_paint_write_limited_;
++
+   // Mojo remote for quarantine service.
+   mojo::Remote<quarantine::mojom::Quarantine> quarantine_service_;
+ 

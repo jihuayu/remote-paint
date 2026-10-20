@@ -1,0 +1,238 @@
+{
+  "at": "2026-10-20T01:24:15.679017+00:00",
+  "status": "native-basefile-write-cap-qualified-within-scope",
+  "scope": "Actual Linux ARM64 BaseFile single-file extent bound of 4MiB under remote-paint-token presence. Not a browser integration, total-spool/item/network-buffer/resident-memory or Playwright metadata retirement qualification.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/download-artifact-cleanup-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "97135d404dd4aa5fa777d46ccb3fd9cdeb1d46ecb7d783a11103bebab23c9e8b",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-write-cap-candidate-v1/frozen-version.json",
+  "executedManifestSha256": "b201b56f34c31882e82196af6e2626aa8827f36f2794e5269655a6863868fe7d",
+  "sourceFilesExecuted": 1135,
+  "codeDeltaPaths": [
+    "native/chromium/BUILD.gn",
+    "native/chromium/download_file_test_main.cc",
+    "native/chromium/download_file_unittest.cc",
+    "native/patches/0015-native-download-write-budget.patch"
+  ],
+  "buildManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-write-cap-build-v3/manifest.json",
+  "buildManifestSha256": "6a11c38697748c424dc0b345e88a81cd1586e8b90277a53d09cf5bd79b52f663",
+  "buildActualExitCode": 0,
+  "buildLogSha256": "a47afdf0320f1b9ed310d57030d01045970401c3c81b0abd3216a91230eb11c3",
+  "cppTestManifestSha256": "5e4532429c705ba1d134c7d00543ee070570509e6d75e09a6c6a7d47d3d496e7",
+  "cppTestLogSha256": "6a2c29feadd482aad13c9c725d487e54b28fd692d28357e3ff13ca65e82c1c5e",
+  "gtestSha256": "5a5d5048446ce02af4e334024ec3a943e2d123720381d9cdc18203d6a0d2fa32",
+  "cppTests": {
+    "total": 45,
+    "upstream": 35,
+    "new": 10,
+    "passed": 45,
+    "disabled": 0,
+    "failed": 0,
+    "actualExitCode": 0,
+    "allTestsUnfiltered": true,
+    "allStatusRunCompleted": true,
+    "newNames": [
+      "EmptyAndExactLimitRemainValid",
+      "RejectedWriteHasNoPermittedPrefix",
+      "SparseWritesAndIntegerEdgesUseFileExtent",
+      "OversizedResumeIsRejectedBeforeTruncation",
+      "InvalidResumeCursorCannotWidenOrTruncate",
+      "ExactSparseResumeStillRejectsNextByte",
+      "RemovingSwitchCannotWidenConstructedOwner",
+      "NativeFlagCannotDisableBudgetWithBadValue",
+      "NonNativeDownloadKeepsOriginalBehavior",
+      "CancelRemovesAcceptedPrefixAfterLimitError"
+    ]
+  },
+  "testArtifacts": {
+    "download_file_tests": "78afe9824c1137f55c1d5b89fbe4837575915b39005c307e59c9662d231b5df5",
+    "icudtl.dat": "495c45cc7a65562ec461f860c310c6b66e006acd96833f61d1aa31f77fe18cf1"
+  },
+  "actualTestMachine": "aarch64",
+  "fullJs": {
+    "at": "2026-10-19T23:59:38.232119+00:00",
+    "status": "current-native-candidate-full-js-qualified-only",
+    "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-write-cap-candidate-v1/frozen-version.json",
+    "candidateManifestSha256": "b201b56f34c31882e82196af6e2626aa8827f36f2794e5269655a6863868fe7d",
+    "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v61/manifest.json",
+    "fullJsManifestSha256": "1db55bbece84b36bb4e30611a1a7d73ea1a6932ef1e723f588a70d7e2551d270",
+    "sourceFiles": 1135,
+    "testFiles": 138,
+    "testsEach": 1425,
+    "results": {
+      "mac": {
+        "tests": 1425,
+        "passed": 1410,
+        "skipped": 15,
+        "failed": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "actualExitCode": 0,
+        "receiptSha256": "2ff3771c5ed69ca1a134e5b5699f144cbf918a73a2678d71da9c6d41040840e7",
+        "logSha256": "54523e42e34dbb355e0b2c708558178450562959468a3fc1b65c609ef54179cd"
+      },
+      "linux": {
+        "tests": 1425,
+        "passed": 1419,
+        "skipped": 6,
+        "failed": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "actualExitCode": 0,
+        "receiptSha256": "cdf72fd49627da54da5f1ba06768f005bc8f782866410912df11ed0c029260f9",
+        "logSha256": "e0e41173f098ab39aacce92cab9cbcf6447aae055fd6ee1a09ed07e766311d85"
+      }
+    },
+    "allFrozenSourceAndDependenciesRevalidated": true,
+    "freshFullJs1425Both": true,
+    "linuxContainerId": "39273358fc3c6499d16d1133076c4a2d0dfade6fe457464b3b790c14fbaef0d1",
+    "linuxStoppedPidZeroExit0NoOomBeforeRemoval": true,
+    "linuxContainerRemoved": true,
+    "qualifierScriptSha256": "d1869065cbcdadad03329dfc7a5f3fcf6e33e147d854e0f38bce02435b90a0a5",
+    "nativeDownloadBaseFileWriteCapQualified": false,
+    "browserDownloadSpoolPrewriteHardCapQualified": false,
+    "playwrightDownloadMetadataPhysicalBoundQualified": false,
+    "productionNativeFullyQualified": false,
+    "K6Complete": false,
+    "eightHourPassed": false,
+    "wholeGoalQualified": false,
+    "scope": "Full JS regression of this exact C++ candidate; actual C++ build/tests and browser integration remain independent pending gates."
+  },
+  "parentSdkEvidenceOnly": {
+    "parentManifestSha256": "97135d404dd4aa5fa777d46ccb3fd9cdeb1d46ecb7d783a11103bebab23c9e8b",
+    "all70MappedInputsByteEqual": true,
+    "allSdkSourceByteEqual": true,
+    "archives": {
+      "node": {
+        "sha256": "1c125f6044e72f82d34d6d12f9e0557ec39333cd8001138a3dbd458654e44b3d",
+        "members": [
+          "package/README.md",
+          "package/agent-download.mjs",
+          "package/agent-observation.mjs",
+          "package/agent.d.mts",
+          "package/agent.mjs",
+          "package/backend-transport.mjs",
+          "package/backend.d.mts",
+          "package/backend.mjs",
+          "package/package.json",
+          "package/viewer-channel.d.mts",
+          "package/viewer-channel.mjs",
+          "package/viewer-connection.d.mts",
+          "package/viewer-connection.mjs",
+          "package/viewer-control.d.mts",
+          "package/viewer-control.mjs",
+          "package/viewer-frame.d.mts",
+          "package/viewer-frame.mjs",
+          "package/viewer-telemetry.d.mts",
+          "package/viewer-telemetry.mjs",
+          "package/viewer.d.mts",
+          "package/viewer.mjs"
+        ],
+        "version": "0.0.0-dev.0"
+      },
+      "python": {
+        "sha256": "d10813e8dfe82657cc77e0a944c1c02cfb241a6eca8ee1b4a5ab1e759d1b0823",
+        "members": [
+          "remote_paint_session-0.0.0.dev0.dist-info/METADATA",
+          "remote_paint_session-0.0.0.dev0.dist-info/RECORD",
+          "remote_paint_session-0.0.0.dev0.dist-info/WHEEL",
+          "remote_paint_session-0.0.0.dev0.dist-info/top_level.txt",
+          "remote_paint_session/__init__.py",
+          "remote_paint_session/_agent.py",
+          "remote_paint_session/_client.py",
+          "remote_paint_session/_download.py",
+          "remote_paint_session/_observation.py",
+          "remote_paint_session/_transport.py",
+          "remote_paint_session/py.typed"
+        ],
+        "version": "0.0.0.dev0"
+      }
+    },
+    "nodeTests": 175,
+    "pythonTests": 118,
+    "freshInstalledSdkRerunThisTask": false
+  },
+  "failedBuildsPreserved": [
+    {
+      "attempt": 1,
+      "actualExitCode": 1,
+      "logSha256": "1304e783e29a0252a77827f4c0d442577fcd240582f0585b28cf514699867e0c",
+      "buildManifestSha256": "2bfd00c5a4c7db882bb64d5ebf755da6d288ab257c0c0675d7f8c7c9462c9286",
+      "retirementSha256": "3e1482784777710171301625f45af976aed47e286fd4deba1a381fe626f2876d"
+    },
+    {
+      "attempt": 2,
+      "actualExitCode": 1,
+      "logSha256": "042b4143ee5263fdf238a931047ff847447f68c012447f9c3d813dfd9eff6973",
+      "buildManifestSha256": "e4ef57d5a9c2f1a0e21636eb881e3fd6cdd13e627c1dde156a54653848f4c34d",
+      "retirementSha256": "1dfcf057c0f78c94959f9476a40a84872ede83b6f8ebb95a3083afbf5628be6d"
+    }
+  ],
+  "goEnvironmentRepairs": {
+    "cachePreflightActual0": true,
+    "defaultTmpfsNoexecConfirmed": true,
+    "dedicatedGoTmpfsExecConfirmed": true,
+    "sameGeneratorPreflightActual0": true,
+    "generatedOutputs": 26,
+    "generatorProofSha256": "590da61ff37b2da2c15ec60029a94c98abec0e6ded8079b49867eb3370d8f703"
+  },
+  "realBaseFileLinkageProofSha256": "9964f75bb6a5663839e56eedebc8febc7206d38572f5eded020e955fd3231453",
+  "all19CanonicalBrowserFilesUnchanged": true,
+  "cleanup": {
+    "at": "2026-10-20T01:24:15.679017+00:00",
+    "retired": [
+      {
+        "containerId": "aacb2b79b9455364f43a61037bbd32f623e893b04e551039486a17b82be2ea4e",
+        "stateBeforeRemoval": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-20T00:10:59.548506927Z",
+          "FinishedAt": "2026-10-20T01:19:57.268291808Z"
+        },
+        "removed": true
+      },
+      {
+        "containerId": "78bfe2984f13a34345ae498f4967430b61851abb9434f1729124b9dcf76d5923",
+        "stateBeforeRemoval": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-20T01:19:59.571529492Z",
+          "FinishedAt": "2026-10-20T01:19:59.674898136Z"
+        },
+        "removed": true
+      }
+    ],
+    "logsAndNewOwnedOutputAndGoCachePreserved": true,
+    "samplerHashAndIdentityUnchanged": true,
+    "originalFailedEightHourUnchanged": true,
+    "gitIndexEmpty": true,
+    "noCommitPush": true
+  },
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "nativeDownloadBaseFileWriteCapQualified": true,
+  "browserDownloadSpoolPrewriteHardCapQualified": false,
+  "playwrightDownloadMetadataPhysicalBoundQualified": false,
+  "K6Complete": false,
+  "productionNativeFullyQualified": false,
+  "eightHourPassed": false,
+  "wholeGoalQualified": false,
+  "noCommitPush": true,
+  "noSubagents": true
+}

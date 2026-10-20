@@ -41,3 +41,22 @@ test("serializer_tests") {
     "//testing/gtest",
   ]
 }
+
+# Actual upstream BaseFile and native pre-write filesystem contracts only.
+# Keep this independent of the headless_shell output and its retained graph.
+test("download_file_tests") {
+  sources = [
+    "download_file_test_main.cc",
+    "download_file_unittest.cc",
+    "//components/download/internal/common/base_file_unittest.cc",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/download/public/common:public",
+    "//crypto",
+    "//net",
+    "//testing/gtest",
+    "//url",
+  ]
+}
