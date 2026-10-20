@@ -22,7 +22,7 @@ def sha(path: Path) -> str:
 
 
 def inspect_archives(project: Path, node: Path, wheel: Path) -> dict:
-    node_names={'package/package.json','package/backend.mjs','package/backend.d.mts','package/viewer-connection.mjs','package/viewer-connection.d.mts','package/viewer-frame.mjs','package/viewer-frame.d.mts','package/viewer-channel.mjs','package/viewer-channel.d.mts','package/viewer.mjs','package/viewer.d.mts','package/README.md'}
+    node_names={'package/package.json','package/backend.mjs','package/backend.d.mts','package/viewer-connection.mjs','package/viewer-connection.d.mts','package/viewer-frame.mjs','package/viewer-frame.d.mts','package/viewer-channel.mjs','package/viewer-channel.d.mts','package/viewer-control.mjs','package/viewer-control.d.mts','package/viewer.mjs','package/viewer.d.mts','package/README.md'}
     with tarfile.open(node,'r:gz') as archive:
         members=archive.getmembers()
         assert {x.name for x in members}==node_names and len(members)==len(node_names)
@@ -119,7 +119,7 @@ def main() -> None:
                    NPM_CONFIG_GLOBALCONFIG=str(out/'empty-global.npmrc'))
         run('npm-install',[args.npm,'install','--offline','--ignore-scripts','--no-audit','--no-fund','--package-lock=false',str(args.node_archive)],cwd=consumer,env=env)
         expected=consumer/'node_modules/@remote-paint/session-client'
-        for name in ['backend.mjs','backend.d.mts','viewer-connection.mjs','viewer-connection.d.mts','viewer-frame.mjs','viewer-frame.d.mts','viewer-channel.mjs','viewer-channel.d.mts','viewer.mjs','viewer.d.mts','README.md','package.json']:assert sha(expected/name)==sha(args.project/'sdk'/name)
+        for name in ['backend.mjs','backend.d.mts','viewer-connection.mjs','viewer-connection.d.mts','viewer-frame.mjs','viewer-frame.d.mts','viewer-channel.mjs','viewer-channel.d.mts','viewer-control.mjs','viewer-control.d.mts','viewer.mjs','viewer.d.mts','README.md','package.json']:assert sha(expected/name)==sha(args.project/'sdk'/name)
         # ws is a private control-service fixture dependency, not an SDK
         # dependency. Copy its frozen bytes explicitly, with no source symlink.
         fixture_dependencies={}
@@ -160,7 +160,7 @@ test('installed DOM component owns and destroys its pending iframe without backe
  const children=[],container={ownerDocument:document,appendChild(child){children.push(child);}};
  const config={viewerOrigin:'https://viewer.example',gatewayOrigin:'https://gateway.example',sessionId:'ses_fixture',getTicket(){tickets++;throw new Error('No ticket before connect');}};
  assert.throws(()=>createViewer(container,{...config,apiKey:'backend-secret'}),e=>e.code==='VIEWER_INVALID_CONFIG');assert.equal(children.length,0);
- const viewer=createViewer(container,config),rejected=assert.rejects(viewer.ready,e=>e.code==='VIEWER_CLOSED');assert.equal(viewer.state.state,'loading');assert.equal(children.length,1);await viewer.destroy();await rejected;assert.equal(viewer.state.state,'destroyed');assert.equal(tickets,0);assert.equal(listeners.size,0);assert.equal(main.createViewer,undefined);
+ const viewer=createViewer(container,config),rejected=assert.rejects(viewer.ready,e=>e.code==='VIEWER_CLOSED');assert.equal(viewer.state.state,'loading');assert.equal(viewer.control.held,false);await assert.rejects(viewer.takeControl(),e=>e.code==='VIEWER_CONTROL_UNAVAILABLE');await assert.rejects(viewer.releaseControl(),e=>e.code==='VIEWER_CONTROL_UNAVAILABLE');assert.equal(children.length,1);await viewer.destroy();await rejected;assert.equal(viewer.state.state,'destroyed');assert.equal(tickets,0);assert.equal(listeners.size,0);assert.equal(main.createViewer,undefined);
  assert.ok(fileURLToPath(import.meta.resolve('@remote-paint/session-client/viewer')).includes('/node_modules/@remote-paint/session-client/viewer.mjs'));
 });
 test('unsupported internal and CommonJS exports are predictably refused',async()=>{

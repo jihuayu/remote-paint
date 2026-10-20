@@ -1,5 +1,5 @@
 const integer=(v,min=1,max=Number.MAX_SAFE_INTEGER)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
-const codes=new Set(['CHANNEL_CLOSED','CHANNEL_PROTOCOL','CHANNEL_TIMEOUT','CHANNEL_ABORTED','CHANNEL_BUSY','CHANNEL_HANDLER_FAILED','VIEWER_INVALID_CONFIG','VIEWER_INVALID_TICKET','VIEWER_CLOSED','VIEWER_ABORTED','VIEWER_ACCESS_ENDED','VIEWER_PROTOCOL_ERROR','VIEWER_STREAM_CLOSED','VIEWER_TICKET_BUSY','VIEWER_TICKET_TIMEOUT','VIEWER_TICKET_UNAVAILABLE','VIEWER_HANDSHAKE_TIMEOUT','VIEWER_TRANSPORT_UNAVAILABLE','VIEWER_CONFIG_INVALID','VIEWER_CONFIG_TIMEOUT','VIEWER_CONFIG_ABORTED']);
+const codes=new Set(['CHANNEL_CLOSED','CHANNEL_PROTOCOL','CHANNEL_TIMEOUT','CHANNEL_ABORTED','CHANNEL_BUSY','CHANNEL_HANDLER_FAILED','VIEWER_INVALID_CONFIG','VIEWER_INVALID_TICKET','VIEWER_CLOSED','VIEWER_ABORTED','VIEWER_ACCESS_ENDED','VIEWER_PROTOCOL_ERROR','VIEWER_STREAM_CLOSED','VIEWER_TICKET_BUSY','VIEWER_TICKET_TIMEOUT','VIEWER_TICKET_UNAVAILABLE','VIEWER_HANDSHAKE_TIMEOUT','VIEWER_TRANSPORT_UNAVAILABLE','VIEWER_CONFIG_INVALID','VIEWER_CONFIG_TIMEOUT','VIEWER_CONFIG_ABORTED','VIEWER_CONTROL_UNAVAILABLE','VIEWER_CONTROL_BUSY','VIEWER_CONTROL_DENIED','VIEWER_CONTROL_STALE']);
 export class ViewerChannelError extends Error {constructor(code){super('Viewer channel unavailable');this.name='ViewerChannelError';this.code=codes.has(code)?code:'CHANNEL_HANDLER_FAILED';}}
 const fail=code=>{throw new ViewerChannelError(code);};
 export const channelCode=value=>typeof value==='string'&&codes.has(value)?value:'CHANNEL_HANDLER_FAILED';
@@ -11,7 +11,7 @@ export function viewerNonce(){const bytes=new Uint8Array(32);globalThis.crypto.g
 export const validNonce=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
 const plain=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const exact=(value,names)=>plain(value)&&Object.keys(value).length===names.length&&names.every(k=>Object.hasOwn(value,k));
-const methods=new Set(['connect','disconnect','state','ticket']),events=new Set(['ready','state']);
+const methods=new Set(['connect','disconnect','state','ticket','take-control','release-control']),events=new Set(['ready','state','control']);
 const bytes=text=>new TextEncoder().encode(text).byteLength;
 function encode(value){let text;try{text=JSON.stringify(value);}catch{fail('CHANNEL_PROTOCOL');}if(typeof text!=='string'||text.length>16384||bytes(text)>16384)fail('CHANNEL_PROTOCOL');return text;}
 function parse(text){if(typeof text!=='string'||text.length>16384||bytes(text)>16384)fail('CHANNEL_PROTOCOL');try{return JSON.parse(text);}catch{fail('CHANNEL_PROTOCOL');}}

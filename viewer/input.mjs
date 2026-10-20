@@ -33,11 +33,11 @@ const displayStamp=frame=>({pageEpoch:frame.pageEpoch,viewportVersion:frame.view
  native:frame.native?{producer:typeof frame.native.producer==='string'&&frame.native.producer.length<=128?frame.native.producer:undefined,namespace:Array.isArray(frame.native.namespace)&&frame.native.namespace.length===2&&frame.native.namespace.every(n=>Number.isSafeInteger(n)&&n>=0)?frame.native.namespace.slice():null,frameToken:Number.isSafeInteger(frame.native.frameToken)?frame.native.frameToken:undefined}:null});
 const pointerCursors=new Set(['default','pointer','text','vertical-text','crosshair','move','wait','progress','help','not-allowed','no-drop','grab','grabbing','copy','alias','cell','context-menu','all-scroll','col-resize','row-resize','n-resize','s-resize','e-resize','w-resize','ne-resize','nw-resize','se-resize','sw-resize','ew-resize','ns-resize','nesw-resize','nwse-resize','zoom-in','zoom-out']);
 export class ViewerInput {
- constructor({canvas,proxy,button,label,feedbackLabel,overlay,pointerOverlay,send,inputWindow=16,ackTimeout=5000}){
+ constructor({canvas,proxy,button,label,feedbackLabel,overlay,pointerOverlay,send,onControl,inputWindow=16,ackTimeout=5000}){
   this.inputWindow=Math.max(1,Math.min(32,inputWindow|0));this.ackTimeout=ackTimeout;
-  Object.assign(this,{canvas,proxy,button,label,feedbackLabel,overlay,pointerOverlay,send});this.queue=[];this.active=false;this.frame=null;this.composing=false;
+  Object.assign(this,{canvas,proxy,button,label,feedbackLabel,overlay,pointerOverlay,send,onControl});this.queue=[];this.active=false;this.frame=null;this.composing=false;
   this.overlaySeq=0;this.lastFrameInputSeq=0;
-  button.onclick=()=>{if(this.active)this.send({type:'ReleaseControl',...this.tags()});else if(this.frame)this.send({type:'AcquireControl',...this.tags()});};
+  button.onclick=()=>{if(this.active)this.releaseControl();else this.requestControl();};
   const modifiers=e=>(e.altKey?1:0)|(e.ctrlKey?2:0)|(e.metaKey?4:0)|(e.shiftKey?8:0);
   const point=e=>{const r=this.canvas.getBoundingClientRect(),v=this.frame.viewport;return {x:Math.min(v.cssWidth-0.001,Math.max(0,(e.clientX-r.left)*v.cssWidth/r.width)),y:Math.min(v.cssHeight-0.001,Math.max(0,(e.clientY-r.top)*v.cssHeight/r.height))};};
   this.bindCanvas=target=>{this.canvas=target;
@@ -71,10 +71,13 @@ export class ViewerInput {
   window.addEventListener('blur',()=>{if(this.active)this.send({type:'ReleaseControl',...this.tags()});});
   this.reset();
  }
+ notifyControl(reason){try{this.onControl?.(reason);}catch{}}
+ requestControl(){if(!this.enabled||!this.frame||this.active)return false;this.button.disabled=true;this.send({type:'AcquireControl',...this.tags()});return true;}
+ releaseControl(){if(!this.active)return false;this.send({type:'ReleaseControl',...this.tags()});this.reset();return true;}
  tags(){return {sessionId:this.sessionId,pageEpoch:this.frame?.pageEpoch,viewportVersion:this.frame?.viewportVersion,lease:this.lease};}
- welcome(message){this.reset();this.frame=null;this.enabled=message.input;this.feedbackEnabled=message.inputFeedback===true;this.sessionId=message.sessionId;this.peerId=message.peerId;this.button.hidden=!this.enabled;}
- display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=displayStamp(frame);this.lastFrameInputSeq=Math.max(this.lastFrameInputSeq,frame.lastProcessedInputSeq??0);if(this.lastFrameInputSeq>this.editorConfirmedSeq&&(!this.optimisticState?.tentative||this.lastFrameInputSeq>this.editorPredictedSeq))this.invalidateEditor();else if(this.overlaySeq&&this.lastFrameInputSeq>=this.overlaySeq)this.clearOptimistic();if(this.feedbackSeq&&this.lastFrameInputSeq>=this.feedbackSeq)this.clearFeedbackLabel();this.flushFeedback();this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);}
- reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.nextSeq=undefined;this.pending=new Map();this.queue=[];this.eventContexts=new WeakMap();this.editorContext=0;this.contextBarrierSeq=0;this.editorConfirmedSeq=0;this.pendingFeedback=null;this.feedbackEpoch=null;this.lastFeedbackRevision=0;this.composing=false;this.proxy.value='';this.proxy.blur();this.invalidateEditor();this.clearPointer();this.clearFeedbackLabel();this.lastFrameInputSeq=0;this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';}
+ welcome(message){this.reset();this.frame=null;this.mode=undefined;this.controlHolder=null;this.controlExpiresAt=null;this.controlPageEpoch=null;this.controlViewportVersion=null;this.enabled=message.input;this.feedbackEnabled=message.inputFeedback===true;this.sessionId=message.sessionId;this.peerId=message.peerId;this.button.hidden=!this.enabled;this.notifyControl('welcome');}
+ display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=displayStamp(frame);this.lastFrameInputSeq=Math.max(this.lastFrameInputSeq,frame.lastProcessedInputSeq??0);if(this.lastFrameInputSeq>this.editorConfirmedSeq&&(!this.optimisticState?.tentative||this.lastFrameInputSeq>this.editorPredictedSeq))this.invalidateEditor();else if(this.overlaySeq&&this.lastFrameInputSeq>=this.overlaySeq)this.clearOptimistic();if(this.feedbackSeq&&this.lastFrameInputSeq>=this.feedbackSeq)this.clearFeedbackLabel();this.flushFeedback();this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);this.notifyControl('frame');}
+ reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.nextSeq=undefined;this.pending=new Map();this.queue=[];this.eventContexts=new WeakMap();this.editorContext=0;this.contextBarrierSeq=0;this.editorConfirmedSeq=0;this.pendingFeedback=null;this.feedbackEpoch=null;this.lastFeedbackRevision=0;this.composing=false;this.proxy.value='';this.proxy.blur();this.invalidateEditor();this.clearPointer();this.clearFeedbackLabel();this.lastFrameInputSeq=0;this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';this.notifyControl('reset');}
  clearFeedbackLabel(){this.feedbackSeq=0;if(this.feedbackLabel)this.feedbackLabel.textContent='';window.remotePaintInputStage=null;}
  showFeedbackLabel(seq,stage,preview=false){if(seq<=this.lastFrameInputSeq||seq<(this.feedbackSeq??0))return;this.feedbackSeq=seq;if(this.feedbackLabel)this.feedbackLabel.textContent=stage==='pending'?(preview?'本地预览 · 输入待确认':'输入待确认'):'输入已注入 · 等待画面';window.remotePaintInputStage={seq,stage};}
  clearOptimistic(){this.overlaySeq=0;if(this.overlay)this.overlay.replaceChildren();window.remotePaintOptimistic=null;}
@@ -139,16 +142,16 @@ export class ViewerInput {
  }
  message(message){
   if(message.type==='ControlState'){
-   this.mode=message.mode;if(message.mode!=='human'||message.holder!==this.peerId){this.reset();this.button.disabled=!this.enabled||!this.frame||message.mode!=='agent';}
+   this.mode=message.mode;this.controlHolder=message.holder;this.controlExpiresAt=message.expiresAt;this.controlPageEpoch=message.pageEpoch;this.controlViewportVersion=message.viewportVersion;if(message.mode!=='human'||message.holder!==this.peerId){this.reset();this.button.disabled=!this.enabled||!this.frame||message.mode!=='agent';}
    if(message.mode==='human'&&message.holder===this.peerId&&!this.active)this.button.disabled=true;
-   this.label.textContent=message.mode==='handoff'?'正在交接':message.mode==='agent'?'Agent 控制':message.holder===this.peerId?(this.active?'你正在操作':'正在接管'):'其他 Viewer 控制';return true;
+   this.label.textContent=message.mode==='handoff'?'正在交接':message.mode==='agent'?'Agent 控制':message.holder===this.peerId?(this.active?'你正在操作':'正在接管'):'其他 Viewer 控制';this.notifyControl('state');return true;
   }
   if(message.type==='ControlGranted'){
    if(message.pageEpoch!==this.frame?.pageEpoch||message.viewportVersion!==this.frame?.viewportVersion){this.send({...message,type:'ReleaseControl'});return true;}
-   this.active=true;this.lease=message.lease;this.feedbackEpoch=message.feedbackEpoch;this.nextSeq=Math.max(this.nextSeq??0,message.nextSeq);this.button.disabled=false;this.button.textContent='交还 Agent';this.label.textContent='你正在操作';
-   clearInterval(this.renewTimer);this.renewTimer=setInterval(()=>this.send({type:'RenewControl',...this.tags()}),10000);return true;
+   this.mode='human';this.controlHolder=this.peerId;this.controlExpiresAt=message.expiresAt;this.controlPageEpoch=message.pageEpoch;this.controlViewportVersion=message.viewportVersion;this.active=true;this.lease=message.lease;this.feedbackEpoch=message.feedbackEpoch;this.nextSeq=Math.max(this.nextSeq??0,message.nextSeq);this.button.disabled=false;this.button.textContent='交还 Agent';this.label.textContent='你正在操作';
+   clearInterval(this.renewTimer);this.renewTimer=setInterval(()=>this.send({type:'RenewControl',...this.tags()}),10000);this.notifyControl('granted');return true;
   }
-  if(message.type==='ControlDenied'){this.reset();this.label.textContent=`操作被拒绝：${message.code}`;this.button.disabled=!this.enabled||!this.frame;return true;}
+  if(message.type==='ControlDenied'){this.controlDenied=message.code;this.reset();this.label.textContent=`操作被拒绝：${message.code}`;this.button.disabled=!this.enabled||!this.frame;this.notifyControl('denied');return true;}
   if(message.type==='FeedbackState'){
    if(!this.active||!this.feedbackEnabled||message.sessionId!==this.sessionId||message.feedbackEpoch!==this.feedbackEpoch||message.pageEpoch!==this.frame?.pageEpoch||message.viewportVersion!==this.frame?.viewportVersion||!Number.isSafeInteger(message.revision)||message.revision<=this.lastFeedbackRevision||!Number.isSafeInteger(message.afterInputSeq)||message.afterInputSeq<Math.max(this.contextBarrierSeq,this.lastFrameInputSeq)||message.afterInputSeq>=this.nextSeq)return true;
    if(message.native&&(!Number.isSafeInteger(message.native.frameToken)||message.native.frameToken<0||typeof message.native.producer!=='string'||!Array.isArray(message.native.namespace)||message.native.namespace.length!==2))return true;

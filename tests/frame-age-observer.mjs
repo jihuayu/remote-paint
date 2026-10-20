@@ -88,7 +88,7 @@ export async function prepareFrameAgeAssets(points,diagnosticFaults,streaming){
   ['/', ['viewer/live.html','text/html; charset=utf-8']],['/live.mjs',['viewer/live.mjs','text/javascript']],
   ['/input.mjs',['viewer/input.mjs','text/javascript']],['/control-channel.mjs',['viewer/control-channel.mjs','text/javascript']],
   ['/connection.mjs',['sdk/viewer-connection.mjs','text/javascript']],['/public-config.mjs',['viewer/public-config.mjs','text/javascript']],
-  ['/viewer-channel.mjs',['sdk/viewer-channel.mjs','text/javascript']],['/embed-bridge.mjs',['viewer/embed-bridge.mjs','text/javascript']],
+  ['/viewer-control.mjs',['sdk/viewer-control.mjs','text/javascript']],['/viewer-channel.mjs',['sdk/viewer-channel.mjs','text/javascript']],['/embed-bridge.mjs',['viewer/embed-bridge.mjs','text/javascript']],
   ['/lifecycle.mjs',['viewer/lifecycle.mjs','text/javascript']],['/frame-presenter.mjs',['viewer/frame-presenter.mjs','text/javascript']],
   ['/renderer-runtime.mjs',['viewer/renderer-runtime.mjs','text/javascript']],['/damage.mjs',['viewer/damage.mjs','text/javascript']],
   ['/live.css',['viewer/live.css','text/css']],['/scene-renderer.mjs',['viewer/scene-renderer.mjs','text/javascript']],

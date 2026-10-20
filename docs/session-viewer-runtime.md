@@ -2,7 +2,7 @@
 
 现有 `viewer/live.mjs` 和 `viewer/stream-worker.mjs` 已共享 `sdk/viewer-connection.mjs` 的公共票据连接。它们继续使用原 FrameGate、资源校验、CanvasKit 渲染和输入租约，不再为公共连接拼接私有 Source key。原本地演示链接仍可使用私有密钥路径。
 
-这个阶段提供票据连接与生命周期接线，以及独立[公开资源服务](session-viewer-assets.md)的 CSP/allowlist 配置。[父子连接桥](session-viewer-frame.md)已接入现有入口；创建/销毁 DOM 的完整宿主组件、resize/接管公共 API 及真实浏览器的 CSP/资源验收仍待完成；不能将这些接线测试当作 K2 全部完成。
+这个阶段提供票据连接与生命周期接线，以及独立[公开资源服务](session-viewer-assets.md)的 CSP/allowlist 配置。[父子连接桥](session-viewer-frame.md)已接入现有入口；[createViewer 组件](session-viewer-component.md)和[公开接管/租约 API](session-viewer-control.md)已完成 Node 合同范围的接线，resize/角色切换/性能事件及真实浏览器的 CSP/资源验收仍待完成；不能将这些接线测试当作 K2 全部完成。
 
 ## 当前 Viewer 入口
 

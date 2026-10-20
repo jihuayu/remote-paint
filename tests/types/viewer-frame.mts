@@ -11,3 +11,7 @@ new ViewerFrameConnection({...options,role:'agent'});
 // @ts-expect-error state snapshots are immutable
 state.state='connected';
 const caught:unknown=new Error();if(caught instanceof ViewerChannelError){const code:string=caught.code;void code;}
+
+const lease=await frame.takeControl({signal:new AbortController().signal,timeoutMs:5000});const fence:number|null=lease.fencingToken;void fence;const held:boolean=lease.held;void held;await frame.releaseControl();
+// @ts-expect-error lease snapshots are immutable
+lease.lease="private";

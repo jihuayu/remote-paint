@@ -27,7 +27,7 @@ await viewer.destroy();
 
 ## 连接与重载
 
-`ready` 是当前 iframe 代次的公开元数据 Promise；加载完成不索取票据。`connect({signal?})` 才请求授权，并等待实际 Welcome 的 connected 状态。连接成功与首帧、交互结果或业务完成分别处理，当前组件尚未开放首帧/性能事件。并发 connect 共用进行中的连接；初始调用者取消会停止该连接，后续调用者取消只结束自己的等待。
+`ready` 是当前 iframe 代次的公开元数据 Promise；加载完成不索取票据。`connect({signal?})` 才请求授权，并等待实际 Welcome 的 connected 状态。连接成功与首帧、交互结果或业务完成分别处理，当前组件尚未开放首帧/性能事件。[公开接管与租约](session-viewer-control.md)提供实际确认的 takeControl/releaseControl 以及只读 control 快照。并发 connect 共用进行中的连接；初始调用者取消会停止该连接，后续调用者取消只结束自己的等待。
 
 iframe load/reload 会关闭旧端口、生成新 nonce，旧状态不能更新新代次。连接仍被应用要求时，正常重载会重新授权；一份中心 `ViewerTicketSource` 跨重载保存版本、grant 历史和实际回调额度。即使旧应用回调不响应取消，重建 iframe 也不能再次进入回调，迟到结果不能分配旧连接。
 
@@ -45,4 +45,4 @@ iframe load/reload 会关闭旧端口、生成新 nonce，旧状态不能更新�
 
 12 条组件合同通过真实 MessageChannel 转移、HTTP/WebSocket、SQLite 和 Node Source 执行保存的主线程/Worker 入口，覆盖刷新、重载、撤销、取消、迟到回调、加载/connect/断开/destroy 界限、宿主移除和 8 次重复挂载卸载。既有 14 条保存入口合同在提取共享夹具后保留原语义。DOM、ShadowRoot、MutationObserver、CanvasKit、呈现器及 realm 调度是明确夹具，不能替代真实跨域浏览器、GPU 或 Native 资源退役证据。
 
-冻结版本、双平台范围回归和私有离线安装包结果记录在[组件检查点](evidence/viewer-dom-component.json)。公开接管/租约/栅栏、角色切换、resize/性能事件、Native 私有端点桥接及真实浏览器验收继续下一阶段；41 项仍为 9 完成、15 部分、17 待实现。
+冻结版本、双平台范围回归和私有离线安装包结果记录在[组件检查点](evidence/viewer-dom-component.json)。完整 Agent/CDP 写栅栏、角色切换、resize/性能事件、Native 私有端点桥接及真实浏览器验收继续下一阶段；41 项仍为 9 完成、15 部分、17 待实现。

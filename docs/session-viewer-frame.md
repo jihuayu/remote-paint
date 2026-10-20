@@ -1,6 +1,6 @@
 # iframe 父子连接桥（开发中）
 
-公开 Viewer 入口已安装子窗口桥。实验性 `@remote-paint/session-client/viewer-frame` 导出 `ViewerFrameConnection`，可将现有 iframe 接入既有主线程/Worker 渲染器。这个检查点完成通道和连接授权；后续的 [createViewer 组件](session-viewer-component.md)已接入 DOM 生命周期，接管/租约/resize/性能 API 仍在后续阶段；真实 iframe/CSP/资源验收尚未完成。
+公开 Viewer 入口已安装子窗口桥。实验性 `@remote-paint/session-client/viewer-frame` 导出 `ViewerFrameConnection`，可将现有 iframe 接入既有主线程/Worker 渲染器。这个检查点完成通道和连接授权；后续的 [createViewer 组件](session-viewer-component.md)已接入 DOM 生命周期，[接管/租约 API](session-viewer-control.md)已接入原输入流水线，resize/角色切换/性能 API 仍在后续阶段；真实 iframe/CSP/资源验收尚未完成。
 
 ## 接入现有 iframe
 
@@ -41,7 +41,7 @@ iframe 的 src 使用公开资源入口，不含票据、管理 key 或通道参
 
 请求可取消并有期限；忽略取消的处理器继续占用入站额度，直至实际 Promise 结束。票据来源额外保留唯一的实际应用回调额度，超时或断开不会绕过它。默认心跳 1 秒、通信空闲期限 15 秒；失联关闭通道并停止子窗口 Viewer。后台长时间暂停可能结束通道，应由宿主在恢复后重新建立连接。
 
-通道只支持连接、断开、查询和内部票据请求；当前不提供 CDP、Agent、任意执行或编辑器内容通道。状态和异常只传固定字段/错误码，不传私有 Source URL/key。完整权限与输入租约仍继续走原票据网关和 ControlLease。
+通道支持连接、断开、查询、内部票据请求及有界 take-control/release-control；当前不提供 CDP、Agent、任意执行或编辑器内容通道。状态和异常只传固定字段/错误码，不传私有 Source URL/key。完整权限与输入租约仍继续走原票据网关和 ControlLease。
 
 ## 失败与恢复
 

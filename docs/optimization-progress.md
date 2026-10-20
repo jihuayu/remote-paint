@@ -1705,3 +1705,12 @@ K2仍部分实现，41项仍9/15/17。后续继续真实父子消息桥与宿主
 12 条组件合同以真实 MessageChannel 转移和 Node HTTP/WebSocket/SQLite/FrameGate 验证刷新/重载/撤销/取消/超时及 8 次重复挂载卸载。共享提取的保存入口夹具保留原 14 条合同；DOM/ShadowRoot/MutationObserver/CanvasKit/呈现器/realm 调度仍为明确夹具。新增 /viewer 安装包导出与严格声明检查，双平台范围结果见[组件检查点](evidence/viewer-dom-component.json)。
 
 公开租约/接管/角色切换/resize/性能 API、Native 端点、Agent/CDP 写栅栏和真实浏览器资源验收仍待完成；41 项仍 9/15/17。原始 783 文件 8 小时副本未动，未额外启动 Native 浏览器，未暂存、提交或推送。
+
+
+### K2a2b3a：公开接管、交还与租约状态
+
+Window/Worker 的真实 ViewerInput 已通过有限父子 RPC 接入 Frame/DOM SDK，控制角色才可接管；只读在发请求前拒绝。takeControl 等待实际 Source 授予，releaseControl 立即停止旧输入队列但继续等 Source 清理栅栏回到 agent。快照只返回八个固定字段和自己的 lease/fencingToken；其他持有者的租约、私有 Source Session/peer/key 和编辑器内容不外传。取消/超时终止显示连接，迟到授予不得落入旧 peer；异常成功回复也结束端口。
+
+17 条合同执行保存的主线程/Worker 及真实 ViewerInput，经实际 Node HTTP/WebSocket/SQLite/MessageChannel 验证双持有者、旧 token 拒绝、等待 Agent/清理、取消/超时、页面失效和 4 次持有租约后销毁。DOM/CanvasKit/realm、Session provider 与 CDP 结果仍为明确夹具，不能外推全部 Agent/CDP 写路径或真实 Native/browser 验收。双平台范围回归与私有安装包/类型结果见[公开控制检查点](evidence/viewer-public-control.json)。
+
+角色切换、resize/性能事件、实际 Native 端点、所有 Agent/CDP 权限与栅栏、原 8 小时/整份候选验收仍待完成；41 项仍 9/15/17。未额外启动 Native 浏览器，原 783 文件长测源未动，未暂存、提交或推送。

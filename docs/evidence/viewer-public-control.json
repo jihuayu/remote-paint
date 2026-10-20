@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-19T00:08:45.638520+00:00",
+  "task": "K2a2b3a",
+  "scope": "Public actual SourceControlLease takeover/release and sanitized lease/fence snapshots through real ViewerInput Window/Worker and authenticated Frame/DOM SDK;not full Agent/CDP fencing.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-public-control-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-public-control-checkpoint-v1.json",
+  "contract": {
+    "permissions": "Controller ticket only;readonly rejects before wire. No arbitrary execute/CDP methods.",
+    "confirmation": "Takeover waits actualgrant after priorAgent/cleanup fence. Release stops localqueuedinput and waits actualSourceagent mode.",
+    "privacy": "8fixedfields;only self lease/fencingToken;no SourceSession/peer/key/pairing/editor data.",
+    "lifetime": "One pending action;5s default50ms..10s;preabortnoeffect;dispatchedcancel/deadline closeconnection;explicitconnectafterfailure. Malformedreply/event retireport. Deniedrelease also ends peer so no unconfirmed lease stays usable."
+  },
+  "tests": {
+    "publicControlCases": 17,
+    "heldDestroyCycles": 4,
+    "real": "MessageChannel transfer,HTTP/WebSocket/SQLite/NodeSource,originalControlLease/ViewerInput/FrameGate.",
+    "fixtures": "DOM/shadow/MutationObserver/CanvasKit/presenter/realm,Sessionprovider/CDPresults.",
+    "initialCases": 12,
+    "boundaryCases": 16,
+    "broaderPreliminaryCases": 88,
+    "allPreliminaryActualExitCode": 0,
+    "typesActualExitCode": 0
+  },
+  "remaining": [
+    "Role/readonly transitions with freshgrant,stopped oldsocket and persistentcallbackadmission/version.",
+    "Explicitresize/performance/firstframe/error API semantics.",
+    "Actualbrowser/CSP/sandbox/repeatmount physicalresource acceptance afteroriginal8hterminal.",
+    "Nativeworkerownedendpointbridge and allAgent/CDPindependentpermissions/managedwritefences.",
+    "Original8hterminal physicalgates,wholecandidatefullregression and all41/N1audit."
+  ],
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "wholeFullJsQualified": false,
+  "nativeProductionProviderComplete": false,
+  "allAgentCdpFenced": false,
+  "eightHourPassed": false,
+  "noCommitPush": true
+}

@@ -15,3 +15,7 @@ state.state='connected';
 // @ts-expect-error finite subscription names
 viewer.on('execute',()=>{});
 const error:unknown=new Error();if(error instanceof ViewerChannelError){const code:string=error.code;void code;}
+
+const lease=await viewer.takeControl({signal:new AbortController().signal,timeoutMs:5000});const fence:number|null=lease.fencingToken;void fence;const held:boolean=lease.held;void held;await viewer.releaseControl();
+// @ts-expect-error lease snapshots are immutable
+lease.lease="private";

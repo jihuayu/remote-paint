@@ -1,11 +1,12 @@
 import {ViewerTicketSource} from './viewer-connection.mjs';
+import {emptyViewerControl,viewerControlState,viewerControlOptions} from './viewer-control.mjs';
 import {ViewerPort,ViewerChannelError,viewerOrigin,viewerNonce,viewerHello,channelCode} from './viewer-channel.mjs';
 export {ViewerChannelError} from './viewer-channel.mjs';
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const fail=code=>{throw new ViewerChannelError(code);};
 const states=new Set(['waiting','paused','connecting','connected','refreshing','reconnecting','failed','closed']);
 function options(value){
- const names=['frameWindow','frameOrigin','gatewayOrigin','sessionId','role','version','getTicket','requestTimeoutMs','readyTimeoutMs','connectTimeoutMs','onState','onError'];
+ const names=['frameWindow','frameOrigin','gatewayOrigin','sessionId','role','version','getTicket','requestTimeoutMs','readyTimeoutMs','connectTimeoutMs','onState','onError','onControl'];
  if(!value||typeof value!=='object'||Reflect.ownKeys(value).some(k=>!names.includes(k)||!Object.hasOwn(Object.getOwnPropertyDescriptor(value,k),'value')))fail('VIEWER_INVALID_CONFIG');
  return Object.fromEntries(Reflect.ownKeys(value).map(k=>[k,value[k]]));
 }
@@ -24,12 +25,14 @@ function state(value,settings){
 // Host-side connection to an existing trusted iframe Window. The DOM component
 // owns iframe creation/removal; this class owns only this authenticated port.
 export class ViewerFrameConnection {
+ #control=emptyViewerControl();#onControl;#terminalControlCode=null;
  #tickets;#settings;#port;#readyResolve;#readyReject;#readyTimer;#readyDone=false;#closed=false;#ownClose=false;#closedError=null;#active=false;#issued=false;#abort=null;#connectPromise=null;#connectWaiter=null;#onState;#onError;#timeout;#state=Object.freeze({state:'waiting'});
  constructor(value){
   const config=options(value),frameOrigin=viewerOrigin(config.frameOrigin);
   if(!config.frameWindow||typeof config.frameWindow.postMessage!=='function'||config.onState!==undefined&&typeof config.onState!=='function'||config.onError!==undefined&&typeof config.onError!=='function'||!integer(config.readyTimeoutMs??10000,50,30000)||!integer(config.connectTimeoutMs??30000,50,60000))fail('VIEWER_INVALID_CONFIG');
   this.#tickets=new ViewerTicketSource({gatewayOrigin:config.gatewayOrigin,audience:frameOrigin,sessionId:config.sessionId,role:config.role,getTicket:config.getTicket,...(config.version===undefined?{}:{version:config.version}),...(config.requestTimeoutMs===undefined?{}:{requestTimeoutMs:config.requestTimeoutMs})});
-  this.#settings=this.#tickets.settings;this.#onState=config.onState;this.#onError=config.onError;this.#timeout=config.connectTimeoutMs??30000;
+  if(config.onControl!==undefined&&typeof config.onControl!=='function')fail('VIEWER_INVALID_CONFIG');
+  this.#settings=this.#tickets.settings;this.#onState=config.onState;this.#onError=config.onError;this.#onControl=config.onControl;this.#timeout=config.connectTimeoutMs??30000;
   this.ready=new Promise((resolve,reject)=>{this.#readyResolve=resolve;this.#readyReject=reject;});void this.ready.catch(()=>{});
   const channel=viewerNonce(),pair=new MessageChannel();
   this.#port=new ViewerPort({port:pair.port1,channel,handle:async(method,data,{signal})=>{
@@ -43,13 +46,21 @@ export class ViewerFrameConnection {
   try{config.frameWindow.postMessage(viewerHello(channel),frameOrigin,[pair.port2]);}catch{pair.port2.close();this.#port.close('CHANNEL_CLOSED');}
  }
  get state(){return this.#state;}
+ get control(){return this.#control;}
+ #publishControl(value){if(JSON.stringify(value)===JSON.stringify(this.#control))return;this.#control=value;try{this.#onControl?.(value);}catch{}}
  #publish(value){this.#state=value;try{this.#onState?.(value);}catch{}}
  #notification(name,data){
   if(name==='ready'){
    if(this.#readyDone||!data||typeof data!=='object'||Object.keys(data).length!==2||data.gatewayOrigin!==this.#settings.gatewayOrigin||typeof data.viewerBuild!=='string'||!/^[a-f0-9]{64}$/.test(data.viewerBuild))fail('VIEWER_INVALID_CONFIG');
    this.#readyDone=true;clearTimeout(this.#readyTimer);this.#readyResolve(Object.freeze({...data}));return;
   }
-  if(name!=='state'||!this.#readyDone)fail('CHANNEL_PROTOCOL');const value=state(data,this.#tickets.settings);if(value.state==='connected'&&(!this.#active||!this.#issued))return;this.#publish(value);
+  if(name==='control'){
+   if(!this.#readyDone)fail('CHANNEL_PROTOCOL');const value=viewerControlState(data);
+   if(this.#settings.role!=='controller'&&value.mode!=='unavailable')fail('CHANNEL_PROTOCOL');
+   if(value.mode!=='unavailable'&&(!this.#active||!this.#issued||this.#state.state!=='connected'))return;
+   this.#publishControl(value);return;
+  }
+  if(name!=='state'||!this.#readyDone)fail('CHANNEL_PROTOCOL');const value=state(data,this.#tickets.settings);if(value.state==='connected'&&(!this.#active||!this.#issued))return;if(value.state==='failed')this.#terminalControlCode=value.code;else if(value.state==='connected')this.#terminalControlCode=null;this.#publish(value);
   if(value.state==='connected')this.#connectWaiter?.resolve(value);
   if(value.state==='failed'){
    this.#active=false;const error=new ViewerChannelError(value.code??'CHANNEL_HANDLER_FAILED');if(this.#connectWaiter)this.#connectWaiter.reject(error);else this.#abort?.abort();try{this.#onError?.(error);}catch{}
@@ -57,7 +68,7 @@ export class ViewerFrameConnection {
  }
  #ended(error){
   if(this.#closed)return;this.#closed=true;this.#closedError=error;clearTimeout(this.#readyTimer);this.#active=false;this.#abort?.abort();this.#tickets.destroy();
-  if(!this.#readyDone)this.#readyReject(error);this.#connectWaiter?.reject(error);this.#publish(Object.freeze({state:'closed',code:error.code}));if(!this.#ownClose)try{this.#onError?.(error);}catch{}
+  this.#publishControl(emptyViewerControl());if(!this.#readyDone)this.#readyReject(error);this.#connectWaiter?.reject(error);this.#publish(Object.freeze({state:'closed',code:error.code}));if(!this.#ownClose)try{this.#onError?.(error);}catch{}
  }
  connect({signal}={}){
   if(signal!==undefined&&!(signal instanceof AbortSignal))return Promise.reject(new ViewerChannelError('VIEWER_INVALID_CONFIG'));
@@ -78,9 +89,19 @@ export class ViewerFrameConnection {
   this.#connectPromise=work;void work.finally(()=>{if(this.#connectPromise===work)this.#connectPromise=null;}).catch(()=>{});return work;
  }
  async disconnect(){
-  this.#active=false;this.#abort?.abort();if(this.#closed)return;
+  this.#active=false;this.#abort?.abort();this.#publishControl(emptyViewerControl());if(this.#closed)return;
   await this.#port.request('disconnect',null);this.#publish(Object.freeze({...this.#state,state:'paused'}));
  }
  async getState(){if(this.#closed)fail('CHANNEL_CLOSED');const value=state(await this.#port.request('state',null),this.#tickets.settings);this.#publish(value);return value;}
+ async #controlRequest(method,options){
+  if(this.#closed)fail('CHANNEL_CLOSED');if(this.#settings.role!=='controller'||!this.#active||this.#state.state!=='connected')fail('VIEWER_CONTROL_UNAVAILABLE');
+  const {signal,timeoutMs}=viewerControlOptions(options);if(signal?.aborted)fail('CHANNEL_ABORTED');
+  try{
+   const value=viewerControlState(await this.#port.request(method,{timeoutMs},{signal,timeoutMs:timeoutMs+1000}));
+   if(!this.#active||this.#closed)fail('CHANNEL_ABORTED');if(method==='take-control'&&!value.held||method==='release-control'&&(value.mode!=='agent'||value.held))fail('CHANNEL_PROTOCOL');this.#publishControl(value);return value;
+  }catch(error){if(['CHANNEL_PROTOCOL','CHANNEL_TIMEOUT','CHANNEL_ABORTED'].includes(error.code))this.#port.close(error.code);if(this.#terminalControlCode)throw new ViewerChannelError(this.#terminalControlCode);throw error;}
+ }
+ takeControl(options){return this.#controlRequest('take-control',options);}
+ releaseControl(options){return this.#controlRequest('release-control',options);}
  close(){if(this.#closed)return;this.#ownClose=true;this.#port.close('CHANNEL_CLOSED');}
 }
