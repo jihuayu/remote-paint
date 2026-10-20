@@ -1,0 +1,192 @@
+{
+  "at": "2026-10-19T20:55:51.642855+00:00",
+  "task": "Source actual Page download intake core",
+  "status": "Source-page-download-core-qualified-within-scope",
+  "scope": "Local trusted Managed Agent Run Source next-owned-Page download arm/info/chunks/release only. Actual browser-produced file, no refetch/caller URL/path; original Run/Page/Native document checked on reads, one ticket and one retained buffer. Completed file nofollow descriptor/stat before bounded allocation, sequential3072 reads/exact EOF/hash and spool unlink before ready. Real cancellation/path/file cleanup retained until settlement; human lease preserved. Browser pre-spool and Playwright retained metadata bounds and all RPC/public/SDK download layers pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-screenshot-sdk-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "6982fe6f1ec33501c3fc1b2b6a509c67e0ca2b0ded984c5bedcc6439c2866e65",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-download-core-candidate-v3/frozen-version.json",
+  "executedManifestSha256": "41b77639c44472b5bce887efbed664ef8364ede720999fbe4e8f707068662260",
+  "newContracts": 19,
+  "newTestNames": [
+    "download arm and chunk inputs capture exact own bounded data without caller paths URLs or getters",
+    "one explicit next-Page ticket produces real binary chunks hash and safe metadata after spool deletion",
+    "empty actual file is retained with an exact empty digest and EOF chunk",
+    "ticket remains exclusive until explicit release and extra Page download events are outside its window",
+    "completed-file cap rejects before retained allocation and removes the oversized owned spool",
+    "nofollow descriptor rejects symlink and hardlink artifacts without reading or deleting the other file",
+    "receipt cannot become ready before actual artifact deletion finishes",
+    "arm deadline removes Page listeners and leaves an explicit timeout until release",
+    "end cancels an in-progress browser download and waits for real path and cancel settlement",
+    "receive deadline initiates cancellation without pretending that actual browser work has settled",
+    "navigation invalidates the armed document and cancels an accepted late file before exposing data",
+    "foreign Page event cannot cause a read cancel or delete against the foreign artifact",
+    "permission is checked before caller getters and independently of write permission without refencing",
+    "revoked permission and replaced original Page or capture reject late file bytes and still clean the spool",
+    "foreign binding document and invalid chunk arithmetic never select the owned file",
+    "Native document validation precedes every status chunk and release and cannot return cached bytes after token mismatch",
+    "pending native arm metadata shares read admission and end prevents a late listener from being installed",
+    "human lease and held authority survive download reads release and Run end",
+    "end during actual release cleanup rejects the late receipt and still waits for the same owned work"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v55/manifest.json",
+  "fullJsManifestSha256": "e805767e9fec80693ce6d605e4b7ac0d61bb263ad3761efa4ccae0b720e92bee",
+  "fullJs": {
+    "mac": {
+      "tests": 1358,
+      "passed": 1343,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "cbd5861b18a10385830e8274de6072a24b3701a31683777746d0fafa5f10640d"
+    },
+    "linux": {
+      "tests": 1358,
+      "passed": 1352,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "86483dc9e312c2df14f5a771a906b7655196ba6c37ccfa11d6ee758003c6574c"
+    }
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-download-core-native-v3/manifest.json",
+  "nativeManifestSha256": "af0902ba7649b58e949457221a4e33af314d938e218aac47813aba388e8b3dcd",
+  "nativeActualExitCode": 0,
+  "nativeLogSha256": "b89a10ee399bc9ffba597954a5c6995d39a1ecee7d986d284d07f5104332880c",
+  "nativeObservations": {
+    "network": {
+      "actualOriginalPageDownload": true,
+      "cookiePreserved": true,
+      "requests": 1,
+      "byteLength": 8999,
+      "sha256": "2fb4ebc93e3c8ef0d2a86c97203a9cd33ee2cbf4e5e8e6ac69e8c9ceb50ebdfc",
+      "spoolAbsentBeforeReturn": true,
+      "noRefetch": true,
+      "writerFenceUnchanged": true,
+      "releaseInvalidates": true
+    },
+    "blob": {
+      "actualBrowserBlobDownload": true,
+      "byteLength": 5001,
+      "sha256": "1e4adf95716dd1a137204d50d66166329e034b081146ac37b9a43605acb6e494"
+    },
+    "empty": {
+      "zeroByteActualDownload": true,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "overCap": {
+      "retainedBytesRejected": true,
+      "spoolAbsentAfterRelease": true,
+      "prewriteHardCapClaim": false
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "originalContextRejected": true,
+      "actualSlowRequestClosed": true,
+      "runClosed": true
+    },
+    "end": {
+      "actualDownloadCancelled": true,
+      "actualSlowRequestClosed": true,
+      "listenersRemoved": true,
+      "explicitOldTicket": "dl_8afce615-37fd-4a73-9703-ca68541b457e"
+    },
+    "human": {
+      "actualHumanClickDownload": true,
+      "byteLength": 8999,
+      "sha256": "2fb4ebc93e3c8ef0d2a86c97203a9cd33ee2cbf4e5e8e6ac69e8c9ceb50ebdfc",
+      "observeDuringHumanLease": true,
+      "readReleaseEndPreserveGrant": true
+    }
+  },
+  "failedAttemptsPreserved": [
+    {
+      "kind": "native-test-harness",
+      "version": "v1",
+      "stage": "network-download",
+      "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-download-core-native-v1/manifest.json",
+      "manifestSha256": "e25b7cef55df0c26229487ca006e5321bba53d44ae6792b5c453f2cb8ce6f923",
+      "actualExitCode": 1,
+      "failed": {
+        "stage": "network-download",
+        "code": null,
+        "message": "download.path: Target page, context or browser has been closed",
+        "stack": [
+          "download.path: Target page, context or browser has been closed",
+          "    at /project/tests/verify-agent-download-native.mjs:28:417"
+        ]
+      },
+      "knownProcessIdentitiesRetired": true
+    },
+    {
+      "kind": "native-test-harness",
+      "version": "v2",
+      "stage": "human-priority-read",
+      "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-download-core-native-v2/manifest.json",
+      "manifestSha256": "17e0a478ed17b66a86a12e79733f552754b3e64ea2693b403ff4bfa5e6660f61",
+      "actualExitCode": 1,
+      "failed": {
+        "stage": "human-priority-read",
+        "code": "NO_DISPLAY_FRAME",
+        "message": "NO_DISPLAY_FRAME",
+        "stack": [
+          "Error: NO_DISPLAY_FRAME",
+          "    at reject (file:///project/live/input.mjs:8:27)",
+          "    at ControlLease.acquire (file:///project/live/input.mjs:97:45)",
+          "    at file:///project/tests/verify-agent-download-native.mjs:34:171"
+        ]
+      },
+      "knownProcessIdentitiesRetired": true
+    },
+    {
+      "kind": "strict-Run-method-whitelist",
+      "role": "mac",
+      "actualExitCode": 1,
+      "logSha256": "cae69b5c2469cc9166a59b51f0d109b94cf0389ebb1c3d26513ee4a969c6bcf5"
+    },
+    {
+      "kind": "strict-Run-method-whitelist",
+      "role": "linux",
+      "actualExitCode": 1,
+      "logSha256": "0aa8d79b48227ef065ec35f0558ce0a9e1e9f8cdebd1ac630f15ab658358d538"
+    }
+  ],
+  "failedAttemptFixes": "No production Source changes after candidatev1: exact method whitelist test updated; Native path proof moved before Playwright artifact disposal and human grant test obtains a real current display frame before exercising actual human click. Both prior Native failures remain failed.",
+  "sdk": {
+    "sourcePathsUnchanged": 28,
+    "dependenciesUnchanged": true,
+    "newDownloadSdkQualified": false,
+    "installedSdkNotRerunThisCheckpoint": true,
+    "priorCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-screenshot-sdk-checkpoint-v1.json"
+  },
+  "sourceLimits": {
+    "defaultBytes": 1048576,
+    "maxBytes": 4194304,
+    "oneRetainedFile": true,
+    "chunkBytes": 3072,
+    "defaultTimeoutMs": 10000,
+    "timeoutRangeMs": [
+      50,
+      30000
+    ],
+    "resultJsonBytes": 6144
+  },
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-download-core-cleanup-v1.json",
+  "cleanupAuditSha256": "2cffb741b712d9419b6591fb4780642fe8640e8563aa9c3976bddcaf79316ce0",
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "nextRequired": "Continue actual page download private RPC/capability and Native resource/provider/channel exact DTO/version/context validation with current Run ticket lifecycle, then public executor/HTTP authorized binary result and Node/Python SDK separately with own review ZIPs. Resolve pre-spool browser disk budget and Playwright retained Download metadata physical bounds; do not call completed-file caps pre-write limits. Continue K6 full locator/frame/write-by-handle, K10 upload/Profile, K7/K8/K4, unknown Engine Start, remaining41/N1/device/original failed8h. No automatic8h restart or changed limits.",
+  "pageDownloadSourceCoreQualified": true,
+  "pageDownloadPrivateRpcQualified": false,
+  "pageDownloadPublicQualified": false,
+  "pageDownloadSdkQualified": false,
+  "browserDownloadSpoolPrewriteHardCapQualified": false,
+  "playwrightDownloadMetadataPhysicalBoundQualified": false,
+  "K6Complete": false,
+  "productionNativeFullyQualified": false,
+  "eightHourPassed": false,
+  "noCommitPush": true,
+  "noSubagents": true
+}
