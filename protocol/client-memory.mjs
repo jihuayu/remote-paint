@@ -170,7 +170,9 @@ export class ClientMemory{
  }
  shouldRecycle(){return this.observed.wasmHeapBytes>=this.policy.wasm*.7;}
  retire(ck){
-  const token={};this.retired.set(token,ck.HEAPU8.buffer.byteLength);this.stats.retiredArenas++;this.finalizer?.register(ck,token);
+  // Views may outlive the module wrapper. Keep the retired allocation charged
+  // until its actual backing store is collectible, not merely the wrapper.
+  const backing=ck.HEAPU8.buffer,token={};this.retired.set(token,backing.byteLength);this.stats.retiredArenas++;this.finalizer?.register(backing,token);
   this.observed={wasmHeapBytes:0,decodeCacheBytes:0,gpuCacheBytes:null,gpuUsageSource:'unavailable'};
  }
  snapshot(){return {profile:this.policy.profile,decodeAdmission:this.decodeAdmission??'not-negotiated',limits:{...this.policy},...this.totals(),observed:{...this.observed},stats:{...this.stats},accounting:'ArrayBuffers deduplicated/current byteLength reconciled on reports; fixed-backing admission uses conservative cached upper bounds, resizable backings refresh every check; peaks are admission estimates; category/resizable aggregate metadata estimated; retained scenes/pass copies and cache/ledger JS metadata estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; transient parser/VM/driver/process overhead not fully covered'};}

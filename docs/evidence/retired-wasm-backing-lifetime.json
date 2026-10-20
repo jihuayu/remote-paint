@@ -1,0 +1,92 @@
+{
+  "at": "2026-10-17T22:44:15.121316+00:00",
+  "status": "accepted-retired-Wasm-backing-lifetime-accounting-fix",
+  "scope": "Retired Wasm budget follows actual backing ArrayBuffer collectible lifetime,not a modulewrapper that maydie while a retained view remains readable. Noallocation/storage forcedGC inproduction;only isolatedNode regression uses--expose-gc. Not a proved explanation for priorfootprintgrowth/physicalmemoryreturn/8h/fullN1.",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/retired-wasm-backing-v1/frozen-version.json",
+    "sha256": "a7ba3bf5743b293ef3f5a96271e811c36e961c7d9a0d059039202b8bd7b1db29"
+  },
+  "actualRegression": {
+    "before": {
+      "wrapperCollected": true,
+      "liveBackingBytes": 16777216,
+      "incorrectChargedBytes": 0
+    },
+    "after": {
+      "wrapperCollected": true,
+      "chargedWhileHeld": 16777216,
+      "chargedAfterBackingReleased": 0
+    },
+    "isolatedGCOnly": true
+  },
+  "fullJS": {
+    "testsEach": 255,
+    "mac": {
+      "pass": 247,
+      "skipLinuxOnly": 8,
+      "fail": 0,
+      "log": "mac-js-v2.log"
+    },
+    "linux": {
+      "pass": 251,
+      "skipMacOnly": 4,
+      "fail": 0,
+      "log": "linux-js-v2.log"
+    }
+  },
+  "actualCanvasKitRuntimeMainAndWorker": [
+    "mac",
+    "linux"
+  ],
+  "preservedFailures": {
+    "mac-js.log": "Nativehelperfreshpath startup exceeded2s,pid95392 SIGKILL/actuallyreaped. Knownunresolvedfailure repeated;independentunchangedreplaypassed,no claim causefixed/deadline relaxed.",
+    "linux-js.log": "Ownedruntimeworkspacehostabsolute symlinks invalidinsidecontainer;fixturecouldnotread native/broker.mjs. v2usescontainer/project links,source unchanged."
+  },
+  "productionChanged": [
+    "protocol/client-memory.mjs"
+  ],
+  "cppRustCaptureBinariesUnchanged": true,
+  "limitsUnchanged": true,
+  "artifacts": {
+    "retired-wasm-backing-before-v1.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/retired-wasm-backing-v1/retired-wasm-backing-before-v1.json",
+      "sha256": "21fba06d5f6d397478bc7fc7a5d3679d9217ee7a4f02c6053f37e5cb4ddebbd4"
+    },
+    "retired-wasm-backing-after-v1.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/retired-wasm-backing-v1/retired-wasm-backing-after-v1.json",
+      "sha256": "471bbf85ddf7fcf398aed655da143792fc784980d27722e29222edf8b45104fc"
+    },
+    "results/mac-js.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/retired-wasm-backing-v1/results/mac-js.log",
+      "sha256": "0a769e780d92a8ec7578579c34402d08f47fed60e085c211fc539c27d6e77723"
+    },
+    "results/mac-js-v2.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/retired-wasm-backing-v1/results/mac-js-v2.log",
+      "sha256": "61885419fe7b96474876a93c4b07aa1053e3da56c7eac7d95d3a185888a47507"
+    },
+    "results/linux-js.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/retired-wasm-backing-v1/results/linux-js.log",
+      "sha256": "0cff82115c46756902fdc0d8843e5b06d0055782cb5af96454fda4e0019ccc1a"
+    },
+    "results/linux-js-v2.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/retired-wasm-backing-v1/results/linux-js-v2.log",
+      "sha256": "1835b9fdefcbb76c8aa3e76e7c64912404a3aec0c6b7c5e39d8a067d79ad725c"
+    },
+    "results/mac/artifacts/memory/runtime.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/retired-wasm-backing-v1/results/mac/artifacts/memory/runtime.json",
+      "sha256": "656e0c299f85d21f9571c9dcf742bcf537d1ead8c407f8e67a21b71d2f543f73"
+    },
+    "results/linux-v2/artifacts/memory/runtime.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/retired-wasm-backing-v1/results/linux-v2/artifacts/memory/runtime.json",
+      "sha256": "ec0794417218cc5a432b75d32b9ca245d54bed16350a3283ca606b1d66579b63"
+    }
+  },
+  "noCommitPush": true,
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}

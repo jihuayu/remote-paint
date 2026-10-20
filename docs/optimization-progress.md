@@ -1254,3 +1254,13 @@ owner.after的原metrics在finally关闭历史procFD之前采集，不能当探�
 原579文件/runtime/依赖/browser/workload/物理policy完全保留，仅换测试driver复用4×1探针的独立30分钟复验完成。31次采样中三个主页面/两个Worker/probe nonce均持续相同，每页创建数1；所有绝对内存上限保持，但主VM独占footprint前后中位数仍+313,852,336bytes（约299MiB）>事前192MiB，因此Viewer按原断言exit1。带附加Session状态+115,179,832bytes（约110MiB）通过，其余8域增长通过。Source与容器exit0，清理无错误。
 
 复用画布不足以解决门槛失败，不能声称找到唯一原因。原失败与复验均单独保存，未合并时长、未改预算或强制GC、未改生产代码。补充诊断看到部分末期样本仍带未GC的旧Wasm arena，属于混杂状态而非充分解释：原失败在无retired arena的主VM样本中也有约298MB中位数增长；复验的同类样本不足10个，不能选样改判。需要继续定位native footprint/分配器/arena归属，或以明确理论和独立验证完善物理观测方案，不能把现有失败重写成通过。8小时/N1完整合并仍未验收。
+
+## 退休Wasm预算跟随真实backing的生命周期
+
+发现并实际复现独立记账漏洞：ClientMemory.retire原先finalizer注册modulewrapper，wrapper被收集时即移除retiredWasm charge，但其他typed view仍可能持有可读的线性backing。隔离Node GC回归证明旧代码在16MiB实际Wasm backing仍可读时错误记为0；修正为register实际ArrayBuffer之后，wrapper已收集仍记16MiB，最后view释放且backing收集后才归0。生产代码不调用GC；--expose-gc只用于独立生命周期回归，不是长测通过证据。
+
+单任务603文件副本完成相关22项测试，以及完整JS每平台255项：Mac247通过/8Linux-only跳过，Linux251通过/4Mac-only跳过；两平台真实CanvasKit main+Worker重建、旧generation取消、FrameGate、销毁检查通过。原生C++/Rust/capture/二进制与所有预算不变，此次有1个生产protocol/client-memory.mjs修改，不能继续泛称全部113生产文件未改。
+
+完整Mac首次运行再次触发既有helper新路径2s ready超时，pid95392被SIGKILL后真实回收；原失败保留，相同代码/门槛独立复验通过，原因仍未查明，不宣称修复启动问题。Linux首次失败为自建测试工作目录的宿主绝对链接在容器内无效，修正容器工作目录链接后通过，冻结代码未改。
+
+此修复确保内存账不会因wrapper提前收集而少计，不证明前两次footprint增长全部由此造成，也不代表内存已物理归还。独立VM分类取证仍运行旧579文件副本，结果不会被此改动混淆。8小时与N1完整组合仍未通过。
