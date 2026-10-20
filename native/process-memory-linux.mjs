@@ -28,7 +28,7 @@ export function parseLinuxChildren(text){
 function check(signal){if(signal?.aborted)throw signal.reason??fail('LINUX_MEMORY_ABORTED','Linux memory read aborted');}
 function identity(stat,status){if(stat.ppid!==status.ppid)throw fail('LINUX_MEMORY_IDENTITY','Linux stat/status parent changed',{pid:stat.pid});return {provider:'linux-proc-start-v1',pid:stat.pid,ppid:stat.ppid,startTicks:stat.startTicks,uids:status.uids};}
 const sameIdentity=(a,b)=>b&&Array.isArray(b.uids)&&b.uids.length===4&&a.pid===b.pid&&a.ppid===b.ppid&&a.startTicks===b.startTicks&&a.uids.every((v,n)=>v===b.uids[n]);
-async function boundedText(path,signal){
+export async function readLinuxMemoryText(path,signal){
  check(signal);const file=await open(path,'r');try{
   check(signal);const buffer=Buffer.allocUnsafeSlow(LINUX_MEMORY_LIMITS.fileBytes+1),{bytesRead}=await file.read(buffer,0,buffer.length,null);check(signal);if(bytesRead>LINUX_MEMORY_LIMITS.fileBytes)throw fail('LINUX_MEMORY_FILE_LIMIT','Linux process file exceeded64KiB');
   // Rollup fits a single bounded read. Reject a continuation instead of joining
@@ -44,16 +44,16 @@ export class LinuxProcessProbe{
  async sample({details=true,children=true,expectedParent,expectedIdentity}={}){
   if(this.closed)throw fail('LINUX_MEMORY_CLOSED','Linux process probe is closed');if(this.busy)throw fail('LINUX_MEMORY_BUSY','Linux process probe already sampling');this.busy=true;
   try{
-   const before=parseLinuxStat(await boundedText(this.path+'/stat',this.signal),this.pid),status=parseLinuxStatus(await boundedText(this.path+'/status',this.signal),this.pid),first=identity(before,status);
+   const before=parseLinuxStat(await readLinuxMemoryText(this.path+'/stat',this.signal),this.pid),status=parseLinuxStatus(await readLinuxMemoryText(this.path+'/status',this.signal),this.pid),first=identity(before,status);
    if(expectedParent!==undefined&&first.ppid!==expectedParent||expectedIdentity&&!sameIdentity(first,expectedIdentity))throw fail('LINUX_MEMORY_IDENTITY','Linux expected process identity changed',{pid:this.pid});
    const row={pid:this.pid,ppid:first.ppid,startTicks:first.startTicks,state:before.state,identity:first,cpuTicks:before.cpuTicks,isChromium:before.isChromium,statusRssBytes:status.statusRssBytes,rssBytes:status.statusRssBytes};
-   if(details){try{Object.assign(row,parseLinuxRollup(await boundedText(this.path+'/smaps_rollup',this.signal)));row.rssBytes=row.rollupRssBytes;}
+   if(details){try{Object.assign(row,parseLinuxRollup(await readLinuxMemoryText(this.path+'/smaps_rollup',this.signal)));row.rssBytes=row.rollupRssBytes;}
     catch(error){if(!['ENOENT','ESRCH','EACCES','EPERM','LINUX_MEMORY_FIELD','LINUX_MEMORY_PRECISION','LINUX_MEMORY_FORMAT'].includes(error.code))throw error;row.pssUnavailable={code:error.code,...(error.field?{field:error.field}:{})};}}
    const childIds=new Set(),issues=[];let issueCount=0;if(children){check(this.signal);const tasks=await readdir(this.path+'/task');check(this.signal);if(tasks.length>LINUX_MEMORY_LIMITS.tasksPerProcess)throw fail('LINUX_MEMORY_TASK_LIMIT','Process task inventory exceeded4096');
-    for(const task of tasks){if(!/^[1-9][0-9]*$/.test(task))throw fail('LINUX_MEMORY_FORMAT','Invalid task ID');try{for(const pid of parseLinuxChildren(await boundedText(`${this.path}/task/${task}/children`,this.signal))){childIds.add(pid);if(childIds.size>LINUX_MEMORY_LIMITS.processes)throw fail('LINUX_MEMORY_PROCESS_LIMIT','Process children exceeded1024');}}
+    for(const task of tasks){if(!/^[1-9][0-9]*$/.test(task))throw fail('LINUX_MEMORY_FORMAT','Invalid task ID');try{for(const pid of parseLinuxChildren(await readLinuxMemoryText(`${this.path}/task/${task}/children`,this.signal))){childIds.add(pid);if(childIds.size>LINUX_MEMORY_LIMITS.processes)throw fail('LINUX_MEMORY_PROCESS_LIMIT','Process children exceeded1024');}}
      catch(error){if(!['ENOENT','ESRCH','EACCES','EPERM'].includes(error.code))throw error;issueCount++;if(issues.length<LINUX_MEMORY_LIMITS.issueDetails)issues.push({pid:this.pid,task:Number(task),code:error.code});}}
    }
-   const after=parseLinuxStat(await boundedText(this.path+'/stat',this.signal),this.pid),afterStatus=parseLinuxStatus(await boundedText(this.path+'/status',this.signal),this.pid);if(!sameIdentity(first,identity(after,afterStatus)))throw fail('LINUX_MEMORY_IDENTITY','Linux process identity changed while reading',{pid:this.pid});
+   const after=parseLinuxStat(await readLinuxMemoryText(this.path+'/stat',this.signal),this.pid),afterStatus=parseLinuxStatus(await readLinuxMemoryText(this.path+'/status',this.signal),this.pid);if(!sameIdentity(first,identity(after,afterStatus)))throw fail('LINUX_MEMORY_IDENTITY','Linux process identity changed while reading',{pid:this.pid});
    check(this.signal);return {row,children:[...childIds].sort((a,b)=>a-b),issues,issueCount};
   }finally{this.busy=false;}
  }

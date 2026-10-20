@@ -1,0 +1,157 @@
+{
+  "at": "2026-10-17T20:22:38.571016+00:00",
+  "status": "accepted-Linux-PSS-cgroup-runtime-gates-in-stated-180s-scope;Mac-initial-startup-failure-preserved",
+  "scope": "Pinned-proc before/after startTicks,parent,UID with two matching live descendant witnesses;only complete observed cohort gets a PSS total. Actual cgroup membership/mount/procs/anon/file/OOM verified separately. Actual formalB1 Linux Source to AppleM2Max Metal GPUWorker+CPUWorker+CPUmain,all original workload/deadline/logical gates. Not atomic,not unique wholeSession memory or8h/growth/physicalIME acceptance.",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/frozen-version.json",
+  "manifestSha256": "403fa12645c00a51299c106bd58d441ec297db1dd69f45484693717bc268a9a6",
+  "requestedSeconds": 180,
+  "actualExerciseSeconds": 181.94738325,
+  "cycles": 460,
+  "navigations": 1,
+  "resizes": 41,
+  "inputs": 28,
+  "imageBytes": 103482128,
+  "samples": 4,
+  "maxSampleGapSeconds": 62.15400000000001,
+  "linuxSampleMs": {
+    "min": 43.122315000000526,
+    "max": 55.0707720000064
+  },
+  "cgroupMsMax": 1.8493820000148844,
+  "sourceCgroupOutsideObservedPids": [
+    1
+  ],
+  "actualGpu": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+  },
+  "actualSourceContracts": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/linux-memory-diagnostics-v1/artifacts/memory-diagnostics/contract.json",
+    "sha256": "881ebad48547051d96a2783013d9929441482f860716ea7db28507fb4722c4f0",
+    "variants": [
+      {
+        "fault": "none",
+        "samples": 7,
+        "sampledOwnedProcessIdentities": 8,
+        "exitCode": 0,
+        "cleanupStatus": "closed"
+      },
+      {
+        "fault": "renderer-crash",
+        "samples": 13,
+        "sampledOwnedProcessIdentities": 8,
+        "exitCode": 0,
+        "cleanupStatus": "closed"
+      },
+      {
+        "fault": "cleanup-error",
+        "samples": 7,
+        "sampledOwnedProcessIdentities": 8,
+        "exitCode": 1,
+        "cleanupStatus": "failed"
+      }
+    ]
+  },
+  "js": {
+    "linuxPassed": 238,
+    "linuxDarwinOnlySkipped": 4,
+    "macIndependentReplayPassed": 234,
+    "macLinuxOnlySkipped": 8,
+    "initialMacFailed": 1,
+    "initialMacPassed": 233,
+    "totalEach": 242
+  },
+  "macStartupInvestigation": {
+    "initialLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/js-mac.log",
+    "initialSha256": "d727169c95d8d7638317c7a29f829ab97c2d406843f10ffd308ea249afddbcc5",
+    "error": "NATIVE_MEMORY_READY_TIMEOUT:actualnativehelpernotreadywithin2s;exactchildSIGKILL/closeobserved",
+    "cause": "unconfirmed;not reproduced;no claim fixed",
+    "codesignVerify": "valid on disk;designated requirement satisfied;no xattr names",
+    "controlledProbe": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/darwin-native-startup-probe-v1/report.json",
+    "probeSha256": "d33201aa0f270fb78ef379d47d6e8fd6f0f1ee6f886b38aac599982961483886",
+    "freshExecutablePaths": 20,
+    "passed": 20,
+    "maxReadyMs": 844.1069580000001,
+    "scope": "Actualfreshpathcopies/nativeRSS+footprint/ownedreapwhilehardwareloadrunning;OSsecuritycacheintact. Samefrozencodeand2s/250ms/5sdeadlines;manualindependentfullJScleanreplayafterprobe,notautoretryorrewrittenfailedlog."
+  },
+  "sourceCleanup": {
+    "status": "closed",
+    "completeObservedPSS": true,
+    "remainingKinds": [
+      "node"
+    ]
+  },
+  "nativeHelperCleanup": {
+    "pid": 70835,
+    "exited": true,
+    "exitCode": 0,
+    "signal": null
+  },
+  "artifacts": {
+    "report.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/results/report.json",
+      "sha256": "f8b4b8ff9cba0ee1179b1c99ba95ee15d60194c3f4f582e724488018d30ed840"
+    },
+    "samples.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/results/samples.jsonl",
+      "sha256": "23bf97c8e085305e4993a27f5a54deda1807484bae941400568919cbeaf56071"
+    },
+    "sampling-phases.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/results/sampling-phases.jsonl",
+      "sha256": "9d86f4a4e8bf1ccc0a1684e4de12b016b910e4a506855001c7af69bcfe2251a4"
+    },
+    "native-memory-attempts.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/results/native-memory-attempts.jsonl",
+      "sha256": "88eba977c2c4a9d47eac396e54b95aa7f0d04582b3dfd512324f37080cc373ca"
+    },
+    "native-memory-observer.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/results/native-memory-observer.json",
+      "sha256": "3d9cf031da092b25f558cd61d6b8fde9e89cf1e0088d5efc2c08f0ce78740baa"
+    },
+    "cleanup.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/results/cleanup.json",
+      "sha256": "1bd4bb5a2924360b3f658236385fe0025bf228291262269818d07369fd1edfc4"
+    },
+    "source-stopped.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/results/source-stopped.json",
+      "sha256": "e215b1704c093e00613a35653c275fa3c4569013f229e8ecabec66c356a934d8"
+    },
+    "source-runtime.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/results/source-runtime.jsonl",
+      "sha256": "1c6e0f7f1c008434c187375ae510f12933c11f48e86dfb906a61a90a4c14f6b9"
+    },
+    "js-mac.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/js-mac.log",
+      "sha256": "d727169c95d8d7638317c7a29f829ab97c2d406843f10ffd308ea249afddbcc5"
+    },
+    "js-mac-v2.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/js-mac-v2.log",
+      "sha256": "3d6ae0733a358769078fdc541ec4cd6749e9845e7cbc7a96b79d5c5659985549"
+    },
+    "js-linux.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/js-linux.log",
+      "sha256": "71fa10b27328019efa491079dba26af8a100db0f511716cd5f46d3615c2ffb2f"
+    },
+    "source.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/source.log",
+      "sha256": "3b15086bd7ea02a9aa5d209acfdcbd5477c697f154228102e7956ba500dfed9f"
+    },
+    "viewer.log": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-integration-v1/viewer.log",
+      "sha256": "0903b93976099cc47687255e379b97d2dcacc488ce96ac1d60f679ac5475067a"
+    }
+  },
+  "coreCaptureTransportCppRustAndB1BinariesUnchanged": true,
+  "noCommitPush": true,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  },
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "acceptanceReceipt": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-memory-runtime-acceptance-v1.json",
+    "sha256": "25a173f8c1b7883dc373f4e12479953f8c9c7f4bd0da7bb38770e7b5e718b0a1"
+  }
+}

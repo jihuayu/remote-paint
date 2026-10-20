@@ -1105,3 +1105,16 @@ RSS、虚拟地址空间与physical footprint分别报告，physical footprint�
 真实64MiB脏页分配使RSS/PSS/Private_Dirty分别增长67588096/67543040/67457024字节。实际同UID、不可dump进程的smaps_rollup被内核拒绝，返回EACCES、bytes:null与completeObservedCohort:false；availableBytes明确仅为可读部分，不冒充完整总量。缺字段、权限、进程身份变化或进程组不稳定均不能变成补零的PSS。父子进程实测覆盖、子进程回收后的新采样、根启动身份不符、单次在途及重复FD回收均已核对。
 
 此处只完成新采集模块的独立合同，尚未接入runtimeMetrics和长测门禁。运行中的children枚举本身可能漏掉正在退出的进程，匹配的时间见证不等于冻结或原子快照；PSS为比例分摊，也不等于独占Session内存。完整Session创建销毁/跨站/长期增长、N1长期和八小时继续；41项仍9完成/12部分/20待做，没有提交或推送。
+
+
+## Linux PSS、cgroup 与实际长测门禁接入
+
+[运行集成证据](evidence/linux-memory-runtime-integration.json)将新采集层接入runtimeMetrics和Source诊断。PSS仅在观测到的后代身份列表稳定、全部所需rollup字段可读时给出完整总量；否则bytes:null，单独保留可读部分、不可读原因及覆盖数。实际cgroup由/proc/self/cgroup与mountinfo解析，打开所属目录FD，再核对前后进程归属；memory.current、memory.stat中的anon/file及OOM事件与PSS分开。挂载位置或归属不能确认时不回退到根目录假定值。cgroup包含内核、文件缓存及其他成员，PSS与cgroup都不被解释为独占Session内存；CDP进程角色另记较晚的时间见证，不冒称与启动身份原子配对。
+
+新cgroup五项边界/实际检查通过。三组实际正式B1 Linux Source分别正常关闭、真实Page.crash renderer崩溃、明确注入清理错误；每组启动时观测八个进程，全部启动身份最终退出。死页面后PSS仍可独立读取，最终观测仅余控制Node；故障清理继续关闭Broker、夹具和诊断，明确清理错误按预期返回1而非伪造成功。完整Linux242项测试中238通过、四项Mac专用检查跳过。
+
+新的三Viewer门禁要求真实硬件GPU Worker、CPU Worker、CPU主线程模式及完整观测PSS/已确认cgroup归属，原有Wasm/JS/render预算、2秒Mac原生请求、5秒阶段、90秒覆盖与真实像素工作负载不变。实际Apple M2 Max与正式B1 Source完成181.947秒、460次PNG/字体更新、一次导航、41次resize、28次输入，图像累计103,482,128字节；四次采样均完整，覆盖间隔最大62.154秒，Linux进程采集43.122至55.071ms，cgroup阶段最大1.849ms。Source cgroup在此隔离容器中另含init PID1，已如实列明；最终Viewer/helper/Source/Broker/夹具关闭，两端退出0。此前601秒结果保留原版本，本次不与其相加。
+
+Mac首次全量运行有一项NATIVE_MEMORY_READY_TIMEOUT：实际helper未在原2秒内就绪，SIGKILL后已回收，233项通过、八项Linux专用检查跳过，失败日志完整保留。签名校验正常、无扩展属性；后续20个新可执行路径副本的实际采样/清理均通过，最慢就绪844.107ms，但操作系统缓存未清除，未复现原条件，根因未确认，也不宣称修复。未修改源码、产物或期限的独立全量重跑234项通过、八项平台跳过；这不抹去首次失败，更不是采样器自动重试或对旧值放行。
+
+此处完成列明的PSS/cgroup基础设施和短负载门禁，捕获、映射、传输及正式Chromium/Broker未改。完整Session创建销毁/跨站/物理内存增长、N1长期和独立八小时继续；当前没有八小时进程，也没有八小时通过。41项仍9完成/12部分/20待做，无关修改、旧失败与缓存保留，没有提交或推送。

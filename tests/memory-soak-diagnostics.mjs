@@ -16,9 +16,9 @@ export async function startMemoryDiagnostics({source,directory,runId,interval=10
  let closing=false,stopped=false,timer,writes=Promise.resolve(),last=null;
  const persist=operation=>{const result=writes.then(operation);writes=result.catch(error=>console.error(`Memory diagnostic persistence failed: ${error.message}`));return result;};
  const snapshot=async()=>{
-  const metrics=await runtimeMetrics(source,{details:true});
+  const metricsStartedAt=new Date().toISOString(),metrics=await runtimeMetrics(source,{details:true}),metricsFinishedAt=new Date().toISOString();
   const info=await deadline(session.send('SystemInfo.getProcessInfo'),2000,'process roles').catch(error=>({error:error.message}));
-  if(info.processInfo){const roles=new Map(info.processInfo.map(p=>[Number(p.id),p.type]));for(const row of metrics.processes)if(roles.has(row.pid))row.chromiumRole=roles.get(row.pid);}
+  if(info.processInfo){const roles=new Map(info.processInfo.map(p=>[Number(p.id),p.type]));for(const row of metrics.processes)if(row.kind==='chromium'&&roles.has(row.pid))row.chromiumRole=roles.get(row.pid);metrics.processRolesWitness={metricsStartedAt,metricsFinishedAt,rolesFinishedAt:new Date().toISOString(),scope:'CDP PID roles observed after pinned-proc memory reads;not an atomic role/start-identity correlation.'};}
   else metrics.processRolesError=info.error;
   return {at:new Date().toISOString(),runId,closing,health:{...health},metrics};
  };

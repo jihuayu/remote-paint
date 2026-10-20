@@ -47,7 +47,7 @@ const stop=()=>stopPromise??=(async()=>{
   ['fixture',()=>new Promise((resolve,reject)=>{fixture.close(error=>error?reject(error):resolve());fixture.closeAllConnections();})],
   ['diagnostics',()=>diagnostics.stop()],
  ]){try{await close();steps.push({name,status:'closed'});}catch(error){steps.push({name,status:'failed',error:error.stack});}}
- const receipt={at:new Date().toISOString(),runId,status:steps.every(step=>step.status==='closed')?'closed':'failed',steps,fixtureListening:fixture.listening,sourceClosed:source.closed,brokerClosed:source.broker?source.broker.child.exitCode!==null||source.broker.child.signalCode!==null:null,remainingProcesses:diagnostics.last?.metrics.processes};
+ const receipt={at:new Date().toISOString(),runId,status:steps.every(step=>step.status==='closed')?'closed':'failed',steps,fixtureListening:fixture.listening,sourceClosed:source.closed,brokerClosed:source.broker?source.broker.child.exitCode!==null||source.broker.child.signalCode!==null:null,remainingProcesses:diagnostics.last?.metrics.processes,processSampling:diagnostics.last?.metrics.processSampling,pss:diagnostics.last?.metrics.pss,cgroupProvenance:diagnostics.last?.metrics.cgroup.provenance};
  await atomic('source-stopped.json',receipt);if(receipt.status==='failed')process.exitCode=1;return receipt;
 })();
 async function poll(){

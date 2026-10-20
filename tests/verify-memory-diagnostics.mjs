@@ -21,20 +21,20 @@ try{
   const ready=await until(()=>json(join(directory,'ready.json')),'Source readiness');
   const command=async op=>{const id=randomUUID();await atomicJson(join(directory,'requests'),`${id}.json`,{runId:ready.runId,id,op});const reply=await until(()=>json(join(directory,'responses',`${id}.json`)),`${op} response`);assert.equal(reply.error,undefined);return reply;};
   const before=await command('metrics');assert.equal(before.health.pageCrashed,false);assert.equal(before.state.pageStateError,undefined);
-  assert.ok(before.metrics.pss.bytes>0);assert.equal(before.metrics.pss.sampledProcesses,before.metrics.pss.totalProcesses);
+  assert.ok(before.metrics.pss.bytes>0);assert.equal(before.metrics.pss.sampledProcesses,before.metrics.pss.totalProcesses);assert.equal(before.metrics.pss.completeObservedCohort,true);assert.equal(before.metrics.processSampling.status,'observed-stable');assert.equal(before.metrics.processSampling.provider,'linux-pinned-proc-v1');
   assert.ok(before.metrics.processes.some(row=>row.kind==='broker'&&row.pssBytes>0));assert.ok(before.metrics.processes.some(row=>row.chromiumRole==='renderer'&&row.pssBytes>0));
-  assert.ok(Number.isSafeInteger(before.metrics.cgroup['memory.current']));assert.equal(typeof before.metrics.cgroup['memory.events'].oom_kill,'number');
+  assert.ok(Number.isSafeInteger(before.metrics.cgroup['memory.current']));assert.equal(typeof before.metrics.cgroup['memory.events'].oom_kill,'number');assert.equal(before.metrics.cgroup.provenance.status,'observed');assert.equal(before.metrics.cgroup.provenance.processMembershipConfirmed,true);assert.ok(Number.isSafeInteger(before.metrics.cgroup['memory.stat'].anon));assert.ok(Number.isSafeInteger(before.metrics.cgroup['memory.stat'].file));
   await delay(1150);
   let afterCrash;
   if(fault==='renderer-crash'){
    afterCrash=await command('crash');assert.equal(afterCrash.health.pageCrashed,true);assert.match(afterCrash.state.pageStateError,/crash/i);
-   const later=await command('snapshot');assert.equal(later.health.pageCrashed,true);assert.ok(later.metrics.pss.bytes>0,'Dead page prevented independent process sample');
+   const later=await command('snapshot');assert.equal(later.health.pageCrashed,true);assert.ok(later.metrics.pss.bytes>0,'Dead page prevented independent process sample');assert.equal(later.metrics.pss.completeObservedCohort,true);
    const events=(await readFile(join(directory,'source-events.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);assert.ok(events.some(event=>event.type==='page-crash'&&!event.expectedDuringClose));assert.ok(events.some(event=>event.type==='target-crash'&&!event.expectedDuringClose));
   }
   await command('stop');const [code,signal]=await deadline(exited,20000,'Source process exit');
   await writeFile(join(directory,'stdout.log'),stdout);await writeFile(join(directory,'stderr.log'),stderr);
   assert.equal(code,fault==='cleanup-error'?1:0);assert.equal(signal,null);
-  const receipt=await json(join(directory,'source-stopped.json'));assert.equal(receipt.runId,ready.runId);assert.equal(receipt.status,fault==='cleanup-error'?'failed':'closed');assert.equal(receipt.fixtureListening,false);assert.equal(receipt.sourceClosed,true);assert.equal(receipt.brokerClosed,true);assert.ok(receipt.remainingProcesses.every(row=>row.kind==='node'));
+  const receipt=await json(join(directory,'source-stopped.json'));assert.equal(receipt.runId,ready.runId);assert.equal(receipt.status,fault==='cleanup-error'?'failed':'closed');assert.equal(receipt.fixtureListening,false);assert.equal(receipt.sourceClosed,true);assert.equal(receipt.brokerClosed,true);assert.ok(receipt.remainingProcesses.every(row=>row.kind==='node'));assert.equal(receipt.processSampling.status,'observed-stable');assert.equal(receipt.pss.completeObservedCohort,true);
   if(fault==='cleanup-error'){assert.match(receipt.steps[0].error,/Injected soak cleanup failure/);assert.equal(receipt.steps.find(step=>step.name==='fixture').status,'closed');assert.equal(receipt.steps.find(step=>step.name==='diagnostics').status,'closed');}
   await until(async()=>{for(const row of before.metrics.processes)if(await identity(row.pid)===row.startTicks)return false;return true;},'Owned process identities retirement');
   const samples=(await readFile(join(directory,'source-runtime.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);assert.ok(samples.some(sample=>sample.reason==='interval'));assert.equal(samples.at(-1).reason,'cleanup');
