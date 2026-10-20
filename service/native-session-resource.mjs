@@ -5,7 +5,7 @@ import {AgentRpcError,captureAgentRequest} from './agent-rpc.mjs';
 export class NativeSessionResource {
  #startLive;#request;#signal;#transportKey;#live=null;#starting=null;#closing=null;#stopping=false;#startupFailed=false;#startInvoked=false;
  #unavailable=false;#subscriber=null;#bindings=[];
- #sessionId;#tenantId;#initialized=false;#agentRun=null;#agentBinding=null;#agentEnding=null;#agentActivity=null;
+ #sessionId;#tenantId;#initialized=false;#version=null;#agentRun=null;#agentBinding=null;#agentEnding=null;#agentActivity=null;
  constructor({request,signal,startLive,transportKey,sessionId=null,tenantId=null}={}){
   if(typeof startLive!=='function'||!(signal instanceof AbortSignal)||!request||typeof request.url!=='string')throw new TypeError('Configure an explicit Native Source factory and request');
   if(transportKey!==undefined&&(typeof transportKey!=='string'||!/^[a-f0-9]{64}$/.test(transportKey)))throw new TypeError('Invalid private Native transport key');
@@ -43,11 +43,12 @@ export class NativeSessionResource {
    if(this.#unavailable)throw new Error('Native Source is unavailable');
    if(this.#stopping||this.#signal.aborted)throw new Error('Native startup cancelled');
    if(!this.#healthy(source)){this.#lose();throw new Error('Native Source is unavailable');}
-   this.#initialized=true;return {version};
+   this.#version=version;this.#initialized=true;return {version};
   }).catch(error=>{this.#startupFailed=true;throw error;});
   return this.#starting;
  }
  #agentAvailable(){return typeof this.#sessionId==='string'&&/^ses_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(this.#sessionId)&&this.#initialized&&!this.#stopping&&!this.#unavailable&&!this.#signal.aborted&&this.#live&&this.#healthy(this.#live.source);}
+ get agentObservationVersion(){return 1;}
  agent(value){
   if(!this.#agentAvailable())throw new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched');
   const request=captureAgentRequest(value);
@@ -56,7 +57,7 @@ export class NativeSessionResource {
    // A run waits for page postconditions between calls. Own clock demand for
    // that lifetime without starting display/observation/recording encoding.
    const activity=this.#live.source.acquirePageRun?.({signal:this.#signal});if(typeof activity!=='function')throw new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched');
-   try{const run=createManagedAgentRun(this.#live.source.control,{sessionId:this.#sessionId,tenantId:this.#tenantId,authorize:({binding})=>this.#agentAvailable()&&binding.sessionId===this.#sessionId&&binding.tenantId===this.#tenantId});this.#agentRun=run;const context=run.context();this.#agentBinding=context.binding;this.#agentActivity=activity;return context;}catch(error){activity();throw error;}
+   try{const run=createManagedAgentRun(this.#live.source.control,{sessionId:this.#sessionId,tenantId:this.#tenantId,version:this.#version,authorize:({binding})=>this.#agentAvailable()&&binding.sessionId===this.#sessionId&&binding.tenantId===this.#tenantId});this.#agentRun=run;const context=run.context();this.#agentBinding=context.binding;this.#agentActivity=activity;return context;}catch(error){activity();throw error;}
   }
   const run=this.#agentRun;if(!run||request.runId!==undefined&&request.runId!==this.#agentBinding?.runId)throw new AgentRpcError('AGENT_RUN_NOT_FOUND','not-dispatched');
   if(request.op==='end'){
@@ -65,6 +66,8 @@ export class NativeSessionResource {
   }
   if(this.#agentEnding)throw new AgentRpcError('AGENT_RPC_BUSY','not-dispatched');
   if(request.op==='context')return run.context();
+  if(request.op==='observation-context')return run.observationContext();
+  if(request.op==='observe')return run.observe(request.query,request.context,request.limits);
   return run.perform(request.tool,request.params,request.context);
  }
  close(){

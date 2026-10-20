@@ -1,4 +1,5 @@
 import {randomUUID} from 'node:crypto';
+import {createManagedAgentObserver} from './agent-observation.mjs';
 import {ControlLease,InputError,AgentInputError,captureAgentFence,validateInput} from './input.mjs';
 const owners=new WeakMap();
 export const MANAGED_AGENT_TOOLS=Object.freeze(['move','click','drag','scroll','press','insertText','composition']);
@@ -36,24 +37,28 @@ function failure(error,submitted=false){return error instanceof AgentInputError?
 // trusted state; this callback contract does not implement remote authentication.
 export function createManagedAgentRun(control,configuration){
  if(!(control instanceof ControlLease))throw new TypeError('Configure an owned ControlLease');
- const config=data(configuration,['tenantId','sessionId','authorize']);
+ const config=data(configuration,['tenantId','sessionId','authorize','version'],['tenantId','sessionId','authorize']);
  if(typeof config.tenantId!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(config.tenantId)||typeof config.sessionId!=='string'||!/^ses_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(config.sessionId)||typeof config.authorize!=='function')throw new TypeError('Configure a tenant, management Session and trusted synchronous authorizer');
  const source=control.source,page=source.page;
  const targetMatches=ControlLease.prototype.agentTargetMatches.bind(control);
  if(!page||typeof page.isClosed!=='function'||source.control!==control||!targetMatches(page))throw new TypeError('Configure the owned controlled Page');
  if(owners.has(control))fail('AGENT_RUN_BUSY');
  const binding=Object.freeze({tenantId:config.tenantId,sessionId:config.sessionId,targetId:control.targetId,runId:'run_'+randomUUID()}),owner={},capture=ControlLease.prototype.agentFence.bind(control),batch=ControlLease.prototype.agentBatch.bind(control),revoke=ControlLease.prototype.revoke.bind(control),fenceQueue=ControlLease.prototype.fence.bind(control);
- let closed=false,closing=null;owners.set(control,owner);
+ let closed=false,closing=null,observer=null;owners.set(control,owner);
  function live(){if(closed)fail('AGENT_RUN_CLOSED');if(owners.get(control)!==owner||control.source!==source||source.control!==control||!targetMatches(page)||page.isClosed())fail('AGENT_TARGET_CHANGED');}
- function allowed(action=null){
+ function allowed(action=null,permission='agent:write'){
   live();let result;
-  try{result=config.authorize(Object.freeze({binding,permission:'agent:write',action}));}catch{fail('AGENT_NOT_AUTHORIZED');}
+  try{result=config.authorize(Object.freeze({binding,permission,action}));}catch{fail('AGENT_NOT_AUTHORIZED');}
   if(result!==true){if(result instanceof Promise)void result.catch(()=>{});fail('AGENT_NOT_AUTHORIZED');}
   live();return true;
  }
  try{capture();allowed();capture();}catch(error){owners.delete(control);throw failure(error);}
  return Object.freeze({
   context(){try{allowed();return Object.freeze({binding,fence:capture()});}catch(error){throw failure(error);}},
+  observationContext(){allowed(null,'agent:observe');if(!observer)observer=createManagedAgentObserver({source,page,binding,version:config.version,live,authorize:()=>allowed(null,'agent:observe')});return observer.context();},
+  observe(query,context,limits={}){
+   try{allowed(null,'agent:observe');if(!observer)observer=createManagedAgentObserver({source,page,binding,version:config.version,live,authorize:()=>allowed(null,'agent:observe')});return observer.observe(query,context,limits);}catch(error){return Promise.reject(failure(error));}
+  },
   perform(tool,params,context){
    let submitted=false;
    try{
@@ -70,7 +75,7 @@ export function createManagedAgentRun(control,configuration){
    // handoff already fences Agent work and owns its own cleanup: ending the
    // run must not revoke that authority or release human-held keys/buttons.
    const revoked=control.mode==='agent'?revoke('agent-run-closed'):Promise.resolve(),idle=fenceQueue(()=>{});
-   closing=Promise.all([revoked,idle]).then(()=>{if(owners.get(control)===owner)owners.delete(control);return Object.freeze({stage:'run-closed',binding});},error=>{throw failure(error,true);});
+   closing=Promise.all([revoked,idle,observer?.close()]).then(()=>{if(owners.get(control)===owner)owners.delete(control);return Object.freeze({stage:'run-closed',binding});},error=>{throw failure(error,true);});
    return closing;
   }
  });
