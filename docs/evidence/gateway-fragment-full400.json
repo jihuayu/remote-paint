@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-18T12:39:51.604415+00:00",
+  "status": "current-full400-tests-each-Mac-Linux-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-mountinfo-short-read-v2/frozen-version.json",
+  "manifestSha256": "6db70e00e68493c1a20115451e17155086edb9f094b245fd777edeec77dbe30f",
+  "sourceFiles": 717,
+  "testFiles": 58,
+  "concurrency": 4,
+  "platforms": {
+    "mac": {
+      "tests": 400,
+      "pass": 391,
+      "fail": 0,
+      "skipped": 9,
+      "actualExitCode": 0,
+      "progress": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-regressions-v3-mac-js/progress.json",
+      "progressSha256": "3171f254d8385678bcbad5aa8740b61d95abe9d711dd2bd9f807c2c048926d3b",
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-regressions-v3-mac-js/mac-js.log"
+    },
+    "linux": {
+      "tests": 400,
+      "pass": 396,
+      "fail": 0,
+      "skipped": 4,
+      "actualExitCode": 0,
+      "progress": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-regressions-v3-linux-js/progress.json",
+      "progressSha256": "9c97b014f1aecdc56cda300179ade829a6a0d4054233fcc5815743d53e29d092",
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-regressions-v3-linux-js/linux-js.log"
+    }
+  },
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-mountinfo-short-read-v2/frozen-version.json": "6db70e00e68493c1a20115451e17155086edb9f094b245fd777edeec77dbe30f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-regressions-v3-mac-js/progress.json": "3171f254d8385678bcbad5aa8740b61d95abe9d711dd2bd9f807c2c048926d3b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-regressions-v3-mac-js/mac-js.log": "b0488f9dc01c2e3415493286df77042bf11a0da1018bd8a0e8127c8518432801",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-regressions-v3-linux-js/progress.json": "9c97b014f1aecdc56cda300179ade829a6a0d4054233fcc5815743d53e29d092",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-regressions-v3-linux-js/linux-js.log": "35aca645ad10a5f110e0eff82bcf058f44dedcdf3ee55af51d775f97642317ee",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-regressions-v3-linux-js/linux-js-inspect.json": "68f177875932b257121e14fc1d60e6302e6f63b166dc2d81b33b51168d21d782"
+  },
+  "scope": "Exact717file candidate withstagedfragmentedBroker andmountinfofix. Full400 Mac391pass9platformskip/Linux396pass4platformskip,actual0/0. Earlier missing-artifactmount andactualmountinfo failures retained. Not Native13 completion/600s/netem/8h/all41 acceptance.",
+  "earlierFailures": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-linux-js-setup-failure-checkpoint-v1.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/gateway-fragment-linux-js-memory-failure-checkpoint-v1.json"
+  ],
+  "noCommitPush": true,
+  "eightHourPassed": false
+}
