@@ -182,6 +182,7 @@ export class SqliteSessionStore {
  findAgentInvocation(agentRunId,tenant,keyHash,{owner}={}){this.#open();return this.#agents.findInvocation(agentRunId,tenant,keyHash,owner);}
  listAgentRecords(kind,options,{owner}={}){this.#open();return this.#agents.list(kind,options,owner);}
  listAgentEvents(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.events(agentRunId,tenant,options,owner);}
+ agentCancellationSnapshot(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.cancellation(agentRunId,tenant,options,owner);}
  commitAgentRun(row,{owner}={}){this.#open();return this.#agents.commitRun(row,owner);}
  commitAgentInvocation(row,{owner}={}){this.#open();return this.#agents.commitInvocation(row,owner);}
  reconcileAgentRun(agentRunId,{owner}={}){this.#open();return this.#agents.reconcileRun(agentRunId,owner);}

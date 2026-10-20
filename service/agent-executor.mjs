@@ -1,3 +1,4 @@
+import {agentCancellationAfter,agentCancellationReport} from './agent-cancellation.mjs';
 import {publicDownload,captureDownloadFile,checkDownloadFileChunk} from './agent-download-access.mjs';
 import {publicScreenshot,captureScreenshotDownload,checkScreenshotDownloadChunk} from './agent-screenshot-access.mjs';
 import {createHash,createHmac,randomUUID} from 'node:crypto';
@@ -7,7 +8,7 @@ import {AGENT_EVENT_LIMITS} from './agent-event-journal.mjs';
 import {sourceObservationContext,publicObservationContext,publicObservation,publicAccessibility} from './agent-observation-access.mjs';
 import {captureAgentRequest,captureAgentResult,agentReplyExpectation,AgentRpcError,agentFailure} from './agent-rpc.mjs';
 
-const codes=new Set(['AGENT_IDEMPOTENCY_CONFLICT','AGENT_INVOCATION_NOT_FOUND','AGENT_EXECUTOR_CLOSED','AGENT_EXECUTOR_CAPACITY','AGENT_EXECUTOR_BUSY','AGENT_RECOVERY_REQUIRED','AGENT_STORAGE_UNAVAILABLE','AGENT_EVENT_CURSOR_INVALID']);
+const codes=new Set(['AGENT_IDEMPOTENCY_CONFLICT','AGENT_INVOCATION_NOT_FOUND','AGENT_EXECUTOR_CLOSED','AGENT_EXECUTOR_CAPACITY','AGENT_EXECUTOR_BUSY','AGENT_RECOVERY_REQUIRED','AGENT_STORAGE_UNAVAILABLE','AGENT_EVENT_CURSOR_INVALID','AGENT_CANCELLATION_CURSOR_INVALID','AGENT_CANCELLATION_CHANGED']);
 export class AgentExecutionError extends Error {
  constructor(code,outcome='not-dispatched'){super('Agent execution is unavailable');this.name='AgentExecutionError';this.code=codes.has(code)||new AgentRpcError(code).code===code?code:'AGENT_INPUT_FAILED';this.outcome=outcome==='unknown'?'unknown':'not-dispatched';}
 }
@@ -92,6 +93,13 @@ export class DurableAgentExecutor {
   const v=data(value,['tenantId','agentRunId','after','limit'],['tenantId','agentRunId']),ref=runRequest({tenantId:v.tenantId,agentRunId:v.agentRunId}),after=Object.hasOwn(v,'after')?v.after:0,limit=Object.hasOwn(v,'limit')?v.limit:AGENT_EVENT_LIMITS.pageEvents;
   if(!Number.isSafeInteger(after)||after<0||!Number.isInteger(limit)||limit<1||limit>AGENT_EVENT_LIMITS.pageEvents)fail('AGENT_INVALID_REQUEST');const row=this.#run(ref);
   try{return this.#store.listAgentEvents(row.agentRunId,row.tenant,{after,limit},{owner:this.#owner});}catch(error){if(error?.code==='STATE_AGENT_EVENT_CURSOR')fail('AGENT_EVENT_CURSOR_INVALID');this.#fault=true;fail('AGENT_STORAGE_UNAVAILABLE');}
+ }
+ cancellation(value){
+  const v=data(value,['tenantId','agentRunId','after'],['tenantId','agentRunId']),ref=runRequest({tenantId:v.tenantId,agentRunId:v.agentRunId});this.#run(ref);let options;
+  try{options=agentCancellationAfter(v.agentRunId,v.after);}catch{fail('AGENT_CANCELLATION_CURSOR_INVALID');}
+  this.#snapshot();let snapshot;
+  try{snapshot=this.#store.agentCancellationSnapshot(v.agentRunId,v.tenantId,options,{owner:this.#owner});}catch(error){if(error?.code==='STATE_AGENT_CANCELLATION_CHANGED')fail('AGENT_CANCELLATION_CHANGED');if(error?.code==='STATE_AGENT_CANCELLATION_CURSOR')fail('AGENT_CANCELLATION_CURSOR_INVALID');this.#fault=true;fail('AGENT_STORAGE_UNAVAILABLE');}
+  try{return agentCancellationReport(snapshot,{ordinaryPending:this.#ordinary.has(v.agentRunId),endPending:this.#ending.has(v.agentRunId),recoveryRequired:this.#recovered.has(v.agentRunId),executorStopping:this.#stopping});}catch{this.#fault=true;fail('AGENT_STORAGE_UNAVAILABLE');}
  }
  context(value,callOptions){
   const v=runRequest(value),opts=options(callOptions);this.#admit();const row=this.#run(v);this.#active(row);this.#capacity(this.#ordinary,row.agentRunId);

@@ -18,7 +18,7 @@ SSE先发送不带id的 `ready`，包含保留窗口/来源及起始游标。每
 
 每Run仍只保留64条。过旧游标在响应头前返回409 `AGENT_EVENT_GAP`，`error.details` 含 `agent-event-gap-v1`、原after、oldestCursor、latestCursor、historyOrigin及missingHistory=true；没有事件和默认推进。流开始后若客户端慢写期间发生淘汰，最后发送无id的gap帧并结束，after仍为此前实际发送事件的游标，不发送成功checkpoint。
 
-消费者必须显式处理缺失历史：查询原Run当前状态，使用自己原有Invocation ID查询最终结果，或用相同幂等键恢复原调用记录，不能重放一个新副作用请求。只有在应用接受缺口并自行核对后，才可主动从oldestCursor读取尚存窗口，或选择latestCursor只观察后续；这都无法补回已淘汰历史。当前没有完整业务快照/所有历史Invocation枚举接口，本检查点不声称可无损恢复已丢弃的历史。旧库显式migration-snapshot来源仍保留，不能当作新创建历史。
+消费者必须显式处理缺失历史：查询原Run当前状态，使用自己原有Invocation ID查询最终结果，或用相同幂等键恢复原调用记录，不能重放一个新副作用请求。只有在应用接受缺口并自行核对后，才可主动从oldestCursor读取尚存窗口，或选择latestCursor只观察后续；这都无法补回已淘汰历史。此事件检查点不含完整业务快照；后续[取消效果报告](agent-cancellation.md)可用固定版本分页枚举原Run当前Invocation结果，供缺口核对，仍不能无损恢复已丢弃的中间历史。旧库显式migration-snapshot来源仍保留，不能当作新创建历史。
 
 ## 有界连接与清理
 

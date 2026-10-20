@@ -81,7 +81,12 @@ function route(req){
  const path=req.url;
  if(typeof path!=='string'||path.length>2048||/[#%]/.test(path))fail('ROUTE_NOT_FOUND');
  const [resource,query,...extra]=path.split('?'),agent=agentHttpRoute(resource);
- if(query!==undefined){if(extra.length||!agent||!['agent-events','agent-event-stream'].includes(agent.kind)||!/^after=aec1\.arun_[a-f0-9-]{36}\.(?:0|[1-9][0-9]{0,15})$/.test(query))fail('ROUTE_NOT_FOUND');agent.eventCursor=query.slice(6);}
+ if(query!==undefined){
+  if(extra.length||!agent)fail('ROUTE_NOT_FOUND');
+  if(['agent-events','agent-event-stream'].includes(agent.kind)&&/^after=aec1\.arun_[a-f0-9-]{36}\.(?:0|[1-9][0-9]{0,15})$/.test(query))agent.eventCursor=query.slice(6);
+  else if(agent.kind==='agent-cancellation'&&/^after=acc1\.arun_[a-f0-9-]{36}\.[1-9][0-9]{0,15}\.ainv_[a-f0-9-]{36}$/.test(query))agent.cancellationCursor=query.slice(6);
+  else fail('ROUTE_NOT_FOUND');
+ }
  if(agent)return agent;
  if(query!==undefined)fail('ROUTE_NOT_FOUND');
  let match;
@@ -108,7 +113,7 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
    if(req.rawHeaders.length>128)fail('INVALID_REQUEST');
    if(header(req,'origin')!==undefined)fail('MANAGEMENT_ORIGIN_FORBIDDEN');
    if(header(req,'expect')!==undefined)fail('INVALID_REQUEST');
-   selected=route(req);const priority=selected.kind==='agent-end'&&req.method===selected.method,eventReader=['agent-events','agent-event-stream'].includes(selected.kind)&&req.method===selected.method;
+   selected=route(req);const priority=['agent-end','agent-cancel'].includes(selected.kind)&&req.method===selected.method,eventReader=['agent-events','agent-event-stream'].includes(selected.kind)&&req.method===selected.method;
    if(priority){if(activeEnds>=maxAgentEndRequests)fail('SERVICE_BUSY');activeEnds++;held='end';}
    else if(eventReader){if(activeEvents>=maxAgentEventStreams)fail('SERVICE_BUSY');activeEvents++;held='event';}
    else{if(active>=maxConcurrentRequests)fail('SERVICE_BUSY');active++;held='ordinary';}
@@ -137,6 +142,7 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
     const needsKey=['agent-create','agent-invocations'].includes(selected.kind),idempotencyKey=needsKey?header(req,'idempotency-key'):undefined;
     if(needsKey&&(typeof idempotencyKey!=='string'||!/^[\x21-\x7e]{1,128}$/.test(idempotencyKey)))fail('INVALID_IDEMPOTENCY_KEY');
     const input=needsBody?await body(req,bodyLimit,signal):undefined;aborted(signal);confirmed(registry);
+    if(['agent-cancel','agent-cancellation'].includes(selected.kind)&&header(req,'last-event-id')!==undefined)fail('INVALID_REQUEST');
     if(eventReader){
      if(!agentAccess)throw new AgentEventHttpError('AGENT_NOT_CONFIGURED');
      const last=header(req,'last-event-id');if(last!==undefined&&selected.eventCursor!==undefined)throw new AgentEventHttpError('AGENT_EVENT_CURSOR_INVALID');

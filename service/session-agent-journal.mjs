@@ -1,4 +1,5 @@
 import {createHash} from 'node:crypto';
+import {AGENT_CANCELLATION_LIMITS} from './agent-cancellation.mjs';
 
 // Private control-plane metadata in the Session ledger. A stored receipt hash
 // identifies caller-validated evidence; it does not prove a remote side effect.
@@ -79,6 +80,20 @@ export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,
   writer(sessionId,value){authorize(value);return uniqueRun('SELECT agent_run_id FROM agent_runs WHERE session_id=? AND reserved=1 LIMIT 2',sessionId);},
   getInvocation(id,value){authorize(value);return readInvocation(id);},
   events(id,tenant,options,value){authorize(value);const row=readRun(id);if(!row||row.tenant!==tenant)reject('REFERENCE','Agent run is unavailable');if(!eventJournal)reject('INVALID','Agent event journal is unavailable');return eventJournal.read(row,options);},
+  cancellation(id,tenant,options={},value){
+   authorize(value);if(!options||![Object.prototype,null].includes(Object.getPrototypeOf(options)))reject('INVALID','Invalid bounded cancellation page');const keys=Reflect.ownKeys(options);
+   if(!plain(options,keys)||keys.some(k=>!['afterId','eventSequence'].includes(k))||keys.length!==0&&(!plain(options,['afterId','eventSequence'])||!prefixed(options.afterId,'ainv_')||!Number.isSafeInteger(options.eventSequence)||options.eventSequence<1))reject('INVALID','Invalid bounded cancellation page');
+   try{
+    db.exec('BEGIN');const row=readRun(id);if(!row||row.tenant!==tenant)reject('REFERENCE','Agent run is unavailable');if(!eventJournal)reject('INVALID','Agent event journal is unavailable');
+    const head=eventJournal.read(row,{after:0,limit:1}),afterId=options.afterId??'';
+    if(options.eventSequence>head.latestSequence)reject('CANCELLATION_CURSOR','Cancellation cursor is ahead of its original Run');
+    if(options.eventSequence!==undefined&&options.eventSequence!==head.latestSequence)reject('CANCELLATION_CHANGED','Original Run changed while enumerating cancellation effects');
+    if(afterId){const prior=readInvocation(afterId);if(!prior||prior.agentRunId!==id||prior.tenant!==tenant)reject('CANCELLATION_CURSOR','Cancellation cursor lacks its original invocation');}
+    const selected=db.prepare('SELECT invocation_id FROM agent_invocations WHERE agent_run_id=? AND tenant=? AND invocation_id>? ORDER BY invocation_id LIMIT ?').all(id,tenant,afterId,AGENT_CANCELLATION_LIMITS.pageInvocations+1);
+    const records=selected.slice(0,AGENT_CANCELLATION_LIMITS.pageInvocations).map(x=>readInvocation(x.invocation_id));
+    const result=structuredClone({run:row,eventSequence:head.latestSequence,historyOrigin:head.historyOrigin,afterId,records,hasMore:selected.length>records.length});db.exec('COMMIT');return result;
+   }catch(error){try{db.exec('ROLLBACK');}catch{}if(isStoreError(error))throw error;fail('STATE_AGENT_READ','Cancellation snapshot could not be confirmed',error);}
+  },
   findInvocation(agentRunId,tenant,keyHash,value){authorize(value);const rows=db.prepare('SELECT invocation_id FROM agent_invocations WHERE agent_run_id=? AND tenant=? AND key_hash=? LIMIT 2').all(agentRunId,tenant,keyHash);if(rows.length>1)fail('STATE_CORRUPT','Invocation lookup has multiple identities');return rows.length?readInvocation(rows[0].invocation_id):null;},
   list(kind,{afterId='',limit=64,reservedOnly=false,unfinishedOnly=false}={},value){
    authorize(value);if(!['runs','invocations'].includes(kind)||typeof afterId!=='string'||afterId.length>128||!Number.isInteger(limit)||limit<1||limit>256||typeof reservedOnly!=='boolean'||typeof unfinishedOnly!=='boolean'||kind==='runs'&&unfinishedOnly||kind==='invocations'&&reservedOnly)reject('INVALID','Invalid bounded Agent history cursor');
