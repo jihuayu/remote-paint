@@ -9,6 +9,7 @@ import {ControlLink} from '/control-channel.mjs';
 import {ViewerLifecycle} from '/lifecycle.mjs';
 import {ViewerConnection,ViewerTicketSource,ViewerConnectionError} from '/connection.mjs';
 import {loadPublicViewerConfig,PublicViewerConfigError} from '/public-config.mjs';
+import {attachViewerChild} from '/embed-bridge.mjs';
 const VIEWER_BUILD='__REMOTE_PAINT_VIEWER_BUILD__',EXPECTED_WASM_SHA='__REMOTE_PAINT_WASM_SHA__';
 const $=id=>document.getElementById(id),status=text=>$('status').textContent=text;
 const publicMode=document.querySelector?.('meta[name="remote-paint-mode"]')?.content==='public',configController=new AbortController();let bootConfig=null;
@@ -20,7 +21,10 @@ let ticketSource=null,publicSettings=null,publicConnection=null;const workerTick
 let streamWorker,renderer,presenter,socket,cleanupSession,cancelInitialization,heartbeat,lastPong,forceMainThread=false,generation=0,retryTimer,stopped=false,retryDelay=250;
 const controlLink=new ControlLink({onMessage:message=>{if(message.type==='CaptureError')status(message.message);else input.message(message);},onError:fail,onClose:peerId=>{input.reset();if(stopped)return;if(streamWorker)streamWorker.postMessage({type:'control-lost',peerId});else socket?.close(1012,'Control connection closed');}});
 function fail(error){$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';}
-function connectionState(state){window.remotePaintConnection=state;window.dispatchEvent(new CustomEvent('remote-paint-connection',{detail:state}));}
+function connectionState(state){
+ if(state.state==='failed'&&publicSettings&&!stopped){stopped=true;lifecycle.freeze();fail(new ViewerConnectionError(state.code));}
+ window.remotePaintConnection=state;window.dispatchEvent(new CustomEvent('remote-paint-connection',{detail:state}));
+}
 function abortWorkerTickets(){for(const request of workerTickets.values())request.controller.abort();workerTickets.clear();}
 function workerMessage({data}){
  if(data.type==='connection-cancel'){const request=workerTickets.get(data.requestId);if(request?.worker===streamWorker){request.controller.abort();workerTickets.delete(data.requestId);}return;}
@@ -203,5 +207,5 @@ window.remotePaintViewer=Object.freeze({
  disconnect(){const state=window.remotePaintConnection??{...publicSettings};stopped=true;ticketSource?.destroy();lifecycle.freeze();connectionState({...state,state:'paused'});},
  get state(){return window.remotePaintConnection??{state:'paused'};}
 });
-if(publicMode){stopped=true;lifecycle.freeze();status('等待宿主授权');connectionState({state:'waiting'});}
+if(publicMode){stopped=true;lifecycle.freeze();status('等待宿主授权');connectionState({state:'waiting'});attachViewerChild({targetWindow:window,ready:publicReady,api:window.remotePaintViewer});}
 else if(document.hidden)lifecycle.suspend('hidden');else void lifecycle.run();

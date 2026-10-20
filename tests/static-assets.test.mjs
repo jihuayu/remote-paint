@@ -25,6 +25,11 @@ test('asset namespace changes with source bytes and rewrites only static paths',
 test('compression negotiation respects explicit exclusion before wildcard',()=>{
  for(const [header,expected]of [['gzip, deflate',true],['br, *;q=.5',true],['gzip;q=0, *;q=1',false],['gzip;q=.2',true],['gzip;q=broken',false],['br',false],['',false]])assert.equal(acceptsGzip(header),expected,header);
 });
+
+test('child SDK-relative imports resolve to the same canonical connection and channel modules',async()=>{
+ const inputs=fixture();inputs.set('/connection.mjs',{type:'text/javascript',bytes:Buffer.from('export class ViewerConnectionError extends Error{}')});inputs.set('/viewer-channel.mjs',{type:'text/javascript',bytes:Buffer.from('export class ViewerPort{}')});inputs.set('/embed-bridge.mjs',{type:'text/javascript',bytes:Buffer.from("import {ViewerConnectionError} from '../sdk/viewer-connection.mjs';import {ViewerPort} from '../sdk/viewer-channel.mjs';fetch('/viewer-config');")});const assets=await makeStaticAssets(inputs),text=assets.get('/embed-bridge.mjs').bytes.toString();
+ assert.ok(text.includes("from '"+assets.prefix+"/connection.mjs'"));assert.ok(text.includes("from '"+assets.prefix+"/viewer-channel.mjs'"));assert.ok(text.includes("fetch('/viewer-config')"));assert.ok(!text.includes('../sdk/'));
+});
 test('asset compression yields the event loop and concurrent identical builds share work',async()=>{
  const inputs=fixture();inputs.get('/vendor/canvaskit.wasm').bytes=Buffer.alloc(4*1024*1024,29);
  let timerAdvanced=false;const timer=setTimeout(()=>{timerAdvanced=true;},0);

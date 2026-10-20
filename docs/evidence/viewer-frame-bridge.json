@@ -1,0 +1,59 @@
+{
+  "at": "2026-10-18T23:32:44.747155+00:00",
+  "task": "K2a2b1",
+  "scope": "Actual authenticated parent/child MessagePort bridge into existing public main/Worker Viewer with browser-safe SDK frame entry;full DOM component and realbrowser acceptance remain pending.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-frame-bridge-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-frame-bridge-checkpoint-v1.json",
+  "contract": {
+    "bootstrap": "Exact capturedparentWindow/exactconfiguredOrigin,256bit nonce,one transferredport;one candidate while metadata pending;no ticket URL/query or wildcardtargetOrigin.",
+    "rpc": "JSON<=16KiB,finite methods,monotonicdirectionalIDs,8outgoing/8unsettledincoming requests,requestcancellation/deadline;cancellednoncooperative handlers retain admission. Heartbeat1s/idle15s.",
+    "authority": "ParentViewerTicketSource controls fixedgateway/Session/role/audience/version and grant history;one actual callback retained across disconnect/reconnect. ChildSourceuses original Window/Worker/FrameGate and original ticket gateway.",
+    "lifecycle": "ready binds publicgateway/build;connect awaitsactualconnected;disconnect retainsport/sourcehistory;close aborts and stopschild. Late connected state cannot revive a disconnectedhost.",
+    "terminal": "Any publicconnectionfailure freezes Window lifecycle until explicitconnect. Actualpre-fix main/Worker online/resume both mintedsecondgrant afterrevocation;corrected without changing backend permission rules.",
+    "assets": "ChildSDKrelativeimports compile to same canonicalservedconnectionmodule;newbridge/channel included in copied observerbaseline;strictpublic/privatebuild checks retained."
+  },
+  "tests": {
+    "portCases": 9,
+    "frameBootstrapCases": 9,
+    "addedSavedEntryCases": 6,
+    "staticImportIdentityCase": 1,
+    "infrastructure": "RealMessageChannel/porttransfer and actualHTTP/WebSocket/SQLite/NodeSource/FrameGate. DOM/CanvasKit/presenter/realm scheduler are explicit fixtures.",
+    "preFixTerminalResume": {
+      "actualExitCode": 1,
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-frame-terminal-resume-before-fix.log",
+      "actualTicketCallbackCount": 2,
+      "expected": 1
+    },
+    "postFixTerminalResume": {
+      "actualExitCode": 0,
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-frame-terminal-resume-after-fix.log"
+    },
+    "preliminaryContracts": {
+      "actualExitCode": 0,
+      "tests": 38,
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-frame-before-freeze.log"
+    },
+    "typesReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-frame-types-preliminary-exit.json"
+  },
+  "remaining": [
+    "FullnativeJScreateViewerDOMcomponent/load/reload/destroy and publiccontrol/lease/fencing/resize/error/performance API.",
+    "Actualcrossoriginbrowser/CSP/sandbox/allowlist and realphysicalresource repeatmount/unmount afteroriginal8hterminal.",
+    "Nativeworkerownedendpointbridge and independentAgent/CDPpermissions/managedwritefences.",
+    "Original8hterminal physicalgates,wholecandidatefullregression and all41/N1finalrequirementaudit."
+  ],
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "wholeFullJsQualified": false,
+  "nativeProductionProviderComplete": false,
+  "eightHourPassed": false,
+  "noCommitPush": true
+}

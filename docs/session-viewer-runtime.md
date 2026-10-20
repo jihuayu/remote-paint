@@ -2,7 +2,7 @@
 
 现有 `viewer/live.mjs` 和 `viewer/stream-worker.mjs` 已共享 `sdk/viewer-connection.mjs` 的公共票据连接。它们继续使用原 FrameGate、资源校验、CanvasKit 渲染和输入租约，不再为公共连接拼接私有 Source key。原本地演示链接仍可使用私有密钥路径。
 
-这个阶段提供票据连接与生命周期接线，以及独立[公开资源服务](session-viewer-assets.md)的 CSP/allowlist 配置。iframe 宿主组件、父子消息协议、resize/接管公共 API 及真实浏览器的 CSP/资源验收仍待完成；不能将这些接线测试当作 K2 全部完成。
+这个阶段提供票据连接与生命周期接线，以及独立[公开资源服务](session-viewer-assets.md)的 CSP/allowlist 配置。[父子连接桥](session-viewer-frame.md)已接入现有入口；创建/销毁 DOM 的完整宿主组件、resize/接管公共 API 及真实浏览器的 CSP/资源验收仍待完成；不能将这些接线测试当作 K2 全部完成。
 
 ## 当前 Viewer 入口
 
@@ -29,7 +29,7 @@ window.remotePaintViewer.connect({
 
 公开入口必须先 await ready 加载无凭据的同源配置；gatewayOrigin 还必须与资源服务配置完全一致。原本地入口的 ready 返回 null，保留原行为。
 
-浏览器中不配置管理 API key。应用后端负责认证自己的用户、核对目标 Session/角色，并通过[票据接口](session-viewer-access.md)签发或刷新；不能信任浏览器自行提供的租户或权限。当前 Window API 将 audience 固定为 Viewer frame 的 `location.origin`。跨域宿主页面需等后续安全父子消息桥接，不能直接调用另一个 Origin 的 Window。
+浏览器中不配置管理 API key。应用后端负责认证自己的用户、核对目标 Session/角色，并通过[票据接口](session-viewer-access.md)签发或刷新；不能信任浏览器自行提供的租户或权限。当前 Window API 将 audience 固定为 Viewer frame 的 `location.origin`。跨域宿主页面通过 ViewerFrameConnection 和已绑定端口接入，不能直接调用另一个 Origin 的 Window。
 
 `gatewayOrigin` 必须是规范化的 HTTPS Origin；HTTP 仅允许 loopback 开发。回调不能改换网关、Session、角色或 audience；首份票据的版本随后固定。可配置 `version` 进一步预先固定版本，票据回调期限默认 5 秒，可设 50ms 到 10 秒。未知配置字段、管理 key、getter 或继承的配置字段会被拒绝；支持来自普通跨 realm 数据对象的配置。
 
@@ -41,7 +41,7 @@ Worker 模式由主 Window 保有应用回调；Worker 通过有界、可取消�
 
 控制器在接受 Welcome 前核对公开的 Session ID、版本、grant ID 和角色；原 Source 控制 Session ID 留给租约协议。只读 Welcome 还必须明确禁止输入、反馈和私有控制配对。正式连接后在期限前刷新：默认提前 5 秒，短票据在剩余时间一半处刷新；每次回调携带上份 `previousGrantId`，应用后端可据此刷新并撤销旧 grant。刷新不会延长原 Session TTL。
 
-临时传输或回调故障最多连续重试 3 次，可配 0 到 5 次，间隔从 250ms 增加至最多 2 秒；有效 Welcome 后重新计算连续失败次数。握手总期限默认 10 秒。服务端 1008 授权/协议拒绝、客户端 4008 校验失败和正常终止不会静默签发新授权。主动撤销后应由应用决定是否再次授权。关闭理由与回调异常不直接显示为错误详情，状态/error 只带固定 code，不包含票据或私有 URL。
+临时传输或回调故障最多连续重试 3 次，可配 0 到 5 次，间隔从 250ms 增加至最多 2 秒；有效 Welcome 后重新计算连续失败次数。握手总期限默认 10 秒。服务端 1008 授权/协议拒绝、客户端 4008 校验失败和正常终止不会静默签发新授权。公开连接失败后会冻结 Window 生命周期，online/resume/pageshow 不会绕过失败再次索票；需显式 connect，由应用决定是否再次授权。关闭理由与回调异常不直接显示为错误详情，状态/error 只带固定 code，不包含票据或私有 URL。
 
 Window 会派发 `remote-paint-connection` 事件，`detail` 为状态快照；也可读取 `window.remotePaintViewer.state`。这是连接状态接口，尚不等同完整嵌入组件的错误、租约与性能事件契约。
 

@@ -1,6 +1,6 @@
 # 公开 Viewer 资源服务（开发中）
 
-`service/viewer-assets-http.mjs` 提供独立的 `createPublicViewerServer`。它只提供 Viewer 静态资源和无凭据的配置；数据连接仍使用[票据网关](session-viewer-access.md)。此阶段已验证实际 HTTP 行为及保存入口脚本的等待/接线；iframe 父子授权消息、宿主组件和真实浏览器 CSP/资源验收仍待完成。
+`service/viewer-assets-http.mjs` 提供独立的 `createPublicViewerServer`。它只提供 Viewer 静态资源和无凭据的配置；数据连接仍使用[票据网关](session-viewer-access.md)。此阶段已验证实际 HTTP 行为及保存入口脚本的等待/接线；父子连接桥已接入公开入口；完整宿主组件和真实浏览器 CSP/资源验收仍待完成。
 
 ```js
 import {prepareViewerAssets} from '../live/viewer-assets.mjs';
@@ -27,7 +27,7 @@ public HTML 添加固定启动标记。与同版本 private 入口共用原有�
 
 公开入口在宿主授权前冻结生命周期，不初始化 Worker/呈现器、不读私有 hash key、不请求 `/session-config`，也不自动连接。它以不带凭据、拒绝重定向、no-store 的同源请求加载 `/viewer-config`，总等待默认 5 秒、正文最多 16KiB，UTF-8/字段/Origin/build 均须有效。
 
-`await window.remotePaintViewer.ready` 返回冻结后的公开配置。失败时返回固定错误码并保持停止，页面不会转入私有连接路径。显式 `connect` 还核对 gateway 与加载配置完全一致；调用方式见[运行时说明](session-viewer-runtime.md)。未来宿主消息桥必须同时验证父 Window 和 allowlist，不能因配置公开就跳过票据或父窗口授权。
+`await window.remotePaintViewer.ready` 返回冻结后的公开配置。失败时返回固定错误码并保持停止，页面不会转入私有连接路径。显式 `connect` 还核对 gateway 与加载配置完全一致；调用方式见[运行时说明](session-viewer-runtime.md)。[父子连接桥](session-viewer-frame.md)同时验证父 Window 和 allowlist，配置公开不代替票据或父窗口授权。
 
 ## CSP 与静态资源
 

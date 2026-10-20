@@ -9,8 +9,9 @@
   "exports": {
     ".": {"types": "./backend.d.mts", "import": "./backend.mjs"},
     "./backend": {"types": "./backend.d.mts", "import": "./backend.mjs"},
-    "./viewer-connection": {"types": "./viewer-connection.d.mts", "import": "./viewer-connection.mjs"}
+    "./viewer-connection": {"types": "./viewer-connection.d.mts", "import": "./viewer-connection.mjs"},
+    "./viewer-frame": {"types": "./viewer-frame.d.mts", "import": "./viewer-frame.mjs"}
   },
-  "files": ["backend.mjs", "backend.d.mts", "viewer-connection.mjs", "viewer-connection.d.mts", "README.md"],
+  "files": ["backend.mjs", "backend.d.mts", "viewer-connection.mjs", "viewer-connection.d.mts", "viewer-frame.mjs", "viewer-frame.d.mts", "viewer-channel.mjs", "viewer-channel.d.mts", "README.md"],
   "sideEffects": false
 }

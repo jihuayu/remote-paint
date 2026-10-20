@@ -9,6 +9,8 @@ import {ViewerConnection,ViewerTicketSource,ViewerConnectionError} from '../sdk/
 import {ViewerLifecycle} from '../viewer/lifecycle.mjs';
 import {instrumentFrameAgeWorker} from './frame-age-observer.mjs';
 import {loadPublicViewerConfig,PublicViewerConfigError} from '../viewer/public-config.mjs';
+import {attachViewerChild} from '../viewer/embed-bridge.mjs';
+import {ViewerFrameConnection} from '../sdk/viewer-frame.mjs';
 import {LIVE_VERSION,LIVE_LIMITS,LiveFrameGate,RecoveryRequired} from '../protocol/live-wire.mjs';
 import {sessionStoreSupported} from '../service/session-store.mjs';
 import {fixture,audience,pending} from './fixtures/viewer-access-harness.mjs';
@@ -20,7 +22,7 @@ async function until(check){for(let i=0;i<400;i++){if(check())return;await delay
 // Execute the saved main/Worker entry points. Only DOM, CanvasKit/presentation
 // and the Worker realm scheduler are fixtures. Socket, ticket authority, Source,
 // SQLite and frame validation are real; this is not a rendered-browser test.
-function runtime(workerMode,{publicMode=false,viewerBuild='fixture',configFetch,hash='',workerTemplate=workerSource}={}){
+function runtime(workerMode,{publicMode=false,viewerBuild='fixture',configFetch,hash='',workerTemplate=workerSource,parentWindow}={}){
  const stats={live:new Set(),peak:0,draws:0,sockets:[],workers:new Set(),events:[],fetches:[],socketSetupErrors:[]};
  class Memory {constructor(){this.policy={receive:64*1024*1024,js:64*1024*1024};}buffer(){return()=>{};}reserve(){return()=>{};}snapshot(){return{};}observe(){return{};}retire(){}}
  class Renderer {constructor(ck,canvas,{memory}){Object.assign(this,{ck,canvas,memory,stats:{},presentation:{mode:'fixture'}});stats.live.add(this);stats.peak=Math.max(stats.peak,stats.live.size);}draw(){stats.draws++;}clear(){}retain(){}dispose(){stats.live.delete(this);}}
@@ -36,7 +38,7 @@ function runtime(workerMode,{publicMode=false,viewerBuild='fixture',configFetch,
  // browser realm's Socket explicitly, including its automatic Origin header.
  class RuntimeConnection extends ViewerConnection {constructor(options){super({...options,WebSocket:Socket,onSocket:(...args)=>{try{return options.onSocket(...args);}catch(error){stats.socketSetupErrors.push(error.message);throw error;}}});}}
  const common={console,URL,URLSearchParams,TextEncoder,TextDecoder,ArrayBuffer,Uint8Array,AbortSignal,AbortController,performance,crypto:webcrypto,setTimeout,clearTimeout,setInterval,clearInterval,
-  location:new URL(audience+'/'+hash),WebSocket:Socket,ViewerConnection:RuntimeConnection,ViewerTicketSource,ViewerConnectionError,loadPublicViewerConfig,PublicViewerConfigError,RendererRuntime:Renderer,ClientMemory:Memory,memoryPolicy:()=>({}),CanvasKitInit:async()=>({}),
+  location:new URL(audience+'/'+hash),WebSocket:Socket,ViewerConnection:RuntimeConnection,ViewerTicketSource,ViewerConnectionError,loadPublicViewerConfig,PublicViewerConfigError,attachViewerChild,RendererRuntime:Renderer,ClientMemory:Memory,memoryPolicy:()=>({}),CanvasKitInit:async()=>({}),
   LIVE_VERSION,LIVE_LIMITS,LiveFrameGate,RecoveryRequired,AssetCache:Assets,isHash:v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v),decodeAsset:()=>{throw new Error('Unexpected binary fixture');},parseMetadataJson:text=>({value:JSON.parse(text),byteLength:Buffer.byteLength(text),release(){}}),
   fetch:async(url,options)=>{stats.fetches.push(String(url));if(String(url).endsWith('/viewer-config'))return configFetch(url,options);return {arrayBuffer:async()=>wasm.buffer.slice(wasm.byteOffset,wasm.byteOffset+wasm.byteLength),json:async()=>({nativePort:null})};}};
  class Worker {
@@ -48,6 +50,7 @@ function runtime(workerMode,{publicMode=false,viewerBuild='fixture',configFetch,
   postMessage(data){if(!this.terminated)queueMicrotask(()=>{if(!this.terminated)void this.realm.self.onmessage({data:structuredClone(data)});});}
   terminate(){if(this.terminated)return;this.terminated=true;stats.workers.delete(this);void this.realm.self.onmessage({data:{type:'stop'}});}
  }
+ window.location=common.location;window.parent=parentWindow??window;
  const realm={...common,window,document,CustomEvent:class {constructor(type,{detail}){this.type=type;this.detail=detail;}},ViewerInput:Input,ControlLink:Control,ViewerLifecycle,...(workerMode?{Worker}:{})};
  runInNewContext(executable(mainSource,viewerBuild),realm,{filename:'saved-viewer-live.mjs'});
  return {window,document,stats,disconnect:()=>window.remotePaintViewer.disconnect()};
@@ -91,4 +94,31 @@ test('current frame-age instrumented Worker reaches a real Node frame after the 
  const h=await fixture(t,{wasmSha256}),workerTemplate=instrumentFrameAgeWorker(workerSource,[[1,1]]),r=runtime(true,{workerTemplate});t.after(r.disconnect);
  r.window.remotePaintViewer.connect({gatewayOrigin:h.base,sessionId:h.sessionId,role:'readonly',getTicket:()=>h.issue()});await until(()=>r.window.remotePaintResult?.frameId===1).catch(()=>assert.fail(JSON.stringify({socketSetupErrors:r.stats.socketSetupErrors,state:r.window.remotePaintConnection})));
  assert.deepEqual(r.stats.socketSetupErrors,[]);r.disconnect();await until(()=>h.transport.peers.size===0);assert.equal(r.stats.live.size,0);
+});
+
+for(const workerMode of [false,true])test(`revoked ${workerMode?'Worker':'main'} public access cannot mint again on online/resume`,{skip:!sessionStoreSupported},async t=>{
+ const h=await fixture(t,{wasmSha256}),r=runtime(workerMode);t.after(r.disconnect);let calls=0,grant;
+ r.window.remotePaintViewer.connect({gatewayOrigin:h.base,sessionId:h.sessionId,role:'readonly',getTicket:async()=>{calls++;grant=await h.issue();return grant;}});await until(()=>r.window.remotePaintResult?.frameId===1);
+ assert.equal((await h.api(h.tickets+'/'+grant.grantId,{method:'DELETE'})).status,200);await until(()=>r.window.remotePaintConnection?.state==='failed');
+ r.window.dispatchEvent({type:'online'});r.document.dispatchEvent({type:'resume'});r.window.dispatchEvent({type:'pageshow'});await delay(100);
+ assert.equal(calls,1);assert.equal(r.window.remotePaintConnection.state,'failed');assert.equal(r.window.remotePaintConnection.code,'VIEWER_ACCESS_ENDED');assert.equal(r.stats.live.size,0);assert.equal(r.stats.workers.size,0);
+});
+
+function framed(t,h,workerMode,getTicket){
+ const parentWindow={},parentOrigin='https://host.example',build='b'.repeat(64),r=runtime(workerMode,{publicMode:true,viewerBuild:build,parentWindow,configFetch:async()=>new Response(JSON.stringify({schema:'public-viewer-v1',gatewayOrigin:h.base,allowedParentOrigins:[parentOrigin],viewerBuild:build}),{headers:{'content-type':'application/json'}})});
+ r.window.postMessage=(data,targetOrigin,ports)=>{assert.equal(targetOrigin,audience);const transferred=structuredClone({data,ports},{transfer:ports});queueMicrotask(()=>r.window.dispatchEvent({type:'message',...transferred,origin:parentOrigin,source:parentWindow}));};
+ const client=new ViewerFrameConnection({frameWindow:r.window,frameOrigin:audience,gatewayOrigin:h.base,sessionId:h.sessionId,role:'readonly',getTicket});t.after(()=>{client.close();r.window.dispatchEvent({type:'pagehide',persisted:false});});return {r,client};
+}
+
+for(const workerMode of [false,true])test(`authenticated parent port drives actual ${workerMode?'Worker':'main'} frames, refresh and revocation without reauthorizing on resume`,{skip:!sessionStoreSupported},async t=>{
+ const h=await fixture(t,{wasmSha256,viewerBuild:'b'.repeat(64)});let calls=0,lastGrant;
+ const {r,client}=framed(t,h,workerMode,async request=>{calls++;if(request.previousGrantId){const response=await h.api(h.tickets+'/'+request.previousGrantId+'/refresh',{method:'POST',body:{ttlSeconds:1}});if(response.status===200){lastGrant=response.data;return lastGrant;}}lastGrant=await h.issue('readonly',{ttlSeconds:1});return lastGrant;});
+ await client.ready;assert.equal(calls,0);assert.equal((await client.connect()).state,'connected');await until(()=>r.window.remotePaintResult?.frameId===1);await until(()=>calls>=2&&r.stats.events.filter(e=>e.state==='connected').length>=2);assert.equal(client.state.sessionId,h.sessionId);assert.ok(r.stats.draws>0);
+ await h.api(h.tickets+'/'+lastGrant.grantId,{method:'DELETE'});await until(()=>client.state.state==='failed');assert.equal(client.state.code,'VIEWER_ACCESS_ENDED');const before=calls;r.window.dispatchEvent({type:'online'});r.document.dispatchEvent({type:'resume'});await delay(100);assert.equal(calls,before);assert.equal(r.stats.live.size,0);assert.equal(r.stats.workers.size,0);
+ assert.equal((await client.connect()).state,'connected');await until(()=>r.window.remotePaintResult?.frameId===1);client.close();await until(()=>h.transport.peers.size===0);assert.equal(r.stats.live.size,0);assert.equal(r.stats.workers.size,0);
+});
+
+for(const workerMode of [false,true])test(`authenticated parent disconnect fences late ticket access in the ${workerMode?'Worker':'main'} path`,{skip:!sessionStoreSupported},async t=>{
+ const h=await fixture(t,{wasmSha256,viewerBuild:'b'.repeat(64)}),gate=pending(),started=pending();let calls=0;
+ const {r,client}=framed(t,h,workerMode,async()=>{calls++;started.resolve();await gate.promise;return h.issue();});const connecting=client.connect(),rejected=assert.rejects(connecting,e=>e.code==='CHANNEL_ABORTED');await started.promise;await client.disconnect();await rejected;assert.equal(h.resolutions.length,0);assert.equal(r.stats.live.size,0);assert.equal(r.stats.workers.size,0);gate.resolve();await delay(30);assert.equal(h.resolutions.length,0);await client.connect();await until(()=>r.window.remotePaintResult?.frameId===1);assert.equal(calls,2);await client.disconnect();await until(()=>h.transport.peers.size===0);assert.equal(r.stats.live.size,0);assert.equal(r.stats.workers.size,0);
 });

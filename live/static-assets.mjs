@@ -26,6 +26,10 @@ export async function makeStaticAssets(inputs){
     // Repo Viewer modules live one directory below protocol/, while their
     // served URLs share the bundle root. Preserve that cross-directory edge.
     if(logical.startsWith('/protocol/'))source=source.replaceAll(`${quote}..${logical}${quote}`,`${quote}${prefix}${logical}${quote}`);
+    // The child bridge is also imported directly by Node contract tests. Keep
+    // its SDK-relative imports on the single canonical served module URL.
+    if(logical==='/connection.mjs')source=source.replaceAll(`${quote}../sdk/viewer-connection.mjs${quote}`,`${quote}${prefix}${logical}${quote}`);
+    if(logical==='/viewer-channel.mjs')source=source.replaceAll(`${quote}../sdk/viewer-channel.mjs${quote}`,`${quote}${prefix}${logical}${quote}`);
    }
    source=source.replaceAll('`/vendor/',`\`${prefix}/vendor/`).replaceAll('__REMOTE_PAINT_VIEWER_BUILD__',build).replaceAll('__REMOTE_PAINT_WASM_SHA__',wasmSha256);
    bytes=Buffer.from(source);

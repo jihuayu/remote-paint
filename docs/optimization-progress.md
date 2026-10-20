@@ -1687,3 +1687,12 @@ K2由待实现改为部分实现，41项计数为9完成/15部分/17待实现；
 复核发现旧帧龄观察器复制资源清单缺少两个新增模块，且连接诊断引用已移动局部config；保留2条build失配和1条config is not defined失败后修正。新增Node核对当前生产基线、故障/streaming provenance及插桩Worker实际取得帧，原始门槛和正在运行的783文件8小时副本均未改变。最终结果见[公开资源检查点](evidence/viewer-public-assets.json)。
 
 K2仍部分实现，41项仍9/15/17。后续继续真实父子消息桥与宿主组件；真实浏览器/Native及整份全量回归待原始长测退出。未暂存、提交或推送。
+
+
+### K2a2b1：实际父子端口授权与连接
+
+公开入口已绑定真实MessagePort桥，先核对父Window/Origin和随机nonce，再转移短票据及连接请求；报文、方法、并发、期限、取消和心跳失联均有界。父端ViewerFrameConnection复用原票据来源与版本历史，子端接入已有Window/Worker渲染器；没有另造呈现器或任意CDP/Agent执行入口。
+
+真实MessageChannel测试与保存入口脚本通过实际Node数据链路覆盖帧/刷新/撤销/迟到票据。也实际复现底层失败后online/resume会第二次索票：保留主线程/Worker各1条失败后修正为公共失败冻结，必须显式connect。详情及双平台/安装包结果见[桥检查点](evidence/viewer-frame-bridge.json)。DOM/CanvasKit/realm调度为夹具，不等同真实浏览器iframe/CSP/Native验收。
+
+完整createViewer宿主DOM组件、公开租约/接管/resize/性能API、实际Native私有端点和Agent/CDP栅栏仍待实现/验收；41项仍9/15/17。原8小时冻结源不变，未额外启动Native浏览器，未暂存、提交或推送。
