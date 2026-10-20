@@ -96,4 +96,25 @@ TEST_F(RemotePaintDownloadBridgeTest, InvalidConfiguredCapabilityNeverAuthorizes
     EXPECT_FALSE(descriptor.Describe(token, document_, document_, true, true));
   }
 }
+
+TEST_F(RemotePaintDownloadBridgeTest, CleanupCapabilitySurvivesInactiveDocumentWithoutAuthorizingData) {
+  Descriptor descriptor; EXPECT_TRUE(descriptor.AllowsRetirement(token_, true));
+  EXPECT_FALSE(descriptor.Describe(token_, "old", "new", true, true));
+  EXPECT_FALSE(descriptor.Describe(token_, "old", "old", true, false));
+}
+TEST_F(RemotePaintDownloadBridgeTest, CleanupStillRequiresExactPrivateTokenAndTrustedHandler) {
+  Descriptor descriptor; EXPECT_FALSE(descriptor.AllowsRetirement(token_, false));
+  EXPECT_FALSE(descriptor.AllowsRetirement("", true)); EXPECT_FALSE(descriptor.AllowsRetirement(std::string(257, 'a'), true));
+  EXPECT_FALSE(descriptor.AllowsRetirement(token_ + "x", true));
+}
+TEST_F(RemotePaintDownloadBridgeTest, CleanupCannotEnableAProcessWithoutBothOriginalSwitches) {
+  command_.GetProcessCommandLine()->RemoveSwitch("remote-paint-download-budget-v1"); Descriptor no_budget;
+  EXPECT_FALSE(no_budget.AllowsRetirement(token_, true));
+  command_.GetProcessCommandLine()->AppendSwitch("remote-paint-download-budget-v1"); command_.GetProcessCommandLine()->RemoveSwitch("remote-paint-token"); Descriptor no_token;
+  EXPECT_FALSE(no_token.AllowsRetirement(token_, true));
+}
+TEST_F(RemotePaintDownloadBridgeTest, CleanupCapabilityUsesOriginalConstructorSnapshot) {
+  Descriptor descriptor; command_.GetProcessCommandLine()->AppendSwitchASCII("remote-paint-token", std::string(64, 'z'));
+  EXPECT_TRUE(descriptor.AllowsRetirement(token_, true)); EXPECT_FALSE(descriptor.AllowsRetirement(std::string(64, 'z'), true));
+}
 }  // namespace

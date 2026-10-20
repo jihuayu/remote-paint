@@ -21,6 +21,8 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 
 2026-10-20 Source下载目录补充：[私有目录生命周期](source-download-spool.md)在原launch/Page/context中接入0700目录，等待固定本地驱动的原ChildProcess close、Playwright关闭及实际本地文件工作后才删除。未知启动/意外断连/关闭失败/目录替换均保留失败；21项新增边界两平台通过，完整JS各1456项无失败，真实旧浏览器工作副本验证cookie/下载/未arm残留/目录清理及5个进程身份退役。Native预算和桥接仍关闭，正常导航后的Native退休收据仍待实现；全41项状态不变。
 
+2026-10-20 Native下载清理补充：[原ticket退役收据](native-download-retirement-receipt.md)在arm时建立有界小对象，实际准入原子关联原lease，修复“尚未Offer即视为已清理”的缺口。文档门面销毁后仍等真实creator/FD/URL/item/map结束，原handler保留旧doc/ticket的清理权限，数据命令仍要求活动原文档。24项新增与原436项共460项及4个隔离子进程通过，五个实际浏览器调用方/GN依赖编译通过；实际RFH/导航/CDP会话和新浏览器仍待验收。Source预算/readiness继续关闭，41项状态不变。
+
 ## 实施顺序
 
 1. WebGL 来源识别、占位协议、Viewer 显示和真实原生链路验收。

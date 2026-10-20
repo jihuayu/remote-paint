@@ -1,0 +1,13 @@
+# Native 原ticket清理收据
+
+在原arm建立固定有界的小收据，准入时原子标记并由实际新lease持有同一对象。文档registry、client及原PageHandler可保留该对象，收据不强持有Page/context/lease。独立小对象上限为8，覆盖4个活动窗口和4个不同的实际lease；原4个lease、4个arm和每文件4MiB额度不变，未增加重置或终身次数额度。
+
+封闭窗口只阻止后续准入；请求退役还会向原lease序列投递一次weak清理回调。registry释放不能再用“尚未Offer”视为没有准入。只有实际lease完成creator、文件/FD/IO、URL及item/map退役后，才将已准入收据置为完成；未准入窗口可在封闭后完成。
+
+原handler保留一个原doc/ticket收据，正常同WebContents导航及暂时无renderer保留清理权限，切换到其他WebContents或销毁时丢弃并请求退役。Release核对原handler的不可变key槽、私密能力及原doc/ticket；不要求旧文档仍活动，也不创建/采纳新文档。读取、info和arm保留活动原文档校验。released=false仅为未确认；true只从原收据得到。
+
+当前在组件及实际调用方编译范围内通过验证。24项新增边界与原436项共460项，编译列表与RUN/COMPLETED逐项一致，0失败/跳过/禁用，4个真实失败隔离子进程报告完整通过。新增20项退役边界与4项能力验证覆盖准入早于Offer、待返回creator、实际FD/URL/map ACK、旧门面失败与迟到退休、8对象准入/复用、跨线程weak原序列清理、原key/ticket及能力；原失败物理清理子进程另加收据不完成断言。
+
+实际manager、navigation、owner、PageHandler、instrumentation五个ARM64调用方各一次编译通过，GN browser依赖检查通过；browser/Blink四个已生成协议文件未变。两平台各13项构建/打包回归通过；完整1456项JS及SDK仅继承既有证据，本轮未重跑，JS/TS/Python源码与父检查点逐字节相同。首次编译及460项执行均通过，没有隐藏失败或重写已应用补丁；第33补丁与前32项顺序重放对比全部70路径、35Native源码副本一致。
+
+真实浏览器/RFH/同target导航及原Playwright实际生命周期仍未验收；Source预算、桥接及transfersReady继续关闭。

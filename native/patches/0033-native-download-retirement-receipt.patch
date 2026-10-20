@@ -1,0 +1,686 @@
+--- a/components/download/public/common/BUILD.gn
++++ b/components/download/public/common/BUILD.gn
+@@ -71,6 +71,8 @@
+     "native_download_transfer_client.h",
+     "native_download_arm_window.cc",
+     "native_download_arm_window.h",
++    "native_download_retirement_receipt.cc",
++    "native_download_retirement_receipt.h",
+     "native_download_request_context.cc",
+     "native_download_request_context.h",
+     "native_download_budget.cc",
+--- a/components/download/public/common/native_download_arm_window.h
++++ b/components/download/public/common/native_download_arm_window.h
+@@ -8,6 +8,7 @@
+ #include "base/unguessable_token.h"
+ #include "components/download/public/common/download_export.h"
+ #include "components/download/public/common/native_download_request_context.h"
++#include "components/download/public/common/native_download_retirement_receipt.h"
+ 
+ namespace download {
+ // A bounded, reusable browser-owned arm registry. Request contexts copy only an
+@@ -20,13 +21,17 @@
+     base::TimeTicks deadline;
+     uint64_t maximum_bytes;
+   };
++  struct Admission : Window { scoped_refptr<NativeDownloadRetirementReceipt> receipt; };
++  static scoped_refptr<NativeDownloadRetirementReceipt> Retirement(const base::UnguessableToken& id);
+   static std::optional<Window> Open(const NativeDownloadRequestContext& owner,
+       uint64_t maximum_bytes, base::TimeDelta timeout);
+   static base::UnguessableToken Capture(const NativeDownloadRequestContext::Frame& page);
+-  static std::optional<Window> Consume(const NativeDownloadRequestContext& request);
++  static std::optional<Admission> Consume(const NativeDownloadRequestContext& request);
+   static bool AllowsResume(const NativeDownloadRequestContext& request);
+   static void Close(const base::UnguessableToken& id);
+   static size_t ActiveWindowsForTesting();
++ private:
++  static void Prune();
+ };
+ }  // namespace download
+ #endif
+--- a/components/download/public/common/native_download_arm_window.cc
++++ b/components/download/public/common/native_download_arm_window.cc
+@@ -1,6 +1,7 @@
+ #include "components/download/public/common/native_download_arm_window.h"
+ 
+ #include <array>
++#include <utility>
+ #include "base/no_destructor.h"
+ #include "base/synchronization/lock.h"
+ #include "components/download/public/common/native_download_budget.h"
+@@ -9,7 +10,7 @@
+ namespace {
+ using Frame = NativeDownloadRequestContext::Frame;
+ using Window = NativeDownloadArmWindow::Window;
+-struct Entry { Frame page; Window window; bool consumed = false; };
++struct Entry { Frame page; Window window; scoped_refptr<NativeDownloadRetirementReceipt> receipt; bool consumed = false; };
+ struct State {
+   base::Lock lock;
+   std::array<std::optional<Entry>, NativeDownloadBudget::kMaxItems> entries;
+@@ -19,62 +20,89 @@
+   return a.process_id == b.process_id && a.routing_id == b.routing_id &&
+       a.document_token == b.document_token;
+ }
+-void Prune(State& state, base::TimeTicks now) {
+-  for (auto& entry : state.entries)
+-    if (entry && now >= entry->window.deadline) entry.reset();
++// Extract expired receipts under the lock; window sealing occurs outside it.
++std::array<scoped_refptr<NativeDownloadRetirementReceipt>, NativeDownloadBudget::kMaxItems>
++TakeExpired(State& state, base::TimeTicks now) {
++  std::array<scoped_refptr<NativeDownloadRetirementReceipt>, NativeDownloadBudget::kMaxItems> expired;
++  for (size_t i = 0; i < state.entries.size(); ++i) {
++    auto& entry = state.entries[i];
++    if (entry && now >= entry->window.deadline) { expired[i] = std::move(entry->receipt); entry.reset(); }
++  }
++  return expired;
+ }
+ bool Matches(const Entry& entry, const NativeDownloadRequestContext& request) {
+   return entry.window.id == request.arm_id() && Same(entry.page, request.page());
+ }
+ }  // namespace
++void NativeDownloadArmWindow::Prune() {
++  auto& state = Slots();
++  decltype(TakeExpired(state, base::TimeTicks())) expired;
++  { base::AutoLock guard(state.lock); expired = TakeExpired(state, base::TimeTicks::Now()); }
++  for (const auto& receipt : expired) if (receipt) receipt->CloseWindow();
++}
++scoped_refptr<NativeDownloadRetirementReceipt> NativeDownloadArmWindow::Retirement(
++    const base::UnguessableToken& id) {
++  auto& state = Slots(); base::AutoLock guard(state.lock);
++  for (const auto& entry : state.entries) if (entry && entry->window.id == id) return entry->receipt;
++  return nullptr;
++}
+ std::optional<Window> NativeDownloadArmWindow::Open(const NativeDownloadRequestContext& owner,
+     uint64_t maximum_bytes, base::TimeDelta timeout) {
+   if (!NativeDownloadRequestContext::EnabledForProcess() || !maximum_bytes ||
+       maximum_bytes > NativeDownloadBudget::kFileBytes || timeout <= base::TimeDelta() ||
+       timeout > base::Seconds(30)) return std::nullopt;
+-  auto& state = Slots(); base::AutoLock guard(state.lock);
+-  const auto now = base::TimeTicks::Now(); Prune(state, now);
++  Prune(); auto& state = Slots(); base::AutoLock guard(state.lock);
++  const auto now = base::TimeTicks::Now();
+   for (const auto& entry : state.entries)
+     if (entry && Same(entry->page, owner.page())) return std::nullopt;
+   for (auto& entry : state.entries) {
+     if (!entry) {
+       Window window{base::UnguessableToken::Create(), now, now + timeout, maximum_bytes};
+-      entry = Entry{owner.page(), window}; return window;
++      auto receipt = NativeDownloadRetirementReceipt::Create(window.id);
++      if (!receipt) return std::nullopt;
++      entry = Entry{owner.page(), window, std::move(receipt)}; return window;
+     }
+   }
+   return std::nullopt;
+ }
+ base::UnguessableToken NativeDownloadArmWindow::Capture(const Frame& page) {
+   if (!NativeDownloadRequestContext::EnabledForProcess()) return {};
+-  auto& state = Slots(); base::AutoLock guard(state.lock); Prune(state, base::TimeTicks::Now());
++  Prune(); auto& state = Slots(); base::AutoLock guard(state.lock);
+   for (const auto& entry : state.entries)
+-    if (entry && Same(entry->page, page)) return entry->window.id;
++    if (entry && base::TimeTicks::Now() < entry->window.deadline && Same(entry->page, page)) return entry->window.id;
+   return {};
+ }
+-std::optional<Window> NativeDownloadArmWindow::Consume(const NativeDownloadRequestContext& request) {
++std::optional<NativeDownloadArmWindow::Admission> NativeDownloadArmWindow::Consume(const NativeDownloadRequestContext& request) {
+   if (request.arm_id().is_empty() || !NativeDownloadRequestContext::EnabledForProcess()) return std::nullopt;
+-  auto& state = Slots(); base::AutoLock guard(state.lock); Prune(state, base::TimeTicks::Now());
++  Prune(); auto& state = Slots(); base::AutoLock guard(state.lock);
+   for (auto& entry : state.entries) {
+-    if (entry && !entry->consumed && Matches(*entry, request)) {
+-      entry->consumed = true; return entry->window;
++    if (entry && base::TimeTicks::Now() < entry->window.deadline && !entry->consumed && Matches(*entry, request)) {
++      entry->receipt->Admitted(); entry->consumed = true; return Admission{entry->window, entry->receipt};
+     }
+   }
+   return std::nullopt;
+ }
+ bool NativeDownloadArmWindow::AllowsResume(const NativeDownloadRequestContext& request) {
+   if (request.arm_id().is_empty() || !NativeDownloadRequestContext::EnabledForProcess()) return false;
+-  auto& state = Slots(); base::AutoLock guard(state.lock); Prune(state, base::TimeTicks::Now());
++  Prune(); auto& state = Slots(); base::AutoLock guard(state.lock);
+   for (const auto& entry : state.entries)
+-    if (entry && entry->consumed && Matches(*entry, request)) return true;
++    if (entry && base::TimeTicks::Now() < entry->window.deadline && entry->consumed && Matches(*entry, request)) return true;
+   return false;
+ }
+ void NativeDownloadArmWindow::Close(const base::UnguessableToken& id) {
+   if (id.is_empty()) return;
+-  auto& state = Slots(); base::AutoLock guard(state.lock);
+-  for (auto& entry : state.entries) if (entry && entry->window.id == id) { entry.reset(); return; }
++  scoped_refptr<NativeDownloadRetirementReceipt> receipt;
++  auto& state = Slots();
++  {
++    base::AutoLock guard(state.lock);
++    for (auto& entry : state.entries) if (entry && entry->window.id == id) {
++      receipt = std::move(entry->receipt); entry.reset(); break;
++    }
++  }
++  if (receipt) receipt->CloseWindow();
+ }
+ size_t NativeDownloadArmWindow::ActiveWindowsForTesting() {
+-  auto& state = Slots(); base::AutoLock guard(state.lock); Prune(state, base::TimeTicks::Now());
++  Prune(); auto& state = Slots(); base::AutoLock guard(state.lock);
+   size_t count = 0; for (const auto& entry : state.entries) if (entry) ++count; return count;
+ }
+ }  // namespace download
+--- a/components/download/public/common/native_download_budget.h
++++ b/components/download/public/common/native_download_budget.h
+@@ -17,6 +17,7 @@
+ #include "components/download/public/common/download_export.h"
+ #include "components/download/public/common/download_item.h"
+ #include "components/download/public/common/native_download_read_session.h"
++#include "components/download/public/common/native_download_retirement_receipt.h"
+ 
+ namespace download {
+ class DownloadFileCleanupState;
+@@ -83,6 +84,7 @@
+   void Schedule();
+   void Fail();
+   void Finish();
++  scoped_refptr<NativeDownloadRetirementReceipt> retirement_;
+   scoped_refptr<NativeDownloadLease> keepalive_;
+   base::RepeatingCallback<void(NativeDownloadLease*)> done_;
+   raw_ptr<DownloadItemImpl> item_ = nullptr;
+--- a/components/download/public/common/native_download_budget.cc
++++ b/components/download/public/common/native_download_budget.cc
+@@ -6,6 +6,8 @@
+ #include "base/check.h"
+ #include "base/command_line.h"
+ #include "base/functional/bind.h"
++#include "base/task/bind_post_task.h"
++#include "base/task/sequenced_task_runner.h"
+ #include "base/notreached.h"
+ #include "components/download/public/common/download_create_info.h"
+ #include "components/download/public/common/native_download_request_context.h"
+@@ -68,13 +70,18 @@
+     if (!slot && info.remote_paint_request_context && Reserve()) {
+       // Roll back only this not-yet-attached reservation if the immutable
+       // request window is unavailable. Never consume an arm when quota is full.
+-      if (!NativeDownloadArmWindow::Consume(*info.remote_paint_request_context)) {
++      auto admission = NativeDownloadArmWindow::Consume(*info.remote_paint_request_context);
++      if (!admission) {
+         CHECK_GT(g_reserved.fetch_sub(1), 0u); return nullptr;
+       }
+       slot = base::WrapRefCounted(new NativeDownloadLease(base::BindRepeating(
+           &NativeDownloadBudget::Released, weak_.GetWeakPtr())));
++      slot->retirement_ = std::move(admission->receipt);
+       slot->keepalive_ = slot;
+       CHECK(slot->AddAttempt(info, cancel));
++      slot->retirement_->BindRetirement(base::BindPostTask(
++          base::SequencedTaskRunner::GetCurrentDefault(), base::BindOnce(
++              &NativeDownloadLease::BeginRetire, slot->resume_weak_.GetWeakPtr())));
+       return slot;
+     }
+   }
+@@ -317,11 +324,13 @@
+ }
+ void NativeDownloadLease::Finish() {
+   auto self = keepalive_;
++  auto retirement = std::move(retirement_);
+   finished_ = true;
+   resume_weak_.InvalidateWeakPtrs();
+   timer_.Stop();
+   CHECK_GT(g_reserved.fetch_sub(1), 0u);
+   done_.Run(this);
+   keepalive_.reset();
++  if (retirement) retirement->Settled();
+ }
+ }  // namespace download
+--- a/components/download/public/common/native_download_transfer_registry.h
++++ b/components/download/public/common/native_download_transfer_registry.h
+@@ -16,6 +16,7 @@
+ #include "components/download/public/common/download_export.h"
+ #include "components/download/public/common/download_item.h"
+ #include "components/download/public/common/native_download_read_session.h"
++#include "components/download/public/common/native_download_retirement_receipt.h"
+ 
+ namespace download {
+ class NativeDownloadLease;
+@@ -49,6 +50,7 @@
+   // the actual lease has finished all file/URL/item/map settlement. A 30s reply
+   // deadline or failure reports false and keeps the ticket/reservation held.
+   bool Release(std::string_view ticket, base::OnceCallback<void(bool)> done);
++  scoped_refptr<NativeDownloadRetirementReceipt> Retirement(std::string_view ticket) const;
+   void Invalidate();
+   void OnDownloadUpdated(DownloadItem* item) override;
+   void OnDownloadDestroyed(DownloadItem* item) override;
+@@ -66,6 +68,7 @@
+   const bool enabled_;
+   scoped_refptr<NativeDownloadRequestContext> owner_;
+   scoped_refptr<NativeDownloadLease> lease_;
++  scoped_refptr<NativeDownloadRetirementReceipt> retirement_;
+   raw_ptr<DownloadItem> item_ = nullptr;
+   std::unique_ptr<NativeDownloadReadSession> reader_;
+   std::string ticket_;
+--- a/components/download/public/common/native_download_transfer_registry.cc
++++ b/components/download/public/common/native_download_transfer_registry.cc
+@@ -19,6 +19,7 @@
+ NativeDownloadTransferRegistry::~NativeDownloadTransferRegistry() {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   weak_.InvalidateWeakPtrs(); timer_.Stop();
++  if (retirement_) retirement_->Retire();
+   NativeDownloadArmWindow::Close(arm_id_); arm_id_ = {};
+   if (item_) item_->RemoveObserver(this);
+   item_ = nullptr;
+@@ -32,6 +33,8 @@
+     return std::nullopt;
+   auto window = NativeDownloadArmWindow::Open(*owner_, maximum_bytes, timeout);
+   if (!window) return std::nullopt;
++  retirement_ = NativeDownloadArmWindow::Retirement(window->id);
++  if (!retirement_) { NativeDownloadArmWindow::Close(window->id); return std::nullopt; }
+   arm_id_ = window->id;
+   ticket_ = "dl_" + base::Uuid::GenerateRandomV4().AsLowercaseString();
+   maximum_bytes_ = maximum_bytes; armed_at_ = window->opened_at;
+@@ -78,6 +81,11 @@
+   if (self) self->Poll();
+   return true;
+ }
++scoped_refptr<NativeDownloadRetirementReceipt> NativeDownloadTransferRegistry::Retirement(
++    std::string_view ticket) const {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  return Matches(ticket) ? retirement_ : nullptr;
++}
+ void NativeDownloadTransferRegistry::Invalidate() {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   // Invalidation is permanent for this document. A later browser document must
+@@ -96,6 +104,7 @@
+   }
+ }
+ void NativeDownloadTransferRegistry::BeginRetire(Error error) {
++  if (retirement_) retirement_->Retire();
+   NativeDownloadArmWindow::Close(arm_id_); arm_id_ = {};
+   if (error_ == Error::kNone) error_ = error;
+   state_ = State::kRetiring;
+@@ -112,8 +121,12 @@
+   auto self = weak_.GetWeakPtr(); Expire();
+   if (!self) return;
+   if (!lease_ || lease_->finished()) {
+-    if (release_requested_) { ReplyRelease(true); return; }
+-    if (state_ == State::kRetiring) state_ = State::kFailed;
++    // Admission can precede Offer. Absence of an offered lease is not proof
++    // that this original arm's creator/file/URL/item/map work has settled.
++    const bool retired = retirement_ && retirement_->retired();
++    if (release_requested_ && retired) { ReplyRelease(true); return; }
++    if (state_ == State::kRetiring && retired) state_ = State::kFailed;
++    if (release_callback_ && base::TimeTicks::Now() >= release_deadline_) ReplyRelease(false);
+     return;
+   }
+   if (lease_->failed()) {
+@@ -189,7 +202,7 @@
+   NativeDownloadArmWindow::Close(arm_id_); arm_id_ = {};
+   timer_.Stop();
+   if (item_) item_->RemoveObserver(this);
+-  item_ = nullptr; reader_.reset(); lease_.reset(); ticket_.clear();
++  item_ = nullptr; reader_.reset(); lease_.reset(); retirement_.reset(); ticket_.clear();
+   state_ = State::kIdle; error_ = Error::kNone; metadata_ = {};
+   maximum_bytes_ = 0; release_requested_ = false;
+ }
+--- a/components/download/public/common/native_download_transfer_client.h
++++ b/components/download/public/common/native_download_transfer_client.h
+@@ -30,6 +30,8 @@
+       uint64_t offset, uint32_t maximum_bytes, ReadCallback done);
+   bool Release(const base::UnguessableToken& client, std::string_view ticket,
+       base::OnceCallback<void(bool)> done);
++  scoped_refptr<NativeDownloadRetirementReceipt> Retirement(
++      const base::UnguessableToken& client, std::string_view ticket) const;
+   bool OwnsClient(const base::UnguessableToken& client) const;
+   // Permanently invalidates this document facade. Settles each accepted client
+   // reply exactly once with failure; actual lease retirement stays independent.
+--- a/components/download/public/common/native_download_transfer_client.cc
++++ b/components/download/public/common/native_download_transfer_client.cc
+@@ -15,6 +15,10 @@
+ bool NativeDownloadTransferClient::OwnsClient(const base::UnguessableToken& client) const {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   return !closed_ && !client.is_empty() && !ticket_.empty() && client == client_;
++}
++scoped_refptr<NativeDownloadRetirementReceipt> NativeDownloadTransferClient::Retirement(
++    const base::UnguessableToken& client, std::string_view ticket) const {
++  return Owned(client, ticket) ? registry_.Retirement(ticket) : nullptr;
+ }
+ bool NativeDownloadTransferClient::Owned(const base::UnguessableToken& client, std::string_view ticket) const {
+   return OwnsClient(client) && ticket.size() == ticket_.size() && ticket == ticket_;
+@@ -85,6 +89,7 @@
+     base::OnceCallback<void(bool)> done) {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   if (!Owned(client, ticket) || !done || release_reply_) return false;
++  if (!Refresh() || !Owned(client, ticket)) return false;
+   release_reply_ = std::move(done);
+   const bool accepted = registry_.Release(ticket, base::BindOnce(
+       &NativeDownloadTransferClient::OnRelease, weak_.GetWeakPtr()));
+--- a/components/download/public/common/native_download_bridge_descriptor.h
++++ b/components/download/public/common/native_download_bridge_descriptor.h
+@@ -26,6 +26,10 @@
+   NativeDownloadBridgeDescriptor(const NativeDownloadBridgeDescriptor&) = delete;
+   NativeDownloadBridgeDescriptor& operator=(const NativeDownloadBridgeDescriptor&) = delete;
+ 
++  // Capability authentication only. The handler must additionally own the
++  // original immutable document/ticket receipt; this never authorizes data.
++  bool AllowsRetirement(std::string_view token, bool trusted_client) const;
++
+   std::optional<Snapshot> Describe(std::string_view token,
+                                    std::string_view expected_document,
+                                    std::string_view current_document,
+--- a/components/download/public/common/native_download_bridge_descriptor.cc
++++ b/components/download/public/common/native_download_bridge_descriptor.cc
+@@ -11,14 +11,17 @@
+       token_(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("remote-paint-token")) {}
+ NativeDownloadBridgeDescriptor::~NativeDownloadBridgeDescriptor() = default;
+ 
++bool NativeDownloadBridgeDescriptor::AllowsRetirement(std::string_view token,
++    bool trusted_client) const {
++  return enabled_ && trusted_client && token_.size() >= 32 && token_.size() <= 256 && token == token_;
++}
+ std::optional<NativeDownloadBridgeDescriptor::Snapshot>
+ NativeDownloadBridgeDescriptor::Describe(std::string_view token,
+                                          std::string_view expected_document,
+                                          std::string_view current_document,
+                                          bool trusted_client,
+                                          bool active_top_frame) const {
+-  if (!enabled_ || !trusted_client || !active_top_frame || token_.size() < 32 ||
+-      token_.size() > 256 || token != token_ || current_document.empty() ||
++  if (!AllowsRetirement(token, trusted_client) || !active_top_frame || current_document.empty() ||
+       current_document.size() > 64 || expected_document != current_document)
+     return std::nullopt;
+   // Do not advertise arm/read/release before those operations exist and have
+--- a/content/browser/download/native_download_transfer_owner.h
++++ b/content/browser/download/native_download_transfer_owner.h
+@@ -2,6 +2,8 @@
+ #define CONTENT_BROWSER_DOWNLOAD_NATIVE_DOWNLOAD_TRANSFER_OWNER_H_
+ 
+ #include <memory>
++#include <string_view>
++#include "base/functional/callback.h"
+ #include "base/memory/raw_ptr.h"
+ #include "base/memory/ref_counted.h"
+ #include "base/memory/weak_ptr.h"
+@@ -27,6 +29,9 @@
+   ~NativeDownloadTransferOwner() override;
+   download::NativeDownloadTransferClient* ClientForDocument(RenderFrameHost* current);
+   void ClientDetached(const base::UnguessableToken& client);
++  bool HasClient(const base::UnguessableToken& client) const;
++  bool ReleaseForClient(const base::UnguessableToken& client, std::string_view ticket,
++      base::OnceCallback<void(bool)> done);
+   bool OwnsDocument(RenderFrameHost* current) const;
+   base::WeakPtr<NativeDownloadTransferOwner> GetWeakPtr() { return weak_.GetWeakPtr(); }
+   void OnDownloadCreated(DownloadManager* manager, download::DownloadItem* item) override;
+--- a/content/browser/download/native_download_transfer_owner.cc
++++ b/content/browser/download/native_download_transfer_owner.cc
+@@ -68,6 +68,16 @@
+       actual, actual, download::NativeDownloadRequestContext::Origin::kExplicitRequest);
+   return captured && original_page_->SamePageDocument(*captured);
+ }
++bool NativeDownloadTransferOwner::HasClient(const base::UnguessableToken& client) const {
++  DCHECK_CURRENTLY_ON(BrowserThread::UI);
++  return client_ && client_->OwnsClient(client);
++}
++bool NativeDownloadTransferOwner::ReleaseForClient(const base::UnguessableToken& client,
++    std::string_view ticket, base::OnceCallback<void(bool)> done) {
++  DCHECK_CURRENTLY_ON(BrowserThread::UI);
++  // Never creates or adopts a document facade for cleanup.
++  return HasClient(client) && client_->Release(client, ticket, std::move(done));
++}
+ void NativeDownloadTransferOwner::ClientDetached(const base::UnguessableToken& client) {
+   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+   if (client_ && client_->OwnsClient(client)) RetireDocument();
+--- a/content/browser/devtools/protocol/page_handler.h
++++ b/content/browser/devtools/protocol/page_handler.h
+@@ -15,6 +15,7 @@
+ #include <vector>
+ 
+ #include "base/memory/raw_ptr.h"
++#include "base/memory/scoped_refptr.h"
+ #include "base/memory/weak_ptr.h"
+ #include "base/scoped_observation.h"
+ #include "base/unguessable_token.h"
+@@ -41,6 +42,7 @@
+ 
+ namespace download {
+ class NativeDownloadTransferClient;
++class NativeDownloadRetirementReceipt;
+ }
+ 
+ namespace gfx {
+@@ -300,6 +302,13 @@
+   bool RemotePaintDownloadReplyValid(const std::string& document,
+       base::WeakPtr<NativeDownloadTransferOwner> owner);
+   void DetachRemotePaintDownloads();
++  bool RemotePaintRetirementMatches(const std::string& document, const std::string& ticket,
++      const download::NativeDownloadRetirementReceipt* receipt) const;
++  void ClearRemotePaintRetirement();
++  scoped_refptr<download::NativeDownloadRetirementReceipt> remote_paint_download_retirement_;
++  base::WeakPtr<NativeDownloadTransferOwner> remote_paint_download_retirement_owner_;
++  std::string remote_paint_download_retirement_document_;
++  std::string remote_paint_download_retirement_ticket_;
+   const base::UnguessableToken remote_paint_download_client_key_ = base::UnguessableToken::Create();
+   base::WeakPtr<NativeDownloadTransferOwner> remote_paint_download_owner_;
+   std::string remote_paint_download_document_;
+--- a/content/browser/devtools/protocol/page_handler.cc
++++ b/content/browser/devtools/protocol/page_handler.cc
+@@ -532,9 +532,23 @@
+ 
+ PageHandler::~PageHandler() {
+   weak_factory_.InvalidateWeakPtrs();
++  ClearRemotePaintRetirement();
+   DetachRemotePaintDownloads();
+ }
+ 
++bool PageHandler::RemotePaintRetirementMatches(const std::string& document,
++    const std::string& ticket, const download::NativeDownloadRetirementReceipt* receipt) const {
++  return receipt && remote_paint_download_retirement_.get() == receipt &&
++      document == remote_paint_download_retirement_document_ &&
++      ticket == remote_paint_download_retirement_ticket_;
++}
++void PageHandler::ClearRemotePaintRetirement() {
++  auto receipt = std::move(remote_paint_download_retirement_);
++  remote_paint_download_retirement_owner_.reset();
++  remote_paint_download_retirement_document_.clear();
++  remote_paint_download_retirement_ticket_.clear();
++  if (receipt) receipt->Retire();
++}
+ void PageHandler::DetachRemotePaintDownloads() {
+   auto owner = std::move(remote_paint_download_owner_);
+   remote_paint_download_owner_.reset();
+@@ -587,6 +601,8 @@
+   if (max_bytes <= 0 || max_bytes > static_cast<int>(download::NativeDownloadBudget::kFileBytes) ||
+       timeout_ms <= 0 || timeout_ms > 30000)
+     return Response::InvalidParams("Remote Paint download bounds exceeded");
++  if (remote_paint_download_retirement_)
++    return Response::ServerError("Previous Remote Paint download retirement is unacknowledged");
+   auto self = weak_factory_.GetWeakPtr();
+   auto* client = RemotePaintDownloadClient(descriptor_version, token, document_token);
+   if (!self || !client) return Response::ServerError("Remote Paint download bridge unavailable");
+@@ -594,6 +610,12 @@
+   auto ticket = client->Arm(remote_paint_download_client_key_, max_bytes, base::Milliseconds(timeout_ms));
+   if (!self || !ticket || !RemotePaintDownloadReplyValid(document_token, owner))
+     return Response::ServerError("Remote Paint download arm unavailable");
++  auto receipt = client->Retirement(remote_paint_download_client_key_, *ticket);
++  if (!receipt) return Response::ServerError("Remote Paint download receipt unavailable");
++  remote_paint_download_retirement_ = std::move(receipt);
++  remote_paint_download_retirement_owner_ = owner;
++  remote_paint_download_retirement_document_ = document_token;
++  remote_paint_download_retirement_ticket_ = *ticket;
+   *out_version = 1; *out_document = document_token; *out_ticket = std::move(*ticket);
+   return Response::Success();
+ }
+@@ -686,29 +708,42 @@
+   if (ticket.size() != 39) {
+     callback->sendFailure(Response::InvalidParams("Invalid Remote Paint download ticket")); return;
+   }
++  auto receipt = remote_paint_download_retirement_;
++  if (descriptor_version != 1 || !remote_paint_download_bridge_.AllowsRetirement(token, is_trusted_) ||
++      !RemotePaintRetirementMatches(document_token, ticket, receipt.get())) {
++    callback->sendFailure(Response::ServerError("Remote Paint download retirement unavailable")); return;
++  }
++  // This is cleanup of an immutable original slot, not access to an inactive
++  // document or adoption of whichever document happens to be current now.
++  receipt->Retire();
++  const auto client_key = remote_paint_download_client_key_;
+   auto self = weak_factory_.GetWeakPtr();
+-  auto* client = RemotePaintDownloadClient(descriptor_version, token, document_token);
+-  if (!self || !client) {
+-    callback->sendFailure(Response::ServerError("Remote Paint download bridge unavailable")); return;
+-  }
+-  auto owner = remote_paint_download_owner_;
++  auto owner = remote_paint_download_retirement_owner_;
+   using Reply = base::RefCountedData<std::unique_ptr<ReleaseRemotePaintDownloadCallback>>;
+   auto reply = base::MakeRefCounted<Reply>(std::move(callback));
+-  const bool accepted = client->Release(remote_paint_download_client_key_, ticket, base::BindOnce(
+-      [](base::WeakPtr<PageHandler> self, base::WeakPtr<NativeDownloadTransferOwner> owner,
+-          std::string document, std::string ticket, scoped_refptr<Reply> reply, bool success) {
++  const bool accepted = owner && owner->ReleaseForClient(client_key, ticket,
++      base::BindOnce([](base::WeakPtr<PageHandler> self, std::string document,
++          std::string ticket, scoped_refptr<download::NativeDownloadRetirementReceipt> receipt,
++          scoped_refptr<Reply> reply, bool) {
+         auto callback = std::move(reply->data);
+         if (!callback) return;
+-        // Successful physical settlement already cleared the key binding. Check
+-        // the original handler/owner/document, not the now-absent ticket.
+-        if (!self || !self->RemotePaintDownloadReplyValid(document, owner)) {
+-          callback->sendFailure(Response::ServerError("Remote Paint download release unavailable")); return;
++        if (!self || !self->RemotePaintRetirementMatches(document, ticket, receipt.get())) {
++          callback->sendFailure(Response::ServerError("Remote Paint download retirement unavailable")); return;
+         }
++        const bool success = receipt->retired();
++        if (success) self->ClearRemotePaintRetirement();
+         callback->sendSuccess(1, document, ticket, success);
+-      }, self, owner, document_token, ticket, reply));
++      }, self, document_token, ticket, receipt, reply));
+   if (!accepted && reply->data) {
+-    auto rejected = std::move(reply->data);
+-    rejected->sendFailure(Response::ServerError("Remote Paint download release rejected"));
++    auto pending = std::move(reply->data);
++    if (!self || !self->RemotePaintRetirementMatches(document_token, ticket, receipt.get())) {
++      pending->sendFailure(Response::ServerError("Remote Paint download retirement unavailable")); return;
++    }
++    // A pending original facade still owns its one reply/binding. Extra polls
++    // retain no second callback and cannot acknowledge it out from underneath.
++    const bool success = receipt->retired() && (!owner || !owner->HasClient(client_key));
++    if (success) ClearRemotePaintRetirement();
++    pending->sendSuccess(1, document_token, ticket, success);
+   }
+ }
+ 
+@@ -772,6 +807,13 @@
+   auto self = weak_factory_.GetWeakPtr();
+   const auto old_host = host_;
+   auto next_host = frame_host ? frame_host->GetWeakPtr() : base::WeakPtr<RenderFrameHostImpl>();
++  if (frame_host && remote_paint_download_retirement_ &&
++      (!remote_paint_download_retirement_owner_ ||
++       NativeDownloadTransferOwner::FromWebContents(WebContents::FromRenderFrameHost(frame_host)) !=
++           remote_paint_download_retirement_owner_.get()))
++    ClearRemotePaintRetirement();
++  // A transient null renderer or a new RFH in the same WebContents preserves
++  // only cleanup authority. Data commands still require the active original doc.
+   DetachRemotePaintDownloads();
+   if (!self || host_ != old_host || (frame_host && !next_host)) return;
+ 
+--- /dev/null
++++ b/components/download/public/common/native_download_retirement_receipt.h
+@@ -0,0 +1,45 @@
++#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_RETIREMENT_RECEIPT_H_
++#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_RETIREMENT_RECEIPT_H_
++
++#include <cstddef>
++#include "base/functional/callback.h"
++#include "base/memory/ref_counted.h"
++#include "base/synchronization/lock.h"
++#include "base/unguessable_token.h"
++#include "components/download/public/common/download_export.h"
++
++namespace download {
++// A tiny original-arm receipt, not a reference to a Page, client or lease.
++// Four active windows plus four separately retiring leases fit this bound.
++// No test reset or lifetime quota: actual final reference destruction returns
++// only this tiny metadata slot, never any Native file/lease reservation.
++class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadRetirementReceipt
++    : public base::RefCountedThreadSafe<NativeDownloadRetirementReceipt> {
++ public:
++  static constexpr size_t kMaxReceipts = 8;
++  void Retire();
++  bool retired() const;
++  static size_t LiveReceiptsForTesting();
++ private:
++  friend class NativeDownloadArmWindow;
++  friend class NativeDownloadBudget;
++  friend class NativeDownloadLease;
++  friend class base::RefCountedThreadSafe<NativeDownloadRetirementReceipt>;
++  explicit NativeDownloadRetirementReceipt(base::UnguessableToken arm);
++  ~NativeDownloadRetirementReceipt();
++  static scoped_refptr<NativeDownloadRetirementReceipt> Create(base::UnguessableToken arm);
++  void CloseWindow();
++  void Admitted();
++  void BindRetirement(base::OnceClosure retire);
++  void Settled();  // Only the original actual lease's Finish may call this.
++  const base::UnguessableToken arm_;
++  mutable base::Lock lock_;
++  bool window_closed_ = false;
++  bool admitted_ = false;
++  bool bound_ = false;
++  bool retire_requested_ = false;
++  bool settled_ = false;
++  base::OnceClosure retire_;
++};
++}  // namespace download
++#endif
+--- /dev/null
++++ b/components/download/public/common/native_download_retirement_receipt.cc
+@@ -0,0 +1,58 @@
++#include "components/download/public/common/native_download_retirement_receipt.h"
++
++#include <atomic>
++#include <utility>
++#include "base/check_op.h"
++#include "components/download/public/common/native_download_arm_window.h"
++
++namespace download {
++namespace { std::atomic<size_t> g_receipts{0}; }
++NativeDownloadRetirementReceipt::NativeDownloadRetirementReceipt(base::UnguessableToken arm)
++    : arm_(arm) {}
++NativeDownloadRetirementReceipt::~NativeDownloadRetirementReceipt() {
++  CHECK_GT(g_receipts.fetch_sub(1), 0u);
++}
++scoped_refptr<NativeDownloadRetirementReceipt> NativeDownloadRetirementReceipt::Create(
++    base::UnguessableToken arm) {
++  auto count = g_receipts.load();
++  while (count < kMaxReceipts) {
++    if (g_receipts.compare_exchange_weak(count, count + 1))
++      return base::WrapRefCounted(new NativeDownloadRetirementReceipt(arm));
++  }
++  return nullptr;
++}
++size_t NativeDownloadRetirementReceipt::LiveReceiptsForTesting() { return g_receipts.load(); }
++void NativeDownloadRetirementReceipt::CloseWindow() {
++  base::AutoLock guard(lock_); window_closed_ = true;
++}
++void NativeDownloadRetirementReceipt::Admitted() {
++  base::AutoLock guard(lock_);
++  CHECK(!window_closed_ && !admitted_); admitted_ = true;
++}
++void NativeDownloadRetirementReceipt::BindRetirement(base::OnceClosure retire) {
++  base::OnceClosure run;
++  {
++    base::AutoLock guard(lock_); CHECK(admitted_ && !bound_ && retire);
++    bound_ = true;
++    if (retire_requested_) run = std::move(retire); else retire_ = std::move(retire);
++  }
++  // The actual budget supplies a weak lease closure posted to its origin.
++  if (run) std::move(run).Run();
++}
++void NativeDownloadRetirementReceipt::Retire() {
++  NativeDownloadArmWindow::Close(arm_);
++  base::OnceClosure run;
++  {
++    base::AutoLock guard(lock_);
++    window_closed_ = true; retire_requested_ = true; run = std::move(retire_);
++  }
++  if (run) std::move(run).Run();
++}
++void NativeDownloadRetirementReceipt::Settled() {
++  base::AutoLock guard(lock_); CHECK(admitted_); settled_ = true; retire_.Reset();
++}
++bool NativeDownloadRetirementReceipt::retired() const {
++  base::AutoLock guard(lock_);
++  return window_closed_ && (!admitted_ || settled_);
++}
++}  // namespace download

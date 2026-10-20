@@ -865,12 +865,14 @@ TEST_F(RemotePaintDownloadTransferTest, FailedPhysicalCleanupNeverReportsRelease
     EXPECT_EQ(0, code); EXPECT_EQ(0u, Budget::ReservedItems()); return;
   }
   Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry); Start(model, registry, owner);
+  auto receipt = registry.Retirement(ticket); ASSERT_TRUE(receipt);
   const auto path = PathFor(model); auto lease = LeaseFor(model); const auto id = Identity(path);
   ASSERT_TRUE(base::Move(path, model.directory.GetPath().AppendASCII("moved-transfer"))); ASSERT_TRUE(base::CreateDirectory(path));
   ASSERT_TRUE(base::WriteFile(path.AppendASCII("keep"), "keep")); base::test::TestFuture<bool> done;
   EXPECT_TRUE(registry.Release(ticket, done.GetCallback())); model.Drain(); ASSERT_TRUE(done.IsReady()); EXPECT_FALSE(done.Take());
   EXPECT_EQ(0, OwnedReferences(id)); EXPECT_TRUE(lease->failed()); EXPECT_FALSE(lease->finished()); EXPECT_EQ(1u, Budget::ReservedItems());
   EXPECT_TRUE(registry.Info(ticket)); EXPECT_FALSE(registry.Arm(7, base::Seconds(10)));
+  EXPECT_FALSE(receipt->retired()); registry.Invalidate(); model.Drain(); EXPECT_FALSE(receipt->retired());
 }
 
 class RemotePaintDownloadOwnerAccessTest : public RemotePaintDownloadReadTest {};
@@ -1421,5 +1423,130 @@ TEST_F(RemotePaintDownloadBudgetTest, FailedCleanupHoldsQuotaUntilActualProcessE
   auto extra = model.Start(); model.Drain();
   EXPECT_EQ(2u, Budget::ReservedItems());  // The failed slot was never recycled.
   model.RetireAll(); EXPECT_EQ(1u, Budget::ReservedItems());
+}
+
+using Receipt = download::NativeDownloadRetirementReceipt;
+class RemotePaintDownloadRetirementTest : public RemotePaintDownloadClientTest {
+ protected:
+  void SetUp() override { RemotePaintDownloadClientTest::SetUp(); EXPECT_EQ(0u, Receipt::LiveReceiptsForTesting()); }
+  void TearDown() override {
+    for (const auto& id : windows_) ArmWindow::Close(id);
+    tasks_.RunUntilIdle(); EXPECT_EQ(0u, Receipt::LiveReceiptsForTesting()); EXPECT_EQ(0u, Budget::ReservedItems());
+  }
+  auto Window(scoped_refptr<Context> context) {
+    auto window = ArmWindow::Open(*context, 7, base::Seconds(10)); EXPECT_TRUE(window);
+    if (window) windows_.push_back(window->id);
+    return window;
+  }
+  void Ack(Model& model) {
+    for (auto& lease : model.delegate.metadata_acks) lease->MetadataRetired();
+    model.delegate.metadata_acks.clear(); model.Drain();
+  }
+  std::vector<base::UnguessableToken> windows_;
+};
+TEST_F(RemotePaintDownloadRetirementTest, UnusedArmReceiptSurvivesDocumentFacadeDestruction) {
+  auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key);
+  auto receipt = client->Retirement(key, ticket); ASSERT_TRUE(receipt); EXPECT_FALSE(receipt->retired()); client.reset();
+  EXPECT_TRUE(receipt->retired()); EXPECT_EQ(0u, Budget::ReservedItems()); EXPECT_TRUE(context->HasOneRef()); EXPECT_EQ(1u, Receipt::LiveReceiptsForTesting());
+}
+TEST_F(RemotePaintDownloadRetirementTest, ReceiptRetrievalRequiresOriginalClientAndExactTicket) {
+  Client client(RequestContext()); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  EXPECT_FALSE(client.Retirement(base::UnguessableToken::Create(), ticket)); EXPECT_FALSE(client.Retirement({}, ticket)); EXPECT_FALSE(client.Retirement(key, ticket + "x")); EXPECT_FALSE(client.Retirement(key, "bad"));
+  auto receipt = client.Retirement(key, ticket); ASSERT_TRUE(receipt); client.Invalidate(); EXPECT_FALSE(client.Retirement(key, ticket)); EXPECT_TRUE(receipt->retired());
+}
+TEST_F(RemotePaintDownloadRetirementTest, MissingOfferDoesNotCreditAnAdmittedActualLease) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); auto receipt = client.Retirement(key, ticket); ASSERT_TRUE(receipt);
+  model.Start(true, 7, true, context); model.Drain(); ASSERT_EQ(1u, Budget::ReservedItems()); auto lease = LeaseFor(model);
+  base::test::TestFuture<bool> release; ASSERT_TRUE(client.Release(key, ticket, release.GetCallback())); model.Drain();
+  EXPECT_TRUE(model.delegate.items.empty()); EXPECT_FALSE(release.IsReady()); EXPECT_FALSE(receipt->retired()); EXPECT_EQ(1u, Budget::ReservedItems());
+  Ack(model); ASSERT_TRUE(release.IsReady()); EXPECT_TRUE(release.Take()); EXPECT_TRUE(receipt->retired()); EXPECT_TRUE(lease->finished()); EXPECT_TRUE(lease->HasOneRef());
+}
+TEST_F(RemotePaintDownloadRetirementTest, UnofferedAdmissionRetiresAfterDocumentClientIsGone) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key); auto receipt = client->Retirement(key, ticket); ASSERT_TRUE(receipt);
+  model.Start(false, 7, true, context); model.Drain(); auto lease = LeaseFor(model); client.reset(); model.Drain();
+  EXPECT_FALSE(receipt->retired()); EXPECT_EQ(1u, Budget::ReservedItems()); EXPECT_TRUE(model.delegate.items.empty()); Ack(model);
+  EXPECT_TRUE(receipt->retired()); EXPECT_TRUE(lease->finished()); EXPECT_TRUE(lease->HasOneRef()); EXPECT_TRUE(context->HasOneRef());
+}
+TEST_F(RemotePaintDownloadRetirementTest, UnofferedCreatorMustReallyReturnBeforeReceiptCompletes) {
+  Model model(tasks_); model.delegate.hold_creation = true; auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key); auto receipt = client->Retirement(key, ticket); ASSERT_TRUE(receipt);
+  auto reads = model.Start(false, 7, true, context); ASSERT_EQ(1u, Budget::ReservedItems()); client.reset(); model.Drain(); tasks_.FastForwardBy(base::Seconds(31)); model.Drain();
+  EXPECT_FALSE(receipt->retired()); EXPECT_EQ(0, reads->count); EXPECT_EQ(0, model.delegate.allocations); EXPECT_EQ(1u, Budget::ReservedItems());
+  model.delegate.RejectPending(); model.Drain(); EXPECT_TRUE(receipt->retired()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadRetirementTest, ClaimedReaderDescriptorOutlivesFailureReplyUntilActualClose) {
+  Model model(tasks_); auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key); auto receipt = client->Retirement(key, ticket); ASSERT_TRUE(receipt); Start(model, *client, context); const auto id = Identity(PathFor(model));
+  auto gate = BlockFileSequence(); auto unblock = ReleaseOnExit(gate); base::test::TestFuture<Reader::Chunk> read; ASSERT_TRUE(client->Read(key, ticket, 0, 7, read.GetCallback()));
+  client.reset(); ASSERT_TRUE(read.IsReady()); EXPECT_EQ(ReadError::kClosed, read.Take().error); EXPECT_FALSE(receipt->retired()); EXPECT_EQ(1, OwnedReferences(id)); EXPECT_EQ(1u, Budget::ReservedItems());
+  gate->allow.Signal(); model.Drain(); EXPECT_EQ(0, OwnedReferences(id)); EXPECT_TRUE(receipt->retired()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadRetirementTest, UnofferedUrlOwnerAndOriginAckMustActuallyRetire) {
+  Model model(tasks_); model.hold_requests = true; auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key); auto receipt = client->Retirement(key, ticket); ASSERT_TRUE(receipt);
+  model.Start(false, 7, true, context); model.Drain(); client.reset(); model.Drain(); EXPECT_FALSE(receipt->retired()); EXPECT_EQ(1u, Budget::ReservedItems());
+  model.hold_requests = false; model.CompleteRequests(); model.Drain(); EXPECT_TRUE(receipt->retired()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadRetirementTest, MissingOfferReleaseDeadlineCannotInventPhysicalCompletion) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); auto receipt = client.Retirement(key, ticket); ASSERT_TRUE(receipt);
+  model.Start(true, 7, true, context); model.Drain(); base::test::TestFuture<bool> release; ASSERT_TRUE(client.Release(key, ticket, release.GetCallback())); model.Drain(); tasks_.FastForwardBy(base::Seconds(31));
+  ASSERT_TRUE(release.IsReady()); EXPECT_FALSE(release.Take()); EXPECT_FALSE(receipt->retired()); EXPECT_EQ(1u, Budget::ReservedItems()); Ack(model); EXPECT_TRUE(receipt->retired());
+}
+TEST_F(RemotePaintDownloadRetirementTest, FailedFacadeReplyIsSeparateFromLateActualReceipt) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key); auto receipt = client->Retirement(key, ticket); ASSERT_TRUE(receipt); Start(model, *client, context);
+  base::test::TestFuture<bool> release; ASSERT_TRUE(client->Release(key, ticket, release.GetCallback())); client->Invalidate(); ASSERT_TRUE(release.IsReady()); EXPECT_FALSE(release.Take()); client.reset(); model.Drain(); EXPECT_FALSE(receipt->retired()); Ack(model); EXPECT_TRUE(receipt->retired());
+}
+TEST_F(RemotePaintDownloadRetirementTest, SettledReceiptRetainsNeitherActualLeaseNorOriginalContext) {
+  Model model(tasks_); auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key); auto receipt = client->Retirement(key, ticket); ASSERT_TRUE(receipt); Start(model, *client, context); auto lease = LeaseFor(model); client.reset(); model.Drain();
+  EXPECT_TRUE(receipt->retired()); EXPECT_TRUE(lease->finished()); EXPECT_TRUE(lease->HasOneRef()); EXPECT_TRUE(context->HasOneRef()); EXPECT_TRUE(model.delegate.items.empty()); EXPECT_EQ(0u, model.manager->NativeDownloadRecordCountForTesting());
+}
+TEST_F(RemotePaintDownloadRetirementTest, UnrelatedActualLeaseSettlementCannotCompleteOldReceipt) {
+  Model old(tasks_), newer(tasks_); old.delegate.hold_metadata = true; auto a = RequestContext(), b = RequestContext(); Client first(a), second(b); const auto key = base::UnguessableToken::Create(); const auto ta = Arm(first, key), tb = Arm(second, key); auto ra = first.Retirement(key, ta), rb = second.Retirement(key, tb); ASSERT_TRUE(ra && rb);
+  Start(old, first, a); Start(newer, second, b); first.Invalidate(); old.Drain(); base::test::TestFuture<bool> released; ASSERT_TRUE(second.Release(key, tb, released.GetCallback())); newer.Drain(); ASSERT_TRUE(released.IsReady()); EXPECT_TRUE(released.Take()); EXPECT_TRUE(rb->retired()); EXPECT_FALSE(ra->retired()); EXPECT_EQ(1u, Budget::ReservedItems()); Ack(old); EXPECT_TRUE(ra->retired());
+}
+TEST_F(RemotePaintDownloadRetirementTest, OldReceiptNeverAdoptsTheNextActualDocumentTicket) {
+  Model model(tasks_); const auto key = base::UnguessableToken::Create(); auto context = RequestContext(); auto old = std::make_unique<Client>(context); const auto ticket = Arm(*old, key); auto receipt = old->Retirement(key, ticket); ASSERT_TRUE(receipt); old.reset(); EXPECT_TRUE(receipt->retired());
+  auto next_context = RequestContext(); Client next(next_context); const auto next_ticket = Arm(next, key); auto current = next.Retirement(key, next_ticket); ASSERT_TRUE(current); EXPECT_NE(receipt, current); EXPECT_NE(ticket, next_ticket); EXPECT_FALSE(next.Retirement(key, ticket)); Start(model, next, next_context); EXPECT_FALSE(current->retired()); EXPECT_TRUE(receipt->retired()); Release(model, next, key, next_ticket); EXPECT_TRUE(current->retired());
+}
+TEST_F(RemotePaintDownloadRetirementTest, TinyReceiptSlotsHaveFixedEightObjectBoundAndRealReuse) {
+  std::vector<scoped_refptr<Receipt>> held;
+  for (size_t i = 0; i < Receipt::kMaxReceipts; ++i) {
+    auto window = Window(RequestContext()); ASSERT_TRUE(window); auto receipt = ArmWindow::Retirement(window->id); ASSERT_TRUE(receipt); held.push_back(receipt); ArmWindow::Close(window->id); EXPECT_TRUE(receipt->retired());
+  }
+  EXPECT_EQ(8u, Receipt::LiveReceiptsForTesting()); EXPECT_EQ(0u, ArmWindow::ActiveWindowsForTesting()); EXPECT_EQ(0u, Budget::ReservedItems()); EXPECT_FALSE(ArmWindow::Open(*RequestContext(), 7, base::Seconds(10)));
+  held.front().reset(); EXPECT_EQ(7u, Receipt::LiveReceiptsForTesting()); auto next = Window(RequestContext()); ASSERT_TRUE(next); EXPECT_EQ(8u, Receipt::LiveReceiptsForTesting()); ArmWindow::Close(next->id);
+}
+TEST_F(RemotePaintDownloadRetirementTest, FourOldLeasesAndFourNewWindowsFitWithoutQuotaCredit) {
+  Model model(tasks_); std::vector<scoped_refptr<Receipt>> held;
+  for (int i = 0; i < 4; ++i) model.Start(); model.Drain(); model.CloseFixtureWindows(); EXPECT_EQ(4u, Budget::ReservedItems());
+  for (int i = 0; i < 4; ++i) { auto window = Window(RequestContext()); ASSERT_TRUE(window); held.push_back(ArmWindow::Retirement(window->id)); }
+  EXPECT_EQ(8u, Receipt::LiveReceiptsForTesting()); EXPECT_EQ(4u, Budget::ReservedItems());
+  for (const auto& receipt : held) receipt->Retire(); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadRetirementTest, SealingWindowIsDistinctFromRequestingActualRetirement) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); auto receipt = client.Retirement(key, ticket); ASSERT_TRUE(receipt); model.Start(false, 7, true, context); model.Drain(); auto lease = LeaseFor(model);
+  ArmWindow::Close(model.last_context->arm_id()); model.Drain(); EXPECT_FALSE(lease->retiring()); EXPECT_FALSE(receipt->retired()); EXPECT_EQ(1u, Budget::ReservedItems()); receipt->Retire(); model.Drain(); EXPECT_TRUE(lease->finished()); EXPECT_TRUE(receipt->retired());
+}
+TEST_F(RemotePaintDownloadRetirementTest, CrossThreadReceiptRetirementPostsOnlyToActualLeaseOrigin) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); auto receipt = client.Retirement(key, ticket); ASSERT_TRUE(receipt); model.Start(false, 7, true, context); model.Drain(); auto lease = LeaseFor(model);
+  base::Thread other("receipt-retire"); ASSERT_TRUE(other.Start()); auto done = base::MakeRefCounted<BarrierEvent>(); ASSERT_TRUE(other.task_runner()->PostTask(FROM_HERE, base::BindOnce([](scoped_refptr<Receipt> receipt, decltype(done) done) { receipt->Retire(); done->data.Signal(); }, receipt, done)));
+  { base::ScopedAllowBaseSyncPrimitivesForTesting allow; ASSERT_TRUE(done->data.TimedWait(base::Seconds(10))); } other.Stop(); EXPECT_FALSE(lease->retiring()); EXPECT_FALSE(receipt->retired()); model.Drain(); EXPECT_TRUE(receipt->retired()); EXPECT_TRUE(lease->finished());
+}
+TEST_F(RemotePaintDownloadRetirementTest, ExtraReleaseCannotRetainSecondReplyWhileReceiptPending) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); auto receipt = client.Retirement(key, ticket); ASSERT_TRUE(receipt); Start(model, client, context); base::test::TestFuture<bool> release; ASSERT_TRUE(client.Release(key, ticket, release.GetCallback()));
+  auto capture = base::MakeRefCounted<base::RefCountedData<int>>(0); EXPECT_FALSE(client.Release(key, ticket, base::BindOnce([](decltype(capture) capture, bool) { ++capture->data; }, capture))); EXPECT_TRUE(capture->HasOneRef()); EXPECT_EQ(0, capture->data); model.Drain(); EXPECT_FALSE(receipt->retired()); Ack(model); EXPECT_TRUE(release.Take()); EXPECT_TRUE(receipt->retired());
+}
+TEST_F(RemotePaintDownloadRetirementTest, TimedOutFacadeRefreshDropsOnlyTheActuallySettledOldBinding) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); auto receipt = client.Retirement(key, ticket); ASSERT_TRUE(receipt); Start(model, client, context); base::test::TestFuture<bool> release; ASSERT_TRUE(client.Release(key, ticket, release.GetCallback())); model.Drain(); tasks_.FastForwardBy(base::Seconds(31)); ASSERT_TRUE(release.IsReady()); EXPECT_FALSE(release.Take()); EXPECT_TRUE(client.OwnsClient(key)); EXPECT_FALSE(receipt->retired()); Ack(model); EXPECT_TRUE(receipt->retired());
+  base::test::TestFuture<bool> refreshed; EXPECT_FALSE(client.Release(key, ticket, refreshed.GetCallback())); EXPECT_FALSE(refreshed.IsReady()); EXPECT_FALSE(client.OwnsClient(key));
+  const auto next = Arm(client, key); EXPECT_NE(ticket, next); Release(model, client, key, next);
+}
+TEST_F(RemotePaintDownloadRetirementTest, RetiredUnusedArmCannotBeUpgradedByAnOldCapturedResponse) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); auto receipt = client.Retirement(key, ticket); ASSERT_TRUE(receipt);
+  auto captured = Context::Create(context->origin(), context->target(), context->initiator(), context->page()); ASSERT_FALSE(captured->arm_id().is_empty()); receipt->Retire(); EXPECT_TRUE(receipt->retired()); auto reads = model.StartCaptured(true, 7, true, captured); model.Drain(); EXPECT_EQ(0, reads->count); EXPECT_EQ(0, model.delegate.allocations); EXPECT_EQ(0u, Budget::ReservedItems()); EXPECT_TRUE(receipt->retired());
+}
+TEST_F(RemotePaintDownloadRetirementTest, TwelveRealDocumentCyclesReuseReceiptsWithoutLifetimeQuota) {
+  Model model(tasks_); const auto key = base::UnguessableToken::Create();
+  for (int i = 0; i < 12; ++i) {
+    auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto ticket = Arm(*client, key); auto receipt = client->Retirement(key, ticket); ASSERT_TRUE(receipt); Start(model, *client, context); client.reset(); model.Drain(); EXPECT_TRUE(receipt->retired()); EXPECT_EQ(0u, Budget::ReservedItems()); receipt.reset(); EXPECT_EQ(0u, Receipt::LiveReceiptsForTesting());
+  }
+  EXPECT_EQ(12, model.delegate.allocations);
 }
 }  // namespace
