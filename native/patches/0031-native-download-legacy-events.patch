@@ -1,0 +1,25 @@
+--- a/content/browser/devtools/devtools_instrumentation.cc
++++ b/content/browser/devtools/devtools_instrumentation.cc
+@@ -15,6 +15,7 @@
+ #include "base/unguessable_token.h"
+ #include "components/download/public/common/download_create_info.h"
+ #include "components/download/public/common/download_item.h"
++#include "components/download/public/common/native_download_budget.h"
+ #include "components/download/public/common/download_url_parameters.h"
+ #include "content/browser/devtools/browser_devtools_agent_host.h"
+ #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
+@@ -1390,6 +1391,14 @@
+ void WillBeginDownload(download::DownloadCreateInfo* info,
+                        download::DownloadItem* item) {
+   if (!item) {
++    return;
++  }
++  // The real admission is attached in the item constructor, before manager
++  // observers can claim a transfer. Keep Native downloads out of every legacy
++  // Browser/Page event session (including Playwright's original root session),
++  // before frame lookup, URL/filename serialization and event observer slots.
++  // Non-Native items retain their ordinary DevTools download events.
++  if (item->GetRemotePaintAdmission()) {
+     return;
+   }
+   auto* rfh = static_cast<RenderFrameHostImpl*>(

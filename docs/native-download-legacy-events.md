@@ -1,0 +1,17 @@
+# Native 下载与旧 DevTools 下载事件隔离
+
+第31补丁在实际 devtools_instrumentation::WillBeginDownload 的空item检查之后，读取实际item的 GetRemotePaintAdmission；有Native admission则在frame查找、URL/建议文件名序列化、所有Browser/Page会话分发及事件观察槽建立之前返回。没有Native admission的旧路径保持。判定依据是已准入item，不依赖稍后才发生的transfer claim，也不通过新建CDP会话修改另一个会话的设置。
+
+实际调用顺序是：DownloadItemImpl构造时从DownloadCreateInfo保留admission并Attach；DownloadManagerImpl::CreateActiveItem返回后调用WillBeginDownload；绑定文件/start callback之后才通知manager的OnDownloadCreated。因此Native owner的Offer/ClaimTransfer发生得太晚，不能充当旧事件分发的门。提前返回不跳过文件绑定或Native owner通知，不另建Page/context，不重取URL或改变cookies。
+
+固定Playwright 1.64.1原CRBrowser根会话直接监听Browser.downloadWillBegin/progress。收到事件会创建Download/Artifact并插入context集合；新建browser CDP session只影响新会话，删除文件也不能证明这些对象退休。此补丁从浏览器分发源头绕过Native item旧事件，目的在于避免这些元数据进入原PW会话。实际PW对象/通道/集合是否保持有界仍须完整浏览器运行验收，当前不能从代码或编译推定已经完成。
+
+本步仅一个实际Chromium修改路径，31补丁/65路径/35 Native组件完整回放与准备后的源码相同。新instrumentation TU按真实编译命令生成ARM64对象，浏览器GN依赖检查通过。其他五个调用方的源文件和Native组件与父版逐哈希相同，继承父版实际编译记录，未把它们声称为本步重新编译。
+
+既有415项Native/上游回归在同一哈希ELF上重新无过滤执行，全部RUN/COMPLETED、零失败/禁用，编译列表与父版及本次执行逐项一致；4份既有子进程各1项通过，新增组件用例0。**这些组件测试不执行新的instrumentation事件分支。** 没有编写一个仅重复getter判断的测试来冒充真实会话验证。Mac/Linux源码打包专项各13项通过，未重跑完整1435项或SDK；没有整浏览器链接/运行。
+
+下一步仍须实现明确的unarmed/其他Page拒绝策略，并将精确arm窗口身份在实际请求创建时写入不可变context，在准入前匹配。当前context只有request nonce，lease.created_at是响应后准入时刻；与armed_at比较不能排除arm之前已创建、arm之后才收到响应的请求。不能以响应时查当前arm或current frame来修补它。还要把Source私有spool根目录及桥接接上，再用原已初始化Page验收下载/导航/cookies/resume、popup/初始Page效果、真实协议认证/断开/envelope及所有物理退休。
+
+Source预算开关关闭、transfersReady=false；未将此编译范围写成PW元数据物理上限或完整下载准入验收。自有容器实际终态/PID0/无OOM后删除，缓存/正式浏览器19文件/观察器保留，未访问禁止输出或演示，未提交、推送或使用子代理。早期IO/远端服务退休、未知启动、原8小时增长失败和其余41/N1门槛继续待办；K6部分、41项10完成/17部分/14待办保持。
+
+见[结构化证据](evidence/native-download-legacy-events.json)、[Page协议接线](native-download-page-protocol.md)与[进度](optimization-progress.md)。
