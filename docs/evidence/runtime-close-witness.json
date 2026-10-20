@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-18T21:33:23.862140+00:00",
+  "task": "B1c1b2c3a",
+  "scope": "Actual close-only effective witness collection and same-generation published-file adoption,integrated into owning provider before retirement;explicit retries remain a separate next checkpoint.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/runtime-close-witness-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/runtime-close-witness-checkpoint-v1.json",
+  "contract": {
+    "channel": "Explicit closeOnly requires runtime witness and null owner key;Start rejected before reading arguments. Bounded Hello/receipt wait then EOF;no Start/authenticatedframes/resourceinitialization/Ready. Normal channel behavior remains covered.",
+    "journal": "Named bindRuntimeClosingWitness qualifies only alreadyclosing fullCID requested/legacyunknown with reserved parent;generic commit cannot request this capability. Receipt is one-use/immutable and recovery stays closing/retired only.",
+    "provider": "After durableclosing and awaitedcreate outcome,adopt existing valid same-generation file via actual inspection,or collect actualrunning WorkerHello through owned close-only proxy. Source/image/fullCID/isolation and signal fences remain active;persist/read then namedclosingbind before removal/retirement/quota release.",
+    "lifetime": "WorkerClosed,proxyexit and complete runtime retirement remain separate. Collector privateStart=false even with no recovered owner credential.",
+    "gap": "Published file before normal journal confirmation is adopted only using actual same-generation live/stopped inspection. Missing evidence or absent object without prior journal binding is not silently qualified."
+  },
+  "actualNewModes": [
+    "cancel-engine-started",
+    "cancel-file-published",
+    "provider-SIGKILL-on-engine-started",
+    "provider-SIGKILL-on-witness-file-published"
+  ],
+  "qualification": "Final dual-platform Node contracts include all prior257 plus close-only/generic-channel tests;all15 prior Enginecases plus4 newactualowningprovider paths rerun. Original created-history and missing/corrupt known-absence cases remain four expected quarantines.",
+  "initialRegression": "Original1s attach deadline test timed out after info rather than reachingUpgrade while initial Node283 ran alongside actual Engine fixtures;its deadline assertion passed but required requestcount failed. Focused original test reached all3 and passed;no threshold/assertion changed. Final resource-sharing-sensitive checks run sequentially byplatform and beforeEnginecases. Sole scheduling cause not claimed.",
+  "remaining": [
+    "Explicit bounded retry after unconfirmed close with sharedinflight promise.",
+    "Original channel EOF before any saved witness and absent-after-file-before-journal windows still require actual safe proofs.",
+    "Requested-before-send or oldunknown created without effective witness remains quarantined.",
+    "ActualNative/full regression after original8h isolation;Viewerroles/HTTP/SDK/all41/N1 acceptance."
+  ],
+  "nativeProductionProviderComplete": false,
+  "wholeFullJsQualified": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "noCommitPush": true
+}

@@ -18,7 +18,7 @@ import {SessionRegistry} from '../service/session-registry.mjs';
 import {planDockerRuntime} from '../service/docker-runtime-spec.mjs';
 const socketPath=process.env.REMOTE_PAINT_DOCKER_SOCKET,daemonId=process.env.REMOTE_PAINT_DOCKER_DAEMON,imageId=process.env.REMOTE_PAINT_DOCKER_IMAGE;
 assert.ok(socketPath&&daemonId&&imageId&&process.env.REMOTE_PAINT_DOCKER_EFFECT_OUTPUT);
-const mode=process.env.REMOTE_PAINT_DOCKER_PROVIDER_MODE??'normal';assert.ok(['normal','cancel-intent','cancel-created','cancel-witness','proxy-lost','ttl','source-changed','closing-capacity','runtime-removed'].includes(mode));
+const mode=process.env.REMOTE_PAINT_DOCKER_PROVIDER_MODE??'normal';assert.ok(['normal','cancel-intent','cancel-created','cancel-witness','proxy-lost','ttl','source-changed','closing-capacity','runtime-removed','cancel-engine-started','cancel-file-published'].includes(mode));
 const output=resolve(process.env.REMOTE_PAINT_DOCKER_EFFECT_OUTPUT);await mkdir(output,{mode:0o700});
 const sha=v=>createHash('sha256').update(v).digest('hex'),region='provider-fixture',deploymentId='provider-'+randomUUID(),tenantId='provider-fixture',nonce=randomBytes(32).toString('hex');
 async function save(name,value){const f=await open(join(output,name),'wx',0o600);try{await f.writeFile(JSON.stringify(value,null,2)+'\n');await f.sync();}finally{await f.close();}const dir=await open(output,'r');try{await dir.sync();}finally{await dir.close();}return sha(await readFile(join(output,name)));}
@@ -42,7 +42,7 @@ try{
  provider=new DockerSessionProvider({store,deploymentBinding:new RuntimeDeploymentBindingStore({directory}),configuration,metadata,effects,attach,witnessStore,retirementStore,projectManifest:join(output,'project-manifest.json'),browserManifest:join(output,'browser-manifest.json'),maxSessions:mode==='closing-capacity'?1:2,onEvent:event=>{
   events.push({...event,at:new Date().toISOString()});if(event.containerId)containerId=event.containerId;if(event.type==='witness-persisted')witnessConfirmed=true;
   if(mode==='closing-capacity'&&event.type==='closing'&&event.sessionId===operation?.sessionId&&!secondOperation){try{secondOperation=registry.create(tenantId,{},{idempotencyKey:'capacity-while-closing'});}catch(e){eventErrors.push({code:e.code??null,message:e.message});}}
-  const cancel={ 'cancel-intent':'intent','cancel-created':'created','cancel-witness':'witness-persisted'}[mode];
+  const cancel={ 'cancel-intent':'intent','cancel-created':'created','cancel-witness':'witness-persisted','cancel-engine-started':'engine-started','cancel-file-published':'witness-file-published'}[mode];
   if(event.type===cancel){try{registry.release(tenantId,event.sessionId);assert.notEqual(registry.getSession(tenantId,event.sessionId).state,'ready');}catch(e){eventErrors.push({name:e.name,code:e.code??null,message:e.message});}}
  }});
  assert.equal((await provider.initialize()).available,true);registry=new SessionRegistry({providers:new Map([[region,provider]]),defaultRegion:region,store,globalQuota:2,tenantQuota:2});
@@ -73,6 +73,8 @@ try{
  if(mode==='closing-capacity'){assert.ok(secondOperation);assert.equal(registry.getOperation(tenantId,secondOperation.operationId).status,'failed');assert.equal(events.filter(x=>x.type==='intent').length,1);assert.equal(registry.getSession(tenantId,secondOperation.sessionId).holdsQuota,false);}
  if(mode==='cancel-intent'){assert.equal(containerId,null);assert.equal(events.some(x=>x.type==='created'),false);}
  if(mode==='cancel-created')assert.equal(events.some(x=>x.type==='engine-started'),false);
+ if(mode==='cancel-engine-started'){assert.ok(events.some(x=>x.type==='closing-witness-collected'));const channel=provider.sessionStatus({sessionId:operation.sessionId,tenantId}).channel;assert.equal(channel.closeOnly,true);assert.equal(channel.startSent,false);}
+ if(mode==='cancel-file-published')assert.ok(events.some(x=>x.type==='closing-witness-adopted'));
  if(containerId){assert.equal((await metadata.inspectContainer(containerId)).found,false);await waitFor(()=>[...witnesses.values()].every(x=>x.closed));}
  assert.deepEqual(eventErrors,[]);assert.deepEqual(observerErrors,[]);
  await save('terminal.json',{terminal,events,witnesses:Object.fromEntries(witnesses),provider:provider.sessionStatus({sessionId:operation.sessionId,tenantId})});

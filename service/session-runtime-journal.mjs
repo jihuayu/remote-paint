@@ -65,7 +65,7 @@ export function createSessionRuntimeJournal(db,{fail,isStoreError,validateSessio
   },
   release(owner){const key=authorize(owner);owners.delete(owner);regions.delete(key);recovery.delete(owner);},
   snapshot(owner){const key=authorize(owner);validate();const allocations=[];for(const row of db.prepare('SELECT session_id FROM runtimes WHERE region=? ORDER BY session_id').iterate(key))allocations.push(runtime(row.session_id));return {revision:revision(),provider:binding(key),allocations,recoveryRequired:[...recovery.get(owner)].sort()};},
-  commit(value,owner){
+  commit(value,owner,{closingWitness=false}={}){
    const key=authorize(owner),row=record(value);if(row.region!==key)reject('OWNER','Runtime provider cannot write another region');
    return transaction(()=>{
     const parent=reference(row),old=runtime(row.sessionId);
@@ -73,7 +73,9 @@ export function createSessionRuntimeJournal(db,{fail,isStoreError,validateSessio
     if(old?.state==='requested'&&row.state==='requested')reject('CONFLICT','Dispatch intent is one-use and cannot authorize a repeated allocation');
     if(!old){if(row.state!=='intent'||row.startDispatch!=='not-requested'||row.requestStarted||row.containerId!==null||parent.state!=='creating'||!parent.reserved)reject('CONFLICT','A new runtime requires a reserved creating Session and an undispatched intent');}
     else{
-     if(JSON.stringify(old.startDispatch)!==JSON.stringify(row.startDispatch)&&(!((old.startDispatch==='not-requested'&&row.startDispatch==='requested')||(old.startDispatch==='requested'&&isRuntimeWitnessBinding(row.startDispatch)))||old.state!=='created'||row.state!=='created'||parent.state!=='creating'||!parent.reserved))reject('CONFLICT','Engine Start requires a one-use durable fence before dispatch');
+     const normalStartChange=((old.startDispatch==='not-requested'&&row.startDispatch==='requested')||(old.startDispatch==='requested'&&isRuntimeWitnessBinding(row.startDispatch)))&&old.state==='created'&&row.state==='created'&&parent.state==='creating'&&parent.reserved;
+     const closingChange=closingWitness&&['requested','legacy-unknown'].includes(old.startDispatch)&&isRuntimeWitnessBinding(row.startDispatch)&&old.state==='closing'&&row.state==='closing'&&old.requestStarted&&old.containerId!==null&&parent.reserved;
+     if(JSON.stringify(old.startDispatch)!==JSON.stringify(row.startDispatch)&&!normalStartChange&&!closingChange)reject('CONFLICT','Engine Start or closing witness requires its one-use durable fence');
      if(old.state==='created'&&row.state==='created'&&(old.startDispatch==='requested'&&row.startDispatch==='requested'||isRuntimeWitnessBinding(old.startDispatch)))reject('CONFLICT','Engine Start dispatch fence is one-use');
      if(immutable.some(k=>old[k]!==row[k])||row.updatedAt<old.updatedAt||!transitions[old.state].includes(row.state)||old.containerId!==null&&old.containerId!==row.containerId||old.version!==null&&old.version!==row.version||old.closeReason!==null&&old.closeReason!==row.closeReason||old.state==='retired'&&encode(old)!==encode(row))reject('CONFLICT','Runtime ownership or terminal history cannot be rewritten');
      if(!old.requestStarted&&row.requestStarted&&(old.state!=='intent'||row.state!=='requested')||old.requestStarted&&!row.requestStarted)reject('CONFLICT','Runtime dispatch must be durably recorded before allocation and cannot begin after closure');
@@ -83,6 +85,11 @@ export function createSessionRuntimeJournal(db,{fail,isStoreError,validateSessio
     if(row.state==='ready'&&parent.version!==null&&parent.version!==row.version)reject('REFERENCE','Runtime version disagrees with its Session');
     db.prepare('INSERT INTO runtimes VALUES(?,?,?,?,?,?) ON CONFLICT(session_id) DO UPDATE SET body=excluded.body,container_id=excluded.container_id').run(row.sessionId,row.tenant,row.region,row.containerName,row.containerId,encode(row));return {allocation:row};
    });
+  },
+  bindClosingWitness(sessionId,startWitness,owner){
+   const key=authorize(owner),old=runtime(sessionId);
+   if(!old||old.region!==key||old.state!=='closing'||!old.requestStarted||old.containerId===null||!['requested','legacy-unknown'].includes(old.startDispatch)||!isRuntimeWitnessBinding(startWitness))reject('CONFLICT','Only an unbound closing runtime can receive a closing witness');
+   return this.commit({...old,startDispatch:copyRuntimeWitnessBinding(startWitness),updatedAt:new Date(Math.max(Date.now(),Date.parse(old.updatedAt))).toISOString()},owner,{closingWitness:true});
   },
   checkSession(row){
    if(!binding(row.region))return;const value=runtime(row.sessionId);

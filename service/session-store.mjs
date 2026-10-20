@@ -147,6 +147,7 @@ export class SqliteSessionStore {
  releaseRuntimeProvider(owner){if(!this.#db)fail('STATE_CLOSED','Session ledger is closed');this.#runtime.release(owner);}
  loadRuntime({owner}={}){this.#open();return this.#runtime.snapshot(owner);}
  commitRuntime(row,{owner}={}){this.#open();return this.#runtime.commit(row,owner);}
+ bindRuntimeClosingWitness(sessionId,startWitness,{owner}={}){this.#open();return this.#runtime.bindClosingWitness(sessionId,startWitness,owner);}
  claimRegistry(owner){
   this.#open();if(typeof owner!=='symbol')throw new TypeError('Expected an opaque registry owner');
   if(this.#registryOwner!==null&&this.#registryOwner!==owner)fail('STATE_IN_USE','Session ledger already has a Registry owner');

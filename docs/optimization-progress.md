@@ -1636,3 +1636,14 @@ Start 历史新增明确版本的见证确认，绑定实际 EngineStartedAt、�
 真实外部删除最初两次触发 Engine409，Ready 已即时撤销而配额继续保留；已保留失败记录、原SQL快照和随后只清理恢复。修复仅有界等待完整CID缺失，最多32次只读查询共享5秒上限；第二个操作必须先确认 alreadyAbsent，因而不重发DELETE，再保存新鲜404。实际活跃提供器路径和提供器 Ready 后 SIGKILL、原日志/绑定重开路径均验证；缺失或错代次见证保留配额。最终双平台与所有真实路径见[已知缺失检查点](evidence/runtime-known-absence.json)。
 
 见证前启动不确定性、取消、文件已发布但日志确认尚未提交的崩溃窗口、显式清理重试仍需完成。Native 实际提供器、当前候选整份全量回归、Viewer角色/HTTP/SDK及原8小时终验尚未完成，41项保持9/14/18，未暂存、提交或推送。
+
+
+### 关闭专用见证通道与已发布文件恢复（B1c1b2c3a）
+
+Worker 通道新增明确 closeOnly 模式，必须启用有效内核见证且不接收 owner key。Start 在读取参数前直接拒绝，通道只等待有界 WorkerHello/持久回执，再结束输入；不发送私有 Start、心跳或认证 Close 帧，不初始化资源或发布 Ready。正常通道及全部原合同仍单独回归。
+
+日志新增命名的关闭见证确认入口，仅可为已 closing、有完整 CID、父 Session 仍保留配额且历史为 requested/legacy-unknown 的记录确认一次。普通 commit 不具有该能力；恢复 owner 仍不能回到 created/Ready 或重放 EngineStart。提供器先保存关闭屏障并等待创建结果，再用实际同代次检查回读已发布文件，或在运行时仍真实 running 时通过自有关闭专用代理收集见证。保存/回读后确认 closing 见证，再按原204或已知缺失规则退役、独立读回后释放配额。
+
+真实 Node 路径覆盖 EngineStart 后、见证通道前取消；文件发布后、正常日志确认前取消；以及这两个时点的实际 provider SIGKILL/原日志绑定重开。全部无私有 Start、资源子进程或 Ready 重放，保留主进程有效 namespace/TCP 关闭旁证。最终双平台与19条实际路径结果见[关闭见证检查点](evidence/runtime-close-witness.json)。首次整组回归中原1秒 attach 预算在 info 后耗尽，时限断言通过但三请求断言失败；原测试单独运行通过，未改变时限或断言，失败日志保留。
+
+显式清理重试、原通道在保存见证前已 EOF、对象在文件发布/日志确认间已消失、未知 created 启动历史等边界仍需推进。Native 提供器、当前候选整份全量回归、Viewer角色/HTTP/SDK及原8小时终验未完成，41项保持9/14/18，未提交或推送。
