@@ -40,7 +40,7 @@ export function createAgentDownloadOwner({page,binding,version}){
  function forgetListeners(r){page.off('download',r.accept);page.off('framenavigated',r.navigate);page.off('close',r.pageClosed);clearTimeout(r.timer);r.timer=null;}
  function cancel(r,code){
   if(!r.error)r.error=code;r.bytes=null;forgetListeners(r);
-  if(r.download&&r.completedAt===undefined&&!r.cancelWork){r.cancelWork=Promise.resolve().then(()=>r.download.cancel()).catch(()=>{r.cancelFailed=true;});}
+  if(r.download&&!r.pathResolved&&r.completedAt===undefined&&!r.cancelWork){r.cancelWork=Promise.resolve().then(()=>r.download.cancel()).catch(()=>{r.cancelFailed=true;});}
  }
  async function unlinkSpool(r){if(!r.path)return;try{await unlink(r.path);}catch(error){if(error.code!=='ENOENT')throw error;}r.path=null;}
  async function receive(r,download){
@@ -48,7 +48,7 @@ export function createAgentDownloadOwner({page,binding,version}){
   try{
    // Only this Page's trusted Download event supplies a path. No caller path,
    // URL, selector, evaluation or second HTTP request can enter this reader.
-   const path=await download.path();if(typeof path!=='string'||path.length>4096||!isAbsolute(path))fail('AGENT_DOWNLOAD_FAILED');r.path=path;r.check();if(r.error)fail(r.error);
+   const path=await download.path();if(typeof path!=='string'||path.length>4096||!isAbsolute(path))fail('AGENT_DOWNLOAD_FAILED');r.path=path;r.pathResolved=true;r.check();if(r.error)fail(r.error);
    file=await open(path,constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK);const stat=await file.stat();if(!stat.isFile()||stat.nlink!==1||!integer(stat.size,0,r.limits.maxBytes))fail(stat.isFile()&&stat.size>r.limits.maxBytes?'AGENT_DOWNLOAD_LIMIT':'AGENT_DOWNLOAD_FAILED');
    r.check();if(r.error)fail(r.error);candidate=Buffer.alloc(stat.size);const hash=createHash('sha256');let offset=0;
    while(offset<stat.size){r.check();if(r.error)fail(r.error);const {bytesRead}=await file.read(candidate,offset,Math.min(AGENT_DOWNLOAD_LIMITS.chunkBytes,stat.size-offset),offset);if(bytesRead===0)fail('AGENT_DOWNLOAD_FAILED');hash.update(candidate.subarray(offset,offset+bytesRead));offset+=bytesRead;}
@@ -61,8 +61,11 @@ export function createAgentDownloadOwner({page,binding,version}){
    // path() settles only when the real browser download finishes or fails.
    // A canceled path has no successful artifact path to unlink; Chromium owns
    // retiring its partial spool. This is not a pre-write disk-budget proof.
-   if(!r.error){try{await download.delete();}catch{cleanupFailed=true;}}
+   // A successful path() proves browser completion, even when our cap,
+   // context or file validation rejects it. Always dispose that Artifact.
+   if(r.pathResolved){try{await download.delete();}catch{cleanupFailed=true;}}
    if(r.cancelWork)await r.cancelWork;
+   if(r.cancelFailed&&!r.pathResolved)cleanupFailed=true;
    if(cleanupFailed){r.cleanupFailed=true;r.error='AGENT_DOWNLOAD_FAILED';candidate=null;}
    forgetListeners(r);
   }
@@ -74,7 +77,7 @@ export function createAgentDownloadOwner({page,binding,version}){
  return Object.freeze({
   arm(context,request,check){
    if(closed)fail('AGENT_RUN_CLOSED');if(record)fail('AGENT_DOWNLOAD_BUSY');if(typeof page.on!=='function'||typeof page.off!=='function')fail('AGENT_OBSERVATION_UNAVAILABLE');const ctx=captureAgentObservationContext(context);if(Object.keys(binding).some(k=>ctx.binding[k]!==binding[k])||typeof check!=='function')fail('AGENT_INVALID_CONTEXT');const limits=captureManagedAgentDownload(request.limits).limits;check();
-   const r={downloadId:'dl_'+randomUUID(),document:ctx.document,limits,armedAt:new Date().toISOString(),phase:'armed',bytes:null,work:null,cancelWork:null,path:null,error:null,check};
+   const r={downloadId:'dl_'+randomUUID(),document:ctx.document,limits,armedAt:new Date().toISOString(),phase:'armed',bytes:null,work:null,cancelWork:null,path:null,pathResolved:false,error:null,check};
    r.accept=download=>{if(record!==r||closed||r.error)return;page.off('download',r.accept);try{if(download.page()!==page)fail('AGENT_TARGET_CHANGED');r.download=download;r.check();r.phase='receiving';r.work=receive(r,download);void r.work.catch(()=>{});}catch(error){cancel(r,errorCode(error));if(r.download){r.work=receive(r,download);void r.work.catch(()=>{});}}};
    r.navigate=()=>cancel(r,'STALE_AGENT_PAGE');r.pageClosed=()=>cancel(r,'AGENT_TARGET_CHANGED');
    record=r;page.on('download',r.accept);page.on('framenavigated',r.navigate);page.on('close',r.pageClosed);r.timer=setTimeout(()=>cancel(r,'AGENT_DOWNLOAD_TIMEOUT'),limits.timeoutMs);
