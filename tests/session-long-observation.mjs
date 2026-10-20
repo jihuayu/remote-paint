@@ -8,6 +8,19 @@ import {WebSocket} from 'ws';
 import {installFrameAgeObserver} from './frame-age-observer.mjs';
 import {startFrameAgeStream} from './frame-age-stream.mjs';
 
+export async function drainSessionMarkerWindow(stream,readCycle,number,{stop=false,onBoundary=async()=>{}}={}){
+ assert.equal(typeof readCycle,'function');assert.ok(Number.isSafeInteger(number)&&number>0&&number<=65535);
+ const read=()=>{const n=readCycle();assert.ok(Number.isSafeInteger(n)&&n>=0&&n<=65535,'Invalid actual primary update counter');return n;};
+ const invocationCycle=read(),result=await stream.drain({stop}),throughCycle=read();
+ assert.ok(throughCycle>=invocationCycle,'Primary update counter went backwards');
+ assert.equal(typeof onBoundary,'function');await onBoundary({window:result.window,invocationCycle,throughCycle});
+ // Updates may continue while the Worker handles rotate and while the closed
+ // raw window is calibrated. Validate against the actual counter read after
+ // that boundary, rather than the stale value at the drain invocation.
+ for(const s of result.samples){assert.equal(s.pixels.length,4);for(const p of s.pixels){assert.ok(p.length===4&&p.every(v=>Number.isInteger(v)&&v>=0&&v<=255));}for(const p of s.pixels.slice(0,2)){const n=p[0]+256*p[1];assert.ok((p[2]===199&&p[3]===255&&n<=throughCycle)||p.every(v=>v===255),'Unknown actual image/DOM marker');}const p=s.pixels[2];assert.ok(JSON.stringify(p)===JSON.stringify([number&255,(number>>8)&255,211,255])||p.every(v=>v===255),'Unknown observed Session identity');}
+ return {result,bounds:{invocationCycle,throughCycle}};
+}
+
 export function createSessionInputFrameProofs(persist){
  const pending=[];let queued=0,proved=0;
  return {get stats(){return {queued,proved,pending:pending.length,limit:128};},enqueue(textCount,ack){
@@ -34,7 +47,8 @@ export async function prepareSessionLongObservation(page,ready){
  await installFrameAgeObserver(page,provenance);return provenance;
 }
 
-export async function startSessionLongObservation({page,ready,provenance,command,directory,impaired=false}){
+export async function startSessionLongObservation({page,ready,provenance,command,directory,readCycle,impaired=false}){
+ assert.equal(typeof readCycle,'function');
  const save=(name,value)=>appendFile(join(directory,name),JSON.stringify({at:new Date().toISOString(),...value})+'\n');
  const errors=[],rtt={count:0,minMs:null,maxMs:null};let echo,stream,networkActive=false,closed,lossOrdinal=0,lossWindow=0,windows=0;
  let sourceCloseLoss=null;
@@ -72,12 +86,11 @@ export async function startSessionLongObservation({page,ready,provenance,command
   const measuredRttMs=[];for(let n=0;n<10;n++)measuredRttMs.push(await ping());await save('session-network-windows.jsonl',{phase:'initial-rtt',impaired,measuredRttMs});
   stream=await startFrameAgeStream(page,provenance,{nativeProbe,directory});
  }catch(error){try{await close();}catch(cleanup){error.cleanup=cleanup.message;}throw error;}
- return {async finishSource(value){await save('session-loss-windows.jsonl',{phase:'after-source-close',loss:value});assert.equal(value.observerFailure,null);assert.equal(value.windowOrdinal,lossWindow+1);assert.equal(value.afterObservationOrdinal,lossOrdinal);assert.equal(value.throughObservationOrdinal-value.afterObservationOrdinal,value.rejections.length);assert.equal(value.receivedRejectionEvents,value.rejectionCount);value.rejections.forEach((r,i)=>assert.equal(r.observationOrdinal,lossOrdinal+i+1));sourceCloseLoss={windowOrdinal:value.windowOrdinal,throughObservationOrdinal:value.throughObservationOrdinal};},enqueueInput:(n,ack)=>inputs.enqueue(n,ack),witness:()=>stream.witness(),close,get active(){return stream.active;},get summary(){return {impaired,windows,frameAge:stream.totals,lifetime:stream.lifetime,inputProofs:inputs.stats,rtt,receivedNativeRejections:lossOrdinal,lossWindows:lossWindow,sourceCloseLoss,errors};},async drain({cycle,stop=false}){
-  const result=await stream.drain({stop});
-  for(const s of result.samples){assert.equal(s.pixels.length,4);for(const p of s.pixels.slice(0,2)){const n=p[0]+256*p[1];assert.ok((p[2]===199&&p[3]===255&&n<=cycle)||p.every(v=>v===255),'Unknown actual image/DOM marker');}const p=s.pixels[2];assert.ok(JSON.stringify(p)===JSON.stringify([ready.primary.number&255,(ready.primary.number>>8)&255,211,255])||p.every(v=>v===255),'Unknown observed Session identity');}
+ return {async finishSource(value){await save('session-loss-windows.jsonl',{phase:'after-source-close',loss:value});assert.equal(value.observerFailure,null);assert.equal(value.windowOrdinal,lossWindow+1);assert.equal(value.afterObservationOrdinal,lossOrdinal);assert.equal(value.throughObservationOrdinal-value.afterObservationOrdinal,value.rejections.length);assert.equal(value.receivedRejectionEvents,value.rejectionCount);value.rejections.forEach((r,i)=>assert.equal(r.observationOrdinal,lossOrdinal+i+1));sourceCloseLoss={windowOrdinal:value.windowOrdinal,throughObservationOrdinal:value.throughObservationOrdinal};},enqueueInput:(n,ack)=>inputs.enqueue(n,ack),witness:()=>stream.witness(),close,get active(){return stream.active;},get summary(){return {impaired,windows,frameAge:stream.totals,lifetime:stream.lifetime,inputProofs:inputs.stats,rtt,receivedNativeRejections:lossOrdinal,lossWindows:lossWindow,sourceCloseLoss,errors};},async drain({stop=false}={}){
+  const {result,bounds}=await drainSessionMarkerWindow(stream,readCycle,ready.primary.number,{stop,onBoundary:b=>save('session-marker-boundaries.jsonl',b)});
   await inputs.consume(result);const sourceLoss=await loss(stop?'final-enabled-window':'enabled-window'),measuredRttMs=[];for(let n=0;n<3;n++)measuredRttMs.push(await ping());
   let network=null;if(impaired){network=(await command('network-snapshot')).network;await save('session-network-windows.jsonl',{phase:'window',window:result.window,network,measuredRttMs});}
-  assert.deepEqual(errors,[]);windows++;await save('session-observation-windows.jsonl',{cycle,stop,window:result.window,coverage:result.coverage,age:result.age,ageLower:result.ageLower,ageUpper:result.ageUpper,clockUncertainty:result.clockUncertainty,pixelObserverCost:result.pixelObserverCost,protocol:result.protocol.counts,sourceLossWindow:sourceLoss.windowOrdinal,measuredRttMs,inputProofs:inputs.stats});
+  assert.deepEqual(errors,[]);windows++;await save('session-observation-windows.jsonl',{cycle:bounds.throughCycle,cycleBounds:bounds,stop,window:result.window,coverage:result.coverage,age:result.age,ageLower:result.ageLower,ageUpper:result.ageUpper,clockUncertainty:result.clockUncertainty,pixelObserverCost:result.pixelObserverCost,protocol:result.protocol.counts,sourceLossWindow:sourceLoss.windowOrdinal,measuredRttMs,inputProofs:inputs.stats});
   if(stop){inputs.finish();assert.ok(inputs.stats.proved>0);assert.ok(stream.totals.paired>=400);assert.equal(stream.totals.missing,0);if(impaired){assert.ok(network.counters.bytes>64*1024*1024&&network.counters.drops>0);}}
   return {window:result.window,paired:result.coverage.paired,inputProofs:inputs.stats};
  }};

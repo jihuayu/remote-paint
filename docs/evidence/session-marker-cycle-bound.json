@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-18T00:57:11.354456+00:00",
+  "status": "cycle-bound-interleaving-fixed-and4-contracts-passed",
+  "sourceFiles": {
+    "tests/session-long-observation.mjs": "da996377cde9c1e889681b26ebd5c5f42402f5a21a1b25b299ba41f273a12754",
+    "tests/session-long-observation.test.mjs": "6eb33c9b426248e90c96aba2bad48e6688c28cf1bc842d9b1cdf7826e08178b5",
+    "tests/verify-session-longload.mjs": "b2ed7dbf7bf7fe7fb6ba0f8589dc59f38f1fae498e7540408cf73ba071ba2af8"
+  },
+  "scope": "Test-only closed-window marker validation underconcurrentprimaryupdates. Currentfrozen623baselineisunchanged;thisfix needsfreshactualpilotsbefore8h.",
+  "problem": "Numericinvocationcycle capturedbeforeawaitedWorkerrotate canbeolderthan avalidclosedwindowmarker. Deterministicdeferredrotationcontract demonstrates101pixelafterinvocation100 whileactualcounter advances101. No suchactualrunfailureclaimed.",
+  "change": "Readactualprimarycounter beforeandaftercompletedstreamdrain;persistbothboundsbeforemarkerchecks,validate allsamples againstobservedpostrotationupperbound. No filtering/discarding,clockorcounterfabrication;futurecycles/wrongSession/invalidRGBA/counterrollback stillfail. Driverpassesitsactual cycle closure.",
+  "tests": {
+    "total": 4,
+    "pass": 4,
+    "fail": 0,
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-marker-cycle-bound-v1/contracts.log",
+    "logSha256": "97eb874b217e6f10cbd78204e90b8164607cbcc7253713bb3e982f41a26c183f"
+  },
+  "budgetsUnchanged": true,
+  "productionRuntimeUnchanged": true,
+  "activeFrozenBaseline": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v3/baseline-frozen-version.json",
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

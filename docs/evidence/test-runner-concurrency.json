@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-18T00:52:19.120365+00:00",
+  "status": "passed-bounded-testfile-concurrency-fullJS-on-fresh623files",
+  "sourceFiles": 623,
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v3/baseline-frozen-version.json",
+  "manifestSha256": "3f8faec79dff785e43c15394166ff2e4eb0f9ed0c3c0fbb6948eae5cba2bc02c",
+  "change": "package.json canonicaltest script capsfileprocessesat4;all265testsandoriginal2sready/request,250msreap,5sphase assertions unchanged. Runtime/source/Nativecode unchanged since620observer candidate.",
+  "command": "node --test --test-concurrency=4 tests/*.test.mjs",
+  "fullJS": {
+    "testsEach": 265,
+    "mac": {
+      "passed": 257,
+      "skipLinuxOnly": 8,
+      "failed": 0,
+      "exitCode": 0
+    },
+    "linux": {
+      "passed": 261,
+      "skipMacOnly": 4,
+      "failed": 0,
+      "exitCode": 0
+    }
+  },
+  "preservedFailures": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-mac-js-initial-failure-v1.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-mac-js-replay-failure-v1.json"
+  ],
+  "isolatedSamplerContracts": {
+    "tests": 14,
+    "passed": 14,
+    "actualRssTwoHangAndReapMs": 4017.4236250000004,
+    "scope": "Isolatedtwosamplerfiles;no fake timer foractualhangcases;notfullsuite/soakacceptance"
+  },
+  "postFailureOwnedFaultAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-mac-rss-postfailure-process-audit-v1.json",
+  "causeScope": "Boundedfileconcurrencyremovesobservedfullsuite interference inthis freshcopy. Notproof ofsoleOSscheduler/coldstartup cause,notpermission torelaxproductionprobe deadlines orclaimoldfailurespassed.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v3/js-results/mac.log": "5240e00e2abc67e7e96543ccae9940d3d6e5136c7988d0d7260713bb9c87076b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v3/js-results/linux.log": "ff21d3a31fa95c691da223373352ac874ecdbb8e588fad3e4f65a599a9a60777",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v3/js-results/mac-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v3/js-results/linux-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v1/js-results/mac-sampler-isolation.log": "d80d3d866d3c4ed5ef6e57de9cbea7cbac5faf88f2a4935a09b92ee0cc002e71"
+  },
+  "hardwarePilotsNotStarted": true,
+  "physicalAcceptanceSeparate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-physical-checkpoint-v1.json",
+  "noCommitPush": true,
+  "eightHourPassed": false
+}
