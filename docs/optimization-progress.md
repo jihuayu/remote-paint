@@ -1925,3 +1925,8 @@ CPU主线程controller与实际CPU Worker readonly同时显示真实Native Sessi
 ### Agent排队输入在handoff开始时失效
 
 修复ControlLease.agent只在入队检查模式、接管中仍执行旧队列的窗口；发送CDP前重查控制version/mode，未发出的旧动作AGENT_PAUSED，已发输入仍等结算并清理按键再授予人工。两个单测before1/after0；真实Native页面before A→ASTALE、after A→AH→AHF，根1→0。新双平台955项无失败，当前生产Native公共SDK三像素路径/输入/resize/角色/CSP/终止又实际0，WebGL黑框精确文字保持。见[范围](agent-input-handoff.md)。上游请求token、通用Playwright/CDP/生产Agent服务尚未完成；未知启动见证隔离不弱化，41项9/15/17及原8小时失败保持。
+
+
+### Source内部Agent输入显式版本戳
+
+新增agentFence()与agent(event,{fence})，四个严格自有data字段绑定Source控制器/控制version/页面/viewport，入队及实际发送前核对并复制冻结。Native旧实现接管释放后仍A→AH→AHLATE，新的显式路径拒绝旧戳；当前戳AHF、真实resize后旧戳拒绝/新戳AHFV、真实导航后旧戳拒绝/新文档N。7合同before1（含接口不存在）after0，双平台109文件完整962项无失败，3测试容器均终止、已知进程退出。见[版本戳范围](agent-request-fence.md)。这是本地generation guard，不是认证/幂等；兼容的受信任无戳入口保留，受限facade与服务/SDK Agent授权继续，41项9/15/17及原8小时失败保持。

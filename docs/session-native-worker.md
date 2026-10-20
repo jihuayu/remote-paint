@@ -145,3 +145,8 @@ Node/Python SDK现接受worker-unavailable关闭原因，包括配额尚保留�
 ## 本地Agent输入handoff栅栏
 
 ControlLease.agent在实际发送前重查控制version/mode，人工接管或revoke开始后丢弃未发出的旧队列输入。真实Native Source因果1→0和当前生产Native公共Viewer回归通过；此局部修复不代表上游Agent授权或全部Playwright/CDP接口已覆盖。见[范围](agent-input-handoff.md)。
+
+
+## Source内部Agent请求显式版本戳
+
+ControlLease.agentFence()提供控制器/控制version/文档/viewport的冻结JSON戳，agent(event,{fence})在入队和CDP发送前拒绝旧戳。真实Native接管释放、resize、导航验证通过；该Core API未作为新的公共命令开放，也不替代租户/任务/Agent授权。见[范围](agent-request-fence.md)。

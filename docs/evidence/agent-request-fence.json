@@ -1,0 +1,157 @@
+{
+  "at": "2026-10-19T13:43:43.131294+00:00",
+  "task": "K5-explicit-Agent-input-request-generation-fence",
+  "status": "local-Agent-input-explicit-generation-fence-qualified",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-request-fence-after-v1/frozen-version.json",
+  "executedManifestSha256": "9e50147fc65fb1fe3f07411618e1dcd8dc05a5e5ec9ab2edc4eef0bd6e056123",
+  "canonicalSourceFiles": 965,
+  "beforeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-request-fence-before-v1/frozen-version.json",
+  "beforeManifestSha256": "2530ed02a5f60ece01047e539c7da3583517cea4a39d1c2220b01b6cf0f617f4",
+  "onlyBeforeAfterProductionDelta": "live/input.mjs",
+  "api": "ControlLease.agentFence() and agent(event,{fence})",
+  "fenceFields": [
+    "controlSessionId",
+    "controlVersion",
+    "pageEpoch",
+    "viewportVersion"
+  ],
+  "fenceIsAuthenticationCredential": false,
+  "schemaOwnDataExactFieldsAndNoAccessorReads": true,
+  "immutableJsonTransportFenceAndAdmissionSnapshot": true,
+  "staleFenceRejectedBeforeInputReadOrCdpDispatch": true,
+  "legacyTrustedLocalAgentWithoutOptionsPreserved": true,
+  "noNewPublicWireCommandOrAuthorizationGrant": true,
+  "unitBeforeActual1SixFailuresOnePassAfterActual0SevenPasses": true,
+  "beforeFailuresIncludeNewApiNotYetPresent": true,
+  "actualLocalNativeBefore1After0": true,
+  "actualLateOldFenceBeforeInjected": "AHLATE",
+  "actualAfterFreshValues": [
+    "A",
+    "AH",
+    "AHF",
+    "AHFV",
+    "N"
+  ],
+  "actualNativeControlCycleResizeAndNavigationOldFencesDenied": true,
+  "actualNativeOldRequestsError": "STALE_AGENT_FENCE",
+  "actualNativeFinalFence": {
+    "controlSessionId": "8d6819b7-dc9d-4eed-b80c-a915451e81ac",
+    "controlVersion": 4,
+    "pageEpoch": 2,
+    "viewportVersion": 2
+  },
+  "fixtureOwnReadyAndInputHttpReportsUsed": true,
+  "sourceCdpTestEndpointAdded": false,
+  "freshFullJs": {
+    "mac": {
+      "tests": 962,
+      "pass": 947,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "04b73f1a723b24df62150027d2b7480a3a7d869d4086e1a77b9fd4a40bfa5847"
+    },
+    "linux": {
+      "tests": 962,
+      "pass": 956,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "f8f3dd947b9dcba03e503e1bd95c96b936a5be15adcee28fb78a917504c11dfc",
+      "containerId": "b80cba0fce239c962a387efee0cfb930a57b447a6fa97afeae036333532a99e5"
+    }
+  },
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v19/manifest.json",
+  "fullJsManifestSha256": "3c38383cd2b9c46e0f6223e22b0101615bb71c4e9e202e89d9adea1b755ea445",
+  "fullTestFiles": 109,
+  "sdk78Node17PythonBothTscBothMacMypyInheritedExactUnchangedInputs": true,
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "a93654f41a1ac70756220d24eb5e6d4ff5a447fa0a3050714ecafdb92ed1354c",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "d21a3f6d707ba6f778ad2c4c1a0372e01f710d3a6d7ab123790487b26513a669"
+  },
+  "freshSdkPackageOrViewerPixelRerunClaimed": false,
+  "nativeCases": [
+    {
+      "stage": "before",
+      "containerId": "7d7f284b1e3ea4bdf314f7318bd71ac284d8f17633d23881d8509f1d8dce346a",
+      "actualExitCode": 1,
+      "pid": 0,
+      "oomKilled": false,
+      "knownLinuxProcessIdentitiesRetired": [
+        {
+          "pid": 23,
+          "startTicks": "31559965"
+        },
+        {
+          "pid": 75,
+          "startTicks": "31559997"
+        },
+        {
+          "pid": 40,
+          "startTicks": "31559982"
+        },
+        {
+          "pid": 43,
+          "startTicks": "31559982"
+        },
+        {
+          "pid": 20,
+          "startTicks": "31559963"
+        }
+      ]
+    },
+    {
+      "stage": "after",
+      "containerId": "ac375490a3633440dc9fc17ba4bfd1c38b535b770bc7fd1994a377b855af209b",
+      "actualExitCode": 0,
+      "pid": 0,
+      "oomKilled": false,
+      "knownLinuxProcessIdentitiesRetired": [
+        {
+          "pid": 23,
+          "startTicks": "31571410"
+        },
+        {
+          "pid": 76,
+          "startTicks": "31571438"
+        },
+        {
+          "pid": 39,
+          "startTicks": "31571428"
+        },
+        {
+          "pid": 42,
+          "startTicks": "31571429"
+        },
+        {
+          "pid": 20,
+          "startTicks": "31571408"
+        }
+      ]
+    }
+  ],
+  "knownHostPidsAbsent": [
+    46175,
+    46232,
+    49104,
+    49143
+  ],
+  "explicitAgentInputFenceCoreQualified": true,
+  "explicitUpstreamAgentRequestFenceQualified": false,
+  "managedPlaywrightCdpFacadeQualified": false,
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "physicalLatencyOrN1Claim": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

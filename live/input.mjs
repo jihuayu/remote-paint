@@ -5,6 +5,20 @@ const reject=code=>{throw new InputError(code);};
 const viewportCodes=new Set(['INVALID_VIEWPORT_REQUEST','UNSUPPORTED_VIEWPORT','VIEWPORT_BUSY','STALE_VIEWPORT_REQUEST','STALE_SESSION','PAGE_TRANSITION','STALE_EPOCH','STALE_VIEWPORT','STALE_LEASE','INPUT_QUEUE_FULL','SESSION_CLOSED','VIEWPORT_INPUT_RESET_FAILED','VIEWPORT_RESIZE_FAILED','VIEWPORT_SUPERSEDED']);
 const viewportId=value=>Number.isSafeInteger(value)&&value>=1;
 const number=(n,limit=1e7)=>Number.isFinite(n)&&Math.abs(n)<=limit;
+const agentFenceFields=['controlSessionId','controlVersion','pageEpoch','viewportVersion'];
+function agentData(value,fields){
+ try{
+  if(!value||typeof value!=='object'||Array.isArray(value))reject('INVALID_AGENT_FENCE');
+  const prototype=Object.getPrototypeOf(value),keys=Reflect.ownKeys(value),descriptors=Object.getOwnPropertyDescriptors(value);
+  if(prototype!==null&&prototype!==Object.prototype||keys.length!==fields.length||keys.some(key=>!fields.includes(key))||fields.some(key=>!Object.hasOwn(descriptors,key)||!Object.hasOwn(descriptors[key],'value')))reject('INVALID_AGENT_FENCE');
+  return Object.fromEntries(fields.map(key=>[key,descriptors[key].value]));
+ }catch{reject('INVALID_AGENT_FENCE');}
+}
+function agentRequestFence(options){
+ const value=agentData(agentData(options,['fence']).fence,agentFenceFields);
+ if(typeof value.controlSessionId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(value.controlSessionId)||!Number.isSafeInteger(value.controlVersion)||value.controlVersion<0||![value.pageEpoch,value.viewportVersion].every(viewportId))reject('INVALID_AGENT_FENCE');
+ return Object.freeze(value);
+}
 export function validateInput(event,viewport){
  if(!event||typeof event!=='object')reject('INVALID_EVENT');
  const modifiers=event.modifiers??0;if(!Number.isInteger(modifiers)||modifiers<0||modifiers>15)reject('INVALID_MODIFIERS');
@@ -185,10 +199,20 @@ export class ControlLease {
   if(this.version===version&&!this.closed){this.mode='agent';this.broadcast();}
   return {reason};
  }
- agent(event){
-  if(this.mode!=='agent')reject('AGENT_PAUSED');validateInput(event,this.source.viewport);
+ // This is a generation fence, not an authentication credential. A managed
+ // transport must separately bind its tenant, Session, target and Agent run.
+ agentFence(){
+  if(this.closed||this.source.closed===true)reject('SESSION_CLOSED');if(this.mode!=='agent')reject('AGENT_PAUSED');if(this.source.transitioning)reject('STALE_AGENT_PAGE');
+  return agentRequestFence({fence:{controlSessionId:this.sessionId,controlVersion:this.version,pageEpoch:this.source.pageEpoch,viewportVersion:this.source.viewportVersion}});
+ }
+ #checkAgentFence(fence){
+  if(this.closed||this.source.closed===true)reject('SESSION_CLOSED');
+  if(this.source.transitioning||fence.controlSessionId!==this.sessionId||fence.controlVersion!==this.version||fence.pageEpoch!==this.source.pageEpoch||fence.viewportVersion!==this.source.viewportVersion)reject('STALE_AGENT_FENCE');
+ }
+ agent(event,options){
+  if(this.mode!=='agent')reject('AGENT_PAUSED');const suppliedFence=options===undefined?null:agentRequestFence(options);if(suppliedFence)this.#checkAgentFence(suppliedFence);validateInput(event,this.source.viewport);
   const epoch=this.source.pageEpoch,viewport=this.source.viewportVersion,version=this.version;
-  return this.enqueue(async()=>{if(this.source.transitioning||this.source.pageEpoch!==epoch||this.source.viewportVersion!==viewport)reject('STALE_AGENT_PAGE');if(this.mode!=='agent'||this.version!==version)reject('AGENT_PAUSED');const release=this.source.acquirePageRun?.();try{await this.dispatch(event);this.source.requestCapture?.();}finally{release?.();}});
+  return this.enqueue(async()=>{if(this.source.transitioning||this.source.pageEpoch!==epoch||this.source.viewportVersion!==viewport)reject('STALE_AGENT_PAGE');if(this.mode!=='agent'||this.version!==version)reject('AGENT_PAUSED');if(suppliedFence)this.#checkAgentFence(suppliedFence);const release=this.source.acquirePageRun?.();try{await this.dispatch(event);this.source.requestCapture?.();}finally{release?.();}});
  }
  async handle(peer,message){
   try{
