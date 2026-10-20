@@ -1,13 +1,13 @@
 {
-  "at": "2026-10-20T15:37:36.808642+00:00",
+  "at": "2026-10-20T21:22:49.908075+00:00",
   "task": "K8c2b2 actual bounded Python HTTPX SSE lifecycle",
   "scope": "K8c2b2 independent bounded HTTPX SSE lifecycle with actual cleanup ownership",
-  "candidateNotQualified": true,
+  "candidateNotQualified": false,
   "pythonSseParserQualified": true,
   "pythonSseTransportImplemented": true,
-  "pythonSseTransportQualified": false,
-  "freshWholeJsBoth": false,
-  "freshInstalledPackagesBoth": false,
+  "pythonSseTransportQualified": true,
+  "freshWholeJsBoth": true,
+  "freshInstalledPackagesBoth": true,
   "expectedFullJsEach": 1584,
   "expectedInstalledNodeEach": 202,
   "expectedInstalledPythonEach": 194,
@@ -57,5 +57,63 @@
   },
   "eightHourPassed": false,
   "K8Complete": false,
-  "wholeGoalQualified": false
+  "wholeGoalQualified": false,
+  "fullJs": {
+    "mac": {
+      "tests": 1584,
+      "pass": 1569,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15
+    },
+    "linux": {
+      "tests": 1584,
+      "pass": 1578,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "todo": 0
+    }
+  },
+  "installedPackages": {
+    "nodeEach": 202,
+    "pythonEach": 194,
+    "all32NewPythonCasesActualBoth": true,
+    "all162PriorRetainedBoth": true,
+    "actualHttpSqliteCasesEach": 8,
+    "strictTypescriptBoth": true,
+    "public5Source9MypyBoth": true,
+    "archivesIdenticalBoth": true
+  },
+  "qualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/sdk-package-ci-github-verification-v1/final-qualification.json",
+  "qualificationSha256": "c38386d2d254477ca651e12d8519d6e5c2f7fbfa07a6e2fd8a736317b688419e",
+  "macExecutedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-event-stream-candidate-v1/frozen-version.json",
+  "macExecutedManifestSha256": "36e11153e80b2520ce8122f601cf203ac6c664d223978e498f79c004c7925819",
+  "linuxCiSourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/sdk-package-ci-github-run-v4/source-manifest.json",
+  "linuxCiSourceManifestSha256": "de17a4833ea7493aa080d0a34aad82a8df97986d055ef137684c0b9f844ac399",
+  "githubRun": 39496883279,
+  "githubUrl": "https://github.com/jihuayu/remote-paint/actions/runs/39496883279",
+  "ciPriorFailures": [
+    39485030782,
+    39490733953,
+    39494297596
+  ],
+  "nativeSourceProtection": {
+    "at": "2026-10-20T21:22:49.853034+00:00",
+    "native108InputsUnchanged": true,
+    "canonical19FilesReadOnlyHashesMatch": true,
+    "protectedSamplerIdentityAndHashMatchWithoutExecutionOrCopy": true,
+    "pinSha256": "628f35364a453fc22b546e92dd095257df016663135342f8fb583ee1ca75f4b0",
+    "unrelatedPeerUnchangedAndExcluded": true,
+    "lastActualBrowserLogProgress": [
+      1578,
+      17924
+    ],
+    "lastBrowserLogAt": "2026-10-20T20:37:34.597678+00:00",
+    "hostOwnedProcesses": "  PID  PPID  ELAPSED STAT\n 9564 73470 08:35:18 Ss  \n 9580  9564 08:35:17 S   \n",
+    "localContainerState": "unknown: last Docker queries timed out; no restart performed",
+    "localRuntimeQualified": false,
+    "freeGiB": 82.86882781982422,
+    "minimumFreeGiB": 32
+  }
 }

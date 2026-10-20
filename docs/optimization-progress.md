@@ -1,6 +1,6 @@
 # Remote Paint 优化实施进度
 
-2026-10-20 K8c2b2新增[Python实际SSE流SDK](python-agent-event-stream-sdk.md)：独立事件池、惰性异步迭代/上下文、绝对期限含暂停/重连、fresh鉴权与精确交付游标；原send/read/close未结算继续占额，stop唤醒退避，普通/end独立且reader close不结束Source。32新增含8实际HTTP/SQLite合同，失败证据保留；双平台/隔离包待冻结验收。签名Webhook与原Native端到端仍待，K8部分、41项10/18/13及原八小时失败保持。
+2026-10-20 K8c2b2新增[Python实际SSE流SDK](python-agent-event-stream-sdk.md)：独立事件池、惰性异步迭代/上下文、绝对期限含暂停/重连、fresh鉴权与精确交付游标；原send/read/close未结算继续占额，stop唤醒退避，普通/end独立且reader close不结束Source。32新增含8实际HTTP/SQLite合同，失败证据保留；原1237输入与最终CI逐项哈希一致：双平台完整1584项0失败/取消（macOS1569通过/15跳过，Linux1578通过/6跳过），隔离包各202Node/194Python，32新项及原162均实际运行无跳过，严格TypeScript和安装后5公共/9源码mypy两端通过，两个归档哈希相同。Linux独立CI39496883279保留前三次失败及--init复验，不重启本机Docker。签名Webhook与原Native端到端仍待，K8部分、41项10/18/13及原八小时失败保持。
 
 2026-10-20 K8c2b1增加[Python SSE解析核心](python-agent-event-parser.md)：冻结消息、分片UTF8/LF/CRLF、原待交付对象确认后才前进游标，跨窗口字节/事件预算与明确缺口；一chunk/4096字节帧/一待交付，无队列，pull扫描8192字节后协作yield。24新增含真实HTTP/SQLite生产者六事件窗口通过，162项Python及严格类型预检通过；最终同一候选双平台完整1584项0失败/取消（macOS1569通过/15跳过，Linux1578通过/6跳过），隔离包各202项Node/162项Python和严格TypeScript通过，24新项及原138均运行无跳过，macOS安装后mypy通过。实际HTTPX池/计时器/重连/close生命周期仍是下一独立任务，K8部分、41项10/18/13及原八小时失败保持。
 
@@ -77,7 +77,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
 | K6 | 结构化观察与结果 | 部分实现 | 原观察/SDK范围保留。Native请求创建时arm ID、4个可复用窗口及实际准入前unarmed/旧窗口拒绝已接；原item无RFH续传见证与弱lease引用，旧事件隔离保留。436项（21新+139既有Native+276上游）及4子进程、双平台专项各13、实际依赖五TU/GN通过。Source私有目录/桥接、真实RFH/PW/cookies/整浏览器仍待，transfersReady=false；见[范围](native-download-arm-window.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
-| K8 | 取消与长任务事件 | 部分实现 | [持久事件事务](agent-event-journal.md)、[公开HTTP/SSE](agent-event-http.md)与[取消效果报告](agent-cancellation.md)：稳定ID/游标/显式缺口、心跳/背压和独立end/cancel配额；真实未结算与unknown/注入效果明确区分，固定版本分页枚举。[Node事件与取消SDK](node-agent-events-sdk.md)已在真实HTTP/SQLite夹具和隔离包范围验收；Python流SDK、签名Webhook及原Native端到端仍待。 |
+| K8 | 取消与长任务事件 | 部分实现 | [持久事件事务](agent-event-journal.md)、[公开HTTP/SSE](agent-event-http.md)与[取消效果报告](agent-cancellation.md)：稳定ID/游标/显式缺口、心跳/背压和独立end/cancel配额；真实未结算与unknown/注入效果明确区分，固定版本分页枚举。[Node事件与取消SDK](node-agent-events-sdk.md)已在真实HTTP/SQLite夹具和隔离包范围验收；[Python流SDK](python-agent-event-stream-sdk.md)已在HTTP/SQLite与安装包范围验收；签名Webhook及原Native端到端仍待。 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
 | K10 | Agent 与文件集成 | 待实现 | 按原清单验收，记录实际证据 |
 | B1 | 原生持续采集与按需订阅 | 已完成（Linux ARM64 受管 Source） | 浏览器原生订阅/真实document与frame token、输入水位及credit交给Rust自主Mapper/Gateway；正式浏览器与双平台Broker已更新并保存旧产物。[正式路径验收](evidence/native-source-default-acceptance.json)含76项C++、Mac/Linux各221项JS、当前57MiB/2MiB压力/45MiB旧RPC/423回滚、完整直播/Node回退/WebGL文字占位/真实9MiB及200ms Gateway关闭、12 Source/48进程身份清理；24次跨站导航、重置/实际Retry/64MiB压力/六消费与完整内核矩阵保留精确版本证据。Linux BeginFrame页面时钟仍由Node驱动，取消逐帧捕获登记/map/publish/Runtime.awaitPromise。标准构建图/双架构发布、其他平台兼容、完整Session/PSS及长时N1分别继续。 |
