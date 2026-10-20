@@ -1890,3 +1890,8 @@ Native资源绑定四个终止事件并在Ready前重查，worker先建立停止
 真实canonical Native/provider/Registry及完整内核见证/持久journal完成8项，根实际0：自动TTL，以及intent/created/Engine启动/文件落盘/见证绑定/私有Ready/真实晚到导航提交的取消。关闭专用见证不重放Start，文件见证被采用，晚到资源实际关闭且无迟到Ready，原创建均Cancelled。8项直到retired事件仍持有配额，随后释放；7容器/1未分配intent全部退役，7宿主PID回收。见[TTL/取消范围](production-native-lifecycle.md)。
 
 旧952项和SDK输入未变，继承精确收据，不伪造新重跑。Native代理/外部删除/冷恢复、Page实际崩溃与SDK终止策略继续；41项9/15/17及原8小时失败保持，未自动重跑或提交推送。
+
+
+### 生产Native运行中的代理丢失与外部移除
+
+两项真实canonical Native/provider/Registry均先Ready并解析私有端点，再精确作用于自有代理或完整CID；Ready/端点均撤回，分别用namespace删除和绑定启动见证的404退役。两项配额保留至retired事件，独立重开原SQLite/binding均retired，2容器与3宿主PID回收。根实际0；旧952/SDK输入保持，继承原收据。见[运行中故障范围](production-native-runtime-loss.md)。冷恢复、Page崩溃和SDK终止策略继续，41项9/15/17及原8小时失败保持。

@@ -1,0 +1,108 @@
+{
+  "at": "2026-10-19T12:36:33.480191+00:00",
+  "task": "production-Native-running-runtime-loss",
+  "status": "actual-production-Native-proxy-loss-and-external-removal-qualified",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/production-native-runtime-loss-v1/manifest.json",
+  "executedManifestSha256": "1fe1f3c5808bc8af044d2f946a1aa69b771b1421b8b7cabcf758971185319dfe",
+  "canonicalSourceFiles": 943,
+  "productionRuntimeSourcesUnchangedFrom942": true,
+  "executionDeviations": {
+    "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": {
+      "canonicalSha256": "faa6b3b47a15e4edd659f3fb99c2ca8eb6aace5461a1f12090314e2dda8a5cb0",
+      "fixtureSha256": "4ed13b4cfe989945aab0256eb40b00d026ed74783fd39519df8903d270a61d08"
+    }
+  },
+  "canonicalNativeWorkerUsed": true,
+  "NodeAdapterUsed": false,
+  "sourceCdpTestApiUsed": false,
+  "actualRootExitCode": 0,
+  "actualCases": 2,
+  "cases": [
+    {
+      "mode": "proxy-loss",
+      "containerId": "655b7194ab29d9dc786615f03f1b579d86a1193ed4d83f84d6bc0717a52afdad",
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "retirementKind": "container-removed",
+      "typedStartWitness": true,
+      "readyRevoked": true,
+      "endpointDenied": true,
+      "quotaHeldAtUnavailableAndRetired": true,
+      "runtimeRowReopenedRetired": true,
+      "fault": {
+        "kind": "owned-proxy-SIGKILL",
+        "pid": 79970,
+        "directParentPid": 79963,
+        "commandIdentityRevalidated": true,
+        "signalDelivered": true
+      },
+      "channelFault": "CHANNEL_OUTPUT_CLOSED"
+    },
+    {
+      "mode": "external-removal",
+      "containerId": "3a434ef912425c4b33fdf82af19803c78775d3cb394b4d8c9101018776145a63",
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "retirementKind": "container-absent",
+      "typedStartWitness": true,
+      "readyRevoked": true,
+      "endpointDenied": true,
+      "quotaHeldAtUnavailableAndRetired": true,
+      "runtimeRowReopenedRetired": true,
+      "fault": {
+        "kind": "external-fixture-removal",
+        "containerId": "3a434ef912425c4b33fdf82af19803c78775d3cb394b4d8c9101018776145a63",
+        "daemonId": "b3aeb5ec-7295-44f7-8576-aa9dc5b40dad",
+        "actualExitCode": 0,
+        "stdout": "3a434ef912425c4b33fdf82af19803c78775d3cb394b4d8c9101018776145a63",
+        "ownershipVerifiedBeforeEffect": true
+      },
+      "channelFault": "CHANNEL_OUTPUT_CLOSED"
+    }
+  ],
+  "all2RuntimeRowsIndependentlyReopenedRetired": true,
+  "all2ExactOwnedContainerIdsAbsent": true,
+  "knownHostPidsAbsent": [
+    79963,
+    79970,
+    80028
+  ],
+  "quotaHeldUntilTypedRetirementInBoth": true,
+  "fullJs952BothInheritedAfterEveryOldCanonicalInputMatched": true,
+  "inheritedFullJs": {
+    "mac": {
+      "tests": 952,
+      "pass": 937,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "83b57a3b59ab593a95b35af508ae654594addc42af3b8d374fb2ec3d7ce010dd"
+    },
+    "linux": {
+      "tests": 952,
+      "pass": 946,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "5312e57a2a74fd2426b43cc2f5be96995dd66d0aa733d1a36a19f7a155ed31c5"
+    }
+  },
+  "sdk77Node16PythonTscBothMacMypyInheritedExactInputs": true,
+  "freshFullUnitOrPackageInstallClaimed": false,
+  "nativeProxyLossExternalRemovalQualified": true,
+  "nativeColdRecoveryQualified": false,
+  "nativePageRendererCrashActualQualified": false,
+  "sdkSessionEndAutomaticRetryPolicyQualified": false,
+  "productionNativeFullyQualified": false,
+  "physicalLatencyOrN1Claim": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

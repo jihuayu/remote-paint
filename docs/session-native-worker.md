@@ -110,3 +110,8 @@ Native资源要求实际Browser/Page/Broker的on/off接口，在Ready之前绑�
 ## 真实TTL与启动取消
 
 canonical Native执行了2秒自动TTL与7个取消窗口，包括实际关闭专用见证、文件见证采用和真实晚到导航后的关闭；8项持久退役与配额释放确认。冷恢复/外部丢失及Page崩溃仍待验收。见[TTL与取消范围](production-native-lifecycle.md)。
+
+
+## 真实运行中代理丢失和外部移除
+
+canonical Native实际Ready后完成自有attach代理SIGKILL和完整容器外部删除；两项都撤回Ready/端点并经独立持久退役后释放配额。见[范围](production-native-runtime-loss.md)。冷控制器恢复与Page崩溃仍待验收。
