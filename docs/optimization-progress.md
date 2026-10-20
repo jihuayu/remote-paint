@@ -50,7 +50,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K2 | 可嵌入 Viewer | 部分实现 | 原生JS公共票据连接已接入现有主线程/Worker，含刷新、重连、取消和断开栅栏；真实Node数据链路及保存入口脚本接线通过。iframe/CSP/宿主组件、完整resize/接管/事件API和真实渲染多次挂载卸载仍待验收。 |
 | K3 | 安全授权 | 部分实现 | 后端HTTP已使用可信Bearer租户认证与创建/读取/释放独立scope，管理客户端禁重定向和浏览器运行。现有控制子连接使用绑定原Viewer/Session的10秒一次性票据，错误Origin/跨Viewer/重放/过期拒绝；现有可选公共网关已用短Viewer ticket绑定租户/Session/区域/Ready代次/角色/期限/audience，并在真实Node Source消息路径执行只读限制、撤销和刷新；本地key留在私有Source。实际Native worker端点桥接、嵌入刷新和Agent/CDP独立授权仍待实现，不能据此声明K3完成。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
-| K5 | 输入与多角色控制 | 部分实现 | 七个受管工具经标准Native私有RPC接入同一Page，人控优先、无人观看进度与namespace退役验证通过。新增同账本v4的Run/Invocation有界持久元数据、单写入者/幂等身份/一次派发与恢复隔离；29新合同和双平台完整1065项、现有SDK重新安装及Native回归通过。异步执行器尚未接线，公网独立Agent scope/SDK、完整Playwright与其余故障待做，见[日志范围](session-agent-journal.md)。 |
+| K5 | 输入与多角色控制 | 部分实现 | 七个受管工具经标准Native私有RPC接同一Page；v4持久执行器已先落盘后派发，同键查询不重放、unknown隔离、优先end及关闭式恢复。真实Native页面效果后控制进程SIGKILL、恢复零Agent RPC与原namespace退役通过。31新合同、双平台完整1096项、原SDK重新安装及人控同页通过。公共独立Agent scope/API/SDK、完整Playwright/观察/其余故障待做，见[执行器范围](durable-agent-executor.md)。 |
 | K6 | 结构化观察与结果 | 待实现 | 按原清单验收，记录实际证据 |
 | K7 | 动作和业务成功分离 | 待实现 | 按原清单验收，记录实际证据 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
@@ -1955,3 +1955,8 @@ createManagedAgentInput() 强制显式版本戳，仅放行四个 Input 方法�
 ### Agent 持久元数据与恢复隔离
 
 同一SQLite账本v4新增Run/Invocation，原Session返回形状和Native退役约束保持。固定hash身份/原始fence、一次派发、单writer、有限保留，injected不等于业务成功，unknown终态不重放；新owner只收尾。实际SQLite旧版本迁移、writer/迁移中SIGKILL、回滚/容量/损坏合同29项在双平台通过。完整117文件1065项零失败，原SDK包重新安装双平台78Node/17Python、TSC及Mac Mypy通过。真实标准Native在v4下输入/人控/超时/无人观看滚动及namespace退役回归通过，但RPC尚未接入新日志执行器；边界见[说明](session-agent-journal.md)。公网Agent授权/SDK、任务执行恢复和原N1/物理/设备/8小时目标仍未完成，41项9/16/16。
+
+
+### 可信后端持久 Agent 执行器
+
+create/perform先同步提交意图再异步调用标准provider，稳定幂等身份和HMAC动作/fence，发送前后查当前owner/Ready/阶段；unknown隔离不重放、优先end、迟到begin只关闭，重建仅元数据收尾。改为索引单行查询及64条分页，保留同名完整历史复制合同前1后0。新增31合同，最终双平台118文件1096项零失败；原SDK重新安装双平台78Node/17Python/TSC及Mac Mypy通过。真实标准Native七工具、超时unknown/无重放、人控grant保留与结果B拼HFZ通过；实际页面CRASH一次后、结果尚未落盘时控制进程SIGKILL，重开unknown、同键同ID、恢复零Agent RPC，原Session/namespace退役并释放配额。范围见[执行器](durable-agent-executor.md)。公共Agent scope/API/SDK及其余工具/观察/故障、原N1/物理/设备/8小时仍未完成，41项9/16/16。

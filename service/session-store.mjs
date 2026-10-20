@@ -159,11 +159,19 @@ export class SqliteSessionStore {
  loadRuntime({owner}={}){this.#open();return this.#runtime.snapshot(owner);}
  commitRuntime(row,{owner}={}){this.#open();return this.#runtime.commit(row,owner);}
  bindRuntimeClosingWitness(sessionId,startWitness,{owner}={}){this.#open();return this.#runtime.bindClosingWitness(sessionId,startWitness,owner);}
- claimAgentController(owner){this.load({owner:this.#registryOwner??undefined});return this.#agents.claim(owner);}
+ claimAgentController(owner,{compact=false}={}){this.load({owner:this.#registryOwner??undefined});return this.#agents.claim(owner,{compact});}
  releaseAgentController(owner){if(!this.#db)fail('STATE_CLOSED','Session ledger is closed');this.#agents.release(owner);}
  loadAgents({owner}={}){this.#open();return this.#agents.snapshot(owner);}
+ agentHead({owner}={}){this.#open();return this.#agents.head(owner);}
+ getAgentRun(id,{owner}={}){this.#open();return this.#agents.getRun(id,owner);}
+ findAgentRun(tenant,keyHash,{owner}={}){this.#open();return this.#agents.findRun(tenant,keyHash,owner);}
+ findAgentWriter(sessionId,{owner}={}){this.#open();return this.#agents.writer(sessionId,owner);}
+ getAgentInvocation(id,{owner}={}){this.#open();return this.#agents.getInvocation(id,owner);}
+ findAgentInvocation(agentRunId,tenant,keyHash,{owner}={}){this.#open();return this.#agents.findInvocation(agentRunId,tenant,keyHash,owner);}
+ listAgentRecords(kind,options,{owner}={}){this.#open();return this.#agents.list(kind,options,owner);}
  commitAgentRun(row,{owner}={}){this.#open();return this.#agents.commitRun(row,owner);}
  commitAgentInvocation(row,{owner}={}){this.#open();return this.#agents.commitInvocation(row,owner);}
+ reconcileAgentRun(agentRunId,{owner}={}){this.#open();return this.#agents.reconcileRun(agentRunId,owner);}
  claimRegistry(owner){
   this.#open();if(typeof owner!=='symbol')throw new TypeError('Expected an opaque registry owner');
   if(this.#registryOwner!==null&&this.#registryOwner!==owner)fail('STATE_IN_USE','Session ledger already has a Registry owner');

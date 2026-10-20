@@ -24,3 +24,6 @@ NativeResource 在活动 run 全生命周期持有独立 acquirePageRun 租约�
 
 
 v4同账本已增加Agent Run/Invocation持久元数据及owner恢复隔离，见[日志范围](session-agent-journal.md)。异步执行器尚未把真实RPC接入该日志，公共授权与SDK继续待做；本节原始1036项是当时检查点记录，最新完整回归为1065项。
+
+
+后续检查点已将真实provider/RPC接入[持久执行器](durable-agent-executor.md)，支持幂等状态、unknown不重放与限定窗口的关闭式恢复；真实Native效果后控制进程SIGKILL及原Session退役已验证。本文此前“执行器尚未接入”属于当时检查点范围；公共Agent授权/API/SDK仍未实现。

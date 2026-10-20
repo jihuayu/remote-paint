@@ -28,7 +28,7 @@ const terminalSession=new Set(['closed','expired']);
 const tools=new Set(['click','move','drag','scroll','press','insertText','composition']);
 const dispatch=new Set(['not-requested','requested','confirmed']);
 export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,maxAgentRuns,maxAgentInvocations}){
- let owner=null,recoveryRuns=new Set(),recoveryInvocations=new Set();
+ let owner=null,recoveryRuns=new Set(),recoveryParents=new Set();
  const reject=(code,message)=>fail('STATE_AGENT_'+code,message);
  const encode=row=>{const body=JSON.stringify(row);if(Buffer.byteLength(body)>8192)reject('LIMIT','Agent metadata exceeds 8192 bytes');return body;};
  function errorRecord(value){if(value===null)return null;if(!plain(value,['code','outcome'])||typeof value.code!=='string'||!/^[A-Z][A-Z0-9_]{0,63}$/.test(value.code)||!['not-dispatched','unknown'].includes(value.outcome))reject('INVALID','Invalid bounded Agent error');return {code:value.code,outcome:value.outcome};}
@@ -64,13 +64,33 @@ export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,
  function invocationReference(row){const parent=run(row.agentRunId);if(!parent||parent.sessionId!==row.sessionId||parent.tenant!==row.tenant||parent.binding?.controlSessionId!==row.fence.controlSessionId)reject('REFERENCE','Invocation disagrees with its fixed run and control identity');runReference(parent);return parent;}
  function ready(parent){if(parent.state!=='ready'||!parent.reserved)reject('REFERENCE','New Agent dispatch requires its current reserved Ready Session');}
  function authorize(value){if(typeof value!=='symbol'||owner!==value)reject('OWNER','Agent controller owner is missing or stale');}
+ function readRun(id){const row=run(id);if(row)runReference(row);return row;}
+ function readInvocation(id){const row=invocation(id);if(row)invocationReference(row);return row;}
+ function uniqueRun(sql,...args){const values=db.prepare(sql).all(...args);if(values.length>1)fail('STATE_CORRUPT','Agent lookup has multiple identities');return values.length?readRun(values[0].agent_run_id):null;}
  function transaction(action){try{db.exec('BEGIN IMMEDIATE');const value=action();counts();const next=revision()+1;if(!Number.isSafeInteger(next))reject('LIMIT','Agent revision exhausted');db.prepare("UPDATE metadata SET value=? WHERE name='agent_revision'").run(String(next));db.exec('COMMIT');return structuredClone({revision:next,...value});}catch(error){try{db.exec('ROLLBACK');}catch{}if(isStoreError(error))throw error;fail('STATE_AGENT_WRITE','Agent metadata transaction failed',error);}}
  function validate(){counts();revision();for(const value of db.prepare('SELECT agent_run_id FROM agent_runs').iterate())runReference(run(value.agent_run_id));for(const value of db.prepare('SELECT invocation_id FROM agent_invocations').iterate())invocationReference(invocation(value.invocation_id));if(db.prepare('SELECT session_id FROM agent_runs WHERE reserved=1 GROUP BY session_id HAVING count(*)>1 LIMIT 1').get())fail('STATE_CORRUPT','Multiple Agent writers reserve the same Session');}
  return {
   get claimed(){return owner!==null;},validate,
-  claim(value){if(typeof value!=='symbol')throw TypeError('Expected an opaque Agent controller owner');if(owner!==null&&owner!==value)reject('OWNER','Agent controller already has an owner');validate();if(owner===null){recoveryRuns=new Set(db.prepare('SELECT agent_run_id FROM agent_runs WHERE reserved=1').all().map(x=>x.agent_run_id));recoveryInvocations=new Set(db.prepare('SELECT invocation_id FROM agent_invocations').all().map(x=>x.invocation_id));owner=value;}return this.snapshot(value);},
-  release(value){authorize(value);owner=null;recoveryRuns.clear();recoveryInvocations.clear();},
+  claim(value,{compact=false}={}){if(typeof value!=='symbol')throw TypeError('Expected an opaque Agent controller owner');if(owner!==null&&owner!==value)reject('OWNER','Agent controller already has an owner');validate();if(owner===null){recoveryRuns.clear();recoveryParents.clear();for(const row of db.prepare('SELECT agent_run_id,reserved FROM agent_runs').iterate()){recoveryParents.add(row.agent_run_id);if(row.reserved)recoveryRuns.add(row.agent_run_id);}owner=value;}return compact?{revision:revision(),recoveryRequired:[...recoveryRuns].sort()}:this.snapshot(value);},
+  release(value){authorize(value);owner=null;recoveryRuns.clear();recoveryParents.clear();},
+  head(value){authorize(value);return {revision:revision()};},
+  getRun(id,value){authorize(value);return readRun(id);},
+  findRun(tenant,keyHash,value){authorize(value);return uniqueRun('SELECT agent_run_id FROM agent_runs WHERE tenant=? AND key_hash=? LIMIT 2',tenant,keyHash);},
+  writer(sessionId,value){authorize(value);return uniqueRun('SELECT agent_run_id FROM agent_runs WHERE session_id=? AND reserved=1 LIMIT 2',sessionId);},
+  getInvocation(id,value){authorize(value);return readInvocation(id);},
+  findInvocation(agentRunId,tenant,keyHash,value){authorize(value);const rows=db.prepare('SELECT invocation_id FROM agent_invocations WHERE agent_run_id=? AND tenant=? AND key_hash=? LIMIT 2').all(agentRunId,tenant,keyHash);if(rows.length>1)fail('STATE_CORRUPT','Invocation lookup has multiple identities');return rows.length?readInvocation(rows[0].invocation_id):null;},
+  list(kind,{afterId='',limit=64,reservedOnly=false,unfinishedOnly=false}={},value){
+   authorize(value);if(!['runs','invocations'].includes(kind)||typeof afterId!=='string'||afterId.length>128||!Number.isInteger(limit)||limit<1||limit>256||typeof reservedOnly!=='boolean'||typeof unfinishedOnly!=='boolean'||kind==='runs'&&unfinishedOnly||kind==='invocations'&&reservedOnly)reject('INVALID','Invalid bounded Agent history cursor');
+   const rows=kind==='runs'?db.prepare('SELECT agent_run_id AS id FROM agent_runs WHERE agent_run_id>?'+(reservedOnly?' AND reserved=1':'')+' ORDER BY agent_run_id LIMIT ?').all(afterId,limit):db.prepare('SELECT invocation_id AS id FROM agent_invocations WHERE invocation_id>?'+(unfinishedOnly?" AND json_extract(body,'$.state') IN ('intent','requested')":'')+' ORDER BY invocation_id LIMIT ?').all(afterId,limit);
+   return {records:rows.map(row=>kind==='runs'?readRun(row.id):readInvocation(row.id)),nextCursor:rows.length===limit?rows.at(-1).id:null};
+  },
   snapshot(value){authorize(value);validate();return {revision:revision(),runs:db.prepare('SELECT agent_run_id FROM agent_runs ORDER BY agent_run_id').all().map(x=>run(x.agent_run_id)),invocations:db.prepare('SELECT invocation_id FROM agent_invocations ORDER BY invocation_id').all().map(x=>invocation(x.invocation_id)),recoveryRequired:[...recoveryRuns].filter(id=>run(id)?.reserved).sort()};},
+  reconcileRun(id,token){
+   authorize(token);const row=run(id);if(!row)reject('REFERENCE','Agent run does not exist');const parent=runReference(row);
+   if(row.state==='closed')return {revision:revision(),run:row,confirmed:true};
+   if(!terminalSession.has(parent.state)||parent.reserved)return {revision:revision(),run:row,confirmed:false};
+   const result=this.commitRun({...row,state:'closed',reserved:false,closeEvidence:{kind:'session-terminal',evidenceSha256:agentTerminalSessionDigest(parent)},updatedAt:new Date(Math.max(Date.now(),Date.parse(row.updatedAt))).toISOString()},token);return {...result,confirmed:true};
+  },
   commitRun(value,token){
    authorize(token);const row=runRecord(value);
    return transaction(()=>{
@@ -110,7 +130,7 @@ export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,
     else{
      if(invocationImmutable.some(k=>!same(old[k],row[k]))||row.updatedAt<old.updatedAt)reject('CONFLICT','Invocation action and fence are immutable');
      if(terminalInvocation.has(old.state)){if(!same(old,row))reject('CONFLICT','Terminal invocation history is immutable and cannot be replayed');return {invocation:old};}
-     if(recoveryInvocations.has(row.invocationId)&&!(old.state==='intent'&&row.state==='rejected'&&!row.dispatchStarted||old.state==='requested'&&row.state==='unknown'))reject('RECOVERY_REQUIRED','Recovered invocation may only record an unstarted rejection or unknown result');
+     if(recoveryParents.has(row.agentRunId)&&!(old.state==='intent'&&row.state==='rejected'&&!row.dispatchStarted||old.state==='requested'&&row.state==='unknown'))reject('RECOVERY_REQUIRED','Recovered invocation may only record an unstarted rejection or unknown result');
      if(old.state==='intent'&&row.state==='requested'){available();}
      else if(old.state==='intent'&&row.state==='rejected'&&!row.dispatchStarted){}
      else if(old.state==='requested'&&terminalInvocation.has(row.state)&&row.dispatchStarted){}

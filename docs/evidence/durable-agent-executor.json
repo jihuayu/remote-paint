@@ -1,0 +1,226 @@
+{
+  "at": "2026-10-19T16:16:14.156897+00:00",
+  "task": "K5-trusted-durable-Agent-executor",
+  "status": "trusted-durable-Agent-executor-qualified",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-journal-qualified-v1/frozen-version.json",
+  "parentSha256": "c9bf6acb5fa54b4943cfea09aef638e630937b58cd872b4858e1ff44b16dd238",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/durable-agent-candidate-v1/frozen-version.json",
+  "executedManifestSha256": "18c23fd4b0645516b072ce0f29faba6ccdf37aa9b7b28a4ee043d3b5a93d2240",
+  "executedSourceFiles": 1001,
+  "trustedService": "DurableAgentExecutor({store,registry,providers,actionKey,maxConcurrent?,timeoutMs?})",
+  "methods": [
+    "create",
+    "getRun",
+    "context",
+    "perform",
+    "getInvocation",
+    "end",
+    "status",
+    "shutdown"
+  ],
+  "synchronousDurableIntentAcknowledgementBeforeAsyncSend": true,
+  "stableDomainSeparatedTenantScopedKeyHashes": true,
+  "hmacCapturedActionAndContextFingerprints": true,
+  "changedHmacKeyConflictsOnExistingKeyRatherThanReplays": true,
+  "noRawParamsOrIdempotencyKeysPersisted": true,
+  "perRunOrdinarySlots": 1,
+  "perRunPriorityEndSlots": 1,
+  "defaultGlobalOrdinarySlots": 64,
+  "defaultGlobalEndSlots": 64,
+  "maxGlobalEachConfigured": 256,
+  "noUnboundedQueue": true,
+  "oneUseRequestedMarkerBeforeProviderEntry": true,
+  "ownerReadyAndRunFenceAtActualSendAndAfterAwait": true,
+  "providerMethodCapturedAtConstruction": true,
+  "onlyAuthenticatedTypedNegativeErrorsAreNotDispatched": true,
+  "malformedReplyOrUntypedFailureAfterPossibleSend": "unknown; quarantine run; no replay",
+  "endDuringBegin": "bind late known reply only for closing; never late active",
+  "unknownBegin": "never adopt current worker context; wait actual terminal Session evidence",
+  "shutdownObserverTimeoutDoesNotReleaseOwnerOrActualPendingWork": true,
+  "storageIdentityOrWriteFaultFencesFutureSendAndSuccess": true,
+  "singleRowIndexLookupsForOrdinaryQueries": true,
+  "recoveryAndShutdownPageRecords": 64,
+  "publicSnapshotApiNotUsedByExecutor": true,
+  "recoveryOwnershipTracksParentRunIdsInsteadOfAllInvocationIds": true,
+  "compactStoreOwnerClaimPreservesOriginalSnapshotApi": true,
+  "newContracts": 31,
+  "newContractsPassBothInFullRun": true,
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v28/manifest.json",
+  "fullJsManifestSha256": "b1402c8934528e3e6b4b887e645d4956bbc0e5013cf9d67ad221c7385bf26856",
+  "freshFullJs": {
+    "mac": {
+      "tests": 1096,
+      "pass": 1081,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "52503edaae9e646e5bee5cfabcf8b1e0d58b2ef52dc9328b56c00c0243da1184"
+    },
+    "linux": {
+      "tests": 1096,
+      "pass": 1090,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "8b23e0486419199256069a46c56345b9be4859b67424cce5644d4cf35c83b98a"
+    }
+  },
+  "freshInstalledSdk": {
+    "mac": {
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 28,
+      "freshInstalledOriginalArchives": true
+    },
+    "linux": {
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 28,
+      "freshInstalledOriginalArchives": true
+    }
+  },
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "a93654f41a1ac70756220d24eb5e6d4ff5a447fa0a3050714ecafdb92ed1354c",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "d21a3f6d707ba6f778ad2c4c1a0372e01f710d3a6d7ab123790487b26513a669"
+  },
+  "freshSdkBuildOrPublishingClaimed": false,
+  "preservedDevelopmentRuns": {
+    "initial-v1": {
+      "actualExitCode": 0,
+      "tests": 50,
+      "manifestSha256": "17c06d24f2150b225d687bb489b1c3001e5812bf8a194988f3b916056b64fabd",
+      "logSha256": "1699d5206c814ad1c31dfdf23f5428c81c61da841b5e6757cd6ec25f022a98ae"
+    },
+    "scoped-v2": {
+      "actualExitCode": 0,
+      "tests": 57,
+      "manifestSha256": "eb2dd4448327f945d9ee523fc4920809637f36142297fc4eb1dfafc32eaa3131",
+      "logSha256": "bf441802d33d38c71b28c97063d70d8ccc81e1e00890a6578a4bab657f24f73f"
+    },
+    "history-before-v1": {
+      "actualExitCode": 1,
+      "tests": null,
+      "manifestSha256": "66e732c882e8f47abb72819ac224099ca68eab189b8679b31ab94448d9693b85",
+      "logSha256": "7a2c8011993ffbfce79e104e74af5196acd7ef3ef62060712832cefbc6eff207"
+    },
+    "history-after-v1": {
+      "actualExitCode": 0,
+      "tests": 58,
+      "manifestSha256": "5bf0c32728ea6372470bca1a04d25382f62c4d8c78fd4621b4a139c08813d495",
+      "logSha256": "b8b9bcda5fb1173dc8fdd4c88f844266c85a4ee74e666cd5d4b87594f0cfd9f7"
+    }
+  },
+  "boundedHistorySameNamedCausalTestBefore1After0": true,
+  "abortedFreezerValidationBeforeExecution": {
+    "status": "rejected-before-copy-or-execution",
+    "reason": "new journal bounded-lookup test was not in freezer allowed-delta list",
+    "sourceUnmodifiedByFreezer": true,
+    "candidateExecuted": false
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/durable-agent-native-v1/manifest.json",
+  "nativeManifestSha256": "1a6d5cfd025e59e5069760c13be4197750f748414cd76d24da4f2abdffb15bd8",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "normal": {
+      "sevenManagedTools": true,
+      "duplicateInvocationSameId": true,
+      "conflictingRetryRejected": true,
+      "oneNormalClick": true,
+      "composition": "B拼",
+      "drag": {
+        "x": 430,
+        "y": 130
+      },
+      "noViewerScroll": 80
+    },
+    "timeout": {
+      "invocationId": "ainv_d96c27f1-2bc5-4ad1-851b-b894aadbbda6",
+      "unknown": true,
+      "sameRetryNoReplay": true,
+      "oneActualMouseDown": true,
+      "noOrdinaryClick": true,
+      "endConfirmed": true,
+      "fixtureBusyLoopMs": 400,
+      "physicalLatencyClaim": false
+    },
+    "human": {
+      "pausedInvocationRejected": true,
+      "originalGrantSurvivedAgentEnd": true,
+      "finalPageValue": "B拼HFZ"
+    },
+    "crash": {
+      "controllerPid": 23598,
+      "actualSignal": "SIGKILL",
+      "independentPageValue": "CRASH",
+      "onePageEffect": true,
+      "beforeInvocation": "requested",
+      "recoveredInvocation": "unknown",
+      "sameKeyReturnsOriginal": true,
+      "noRecoveredAgentCalls": true,
+      "noAutomaticBrowserAllocation": true,
+      "closedFromActualTerminalSession": true,
+      "namespaceRetired": true
+    }
+  },
+  "nativeCases": [
+    {
+      "role": "normal",
+      "containerId": "e35b13d6b31f086b9478e31075c45723b76ba528b6f1baddd8bf1ed37affe1a1",
+      "retirementKind": "container-removed",
+      "retirementEvidenceSha256": "04736869574f1fb2fa987661887f31429403962beaa2c1ec52cede93423c8d8a",
+      "reopenedAgentRunStates": [
+        "closed",
+        "closed",
+        "closed"
+      ],
+      "reopenedInvocationStates": {
+        "injected": 12,
+        "unknown": 1,
+        "rejected": 1
+      },
+      "sessionClosedQuotaFree": true
+    },
+    {
+      "role": "crash",
+      "containerId": "73184b4250e9b59ec8f05a5152737707766d34da7a5c709954dc850ed8ed760a",
+      "retirementKind": "container-removed",
+      "retirementEvidenceSha256": "65fd9c840ca4478ab451b0f97e8505b90c9d23897eb7be64d8d7c8a6c2fee6bd",
+      "reopenedAgentRunStates": [
+        "closed"
+      ],
+      "reopenedInvocationStates": {
+        "unknown": 1
+      },
+      "sessionClosedQuotaFree": true
+    }
+  ],
+  "trustedDurableAgentExecutorQualified": true,
+  "durableExecutorIntegrated": true,
+  "durableRunInvocationRecoveryQualified": true,
+  "durableRunInvocationRecoveryScope": "Close-only recovery:6 actual structural writer death stages and canonical Native after input effect/before durable result. No resumable task replay or claim of all fault stages.",
+  "durableAgentControllerDeathCloseOnlyQualified": true,
+  "publicTenantAgentAuthorizationQualified": false,
+  "publicAgentSdkQualified": false,
+  "allAgentCdpFenced": false,
+  "managedPlaywrightCdpFacadeQualified": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "newRenderedPublicViewerPixelsClaimed": false,
+  "physicalLatencyOrN1Claimed": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 16,
+    "pending": 16
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true,
+  "noAgents": true
+}

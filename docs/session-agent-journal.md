@@ -21,3 +21,6 @@ SDK API/包内容未变；复用相同 tgz/wheel，重新安装到无源码回�
 范围严格为持久元数据及存储恢复隔离。下一检查点才实现异步执行器把派发记录与实际 provider/RPC 调用串联，加入运行/调用查询和幂等重试，再独立完成 HTTP Agent scope 和 Node/Python Agent SDK。durableExecutorIntegrated=false，durableRunInvocationRecoveryQualified=false，publicTenantAgentAuthorizationQualified=false，publicAgentSdkQualified=false，allAgentCdpFenced=false，productionNativeFullyQualified=false。完整Playwright/观察/业务验证、异常故障、N1/物理/设备和原8小时增长仍未验收。41项9完成、16部分、16待做；WebGL“WebGL 无法显示”黑框及其他显示源码不变。未暂存、提交、推送、修改演示、强制浏览器GC、改原门槛或重启8小时。
 
 见[证据](evidence/session-agent-journal.json)。
+
+
+后续检查点已将真实provider/RPC接入[持久执行器](durable-agent-executor.md)，支持幂等状态、unknown不重放与限定窗口的关闭式恢复；真实Native效果后控制进程SIGKILL及原Session退役已验证。本文此前“执行器尚未接入”属于当时检查点范围；公共Agent授权/API/SDK仍未实现。
