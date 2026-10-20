@@ -1,0 +1,233 @@
+{
+  "at": "2026-10-19T17:35:01.864378+00:00",
+  "task": "independent Python Agent SDK checkpoint",
+  "status": "public-Node-Python-Agent-SDKs-qualified-within-seven-tool-scope",
+  "scope": "Installed Node and Python backend managed seven-tool Agent SDKs over public authenticated HTTP, durable executor and canonical Native worker. Python adds actual bounded pending transport/cancellation/close, independent end admission and real connection pool. No general CDP/Playwright, DOM/AX/locator/screenshot/download observation, business postcondition, resumable task recovery or full fault claim.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-agent-sdk-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "2916a48de74421fb711cc31172e93ed946f4dfd270cf5e8e16834d770fd8dd00",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-sdk-candidate-v6/frozen-version.json",
+  "executedManifestSha256": "06e8383240f5d8d02b7c6e56b349649e1cabed215d1a2b01afedab7a5e17483c",
+  "newPythonContracts": 20,
+  "testNames": [
+    "test_configuration_boundaries_and_error_privacy",
+    "test_run_prepared_identity_and_body_are_captured",
+    "test_context_requires_expected_session_and_freezes_local_run_tag",
+    "test_prepared_action_captures_original_context_key_and_params",
+    "test_seven_discriminated_tools_and_utf16_selection_map_to_wire",
+    "test_strict_input_schema_bounds_reject_bool_nan_unknown_and_side_effect_dicts",
+    "test_reply_identity_phase_fence_receipt_and_location_checks",
+    "test_run_get_end_status_and_parent_identity_checks",
+    "test_unknown_is_frozen_data_without_retry_or_business_success",
+    "test_authenticated_error_outcomes_redaction_and_client_code_spoof",
+    "test_explicit_retry_preserves_body_and_uncertainty_after_later_denial",
+    "test_noncooperative_fetch_timeout_retains_admission_and_end_still_works",
+    "test_task_cancellation_preserves_semantics_and_actual_slot",
+    "test_noncooperative_response_close_holds_capacity",
+    "test_shutdown_is_single_flight_bounded_and_retains_noncooperative_tasks",
+    "test_byte_limits_encoding_request_id_and_cleanup_failure",
+    "test_end_has_an_independent_real_http_connection_pool",
+    "test_redirect_is_not_followed_and_no_cookie_is_sent",
+    "test_actual_installed_http_lost_response_reuses_id_and_one_effect",
+    "test_actual_http_scope_denied_and_remote_unknown_is_data"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v32/manifest.json",
+  "fullJsManifestSha256": "3458b20e40d69deff0ddcab732da04e8f336722347b96404939fa1a717e39948",
+  "fullJs": {
+    "mac": {
+      "tests": 1139,
+      "pass": 1124,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "2ee5d913a4963c418f07507c8b25c260e101222a7b0375a2c60a58a6d783e407"
+    },
+    "linux": {
+      "tests": 1139,
+      "pass": 1133,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "2b58588069e4ef2e52efe1a11c73eb4491a7b03a63ad162bd5da2cbd6ce3454a"
+    }
+  },
+  "fullJsExecutedManifestSha256": "53fc93f373f79de0d390c2878ffccff4e93e92421a3a479e2943c11f017dbc8a",
+  "fullJsFinalDeltaPythonOnly": [
+    "tests/python/test_agent_client.py",
+    "tests/types/agent_client.py",
+    "tests/verify-sdk-packages.py"
+  ],
+  "inheritedNodeNativeCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-agent-sdk-checkpoint-v1.json",
+  "nodeRuntimeAndDeclarationsUnchanged": true,
+  "sdk": {
+    "mac": {
+      "nodeTests": 97,
+      "pythonTests": 37,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 41,
+      "sourceFallbackUnavailable": true,
+      "archiveMembers": 19,
+      "freshOfflineInstall": true
+    },
+    "linux": {
+      "nodeTests": 97,
+      "pythonTests": 37,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 41,
+      "sourceFallbackUnavailable": true,
+      "archiveMembers": 19,
+      "freshOfflineInstall": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "7a344d69955d90d2ced21f90ac20602ce66a3fefef0f7a0c01a3287427fbdb50",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "9b5dc998594ebeb64ba4779236457d9f3e88051b89588aff1a6a21fb6d3a3902"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-sdk-native-v1/manifest.json",
+  "nativeManifestSha256": "65ebfc1085a4e1ef51a0b36ca8945f4707ec4ac0f07e24ebb17d464cfd4ead2d",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "deniedBeforeAgent": [
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 404,
+        "code": "SESSION_NOT_FOUND"
+      }
+    ],
+    "deniedOnRun": [
+      {
+        "status": 404,
+        "code": "AGENT_RUN_NOT_FOUND"
+      },
+      {
+        "status": 404,
+        "code": "AGENT_RUN_NOT_FOUND"
+      },
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 403,
+        "code": "FORBIDDEN"
+      },
+      {
+        "status": 400,
+        "code": "AGENT_INVALID_REQUEST"
+      },
+      {
+        "status": 403,
+        "code": "AGENT_ACTION_FORBIDDEN"
+      }
+    ],
+    "tools": {
+      "sevenManagedTools": true,
+      "noViewerScroll": 80,
+      "oneNormalClick": true,
+      "drag": {
+        "x": 430,
+        "y": 130
+      },
+      "composition": "B拼",
+      "sameKeySameInvocationId": true,
+      "changedRequestRejected": true
+    },
+    "explicitFence": {
+      "staleInvocationRejected": true,
+      "code": "STALE_AGENT_FENCE"
+    },
+    "lostReply": {
+      "actualHttpResponseDropped": true,
+      "acceptedWorkContinued": true,
+      "retrySameInvocationId": true,
+      "onePageEffect": true,
+      "preparedBodyCapturedBeforeCallerMutation": true
+    },
+    "timeout": {
+      "unknown": true,
+      "sameKeyNoReplay": true,
+      "newActionRejected": true,
+      "oneActualMouseDown": true,
+      "noOrdinaryClick": true,
+      "endConfirmed": true,
+      "busyFixtureMs": 400,
+      "physicalLatencyClaim": false
+    },
+    "human": {
+      "actualPublicController": true,
+      "agentPausedInvocationRejected": true,
+      "originalGrantSurvivedHttpAgentEnd": true,
+      "finalPageValue": "B拼LHFZ"
+    },
+    "viewerAuthority": {
+      "backendKeyNotSentToViewer": true,
+      "readOnlyFrameReceived": true,
+      "readOnlyControlAttemptClosed1008": true,
+      "controllerIssueNeedsIndependentControlScope": true,
+      "crossTenantIssueAndRefreshRejected": true,
+      "wrongAudienceAndTamperedTicketRejected": true,
+      "refreshPreservedRoleAudienceAndClosedOldSocket": true,
+      "oldTicketRejectedAfterRefresh": true,
+      "explicitRevokeClosedActiveSocket": true,
+      "revokedTicketRejected": true,
+      "expiryClosedActiveSocketWhileSessionReady": true,
+      "expiredTicketRejected": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    },
+    "pythonSdk": {
+      "installedPackage": true,
+      "managedWritesUsePythonAgentClient": true,
+      "runContextCarriesLocalId": true,
+      "localIdStrippedFromWire": true,
+      "preparedBodyCapturedBeforeCallerMutation": true,
+      "unknownReturnedAsData": true,
+      "defaultAutomaticRetriesZero": true
+    }
+  },
+  "reopenedAgentStates": {
+    "closedRuns": 3,
+    "injected": 13,
+    "rejected": 2,
+    "unknown": 1
+  },
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-sdk-cleanup-v1.json",
+  "cleanupAuditSha256": "0120b36ace23fcca3401338bc5ba23e49650914f23c9f702064b29a27d6c915b",
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": true,
+  "publicAgentSdkQualified": true,
+  "publicTenantAgentAuthorizationQualified": true,
+  "k3SecurityAuthorizationCompleteWithinScope": true,
+  "managedPlaywrightCdpFacadeQualified": false,
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 16,
+    "pending": 15
+  },
+  "noCommitPush": true
+}

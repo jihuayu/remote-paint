@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "remote-paint-session"
 version = "0.0.0.dev0"
-description = "Experimental backend Session control client"
+description = "Experimental backend Session and managed Agent clients"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["httpx==0.28.1"]

@@ -1,47 +1,21 @@
 from __future__ import annotations
 
-import asyncio
 import json
 import re
-import sys
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, AsyncIterator, Generic, Literal, NewType, NoReturn, TypeVar, cast
+from typing import Any, Literal, NewType, NoReturn, cast
 from urllib.parse import urlsplit
 
 import httpx
+from ._transport import ApiResult, RequestId, RetryCount, Outcome, SessionClientError, SessionClientCancelledError, BackendTransport
 
 SessionId = NewType("SessionId", str)
 OperationId = NewType("OperationId", str)
-RequestId = NewType("RequestId", str)
-RetryCount = Literal[0, 1, 2, 3]
-Outcome = Literal["not-dispatched", "unknown", "rejected"]
 OperationKind = Literal["create-session", "release-session"]
 OperationStatus = Literal["pending", "succeeded", "failed"]
 SessionState = Literal["creating", "ready", "closing", "closed", "expired", "failed", "cleanup-failed", "recovery-required"]
 CloseReason = Literal["released", "ttl-expired", "registry-shutdown", "registry-recovery", "registry-storage-fault", "worker-unavailable"]
-T = TypeVar("T")
-
-
-class SessionClientError(Exception):
-    def __init__(self, code: str, *, status: int | None = None, request_id: RequestId | None = None,
-                 outcome: Outcome = "unknown", retryable: bool = False) -> None:
-        super().__init__("Invalid Session client request" if code == "CLIENT_INVALID_REQUEST" else "Session API request failed")
-        self.code, self.status, self.request_id = code, status, request_id
-        self.outcome, self.retryable = outcome, retryable
-
-
-class SessionClientCancelledError(asyncio.CancelledError):
-    """Cancellation preserves asyncio task semantics and reports dispatch uncertainty."""
-    def __init__(self, outcome: Outcome) -> None:
-        super().__init__("Session API request cancelled")
-        self.code, self.outcome = "CLIENT_CANCELLED", outcome
-
-
-@dataclass(frozen=True, slots=True)
-class ApiResult(Generic[T]):
-    data: T
-    request_id: RequestId
 
 
 @dataclass(frozen=True, slots=True)
@@ -235,184 +209,42 @@ class _Operations:
         return cast(ApiResult[Operation], await self._client._request("GET", "/v1/operations/" + operation_id, None, None, "operation", operation_id, retries))
 
 
-class _TrackedStream(httpx.AsyncByteStream):
-    def __init__(self, source: httpx.AsyncByteStream) -> None:
-        self.source, self.close_failed = source, False
-
-    async def __aiter__(self) -> AsyncIterator[bytes]:
-        async for chunk in self.source:
-            yield chunk
-
-    async def aclose(self) -> None:
-        try:
-            await self.source.aclose()
-        except Exception:
-            self.close_failed = True
-            raise
-
-
-@dataclass(slots=True)
-class _Dispatch:
-    sent: bool = False
-
-
 class SessionClient:
     def __init__(self, *, base_url: str, api_key: str, timeout_seconds: float = 10, retries: RetryCount = 0,
                  max_response_bytes: int = 65536, max_concurrent_requests: int = 64,
                  transport: httpx.AsyncBaseTransport | None = None) -> None:
-        if type(base_url) is not str or len(base_url) > 8192:
-            _invalid()
-        try:
-            url = urlsplit(base_url)
-            valid = url.scheme == "https" or url.scheme == "http" and url.hostname in ("localhost", "127.0.0.1", "::1")
-            if not valid or not url.hostname or url.username is not None or url.password is not None or url.query or url.fragment or url.path not in ("", "/"):
-                _invalid()
-            origin = str(httpx.URL(base_url).copy_with(path="/", query=None, fragment=None)).rstrip("/")
-        except (ValueError, httpx.InvalidURL):
-            _invalid()
-        if type(api_key) is not str or re.fullmatch(r"[A-Za-z0-9_-]{32,256}", api_key) is None:
-            _invalid()
-        if type(timeout_seconds) not in (float, int) or not 0.05 <= timeout_seconds <= 60 or not _integer(max_response_bytes, 1024, 1048576) or not _integer(max_concurrent_requests, 1, 10000):
-            _invalid()
-        if transport is not None and not isinstance(transport, httpx.AsyncBaseTransport):
-            _invalid()
-        self._base, self._api_key, self._timeout = origin, api_key, timeout_seconds
-        self._retries, self._max_bytes, self._max_concurrent = _retries(retries), max_response_bytes, max_concurrent_requests
-        self._http = httpx.AsyncClient(transport=transport, trust_env=False, follow_redirects=False,
-                    timeout=timeout_seconds, limits=httpx.Limits(max_connections=16, max_keepalive_connections=8))
-        self._tasks: set[asyncio.Task[ApiResult[Operation] | ApiResult[Session]]] = set()
-        self._closed, self._close_task = False, cast(asyncio.Task[None] | None, None)
+        self._transport = BackendTransport(base_url=base_url, api_key=api_key, timeout_seconds=timeout_seconds, retries=retries,
+            max_response_bytes=max_response_bytes, max_concurrent_requests=max_concurrent_requests, transport=transport, validate=self._validate)
+        self._http, self._tasks = self._transport.http, self._transport.tasks
         self.sessions, self.operations = _Sessions(self), _Operations(self)
 
     async def __aenter__(self) -> SessionClient:
-        if self._closed:
-            _fail("CLIENT_CLOSED", outcome="not-dispatched")
+        self._transport.ensure_open()
         return self
 
     async def __aexit__(self, *args: Any) -> None:
         await self.aclose()
 
     async def aclose(self) -> None:
-        if self._close_task is None:
-            self._closed = True
-            async def close() -> None:
-                tasks = tuple(self._tasks)
-                for task in tasks:
-                    task.cancel()
-                await asyncio.gather(*tasks, return_exceptions=True)
-                try:
-                    async with asyncio.timeout(1):
-                        await self._http.aclose()
-                except Exception:
-                    _fail("CLIENT_CLOSE_FAILED", outcome="not-dispatched")
-            self._close_task = asyncio.create_task(close())
-        await asyncio.shield(self._close_task)
+        await self._transport.aclose()
 
     async def _request(self, method: str, path: str, body: bytes | None, key: str | None, kind: str,
                        target: str | None, retries: RetryCount | None) -> ApiResult[Operation] | ApiResult[Session]:
-        count = self._retries if retries is None else _retries(retries)
-        if self._closed:
-            _fail("CLIENT_CLOSED", outcome="not-dispatched")
-        if len(self._tasks) >= self._max_concurrent:
-            _fail("CLIENT_BUSY", outcome="not-dispatched", retryable=True)
-        dispatch = _Dispatch()
-        async def run() -> ApiResult[Operation] | ApiResult[Session]:
-            for attempt in range(count + 1):
-                try:
-                    return await self._attempt(method, path, body, key, kind, target, dispatch)
-                except SessionClientError as error:
-                    if not error.retryable or attempt == count:
-                        raise error from None
-            raise AssertionError("unreachable")
-        task = asyncio.create_task(run())
-        self._tasks.add(task)
-        try:
-            return await task
-        except asyncio.CancelledError:
-            raise SessionClientCancelledError("unknown" if dispatch.sent else "not-dispatched") from None
-        finally:
-            self._tasks.discard(task)
+        return cast(ApiResult[Operation] | ApiResult[Session], await self._transport.request(method,path,body,key,(kind,target),retries))
 
-    async def _attempt(self, method: str, path: str, body: bytes | None, key: str | None, kind: str,
-                       target: str | None, dispatch: _Dispatch) -> ApiResult[Operation] | ApiResult[Session]:
-        response: httpx.Response | None = None
-        tracked: _TrackedStream | None = None
-        try:
-            async with asyncio.timeout(self._timeout):
-                headers = {"authorization": "Bearer " + self._api_key, "accept": "application/json", "accept-encoding": "identity", "cache-control": "no-store"}
-                if body is not None:
-                    headers.update({"content-type": "application/json", "idempotency-key": cast(str, key)})
-                request = httpx.Request(method, self._base + path, content=body, headers=headers)
-                dispatch.sent = True
-                response = await self._http.send(request, stream=True, follow_redirects=False)
-                if not isinstance(response.stream, httpx.AsyncByteStream):
-                    _fail("CLIENT_INVALID_RESPONSE")
-                tracked = _TrackedStream(response.stream)
-                response.stream = tracked
-                status, retryable = response.status_code, response.status_code in (408, 429) or response.status_code >= 500
-                if 300 <= status < 400:
-                    _fail("CLIENT_REDIRECT_REJECTED", status=status)
-                if response.headers.get("content-encoding", "identity").lower() != "identity" or re.fullmatch(r"application/json(?:\s*;\s*charset=utf-8)?", response.headers.get("content-type", ""), re.I) is None:
-                    _fail("CLIENT_HTTP_ERROR" if status >= 400 else "CLIENT_INVALID_RESPONSE", status=status, retryable=status >= 400 and retryable)
-                length = response.headers.get("content-length")
-                if length is not None and (re.fullmatch(r"0|[1-9][0-9]*", length) is None or int(length) > self._max_bytes):
-                    _fail("CLIENT_INVALID_RESPONSE", status=status)
-                chunks: list[bytes] = []
-                size = 0
-                if response.is_stream_consumed:
-                    if len(response.content) > self._max_bytes:
-                        _fail("CLIENT_INVALID_RESPONSE", status=status)
-                    chunks.append(response.content)
-                else:
-                    async for chunk in response.aiter_raw():
-                        size += len(chunk)
-                        if size > self._max_bytes:
-                            _fail("CLIENT_INVALID_RESPONSE", status=status)
-                        chunks.append(chunk)
-                try:
-                    value = json.loads(b"".join(chunks).decode("utf-8"))
-                except (ValueError, UnicodeError, RecursionError):
-                    _fail("CLIENT_HTTP_ERROR" if status >= 400 else "CLIENT_INVALID_RESPONSE", status=status, retryable=status >= 400 and retryable)
-                request_id = value.get("requestId") if type(value) is dict else None
-                if not _identifier(request_id, "req_") or response.headers.get("x-request-id") != request_id:
-                    _fail("CLIENT_INVALID_RESPONSE", status=status)
-                if status >= 400:
-                    error = value.get("error")
-                    if not (_exact(value, "error requestId") and _exact(error, "code message") and _code(error["code"]) and not error["code"].startswith("CLIENT_") and _text(error["message"], 512)):
-                        _fail("CLIENT_INVALID_RESPONSE", status=status)
-                    _fail(error["code"], status=status, request_id=request_id, retryable=retryable, outcome="rejected" if status < 500 and status != 408 else "unknown")
-                if status not in (200, 202) or not _exact(value, "data requestId"):
-                    _fail("CLIENT_INVALID_RESPONSE", status=status)
-                if kind == "session":
-                    current = _session(value["data"])
-                    if status != 200 or current.session_id != target:
-                        _fail("CLIENT_INVALID_RESPONSE", status=status)
-                    return ApiResult(current, request_id)
-                operation = _operation(value["data"])
-                if (kind == "operation" and (operation.operation_id != target or status != 200)
-                    or kind != "operation" and operation.kind != kind
-                    or kind == "release-session" and operation.session_id != target
-                    or status == 202 and operation.status != "pending"
-                    or kind != "operation" and status == 200 and operation.status == "pending"):
-                    _fail("CLIENT_INVALID_RESPONSE", status=status)
-                return ApiResult(operation, request_id)
-        except (TimeoutError, httpx.TimeoutException):
-            _fail("CLIENT_TIMEOUT", outcome="unknown" if dispatch.sent else "not-dispatched", retryable=True)
-        except SessionClientError:
-            raise
-        except Exception:
-            _fail("CLIENT_TRANSPORT_ERROR", outcome="unknown" if dispatch.sent else "not-dispatched", retryable=True)
-        finally:
-            self._http.cookies.clear()
-            if response is not None:
-                prior_error = sys.exception()
-                try:
-                    async with asyncio.timeout(1):
-                        await response.aclose()
-                except Exception:
-                    if tracked is not None:
-                        tracked.close_failed = True
-                if tracked is not None and tracked.close_failed:
-                    self._closed = True
-                    if not isinstance(prior_error, asyncio.CancelledError):
-                        _fail("CLIENT_RESPONSE_CLOSE_FAILED")
+    @staticmethod
+    def _validate(status: int, data: Any, expect: tuple[str,str | None], headers: httpx.Headers) -> Operation | Session:
+        kind, target = expect
+        if kind == "session":
+            current = _session(data)
+            if status != 200 or current.session_id != target:
+                _fail("CLIENT_INVALID_RESPONSE", status=status)
+            return current
+        operation = _operation(data)
+        if (kind == "operation" and (operation.operation_id != target or status != 200)
+            or kind != "operation" and operation.kind != kind
+            or kind == "release-session" and operation.session_id != target
+            or status == 202 and operation.status != "pending"
+            or kind != "operation" and status == 200 and operation.status == "pending"):
+            _fail("CLIENT_INVALID_RESPONSE", status=status)
+        return operation

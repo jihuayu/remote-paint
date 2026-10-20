@@ -46,15 +46,15 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | C11 | 页面隐藏与设备故障恢复 | 部分实现 | 显示与 Agent 活动分离；真实 Chrome 隐藏/冻结恢复、导航后新基线、Worker 异常与静默退出回退、旧输入租约清理通过。128项单测；物理休眠及其他目标设备生命周期仍待验收。 |
 | C12 | 浏览器兼容与区域回退 | 部分实现 | WebGL 黑框及文字占位通过真实 Linux/CanvasKit Worker 像素验证；矩阵、裁剪、透明度单测通过。其他纹理、浏览器和复杂合成仍待验收。 |
 | C13 | 控制消息与重放队列调度 | 部分实现 | 默认 Worker 的控制连接改在主线程，绕过慢 SHA 和 Worker 的同步忙碌：注入 1.2 秒 Worker 阻塞时输入确认约 8 ms、撤销约 19 ms。主线程兼容路径仍可能被同步重放阻塞；数据解码切片和过期 viewport 取消待补。 |
-| K1 | 稳定 Session API | 部分实现 | Session创建/查询/释放、持久幂等/TTL/配额及标准Native生命周期已有证据；Node公共Agent SDK接Run/context/Invocation/end，原始fence/固定请求与unknown语义经过安装版Native验证。双平台1139项、安装版97Node/17Python与类型通过。Python Agent SDK、unknown Engine Start收敛、完整滚动/故障与发布仍待做，见[Node SDK](node-agent-sdk.md)。 |
+| K1 | 稳定 Session API | 部分实现 | Session生命周期已有持久/Native证据；Node/Python公共Agent SDK接Run/context/Invocation/end，固定原请求/fence/ID、unknown不重放。双平台安装97Node/37Python/TSC与Mac Mypy，实际安装版七工具和退役通过。结构化观察、unknown Engine Start收敛、完整滚动/故障和发布待做，见[Python SDK](python-agent-sdk.md)。 |
 | K2 | 可嵌入 Viewer | 部分实现 | 原生JS公共票据连接已接入现有主线程/Worker，含刷新、重连、取消和断开栅栏；真实Node数据链路及保存入口脚本接线通过。iframe/CSP/宿主组件、完整resize/接管/事件API和真实渲染多次挂载卸载仍待验收。 |
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
-| K5 | 输入与多角色控制 | 部分实现 | 七工具经安装版Node Agent SDK→独立授权HTTP→持久执行器→标准Native私有RPC到同一Page；原始fence、unknown不重放、优先end、人控grant保留、实际丢响应同ID/一次效果、80px无人观看滚动及namespace退役通过。双平台完整1139项。Python Agent、Playwright/其他工具、观察和完整故障仍待做，见[范围](node-agent-sdk.md)。 |
+| K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
 | K6 | 结构化观察与结果 | 待实现 | 按原清单验收，记录实际证据 |
-| K7 | 动作和业务成功分离 | 部分实现 | 公共记录及Node SDK区分intent/requested/injected/rejected/unknown，固定原语收据，不将注入当作业务完成；同key固定操作/参数/fence、unknown不重放与实际Native丢响应/超时验证通过。业务后置条件观察API与完整可恢复/不可恢复分类仍缺，见[Node SDK](node-agent-sdk.md)。 |
+| K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
-| K9 | 开发者体验和发布 | 部分实现 | 新Node AgentClient及七工具.d.mts、19成员私有包双平台独立离线安装97Node/17Python/TSC，Mac Mypy通过；38个当前输入同hash，无SDK源码回退。安装版Node Agent七工具/unknown/结束与Native退役通过。Python Agent SDK、完整示例/滚动版本策略和发布待做，见[检查点](node-agent-sdk.md)。 |
+| K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
 | K10 | Agent 与文件集成 | 待实现 | 按原清单验收，记录实际证据 |
 | B1 | 原生持续采集与按需订阅 | 已完成（Linux ARM64 受管 Source） | 浏览器原生订阅/真实document与frame token、输入水位及credit交给Rust自主Mapper/Gateway；正式浏览器与双平台Broker已更新并保存旧产物。[正式路径验收](evidence/native-source-default-acceptance.json)含76项C++、Mac/Linux各221项JS、当前57MiB/2MiB压力/45MiB旧RPC/423回滚、完整直播/Node回退/WebGL文字占位/真实9MiB及200ms Gateway关闭、12 Source/48进程身份清理；24次跨站导航、重置/实际Retry/64MiB压力/六消费与完整内核矩阵保留精确版本证据。Linux BeginFrame页面时钟仍由Node驱动，取消逐帧捕获登记/map/publish/Runtime.awaitPromise。标准构建图/双架构发布、其他平台兼容、完整Session/PSS及长时N1分别继续。 |
 | B2 | 更精确的时钟和消费需求 | 已完成（Linux受管Source） | 显示/观察/录制/页面运行独立计数，受管Agent输入临时持有页面运行租约；零显示观察/录制真实像素、输入与新帧屏障、导航/resize、慢端隔离、64MiB压力恢复、延迟首消费者及关闭通过。198项JS每平台、137项Rust同修订及22组冻结/7组正式复验，见[需求与消费证据](evidence/source-consumer-demand.json)。B1原生持续订阅与完整SDK另列。 |
@@ -1970,3 +1970,8 @@ create/perform先同步提交意图再异步调用标准provider，稳定幂等�
 ### Node Agent SDK 独立检查点
 
 Node后端SDK提供受管七工具、不可变prepareCreate、原始context/fence、状态与unknown、独立结束名额。19项新合同及双平台全量1139项零失败；新tgz独立离线安装97Node/17Python/TSC与Mac Mypy通过。安装版SDK实际公共HTTP→标准Native七工具、丢HTTP响应同ID/一次效果、旧fence拒绝、unknown不重放、结束/人控原grant保留、B拼LHFZ与namespace退役通过。整体Agent SDK仍未完成，Python为下一独立检查点；41项仍10/16/15。业务观察、完整Playwright/故障、N1/物理/设备和原8小时增长保持未完成，见[范围](node-agent-sdk.md)。
+
+
+### Python Agent SDK 独立检查点
+
+Python新增受管七工具、冻结模型、判别类型、不可变prepare与unknown语义；共享实际任务有界传输，独立end名额和连接池。20项新测试与原17项Session通过，当前包双平台97Node/37Python/TSC及Mac公共正负类型/安装源码严格Mypy通过。安装版Python真实HTTP→Native七工具、丢响应同ID/一次效果、旧fence、unknown/end、人控原grant保留、B拼LHFZ和namespace退役通过。整体SDK仅该七工具范围通过；K6观察/业务后置条件、完整Playwright/事件取消/故障、N1/物理/设备及原8小时仍未完成，41项保持10/16/15，见[范围](python-agent-sdk.md)。
