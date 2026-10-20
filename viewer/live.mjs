@@ -11,6 +11,7 @@ import {ViewerConnection,ViewerTicketSource,ViewerConnectionError} from '/connec
 import {loadPublicViewerConfig,PublicViewerConfigError} from '/public-config.mjs';
 import {attachViewerChild} from '/embed-bridge.mjs';
 import {ViewerControlActions} from '/viewer-control.mjs';
+import {ViewerTelemetry} from '/viewer-telemetry.mjs';
 const VIEWER_BUILD='__REMOTE_PAINT_VIEWER_BUILD__',EXPECTED_WASM_SHA='__REMOTE_PAINT_WASM_SHA__';
 const $=id=>document.getElementById(id),status=text=>$('status').textContent=text;
 const publicMode=document.querySelector?.('meta[name="remote-paint-mode"]')?.content==='public',configController=new AbortController();let bootConfig=null;
@@ -18,12 +19,14 @@ const publicReady=publicMode?loadPublicViewerConfig({origin:location.origin,fetc
 void publicReady.catch(error=>{if(window.remotePaintConnection?.state==='waiting'){fail(new Error('Viewer 配置暂不可用'));connectionState({state:'failed',code:error instanceof PublicViewerConfigError?error.code:'VIEWER_CONFIG_INVALID'});}});
 const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
 let controlActions=null;
+const telemetry=new ViewerTelemetry({notify:(name,envelope)=>window.dispatchEvent(new CustomEvent('remote-paint-'+name,{detail:envelope}))});
 const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$('control'),label:$('controlState'),feedbackLabel:$('feedbackState'),overlay:$('optimisticOverlay'),pointerOverlay:$('pointerOverlay'),onControl:reason=>controlActions?.update(reason),send:message=>{if(controlLink.send(message))return;if(streamWorker)streamWorker.postMessage({type:'send',message});else if(socket?.readyState===1)socket.send(JSON.stringify(message));}});
 let ticketSource=null,publicSettings=null,publicConnection=null;const workerTickets=new Map();
 let streamWorker,renderer,presenter,socket,cleanupSession,cancelInitialization,heartbeat,lastPong,forceMainThread=false,generation=0,retryTimer,stopped=false,retryDelay=250;
 const controlLink=new ControlLink({onMessage:message=>{if(message.type==='CaptureError')status(message.message);else input.message(message);},onError:fail,onClose:peerId=>{input.reset();if(stopped)return;if(streamWorker)streamWorker.postMessage({type:'control-lost',peerId});else socket?.close(1012,'Control connection closed');}});
-function fail(error){$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';}
+function fail(error){telemetry.reset();$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';}
 function connectionState(state){
+ if(publicMode){if(['connecting','reconnecting','refreshing'].includes(state.state))telemetry.connecting();else if(state.state!=='connected')telemetry.reset();}
  if(state.state==='failed'&&publicSettings&&!stopped){stopped=true;lifecycle.freeze();fail(new ViewerConnectionError(state.code));}
  window.remotePaintConnection=state;controlActions?.update('connection');window.dispatchEvent(new CustomEvent('remote-paint-connection',{detail:state}));
 }
@@ -39,7 +42,7 @@ function workerMessage({data}){
  if(data.type==='connection-state'){connectionState(data.state);return;}
  if(data.type==='pong'){lastPong=Date.now();return;}
  if(data.type==='ready')window.remotePaintStartup=data.startup;
- else if(data.type==='welcome'){input.welcome(data.message);controlLink.open(data.streamUrl,data.message);$('build').textContent=`${data.message.producer.chromium} · Skia ${data.message.producer.skiaRevision.slice(0,12)} · CanvasKit ${data.message.renderer.canvaskit}`;}
+ else if(data.type==='welcome'){if(Number.isSafeInteger(data.connectionGeneration))generation=Math.max(generation,data.connectionGeneration);if(publicMode)telemetry.bind({connectionGeneration:data.connectionGeneration,grantId:data.message.viewerGrantId});input.welcome(data.message);controlLink.open(data.streamUrl,data.message);$('build').textContent=`${data.message.producer.chromium} · Skia ${data.message.producer.skiaRevision.slice(0,12)} · CanvasKit ${data.message.renderer.canvaskit}`;}
  else if(data.type==='control'){
   try{input.message(data.message);}catch(error){
    // The Worker forwards finite control metadata to this UI-owned input
@@ -48,14 +51,15 @@ function workerMessage({data}){
    else{stopped=true;lifecycle.freeze();fail(error);}
   }
  }
- else if(data.type==='reset'){controlLink.reset();input.reset();document.body.dataset.ready='false';}
+ else if(data.type==='reset'){if(publicMode&&!stopped)telemetry.connecting();else telemetry.reset();controlLink.reset();input.reset();document.body.dataset.ready='false';}
  else if(data.type==='status')status(data.text);
  else if(data.type==='error')fail(new Error(data.message));
  else if(data.type==='memory')window.remotePaintMemory=data.memory;
- else if(data.type==='cache'){window.remotePaintMemory=data.memory;if(window.remotePaintResult){window.remotePaintResult.resources=data.resources;window.remotePaintResult.resourceBytes=data.resourceBytes;window.remotePaintResult.memory=data.memory;}}
+ else if(data.type==='cache'){telemetry.update(data.connectionGeneration,{resources:data.resources,resourceBytes:data.resourceBytes,memory:data.memory});window.remotePaintMemory=data.memory;if(window.remotePaintResult){window.remotePaintResult.resources=data.resources;window.remotePaintResult.resourceBytes=data.resourceBytes;window.remotePaintResult.memory=data.memory;}}
  else if(data.type==='frame'){
   const {frame,result}=data;generation=Math.max(generation,result.connectionGeneration);result.viewerGeneration=lifecycle.version;input.display(frame);window.remotePaintMemory=result.memory;$('error').hidden=true;
   $('frame').textContent=`第 ${frame.frameId} 帧`;$('mode').textContent=frame.baseFrameId===null?'完整场景':'增量更新';$('dimensions').textContent=`${frame.viewport.cssWidth} × ${frame.viewport.cssHeight}`;$('renderTime').textContent=`重放 ${result.renderMs.toFixed(1)} ms`;$('bytes').textContent=`缓存 ${(result.resourceBytes/1024).toFixed(0)} KiB`;document.body.dataset.ready='true';status('实时绘制中');window.remotePaintResult=result;
+  if(publicMode)telemetry.record({connectionGeneration:result.connectionGeneration,frame,result,worker:true});
  }
 }
 function workerFailed(worker,error){
@@ -63,6 +67,7 @@ function workerFailed(worker,error){
  forceMainThread=true;lifecycle.restart('worker-failure');status('绘制线程中断，正在恢复兼容模式');
 }
 async function initialize(version){
+ if(publicMode)telemetry.begin('renderer-init');
  const canvas=$('viewport'),current=()=>lifecycle.current(version);
  if(typeof Worker==='function'&&typeof canvas.transferControlToOffscreen==='function'&&!forceMainThread&&!new URLSearchParams(location.search).has('mainThread')){
   const worker=new Worker('/stream-worker.mjs',{type:'module'});streamWorker=worker;
@@ -93,6 +98,7 @@ async function connect(){
  if(stopped)return;clearTimeout(retryTimer);cleanupSession?.();const current=++generation;controlLink.reset();socket?.close();input.reset();presenter?.clear();
  document.body.dataset.ready='false';$('error').hidden=true;status('连接绘制通道');
  if(publicSettings){
+  telemetry.connecting();
   publicConnection?.destroy();publicConnection=null;
   if(streamWorker){streamWorker.postMessage({type:'connect',connection:publicSettings});return;}
   publicConnection=new ViewerConnection({...publicSettings,getTicket:request=>ticketSource.getTicket(request),onSocket:(ws,grant,auth)=>attachStream(ws,++generation,auth),onState:connectionState,onError:error=>fail(error)});
@@ -105,6 +111,7 @@ async function connect(){
  const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${streamHost}/stream?key=${encodeURIComponent(key)}`);attachStream(ws,current);
 }
 function attachStream(ws,current,authorization=null){
+ if(publicMode)telemetry.connecting();
  cleanupSession?.();controlLink.reset();socket?.close();input.reset();presenter?.clear();socket=ws;ws.binaryType='arraybuffer';document.body.dataset.ready='false';$('error').hidden=true;
 
  const memory=presenter.memory,gate=new LiveFrameGate({memory}),assets=new AssetCache({memory});let rejection,closed=false,welcome=false,receivedBytes=0,resourcesReceived=0,full=0,delta=0,recovering=false;
@@ -138,7 +145,7 @@ function attachStream(ws,current,authorization=null){
     if(size>LIVE_LIMITS.sceneBytes)throw new Error('Metadata budget exceeded');const message=parsed;
     if(message.type==='Welcome'){
      if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean'||typeof message.resourceMemory!=='boolean')throw new Error('Incompatible live handshake');
-     authorization?.acceptWelcome(message);welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';input.welcome(message);controlLink.open(ws.url,message);retryDelay=250;$('build').textContent=`${message.producer.chromium} · Skia ${message.producer.skiaRevision.slice(0,12)} · CanvasKit ${renderer.canvaskit}`;return;
+     authorization?.acceptWelcome(message);if(publicMode)telemetry.bind({connectionGeneration:current,grantId:message.viewerGrantId});welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';input.welcome(message);controlLink.open(ws.url,message);retryDelay=250;$('build').textContent=`${message.producer.chromium} · Skia ${message.producer.skiaRevision.slice(0,12)} · CanvasKit ${renderer.canvaskit}`;return;
     }
     if(!welcome)throw new Error('Message before handshake');
     if(input.message(message))return;
@@ -160,10 +167,11 @@ function attachStream(ws,current,authorization=null){
      window.remotePaintResult={protocol:LIVE_VERSION,viewerGeneration:lifecycle.version,connectionGeneration:current,pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,frameId:frame.frameId,
       native:frame.native,lastProcessedInputSeq:frame.lastProcessedInputSeq,resourceBytes:gate.bytes,resources:gate.resources.size,
       resourcesReceived,receivedBytes,fullFrames:full,deltaFrames:delta,renderMs,requiredResources:frame.requiredResources,rendererStats:{...presenter.stats},presentation:{...presenter.presentation}};
-     window.remotePaintMemory=window.remotePaintResult.memory=memory.observe(presenter.ck,presenter.gr);send({type:'FrameAck',pageEpoch:frame.pageEpoch,frameId:frame.frameId,stage:'scene-submitted'});
+     window.remotePaintMemory=window.remotePaintResult.memory=memory.observe(presenter.ck,presenter.gr);if(publicMode)telemetry.record({connectionGeneration:current,frame,result:window.remotePaintResult,worker:false});send({type:'FrameAck',pageEpoch:frame.pageEpoch,frameId:frame.frameId,stage:'scene-submitted'});
     }else if(message.type==='ResourceRelease'){
      if(!Array.isArray(message.ids)||message.ids.length>512||!message.ids.every(isHash))throw new Error('Invalid resource release');for(const id of message.ids)gate.release(id);presenter.retain(new Set(gate.resources.keys()));
      window.remotePaintMemory=memory.snapshot();if(window.remotePaintResult){window.remotePaintResult.resources=gate.resources.size;window.remotePaintResult.resourceBytes=gate.bytes;window.remotePaintResult.memory=window.remotePaintMemory;}
+     telemetry.update(current,{resources:gate.resources.size,resourceBytes:gate.bytes,memory:window.remotePaintMemory});
     }else if(message.type==='CaptureError'){status(message.message);}
     else throw new Error('Unknown message');
    }catch(error){if(!closed&&current===generation){rejection=error.message;fail(error);ws.close(4008,'Viewer rejected frame');}}
@@ -179,6 +187,7 @@ function attachStream(ws,current,authorization=null){
  ws.onerror=()=>{if(current===generation)status('连接暂时不可用，等待重连');};
 }
 function teardownViewer(){
+ telemetry.reset();
  controlActions?.reset();
  publicConnection?.destroy();publicConnection=null;abortWorkerTickets();
  clearInterval(heartbeat);heartbeat=null;clearTimeout(retryTimer);cancelInitialization?.();cancelInitialization=null;
@@ -202,7 +211,7 @@ $('reconnect').onclick=()=>lifecycle.restart('manual');
 document.addEventListener('visibilitychange',()=>lifecycle.visibility(document.hidden));
 document.addEventListener('freeze',()=>lifecycle.freeze());
 document.addEventListener('resume',()=>{if(stopped)return;lifecycle.hidden=document.hidden;lifecycle.resume();});
-window.addEventListener('pagehide',event=>{if(event.persisted)lifecycle.freeze();else{stopped=true;configController.abort();lifecycle.close();ticketSource?.destroy();}});
+window.addEventListener('pagehide',event=>{if(event.persisted)lifecycle.freeze();else{stopped=true;configController.abort();lifecycle.close();ticketSource?.destroy();telemetry.close();}});
 window.addEventListener('pageshow',()=>{if(stopped)return;lifecycle.hidden=document.hidden;lifecycle.resume();});
 window.addEventListener('online',()=>{if(lifecycle.runnable)lifecycle.restart('online');});
 controlActions=new ViewerControlActions({input,available:()=>!stopped&&publicSettings?.role==='controller'&&window.remotePaintConnection?.state==='connected',notify:state=>window.dispatchEvent(new CustomEvent('remote-paint-control',{detail:state})),interrupt:code=>connectionState({...window.remotePaintConnection,state:'failed',code})});
@@ -219,6 +228,8 @@ window.remotePaintViewer=Object.freeze({
  takeControl:options=>controlActions.take(options),releaseControl:options=>controlActions.release(options),
  resizeViewport:(size,options)=>controlActions.resizeViewport(size,options),
  get control(){return controlActions.state;},
+ get performance(){return telemetry.performance;},get firstFrame(){return telemetry.firstFrame;},
+ get performanceEnvelope(){return telemetry.envelope('performance');},get firstFrameEnvelope(){return telemetry.envelope('first-frame');},
  get state(){return window.remotePaintConnection??{state:'paused'};}
 });
 if(publicMode){stopped=true;lifecycle.freeze();status('等待宿主授权');connectionState({state:'waiting'});attachViewerChild({targetWindow:window,ready:publicReady,api:window.remotePaintViewer});}

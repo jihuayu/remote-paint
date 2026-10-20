@@ -4,6 +4,7 @@ import {runInNewContext} from 'node:vm';
 import {WebSocket} from 'ws';
 import {ViewerConnection,ViewerTicketSource,ViewerConnectionError} from '../../sdk/viewer-connection.mjs';
 import {ViewerControlActions} from '../../sdk/viewer-control.mjs';
+import {ViewerTelemetry} from '../../sdk/viewer-telemetry.mjs';
 import {ViewerLifecycle} from '../../viewer/lifecycle.mjs';
 import {loadPublicViewerConfig,PublicViewerConfigError} from '../../viewer/public-config.mjs';
 import {attachViewerChild} from '../../viewer/embed-bridge.mjs';
@@ -19,7 +20,7 @@ const executable=(source,viewerBuild='fixture')=>source.replace(/^import .*;\n/g
 function runtime(workerMode,{publicMode=false,viewerBuild='fixture',configFetch,hash='',workerTemplate=workerSource,parentWindow,realInput=false}={}){
  const stats={live:new Set(),peak:0,draws:0,sockets:[],workers:new Set(),events:[],fetches:[],socketSetupErrors:[]};
  class Memory {constructor(){this.policy={receive:64*1024*1024,js:64*1024*1024};}buffer(){return()=>{};}reserve(){return()=>{};}snapshot(){return{};}observe(){return{};}retire(){}}
- class Renderer {constructor(ck,canvas,{memory}){Object.assign(this,{ck,canvas,memory,stats:{},presentation:{mode:'fixture'}});stats.live.add(this);stats.peak=Math.max(stats.peak,stats.live.size);}draw(){stats.draws++;}clear(){}retain(){}dispose(){stats.live.delete(this);}}
+ class Renderer {constructor(ck,canvas,{memory}){Object.assign(this,{ck,canvas,memory,stats:{},presentation:{mode:'cpu-2d'}});stats.live.add(this);stats.peak=Math.max(stats.peak,stats.live.size);}draw(){stats.draws++;}clear(){}retain(){}dispose(){stats.live.delete(this);}}
  class Input {constructor(){this.frame=null;}welcome(message){this.enabled=message.input;}display(frame){this.frame=frame;}reset(){}message(){return false;}bindCanvas(){}}
  class Assets {constructor(){this.bytes=0;this.stats={};}clear(){}dispose(){}}
  class Control {reset(){}open(){return false;}send(){return false;}}
@@ -32,7 +33,7 @@ function runtime(workerMode,{publicMode=false,viewerBuild='fixture',configFetch,
  // browser realm's Socket explicitly, including its automatic Origin header.
  class RuntimeConnection extends ViewerConnection {constructor(options){super({...options,WebSocket:Socket,onSocket:(...args)=>{try{return options.onSocket(...args);}catch(error){stats.socketSetupErrors.push(error.message);throw error;}}});}}
  const common={console,URL,URLSearchParams,TextEncoder,TextDecoder,ArrayBuffer,Uint8Array,AbortSignal,AbortController,performance,crypto:webcrypto,setTimeout,clearTimeout,setInterval,clearInterval,
-  location:new URL(audience+'/'+hash),WebSocket:Socket,ViewerConnection:RuntimeConnection,ViewerTicketSource,ViewerConnectionError,loadPublicViewerConfig,PublicViewerConfigError,attachViewerChild,ViewerControlActions,RendererRuntime:Renderer,ClientMemory:Memory,memoryPolicy:()=>({}),CanvasKitInit:async()=>({}),
+  location:new URL(audience+'/'+hash),WebSocket:Socket,ViewerConnection:RuntimeConnection,ViewerTicketSource,ViewerConnectionError,loadPublicViewerConfig,PublicViewerConfigError,attachViewerChild,ViewerControlActions,ViewerTelemetry,RendererRuntime:Renderer,ClientMemory:Memory,memoryPolicy:()=>({}),CanvasKitInit:async()=>({}),
   LIVE_VERSION,LIVE_LIMITS,LiveFrameGate,RecoveryRequired,AssetCache:Assets,isHash:v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v),decodeAsset:()=>{throw new Error('Unexpected binary fixture');},parseMetadataJson:text=>({value:JSON.parse(text),byteLength:Buffer.byteLength(text),release(){}}),
   fetch:async(url,options)=>{stats.fetches.push(String(url));if(String(url).endsWith('/viewer-config'))return configFetch(url,options);return {arrayBuffer:async()=>wasm.buffer.slice(wasm.byteOffset,wasm.byteOffset+wasm.byteLength),json:async()=>({nativePort:null})};}};
  class Worker {

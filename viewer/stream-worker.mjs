@@ -65,7 +65,7 @@ function attachStream(ws,current,key,authorization=null){
    if(event.data instanceof ArrayBuffer){if(!welcome)throw new Error('Resource before handshake');const {kind,id,payload}=await verified;if(closed||current!==generation)return;if(kind==='chunk')assets.put(id,payload);else{gate.put(id,payload);resourcesReceived++;}return;}
    if(size>LIVE_LIMITS.sceneBytes)throw new Error('Metadata budget exceeded');const message=parsed;
    if(message.type==='Welcome'){
-    if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean'||typeof message.resourceMemory!=='boolean')throw new Error('Incompatible live handshake');authorization?.acceptWelcome(message);welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';peerId=message.peerId;retryDelay=250;ui('welcome',{message,streamUrl:ws.url});return;
+    if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean'||typeof message.resourceMemory!=='boolean')throw new Error('Incompatible live handshake');authorization?.acceptWelcome(message);welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';peerId=message.peerId;retryDelay=250;ui('welcome',{message,streamUrl:ws.url,connectionGeneration:current});return;
    }
    if(!welcome)throw new Error('Message before handshake');
    if(['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState','ViewportResized','ViewportResizeDenied'].includes(message.type)){ui('control',{message});return;}
@@ -82,7 +82,7 @@ function attachStream(ws,current,key,authorization=null){
     result.memory=memory.observe(presenter.ck,presenter.gr);ui('frame',{result,frame:{pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,viewport:frame.viewport,native:frame.native,lastProcessedInputSeq:frame.lastProcessedInputSeq,frameId:frame.frameId,baseFrameId:frame.baseFrameId}});send({type:'FrameAck',pageEpoch:frame.pageEpoch,frameId:frame.frameId,stage:'scene-submitted'});
    }else if(message.type==='ResourceRelease'){
     if(!Array.isArray(message.ids)||message.ids.length>512||!message.ids.every(isHash))throw new Error('Invalid resource release');for(const id of message.ids)gate.release(id);presenter.retain(new Set(gate.resources.keys()));
-    ui('cache',{resources:gate.resources.size,resourceBytes:gate.bytes,memory:memory.snapshot()});
+    ui('cache',{resources:gate.resources.size,resourceBytes:gate.bytes,memory:memory.snapshot(),connectionGeneration:current});
    }else if(message.type==='CaptureError')status(message.message);
    else throw new Error('Unknown message');
   }catch(error){if(!closed&&current===generation){rejection=error.message;ui('error',{message:rejection});ws.close(4008,'Viewer rejected frame');}}finally{queuedBytes-=size;releaseQueue();}});

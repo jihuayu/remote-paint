@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-19T09:46:42.053312+00:00",
+  "task": "K2a2b3c3a",
+  "status": "child-telemetry-scoped-qualified",
+  "executedManifestSha256": "af8d9b54665c03115de9f070d82435466bd5b5199ba89deb757bfaa9b8766ddf",
+  "sourceFilesExecuted": 900,
+  "fullJs": {
+    "mac": {
+      "tests": 872,
+      "pass": 857,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "8607abba17d7ef30822a54d35ccfaa5ccab4c02219ebef51e3ab248d14cf2223"
+    },
+    "linux": {
+      "tests": 872,
+      "pass": 866,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "cbf7507f1fda6e3944285a7ed2995d7d212bd9b39e82585e3c09298ceaac158e"
+    }
+  },
+  "testFiles": 101,
+  "newContracts": 13,
+  "relatedViewerContracts": 199,
+  "observerAndHttpFixContracts": 14,
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "9e180d7764b86b222b175a3d857bcf1f3e90482e107b54a464d791cb2666e26b",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "cabbac864439e1e8d66bf644f9b20326e9b3544c20d01746963cae4fb21fd6da"
+  },
+  "installedSdk": {
+    "nodeMembers": 16,
+    "nodeTestsEachPlatform": 77,
+    "pythonTestsEachPlatform": 16,
+    "strictTypeScriptBothActual0": true,
+    "installedPythonMypyMacActual0": true,
+    "sdkBytesUnchangedBetween900v1And900v2": true
+  },
+  "contract": {
+    "performanceFields": 22,
+    "firstFrameFields": 13,
+    "minimumPerformanceIntervalMs": 250,
+    "oneScheduledTimer": true,
+    "oneCurrentGrantBinding": true,
+    "firstFrameStage": "scene-submitted",
+    "clock": "viewer-ui-receipt",
+    "workerHopIncluded": true,
+    "memoryScope": "client-estimate",
+    "missingMetrics": null,
+    "privateGrantOnlyInInternalEnvelope": true,
+    "highestConnectionGenerationRetainedAcrossReset": true
+  },
+  "retainedFailures": {
+    "beforeImplementation": {
+      "tests": 13,
+      "fail": 13,
+      "actualExitCode": 1
+    },
+    "firstFullJsBothPlatforms": {
+      "tests": 872,
+      "fail": 2,
+      "actualExitCode": 1,
+      "cause": "Copied frame-age observer asset map omitted new telemetry module;production-build equality assertion preserved;added exact module map and byte equality assertion"
+    }
+  },
+  "fixtures": [
+    "Saved main/Worker entry points with actual Node HTTP/WebSocket/SQLite/ControlLease/ViewerInput",
+    "DOM/CanvasKit/presenter/Worker scheduling explicit fixtures",
+    "Deterministic fake telemetry scheduler for rate/reentrancy/cancelled timer tests"
+  ],
+  "hostPerformanceFirstFrameApiComplete": false,
+  "actualNativeTelemetryQualified": false,
+  "physicalLatencyClaim": false,
+  "productionNativeProviderQualified": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

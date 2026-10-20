@@ -13,6 +13,6 @@
     "./viewer-frame": {"types": "./viewer-frame.d.mts", "import": "./viewer-frame.mjs"},
     "./viewer": {"types": "./viewer.d.mts", "import": "./viewer.mjs"}
   },
-  "files": ["backend.mjs", "backend.d.mts", "viewer-connection.mjs", "viewer-connection.d.mts", "viewer-frame.mjs", "viewer-frame.d.mts", "viewer-channel.mjs", "viewer-channel.d.mts", "viewer-control.mjs", "viewer-control.d.mts", "viewer.mjs", "viewer.d.mts", "README.md"],
+  "files": ["backend.mjs", "backend.d.mts", "viewer-connection.mjs", "viewer-connection.d.mts", "viewer-frame.mjs", "viewer-frame.d.mts", "viewer-channel.mjs", "viewer-channel.d.mts", "viewer-control.mjs", "viewer-control.d.mts", "viewer-telemetry.mjs", "viewer-telemetry.d.mts", "viewer.mjs", "viewer.d.mts", "README.md"],
   "sideEffects": false
 }

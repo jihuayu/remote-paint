@@ -13,6 +13,7 @@ export async function prepareViewerAssets({mode='local'}={}){
   ['/connection.mjs',['sdk/viewer-connection.mjs','text/javascript']],
   ['/viewer-channel.mjs',['sdk/viewer-channel.mjs','text/javascript']],
   ['/viewer-control.mjs',['sdk/viewer-control.mjs','text/javascript']],
+  ['/viewer-telemetry.mjs',['sdk/viewer-telemetry.mjs','text/javascript']],
   ['/embed-bridge.mjs',['viewer/embed-bridge.mjs','text/javascript']],
   ['/public-config.mjs',['viewer/public-config.mjs','text/javascript']],
   ['/frame-presenter.mjs',['viewer/frame-presenter.mjs','text/javascript']],
