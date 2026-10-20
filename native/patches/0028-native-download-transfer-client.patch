@@ -1,0 +1,420 @@
+--- a/components/download/public/common/BUILD.gn
++++ b/components/download/public/common/BUILD.gn
+@@ -67,6 +67,8 @@
+     "native_download_read_session.h",
+     "native_download_transfer_registry.cc",
+     "native_download_transfer_registry.h",
++    "native_download_transfer_client.cc",
++    "native_download_transfer_client.h",
+     "native_download_request_context.cc",
+     "native_download_request_context.h",
+     "native_download_budget.cc",
+--- /dev/null
++++ b/components/download/public/common/native_download_transfer_client.cc
+@@ -0,0 +1,117 @@
++#include "components/download/public/common/native_download_transfer_client.h"
++
++#include <algorithm>
++#include <utility>
++#include "base/functional/bind.h"
++#include "components/download/public/common/native_download_budget.h"
++#include "components/download/public/common/native_download_request_context.h"
++
++namespace download {
++NativeDownloadTransferClient::NativeDownloadTransferClient(scoped_refptr<NativeDownloadRequestContext> owner)
++    : registry_(std::move(owner)) {}
++NativeDownloadTransferClient::~NativeDownloadTransferClient() { Invalidate(); }
++bool NativeDownloadTransferClient::OwnsClient(const base::UnguessableToken& client) const {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  return !closed_ && !client.is_empty() && !ticket_.empty() && client == client_;
++}
++bool NativeDownloadTransferClient::Owned(const base::UnguessableToken& client, std::string_view ticket) const {
++  return OwnsClient(client) && ticket.size() == ticket_.size() && ticket == ticket_;
++}
++void NativeDownloadTransferClient::ClearBinding() {
++  client_ = {}; ticket_.clear(); deadline_ = {};
++}
++bool NativeDownloadTransferClient::Refresh() {
++  // A release reply may already have failed its 30s response deadline. Only
++  // the real registry's later physical settlement can make the ticket absent.
++  if (!ticket_.empty() && !read_reply_ && !release_reply_) {
++    auto self = weak_.GetWeakPtr(); auto info = registry_.Info(ticket_);
++    if (!self) return false;
++    if (!info) ClearBinding();
++  }
++  return true;
++}
++std::optional<std::string> NativeDownloadTransferClient::Arm(const base::UnguessableToken& client,
++    uint64_t maximum_bytes, base::TimeDelta timeout) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (closed_ || client.is_empty()) return std::nullopt;
++  if (!Refresh()) return std::nullopt;
++  if (!ticket_.empty()) return std::nullopt;
++  const auto start = base::TimeTicks::Now();
++  auto ticket = registry_.Arm(maximum_bytes, timeout);
++  if (ticket) { client_ = client; ticket_ = *ticket; deadline_ = start + timeout; }
++  return ticket;
++}
++bool NativeDownloadTransferClient::Offer(scoped_refptr<NativeDownloadLease> lease) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  return !closed_ && registry_.Offer(std::move(lease));
++}
++std::optional<NativeDownloadTransferClient::Snapshot> NativeDownloadTransferClient::Info(
++    const base::UnguessableToken& client, std::string_view ticket) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (!Owned(client, ticket)) return std::nullopt;
++  auto self = weak_.GetWeakPtr(); auto info = registry_.Info(ticket);
++  if (!self) return std::nullopt;
++  if (!info && !read_reply_ && !release_reply_) ClearBinding();
++  return info;
++}
++bool NativeDownloadTransferClient::Read(const base::UnguessableToken& client, std::string_view ticket,
++    uint64_t offset, uint32_t maximum_bytes, ReadCallback done) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (!Owned(client, ticket) || !done || read_reply_ || base::TimeTicks::Now() >= deadline_) return false;
++  read_reply_ = std::move(done); read_offset_ = offset;
++  read_operation_ = base::UnguessableToken::Create();
++  auto self = weak_.GetWeakPtr();
++  const bool accepted = registry_.Read(ticket, offset, maximum_bytes, base::BindOnce(
++      &NativeDownloadTransferClient::OnRead, weak_.GetWeakPtr(), read_operation_));
++  if (!self) return accepted;
++  if (!accepted) { read_reply_.Reset(); read_operation_ = {}; return false; }
++  read_timer_.Start(FROM_HERE, std::max(deadline_ - base::TimeTicks::Now(), base::TimeDelta()),
++      base::BindOnce(&NativeDownloadTransferClient::ReadTimedOut, weak_.GetWeakPtr()));
++  return true;
++}
++bool NativeDownloadTransferClient::Release(const base::UnguessableToken& client, std::string_view ticket,
++    base::OnceCallback<void(bool)> done) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (!Owned(client, ticket) || !done || release_reply_) return false;
++  release_reply_ = std::move(done);
++  const bool accepted = registry_.Release(ticket, base::BindOnce(
++      &NativeDownloadTransferClient::OnRelease, weak_.GetWeakPtr()));
++  // An unused arm can finish and destroy this facade synchronously. A true
++  // result must return without touching any members after the callback.
++  if (!accepted) release_reply_.Reset();
++  return accepted;
++}
++void NativeDownloadTransferClient::OnRead(base::UnguessableToken operation, NativeDownloadReadSession::Chunk chunk) {
++  if (operation != read_operation_ || !read_reply_) return;
++  read_timer_.Stop(); read_operation_ = {};
++  auto done = std::move(read_reply_);
++  std::move(done).Run(std::move(chunk));
++}
++void NativeDownloadTransferClient::ReadTimedOut() {
++  auto done = std::move(read_reply_); const auto offset = read_offset_; read_operation_ = {};
++  // Query drives an overdue core into retirement. A nested release callback may
++  // destroy this facade; only local reply values are used after this point.
++  registry_.Info(ticket_);
++  if (done) std::move(done).Run({NativeDownloadReadSession::Error::kClosed, offset, {}, false});
++}
++void NativeDownloadTransferClient::OnRelease(bool success) {
++  auto read = std::move(read_reply_); auto released = std::move(release_reply_);
++  const auto offset = read_offset_; read_timer_.Stop(); read_operation_ = {};
++  if (success) ClearBinding();
++  // Complete both from locals, so the first callback can destroy the owner.
++  if (read) std::move(read).Run({NativeDownloadReadSession::Error::kClosed, offset, {}, false});
++  if (released) std::move(released).Run(success);
++}
++void NativeDownloadTransferClient::Invalidate() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (closed_) return;
++  closed_ = true; weak_.InvalidateWeakPtrs(); read_timer_.Stop(); read_operation_ = {};
++  auto read = std::move(read_reply_); auto released = std::move(release_reply_);
++  const auto offset = read_offset_; ClearBinding();
++  registry_.Invalidate();
++  // These are failure replies, never physical retirement credit. The complete
++  // actual file/URL/item/map lease still holds its reservation independently.
++  if (read) std::move(read).Run({NativeDownloadReadSession::Error::kClosed, offset, {}, false});
++  if (released) std::move(released).Run(false);
++}
++}  // namespace download
+--- /dev/null
++++ b/components/download/public/common/native_download_transfer_client.h
+@@ -0,0 +1,52 @@
++#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_TRANSFER_CLIENT_H_
++#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_TRANSFER_CLIENT_H_
++
++#include "base/unguessable_token.h"
++#include "components/download/public/common/native_download_transfer_registry.h"
++
++namespace download {
++// A document's browser-owned reply facade. The trusted Page handler supplies
++// its own immutable key, never one accepted from protocol parameters. Actual
++// authentication and transport-disconnect hooks remain the browser's job.
++class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadTransferClient {
++ public:
++  using Snapshot = NativeDownloadTransferRegistry::Snapshot;
++  using ReadCallback = NativeDownloadReadSession::ReadCallback;
++  explicit NativeDownloadTransferClient(scoped_refptr<NativeDownloadRequestContext> owner);
++  ~NativeDownloadTransferClient();
++  NativeDownloadTransferClient(const NativeDownloadTransferClient&) = delete;
++  NativeDownloadTransferClient& operator=(const NativeDownloadTransferClient&) = delete;
++  std::optional<std::string> Arm(const base::UnguessableToken& client,
++      uint64_t maximum_bytes, base::TimeDelta timeout);
++  bool Offer(scoped_refptr<NativeDownloadLease> lease);
++  std::optional<Snapshot> Info(const base::UnguessableToken& client, std::string_view ticket);
++  bool Read(const base::UnguessableToken& client, std::string_view ticket,
++      uint64_t offset, uint32_t maximum_bytes, ReadCallback done);
++  bool Release(const base::UnguessableToken& client, std::string_view ticket,
++      base::OnceCallback<void(bool)> done);
++  bool OwnsClient(const base::UnguessableToken& client) const;
++  // Permanently invalidates this document facade. Settles each accepted client
++  // reply exactly once with failure; actual lease retirement stays independent.
++  void Invalidate();
++ private:
++  bool Owned(const base::UnguessableToken& client, std::string_view ticket) const;
++  bool Refresh();
++  void ClearBinding();
++  void OnRead(base::UnguessableToken operation, NativeDownloadReadSession::Chunk chunk);
++  void ReadTimedOut();
++  void OnRelease(bool success);
++  NativeDownloadTransferRegistry registry_;
++  base::UnguessableToken client_;
++  std::string ticket_;
++  base::TimeTicks deadline_;
++  bool closed_ = false;
++  base::UnguessableToken read_operation_;
++  uint64_t read_offset_ = 0;
++  ReadCallback read_reply_;
++  base::OnceCallback<void(bool)> release_reply_;
++  base::OneShotTimer read_timer_;
++  SEQUENCE_CHECKER(sequence_checker_);
++  base::WeakPtrFactory<NativeDownloadTransferClient> weak_{this};
++};
++}  // namespace download
++#endif
+--- a/components/download/public/common/native_download_transfer_registry.cc
++++ b/components/download/public/common/native_download_transfer_registry.cc
+@@ -38,7 +38,8 @@
+ }
+ bool NativeDownloadTransferRegistry::Offer(scoped_refptr<NativeDownloadLease> lease) {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+-  Expire();
++  auto self = weak_.GetWeakPtr(); Expire();
++  if (!self) return false;
+   if (state_ != State::kArmed || !lease || lease->created_at() < armed_at_ ||
+       !lease->request_context() || !owner_->SamePageDocument(*lease->request_context()) || !lease->ClaimTransfer())
+     return false;
+@@ -49,14 +50,16 @@
+ std::optional<NativeDownloadTransferRegistry::Snapshot> NativeDownloadTransferRegistry::Info(std::string_view ticket) {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   if (!Matches(ticket)) return std::nullopt;
+-  Expire();
++  auto self = weak_.GetWeakPtr(); Expire();
++  if (!self) return std::nullopt;
+   return Snapshot{state_, error_, metadata_.byte_length, metadata_.sha256};
+ }
+ bool NativeDownloadTransferRegistry::Read(std::string_view ticket, uint64_t offset, uint32_t maximum_bytes,
+     NativeDownloadReadSession::ReadCallback done) {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   if (!Matches(ticket)) return false;
+-  Expire();
++  auto self = weak_.GetWeakPtr(); Expire();
++  if (!self) return false;
+   if (state_ != State::kReady || !reader_ || !done) return false;
+   return reader_->Read(offset, maximum_bytes, base::BindOnce(
+       &NativeDownloadTransferRegistry::OnRead, weak_.GetWeakPtr(), std::move(done)));
+@@ -66,20 +69,25 @@
+   if (!Matches(ticket) || !done || release_requested_) return false;
+   release_requested_ = true; release_callback_ = std::move(done);
+   release_deadline_ = base::TimeTicks::Now() + kMaximumTimeout;
+-  BeginRetire(Error::kCancelled);
+-  Poll(); return true;
++  auto self = weak_.GetWeakPtr(); BeginRetire(Error::kCancelled);
++  if (self) self->Poll();
++  return true;
+ }
+ void NativeDownloadTransferRegistry::Invalidate() {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   // Invalidation is permanent for this document. A later browser document must
+   // get a new owned registry; it cannot rebind a retained ticket to itself.
+   owner_.reset();
+-  if (!ticket_.empty()) { BeginRetire(Error::kUnavailable); Poll(); }
++  if (!ticket_.empty()) {
++    auto self = weak_.GetWeakPtr(); BeginRetire(Error::kUnavailable);
++    if (self) self->Poll();
++  }
+ }
+ void NativeDownloadTransferRegistry::Expire() {
+   if ((state_ == State::kArmed || state_ == State::kPending || state_ == State::kReady) &&
+       base::TimeTicks::Now() >= deadline_) {
+-    BeginRetire(Error::kTimeout); Schedule();
++    auto self = weak_.GetWeakPtr(); BeginRetire(Error::kTimeout);
++    if (self) self->Schedule();
+   }
+ }
+ void NativeDownloadTransferRegistry::BeginRetire(Error error) {
+@@ -95,7 +103,8 @@
+ }
+ void NativeDownloadTransferRegistry::Step() {
+   if (ticket_.empty()) return;
+-  Expire();
++  auto self = weak_.GetWeakPtr(); Expire();
++  if (!self) return;
+   if (!lease_ || lease_->finished()) {
+     if (release_requested_) { ReplyRelease(true); return; }
+     if (state_ == State::kRetiring) state_ = State::kFailed;
+@@ -131,30 +140,38 @@
+       base::BindOnce(&NativeDownloadTransferRegistry::Poll, weak_.GetWeakPtr()));
+ }
+ void NativeDownloadTransferRegistry::OnReady(NativeDownloadReadSession::Metadata metadata) {
++  auto self = weak_.GetWeakPtr();
+   if (state_ != State::kPending || base::TimeTicks::Now() >= deadline_) {
+     if (state_ == State::kPending) BeginRetire(Error::kTimeout);
+-    Poll(); return;
++    if (self) self->Poll();
++    return;
+   }
+   if (metadata.error != NativeDownloadReadSession::Error::kNone) {
+     BeginRetire(metadata.error == NativeDownloadReadSession::Error::kLimit ? Error::kLimit : Error::kIo);
+   } else { metadata_ = std::move(metadata); state_ = State::kReady; }
+-  Poll();
++  if (self) self->Poll();
+ }
+ void NativeDownloadTransferRegistry::OnRead(NativeDownloadReadSession::ReadCallback done,
+     NativeDownloadReadSession::Chunk chunk) {
+-  Expire();
++  auto self = weak_.GetWeakPtr(); Expire();
++  if (!self) {
++    std::move(done).Run({NativeDownloadReadSession::Error::kClosed, chunk.offset, {}, false});
++    return;
++  }
+   if (state_ != State::kReady) chunk = {NativeDownloadReadSession::Error::kClosed, chunk.offset, {}, false};
+   if (chunk.error != NativeDownloadReadSession::Error::kNone && state_ == State::kReady) {
+-    BeginRetire(Error::kIo); Schedule();
++    BeginRetire(Error::kIo);
++    if (self) self->Schedule();
+   }
+   std::move(done).Run(std::move(chunk));
+ }
+ void NativeDownloadTransferRegistry::OnDownloadUpdated(DownloadItem*) { Poll(); }
+ void NativeDownloadTransferRegistry::OnDownloadDestroyed(DownloadItem*) {
+   item_ = nullptr;
++  auto self = weak_.GetWeakPtr();
+   if (state_ != State::kRetiring) BeginRetire(Error::kUnavailable);
+   // Destruction notification is never item/map retirement success.
+-  Schedule();
++  if (self) self->Schedule();
+ }
+ void NativeDownloadTransferRegistry::ReplyRelease(bool success) {
+   auto done = std::move(release_callback_);
+--- a/content/browser/devtools/protocol/page_handler.cc
++++ b/content/browser/devtools/protocol/page_handler.cc
+@@ -549,7 +549,7 @@
+   auto self = weak_factory_.GetWeakPtr();
+   auto* contents = WebContents::FromRenderFrameHost(host_);
+   if (!contents || !NativeDownloadTransferOwner::GetOrCreateForWebContents(contents)
+-                        ->RegistryForDocument(host_) || !self ||
++                        ->ClientForDocument(host_) || !self ||
+       !AssureTopLevelActiveFrame().IsSuccess() ||
+       host_->GetDocumentToken().ToString() != actual_document)
+     return Response::ServerError("Remote Paint download bridge unavailable");
+--- a/content/browser/download/native_download_transfer_owner.cc
++++ b/content/browser/download/native_download_transfer_owner.cc
+@@ -4,7 +4,7 @@
+ #include "components/download/public/common/download_item.h"
+ #include "components/download/public/common/native_download_budget.h"
+ #include "components/download/public/common/native_download_request_context.h"
+-#include "components/download/public/common/native_download_transfer_registry.h"
++#include "components/download/public/common/native_download_transfer_client.h"
+ #include "content/browser/download/download_manager_impl.h"
+ #include "content/browser/renderer_host/render_frame_host_impl.h"
+ #include "content/public/browser/browser_context.h"
+@@ -23,13 +23,13 @@
+   }
+ }
+ NativeDownloadTransferOwner::~NativeDownloadTransferOwner() {
+-  weak_.InvalidateWeakPtrs();
+-  UnobserveManager();
+-  // Destruction drops pending client callbacks; the core destructor still
+-  // closes its actual reader and starts the independently retained lease gate.
+-  registry_.reset(); original_page_.reset();
++  closed_ = true; weak_.InvalidateWeakPtrs();
++  UnobserveManager(); original_page_.reset();
++  // Move first: destruction settles bounded client replies and can re-enter
++  // browser teardown; no member is accessed after those callbacks.
++  auto previous = std::move(client_);
+ }
+-download::NativeDownloadTransferRegistry* NativeDownloadTransferOwner::RegistryForDocument(
++download::NativeDownloadTransferClient* NativeDownloadTransferOwner::ClientForDocument(
+     RenderFrameHost* current) {
+   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+   if (!enabled_ || closed_ || !manager_ || !web_contents() || !current ||
+@@ -50,20 +50,24 @@
+         actual, actual, download::NativeDownloadRequestContext::Origin::kExplicitRequest);
+     if (!captured) return nullptr;
+   }
+-  if (!registry_) {
++  if (!client_) {
+     original_page_ = std::move(captured);
+-    registry_ = std::make_unique<download::NativeDownloadTransferRegistry>(original_page_);
++    client_ = std::make_unique<download::NativeDownloadTransferClient>(original_page_);
+   }
+-  return registry_.get();
++  return client_.get();
++}
++void NativeDownloadTransferOwner::ClientDetached(const base::UnguessableToken& client) {
++  DCHECK_CURRENTLY_ON(BrowserThread::UI);
++  if (client_ && client_->OwnsClient(client)) RetireDocument();
+ }
+ void NativeDownloadTransferOwner::OnDownloadCreated(DownloadManager* manager, download::DownloadItem* item) {
+   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+-  if (closed_ || manager != manager_ || !registry_ || !item) return;
++  if (closed_ || manager != manager_ || !client_ || !item) return;
+   // Read the admission retained by the actual item. The core matches its
+   // original immutable Page and arm-time/lifetime claim; no current frame can
+   // repair missing provenance or adopt a historical/other-Page item here.
+   auto lease = item->GetRemotePaintAdmission();
+-  if (lease) registry_->Offer(std::move(lease));
++  if (lease) client_->Offer(std::move(lease));
+ }
+ void NativeDownloadTransferOwner::UnobserveManager() {
+   if (manager_) manager_->RemoveObserver(this);
+@@ -77,7 +81,7 @@
+ void NativeDownloadTransferOwner::RetireDocument() {
+   // Move first: a release callback delivered by Invalidate may re-enter browser
+   // teardown. Never touch this owner after running that callback.
+-  auto previous = std::move(registry_);
++  auto previous = std::move(client_);
+   original_page_.reset();
+   if (previous) previous->Invalidate();
+ }
+--- a/content/browser/download/native_download_transfer_owner.h
++++ b/content/browser/download/native_download_transfer_owner.h
+@@ -5,6 +5,7 @@
+ #include "base/memory/raw_ptr.h"
+ #include "base/memory/ref_counted.h"
+ #include "base/memory/weak_ptr.h"
++#include "base/unguessable_token.h"
+ #include "content/common/content_export.h"
+ #include "content/public/browser/download_manager.h"
+ #include "content/public/browser/web_contents_observer.h"
+@@ -12,7 +13,7 @@
+ 
+ namespace download {
+ class NativeDownloadRequestContext;
+-class NativeDownloadTransferRegistry;
++class NativeDownloadTransferClient;
+ }
+ namespace content {
+ // One tab-lifetime manager observer, with at most one document-lifetime core.
+@@ -24,7 +25,8 @@
+       public DownloadManager::Observer {
+  public:
+   ~NativeDownloadTransferOwner() override;
+-  download::NativeDownloadTransferRegistry* RegistryForDocument(RenderFrameHost* current);
++  download::NativeDownloadTransferClient* ClientForDocument(RenderFrameHost* current);
++  void ClientDetached(const base::UnguessableToken& client);
+   void OnDownloadCreated(DownloadManager* manager, download::DownloadItem* item) override;
+   void ManagerGoingDown(DownloadManager* manager) override;
+   void PrimaryPageChanged(Page& page) override;
+@@ -39,7 +41,7 @@
+   bool closed_ = false;
+   raw_ptr<DownloadManager> manager_ = nullptr;
+   scoped_refptr<download::NativeDownloadRequestContext> original_page_;
+-  std::unique_ptr<download::NativeDownloadTransferRegistry> registry_;
++  std::unique_ptr<download::NativeDownloadTransferClient> client_;
+   base::WeakPtrFactory<NativeDownloadTransferOwner> weak_{this};
+   WEB_CONTENTS_USER_DATA_KEY_DECL();
+ };

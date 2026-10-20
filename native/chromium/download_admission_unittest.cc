@@ -33,6 +33,7 @@
 #include "components/download/public/common/native_download_request_context.h"
 #include "components/download/public/common/native_download_read_session.h"
 #include "components/download/public/common/native_download_transfer_registry.h"
+#include "components/download/public/common/native_download_transfer_client.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
@@ -841,6 +842,178 @@ TEST_F(RemotePaintDownloadOwnerAccessTest, ActualItemVirtualAccessRetainsOrigina
 TEST_F(RemotePaintDownloadOwnerAccessTest, CustomItemDefaultsToNoAdmissionWithoutDowncast) {
   download::MockDownloadItem custom; download::DownloadItem* item = &custom;
   EXPECT_FALSE(item->GetRemotePaintAdmission()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+
+
+using Client = download::NativeDownloadTransferClient;
+class DeleteClientOnCancel : public download::DownloadItem::Observer {
+ public:
+  DeleteClientOnCancel(download::DownloadItem* item, base::OnceClosure drop) : item_(item), drop_(std::move(drop)) { item_->AddObserver(this); }
+  ~DeleteClientOnCancel() override { if (item_) item_->RemoveObserver(this); }
+  void OnDownloadUpdated(download::DownloadItem* item) override {
+    if (item->GetState() != download::DownloadItem::CANCELLED || !drop_) return;
+    item_->RemoveObserver(this); item_ = nullptr; auto drop = std::move(drop_); std::move(drop).Run();
+  }
+  void OnDownloadDestroyed(download::DownloadItem*) override { item_ = nullptr; }
+ private:
+  raw_ptr<download::DownloadItem> item_;
+  base::OnceClosure drop_;
+};
+class RemotePaintDownloadClientTest : public RemotePaintDownloadReadTest {
+ protected:
+  std::string Arm(Client& client, const base::UnguessableToken& key, base::TimeDelta timeout = base::Seconds(10)) {
+    auto ticket = client.Arm(key, Budget::kFileBytes, timeout); EXPECT_TRUE(ticket); return ticket.value_or("");
+  }
+  void Start(Model& model, Client& client, scoped_refptr<download::NativeDownloadRequestContext> context) {
+    model.Start(true, 7, true, std::move(context)); ASSERT_TRUE(client.Offer(LeaseFor(model))); model.Drain();
+  }
+  void Release(Model& model, Client& client, const base::UnguessableToken& key, const std::string& ticket) {
+    base::test::TestFuture<bool> done; EXPECT_TRUE(client.Release(key, ticket, done.GetCallback())); model.Drain();
+    EXPECT_TRUE(done.IsReady()); if (done.IsReady()) EXPECT_TRUE(done.Take()); EXPECT_EQ(0u, Budget::ReservedItems());
+  }
+};
+TEST_F(RemotePaintDownloadClientTest, EmptyClientAndRejectedArmDoNotBindTicket) {
+  Model model(tasks_); Client client(RequestContext()); const auto key = base::UnguessableToken::Create();
+  EXPECT_FALSE(client.Arm({}, 7, base::Seconds(10))); EXPECT_FALSE(client.Arm(key, 0, base::Seconds(10)));
+  EXPECT_FALSE(client.OwnsClient(key)); const auto ticket = Arm(client, key); EXPECT_TRUE(client.OwnsClient(key));
+  Release(model, client, key, ticket); EXPECT_FALSE(client.OwnsClient(key));
+}
+TEST_F(RemotePaintDownloadClientTest, OnlyOriginalClientAndTicketCanAccessActualData) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto key = base::UnguessableToken::Create(), other = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  Start(model, client, context); EXPECT_FALSE(client.Info(other, ticket)); EXPECT_FALSE(client.Info(key, "bad"));
+  EXPECT_FALSE(client.Read(other, ticket, 0, 7, base::BindOnce([](Reader::Chunk) {})));
+  EXPECT_FALSE(client.Release(other, ticket, base::BindOnce([](bool) {}))); EXPECT_FALSE(client.OwnsClient(other));
+  EXPECT_FALSE(client.Arm(other, 7, base::Seconds(10))); EXPECT_EQ(1u, Budget::ReservedItems()); Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, SuccessfulReleaseAllowsAnotherClientAfterRealRetirement) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); const auto a = base::UnguessableToken::Create(), b = base::UnguessableToken::Create();
+  const auto first = Arm(client, a); Start(model, client, context); Release(model, client, a, first);
+  const auto second = Arm(client, b); EXPECT_NE(first, second); EXPECT_FALSE(client.Info(a, first)); Start(model, client, context); Release(model, client, b, second);
+}
+TEST_F(RemotePaintDownloadClientTest, ActualFileReadAdmitsOnlyOnePendingReply) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); Start(model, client, context);
+  base::test::TestFuture<Reader::Chunk> done; EXPECT_TRUE(client.Read(key, ticket, 0, 7, done.GetCallback()));
+  EXPECT_FALSE(client.Read(key, ticket, 0, 7, base::BindOnce([](Reader::Chunk) {}))); tasks_.RunUntilIdle(); ASSERT_TRUE(done.IsReady());
+  const auto chunk = done.Take(); EXPECT_EQ(ReadError::kNone, chunk.error); EXPECT_EQ("xxxxxxx", chunk.bytes); EXPECT_TRUE(chunk.complete); Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, ReentrantReadIsRejectedUntilActualCallbackReturns) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); Start(model, client, context);
+  bool accepted = true; base::test::TestFuture<Reader::Chunk> done;
+  EXPECT_TRUE(client.Read(key, ticket, 0, 7, base::BindOnce(
+      [](Client* client, base::UnguessableToken key, std::string ticket, bool* accepted, Reader::ReadCallback done, Reader::Chunk chunk) {
+        *accepted = client->Read(key, ticket, 0, 7, base::BindOnce([](Reader::Chunk) {})); std::move(done).Run(std::move(chunk));
+      }, base::Unretained(&client), key, ticket, base::Unretained(&accepted), done.GetCallback())));
+  tasks_.RunUntilIdle(); EXPECT_TRUE(done.IsReady()); EXPECT_FALSE(accepted); Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, InvalidateSettlesReadOnceBeforeActualIoReturns) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); Start(model, client, context);
+  auto gate = BlockFileSequence(); auto unblock = ReleaseOnExit(gate); int calls = 0; base::test::TestFuture<Reader::Chunk> done;
+  EXPECT_TRUE(client.Read(key, ticket, 0, 7, base::BindOnce(
+      [](int* calls, Reader::ReadCallback done, Reader::Chunk chunk) { ++*calls; std::move(done).Run(std::move(chunk)); }, base::Unretained(&calls), done.GetCallback())));
+  client.Invalidate(); ASSERT_TRUE(done.IsReady()); EXPECT_EQ(ReadError::kClosed, done.Take().error); EXPECT_EQ(1, calls); EXPECT_EQ(1u, Budget::ReservedItems());
+  EXPECT_FALSE(client.OwnsClient(key)); EXPECT_FALSE(client.Arm(key, 7, base::Seconds(10)));
+  gate->allow.Signal(); model.Drain(); EXPECT_EQ(1, calls); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadClientTest, InvalidateSettlesBothReplySlotsWithoutRetirementCredit) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); Start(model, client, context);
+  auto gate = BlockFileSequence(); auto unblock = ReleaseOnExit(gate); base::test::TestFuture<Reader::Chunk> read; base::test::TestFuture<bool> released;
+  EXPECT_TRUE(client.Read(key, ticket, 0, 7, read.GetCallback())); EXPECT_TRUE(client.Release(key, ticket, released.GetCallback()));
+  EXPECT_FALSE(client.Release(key, ticket, base::BindOnce([](bool) {}))); EXPECT_FALSE(read.IsReady()); EXPECT_FALSE(released.IsReady());
+  client.Invalidate(); ASSERT_TRUE(read.IsReady()); ASSERT_TRUE(released.IsReady()); EXPECT_EQ(ReadError::kClosed, read.Take().error); EXPECT_FALSE(released.Take());
+  EXPECT_EQ(1u, Budget::ReservedItems()); gate->allow.Signal(); model.Drain(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadClientTest, DestructionFreesReplyCapturesWhileActualLeaseRemainsHeld) {
+  Model model(tasks_); auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key); Start(model, *client, context);
+  auto gate = BlockFileSequence(); auto unblock = ReleaseOnExit(gate); auto read_capture = base::MakeRefCounted<base::RefCountedData<int>>(0), release_capture = base::MakeRefCounted<base::RefCountedData<int>>(0);
+  EXPECT_TRUE(client->Read(key, ticket, 0, 7, base::BindOnce([](scoped_refptr<base::RefCountedData<int>> capture, Reader::Chunk chunk) { ++capture->data; EXPECT_EQ(ReadError::kClosed, chunk.error); }, read_capture)));
+  EXPECT_TRUE(client->Release(key, ticket, base::BindOnce([](scoped_refptr<base::RefCountedData<int>> capture, bool success) { ++capture->data; EXPECT_FALSE(success); }, release_capture)));
+  EXPECT_FALSE(read_capture->HasOneRef()); EXPECT_FALSE(release_capture->HasOneRef()); client.reset();
+  EXPECT_TRUE(read_capture->HasOneRef()); EXPECT_TRUE(release_capture->HasOneRef()); EXPECT_EQ(1, read_capture->data); EXPECT_EQ(1, release_capture->data); EXPECT_EQ(1u, Budget::ReservedItems());
+  gate->allow.Signal(); model.Drain(); EXPECT_EQ(1, read_capture->data); EXPECT_EQ(1, release_capture->data); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadClientTest, SynchronousUnusedReleaseCanDestroyClient) {
+  Model model(tasks_); auto client = std::make_unique<Client>(RequestContext()); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key); int replies = 0;
+  EXPECT_TRUE(client->Release(key, ticket, base::BindOnce([](std::unique_ptr<Client>* slot, int* replies, bool success) {
+    EXPECT_TRUE(success); ++*replies; slot->reset();
+  }, base::Unretained(&client), base::Unretained(&replies))));
+  EXPECT_FALSE(client); EXPECT_EQ(1, replies); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadClientTest, FirstInvalidationReplyCanDestroyOwnerBeforeSecondReply) {
+  Model model(tasks_); auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key); Start(model, *client, context);
+  auto gate = BlockFileSequence(); auto unblock = ReleaseOnExit(gate); int reads = 0, releases = 0;
+  EXPECT_TRUE(client->Read(key, ticket, 0, 7, base::BindOnce([](std::unique_ptr<Client>* slot, int* calls, Reader::Chunk chunk) {
+    ++*calls; EXPECT_EQ(ReadError::kClosed, chunk.error); slot->reset();
+  }, base::Unretained(&client), base::Unretained(&reads))));
+  EXPECT_TRUE(client->Release(key, ticket, base::BindOnce([](int* calls, bool success) { ++*calls; EXPECT_FALSE(success); }, base::Unretained(&releases))));
+  client->Invalidate(); EXPECT_FALSE(client); EXPECT_EQ(1, reads); EXPECT_EQ(1, releases); EXPECT_EQ(1u, Budget::ReservedItems());
+  gate->allow.Signal(); model.Drain(); EXPECT_EQ(1, reads); EXPECT_EQ(1, releases); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadClientTest, SynchronousReleaseReplyCanArmAnotherClient) {
+  Model model(tasks_); Client client(RequestContext()); const auto a = base::UnguessableToken::Create(), b = base::UnguessableToken::Create(); const auto first = Arm(client, a); std::string second;
+  EXPECT_TRUE(client.Release(a, first, base::BindOnce([](Client* client, base::UnguessableToken key, std::string* next, bool success) {
+    EXPECT_TRUE(success); auto ticket = client->Arm(key, 7, base::Seconds(10)); EXPECT_TRUE(ticket); if (ticket) *next = *ticket;
+  }, base::Unretained(&client), b, base::Unretained(&second))));
+  EXPECT_TRUE(client.OwnsClient(b)); EXPECT_NE(first, second); Release(model, client, b, second);
+}
+TEST_F(RemotePaintDownloadClientTest, ReleaseWaitsActualFileAndMetadataAck) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); Start(model, client, context);
+  const auto id = Identity(PathFor(model)); base::test::TestFuture<bool> done; EXPECT_TRUE(client.Release(key, ticket, done.GetCallback())); model.Drain();
+  EXPECT_EQ(0, OwnedReferences(id)); EXPECT_TRUE(model.delegate.items.empty()); EXPECT_FALSE(done.IsReady()); EXPECT_TRUE(client.OwnsClient(key)); EXPECT_EQ(1u, Budget::ReservedItems());
+  for (auto& ack : model.delegate.metadata_acks) ack->MetadataRetired(); model.delegate.metadata_acks.clear(); model.Drain();
+  ASSERT_TRUE(done.IsReady()); EXPECT_TRUE(done.Take()); EXPECT_FALSE(client.OwnsClient(key)); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadClientTest, FailedReplyDeadlineKeepsBindingUntilLaterActualSettlement) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(), next = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); Start(model, client, context);
+  base::test::TestFuture<bool> done; EXPECT_TRUE(client.Release(key, ticket, done.GetCallback())); model.Drain(); tasks_.FastForwardBy(base::Seconds(31));
+  ASSERT_TRUE(done.IsReady()); EXPECT_FALSE(done.Take()); EXPECT_TRUE(client.OwnsClient(key)); EXPECT_FALSE(client.Arm(next, 7, base::Seconds(10))); EXPECT_EQ(1u, Budget::ReservedItems());
+  for (auto& ack : model.delegate.metadata_acks) ack->MetadataRetired(); model.delegate.metadata_acks.clear(); model.Drain();
+  const auto second = Arm(client, next); EXPECT_FALSE(client.OwnsClient(key)); Release(model, client, next, second);
+}
+TEST_F(RemotePaintDownloadClientTest, RejectedReadDoesNotRetainCallbackCaptures) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); Start(model, client, context);
+  auto capture = base::MakeRefCounted<base::RefCountedData<int>>(0);
+  EXPECT_FALSE(client.Read(key, ticket, 8, 7, base::BindOnce([](scoped_refptr<base::RefCountedData<int>> capture, Reader::Chunk) { ++capture->data; }, capture)));
+  EXPECT_TRUE(capture->HasOneRef()); EXPECT_EQ(0, capture->data); EXPECT_FALSE(client.Read(key, ticket, 0, 7, {})); EXPECT_FALSE(client.Release(key, ticket, {}));
+  Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, ReadReplyDeadlineSettlesBeforeBlockedActualFileJobReturns) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); Start(model, client, context);
+  auto gate = BlockFileSequence(); auto unblock = ReleaseOnExit(gate); auto capture = base::MakeRefCounted<base::RefCountedData<int>>(0);
+  EXPECT_TRUE(client.Read(key, ticket, 0, 7, base::BindOnce([](scoped_refptr<base::RefCountedData<int>> capture, Reader::Chunk chunk) {
+    ++capture->data; EXPECT_EQ(ReadError::kClosed, chunk.error); EXPECT_TRUE(chunk.bytes.empty());
+  }, capture)));
+  tasks_.AdvanceClock(base::Seconds(11)); base::RunLoop run; run.RunUntilIdle();
+  EXPECT_FALSE(gate->allow.IsSignaled()); EXPECT_EQ(1, capture->data); EXPECT_TRUE(capture->HasOneRef()); EXPECT_EQ(1u, Budget::ReservedItems());
+  gate->allow.Signal(); model.Drain(); EXPECT_EQ(1, capture->data); Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, TwelveDownloadsAcrossClientKeysReuseActualQuota) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context); std::string previous;
+  for (int i = 0; i < 12; ++i) {
+    const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); EXPECT_NE(previous, ticket); previous = ticket;
+    Start(model, client, context); base::test::TestFuture<Reader::Chunk> done; EXPECT_TRUE(client.Read(key, ticket, 0, 7, done.GetCallback())); tasks_.RunUntilIdle();
+    ASSERT_TRUE(done.IsReady()); EXPECT_EQ("xxxxxxx", done.Take().bytes); Release(model, client, key, ticket); EXPECT_TRUE(base::IsDirectoryEmpty(model.directory.GetPath()));
+  }
+}
+TEST_F(RemotePaintDownloadClientTest, ActualCancelObserverCanDestroyClientInsideExpiredInfo) {
+  Model model(tasks_); auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(*client, key);
+  model.Start(false, 7, true, context); ASSERT_TRUE(client->Offer(LeaseFor(model))); model.Drain();
+  DeleteClientOnCancel observer(model.delegate.items.begin()->second.get(), base::BindOnce([](std::unique_ptr<Client>* slot) { slot->reset(); }, base::Unretained(&client)));
+  tasks_.AdvanceClock(base::Seconds(11)); auto* current = client.get(); EXPECT_FALSE(current->Info(key, ticket)); EXPECT_FALSE(client);
+  model.Drain(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadClientTest, ActualCancelObserverCanDestroyCoreInsideExpiredReadOrOffer) {
+  for (bool offering : {false, true}) {
+    Model model(tasks_); auto context = RequestContext(); auto registry = std::make_unique<Registry>(context); auto ticket = registry->Arm(7, base::Seconds(10)); ASSERT_TRUE(ticket);
+    model.Start(false, 7, true, context); auto lease = LeaseFor(model); ASSERT_TRUE(registry->Offer(lease)); model.Drain();
+    DeleteClientOnCancel observer(model.delegate.items.begin()->second.get(), base::BindOnce([](std::unique_ptr<Registry>* slot) { slot->reset(); }, base::Unretained(&registry)));
+    tasks_.AdvanceClock(base::Seconds(11)); auto* current = registry.get();
+    if (offering) EXPECT_FALSE(current->Offer(lease));
+    else {
+      EXPECT_FALSE(current->Read(*ticket, 0, 7, base::BindOnce([](Reader::Chunk) {})));
+    }
+    EXPECT_FALSE(registry); model.Drain(); EXPECT_EQ(0u, Budget::ReservedItems());
+  }
 }
 
 TEST_F(RemotePaintDownloadBudgetTest, FailedCleanupHoldsQuotaUntilActualProcessExit) {

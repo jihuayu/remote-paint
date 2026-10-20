@@ -1,0 +1,23 @@
+# Native 客户端绑定与有界等待回复
+
+第28顺序补丁增加NativeDownloadTransferClient，作为每份文档registry的浏览器调用封装。一个ticket只绑定一个非空UnguessableToken客户端键；错误键或ticket不能info/read/release，第二次arm在原ticket保留时拒绝。键必须由后续可信Page handler自己的不可变字段提供，不能从协议参数接收。本步骤尚未生成实际handler键或开放Page传输命令，所以组件键合同不是完整协议身份验收。
+
+封装最多保留一个读取回复和一个释放回复。读取仍由实际NativeDownloadReadSession限制单在途、3072字节chunk和4MiB内容；等待回复有不晚于原arm期限的UI定时器，至多30秒。超时先移出回调、清除本次operation token，再交付无数据kClosed；迟到IO回调按独立UnguessableToken匹配，不能占用新回复槽或再次交付。它不延长原下载期限。
+
+Invalidate及析构永久废止该文档封装，先移动两个待回复回调、清除绑定和weak回调，再发起真实registry退休，最后从局部变量逐个交付读取closed/释放false。第一个回调可以销毁owner，第二个仍正确结算。实际文件/URL/item/map lease独立保留，失败回复不能归还预约。正常Release成功仍必须等lease.finished；释放回复30秒超时后保持客户端/ticket，只有底层之后实际结算并清掉ticket，才允许另一个客户端重新arm，不以终生耗尽配额代替清理复用。
+
+真实WebContents owner已改为持有这一封装，保留原Page见证和manager新item观察；ClientDetached只对匹配键的文档发起退休。PageHandler描述符仍先认证后初始化。真正的handler断连调用及arm/info/read/release命令尚未接入，本步骤不能证明真实Playwright pending request或元数据物理上限。
+
+取消实际DownloadItem会同步通知观察者，观察者可能删除整个owner。因此registry在Expire、Info、Read、Offer、Release、Invalidate及相关内部回调发起退休后检查weak存活，调用封装查询也复查存活。析构和失效先移出旧owner，再运行外部回复，避免回调后访问已删除对象。这个改动在第28补丁应用前审查草稿中完成，未覆盖已应用补丁或其收据。
+
+新增18项用实际manager/item/file/线程任务和回调验证：原键/ticket隔离；真实退休后换客户端；单等待读取含回调重入；失效结算一个或两个回复且不提前返额度；析构释放回调捕获对象而真实文件任务仍阻塞；同步空ticket释放可删除封装或重入下一arm；真实文件已关但item/map ACK未到仍等待；false释放到后续实际结算才可换键；拒绝读取不保留捕获；原期限UI回复在阻塞文件工作返回前结束；12次实际下载换键复用；真实item取消观察者在过期Info内删除封装，以及在过期Read/Offer内删除核心。没有模拟成功物理退休。
+
+期限用mock clock，原文件任务和主RunLoop真实。到期用例只阻塞实际文件序列并让UI定时器运行，没有停止文件线程；回调捕获的真实refcount回到单一测试引用，而预约仍为1，放行真实工作并清理后才归零。它不是进程内存采样，也不是实际PW会话请求测量。既有4份实际子进程报告各1项通过，本步骤未新增子进程。
+
+最终Linux ARM64 ELF无过滤405项（18新客户端回复、111既有Native、276上游及竞态）全部RUN/COMPLETED，零失败/禁用，编译列表逐项一致；新增18项从父版本源码差分确认、无移除、全部执行。Mac/Linux专项各13项通过，未重跑完整1435项或SDK。组件GN/Ninja5步首次成功；真实owner、PageHandler、DownloadManagerImpl和NavigationRequest四TU按实际命令编译ARM64对象，浏览器GN依赖检查通过。没有整浏览器链接/运行、真实RFH/导航/cookies或Native Mac验收。
+
+28补丁完整回放与64实际修改路径、35个Native组件逐一一致。自有容器实际终态/PID0/无OOM后删除，专用输出与Go缓存保留，原浏览器包19文件和观察器hash/身份保持；未访问禁止旧输出或演示，未提交、推送或使用子代理。
+
+下一步接实际受信任Page命令、handler不可变客户端键和断连退出、每次命令及回复的实际活动主frame/document认证，以及有界协议元数据和base64 chunk。之后仍须处理原PW浏览器会话事件/元数据、Source私有目录和unarmed策略，再显式启用并验收完整浏览器。Source预算第二开关关闭、transfersReady=false；早期IO/远端服务物理退休/未知启动/原8小时增长失败未通过，K6部分、41项10完成/17部分/14待办保持。
+
+见[结构化证据](evidence/native-download-transfer-client.json)、[WebContents接线](native-download-transfer-owner.md)、[单ticket核心](native-download-transfer-registry.md)与[进度](optimization-progress.md)。
