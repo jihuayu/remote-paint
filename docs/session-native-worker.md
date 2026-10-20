@@ -100,3 +100,8 @@ worker现从认证后的owner Start与固定Session/租户/区域派生独立流
 ## Native健康订阅
 
 Native资源要求实际Browser/Page/Broker的on/off接口，在Ready之前绑定并复核Browser连接、Page关闭/崩溃及Broker终止状态；单一订阅在终止时锁存失效，不把capture压力当作死亡。私有worker在慢清理前通知父端，关闭仍持有晚到初始化资源，注册期关闭的监听器也在initialize终结后解绑。真实浏览器/broker死亡已撤销Ready和端点；Page实际崩溃、完整生产生命周期和公开SDK像素仍待验收。见[健康范围](native-health-notification.md)。
+
+
+## 已安装公开SDK的生产Native像素
+
+真正生产provider/端点解析已完成三种SDK绘制路径的实际像素、WebGL中文黑框、输入与视口对照及显式Session释放；没有Source CDP测试接口或Node替身。完整崩溃/TTL/取消/恢复与物理/丢包/8小时仍待验收。见[生产Native像素范围](production-native-viewer.md)。

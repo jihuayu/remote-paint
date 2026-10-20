@@ -1,0 +1,15 @@
+# 生产 Native provider 的已安装 SDK 像素
+
+使用真正canonical Native worker、DockerSessionProvider、私有attach/内核见证/启动journal、Registry/端点解析和已安装后端SDK创建真实Source。没有Node provider替身，也没有给生产worker增加测试接口或经Source CDP注入DOM。隔离执行项目只stage合格Linux broker；生产目录、真实浏览器指纹和宿主端口发布策略不变。
+
+受控HTTP页面自行建立图像、Canvas2D、输入/视口颜色标记和WebGL2 canvas，真实readPixels为[26,191,64,255]；只报告有限测试计数。公开资产Origin与嵌入宿主分离，宿主仅服务已安装包的六个SDK模块，后台API凭据保留在Node宿主内存。Mac真实GPU Worker、禁用GPU的CPU Worker、额外抑制Offscreen transfer能力的CPU主线程均检查实际Viewer canvas像素。三种路径WebGL区域为黑色，精确“WebGL 无法显示”字形precision/recall均1，普通HTML图像、Canvas2D和实际输入像素保留。
+
+三次mount与GPU路径的重连、readonly/controller切换共6条实际连接像素路径。真实页面报告证明按键/鼠标按下后，无变化的resize也先释放输入，公开控制租约保留；640×400、720×480变化均在Source DOM报告、Source ack和Viewer实际像素一致。公开22字段performance/13字段firstFrame的当前generation、viewport、帧号和viewer-ui-receipt/client-estimate范围一致；readonly拒绝控制，真实frame-ancestors拒绝未列出父Origin且分配ticket为0。
+
+三条路径都在真实新图像的异步SHA校验中施加显式测试暂停；控制无变化resize回执先完成，校验释放前图像角像素仍为旧值，释放后实际像素更新。这个测试暂停不是N1丢包、同步Wasm等待或物理时延验收。首次Wasm heap均为134217728字节，这是client-estimate，不是物理footprint或8小时增长结论。
+
+最后在CPU主线程Viewer仍连接时通过已安装后端SDK释放Session，后台立即拒绝Ready和端点，完整退役后配额释放，公开SDK的performance/control为unavailable、firstFrame为null。观察时SDK状态为reconnecting，之后显式destroy；此次不宣称SDK会自动终止全部重连。7次ticket请求包含释放后的拒绝尝试，6次Source解析完成实际像素路径。真实根Node退出0，独立打开运行记录均retired、container-removed证据存在、精确CID再查消失；3组Mac浏览器各4个采样PID及根Node/attach代理共14个已知PID均ESRCH，所有服务器和fixture停止，错误数组为空。
+
+原935文件的全部生产/测试/SDK输入字节未变，新增两个opt-in测试脚本；精确继承双平台952项完整JS及77 Node/16 Python安装合同、严格TSC和Mac Mypy，没有冒充新的完整回归或包安装。源Native每帧RPC计数未在本次重新采集，保留旧证据范围。
+
+接下来仍需真实Page/renderer崩溃、生产Native TTL/取消/晚到启动/EOF/恢复矩阵与会话终止后的SDK策略，以及全部Agent/CDP栅栏、更多设备、N1轻微丢包/物理时延和原8小时增长。41项9/15/17、原8小时失败和192MiB门槛保持，未自动重跑、强制浏览器GC、改演示/采样器或暂存提交推送。见[范围收据](evidence/production-native-viewer.json)。

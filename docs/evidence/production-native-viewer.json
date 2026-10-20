@@ -1,0 +1,155 @@
+{
+  "at": "2026-10-19T12:14:44.171667+00:00",
+  "task": "production-Native-installed-SDK-pixels",
+  "status": "actual-production-Native-installed-SDK-pixels-qualified",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/production-native-viewer-v1/manifest.json",
+  "executedManifestSha256": "dd9e1b24f55531e9cae6db53ca600729bf715162aa0505d3fca9bcfef88b5b4b",
+  "canonicalSourceFiles": 937,
+  "productionRuntimeSourcesUnchangedFrom935": true,
+  "executionDeviations": {
+    "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": {
+      "canonicalSha256": "faa6b3b47a15e4edd659f3fb99c2ca8eb6aace5461a1f12090314e2dda8a5cb0",
+      "fixtureSha256": "4ed13b4cfe989945aab0256eb40b00d026ed74783fd39519df8903d270a61d08"
+    }
+  },
+  "canonicalProductionNativeWorkerExecuted": true,
+  "NodeAdapterUsed": false,
+  "sourceCdpTestApiUsed": false,
+  "qualifiedBrokerStagedOnlyInsideExecutionProject": true,
+  "actualEngineDaemon": "b3aeb5ec-7295-44f7-8576-aa9dc5b40dad",
+  "imageId": "sha256:42df2c322c1c105d79aff686ebf92b0708f237788daa011186976e852b7cf66e",
+  "actualRootNodeExitCode": 0,
+  "actualNativeContainerId": "b03965dd8800d677dabd6cfec66ef61f3c467206add0aa954cf7196d3e893476",
+  "actualNativeVersion": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+  "modes": [
+    "gpu-worker",
+    "cpu-worker",
+    "cpu-main"
+  ],
+  "actualPixelModes": 3,
+  "actualConnectedPixelPaths": 6,
+  "WebGLExactText": "WebGL 无法显示",
+  "sourceActualGreenGlPixel": [
+    26,
+    191,
+    64,
+    255
+  ],
+  "blackBoxGlyphPrecisionRecall": [
+    {
+      "mode": "gpu-worker",
+      "precision": 1,
+      "recall": 1
+    },
+    {
+      "mode": "cpu-worker",
+      "precision": 1,
+      "recall": 1
+    },
+    {
+      "mode": "cpu-main",
+      "precision": 1,
+      "recall": 1
+    }
+  ],
+  "normalHtmlImageCanvas2DAndInputPixels": true,
+  "actualPageReportedNeutralization": true,
+  "explicitNoopAndChangedViewportPixels": true,
+  "actualPublicTelemetryReconnectReadonlyControllerGenerations": true,
+  "readonlyControlDenied": true,
+  "unlistedParentCspAllocatesNoTickets": true,
+  "asyncImageChecksumHeldControlReplyAndOldPixelBarrier": true,
+  "asyncChecksumHoldIsExplicitTestImpairmentNotN1OrPhysicalLatency": true,
+  "ticketRequestsIncludingRejectedAfterRelease": 7,
+  "sourceResolverCalls": 6,
+  "postReleaseObservedSdkState": {
+    "state": "reconnecting",
+    "sessionId": "ses_0faf1e5d-19b6-4499-98ca-be1efbd210ad",
+    "role": "controller",
+    "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+    "generation": 2
+  },
+  "postReleasePerformanceAndControlUnavailableFirstFrameNull": true,
+  "postReleaseAutomaticRetryTerminalBehaviorQualified": false,
+  "componentExplicitlyDestroyedAfterRelease": true,
+  "fixtureHtmlSha256": "9ff1a7abf870207e2a2bb39f5e912d7cf56ae82727efab9a28af4dd61c2128c6",
+  "fixtureReportContainsOnlyBoundedTestCounters": true,
+  "installedSdkArchiveSha256": "eba83b1de6afd850d86bbf719673fcf04d6d55fdbe09672874dc8b8cba6a1bda",
+  "servedInstalledSdkJsHashes": {
+    "viewer.mjs": "b46fec965d07c5fc3eee468d199f94e48548c6dcfb9786405890adfd4e887409",
+    "viewer-frame.mjs": "08f3ae4f389d4d91bd1a6d6ee98014ee0b0e05907e5bc3dfd06fb7eac3c34537",
+    "viewer-channel.mjs": "74eb1c221d17b7f80c27cbc9bf43d7c6b99366eb3665d6a154b76131907d03dc",
+    "viewer-control.mjs": "338cc19827afd6faefa1cd2887a52eac86b60ae0897cb5e409d0f40a3b413e6f",
+    "viewer-connection.mjs": "99237f462caaed7ab1227f69bcaed0666ea43418d9c8b648e74187f3ed711653",
+    "viewer-telemetry.mjs": "906c5c6e9f324bf40cb65dd575f0123f73941be83626830233e06ef5c9e24c30"
+  },
+  "all16InstalledSdkFileHashesVerified": true,
+  "actualInstalledBackendSdkCreateReadRelease": true,
+  "initialWasmHeapEstimates": [
+    134217728,
+    134217728,
+    134217728
+  ],
+  "memoryScope": "client-estimate;not physical footprint or growth proof",
+  "actualNamespaceRetirement": "container-removed",
+  "allExactOwnedContainerIdsAbsent": true,
+  "allKnownHostPidsAbsent": [
+    49569,
+    49609,
+    49610,
+    49766,
+    49767,
+    49768,
+    50037,
+    50042,
+    50043,
+    50044,
+    50139,
+    50143,
+    50144,
+    50145
+  ],
+  "MacBrowserCohorts": 3,
+  "eachCohortSampledPids": [
+    4,
+    4,
+    4
+  ],
+  "allServersAndFixtureStopped": true,
+  "fullJs952BothInheritedAfterEveryOldCanonicalInputMatched": true,
+  "inheritedFullJs": {
+    "mac": {
+      "tests": 952,
+      "pass": 937,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "83b57a3b59ab593a95b35af508ae654594addc42af3b8d374fb2ec3d7ce010dd"
+    },
+    "linux": {
+      "tests": 952,
+      "pass": 946,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "5312e57a2a74fd2426b43cc2f5be96995dd66d0aa733d1a36a19f7a155ed31c5"
+    }
+  },
+  "sdk77Node16PythonTscBothMacMypyInheritedExactInputs": true,
+  "freshFullUnitOrPackageInstallClaimed": false,
+  "renderedPublicSdkPixelsQualified": true,
+  "nativePageCrashTtlCancelRecoveryMatrixQualified": false,
+  "productionNativeFullyQualified": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

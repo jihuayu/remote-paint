@@ -1874,3 +1874,12 @@ Native资源绑定四个终止事件并在Ready前重查，worker先建立停止
 两组真正canonical Native在公开ticket收到Welcome/FrameCommit后，实际拥有浏览器/broker SIGKILL均在原2秒回执后观察窗口撤销Ready和端点，根均0；namespace退役/精确CID消失/4宿主PID回收确认。没有Node shim、公开SDK像素或全生命周期完成声明。见[Native健康范围](native-health-notification.md)。
 
 接下来真实Page崩溃、Native生命周期/恢复及公开SDK像素；41项9/15/17和原8小时失败保持，未自动重跑或提交推送。
+
+
+### 生产Native provider与公开SDK实际像素
+
+真正canonical Native/私有attach/内核见证/持久journal/Registry/端点解析接入已安装SDK；没有Node替身或Source CDP测试接口。GPU Worker、CPU Worker、CPU主线程实际像素通过，源WebGL真绿色在Viewer三路都显示黑框与精确中文提示，图像/Canvas2D/输入及两次视口变化正常；6条连接像素路径含重连/角色切换，CSP、DOM输入释放、异步图像SHA测试暂停下控制优先和最终Session释放通过。
+
+根实际0，完整namespace退役、精确CID消失、14个已知宿主PID回收及服务器关闭确认。释放时SDK观察为reconnecting后显式destroy，自动终止策略未验收。旧952项/SDK精确输入不变，继承原收据，不伪造重跑。见[生产Native像素范围](production-native-viewer.md)。
+
+下一步Native实际崩溃/TTL/取消/恢复及终止策略；41项9/15/17和原8小时失败保持，未自动重跑或提交推送。
