@@ -217,6 +217,7 @@ window.remotePaintViewer=Object.freeze({
  },
  disconnect(){const state=window.remotePaintConnection??{...publicSettings};stopped=true;ticketSource?.destroy();lifecycle.freeze();connectionState({...state,state:'paused'});},
  takeControl:options=>controlActions.take(options),releaseControl:options=>controlActions.release(options),
+ resizeViewport:(size,options)=>controlActions.resizeViewport(size,options),
  get control(){return controlActions.state;},
  get state(){return window.remotePaintConnection??{state:'paused'};}
 });

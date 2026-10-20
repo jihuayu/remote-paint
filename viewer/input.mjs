@@ -105,7 +105,7 @@ export class ViewerInput {
   // A completed request can arrive after a reset; it cannot settle a newer
   // one. A future/invalid ID or malformed matching reply ends the channel.
   if(viewportInteger(message.requestId,0)&&message.requestId<record.requestId)return true;
-  const protocol=()=>{const error=new ViewportInputError('VIEWPORT_PROTOCOL','unknown');this.finishViewport(error);throw error;};
+  const protocol=()=>{const error=new ViewportInputError('VIEWPORT_PROTOCOL','unknown');this.finishViewport(error);this.notifyControl('viewport-protocol');throw error;};
   if(message.requestId!==record.requestId)return protocol();
   if(message.type==='ViewportResizeDenied'){
    if(!viewportRecord(message,['type','requestId','code','outcome'])||!viewportCodes.has(message.code)||!['not-applied','unknown'].includes(message.outcome))return protocol();

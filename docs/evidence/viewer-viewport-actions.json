@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-19T08:19:56.419844+00:00",
+  "task": "K2a2b3c2b2",
+  "status": "implementation-and-scoped-pass-full-regression-and-new-SDK-packages-required",
+  "newCases": 15,
+  "initialCases": 12,
+  "initialFailures": 12,
+  "scopedTests": 83,
+  "scopedPass": 83,
+  "actualExitCode": 0,
+  "beforeFixExit": 1,
+  "beforeFixLogSha256": "5455e258deb65962be160d4e4e7439d73a8d13da97823a392932a53f4fd84c67",
+  "scopedLogSha256": "000934b0509f739f64041f61ac19255763ccb9fb8847584b21d037d8f6a1b450",
+  "realHttpWebSocketSQLiteControlLease": true,
+  "mainWorkerActualSavedCode": true,
+  "DOMCanvasKitWorkerRealmSourceResizeCdpFixtures": true,
+  "BrowserLaunched": false,
+  "sourceAppliedNotNewSubmittedPixels": true,
+  "cancelTimeoutUnknownEndsOldConnection": true,
+  "actualSourceWorkRetainedUntilSettlement": true,
+  "legitimateEpochChangeAwaitsCorrelatedAck": true,
+  "publicFrameComponentViewportExposed": false,
+  "publicBridgeOutcomeStillRequired": true,
+  "nativeViewportControlQualified": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noCommitPush": true
+}

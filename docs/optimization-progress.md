@@ -1759,3 +1759,11 @@ ViewerInput 加入内部有限 resizeViewport 请求和能力检查，暂停旧�
 新增19条合同，相关68项通过，包含保存的Window/Worker和实际Node HTTP/WebSocket/SQLite/ControlLease；独立ControlLink有界解析也通过。DOM/CanvasKit/调度与Source.resize/CDP为明确夹具，不宣称真实新画面或Native验收。详情见[Viewer输入协议](viewer-viewport-input.md)与[范围证据](evidence/viewer-viewport-input.json)。
 
 内部方法尚未接入公开SDK；ControlActions的超时/取消、父子桥/类型和实际Native viewport/像素/控制优先级仍是必须继续的步骤。41项仍9/15/17，原8小时失败与增长策略保持，未自动重跑、未改采样器/演示实例，未暂存提交推送。
+
+### K2a2b3c2b2：远端 viewport 动作与未知结果
+
+Child动作层等待Source相关回执，允许屏障完成前合法的epoch/version变更；接管/交还/viewport共用一个待办额度，配置和预先取消在发请求前拒绝。成功只返回六个冻结字段，明确scope=viewport。50–10000ms总超时、发出后取消、断线及不可验证结果按unknown处理并结束旧连接，Source实际工作继续占用原队列直到结束；不把客户端取消声称为回滚。
+
+15条新合同与原输入/控制相关共83项通过，覆盖真实Node数据链路及保存Window/Worker，异常协议在同步teardown前保留固定错误结果。原始诊断和私有身份不外传；DOM/CanvasKit/调度及Source.resize/CDP为明确夹具。见[动作说明](viewer-viewport-actions.md)和[范围证据](evidence/viewer-viewport-actions.json)。
+
+Frame/DOM SDK父子桥和公开resizeViewport/跨端口outcome仍须下一步实现，不能把Child入口视为完整SDK。真实Native viewport/像素/公开控制优先级与性能事件、原8小时和全部41项仍未验收；计数9/15/17。未改原长测/采样器/演示实例，未暂存提交推送。
