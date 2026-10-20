@@ -1,3 +1,4 @@
+import {captureManagedAgentAccessibility,captureAgentAccessibilityResult,boundAgentAxReply,projectAgentAccessibility} from './agent-accessibility.mjs';
 import {randomUUID} from 'node:crypto';
 import {AgentInputError} from './input.mjs';
 import {createAgentObservationRealm} from './agent-observation-realm.mjs';
@@ -37,10 +38,12 @@ export function captureAgentObservationResult(value,{binding:expectedBinding=nul
 // Source-owned read side. One actual transaction includes evaluation and object
 // cleanup; observer deadlines in the outer channel never free that admission.
 export function createManagedAgentObserver({source,page,binding:bound,version,authorize,live}){
- if(!string(version,256,1)||typeof authorize!=='function'||typeof live!=='function')fail('AGENT_OBSERVATION_UNAVAILABLE');const capture=source.capture,transport=capture?.cdp;if(capture?.page!==page||typeof transport?.send!=='function')fail('AGENT_OBSERVATION_UNAVAILABLE');const send=transport.send.bind(transport),b=binding(bound),group='agent-observe-'+randomUUID();let state=null,pending=null,closed=false,closing=null,poisoned=false;
+ if(!string(version,256,1)||typeof authorize!=='function'||typeof live!=='function')fail('AGENT_OBSERVATION_UNAVAILABLE');const capture=source.capture,transport=capture?.cdp;if(capture?.page!==page||typeof transport?.send!=='function')fail('AGENT_OBSERVATION_UNAVAILABLE');const send=transport.send.bind(transport),b=binding(bound),group='agent-observe-'+randomUUID();let state=null,pending=null,closed=false,closing=null,poisoned=false,auxiliary=null;const axGroup=group+'-ax';
  const current=()=>{live();if(closed)fail('AGENT_RUN_CLOSED');if(poisoned)fail('AGENT_OBSERVATION_UNAVAILABLE');const c=source.capture,config=c?.binding?.config;if(c!==capture||c?.page!==page||c?.cdp!==transport||typeof c.cdp.send!=='function'||!integer(c.world,1)||!string(c.documentToken,64,1)||c.stopped||c.transitioning||source.transitioning||config?.documentToken!==c.documentToken||c.binding.world!==c.world||c.binding.revision!==c.revision||config.pageEpoch!==source.pageEpoch||config.viewportVersion!==source.viewportVersion||source.control.closed||source.page!==page||page.isClosed())fail('STALE_AGENT_PAGE');return {capture:c,cdp:c.cdp,send,world:c.world,documentToken:c.documentToken,revision:c.revision,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,controlSessionId:source.control.sessionId,subscriptionId:config.id,token:c.token};};
  const guard=(expected,document)=>{const now=current();if(Object.keys(expected).some(k=>now[k]!==expected[k])||document&&['controlSessionId','pageEpoch','viewportVersion'].some(k=>document[k]!==now[k]))fail('STALE_AGENT_PAGE');authorize();const after=current();if(Object.keys(expected).some(k=>after[k]!==expected[k]))fail('STALE_AGENT_PAGE');return after;};
  const release=async()=>{const old=state;if(old){try{await old.send('Runtime.releaseObjectGroup',{objectGroup:group});}catch(error){poisoned=true;throw error;}if(state===old)state=null;}};
+ const cleanAuxiliary=async()=>{const held=auxiliary;if(!held)return;let failed=false;try{if(held.ax){await held.send('Accessibility.disable');held.ax=false;}}catch{failed=true;}try{if(held.object){await held.send('Runtime.releaseObjectGroup',{objectGroup:axGroup});held.object=false;}}catch{failed=true;}if(!held.ax&&!held.object&&auxiliary===held)auxiliary=null;if(failed){poisoned=true;throw new AgentInputError('AGENT_OBSERVATION_FAILED','unknown');}};
+ const realmValue=async(expected,declaration,args,document)=>{guard(expected,document);const response=await expected.send('Runtime.callFunctionOn',{objectId:state.objectId,functionDeclaration:declaration,arguments:args,returnByValue:true,awaitPromise:false,silent:true,generatePreview:false});guard(expected,document);if(response.exceptionDetails)fail('AGENT_OBSERVATION_FAILED');const v=response.result?.value;if(v?.ok===false&&['STALE_AGENT_PAGE','STALE_AGENT_ELEMENT','AGENT_OBSERVATION_LIMIT'].includes(v.code))fail(v.code);if(v?.ok!==true)fail('AGENT_OBSERVATION_FAILED');return v;};
  return Object.freeze({
   context(){authorize();const expected=current();guard(expected);return Object.freeze({binding:b,document:Object.freeze({controlSessionId:expected.controlSessionId,pageEpoch:expected.pageEpoch,viewportVersion:expected.viewportVersion})});},
   observe(query,context,limits={}){
@@ -55,7 +58,30 @@ export function createManagedAgentObserver({source,page,binding:bound,version,au
     });const work=pending;void work.finally(()=>{if(pending===work)pending=null;}).catch(()=>{});return work;
    }catch(error){return Promise.reject(error instanceof AgentInputError?error:new AgentInputError('AGENT_OBSERVATION_FAILED','not-dispatched'));}
   },
-  close(){if(closing)return closing;closed=true;closing=(async()=>{try{await pending;}catch{}try{await release();}catch{throw new AgentInputError('AGENT_OBSERVATION_FAILED','unknown');}})();return closing;},
-  status:()=>Object.freeze({pending:pending!==null,closed,realm:state!==null})
+  observeAccessibility(elementId,context,limits={}){
+   try{
+    if(closed)fail('AGENT_RUN_CLOSED');authorize();const request=captureManagedAgentAccessibility(elementId,limits),ctx=captureAgentObservationContext(context);if(Object.keys(b).some(k=>ctx.binding[k]!==b[k]))fail('AGENT_INVALID_CONTEXT');if(pending)fail('AGENT_OBSERVATION_BUSY');const expected=current();guard(expected,ctx.document);const observationId='obs_'+randomUUID();
+    pending=Promise.resolve().then(async()=>{
+     let result;try{
+      if(state&&Object.keys(expected).some(k=>state.expected[k]!==expected[k]))await release();guard(expected,ctx.document);if(!state?.objectId)fail('STALE_AGENT_ELEMENT');
+      const meta=data(await realmValue(expected,'function(handle){return this.axContext(handle);}',[{value:elementId}],ctx.document),['ok','revision','tag','redacted','previousBudget'],undefined,'AGENT_OBSERVATION_FAILED');if(!integer(meta.revision,1)||!string(meta.tag,32,1)||typeof meta.redacted!=='boolean'||meta.previousBudget!==null&&!integer(meta.previousBudget,0,512))fail('AGENT_OBSERVATION_FAILED');
+      auxiliary={send:expected.send,object:true,ax:false};const reference=await expected.send('Runtime.callFunctionOn',{objectId:state.objectId,functionDeclaration:'function(handle){try{return this.axElement(handle);}catch{return null;}}',arguments:[{value:elementId}],objectGroup:axGroup,returnByValue:false,awaitPromise:false,silent:true,generatePreview:false});guard(expected,ctx.document);if(reference.exceptionDetails||reference.result?.subtype!=='node'||!string(reference.result.objectId,1024,1))fail('STALE_AGENT_ELEMENT');const objectId=reference.result.objectId;
+      let projected={ax:null,truncated:false},previousSignature='null';
+      if(!meta.redacted){
+       const described=await expected.send('DOM.describeNode',{objectId,depth:0,pierce:false});guard(expected,ctx.document);boundAgentAxReply(described);const dom=described?.node;if(!integer(dom?.backendNodeId,1,2147483647)||dom.nodeType!==1||typeof dom.localName!=='string'||dom.localName.slice(0,32)!==meta.tag)fail('AGENT_INVALID_REPLY');
+       // The pinned Chromium's disable() is a no-op unless enabled. Own the
+       // enable/disable pair, including unknown enable replies and navigation.
+       auxiliary.ax=true;await expected.send('Accessibility.enable');guard(expected,ctx.document);const raw=await expected.send('Accessibility.getPartialAXTree',{backendNodeId:dom.backendNodeId,fetchRelatives:false});guard(expected,ctx.document);projected=projectAgentAccessibility(raw,dom.backendNodeId,request.limits.maxChars);previousSignature=JSON.stringify(projectAgentAccessibility(raw,dom.backendNodeId,meta.previousBudget??request.limits.maxChars).ax);
+      }
+      const committed=data(await realmValue(expected,'function(handle,node,previous,signature,budget){return this.commitAX(handle,node,previous,signature,budget);}',[{value:elementId},{objectId},{value:previousSignature},{value:JSON.stringify(projected.ax)},{value:request.limits.maxChars}],ctx.document),['ok','revision','url','title','truncated'],undefined,'AGENT_OBSERVATION_FAILED');if(committed.revision!==meta.revision||typeof committed.truncated!=='boolean')fail('AGENT_OBSERVATION_FAILED');const {ok,...metadata}=committed;
+      result=captureAgentAccessibilityResult({stage:'accessibility-observed',binding:b,document:ctx.document,observationId,observedAt:new Date().toISOString(),version,scope:'main-document-element-accessibility',elementId,limits:request.limits,...metadata,ax:projected.ax,redacted:meta.redacted,truncated:metadata.truncated||projected.truncated},{binding:b,document:ctx.document,accessibility:request});
+     }catch(error){throw error instanceof AgentInputError?error:new AgentInputError('AGENT_OBSERVATION_FAILED','not-dispatched');}
+     finally{await cleanAuxiliary();}
+     guard(expected,ctx.document);return result;
+    });const work=pending;void work.finally(()=>{if(pending===work)pending=null;}).catch(()=>{});return work;
+   }catch(error){return Promise.reject(error instanceof AgentInputError?error:new AgentInputError('AGENT_OBSERVATION_FAILED','not-dispatched'));}
+  },
+  close(){if(closing)return closing;closed=true;closing=(async()=>{try{await pending;}catch{}let failed=false;try{await cleanAuxiliary();}catch{failed=true;}try{await release();}catch{failed=true;}if(failed)throw new AgentInputError('AGENT_OBSERVATION_FAILED','unknown');})() ;return closing;},
+  status:()=>Object.freeze({pending:pending!==null,closed,realm:state!==null,accessibilityResources:auxiliary!==null})
  });
 }

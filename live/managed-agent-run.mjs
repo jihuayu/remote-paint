@@ -59,6 +59,9 @@ export function createManagedAgentRun(control,configuration){
   observe(query,context,limits={}){
    try{allowed(null,'agent:observe');if(!observer)observer=createManagedAgentObserver({source,page,binding,version:config.version,live,authorize:()=>allowed(null,'agent:observe')});return observer.observe(query,context,limits);}catch(error){return Promise.reject(failure(error));}
   },
+  observeAccessibility(elementId,context,limits={}){
+   try{allowed(null,'agent:observe');if(!observer)observer=createManagedAgentObserver({source,page,binding,version:config.version,live,authorize:()=>allowed(null,'agent:observe')});return observer.observeAccessibility(elementId,context,limits);}catch(error){return Promise.reject(failure(error));}
+  },
   perform(tool,params,context){
    let submitted=false;
    try{

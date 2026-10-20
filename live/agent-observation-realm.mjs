@@ -17,6 +17,8 @@ export function createAgentObservationRealm(secret,documentToken,subscriptionId)
   return {elementId,tag,id:attr('id',64),role:attr('role',32),name:attr('aria-label',64)||attr('name',64)||attr('alt',64),text:direct,value,redacted};
  }
  const signature=value=>JSON.stringify({...value,elementId:null});
+ const resolve=elementId=>{if(!current())throw Error('STALE_AGENT_PAGE');const old=nodes.get(elementId),node=old?.node.deref();if(!node||!node.isConnected||node.ownerDocument!==doc||!matches(old.parent,node.parentNode)||!matches(old.previous,node.previousSibling)||!matches(old.next,node.nextSibling)||signature(row(node,null,old.budget,{truncated:false}))!==old.signature){nodes.clear();throw Error('STALE_AGENT_ELEMENT');}return node;};
+
  return Object.freeze({
   read(request,handles){
    if(!current())return {ok:false,code:'STALE_AGENT_PAGE'};
@@ -56,6 +58,9 @@ export function createAgentObservationRealm(secret,documentToken,subscriptionId)
    if(!current()){nodes.clear();return {ok:false,code:'STALE_AGENT_PAGE'};}
    result.truncated=flags.truncated;return result;
   },
+  axContext(elementId){try{const node=resolve(elementId),old=nodes.get(elementId);return {ok:true,revision,tag:row(node,null,0,{truncated:false}).tag,redacted:row(node,null,0,{truncated:false}).redacted,previousBudget:old.axBudget??null};}catch(error){return {ok:false,code:error.message==='STALE_AGENT_PAGE'?'STALE_AGENT_PAGE':'STALE_AGENT_ELEMENT'};}},
+  axElement(elementId){return resolve(elementId);},
+  commitAX(elementId,original,previousSignature,signature,budget){try{const node=resolve(elementId),old=nodes.get(elementId);if(node!==original||old.axSignature!==undefined&&old.axSignature!==previousSignature){nodes.clear();return {ok:false,code:'STALE_AGENT_ELEMENT'};}old.axSignature=signature;old.axBudget=budget;const flags={truncated:false},result={ok:true,revision,url:text(doc.URL,1024,flags),title:text(doc.title,256,flags),truncated:false};result.truncated=flags.truncated;if(encoder.encode(JSON.stringify(result)).byteLength>4096)return {ok:false,code:'AGENT_OBSERVATION_LIMIT'};return result;}catch(error){return {ok:false,code:error.message==='STALE_AGENT_PAGE'?'STALE_AGENT_PAGE':'STALE_AGENT_ELEMENT'};}},
   close(){closed=true;nodes.clear();return true;}
  });
 }

@@ -49,6 +49,7 @@ export class NativeSessionResource {
  }
  #agentAvailable(){return typeof this.#sessionId==='string'&&/^ses_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(this.#sessionId)&&this.#initialized&&!this.#stopping&&!this.#unavailable&&!this.#signal.aborted&&this.#live&&this.#healthy(this.#live.source);}
  get agentObservationVersion(){return 1;}
+ get agentAccessibilityVersion(){return 1;}
  agent(value){
   if(!this.#agentAvailable())throw new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched');
   const request=captureAgentRequest(value);
@@ -68,6 +69,7 @@ export class NativeSessionResource {
   if(request.op==='context')return run.context();
   if(request.op==='observation-context')return run.observationContext();
   if(request.op==='observe')return run.observe(request.query,request.context,request.limits);
+  if(request.op==='observe-ax')return run.observeAccessibility(request.elementId,request.context,request.limits);
   return run.perform(request.tool,request.params,request.context);
  }
  close(){

@@ -1,0 +1,244 @@
+{
+  "at": "2026-10-19T19:19:17.735269+00:00",
+  "task": "Source computed exact-element AX and private RPC checkpoint",
+  "status": "Source-computed-AX-private-qualified-within-scope",
+  "scope": "Source exact-element computed accessibility over separate observe-ax private RPC/capability, seeded only by original bounded DOM handles and pinned Native Page/capture/CDP/Document. Real browser role/name/description/value/states; shared actual ordinary admission includes explicit AX domain and remote-object cleanup, bounded stored fingerprint and decoded reply/output projection. Public AX API/SDK/full-tree/frame/raw-transport-preallocation/browser-cache/physical/postcondition qualification remains pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-observation-sdk-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "01f83aa6fea8f463c1574e800700cb84536622fec5ea20727928c0ef0bccad3f",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-computed-ax-candidate-v4/frozen-version.json",
+  "executedManifestSha256": "177e9b5b21a569e6e030c3e75aed40ba9d99b7fe7e281df969a27b360a81bfa1",
+  "newNodeContracts": 22,
+  "testNames": [
+    "computed AX schema accepts only an opaque element and bounded own maxChars data",
+    "computed AX uses the exact realm object/backend node and browser values instead of DOM ARIA projections",
+    "AX projection enforces text/UTF16 truncation, numeric values and supported computed states",
+    "raw AX projection bounds decoded bytes, recursion, properties and exact backend association",
+    "password/hidden realm metadata skips DOM attributes and every browser AX operation",
+    "AX result rejects mismatched metadata, exposed private fields and invalid redaction/budgets",
+    "AX exact read authority is independently checked before caller getters and never updates writer fence",
+    "one actual AX read includes pending browser work and excludes reentrant DOM or AX operations",
+    "pending AX cleanup holds actual admission even after data has arrived",
+    "permission/document/Page/capture changes while AX is in flight reject late data and still clean owned resources",
+    "end waits for real AX and cleanup, rejects late data and preserves the original human grant",
+    "failed AX disable/object cleanup poisons reads without changing writer and is retried by explicit end",
+    "oversized DOM description and malformed AX replies fail with cleanup and allow a fresh healthy read",
+    "realm AX resolution returns the original live Element and new snapshots retire old handles",
+    "realm AX fingerprint changes, detached replacements and native document changes cannot silently rebind",
+    "realm permits different text budgets without losing the prior AX fingerprint and redacts hidden/password metadata",
+    "computed AX requires an independent worker capability and 8KiB channel before dispatch",
+    "computed AX private RPC carries exact DOM handle/document/version and immutable sanitized result",
+    "computed AX timeout retains actual private ordinary slot while independently admitted end stays available",
+    "computed AX wrong version/target/document/redaction cannot pass worker-channel response correlation",
+    "computed AX private capture refuses caller object IDs, write fences, selectors, getters and wrong identity",
+    "private computed AX adds no implicit public observation query or unimplemented SDK path"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v43/manifest.json",
+  "fullJsManifestSha256": "994246e37d74c6e90b4727cc72a04b53bc05aebf2dc1fc2b0f2364f146448fce",
+  "fullJs": {
+    "mac": {
+      "tests": 1227,
+      "pass": 1212,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "1b2f1a886ba85632f544871ba110e973b6f91ca543fe6b64682e3a0ced9b7c9e"
+    },
+    "linux": {
+      "tests": 1227,
+      "pass": 1221,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "5c9e3fc6bfc688c4dfb1a683217e01c57c9cd9391e12370897d7ebd894a884c5"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 115,
+      "pythonTests": 56,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 50,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "archiveBytesUnchanged": true
+    },
+    "linux": {
+      "nodeTests": 115,
+      "pythonTests": 56,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 50,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "archiveBytesUnchanged": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "0810b04ea371205396cc585cde8eb5937fcc6c693218a03c0c4f7f6f8cc9e92e",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "165f7944bc3b49e677d7f2597f60cdfee0d3e36aee187290d750554cf3f53b39"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-computed-ax-native-v1/manifest.json",
+  "nativeManifestSha256": "a27ce605769db872a5e51dc917c7577cc9e1df0a147e5b15b89faf60afb28e93",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "authorization": {
+      "independentObserveScope": true,
+      "tenantIsolation": true,
+      "noWriterFenceOrMutationOrEndOrSessionReleaseOrViewerMint": true,
+      "forgedLogicalContextRejectedBeforeSource": true
+    },
+    "metadata": {
+      "actualDOM": true,
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "targetId": "target_7f1ee0a2-1861-429b-960c-7f0035080bc3",
+      "epoch": 1,
+      "observedAt": "2026-10-19T19:15:51.848Z",
+      "passwordRedacted": true,
+      "mainDocumentLightDomOnly": true,
+      "readDoesNotRefreshWriterFence": true
+    },
+    "accessibility": {
+      "browserComputedRoleNameDescriptionValue": true,
+      "readonlyRequiredChecked": true,
+      "nestedTextAndExternalLabelSemantics": true,
+      "sameHandleDifferentBudgets": true,
+      "originalElementReplacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "computedLabelChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLabel": "Shipping changed",
+      "unicodeNameChars": 512,
+      "truncated": true,
+      "oversizedBrowserReplyRejected": {
+        "code": "AGENT_OBSERVATION_LIMIT",
+        "outcome": "not-dispatched"
+      },
+      "passwordFullyRedacted": true,
+      "explicitDomainAndObjectCleanupConfirmedByCompletedSourceRead": true,
+      "noPhysicalPreallocationClaim": true,
+      "privateRpcOnly": true,
+      "readDuringHumanLease": true,
+      "oldDocumentRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      }
+    },
+    "unicode": {
+      "sourceChars": 4000,
+      "returnedChars": 1024,
+      "truncated": true,
+      "handleStillResolvable": true
+    },
+    "elements": {
+      "replacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "selectedMetadataChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLocatorGetsDistinctHandle": true,
+      "noAutomaticSelectorRebind": true
+    },
+    "human": {
+      "readDuringHumanLease": true,
+      "writeStillPaused": true,
+      "readAndAgentEndPreservedOriginalHumanGrant": true,
+      "fieldValue": "OBSHF"
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "oldReadContextRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "oldHandleRejectedInNewDocument": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "oldWriteFenceRejected": true,
+      "samePageTarget": true
+    },
+    "bounds": {
+      "largeFixtureNodes": 3000,
+      "visitedCap": 32,
+      "truncated": true,
+      "maxSerializedBytes": 8192,
+      "actualSnapshotBytes": 3316,
+      "noScriptOrArbitraryCdp": true
+    },
+    "unknown": {
+      "actualSlowClickOnce": true,
+      "observedActualDOMAfterUnknown": true,
+      "historyRemainedUnknown": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "httpTimeout": {
+      "http408": true,
+      "actualExecutorSlotRetained": true,
+      "writerRemainedActive": true,
+      "inputAfterActualSettlement": true
+    },
+    "disconnect": {
+      "actualExecutorSlotRetained": true,
+      "priorityEndWithIndependentScope": true,
+      "lateReadCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativeJournal": {
+    "logicalRunsClosed": 4,
+    "injected": 10,
+    "unknown": 1,
+    "rejected": 2
+  },
+  "decodedAxCdpReplyByteCap": 32768,
+  "rawCdpReceiverPreallocationQualified": false,
+  "browserAxPhysicalMemoryQualified": false,
+  "privateAxResultByteCap": 6144,
+  "maxAxTextUnits": 512,
+  "publicObservationResultByteCap": 8192,
+  "privateReadResultByteCap": 6144,
+  "standardProviderFrameByteCap": 8192,
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-computed-ax-cleanup-v1.json",
+  "cleanupAuditSha256": "cbd83f05c6b8a18e4edf461d31433d7082375766074967a3c92739485e75cfe4",
+  "trustedNativeObservationCoreQualified": true,
+  "publicObservationQualified": true,
+  "nodeObservationSdkQualified": true,
+  "pythonObservationSdkQualified": true,
+  "observationSdkQualified": true,
+  "computedAxPrivateQualified": true,
+  "computedAxPublicQualified": false,
+  "computedAxSdkQualified": false,
+  "K6Complete": false,
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": true,
+  "publicAgentSdkQualified": true,
+  "agentSdkScope": "Previously qualified Node/Python seven input tools and main-light-DOM observations retained; no computed AX SDK yet. Both archives byte-identical,50 current dependency/contract inputs reinstalled.",
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true
+}

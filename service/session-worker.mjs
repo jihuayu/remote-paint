@@ -104,7 +104,7 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
     initializing=true;
     const ready=await resource.initialize();startSettled=true;
     if(!ready||typeof ready.version!=='string'||!ready.version.length||ready.version.length>256)throw new TypeError('Invalid resource version');
-    if(!stopping){resourceReady=true;clearTimeout(initializeTimer);emit({type:'Ready',version:ready.version,...(typeof resource.agent==='function'?{capabilities:['agent-rpc-v1',...(resource.agentObservationVersion===1?['agent-observe-v1']:[])]}:{})});}
+    if(!stopping){resourceReady=true;clearTimeout(initializeTimer);emit({type:'Ready',version:ready.version,...(typeof resource.agent==='function'?{capabilities:['agent-rpc-v1',...(resource.agentObservationVersion===1?['agent-observe-v1',...(resource.agentAccessibilityVersion===1?['agent-observe-ax-v1']:[])]:[])]}:{})});}
    }).catch(()=>{if(!stopping)void stop('startup-failed','WORKER_START_FAILED');}).finally(()=>{startSettled=true;});
    initializeTimer=setTimeout(()=>{void stop('startup-expired','WORKER_START_TIMEOUT');},initializationTimeoutMs);
   }else if(value.type==='AgentCall'){

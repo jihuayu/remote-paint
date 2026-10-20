@@ -1,0 +1,55 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {captureManagedAgentAccessibility,captureAgentAccessibilityResult,boundAgentAxReply,projectAgentAccessibility} from '../live/agent-accessibility.mjs';
+import {accessibilityFixture,axReply} from './fixtures/agent-accessibility-fixture.mjs';
+import {setup} from './fixtures/agent-observation-realm-fixture.mjs';
+const error=code=>e=>e.code===code;
+const gate=()=>{let resolve;const promise=new Promise(r=>resolve=r);return {promise,resolve};};
+test('computed AX schema accepts only an opaque element and bounded own maxChars data',()=>{
+ const id='elh_'+crypto.randomUUID();for(const [elementId,limits]of [['raw-selector',{}],[id,{maxChars:513}],[id,{maxChars:-1}],[id,{maxNodes:1}],[id,null]])assert.throws(()=>captureManagedAgentAccessibility(elementId,limits),error('INVALID_AGENT_OBSERVATION'));let reads=0;assert.throws(()=>captureManagedAgentAccessibility(id,Object.defineProperty({},'maxChars',{get(){reads++;}})));assert.equal(reads,0);assert.equal(captureManagedAgentAccessibility(id).limits.maxChars,256);
+});
+test('computed AX uses the exact realm object/backend node and browser values instead of DOM ARIA projections',async t=>{
+ const h=await accessibilityFixture(t),r=await h.read();assert.equal(r.stage,'accessibility-observed');assert.equal(r.scope,'main-document-element-accessibility');assert.equal(r.ax.name,'Computed order');assert.equal(r.ax.states.pressed,'mixed');assert.ok(Object.isFrozen(r.ax.states));assert.equal(r.elementId,h.elementId);assert.equal(r.document.controlVersion,undefined);assert.doesNotMatch(JSON.stringify(r),/ax-private|backendDOMNodeId|private-element|objectId/);const c=h.base.calls,describe=c.find(x=>x.method==='DOM.describeNode');assert.deepEqual(describe.params,{objectId:'private-element-object',depth:0,pierce:false});const partial=c.find(x=>x.method==='Accessibility.getPartialAXTree');assert.deepEqual(partial.params,{backendNodeId:71,fetchRelatives:false});assert.equal(c.filter(x=>x.method==='Accessibility.enable').length,1);assert.equal(c.filter(x=>x.method==='Accessibility.disable').length,1);assert.equal(c.filter(x=>x.method==='Runtime.releaseObjectGroup').length,1);assert.ok(c.findIndex(x=>x.method==='Accessibility.disable')>c.indexOf(partial));
+});
+test('AX projection enforces text/UTF16 truncation, numeric values and supported computed states',()=>{
+ const p=projectAgentAccessibility(axReply({role:{type:'role',value:'slider'},name:{type:'computedString',value:'😀ABC'},description:{type:'computedString',value:'help'},value:{type:'number',value:5}}),71,4);assert.equal(p.ax.name,'😀AB');assert.equal(p.ax.description,'');assert.equal(p.ax.value,'');assert.equal(p.truncated,true);assert.equal(projectAgentAccessibility(axReply({value:{type:'number',value:5}}),71,256).ax.value,'5');assert.equal(projectAgentAccessibility(axReply({properties:[{name:'checked',value:{type:'tristate',value:'false'}}]}),71,0).ax.states.checked,false);
+});
+test('raw AX projection bounds decoded bytes, recursion, properties and exact backend association',()=>{
+ for(const reply of [axReply({backendDOMNodeId:72}),{nodes:[]},{nodes:[...axReply().nodes,...axReply().nodes]},axReply({name:{type:'computedString',value:'x'.repeat(40000)}}),axReply({properties:[{name:'disabled',value:{type:'boolean',value:'true'}}]}),axReply({properties:[{name:'disabled',value:{type:'boolean',value:true}},{name:'disabled',value:{type:'boolean',value:false}}]})])assert.throws(()=>projectAgentAccessibility(reply,71,256));assert.throws(()=>boundAgentAxReply({x:'\u0000'.repeat(6000)}),error('AGENT_OBSERVATION_LIMIT'));let deep=null;for(let n=0;n<14;n++)deep={x:deep};assert.throws(()=>boundAgentAxReply(deep),error('AGENT_OBSERVATION_LIMIT'));
+});
+test('password/hidden realm metadata skips DOM attributes and every browser AX operation',async t=>{
+ const h=await accessibilityFixture(t);h.redacted=true;const result=await h.read();assert.equal(result.redacted,true);assert.equal(result.ax,null);assert.equal(h.base.calls.filter(c=>c.method.startsWith('Accessibility.')||c.method==='DOM.describeNode').length,0);assert.equal(h.base.calls.filter(c=>c.method==='Runtime.releaseObjectGroup').length,1);
+});
+test('AX result rejects mismatched metadata, exposed private fields and invalid redaction/budgets',async t=>{
+ const h=await accessibilityFixture(t),r=await h.read(),expected={binding:h.ctx.binding,document:h.ctx.document,accessibility:captureManagedAgentAccessibility(h.elementId)};for(const patch of [{document:{...r.document,pageEpoch:2}},{elementId:'elh_'+crypto.randomUUID()},{limits:{maxChars:1}},{redacted:true},{rawAX:'private'},{scope:'all-frames'},{ax:{...r.ax,states:{url:'secret'}}}])assert.throws(()=>captureAgentAccessibilityResult({...r,...patch},expected));assert.equal(captureAgentAccessibilityResult(r,expected).version,r.version);
+});
+test('AX exact read authority is independently checked before caller getters and never updates writer fence',async t=>{
+ const h=await accessibilityFixture(t),fence=h.base.run.context();h.base.readAllowed=false;let reads=0;await assert.rejects(h.base.run.observeAccessibility(h.elementId,h.ctx,Object.defineProperty({},'maxChars',{get(){reads++;}})),error('AGENT_NOT_AUTHORIZED'));assert.equal(reads,0);h.base.readAllowed=true;h.base.writeAllowed=false;await h.read();h.base.writeAllowed=true;assert.deepEqual(h.base.run.context(),fence);
+});
+test('one actual AX read includes pending browser work and excludes reentrant DOM or AX operations',async t=>{
+ const h=await accessibilityFixture(t),entered=gate(),release=gate();h.hook=async method=>{if(method==='Accessibility.getPartialAXTree'){entered.resolve();await release.promise;}};const pending=h.read();await entered.promise;await assert.rejects(h.read(),error('AGENT_OBSERVATION_BUSY'));await assert.rejects(h.base.run.observe({kind:'snapshot'},h.ctx),error('AGENT_OBSERVATION_BUSY'));release.resolve();await pending;
+});
+test('pending AX cleanup holds actual admission even after data has arrived',async t=>{
+ const h=await accessibilityFixture(t),entered=gate(),release=gate();h.hook=async method=>{if(method==='Accessibility.disable'){entered.resolve();await release.promise;}};let done=false;const pending=h.read().then(r=>{done=true;return r;});await entered.promise;assert.equal(done,false);await assert.rejects(h.read(),error('AGENT_OBSERVATION_BUSY'));release.resolve();await pending;
+});
+test('permission/document/Page/capture changes while AX is in flight reject late data and still clean owned resources',async t=>{
+ for(const mode of ['permission','epoch','page','capture']){const h=await accessibilityFixture(t),entered=gate(),release=gate();h.hook=async method=>{if(method==='Accessibility.getPartialAXTree'){entered.resolve();await release.promise;}};const pending=assert.rejects(h.read());await entered.promise;if(mode==='permission')h.base.readAllowed=false;if(mode==='epoch')h.base.source.pageEpoch++;if(mode==='page')h.base.source.page={isClosed:()=>false};if(mode==='capture')h.base.source.capture={...h.base.source.capture};release.resolve();await pending;assert.equal(h.base.calls.filter(c=>c.method==='Accessibility.disable').length,1);assert.equal(h.base.calls.filter(c=>c.method==='Runtime.releaseObjectGroup').length,1);}
+});
+test('end waits for real AX and cleanup, rejects late data and preserves the original human grant',async t=>{
+ const h=await accessibilityFixture(t),grant=await h.base.control.acquire('human',{sessionId:h.base.control.sessionId,pageEpoch:1,viewportVersion:1}),entered=gate(),release=gate();h.hook=async method=>{if(method==='Accessibility.getPartialAXTree'){entered.resolve();await release.promise;}};const pending=assert.rejects(h.read());await entered.promise;let ended=false;const closing=h.base.run.close().then(()=>ended=true);await new Promise(setImmediate);assert.equal(ended,false);release.resolve();await pending;await closing;assert.equal(h.base.control.mode,'human');assert.equal(h.base.control.lease,grant.lease);assert.equal(h.base.calls.filter(c=>c.method==='Accessibility.disable').length,1);
+});
+test('failed AX disable/object cleanup poisons reads without changing writer and is retried by explicit end',async t=>{
+ for(const failure of ['Accessibility.disable','Runtime.releaseObjectGroup']){const h=await accessibilityFixture(t),original=h.base.run.context();let failing=true;h.hook=method=>{if(failing&&method===failure)throw Error('private AX owner token');};await assert.rejects(h.read(),e=>e.code==='AGENT_OBSERVATION_FAILED'&&e.outcome==='unknown'&&!String(e).includes('owner token'));assert.deepEqual(h.base.run.context(),original);await assert.rejects(h.read(),error('AGENT_OBSERVATION_UNAVAILABLE'));failing=false;await h.base.run.close();assert.ok(h.base.calls.filter(c=>c.method===failure).length>=2);}
+});
+test('oversized DOM description and malformed AX replies fail with cleanup and allow a fresh healthy read',async t=>{
+ for(const failure of ['describe','ax']){const h=await accessibilityFixture(t);h.hook=method=>failure==='describe'&&method==='DOM.describeNode'?{node:{attributes:['x','x'.repeat(40000)]}}:failure==='ax'&&method==='Accessibility.getPartialAXTree'?{nodes:[]}:undefined;await assert.rejects(h.read());assert.equal(h.base.calls.filter(c=>c.method==='Runtime.releaseObjectGroup').length,1);h.hook=null;await h.read();}
+});
+test('realm AX resolution returns the original live Element and new snapshots retire old handles',()=>{
+ const h=setup(),first=h.read({kind:'locate',by:'id',value:'submit'}),id=first.nodes[0].elementId;assert.equal(h.realm.axElement(id),h.button);assert.equal(h.realm.axContext(id).previousBudget,null);h.read({kind:'snapshot'});assert.equal(h.realm.axContext(id).code,'STALE_AGENT_ELEMENT');
+});
+test('realm AX fingerprint changes, detached replacements and native document changes cannot silently rebind',()=>{
+ for(const cause of ['signature','replacement','document','original']){const h=setup(),first=h.read({kind:'locate',by:'id',value:'submit'}),id=first.nodes[0].elementId;assert.equal(h.realm.commitAX(id,h.button,'a','a',256).ok,true);if(cause==='replacement')h.button.isConnected=false;if(cause==='document')h.nativeToken='other';const result=h.realm.commitAX(id,cause==='original'?h.password:h.button,cause==='signature'?'changed':'a','a',256);assert.equal(result.code,cause==='document'?'STALE_AGENT_PAGE':'STALE_AGENT_ELEMENT');}
+});
+test('realm permits different text budgets without losing the prior AX fingerprint and redacts hidden/password metadata',()=>{
+ const h=setup(),first=h.read({kind:'locate',by:'id',value:'submit'}),id=first.nodes[0].elementId;assert.equal(h.realm.commitAX(id,h.button,'full','full',256).ok,true);assert.equal(h.realm.axContext(id).previousBudget,256);assert.equal(h.realm.commitAX(id,h.button,'full','short',2).ok,true);assert.equal(h.realm.axContext(id).previousBudget,2);const secret=h.read({kind:'locate',by:'id',value:'password'}).nodes[0].elementId;assert.equal(h.realm.axContext(secret).redacted,true);assert.equal(JSON.stringify(h.realm.axContext(secret)).includes('SECRET'),false);
+});
