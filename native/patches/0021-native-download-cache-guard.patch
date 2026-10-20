@@ -1,0 +1,21 @@
+--- a/components/download/internal/common/in_progress_download_manager.cc
++++ b/components/download/internal/common/in_progress_download_manager.cc
+@@ -498,6 +498,9 @@
+ }
+ 
+ void InProgressDownloadManager::ReportBytesWasted(DownloadItemImpl* download) {
++  // This initialization callback bypasses the normal non-persistent observer
++  // registration. Native leases must never allocate a persistent cache row.
++  if (download->GetRemotePaintAdmission()) return;
+   download_db_cache_->OnDownloadUpdated(download);
+ }
+ 
+@@ -507,7 +510,7 @@
+ }
+ 
+ size_t InProgressDownloadManager::NativeDownloadRecordCountForTesting() const {
+-  return non_persistent_download_guids_.size();
++  return non_persistent_download_guids_.size() + download_db_cache_->cached_entries_.size();
+ }
+ void InProgressDownloadManager::NativeDownloadRetired(const std::string& guid) {
+   non_persistent_download_guids_.erase(guid);

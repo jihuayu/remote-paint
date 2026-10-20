@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | DOM/AX/截图/原页面下载及SDK既有范围保留。Native文件任务之外，新增浏览器侧URL持有者的真实IO析构/原线程回执和DownloadCreateInfo句柄，原线程丢失不伪造成功。ARM64无过滤315项（9新+30既有Native+276上游）全通过，双平台专项各13通过。item前准入/总spool/远端网络服务/item与Playwright边界待做，见[范围](native-download-request-owner.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | DOM/AX/截图/原页面下载及SDK既有范围保留。新增双开关暂存Native常规下载准入：4个可复用lease、16MiB逻辑内容预留；创建/文件/URL/真实item删除联合结算，连续12次复用。ARM64无过滤329项及实际子进程1项通过，双平台专项各13通过，真实浏览器owner删除TU编译通过。Source桥/启用、PW元数据、早期IO与远端网络服务及整浏览器边界待验，见[范围](native-download-admission.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -2085,3 +2085,7 @@ Native item取消/Detach/部分和完成文件删除接入可跨item移除保留
 ### Native URL handler 持有者退休回执
 
 增加Native快照状态及同一请求的DownloadCreateInfo句柄；自然/显式停止和manager销毁均等待实际IO析构、派生成员与Mojo端点关闭，再收原线程回执。真实原线程退出保留未确认状态，投递拒绝即使兜底析构完成也不伪造成功。9新用例含3实际ResourceDownloader/manager路径；ARM64编译列表315项与实际RUN/COMPLETED逐项一致、无禁用，最终双平台专项各13通过。保留构造内联与夹具接口错误的两次编译失败和第三次成功；19补丁/34修改路径/32组件比对、缓存保留，所有自有容器终态移除。仅浏览器持有者回执，不代表远端网络服务退休，准入/总spool/item/PW生命周期及原8小时仍待，41项10/17/14不变。见[范围](native-download-request-owner.md)。
+
+### Native 常规下载的准入与可复用lease
+
+第20、21补丁增加item前准入、进程共享4份额度/16MiB逻辑文件内容预留及创建、文件、URL持有者、真实item/map删除联合结算。实际12次下载可复用；失败继续持有额度，真实子进程退出合同通过。复查封住ReportBytesWasted直接写缓存旁路，实际回调3次仍无额外缓存行。第四次构建后的完整329项编译列表与RUN/COMPLETED一致，零失败/禁用；子进程另1项通过，双平台专项各13通过。真实浏览器owner删除TU单独编译成功，生成头缺失失败与夹具编译失败完整保留。21补丁/39路径/33组件比对，自有容器终态后删除，输出和Go缓存保留。Source尚未启用第二开关；可信桥、PW元数据、早期IO/远端网络服务与整浏览器验收仍待。K6部分、41项10/17/14及原8小时失败不变。见[范围](native-download-admission.md)。

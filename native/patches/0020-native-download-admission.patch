@@ -1,0 +1,633 @@
+--- a/components/download/public/common/BUILD.gn
++++ b/components/download/public/common/BUILD.gn
+@@ -61,6 +61,8 @@
+     "download_url_parameters.h",
+     "download_utils.h",
+     "in_progress_download_manager.h",
++    "native_download_budget.cc",
++    "native_download_budget.h",
+     "input_stream.cc",
+     "input_stream.h",
+     "parallel_download_configs.h",
+--- a/components/download/public/common/download_create_info.h
++++ b/components/download/public/common/download_create_info.h
+@@ -33,6 +33,7 @@
+ 
+ namespace download {
+ class UrlDownloadHandlerCleanupState;
++class NativeDownloadLease;
+ // Server support for range request inferred from the response headers.
+ // |kSupport| value means the server supports range requests. |kNoSupport|
+ // means no range request is accepted by server. and |kUnknown| is used if
+@@ -66,6 +67,7 @@
+ 
+   // Native-only browser-side URL handler ownership witness for this attempt.
+   scoped_refptr<UrlDownloadHandlerCleanupState> remote_paint_request_cleanup;
++  scoped_refptr<NativeDownloadLease> remote_paint_admission;
+ 
+ 
+   // The chain of redirects that leading up to and including the final URL.
+--- a/components/download/internal/common/download_create_info.cc
++++ b/components/download/internal/common/download_create_info.cc
+@@ -4,6 +4,7 @@
+ 
+ #include "components/download/public/common/download_create_info.h"
+ #include "components/download/public/common/url_download_handler.h"
++#include "components/download/public/common/native_download_budget.h"
+ 
+ #include <memory>
+ #include <string>
+--- a/components/download/public/common/download_item_impl.h
++++ b/components/download/public/common/download_item_impl.h
+@@ -40,6 +40,7 @@
+ namespace download {
+ class DownloadFile;
+ class DownloadFileCleanupState;
++class NativeDownloadLease;
+ class DownloadItemImplDelegate;
+ 
+ // See download_item.h for usage.
+@@ -324,6 +325,7 @@
+   // Native-only retained file-task handle; it survives item removal. Its
+   // snapshot is not a receipt for network jobs, item maps or retained paths.
+   scoped_refptr<DownloadFileCleanupState> GetRemotePaintFileCleanupState() const;
++  scoped_refptr<NativeDownloadLease> GetRemotePaintAdmission() const;
+   DownloadItemRenameHandler* GetRenameHandler() override;
+ #if BUILDFLAG(IS_ANDROID)
+   bool IsFromExternalApp() override;
+@@ -861,6 +863,7 @@
+   // This pointer will be non-null only while the DownloadItem is in
+   // the IN_PROGRESS state.
+   std::unique_ptr<DownloadFile> download_file_;
++  scoped_refptr<NativeDownloadLease> remote_paint_admission_;
+   static scoped_refptr<DownloadFileCleanupState> CreateRemotePaintCleanupState();
+   const scoped_refptr<DownloadFileCleanupState> remote_paint_file_cleanup_ =
+       CreateRemotePaintCleanupState();
+--- a/components/download/internal/common/download_item_impl.cc
++++ b/components/download/internal/common/download_item_impl.cc
+@@ -53,6 +53,7 @@
+ #include "components/download/public/common/download_danger_type.h"
+ #include "components/download/public/common/download_features.h"
+ #include "components/download/public/common/download_file.h"
++#include "components/download/public/common/native_download_budget.h"
+ #include "components/download/public/common/download_interrupt_reasons.h"
+ #include "components/download/public/common/download_item_impl_delegate.h"
+ #include "components/download/public/common/download_item_rename_handler.h"
+@@ -503,6 +504,8 @@
+   request_info_.fetched_via_service_worker = info.fetched_via_service_worker;
+   delegate_->Attach();
+   Init(true /* actively downloading */, TYPE_ACTIVE_DOWNLOAD);
++  remote_paint_admission_ = info.remote_paint_admission;
++  if (remote_paint_admission_) remote_paint_admission_->Attach(this);
+   allow_metered_ |= delegate_->IsActiveNetworkMetered();
+ 
+   TRACE_EVENT_INSTANT("download", "DownloadStarted");
+@@ -1110,6 +1113,11 @@
+ DownloadItemImpl::GetRemotePaintFileCleanupState() const {
+   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+   return remote_paint_file_cleanup_;
++}
++
++scoped_refptr<NativeDownloadLease> DownloadItemImpl::GetRemotePaintAdmission() const {
++  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
++  return remote_paint_admission_;
+ }
+ 
+ DownloadFile* DownloadItemImpl::GetDownloadFile() {
+--- a/components/download/public/common/in_progress_download_manager.h
++++ b/components/download/public/common/in_progress_download_manager.h
+@@ -40,6 +40,7 @@
+ namespace download {
+ 
+ class DownloadDBCache;
++class NativeDownloadBudget;
+ class DownloadStartObserver;
+ class DownloadUrlParameters;
+ struct DownloadDBEntry;
+@@ -212,7 +213,11 @@
+   void AddInProgressDownloadForTest(
+       std::unique_ptr<download::DownloadItemImpl> download);
+ 
++  size_t NativeDownloadRecordCountForTesting() const;
++
+  private:
++  void DownloadRemoved(DownloadItemImpl* download) override;
++  void NativeDownloadRetired(const std::string& guid);
+   void Initialize(const base::FilePath& in_progress_db_dir,
+                   leveldb_proto::ProtoDatabaseProvider* db_provider);
+ 
+@@ -257,6 +262,8 @@
+   // Cancels the given UrlDownloadHandler.
+   void CancelUrlDownload(UrlDownloadHandlerID downloader, bool user_cancel);
+ 
++  std::unique_ptr<NativeDownloadBudget> native_budget_;
++
+   // Active download handlers.
+   std::vector<UrlDownloadHandler::UniqueUrlDownloadHandlerPtr>
+       url_download_handlers_;
+--- a/components/download/internal/common/in_progress_download_manager.cc
++++ b/components/download/internal/common/in_progress_download_manager.cc
+@@ -3,6 +3,8 @@
+ // found in the LICENSE file.
+ 
+ #include "components/download/public/common/in_progress_download_manager.h"
++#include "components/download/public/common/native_download_budget.h"
++#include "base/functional/callback_helpers.h"
+ 
+ #include <optional>
+ 
+@@ -215,9 +217,12 @@
+       url_security_policy_(url_security_policy),
+       wake_lock_provider_binder_(std::move(wake_lock_provider_binder)) {
+   Initialize(in_progress_db_dir, db_provider);
++  native_budget_ = std::make_unique<NativeDownloadBudget>(base::BindRepeating(
++      &InProgressDownloadManager::NativeDownloadRetired, weak_factory_.GetWeakPtr()));
+ }
+ 
+ InProgressDownloadManager::~InProgressDownloadManager() {
++  if (native_budget_) native_budget_->Shutdown();
+   for (auto& handler : url_download_handlers_)
+     RetireUrlDownloadHandler(std::move(handler));
+ }
+@@ -501,6 +506,24 @@
+   download_db_cache_->RemoveEntry(guid);
+ }
+ 
++size_t InProgressDownloadManager::NativeDownloadRecordCountForTesting() const {
++  return non_persistent_download_guids_.size();
++}
++void InProgressDownloadManager::NativeDownloadRetired(const std::string& guid) {
++  non_persistent_download_guids_.erase(guid);
++}
++void InProgressDownloadManager::DownloadRemoved(DownloadItemImpl* download) {
++  auto lease = download->GetRemotePaintAdmission();
++  if (!lease) return;  // Original delegate default did not erase here.
++  for (auto ptr = in_progress_downloads_.begin(); ptr != in_progress_downloads_.end(); ++ptr) {
++    if (ptr->get() == download) {
++      in_progress_downloads_.erase(ptr);
++      lease->MetadataRetired();
++      return;
++    }
++  }
++}
++
+ void InProgressDownloadManager::StartDownload(
+     std::unique_ptr<DownloadCreateInfo> info,
+     std::unique_ptr<InputStream> stream,
+@@ -509,6 +532,16 @@
+     DownloadJob::CancelRequestCallback cancel_request_callback,
+     DownloadUrlParameters::OnStartedCallback on_started) {
+   DCHECK(info);
++  if (native_budget_->enabled()) {
++    CHECK(GetIOTaskRunner());
++    info->remote_paint_admission = native_budget_->Admit(*info, &cancel_request_callback);
++    if (!info->remote_paint_admission) {
++      if (cancel_request_callback) std::move(cancel_request_callback).Run(false);
++      if (stream) GetIOTaskRunner()->DeleteSoon(FROM_HERE, std::move(stream));
++      if (on_started) std::move(on_started).Run(nullptr, DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
++      return;
++    }
++  }
+ 
+   if (info->is_new_download &&
+       (info->result == DOWNLOAD_INTERRUPT_REASON_NONE ||
+@@ -518,6 +551,7 @@
+       if (cancel_request_callback)
+         std::move(cancel_request_callback).Run(false);
+       GetIOTaskRunner()->DeleteSoon(FROM_HERE, std::move(stream));
++      if (info->remote_paint_admission) info->remote_paint_admission->CreationDone(false);
+       return;
+     }
+   }
+@@ -566,6 +600,12 @@
+     DownloadItemImpl* download,
+     const base::FilePath& duplicate_download_file_path,
+     bool should_persist_new_download) {
++  base::ScopedClosureRunner creator_done;
++  if (info->remote_paint_admission) {
++    creator_done.ReplaceClosure(base::BindOnce(&NativeDownloadLease::CreationDone,
++        info->remote_paint_admission, download != nullptr));
++    should_persist_new_download = false;
++  }
+   if (!download) {
+     // If the download is no longer known to the DownloadManager, then it was
+     // removed after it was resumed. Ignore. If the download is cancelled
+@@ -593,6 +633,10 @@
+   }
+ 
+   std::unique_ptr<DownloadFile> download_file;
++  if (info->remote_paint_admission && !duplicate_download_file_path.empty()) {
++    info->result = DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED;
++    if (stream) GetIOTaskRunner()->DeleteSoon(FROM_HERE, std::move(stream));
++  }
+   if (info->result == DOWNLOAD_INTERRUPT_REASON_NONE) {
+     DCHECK(stream);
+     download_file.reset(file_factory_->CreateFile(
+--- a/components/download/public/common/base_file.h
++++ b/components/download/public/common/base_file.h
+@@ -323,6 +323,7 @@
+   // Snapshot once: a later command-line mutation cannot widen an owned file.
+   // The fixed cap applies only when launched as a Remote Paint browser.
+   const bool remote_paint_write_limited_;
++  const bool remote_paint_atomic_rename_;
+ 
+   // Mojo remote for quarantine service.
+   mojo::Remote<quarantine::mojom::Quarantine> quarantine_service_;
+--- a/components/download/internal/common/base_file.cc
++++ b/components/download/internal/common/base_file.cc
+@@ -116,7 +116,10 @@
+     : download_id_(download_id),
+       remote_paint_write_limited_(
+           base::CommandLine::ForCurrentProcess()->HasSwitch(
+-              "remote-paint-token")) {
++              "remote-paint-token")),
++      remote_paint_atomic_rename_(remote_paint_write_limited_ &&
++          base::CommandLine::ForCurrentProcess()->HasSwitch(
++              "remote-paint-download-budget-v1")) {
+   DETACH_FROM_SEQUENCE(sequence_checker_);
+ }
+ 
+--- a/components/download/internal/common/base_file_posix.cc
++++ b/components/download/internal/common/base_file_posix.cc
+@@ -14,7 +14,12 @@
+ 
+ DownloadInterruptReason BaseFile::MoveFileAndAdjustPermissions(
+     const base::FilePath& new_path) {
+-  if (!ReplaceFileWithPermissions(full_path_, new_path)) {
++  // Native managed spools stay one inode. Avoid the permission helper's
++  // speculative empty destination, including on a failed EXDEV rename.
++  const bool moved = remote_paint_atomic_rename_
++      ? base::ReplaceFile(full_path_, new_path, nullptr)
++      : ReplaceFileWithPermissions(full_path_, new_path);
++  if (!moved) {
+     base::File::Error file_error = base::File::OSErrorToFileError(errno);
+     return ConvertFileErrorToInterruptReason(file_error);
+   }
+--- a/content/browser/download/download_manager_impl.cc
++++ b/content/browser/download/download_manager_impl.cc
+@@ -33,6 +33,7 @@
+ #include "components/download/public/common/download_interrupt_reasons.h"
+ #include "components/download/public/common/download_item_factory.h"
+ #include "components/download/public/common/download_item_impl.h"
++#include "components/download/public/common/native_download_budget.h"
+ #include "components/download/public/common/download_item_rename_handler.h"
+ #include "components/download/public/common/download_stats.h"
+ #include "components/download/public/common/download_target_info.h"
+@@ -1165,8 +1166,10 @@
+   if (!download)
+     return;
+ 
++  auto lease = download->GetRemotePaintAdmission();
+   downloads_by_guid_.erase(download->GetGuid());
+   downloads_.erase(download->GetId());
++  if (lease) lease->MetadataRetired();
+ }
+ 
+ void DownloadManagerImpl::DownloadInterrupted(
+--- /dev/null
++++ b/components/download/public/common/native_download_budget.h
+@@ -0,0 +1,96 @@
++// Bounded regular-download admission. Activation is staged behind the trusted
++// Native budget switch; remote network-service memory is outside this ledger.
++#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_BUDGET_H_
++#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_BUDGET_H_
++
++#include <array>
++#include <string>
++
++#include "base/files/file_path.h"
++#include "base/functional/callback.h"
++#include "base/memory/ref_counted.h"
++#include "base/memory/raw_ptr.h"
++#include "base/memory/weak_ptr.h"
++#include "base/timer/timer.h"
++#include "base/sequence_checker.h"
++#include "components/download/public/common/download_export.h"
++#include "components/download/public/common/download_item.h"
++
++namespace download {
++class DownloadFileCleanupState;
++class DownloadItemImpl;
++struct DownloadCreateInfo;
++class UrlDownloadHandlerCleanupState;
++class NativeDownloadBudget;
++
++class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadLease
++    : public base::RefCountedThreadSafe<NativeDownloadLease>,
++      public DownloadItem::Observer {
++ public:
++  void Attach(DownloadItemImpl* item);
++  void CreationDone(bool returned_item);
++  void MetadataRetired();  // Called only after the owner's erase has returned.
++  void BeginRetire();
++  const std::string& guid() const { return guid_; }
++  bool failed() const { return failed_; }
++  bool retiring() const { return retiring_; }
++  void OnDownloadUpdated(DownloadItem* item) override;
++  void OnDownloadDestroyed(DownloadItem* item) override;
++
++ private:
++  friend class NativeDownloadBudget;
++  friend class base::RefCountedThreadSafe<NativeDownloadLease>;
++  NativeDownloadLease(base::RepeatingCallback<void(NativeDownloadLease*)> done);
++  ~NativeDownloadLease() override;
++  bool AddAttempt(DownloadCreateInfo& info,
++                  base::OnceCallback<void(bool)>* cancel);
++  void CapturePaths();
++  void Tick();
++  void Schedule();
++  void Fail();
++  void Finish();
++  scoped_refptr<NativeDownloadLease> keepalive_;
++  base::RepeatingCallback<void(NativeDownloadLease*)> done_;
++  raw_ptr<DownloadItemImpl> item_ = nullptr;
++  scoped_refptr<DownloadFileCleanupState> files_;
++  std::array<scoped_refptr<UrlDownloadHandlerCleanupState>, 4> requests_;
++  scoped_refptr<UrlDownloadHandlerCleanupState> current_request_;
++  scoped_refptr<base::RefCountedData<base::OnceCallback<void(bool)>>> cancel_;
++  std::array<base::FilePath, 8> paths_;
++  std::string guid_;
++  base::OneShotTimer timer_;
++  base::TimeTicks deadline_;
++  size_t pending_creators_ = 0;
++  bool had_item_ = false;
++  bool terminal_ = false;
++  bool retiring_ = false;
++  bool failed_ = false;
++  bool item_cancelled_ = false;
++  bool paths_queued_ = false;
++  bool metadata_retired_ = false;
++  bool finished_ = false;
++  SEQUENCE_CHECKER(sequence_checker_);
++};
++
++class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadBudget {
++ public:
++  static constexpr uint32_t kMaxItems = 4;
++  static constexpr uint64_t kFileBytes = 4 * 1024 * 1024;
++  static uint32_t ReservedItems();
++  static uint64_t ReservedBytes();
++  explicit NativeDownloadBudget(base::RepeatingCallback<void(const std::string&)> done);
++  ~NativeDownloadBudget();
++  bool enabled() const { return enabled_; }
++  scoped_refptr<NativeDownloadLease> Admit(
++      DownloadCreateInfo& info, base::OnceCallback<void(bool)>* cancel);
++  void Shutdown();
++ private:
++  void Released(NativeDownloadLease* lease);
++  const bool enabled_;
++  std::array<scoped_refptr<NativeDownloadLease>, kMaxItems> slots_;
++  base::RepeatingCallback<void(const std::string&)> done_;
++  SEQUENCE_CHECKER(sequence_checker_);
++  base::WeakPtrFactory<NativeDownloadBudget> weak_{this};
++};
++}  // namespace download
++#endif
+--- /dev/null
++++ b/components/download/public/common/native_download_budget.cc
+@@ -0,0 +1,245 @@
++#include "components/download/public/common/native_download_budget.h"
++
++#include <atomic>
++#include <utility>
++
++#include "base/check.h"
++#include "base/command_line.h"
++#include "base/functional/bind.h"
++#include "base/notreached.h"
++#include "components/download/public/common/download_create_info.h"
++#include "components/download/public/common/download_file.h"
++#include "components/download/public/common/download_item_impl.h"
++#include "components/download/public/common/download_task_runner.h"
++#include "components/download/public/common/url_download_handler.h"
++
++namespace download {
++namespace {
++std::atomic<uint32_t> g_reserved{0};
++constexpr auto kActiveLifetime = base::Minutes(5);
++constexpr auto kTerminalRetention = base::Seconds(30);
++constexpr auto kPoll = base::Milliseconds(50);
++using RequestPhase = UrlDownloadHandlerCleanupState::Phase;
++bool IsEnabled() {
++  const auto* cmd = base::CommandLine::ForCurrentProcess();
++  return cmd->HasSwitch("remote-paint-token") &&
++         cmd->HasSwitch("remote-paint-download-budget-v1");
++}
++bool Reserve() {
++  uint32_t value = g_reserved.load();
++  while (value < NativeDownloadBudget::kMaxItems) {
++    if (g_reserved.compare_exchange_weak(value, value + 1)) return true;
++  }
++  return false;
++}
++}  // namespace
++
++uint32_t NativeDownloadBudget::ReservedItems() { return g_reserved.load(); }
++uint64_t NativeDownloadBudget::ReservedBytes() { return ReservedItems() * kFileBytes; }
++NativeDownloadBudget::NativeDownloadBudget(
++    base::RepeatingCallback<void(const std::string&)> done)
++    : enabled_(IsEnabled()), done_(std::move(done)) {}
++NativeDownloadBudget::~NativeDownloadBudget() { Shutdown(); }
++
++scoped_refptr<NativeDownloadLease> NativeDownloadBudget::Admit(
++    DownloadCreateInfo& info, base::OnceCallback<void(bool)>* cancel) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  CHECK(enabled_);
++  if (!info.remote_paint_request_cleanup ||
++      info.remote_paint_request_cleanup->GetPhase() == RequestPhase::Failed)
++    return nullptr;
++  if (!info.is_new_download) {
++    for (auto& lease : slots_) {
++      if (lease && lease->guid() == info.guid && !lease->retiring() &&
++          !lease->failed()) {
++        if (lease->AddAttempt(info, cancel)) return lease;
++        lease->BeginRetire();
++        return nullptr;
++      }
++    }
++    return nullptr;
++  }
++  for (auto& slot : slots_) {
++    if (!slot && Reserve()) {
++      slot = base::WrapRefCounted(new NativeDownloadLease(base::BindRepeating(
++          &NativeDownloadBudget::Released, weak_.GetWeakPtr())));
++      slot->keepalive_ = slot;
++      CHECK(slot->AddAttempt(info, cancel));
++      return slot;
++    }
++  }
++  return nullptr;
++}
++void NativeDownloadBudget::Released(NativeDownloadLease* lease) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  for (auto& slot : slots_) {
++    if (slot.get() == lease) {
++      const std::string guid = lease->guid();
++      slot.reset();
++      if (done_ && !guid.empty()) done_.Run(guid);
++      return;
++    }
++  }
++  NOTREACHED();
++}
++void NativeDownloadBudget::Shutdown() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  for (auto& slot : slots_) if (slot) slot->BeginRetire();
++}
++
++NativeDownloadLease::NativeDownloadLease(
++    base::RepeatingCallback<void(NativeDownloadLease*)> done)
++    : done_(std::move(done)), deadline_(base::TimeTicks::Now() + kActiveLifetime) {}
++NativeDownloadLease::~NativeDownloadLease() = default;
++
++bool NativeDownloadLease::AddAttempt(
++    DownloadCreateInfo& info, base::OnceCallback<void(bool)>* cancel) {
++  if (retiring_ || failed_ || pending_creators_ || !info.remote_paint_request_cleanup) return false;
++  for (auto& request : requests_) {
++    if (request && request->GetPhase() == RequestPhase::Acknowledged) request.reset();
++    if (request && request->GetPhase() == RequestPhase::Failed) return false;
++  }
++  for (auto& request : requests_) {
++    if (!request) {
++      request = info.remote_paint_request_cleanup;
++      current_request_ = request;
++      cancel_ = base::MakeRefCounted<base::RefCountedData<
++          base::OnceCallback<void(bool)>>>(std::move(*cancel));
++      *cancel = base::BindOnce([](decltype(cancel_) cancel,
++                                  scoped_refptr<UrlDownloadHandlerCleanupState> request,
++                                  bool user) {
++        const auto phase = request->GetPhase();
++        if (cancel->data && (phase == RequestPhase::Active || phase == RequestPhase::Queued))
++          std::move(cancel->data).Run(user);
++        else
++          cancel->data.Reset();
++      }, cancel_, current_request_);
++      ++pending_creators_;
++      timer_.Start(FROM_HERE, deadline_ - base::TimeTicks::Now(),
++                   base::BindOnce(&NativeDownloadLease::Tick, this));
++      return true;
++    }
++  }
++  return false;
++}
++void NativeDownloadLease::Attach(DownloadItemImpl* item) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  CHECK(!item_ && !had_item_);
++  item_ = item;
++  had_item_ = true;
++  files_ = item->GetRemotePaintFileCleanupState();
++  guid_ = item->GetGuid();
++  item->AddObserver(this);
++  CapturePaths();
++}
++void NativeDownloadLease::CreationDone(bool returned_item) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  CHECK_GT(pending_creators_, 0u);
++  --pending_creators_;
++  if (returned_item && !had_item_) { Fail(); return; }
++  if (!returned_item && !had_item_) {
++    metadata_retired_ = true;
++    retiring_ = true;
++  }
++  if (retiring_) Schedule();
++}
++void NativeDownloadLease::MetadataRetired() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  metadata_retired_ = true;
++  if (retiring_) Schedule();
++}
++void NativeDownloadLease::CapturePaths() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (!item_) return;
++  for (const auto& path : {item_->GetFullPath(), item_->GetTargetFilePath()}) {
++    if (path.empty()) continue;
++    bool known = false;
++    for (const auto& old : paths_) if (old == path) known = true;
++    if (known) continue;
++    bool stored = false;
++    for (auto& old : paths_) if (old.empty()) { old = path; stored = true; break; }
++    if (!stored) { Fail(); return; }
++  }
++}
++void NativeDownloadLease::OnDownloadUpdated(DownloadItem* item) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  CapturePaths();
++  if (!retiring_ && !terminal_ && item->IsDone()) {
++    terminal_ = true;
++    deadline_ = base::TimeTicks::Now() + kTerminalRetention;
++    timer_.Start(FROM_HERE, kTerminalRetention,
++                 base::BindOnce(&NativeDownloadLease::Tick, this));
++  }
++}
++void NativeDownloadLease::OnDownloadDestroyed(DownloadItem*) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  CapturePaths();
++  item_ = nullptr;
++  retiring_ = true;
++  Schedule();  // Destruction notification itself is never metadata ACK.
++}
++void NativeDownloadLease::Fail() {
++  failed_ = true;
++  timer_.Stop();
++  // Keep the self-reference and global reservation until namespace retirement.
++}
++void NativeDownloadLease::BeginRetire() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (finished_ || failed_) return;
++  retiring_ = true;
++  Tick();
++}
++void NativeDownloadLease::Schedule() {
++  if (!finished_ && !failed_)
++    timer_.Start(FROM_HERE, kPoll, base::BindOnce(&NativeDownloadLease::Tick, this));
++}
++void NativeDownloadLease::Tick() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (failed_ || finished_) return;
++  auto self = keepalive_;
++  retiring_ = true;
++  if (cancel_ && cancel_->data && current_request_) {
++    const auto phase = current_request_->GetPhase();
++    if (phase == RequestPhase::Active || phase == RequestPhase::Queued)
++      std::move(cancel_->data).Run(true);
++  }
++  if (pending_creators_) { Schedule(); return; }
++  if (item_ && !item_cancelled_) {
++    CapturePaths();
++    item_cancelled_ = true;
++    item_->Cancel(true);
++  }
++  if (had_item_ && !files_) { Fail(); return; }
++  if (files_ && !paths_queued_) {
++    paths_queued_ = true;
++    for (const auto& path : paths_)
++      if (!path.empty()) files_->DeletePath(GetDownloadTaskRunner(), path);
++  }
++  if (files_) {
++    const auto snapshot = files_->GetSnapshot();
++    if (snapshot.failed) { Fail(); return; }
++    if (snapshot.pending) { Schedule(); return; }
++  }
++  for (const auto& request : requests_) {
++    if (!request) continue;
++    const auto phase = request->GetPhase();
++    if (phase == RequestPhase::Failed) { Fail(); return; }
++    if (phase != RequestPhase::Acknowledged) { Schedule(); return; }
++  }
++  if (item_) {
++    item_->Remove();
++    Schedule();
++    return;
++  }
++  if (!metadata_retired_) { Schedule(); return; }
++  if (!failed_) Finish();
++}
++void NativeDownloadLease::Finish() {
++  auto self = keepalive_;
++  finished_ = true;
++  timer_.Stop();
++  CHECK_GT(g_reserved.fetch_sub(1), 0u);
++  done_.Run(this);
++  keepalive_.reset();
++}
++}  // namespace download

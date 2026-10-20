@@ -1,0 +1,19 @@
+# Native 常规下载准入与可复用额度
+
+第20个顺序补丁为常规托管下载加入item分配前准入，第21补丁封住初始化回调写入数据库缓存的旁路。只有同时存在`remote-paint-token`和`remote-paint-download-budget-v1`两个进程开关才启用，manager构造时快照。Source尚未传入第二个开关，canonical浏览器也没有重新构建或运行；这是后续可信下载桥的组件基础。
+
+进程共享4个额度，每个预留4MiB文件内容范围，总计16MiB逻辑文件内容。manager固定4个lease槽；每个lease最多记录8个路径、4份未结清请求见证，最多1个创建回调在途。容量已满、缺少请求见证或重复复制文件变体在item或文件工厂分配前拒绝，取消原请求并在真实IO线程销毁输入流。常规文件的4MiB整块写入拒绝沿用此前BaseFile合同。这里不包含文件系统块/元数据开销、任意浏览器存储、save-package、所有更早的IO请求或远端网络服务缓冲。
+
+每份lease结合创建回调结算、实际文件任务状态、全部已接受URL持有者回执和真实item/map删除后的owner确认。超时只触发取消与清理，不能代替上述凭据；item析构通知或map为空也不能单独归还额度。完整浏览器DownloadManagerImpl在真正erase后确认，独立InProgressDownloadManager路径也实际erase item与非持久GUID记录。这条InProgressDownloadManager路径不向下载数据库缓存加入记录。失败或无法确认时自引用持有进程全局额度，不提供进程内清零；必须依赖真实外层进程/命名空间退休。当前组件用实际子进程退出验证这一合同，没有把子进程称为单独容器命名空间。
+
+活动期限5分钟，终态文件保留30秒；组件用mock time驱动这两个期限，同时使用实际临时文件、下载item、任务与IO线程。连续12次下载能回到零额度、零文件与零GUID记录。未结清URL持有者、未结清creator、缺失metadata ACK及实际删除失败均不能提前复用额度。真实浏览器计时、恢复下载及HTTP/网络服务退休尚未验收。
+
+POSIX原有权限重命名助手本来就使用原子ReplaceFile，但会先创建一个空目标以处理权限。Native开关路径直接原子替换，避免跨文件系统失败留下这个未记账的占位文件；没有把原实现描述成内容复制回退。实际/tmp与/dev/shm不同设备的测试确认失败后原文件仍在、目标不存在。该路径仍需在Source受控私有目录与可信桥接下完成浏览器验收。
+
+首轮生产组件构建通过，并执行原315项回归。加入新夹具后一次编译失败，保留缺失callback_helpers、WaitableEvent包装方式及raw_ref要求的日志；仅修正夹具后GN/Ninja2步通过。复查发现ReportBytesWasted仍可绕过非持久观察者注册插入数据库缓存，第21顺序补丁按实际lease跳过该写入，并把缓存行纳入元数据统计；现有独立manager用例实际调用该回调3次，验证无额外行及最终清零。第四次GN/Ninja3步和最终ARM64 ELF无过滤329项全部RUN/COMPLETED，编译列表与实际结果逐一相同、零失败/禁用：14新增、39既有Native、276上游及竞态。失败清理合同另有同一二进制的实际子进程1项结果。Mac和Linux专项各13项通过，没有重新运行全1435项JS或SDK。
+
+真实浏览器DownloadManagerImpl删除hook另以GN/Ninja提取的实际编译命令编译。首轮隔离输出缺少生成头文件，真实失败保留；随后只为编译器报告缺失的头执行明确Ninja生成目标，最终得到ARM64对象。没有进行整浏览器链接或运行，不把该对象等同于浏览器验收。21补丁完整回放与39实际源文件、33个Native组件逐项一致；所有自有容器在实际终态后删除，选定新输出和Go缓存保留。
+
+仍待：原Page/document的受信任版本化Native桥、Source显式启用及私有目录约束、Playwright事件/元数据所有权与实际上限、更早IO准入、远端网络服务物理退休、真实恢复下载和整浏览器端到端验证。原8小时增长失败及其他全局门槛保持未通过。K6仍部分，41项仍为10完成/17部分/14待办。未提交、推送或启动子代理。
+
+见[结构化证据](evidence/native-download-admission.json)、[URL持有者回执](native-download-request-owner.md)、[文件任务回执](native-download-task-settlement.md)及[进度](optimization-progress.md)。
