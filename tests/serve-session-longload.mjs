@@ -9,6 +9,7 @@ import {createSessionMemoryOwner} from './session-memory-owner.mjs';
 import {atomicJson,deadline} from './memory-soak-diagnostics.mjs';
 import {createSessionNetworkProfile} from './session-network-profile.mjs';
 import {createLinuxSourceClockProbe} from './linux-source-clock.mjs';
+import {observeFrameLoss} from './frame-age-observer.mjs';
 assert.equal(process.platform,'linux');assert.notEqual(process.env.REMOTE_PAINT_DATA_PLANE,'node');
 const directory=resolve(process.env.REMOTE_PAINT_SESSION_LONG_DIR??'artifacts/session-longload'),port=Number(process.env.REMOTE_PAINT_SESSION_LONG_PORT??39546),runId=randomUUID();assert.ok(Number.isInteger(port)&&port>=1024&&port<65532);await mkdir(directory,{recursive:true,mode:0o700});for(const name of ['requests','responses'])await mkdir(join(directory,name),{recursive:true});
 const frameAge=process.env.REMOTE_PAINT_SESSION_LONG_FRAME_AGE==='1',networkProfile=process.env.REMOTE_PAINT_SESSION_LONG_NETEM==='1'?createSessionNetworkProfile(port+1):null;
@@ -20,7 +21,7 @@ function monitor(owner){
  const revoke=source.control.revoke.bind(source.control),renew=source.control.renew.bind(source.control);source.control.revoke=async(reason,...args)=>{const value=await revoke(reason,...args),key=reason??'released';revokes[key]=(revokes[key]??0)+1;records.push({at:Date.now(),reason:key,mode:source.control.mode,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion});if(records.length>32)records.shift();return value;};source.control.renew=(...args)=>{const value=renew(...args);renews++;return value;};
  return {health,revokes,records,get renews(){return renews;},closing(){health.closing=true;}};
 }
-let primaryMonitor,secondaryMonitor;const linuxClockProbe=createLinuxSourceClockProbe(()=>primary.source);
+let primaryMonitor,secondaryMonitor,primaryLoss;const linuxClockProbe=createLinuxSourceClockProbe(()=>primary.source);
 async function state(owner,monitor){if(!owner)return null;const source=owner.source;return {id:owner.id,number:owner.number,workload:owner.stats(),pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,viewport:source.viewport,producer:source.producer,nativeDocumentToken:source.nativeDocumentToken,inputSeq:source.inputSeq,stats:source.stats,control:source.control.state(),health:{...monitor.health},...await deadline(source.page.evaluate(()=>({cycle:window.cycle,inputLength:document.querySelector('input').value.length,sessionNumber:window.sessionNumber})),2000,'Session state').catch(error=>({pageStateError:error.message}))};}
 async function leaseState(){
  if(!leaseProbe)return null;const source=primary.source,records=primaryMonitor.records.filter(r=>r.at>=leaseProbe.startedAt&&r.reason==='expired');
@@ -31,17 +32,20 @@ async function closeSecondary(){
  assert.ok(secondary,'No secondary Session');secondaryMonitor.closing();const receipt=await secondary.close();assert.equal(receipt.status,'closed');assert.deepEqual(receipt.errors,[]);assert.equal(receipt.after.sourceProcesses.length,0);await appendFile(join(directory,'closed-sessions.jsonl'),JSON.stringify(receipt)+'\n');stats.closed++;lastClosed={id:receipt.id,number:receipt.number,retiredProcesses:receipt.retired.length,imageBytes:receipt.workload.imageBytes,status:receipt.status,nodeCalls:receipt.nodeCalls,afterPss:receipt.after.metrics.pss,cgroup:receipt.after.metrics.cgroup,controllerVm:receipt.after.controllerVm};secondary=null;secondaryMonitor=null;return lastClosed;
 }
 const stop=()=>stopPromise??=(async()=>{
- closing=true;clearTimeout(timer);const errors=[];let primaryReceipt,networkCleanup;
+ closing=true;clearTimeout(timer);const errors=[];let primaryReceipt,networkCleanup,lossFinal;
  try{if(secondary)await closeSecondary();}catch(error){errors.push({step:'secondary',error:error.stack});}
  try{primaryMonitor?.closing();primaryReceipt=await primary?.close();assert.equal(primaryReceipt?.status,'closed');stats.closed++;}catch(error){errors.push({step:'primary',error:error.stack});}
+ try{primaryLoss?.close();lossFinal=primaryLoss?.drain();if(lossFinal)await appendFile(join(directory,'source-loss-windows.jsonl'),JSON.stringify({at:new Date().toISOString(),phase:'after-source-close',...lossFinal})+'\n');}catch(error){errors.push({step:'source-loss-final',error:error.stack});}
  try{await fixture.close();}catch(error){errors.push({step:'fixture',error:error.stack});}
  try{networkCleanup=await networkProfile?.close();}catch(error){errors.push({step:'network-profile',error:error.stack});}
- const remaining=primaryReceipt?.after?.metrics,receipt={at:new Date().toISOString(),runId,status:errors.length?'failed':'closed',errors,networkCleanup,stats,primary:primaryReceipt,fixtureListening:fixture.listening,activeSessions:fixture.activeSessions,remainingProcesses:remaining?.processes,processSampling:remaining?.processSampling,pss:remaining?.pss,cgroupProvenance:remaining?.cgroup.provenance};await atomic('source-stopped.json',receipt);if(errors.length)process.exitCode=1;return receipt;
+ const remaining=primaryReceipt?.after?.metrics,receipt={at:new Date().toISOString(),runId,status:errors.length?'failed':'closed',errors,networkCleanup,lossFinal,stats,primary:primaryReceipt,fixtureListening:fixture.listening,activeSessions:fixture.activeSessions,remainingProcesses:remaining?.processes,processSampling:remaining?.processSampling,pss:remaining?.pss,cgroupProvenance:remaining?.cgroup.provenance};await atomic('source-stopped.json',receipt);if(errors.length)process.exitCode=1;return receipt;
 })();
 try{
- primary=await createSessionMemoryOwner(fixture,{port,host:'0.0.0.0',frameAgePoints:frameAge?[[20,80],[400,30],[450,30]]:null,frameAgeStreaming:process.env.REMOTE_PAINT_SESSION_LONG_FRAME_AGE_STREAMING==='1'});primaryMonitor=monitor(primary);stats.created++;await primary.pin();await atomic('ready.json',{at:new Date().toISOString(),runId,primary:{id:primary.id,number:primary.number,url:primary.url,streamOrigin:primary.streamOrigin,renderer:primary.renderer},observerProvenance:primary.observerProvenance,platform:process.platform,architecture:process.arch,browser:primary.source.browser.version(),scope:'One long-lived primary Source with crosssite/real30sleaseexpiry;secondary Sessioncreation/working-setpressure/destruction in same controller. Private file commands,normal production FrameGate/Viewer.'});console.log(JSON.stringify({event:'ready',runId,port}));
+ primary=await createSessionMemoryOwner(fixture,{port,host:'0.0.0.0',frameAgePoints:frameAge?[[20,80],[400,30],[450,30]]:null,frameAgeStreaming:process.env.REMOTE_PAINT_SESSION_LONG_FRAME_AGE_STREAMING==='1'});primaryMonitor=monitor(primary);if(frameAge)primaryLoss=observeFrameLoss(primary.source,primary.peers,{drainable:true});stats.created++;await primary.pin();await atomic('ready.json',{at:new Date().toISOString(),runId,primary:{id:primary.id,number:primary.number,url:primary.url,streamOrigin:primary.streamOrigin,renderer:primary.renderer},observerProvenance:primary.observerProvenance,platform:process.platform,architecture:process.arch,browser:primary.source.browser.version(),scope:'One long-lived primary Source with crosssite/real30sleaseexpiry;secondary Sessioncreation/working-setpressure/destruction in same controller. Private file commands,normal production FrameGate/Viewer.'});console.log(JSON.stringify({event:'ready',runId,port}));
 }catch(error){await stop();throw error;}
 async function operation(command){
+ if(command.op==='loss-drain'){assert.ok(primaryLoss);const loss=primaryLoss.drain();await appendFile(join(directory,'source-loss-windows.jsonl'),JSON.stringify({at:new Date().toISOString(),phase:'workload',...loss})+'\n');return {loss};}
+
  if(command.op.startsWith('network-')){
   assert.ok(networkProfile,'This Source was not launched in the owned NET_ADMIN test namespace');let value;
   if(command.op==='network-start')value=await networkProfile.start();else if(command.op==='network-snapshot')value=await networkProfile.snapshot();else if(command.op==='network-stop')value=await networkProfile.close();else throw new Error('Unknown network operation');
@@ -63,7 +67,7 @@ async function operation(command){
   leaseProbe={startedAt:Date.now(),expiresAt:grant.expiresAt,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,renewsAtStart:primaryMonitor.renews,completed:false,scope:'Explicit abandoned server API grant to an actually attached ready Viewer;no ControlGranted token delivery,not organic packet loss or physical input.'};await event({kind:'lease-probe-started',session:primary.id,probe:leaseProbe});return {leaseProbe};
  }
  if(command.op==='metrics'||command.op==='snapshot'){
-  const primaryState=await state(primary,primaryMonitor),secondaryState=await state(secondary,secondaryMonitor),measured=await primary.measure();assert.deepEqual(measured.errors,[]);assert.equal(measured.metrics.pss.completeObservedCohort,true);const value={at:new Date().toISOString(),runId,stats:{...stats},primary:primaryState,secondary:secondaryState,leaseProbe:await leaseState(),metrics:measured.metrics,lastClosed};await appendFile(join(directory,'source-runtime.jsonl'),JSON.stringify(value)+'\n');return value;
+  const primaryState=await state(primary,primaryMonitor),secondaryState=await state(secondary,secondaryMonitor),measured=await primary.measure();assert.deepEqual(measured.errors,[]);assert.equal(measured.metrics.pss.completeObservedCohort,true);const value={at:new Date().toISOString(),runId,stats:{...stats},primary:primaryState,secondary:secondaryState,leaseProbe:await leaseState(),metrics:measured.metrics,lastClosed,loss:primaryLoss?.snapshot()??null};await appendFile(join(directory,'source-runtime.jsonl'),JSON.stringify(value)+'\n');return value;
  }
  if(command.op==='stop')return {stopped:true};
  const owner=command.target==='primary'?primary:command.target==='secondary'?secondary:null;assert.ok(owner,'Unknown Session target');assert.equal(command.sessionId,owner.id,'Stale Session command');

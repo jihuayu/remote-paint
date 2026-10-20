@@ -19,6 +19,7 @@ import {SceneRenderer} from '../viewer/scene-renderer.mjs';
 import {observeFrameLoss} from './frame-age-observer.mjs';
 
 assert.equal(process.platform,'linux');
+const drainableLoss=process.env.REMOTE_PAINT_SOURCE_LOSS_DRAIN==='1',lossDrains=[];
 const output=process.env.REMOTE_PAINT_SOURCE_HASH_RETRY_OUTPUT??'artifacts/native-source-hash-retry';
 await mkdir(output,{recursive:true});
 const blue=[31,79,191,255],green=[43,161,89,255],png=new PNG({width:32,height:32});
@@ -38,7 +39,7 @@ async function until(fn,label){
 }
 try{
  source=await startLiveSource({url:`http://127.0.0.1:${fixture.address().port}`,viewport:{width:320,height:180}});
- assert.equal(source.nativeAutopublish,true);source.on('captureError',e=>errors.push(e.message));lossObservation=observeFrameLoss(source);
+ assert.equal(source.nativeAutopublish,true);source.on('captureError',e=>errors.push(e.message));lossObservation=observeFrameLoss(source,undefined,{drainable:drainableLoss});
  source.broker.on('event',e=>{
   if(['NativeFrame','NativeFrameRejected'].includes(e.event)){events.push({phase,at:performance.now(),...e});assert.ok(events.length<64);}
  });
@@ -106,6 +107,7 @@ try{
  await once(socket,'open');socket.send(JSON.stringify({type:'Hello',protocol:4,renderer:transport.renderer,capabilities:['frame-window-v1','resource-memory-v1'],frameWindow:1}));await until(()=>frames.length>0,'Gateway real CanvasKit image/DOM pixels');
  assert.equal(Object.hasOwn(source.latest,'scene'),false);assert.equal(Object.hasOwn(source.latest,'payloads'),false);assert.equal(source.stats.resourceRecoveries,1);assert.equal(source.stats.resetRequests,0);assert.equal(source.stats.errors,0);assert.deepEqual(errors,[]);assert.deepEqual({map:nodeCalls.map,publish:nodeCalls.publish,awaitPromise:nodeCalls.awaitPromise},{map:5,publish:0,awaitPromise:0});
  lossAfter=lossObservation.snapshot();assert.equal(lossObservation.rejections.length,1);const observed=lossObservation.rejections[0];assert.equal(observed.captureId,rejected.captureId);assert.equal(observed.code,rejected.code);assert.equal(observed.reason,rejected.reason);assert.equal(observed.outcome,'retry');assert.equal(observed.captureOrdinal,rejectedOrdinal);assert.equal(observed.matchedActiveScope,true);assert.equal(lossBefore.rejectionCount,0);assert.equal(lossAfter.rejectionCount,1);assert.equal(lossAfter.source.resourceRecoveries,1);
+ if(drainableLoss){const first=lossObservation.drain();assert.equal(first.windowOrdinal,1);assert.equal(first.rejections.length,1);assert.equal(first.rejections[0].captureId,rejected.captureId);assert.equal(first.rejections[0].observationOrdinal,1);assert.equal(first.rejectionCount,1);assert.equal(lossObservation.rejections.length,0);const empty=lossObservation.drain();assert.equal(empty.windowOrdinal,2);assert.equal(empty.rejections.length,0);assert.equal(empty.rejectionCount,1);assert.equal(empty.afterObservationOrdinal,1);assert.equal(empty.throughObservationOrdinal,1);assert.equal(lossObservation.snapshot().rejectionCount,1);lossDrains.push(first,empty);}
  diagnostics.finalStats={...source.stats};checks.push('recovered resources reach the real Gateway, FrameGate and CanvasKit: blue PNG and key-updated green DOM pixels match with input2; Source keeps only scalar native metadata');
 }catch(e){failure=e.stack;}
 finally{
@@ -113,5 +115,5 @@ finally{
 }
 const cleanup={brokerExited:source?.broker.exited,pending:source?.broker.pending.size,requestOwners:source?.broker.requestMemory.stats().owners,responseOwners:source?.broker.responses.stats().owners};
 if(!failure)try{assert.deepEqual(cleanup,{brokerExited:true,pending:0,requestOwners:0,responseOwners:0});}catch(e){failure=e.stack;}
-const report={at:new Date().toISOString(),status:failure?'failed':'passed',scope:'Actual default NativeSource/real PNG/native hash-only cache miss/real Retry credit/full resend/Gateway/CanvasKit image and DOM pixels. Five explicit empty diagnostic maps and normal resourceBudget reclamation induce the fault before Gateway/peer pins exist; this is not organic workload eviction or a reset. All production limits and binaries unchanged; no full B1/process-memory claim.',browserSha256:hash(await readFile(process.env.REMOTE_PAINT_CHROMIUM)),brokerSha256:hash(await readFile(process.env.REMOTE_PAINT_BROKER)),phase,checks,nodeCalls,events,frames,diagnostics,errors,cleanup,lossMetrics:{before:lossBefore,after:lossAfter,nativeRejections:lossObservation?.rejections,scope:'ActualNativeFrameRejectedidentity/code/outcome/parsedcaptureOrdinal/currentbindingmatchplusNodeSourcewitness;explicitdiagnosticeviction,notorganicnetworkloss.'},...(failure?{error:failure}:{})};
+const report={at:new Date().toISOString(),status:failure?'failed':'passed',scope:'Actual default NativeSource/real PNG/native hash-only cache miss/real Retry credit/full resend/Gateway/CanvasKit image and DOM pixels. Five explicit empty diagnostic maps and normal resourceBudget reclamation induce the fault before Gateway/peer pins exist; this is not organic workload eviction or a reset. All production limits and binaries unchanged; no full B1/process-memory claim.',browserSha256:hash(await readFile(process.env.REMOTE_PAINT_CHROMIUM)),brokerSha256:hash(await readFile(process.env.REMOTE_PAINT_BROKER)),phase,checks,nodeCalls,events,frames,diagnostics,errors,cleanup,lossMetrics:{drainable:drainableLoss,drains:lossDrains,before:lossBefore,after:lossAfter,nativeRejections:lossObservation?.rejections,scope:'ActualNativeFrameRejectedidentity/code/outcome/parsedcaptureOrdinal/currentbindingmatchplusNodeSourcewitness;explicitdiagnosticeviction,notorganicnetworkloss.'},...(failure?{error:failure}:{})};
 await writeFile(output+'/retry.json',JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,checks:checks.length,nodeCalls,retry:diagnostics.retry,cleanup,error:failure}));if(failure)throw new Error(failure);

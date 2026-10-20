@@ -268,19 +268,27 @@ export async function finishFrameAge(source,page,window,provenance,options){
 
 // Node observations carry their own clock boundary. PeerStats is asynchronous;
 // these witnesses cannot be treated as one atomic end-to-end frame-loss ledger.
-export function observeFrameLoss(source,peers=new Set()){
- const rejections=[];
+export function observeFrameLoss(source,peers=new Set(),{drainable=false}={}){
+ assert.equal(typeof drainable,'boolean');const rejections=[];let received=0,recorded=0,drained=0,windowOrdinal=0,observerFailure=null;
  const event=e=>{
-  if(e.event!=='NativeFrameRejected')return;
-  assert.ok(rejections.length<256,'Native rejection observation bound');
-  const match=/^(.*):(\d+)$/.exec(e.captureId??'');assert.ok(match,'Native rejection identity');
-  const captureOrdinal=Number(match[2]);assert.ok(Number.isSafeInteger(captureOrdinal)&&captureOrdinal>0);assert.ok(['retry','pause'].includes(e.outcome));
-  assert.ok(typeof e.reason==='string'&&e.reason.length<=512&&typeof e.code==='string'&&e.code.length<=128);
-  rejections.push({atNodeMs:performance.now(),captureId:e.captureId,captureOrdinal,code:e.code,outcome:e.outcome,reason:e.reason,matchedActiveScope:e.captureId.startsWith((source.capture.binding?.config.id??'unbound')+':')});
+  if(e.event!=='NativeFrameRejected')return;received++;if(observerFailure)return;
+  try{
+   assert.ok(rejections.length<256,'Native rejection observation bound');
+   const match=/^(.*):(\d+)$/.exec(e.captureId??'');assert.ok(match,'Native rejection identity');
+   const captureOrdinal=Number(match[2]);assert.ok(Number.isSafeInteger(captureOrdinal)&&captureOrdinal>0);assert.ok(['retry','pause'].includes(e.outcome));
+   assert.ok(typeof e.reason==='string'&&e.reason.length<=512&&typeof e.code==='string'&&e.code.length<=128);
+   rejections.push({observationOrdinal:++recorded,atNodeMs:performance.now(),captureId:e.captureId,captureOrdinal,code:e.code,outcome:e.outcome,reason:e.reason,matchedActiveScope:e.captureId.startsWith((source.capture.binding?.config.id??'unbound')+':')});
+  }catch(error){if(!drainable)throw error;observerFailure??={atNodeMs:performance.now(),message:error.message.slice(0,1024),receivedEvents:received,recordedEvents:recorded};}
  };
+ const snapshot=()=>({atNodeMs:performance.now(),source:structuredClone(source.stats),rejectionCount:recorded,receivedRejectionEvents:received,retainedRejections:rejections.length,observerFailure,peers:[...peers].map(p=>({id:p.id,kind:p.kind,closed:p.closed,stats:structuredClone(p.stats)}))});
  source.broker.on('event',event);
- return {rejections,snapshot(){return {atNodeMs:performance.now(),source:structuredClone(source.stats),rejectionCount:rejections.length,peers:[...peers].map(p=>({id:p.id,kind:p.kind,closed:p.closed,stats:structuredClone(p.stats)}))};},close(){source.broker.off('event',event);}};
+ return {rejections,snapshot,drain(){
+  assert.equal(drainable,true,'This observer was not configured for bounded window drains');assert.equal(observerFailure,null,'Native rejection observer failed;records may be incomplete');
+  rejections.forEach((r,i)=>assert.equal(r.observationOrdinal,drained+i+1));assert.equal(recorded-drained,rejections.length);
+  const result={...snapshot(),windowOrdinal:++windowOrdinal,afterObservationOrdinal:drained,throughObservationOrdinal:recorded,rejections:rejections.splice(0),scope:'Actual typed NativeFrameRejected events in this Source Node observer window;observationOrdinal counts events,not dropped frames. Source/Gateway stats have independent asynchronous boundaries;not an atomic end-to-end loss ledger.'};drained=recorded;return result;
+ },close(){source.broker.off('event',event);}};
 }
+
 export async function armFrameAgeFault(page,kind){
  assert.ok(['delta-base','missing-resource'].includes(kind));return workerRequest(page,'fault:'+kind);
 }

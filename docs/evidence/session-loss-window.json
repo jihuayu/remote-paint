@@ -1,0 +1,111 @@
+{
+  "at": "2026-10-17T22:17:31.827885+00:00",
+  "status": "passed-bounded-native-rejection-drain/actualretry/legacy/SourceActor-contracts",
+  "scope": "Actual typed NativeFrameRejected events with independent Source/Gateway snapshots. Drainable256record windows keep lifetime/received/retained counters and consecutive observation ordinals;malformed/overflow invalidates proof without throwing into Source emitter. Legacy bounded behavior remains. Not an atomic cross-layer loss ledger or proof of organic workload loss/8h/fullN1.",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-loss-window-v1/frozen-version.json",
+    "sha256": "9b61813cd52f7781b8194cbda0b1e01a30e824a550e952ec54b7968875b91754"
+  },
+  "pureContractsPassed": 22,
+  "actualDiagnosticRetry": {
+    "mode": "five explicit empty diagnostic maps+normal resourceBudget reclamation before Gateway pins;notorganicloss",
+    "drainRecords": [
+      1,
+      0
+    ],
+    "lifetimeRejected": 1,
+    "actualRejection": {
+      "observationOrdinal": 1,
+      "atNodeMs": 2849.336287,
+      "captureId": "7de435d62900d569a78077c8b6391e35:4",
+      "captureOrdinal": 4,
+      "code": "NATIVE_SUBSCRIPTION_FAILED",
+      "outcome": "retry",
+      "reason": "Incremental native resource cache miss",
+      "matchedActiveScope": true
+    },
+    "nodeCalls": {
+      "evaluate": 9,
+      "awaitPromise": 0,
+      "map": 5,
+      "publish": 0
+    },
+    "cleanup": {
+      "brokerExited": true,
+      "pending": 0,
+      "requestOwners": 0,
+      "responseOwners": 0
+    }
+  },
+  "legacyActualRetry": {
+    "retainedRejections": 1,
+    "lifetimeRejected": 1,
+    "cleanup": {
+      "brokerExited": true,
+      "pending": 0,
+      "requestOwners": 0,
+      "responseOwners": 0
+    }
+  },
+  "sourceActorContract": {
+    "checks": 7,
+    "nativeLossWindows": [
+      {
+        "windowOrdinal": 1,
+        "afterObservationOrdinal": 0,
+        "throughObservationOrdinal": 0,
+        "rejections": 0,
+        "receivedRejectionEvents": 0,
+        "peers": 3
+      },
+      {
+        "windowOrdinal": 2,
+        "afterObservationOrdinal": 0,
+        "throughObservationOrdinal": 0,
+        "rejections": 0,
+        "receivedRejectionEvents": 0,
+        "peers": 3
+      },
+      {
+        "windowOrdinal": 3,
+        "afterObservationOrdinal": 0,
+        "throughObservationOrdinal": 0,
+        "rejections": 0,
+        "receivedRejectionEvents": 0,
+        "peers": 0
+      }
+    ],
+    "actual30sLeaseExpiryMs": 30000,
+    "secondaryBytes": 90014739,
+    "sourceCreatedClosed": {
+      "created": 2,
+      "closed": 2,
+      "crosssite": 1,
+      "leaseExpired": 1
+    },
+    "historicalPrimaryNavigationFences": 1,
+    "controllerScope": "Source actor is a child of the test driver;parent CPUViewer processes intentionally outside its observed process cohort. No claim outsideObservedPids=[1] whileparentViewer remains alive."
+  },
+  "artifacts": {
+    "retry-drain/retry.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-loss-window-v1/results/retry-drain/retry.json",
+      "sha256": "a824b2fd406e7f0723dcb27911bf7cbb3a92de1b50d95a057cfd32db4d7d03ea"
+    },
+    "retry-legacy/retry.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-loss-window-v1/results/retry-legacy/retry.json",
+      "sha256": "c4229dac92700eec40c64457c7abd5e8cc6a865f03d829361c3537bc39ccef30"
+    },
+    "source-actor/contract.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-loss-window-v1/results/source-actor/contract.json",
+      "sha256": "12fd426f8bf022040a8a27b3644a951fd0eb406f12b6175a2c7f4a2eb47e6260"
+    }
+  },
+  "noCommitPush": true,
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}

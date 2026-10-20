@@ -1226,3 +1226,11 @@ v1因基础runtime没有tc在施加损伤前失败，保留原记录；另建run
 独立真实Linux合约5.611秒通过：12次交替localhost/127跨站，每次Source doc token/epoch/PID与最终PNG/DOM/Session像素核验，实际共13个历史renderer身份全部保留至销毁；共19个固定Source身份最后均由ESRCH确认退休（包含6个其他进程），全部端点/Source/Broker状态关闭，cohort PSS完整，cgroup内观测cohort之外只有init PID1。Root控制器FD从19回到19，逐帧Node map/publish/awaitPromise为0。未假定每次导航必然新PID；若复用，仍按真实PID/start身份核验。
 
 这补齐后续多次导航长测的历史身份记录，不追溯修改此前只固定初始/最终cohort的结果，也不把当前复验579旧副本变为新owner版本。8小时与N1完整合并仍待验收。
+
+## 原生拒绝事件的有界排空窗口
+
+测试observer新增显式drainable模式：每窗口最多256条真实NativeFrameRejected，按独立observationOrdinal连续排空，累计recorded/received与当前retained分开；空窗口半开区间(after,through]两端相等，不假造事件。溢出/非法事件保留首个失败信息并使drain失败，不把异常抛入Source事件处理器；普通旧模式的边界与行为保持。Source/Gateway统计仅各自异步见证，不能与内核packet drop或Worker恢复直接合成原子丢帧账。Source actor工作窗口与实际关闭后最后尾部窗口落盘，detach listener防止持有废Source。
+
+22个纯契约通过。实际Linux Native hash retry正例与legacy各一轮通过：5次明确诊断空map与正常resourceBudget回收触发真正同scope原生cache miss，真实Retry后自动full resend，蓝PNG/绿DOM及input2经Gateway/CanvasKit验证；drain模式首窗口1条、后空窗口0条且累计仍1，legacy保留1条。这是显式诊断故障，不算自然丢包；对应Node map5仅诊断阶段，retry没有额外控制evaluate。
+
+实际Source actor长期控制合约也通过：3个CPU主VM保持、附加Session400图片/>64MiB、真实30s废弃租约、跨站、关闭与stale命令拒绝；两工作窗口及Source实际关闭后的第三尾部窗口ordinal连续，未漏Native拒绝事件，创建/销毁2/2。Parent测试Viewer在Source actor cohort之外是既定边界，未声称它们已在Source receipt时消失。3个独立容器均实际exit0。完整三VM/N1合并、物理增长门槛和8小时仍未完成。
