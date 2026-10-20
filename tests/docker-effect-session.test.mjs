@@ -92,3 +92,7 @@ test('mutation abort and client close remain uncertain and close actual owned so
 test('synchronous authorization cannot extend the deadline or send after it expires',async t=>{
  const f=await fixture(t,normal,{timeoutMs:40}),s=await f.client.open({kind:'create',plan:f.p});await assert.rejects(s.perform(()=>{Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,60);return ack(f.p);}),e=>code('EFFECT_DEADLINE')(e)&&e.uncertain===false);await s.close();assert.equal(mutations(f.seen).length,0);
 });
+
+test('an early lease or request timer callback rechecks the same absolute deadline before expiring',async t=>{
+ const original=setTimeout;for(const forcedTimer of [1,2]){const f=await fixture(t,(req,res,seen,p)=>{original(()=>normal(req,res,seen,p),5);});let scheduled=0,forced=0;const mock=t.mock.method(globalThis,'setTimeout',(callback,ms,...args)=>{if(++scheduled===forcedTimer){forced++;return original(callback,0,...args);}return original(callback,ms,...args);});try{const s=await f.client.open({kind:'create',plan:f.p});assert.equal(forced,1);assert.equal((await s.perform(()=>ack(f.p))).httpStatus,201);assert.equal((await s.close()).status,'closed');assert.equal(mutations(f.seen).length,1);}finally{mock.mock.restore();}}
+});

@@ -52,6 +52,14 @@ perform要求同步返回同一运行时账本的持久确认，逐字段核对S
 
 夹具先以0600文件保存证据并fsync文件及目录，再把实际文件字节的SHA-256写入retired，最后归还Session配额；另开SQLite核对落盘记录。20项新合同覆盖持久确认先于真实请求字节、一次使用、字段/状态约束、不重连、不重试、固定总期限、限额、超量、取消与socket回收。冻结版本及双平台完整结果见[操作检查点](evidence/session-docker-effects.json)。私有stdio/attach、未知创建的生产恢复、完整Native provider、Registry TTL/取消/健康传播与Viewer角色/票据仍待接入；Native浏览器负载继续等待当前独立8小时结束。
 
+## 私有 attach 前置合同（B1b2a）
+
+`service/docker-multiplex.mjs` 按固定Docker v1.45非TTY格式解码8字节头，只接受stdout/stderr和为0的保留字节。单帧及单输入块上限均64KiB；解码器只保留固定头和最多一帧未完成内容，整帧收齐后才转移其独立Buffer，不提前把截断payload交给worker协议。异步迭代由调用方逐帧消费，不预取下一个输入块；调用方仍负责下游背压及释放已经转移的Buffer。超限、未知流、原始TTY、截断和来源异常均拒绝，错误不回显原始内容。实际socket适配器需先把读取结果拆成有界输入，不能假设Node异步迭代永远只给64KiB。
+
+固定运行配置新增单容器local日志：max-size=1m、max-file=1、compress=false，均为字符串选项。完整配置校验拒绝继承或扩大日志策略；没有修改全局daemon设置，也没有重启任何既有容器。这是Docker轮转配置，不是精确的磁盘字节硬限额。可选实际夹具写3MiB固定日志，再读取已轮转的真实复用流，核对首标记消失、末标记保留和有界帧；原始复用流另存0600文件，供独立检查器重新解析。参见[Docker API v1.45](https://raw.githubusercontent.com/moby/moby/v26.1.5/api/swagger.yaml)和[local日志驱动](https://docs.docker.com/engine/logging/drivers/local/)。
+
+初版嵌套LogConfig曾错误使用对象引用比较，导致合法配置被拒绝；失败保留后改为规范化内容比较。随后定向测试发现原操作会话的timer偶尔早于performance绝对截止时间触发，误报主动关闭；修正为每次回调检查同一截止时间，只等待剩余间隔。原5秒总预算不变；固定强制早触发的两类回调合同验证不会提前过期，未用加长期限或重试代替。冻结版本、真实日志轮转与双平台回归结果见[attach前置检查点](evidence/session-docker-attach-foundation.json)。实际HTTP Upgrade、私有代理和worker通道集成仍在后续B1b2b，不能用这个解码器或日志读取验收代替。
+
 ## 当前证据与剩余条件
 
 轻量合同运行真实Node worker与叶子子进程，验证认证前无分配、重复启动、同批Start/Close、父端EOF与租约失效、心跳、晚启动收尾、提前关闭假回执、abort同步重入、失败脱敏、UTF-8分片/限长和期限。stdout在释放中关闭的失败已保留：此前移除了错误处理器，资源虽关闭仍因EPIPE退出1；修复后正常完成关闭。测试夹具自身在setup失败时回收worker，叶子同时在继承stdin失联后结束，避免重复历史上的测试进程泄漏。

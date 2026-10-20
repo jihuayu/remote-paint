@@ -25,7 +25,8 @@ function authorize(receipt,kind,plan,cid){
  if(row.requestStarted!==true||kind==='create'&&(row.state!=='requested'||row.containerId!==null)||kind==='start'&&(row.state!=='created'||row.containerId!==cid||row.version!==null)||kind==='remove'&&(row.state!=='closing'||row.containerId!==cid))throw fail('EFFECT_AUTHORIZATION');return receipt.revision;
 }
 class EffectSession{
- constructor(client,options){this.client=client;Object.assign(this,options);this.agent=new SingleConnectionAgent(client.socketPath);this.connectionId=randomUUID();this.deadline=performance.now()+client.timeoutMs;this.attempted=false;this.closed=false;this.active=false;this.effectSent=false;this.inspection=null;this.profile=null;this.absent=false;this.currentCancel=null;this.leaseTimer=setTimeout(()=>{void this.close();},client.timeoutMs);}
+ constructor(client,options){this.client=client;Object.assign(this,options);this.agent=new SingleConnectionAgent(client.socketPath);this.connectionId=randomUUID();this.deadline=performance.now()+client.timeoutMs;this.attempted=false;this.closed=false;this.active=false;this.effectSent=false;this.inspection=null;this.profile=null;this.absent=false;this.currentCancel=null;this.armDeadline();}
+ armDeadline(){this.leaseTimer=setTimeout(()=>{if(this.closed)return;if(performance.now()<this.deadline)this.armDeadline();else void this.close();},Math.max(1,Math.ceil(this.deadline-performance.now())));}
  check(){if(performance.now()>=this.deadline)throw fail('EFFECT_DEADLINE',{uncertain:this.effectSent});if(this.closed||this.client.state.closed)throw fail('EFFECT_SESSION_CLOSED',{uncertain:this.effectSent});if(this.signal?.aborted)throw fail('EFFECT_ABORTED',{uncertain:this.effectSent});}
  async initialize(){
   const {value}=await this.json('GET','/info',null,[200]);if(value?.ID!==this.plan.daemonId)throw fail('EFFECT_ENGINE_CHANGED');if(value.OSType!=='linux'||architecture(value.Architecture)!==this.client.architecture)throw fail('EFFECT_PLATFORM_CHANGED');
@@ -54,7 +55,7 @@ class EffectSession{
      buffer=Buffer.allocUnsafeSlow(this.client.maxResponseBytes);res.on('data',chunk=>{if(done)return;try{this.check();}catch(e){finish(e);return;}if(!Buffer.isBuffer(chunk)||used+chunk.length>buffer.length){error('EFFECT_BODY_LIMIT');return;}chunk.copy(buffer,used);used+=chunk.length;});
      res.on('end',()=>{if(done)return;try{this.check();if(!res.complete)throw fail('EFFECT_INCOMPLETE',{uncertain:this.effectSent});let value=null;if(used)value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(buffer.subarray(0,used)));if(value!==null&&(!value||typeof value!=='object'||Array.isArray(value)))throw fail('EFFECT_REPLY_INVALID',{uncertain:this.effectSent});finish(null,{status:res.statusCode,value});}catch(e){finish(e instanceof DockerEffectError?e:fail('EFFECT_REPLY_INVALID',{uncertain:this.effectSent}));}});
     });
-    req.on('socket',socket=>{if(socket!==this.agent.socket)error('EFFECT_CONNECTION_CHANGED');});req.on('error',()=>error('EFFECT_IO'));timer=setTimeout(()=>error('EFFECT_DEADLINE'),Math.max(1,this.deadline-performance.now()));this.check();req.end(payload);
+    req.on('socket',socket=>{if(socket!==this.agent.socket)error('EFFECT_CONNECTION_CHANGED');});req.on('error',()=>error('EFFECT_IO'));const onDeadline=()=>{if(performance.now()<this.deadline)timer=setTimeout(onDeadline,Math.max(1,Math.ceil(this.deadline-performance.now())));else error('EFFECT_DEADLINE');};timer=setTimeout(onDeadline,Math.max(1,Math.ceil(this.deadline-performance.now())));this.check();req.end(payload);
    }catch(e){finish(e instanceof DockerEffectError?e:fail('EFFECT_IO',{uncertain:this.effectSent}));}
   });
  }

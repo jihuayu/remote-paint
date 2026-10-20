@@ -1,0 +1,138 @@
+{
+  "at": "2026-10-18T14:39:27.405233+00:00",
+  "task": "B1b1",
+  "status": "connection-bound-Docker-effects-and-Node-namespace-fixture-qualified",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-effects-v1/frozen-version.json",
+  "manifestSha256": "0d32457171034bcacbe8dd59648a5059763c87e0256c56fd30ddc9898561273e",
+  "sourceFiles": 747,
+  "changedFiles": {
+    "service/docker-effect-session.mjs": "ea2aee2ba9fdbfc7dc79b6d0e63678e82adc62e142c0459ebc2361d937ae3ca7",
+    "service/docker-runtime-spec.mjs": "fe16425feb73649a61b69af69efde343a495d130766279a43d2434953f9e9157",
+    "tests/docker-effect-session.test.mjs": "81cffca87164c1c284fa036ac6ee2f2ce81bdb4debba38123108318006133d39",
+    "tests/verify-docker-effect-session.mjs": "21daa45544f362384ef6399e5baa17b5db51d244e5c42b138a002f0903af50c3",
+    "docs/session-native-worker.md": "0b20529112666b0918a9a29897e3edbebb7af7613c1694f4e210933b2544dcca",
+    "docs/optimization-progress.md": "3fbc4bf1bb5ea133e644a48a0af47dc8d385b48a78735438372bcf5a2d3f998d"
+  },
+  "platforms": {
+    "mac": {
+      "scoped": {
+        "tests": 38,
+        "pass": 38,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "actualExitCode": 0,
+        "logSha256": "f7a9730837a47f6a80b277036a561a824f0b87d4944267f6ccf2a4b4e5e0c1d3"
+      },
+      "full": {
+        "tests": 457,
+        "pass": 448,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 9,
+        "actualExitCode": 0,
+        "logSha256": "4404e1a7359adcae6c58c42916fb4fe5cc61daac2e71dafa2a15b3a3f3931e95"
+      }
+    },
+    "linux": {
+      "scoped": {
+        "tests": 38,
+        "pass": 38,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "actualExitCode": 0,
+        "logSha256": "673964d72c543e6e69273bdcbfd088be5b1b50bcf4ec283380a358b044d9bf04"
+      },
+      "full": {
+        "tests": 457,
+        "pass": 453,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 4,
+        "actualExitCode": 0,
+        "logSha256": "aa93453a667aabdd8b10c8136f6b82e8e1da0177854891786c2beec7547013e3"
+      }
+    }
+  },
+  "actualFixture": {
+    "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-effects-v1/actual-v2",
+    "invocation": {
+      "at": "2026-10-18T14:36:40.990550+00:00",
+      "manifestSha256": "0d32457171034bcacbe8dd59648a5059763c87e0256c56fd30ddc9898561273e",
+      "sourceFiles": 747,
+      "entry": "tests/verify-docker-effect-session.mjs",
+      "entrySha256": "21daa45544f362384ef6399e5baa17b5db51d244e5c42b138a002f0903af50c3",
+      "effectModuleSha256": "ea2aee2ba9fdbfc7dc79b6d0e63678e82adc62e142c0459ebc2361d937ae3ca7",
+      "output": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-effects-v1/actual-v2",
+      "scope": "Node only;noNativebrowserload",
+      "actualExitCode": 0,
+      "logSha256": "9bba3adfbf5eb2cc5a80d06d1286d899a6506bf99399833819105e5863833bd7",
+      "frozenBytesVerifiedAfterExit": true
+    },
+    "containerId": "18258361dba06908b4c6bf7f7fc20c4ae77f0bc70f37d0d316bc54636469a19d",
+    "namespace": "pid:[4026535384]",
+    "main": {
+      "pid": 7,
+      "ppid": 1,
+      "pgrp": 7,
+      "session": 1,
+      "startTicks": "24307862"
+    },
+    "detachedLeaf": {
+      "pid": 19,
+      "ppid": 7,
+      "pgrp": 19,
+      "session": 19,
+      "startTicks": "24307865"
+    },
+    "transportClosedWhileRunning": true,
+    "effectStatuses": [
+      201,
+      204,
+      204
+    ],
+    "rawFiles": {
+      "plan.json": "37a43faadfb1f169662cc629dafdcdbb149169f59fd8094f48af25c3be80ede8",
+      "create.json": "b1dd9a3d11cbcb0b02331336aac879b6511b96ed6fbec9002e4b8f11f0418ac6",
+      "start.json": "d867da12408feda0d196221a71b1db71a2c82a70ebb1c6cbf46831437556ff4d",
+      "before-start.json": "d9fd2facaee3c65b4fb37edf6cfb1169bb4adc5b927ae8d8c02cf6c13dcd6f28",
+      "running-witness.json": "5a6116f5622a786585e3ffae513b3d6591571f244637773fa2611b7c0772413e",
+      "removal.json": "0a45796773c4dea25f13295f94a713d2d9add3ccf27b7c1445feb19347bcdf01",
+      "report.json": "380f4557648d9ab19cb61d16be204e847ef4b6677290bc32fc6196a5a18d95a0"
+    },
+    "retirementEvidenceFileHashVerified": true,
+    "independentReopenedSqliteAudit": true,
+    "sessionQuotaReleased": true,
+    "allActualAttemptContainerIDsFreshAbsent": [
+      "884b24b9c8e703476d80e33258cb71fd61b1c6ed6fec9aaa13b050941e7f3916",
+      "18258361dba06908b4c6bf7f7fc20c4ae77f0bc70f37d0d316bc54636469a19d"
+    ],
+    "scope": "Node-only effective private PID-namespace/init witness + owned exact-ID removal204 + fresh pinned absence + real main/leaf witness socket closure. Namespace retirement is an inference using Linux init semantics,not a host-wide census or Native readiness proof."
+  },
+  "negativeEvidenceMutationsRejected": 9,
+  "unrelatedPeerPreserved": true,
+  "indexEmpty": true,
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "eightHourActive": {
+    "manifestSha256": "2ccec8079ff04a962d53051538c6e4f23058a3d3ccd16f78bf845b096783b03e",
+    "elapsedSeconds": 5548.078223875,
+    "cycle": 2155,
+    "status": "running",
+    "actualDockerRunning": true
+  },
+  "remaining": [
+    "B1b2 private attach proxy/actual ChildProcess close and SessionWorkerChannel integration",
+    "Production unknown creation reconciliation and durable retirement files",
+    "Actual Native provider/Chromium after8h isolation gate",
+    "Registry TTL/cancel/recovery/health lifecycle",
+    "Rendered readonly/control Viewer tickets and stable SDK",
+    "Original8h physical acceptance and remaining41 backlog items"
+  ],
+  "all41": {
+    "complete": 9,
+    "partial": 14,
+    "pending": 18
+  }
+}

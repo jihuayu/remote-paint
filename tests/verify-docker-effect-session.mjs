@@ -1,20 +1,35 @@
 // Opt-in actual Engine fixture: Node main + detached Node descendant only.
 // This does not exercise Native, Chromium, Session readiness, TTL or Viewer roles.
 import assert from 'node:assert/strict';
-import {createServer} from 'node:http';
+import {createServer,request} from 'node:http';
 import {randomUUID,randomBytes,createHash} from 'node:crypto';
 import {mkdir,open,readFile,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
 import {DockerMetadataClient} from '../service/docker-metadata-client.mjs';
 import {DockerEffectClient} from '../service/docker-effect-session.mjs';
+import {decodeDockerMultiplex} from '../service/docker-multiplex.mjs';
 import {planDockerRuntime,verifyDockerRuntime,verifyDockerRuntimeOwnership} from '../service/docker-runtime-spec.mjs';
 import {SqliteSessionStore} from '../service/session-store.mjs';
 import {records} from './fixtures/session-store-records.mjs';
 const socketPath=process.env.REMOTE_PAINT_DOCKER_SOCKET,daemonId=process.env.REMOTE_PAINT_DOCKER_DAEMON,imageId=process.env.REMOTE_PAINT_DOCKER_IMAGE;
 assert.ok(socketPath&&daemonId&&imageId&&process.env.REMOTE_PAINT_DOCKER_EFFECT_OUTPUT);
+const logRotation=process.env.REMOTE_PAINT_DOCKER_LOG_ROTATION==='1';
 const output=resolve(process.env.REMOTE_PAINT_DOCKER_EFFECT_OUTPUT);await mkdir(output,{mode:0o700});
 const sha=b=>createHash('sha256').update(b).digest('hex'),at=new Date().toISOString(),suffix=randomUUID(),region='effect-fixture',deploymentId='effect-'+suffix,nonce=randomBytes(32).toString('hex');
 async function save(name,value){const path=join(output,name),f=await open(path,'wx',0o600);try{await f.writeFile(JSON.stringify(value,null,2)+'\n');await f.sync();}finally{await f.close();}const dir=await open(output,'r');try{await dir.sync();}finally{await dir.close();}return sha(await readFile(path));}
+async function readLogs(metadata,cid,begin,end){
+ const before=await metadata.daemon(),wire=Buffer.allocUnsafeSlow(2097152);let used=0,req,res;
+ try{
+  res=await new Promise((resolve,reject)=>{req=request({socketPath,agent:false,method:'GET',path:'/v1.45/containers/'+cid+'/logs?stdout=true&stderr=true&timestamps=false&follow=false',signal:AbortSignal.timeout(5000)},resolve);req.on('error',()=>reject(Error('Bounded fixture log request unavailable')));req.end();});
+  assert.equal(res.statusCode,200);assert.ok(['application/vnd.docker.raw-stream','application/vnd.docker.multiplexed-stream'].includes(res.headers['content-type']));
+  for await(const chunk of res){assert.ok(Buffer.isBuffer(chunk)&&used+chunk.length<=wire.length,'Fixture log wire limit');chunk.copy(wire,used);used+=chunk.length;}assert.ok(res.complete);
+  const file=await open(join(output,'logs-wire.bin'),'wx',0o600);try{await file.writeFile(wire.subarray(0,used));await file.sync();}finally{await file.close();}const dir=await open(output,'r');try{await dir.sync();}finally{await dir.close();}
+  const after=await metadata.daemon();assert.equal(before.id,daemonId);assert.equal(after.id,daemonId);let stdoutBytes=0,stderrBytes=0,frames=0,maxFrameBytes=0,containsBegin=false,containsEnd=false,tail='';const digest=createHash('sha256');
+  async function* chunks(){for(let n=0;n<used;n+=32768)yield wire.subarray(n,Math.min(used,n+32768));}
+  for await(const item of decodeDockerMultiplex(chunks())){frames++;maxFrameBytes=Math.max(maxFrameBytes,item.bytes.length);if(item.stream==='stdout'){stdoutBytes+=item.bytes.length;digest.update(item.bytes);const text=tail+item.bytes.toString('utf8');containsBegin||=text.includes(begin);containsEnd||=text.includes(end);tail=text.slice(-Math.max(begin.length,end.length));}else stderrBytes+=item.bytes.length;item.bytes.fill(0);}
+  const evidence={before,after,wireBytes:used,wireSha256:sha(wire.subarray(0,used)),stdoutBytes,stderrBytes,stdoutSha256:digest.digest('hex'),frames,maxFrameBytes,containsBegin,containsEnd,beginMarker:begin,endMarker:end,rotationPolicy:{Type:'local',Config:{'max-size':'1m','max-file':'1',compress:'false'}},scope:'Actual local-driver retained stdout/log multiplex stream only;not attach upgrade or worker protocol readiness.'};await save('log-rotation.json',evidence);assert.ok(stdoutBytes>0&&stdoutBytes<=1048576+16384);assert.equal(stderrBytes,0);assert.equal(containsBegin,false);assert.equal(containsEnd,true);assert.ok(maxFrameBytes<=65536&&frames>1);return evidence;
+ }finally{wire.fill(0);res?.destroy();req?.destroy();}
+}
 async function waitFor(check,milliseconds){const end=performance.now()+milliseconds;while(!check()){assert.ok(performance.now()<end,'Fixture observation deadline exceeded');await new Promise(resolve=>setTimeout(resolve,20));}}
 const witnesses=new Map(),connections=new Set(),closed=[],observerErrors=[];
 const server=createServer((req,res)=>{
@@ -29,15 +44,18 @@ import {spawn} from 'node:child_process';
 import {request} from 'node:http';
 const config=JSON.parse(readFileSync('/project/config.json','utf8')),role=process.argv.includes('--leaf')?'leaf':'main';
 function stat(path){const value=readFileSync(path,'utf8'),n=value.lastIndexOf(') '),parts=value.slice(n+2).trim().split(/\\s+/);return {pid:Number(value.slice(0,value.indexOf(' '))),ppid:Number(parts[1]),pgrp:Number(parts[2]),session:Number(parts[3]),startTicks:parts[19]};}
+if(config.logRotation&&role==='main'){
+ const write=bytes=>new Promise((resolve,reject)=>process.stdout.write(bytes,error=>error?reject(error):resolve()));await write(config.beginMarker+'\\n');const line=Buffer.alloc(16384,82);line[line.length-1]=10;for(let n=0;n<192;n++)await write(line);await write(config.endMarker+'\\n');
+}
 const status=Object.fromEntries(readFileSync('/proc/self/status','utf8').trim().split('\\n').map(s=>{const n=s.indexOf(':');return [s.slice(0,n),s.slice(n+1).trim()];}));
 const identity={event:'witness',role,self:stat('/proc/self/stat'),init:stat('/proc/1/stat'),namespace:readlinkSync('/proc/self/ns/pid'),initNamespace:readlinkSync('/proc/1/ns/pid'),capEff:status.CapEff,capBnd:status.CapBnd,noNewPrivs:status.NoNewPrivs,seccomp:status.Seccomp};
 const req=request({hostname:'host.docker.internal',port:config.port,path:'/witness',method:'POST',headers:{authorization:'Bearer '+config.nonce,'content-type':'application/x-ndjson'}},res=>res.resume());req.on('error',()=>{process.exitCode=7;});req.write(JSON.stringify(identity)+'\\n');setInterval(()=>{if(!req.destroyed)req.write(JSON.stringify({event:'heartbeat',pid:process.pid})+'\\n');},100);
 if(role==='main'){const leaf=spawn(process.execPath,['/project/worker.mjs','--leaf'],{detached:true,stdio:'ignore'});leaf.unref();}
 `;
-const metadata=new DockerMetadataClient({socketPath,daemonId}),effects=new DockerEffectClient({socketPath,daemonId}),store=new SqliteSessionStore({path:join(output,'journal.sqlite')}),owner=Symbol('effect-fixture');let row,plan,containerId=null,createdResult,startResult,removeResult,profile,liveProfile,transportClosedWhileRunning=false,started=false,startAttempted=false,error=null,cleanup={status:'unconfirmed'};
+const metadata=new DockerMetadataClient({socketPath,daemonId}),effects=new DockerEffectClient({socketPath,daemonId}),store=new SqliteSessionStore({path:join(output,'journal.sqlite')}),owner=Symbol('effect-fixture');let row,plan,containerId=null,createdResult,startResult,removeResult,profile,liveProfile,transportClosedWhileRunning=false,started=false,startAttempted=false,logEvidence=null,error=null,cleanup={status:'unconfirmed'};
 async function perform(kind,authorize){const session=await effects.open({kind,plan,...(kind==='create'?{}:{containerId})});try{return await session.perform(authorize);}finally{assert.equal((await session.close()).status,'closed');}}
 try{
- const image=await metadata.inspectImage(imageId);await mkdir(join(output,'project'),{mode:0o700});await mkdir(join(output,'browser'),{mode:0o700});await writeFile(join(output,'project/worker.mjs'),worker,{mode:0o600,flag:'wx'});await writeFile(join(output,'project/config.json'),JSON.stringify({port:server.address().port,nonce}),{mode:0o600,flag:'wx'});
+ const image=await metadata.inspectImage(imageId);await mkdir(join(output,'project'),{mode:0o700});await mkdir(join(output,'browser'),{mode:0o700});await writeFile(join(output,'project/worker.mjs'),worker,{mode:0o600,flag:'wx'});await writeFile(join(output,'project/config.json'),JSON.stringify({port:server.address().port,nonce,logRotation,beginMarker:'RP-BEGIN-'+suffix,endMarker:'RP-END-'+suffix}),{mode:0o600,flag:'wx'});
  const projectFiles={'worker.mjs':sha(worker),'config.json':sha(await readFile(join(output,'project/config.json')))};await save('project-manifest.json',projectFiles);
  plan=planDockerRuntime({sessionId:'ses_'+suffix,tenantId:'effect-fixture',region,ownerKeyHash:sha(suffix)},{deploymentId,daemonId,imageId,projectPath:join(output,'project'),browserPath:join(output,'browser'),projectManifestSha256:sha(JSON.stringify(projectFiles)),browserManifestSha256:sha('node-fixture-no-browser'),workerEntry:'worker.mjs',imageEnvironment:image.document.Config.Env??[]});await save('plan.json',plan);
  store.claimRuntimeProvider(owner,{region,deploymentId,daemonId,createdAt:at});const batch=records(suffix,'effect-fixture');batch.sessions[0].region=region;batch.bindings[0].defaults.region=region;store.commit(batch);
@@ -49,6 +67,7 @@ try{
  for(const value of [main,leaf]){assert.ok(value.self.pid>1);assert.equal(value.init.pid,1);assert.equal(value.init.ppid,0);assert.equal(value.namespace,value.initNamespace);assert.match(value.namespace,/^pid:\[[0-9]+\]$/);assert.equal(value.capEff,'0000000000000000');assert.equal(value.capBnd,'0000000000000000');assert.equal(value.noNewPrivs,'1');assert.equal(value.seccomp,'2');assert.match(value.self.startTicks,/^[0-9]+$/);}
  assert.equal(main.self.ppid,1);assert.equal(leaf.self.ppid,main.self.pid);assert.notEqual(leaf.self.pgrp,main.self.pgrp);assert.equal(leaf.self.pgrp,leaf.self.pid);assert.equal(leaf.self.session,leaf.self.pid);assert.equal(main.namespace,leaf.namespace);assert.notEqual(main.self.pid,leaf.self.pid);
  const live=await metadata.inspectContainer(containerId);liveProfile=verifyDockerRuntime(plan,live,{containerId});assert.equal(liveProfile.state,'running');assert.equal(effects.status().activeSessions,0);assert.ok([...witnesses.values()].every(v=>!v.closed));transportClosedWhileRunning=true;await save('running-witness.json',{live,liveProfile,transportClosedWhileRunning,witnesses:Object.fromEntries(witnesses)});
+ if(logRotation)logEvidence=await readLogs(metadata,containerId,'RP-BEGIN-'+suffix,'RP-END-'+suffix);
 }catch(e){error={name:e.name,code:e.code??null,message:e.message};}
 finally{
  try{
@@ -60,4 +79,4 @@ finally{
  }catch(e){cleanup={status:'unconfirmed',name:e.name,code:e.code??null,message:e.message,containerId};}
  await effects.close();await metadata.close();for(const socket of connections)socket.destroy();await new Promise(resolve=>server.close(resolve));try{store.releaseRuntimeProvider(owner);}catch{}store.close();
 }
-const report={at:new Date().toISOString(),status:!error&&cleanup.status==='closed'?'passed':'failed',scope:'Actual pinned Unix Engine create/start/remove with one-use synchronous journal acknowledgment;Node main+detached descendant effective Linux namespace/security witnesses;real socket close+exact-ID force deletion+identity-fenced absence. NO Native/Chromium/Ready/TTL/cancel/recovery/Viewer/SDK/8h/all41 qualification.',daemonId,imageId,containerId,createdResult,startResult,profile,liveProfile,transportClosedWhileRunning,witnesses:Object.fromEntries(witnesses),observerErrors,cleanup,error};await save('report.json',report);console.log(JSON.stringify({status:report.status,containerId,cleanup,error}));assert.equal(report.status,'passed');
+const report={at:new Date().toISOString(),status:!error&&cleanup.status==='closed'?'passed':'failed',scope:'Actual pinned Unix Engine create/start/remove with one-use synchronous journal acknowledgment;Node main+detached descendant effective Linux namespace/security witnesses;real socket close+exact-ID force deletion+identity-fenced absence. NO Native/Chromium/Ready/TTL/cancel/recovery/Viewer/SDK/8h/all41 qualification.',daemonId,imageId,containerId,createdResult,startResult,profile,liveProfile,transportClosedWhileRunning,logRotation,logEvidence,witnesses:Object.fromEntries(witnesses),observerErrors,cleanup,error};await save('report.json',report);console.log(JSON.stringify({status:report.status,containerId,cleanup,error}));assert.equal(report.status,'passed');

@@ -26,3 +26,7 @@ test('source order is canonical and unsafe paths,unpinnedimages,emptyidentity an
 test('ownership can authorize removal of an owned unsafe object but does not attest its isolation',()=>{
  const {plan,inspection}=fixture();inspection.document.HostConfig.PidMode='host';assert.equal(verifyDockerRuntimeOwnership(plan,inspection).containerId,'e'.repeat(64));assert.throws(()=>verifyDockerRuntime(plan,inspection),rejected);inspection.document.Config.Labels['org.remote-paint.runtime.owner-hash']='f'.repeat(64);assert.throws(()=>verifyDockerRuntimeOwnership(plan,inspection),rejected);
 });
+
+test('per-container local logging has explicit finite rotation and rejects inherited or expanded policies',()=>{
+ const {plan,inspection}=fixture();assert.deepEqual(plan.create.HostConfig.LogConfig,{Type:'local',Config:{'max-size':'1m','max-file':'1',compress:'false'}});assert.equal(verifyDockerRuntime(plan,inspection).containerId,'e'.repeat(64));for(const edit of [h=>delete h.LogConfig,h=>h.LogConfig={Type:'json-file',Config:{}},h=>h.LogConfig.Config['max-size']='0',h=>h.LogConfig.Config['max-file']='10',h=>h.LogConfig.Config.compress='true',h=>h.LogConfig.Config.extra='unapproved']){const value=fixture();edit(value.inspection.document.HostConfig);assert.throws(()=>verifyDockerRuntime(value.plan,value.inspection),rejected);}
+});

@@ -1531,3 +1531,7 @@ Linux全量JS回归先因夹具缺少可写产物挂载失败，修正后又复�
 ### Session 容器操作会话检查点（B1b1）
 
 新增同一Unix连接上的daemon检查与一次create/start/remove，持久回执先于实际操作、原总期限与限额、断线不重连、结果不确定不重试。20项新合同及实际Node主进程/脱离进程组叶子的私有namespace、安全状态和完整ID移除见证已建立；证据先落盘、账本后退役、配额最后释放。冻结版本和双平台回归见[操作检查点](evidence/session-docker-effects.json)。实际Native provider、私有attach、未知创建恢复、Registry生命周期与Viewer票据仍未完成；独立720文件8小时副本继续运行，不受新增服务代码影响，41项完成计数维持9/14/18。
+
+### Session 私有 attach 前置合同（B1b2a）
+
+新增完整帧后才交付的64KiB有界stdout/stderr复用解码，以及单容器local日志有限轮转配置；实际夹具可写3MiB并留存真实已轮转复用字节，由独立检查器核对。修复本轮发现的嵌套日志配置比较和绝对截止时间timer早触发问题，失败保留，原5秒期限保持。版本与完整结果见[attach前置检查点](evidence/session-docker-attach-foundation.json)。HTTP Upgrade代理、实际worker握手及Native provider尚未接入，不改变41项9/14/18计数，也不改变独立720文件8小时负载。
