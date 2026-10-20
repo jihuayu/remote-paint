@@ -3,6 +3,7 @@ use bytes::Bytes;
 use serde_json::Value;
 use std::{fmt,io,sync::OnceLock};
 use tungstenite::{Message,WebSocket,Utf8Bytes,protocol::WebSocketConfig};
+use tungstenite::protocol::frame::{Frame,coding::{OpCode,Data}};
 
 pub const PRESSURE:&str="WebSocket backing allocation budget exceeded";
 pub const DEFAULT_BYTES:usize=512*1024*1024;
@@ -13,6 +14,8 @@ pub const MAX_INPUT:usize=32*1024;
 pub const DATA_WRITE:usize=16*1024*1024+64*1024;
 pub const CONTROL_WRITE:usize=128*1024;
 const WRITE_FACTOR:usize=3;
+// Keep ordinary32KiB asset-chunk envelopes whole,while bounding raw resources.
+pub const OUTGOING_FRAGMENT_BYTES:usize=64*1024;
 #[derive(Clone)]
 pub struct Pool(Budget);
 #[derive(Clone,Copy)]pub enum Kind{Data,Control}
@@ -43,27 +46,64 @@ impl Connection{
 }
 // Field order frees the actual codec/retained write capacity before its lease.
 // Received raw payloads get a separate owner so their aliases can outlive it.
-pub struct Socket<S>{ws:WebSocket<S>,connection:Connection}
+struct Outgoing{bytes:Bytes,offset:usize,opcode:Data}
+// Hold one logical data message,sharing its admitted payload owner. Only one
+// small frame enters the opaque codec at a time. Protocol control frames can
+// interleave;application Text/Binary messages must wait for its final fragment.
+pub struct Socket<S>{ws:WebSocket<S>,outgoing:Option<Outgoing>,fragment_progress:u64,connection:Connection}
+fn server_wire_bytes(payload:usize)->usize{payload.saturating_add(if payload<126{2}else if payload<=65535{4}else{10})}
 impl<S:io::Read+io::Write> Socket<S>{
  pub fn new(mut ws:WebSocket<S>,connection:Connection)->Self{
   let kind=connection.kind.expect("WebSocket role must be admitted");let config=ws.get_config();
   assert!(config.max_message_size==Some(MAX_INPUT)&&config.max_frame_size==Some(MAX_INPUT)&&config.read_buffer_size==READ_BYTES&&config.write_buffer_size==0,"WebSocket config must match admitted bounds");
-  ws.set_config(|config|config.max_write_buffer_size=kind.write_limit());Self{ws,connection}
+  ws.set_config(|config|config.max_write_buffer_size=kind.write_limit());Self{ws,outgoing:None,fragment_progress:0,connection}
  }
  pub fn get_mut(&mut self)->&mut S{self.ws.get_mut()}
+ pub fn fragment_progress(&self)->u64{self.fragment_progress}
  #[cfg(test)]pub fn get_ref(&self)->&S{self.ws.get_ref()}
  pub fn set_write_limit(&mut self,limit:usize)->Result<()>{
-  if limit==0||limit>self.connection.kind.unwrap().write_limit(){return Err("WebSocket write limit exceeds admitted role".into());}
+  if limit==0||limit>self.connection.kind.unwrap().write_limit()||self.outgoing.as_ref().is_some_and(|message|server_wire_bytes(message.bytes.len())>limit){return Err("WebSocket write limit exceeds admitted role or pending message".into());}
   self.ws.set_config(|config|config.max_write_buffer_size=limit);Ok(())
  }
- pub fn write(&mut self,message:Message)->tungstenite::Result<()>{self.ws.write(message)}
- pub fn send(&mut self,message:Message)->tungstenite::Result<()>{self.ws.send(message)}
- pub fn flush(&mut self)->tungstenite::Result<()>{self.ws.flush()}
- pub fn close(&mut self,frame:Option<tungstenite::protocol::CloseFrame>)->tungstenite::Result<()>{self.ws.close(frame)}
+ pub fn write(&mut self,message:Message)->tungstenite::Result<()>{
+  if message.is_close(){self.outgoing=None;return self.ws.write(message);}
+  let data=matches!(message,Message::Text(_)|Message::Binary(_));let raw_data=matches!(&message,Message::Frame(frame)if matches!(frame.header().opcode,OpCode::Data(_)));
+  if self.outgoing.is_some()&&(data||raw_data){return Err(tungstenite::Error::WriteBufferFull(Box::new(message)));}
+  if !data||message.len()<=OUTGOING_FRAGMENT_BYTES{return self.ws.write(message);}
+  // Fragmentation must not bypass the negotiated logical-message length cap.
+  // Every production Socket is a server,whose outgoing frames are unmasked.
+  if server_wire_bytes(message.len())>self.ws.get_config().max_write_buffer_size{return Err(tungstenite::Error::WriteBufferFull(Box::new(message)));}
+  let(bytes,opcode)=match message{Message::Text(text)=>(text.into(),Data::Text),Message::Binary(bytes)=>(bytes,Data::Binary),_=>unreachable!()};
+  self.outgoing=Some(Outgoing{bytes,offset:0,opcode});self.flush()
+ }
+ pub fn send(&mut self,message:Message)->tungstenite::Result<()>{self.write(message)?;self.flush()}
+ pub fn flush(&mut self)->tungstenite::Result<()>{
+  loop{
+   // Flush the current small frame and automatic Pong before admitting another
+   // fragment. WouldBlock means this Socket still owns the complete message.
+   self.ws.flush()?;
+   let Some(message)=self.outgoing.as_ref()else{return Ok(());};
+   if !self.ws.can_write(){self.outgoing=None;return Ok(());}
+   let start=message.offset;let end=(start+OUTGOING_FRAGMENT_BYTES).min(message.bytes.len());let final_=end==message.bytes.len();
+   let opcode=if start==0{message.opcode}else{Data::Continue};let frame=Frame::message(message.bytes.slice(start..end),OpCode::Data(opcode),final_);
+   let result=self.ws.write(Message::Frame(frame));
+   match &result{
+    Ok(())=>{},
+    Err(tungstenite::Error::Io(error))if error.kind()==io::ErrorKind::WouldBlock=>{},
+    // A fragment that did not enter the codec remains at the same offset.
+    Err(tungstenite::Error::WriteBufferFull(_))=>return Err(tungstenite::Error::Io(io::ErrorKind::WouldBlock.into())),
+    Err(_)=>return result,
+   }
+   if final_{self.outgoing=None;}else{self.outgoing.as_mut().unwrap().offset=end;}
+   self.fragment_progress=self.fragment_progress.saturating_add(1);
+   result?;
+  }
+ }
+ pub fn close(&mut self,frame:Option<tungstenite::protocol::CloseFrame>)->tungstenite::Result<()>{self.outgoing=None;self.ws.close(frame)}
  // Close-handshake draining never returns a raw payload to another owner.
  // The fixed allowance remains while these ephemeral messages are discarded.
- pub fn discard_read(&mut self)->tungstenite::Result<()>{self.ws.read().map(drop)}
- #[cfg(test)]pub fn into_inner(self)->S{let Self{ws,connection}=self;let stream=ws.into_inner();drop(connection);stream}
+ pub fn discard_read(&mut self)->tungstenite::Result<()>{let message=self.ws.read()?;if message.is_close(){self.outgoing=None;}Ok(())}
+ #[cfg(test)]pub fn into_inner(self)->S{let Self{ws,outgoing,connection,..}=self;let stream=ws.into_inner();drop(outgoing);drop(connection);stream}
 }
 struct RawPayload{bytes:Bytes,_lease:Lease}
 impl AsRef<[u8]> for RawPayload{fn as_ref(&self)->&[u8]{&self.bytes}}
@@ -79,7 +119,8 @@ impl<S:io::Read+io::Write> Socket<S>{
   // owner carries this allowance through every Message clone/slice after the
   // socket has gone;no raw payload is detached from its accounting.
   let lease=self.connection.pool.0.reserve(MESSAGE_BYTES).map_err(|_|tungstenite::Error::Io(io::Error::other(ReadPressure)))?;
-  Ok(match self.ws.read()?{
+  let message=self.ws.read()?;if message.is_close(){self.outgoing=None;}
+  Ok(match message{
    Message::Text(value)=>Message::Text(text(value.into(),lease)),
    Message::Binary(value)=>Message::Binary(raw(value,lease)),
    Message::Ping(value)=>Message::Ping(raw(value,lease)),
@@ -100,7 +141,7 @@ impl<S:io::Read+io::Write> Socket<S>{
  impl Read for Gate<'_>{fn read(&mut self,out:&mut[u8])->io::Result<usize>{self.reads+=1;let n=out.len().min(self.chunk).min(self.input.len()-self.position);out[..n].copy_from_slice(&self.input[self.position..self.position+n]);self.position+=n;Ok(n)}}
  impl Write for Gate<'_>{fn write(&mut self,bytes:&[u8])->io::Result<usize>{if self.broken{return Err(io::ErrorKind::BrokenPipe.into());}if self.blocked{return Err(io::ErrorKind::WouldBlock.into());}self.written+=bytes.len();Ok(bytes.len())}fn flush(&mut self)->io::Result<()>{Ok(())}}
  fn header(padding:usize,extra:usize)->Vec<u8>{let mut request=format!("GET /stream?key=fixture HTTP/1.1\r\nHost: localhost\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost\r\nX-Padding: {}\r\n","x".repeat(padding));for n in 0..extra{request.push_str(&format!("X-{n}: value\r\n"));}request.push_str("\r\n");request.into_bytes()}
- fn frame(out:&mut Vec<u8>,payload:&[u8],opcode:OpCode,final_:bool){let mut frame=Frame::message(Bytes::copy_from_slice(payload),opcode,final_);frame.header_mut().mask=Some([17,29,41,53]);frame.format(out).unwrap();}
+ fn frame(out:&mut Vec<u8>,payload:&[u8],opcode:OpCode,final_:bool){let mut frame=Frame::message(Bytes::copy_from_slice(payload),OpCode::Data(Data::Binary),final_);frame.header_mut().opcode=opcode;frame.header_mut().mask=Some([17,29,41,53]);frame.format(out).unwrap();}
  fn wire(text:&str,fragment:usize,ping:bool)->Vec<u8>{let mut out=vec![];let parts:Vec<_>=text.as_bytes().chunks(fragment).collect();for(n,part)in parts.iter().enumerate(){frame(&mut out,part,OpCode::Data(if n==0{Data::Text}else{Data::Continue}),n+1==parts.len());if ping&&n+1<parts.len(){frame(&mut out,b"ping",OpCode::Control(tungstenite::protocol::frame::coding::Control::Ping),true);}}out}
  fn admission(pool:&Pool,kind:Kind)->Connection{let mut connection=pool.connection().unwrap();connection.role(kind).unwrap();connection}
  #[test]fn fixed_role_and_raw_message_quota_denials_precede_library_side_effects(){
@@ -117,7 +158,7 @@ impl<S:io::Read+io::Write> Socket<S>{
   for(opcode,payload)in [(OpCode::Data(Data::Binary),vec![11;MAX_INPUT]),(OpCode::Control(tungstenite::protocol::frame::coding::Control::Ping),vec![17;125]),(OpCode::Control(tungstenite::protocol::frame::coding::Control::Pong),vec![29;125]),(OpCode::Control(tungstenite::protocol::frame::coding::Control::Close),[1000u16.to_be_bytes().as_slice(),b"reason"].concat())]{let mut input=vec![];frame(&mut input,&payload,opcode,true);let pool=Pool::new(DEFAULT_BYTES);let connection=admission(&pool,Kind::Control);let mut socket=Socket::new(WebSocket::from_raw_socket(Gate::new(&input,131072),Role::Server,Some(config())),connection);let message=socket.read().unwrap();let alias=message.clone();drop(message);drop(socket);assert_eq!(pool.0.used(),MESSAGE_BYTES);drop(alias);assert_eq!(pool.0.used(),0);}
  }
  #[test]fn write_growth_blocking_and_postflush_capacity_remain_admitted_until_socket_drop(){
-  for(kind,name)in [(Kind::Data,"data"),(Kind::Control,"control")]{let limit=kind.write_limit();let sizes=[32768,limit/2+44,limit-10];let payloads:Vec<_>=sizes.into_iter().map(|n|{let bytes=Bytes::from(vec![11;n]);drop(bytes.clone());bytes}).collect();let pool=Pool::new(DEFAULT_BYTES);let connection=admission(&pool,kind);let reserved=pool.0.used();let(socket,live,peak)=crate::allocation_probe::observe(||{let mut socket=Socket::new(WebSocket::from_raw_socket(Gate::new(&[],4096),Role::Server,Some(config())),connection);for payload in &payloads{socket.write(Message::Binary(payload.clone())).unwrap();socket.flush().unwrap();}socket});assert!(peak<=reserved);assert!(live>=limit-10);assert_eq!(pool.0.used(),reserved);println!("ws-backing-write {name}: live_after_flush={live} requested_peak={peak} reservation={reserved} limit={limit}");let mut socket=socket;assert!(socket.set_write_limit(limit+1).is_err());socket.set_write_limit((MAX_INPUT+64).min(limit)).unwrap();assert_eq!(pool.0.used(),reserved);socket.get_mut().blocked=true;let error=socket.write(Message::Binary(payloads[0].clone())).err().unwrap();assert!(matches!(error,tungstenite::Error::Io(error)if error.kind()==io::ErrorKind::WouldBlock));assert_eq!(pool.0.used(),reserved);socket.get_mut().blocked=false;socket.flush().unwrap();assert_eq!(pool.0.used(),reserved);drop(socket);assert_eq!(pool.0.used(),0);}
+  for(kind,name)in [(Kind::Data,"data"),(Kind::Control,"control")]{let limit=kind.write_limit();let sizes=[32768,limit/2+44,limit-10];let payloads:Vec<_>=sizes.into_iter().map(|n|{let bytes=Bytes::from(vec![11;n]);drop(bytes.clone());bytes}).collect();let pool=Pool::new(DEFAULT_BYTES);let connection=admission(&pool,kind);let reserved=pool.0.used();let(socket,live,peak)=crate::allocation_probe::observe(||{let mut socket=Socket::new(WebSocket::from_raw_socket(Gate::new(&[],4096),Role::Server,Some(config())),connection);for payload in &payloads{socket.write(Message::Binary(payload.clone())).unwrap();socket.flush().unwrap();}socket});assert!(peak<=reserved);assert!(live>0&&live<=READ_BYTES+4*OUTGOING_FRAGMENT_BYTES,"{name}: fragmented codec retained {live} bytes");assert_eq!(pool.0.used(),reserved);println!("ws-backing-write {name}: live_after_flush={live} requested_peak={peak} reservation={reserved} limit={limit}");let mut socket=socket;assert!(socket.set_write_limit(limit+1).is_err());socket.set_write_limit((MAX_INPUT+64).min(limit)).unwrap();assert_eq!(pool.0.used(),reserved);socket.get_mut().blocked=true;let error=socket.write(Message::Binary(payloads[0].clone())).err().unwrap();assert!(matches!(error,tungstenite::Error::Io(error)if error.kind()==io::ErrorKind::WouldBlock));assert_eq!(pool.0.used(),reserved);socket.get_mut().blocked=false;socket.flush().unwrap();assert_eq!(pool.0.used(),reserved);drop(socket);assert_eq!(pool.0.used(),0);}
  }
  #[test]fn raw_message_quota_survives_socket_and_many_aliases_without_an_unleased_detach(){
   let input=[wire("first",32,false),wire("second",32,false),wire("third",32,false)].concat();let pool=Pool::new(FIXED_BYTES+3*CONTROL_WRITE+2*MESSAGE_BYTES);let connection=admission(&pool,Kind::Control);let mut socket=Socket::new(WebSocket::from_raw_socket(Gate::new(&input,131072),Role::Server,Some(config())),connection);let a=socket.read().unwrap();let b=socket.read().unwrap();let reads=socket.get_ref().reads;let alias=a.clone();assert!(is_pressure(&socket.read().err().unwrap()));assert_eq!(socket.get_ref().reads,reads);drop(socket);assert_eq!(pool.0.used(),2*MESSAGE_BYTES);drop(a);assert_eq!(pool.0.used(),2*MESSAGE_BYTES);drop(alias);assert_eq!(pool.0.used(),MESSAGE_BYTES);drop(b);assert_eq!(pool.0.used(),0);

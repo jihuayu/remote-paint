@@ -622,12 +622,13 @@ impl Gateway {
                 Err(e) => return Err(e.to_string()),
             }
             let progress = crate::writer::drain(&mut ws, &mut notifications, 16)?;
-            activity |= progress.packets > 0;
+            activity |= progress.packets > 0||progress.transport_progress;
+            if progress.transport_progress{if let Some(frame)=&mut pending{frame.progress_at=Instant::now();}}
             if !progress.blocked && notifications.is_empty() {
                 if let Some(frame) = &mut pending {
                     let progress = crate::writer::drain(&mut ws, &mut frame.packets, 2)?;
                     frame.remaining -= progress.bytes;
-                    if progress.packets > 0 {
+                    if progress.packets > 0||progress.transport_progress {
                         frame.progress_at = Instant::now();
                         activity = true;
                     }

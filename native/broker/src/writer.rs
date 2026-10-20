@@ -12,6 +12,7 @@ pub struct Progress {
     pub bytes: usize,
     pub packets: usize,
     pub blocked: bool,
+    pub transport_progress: bool,
 }
 
 pub fn close(ws: &mut crate::ws_memory::Socket<TcpStream>, code: u16, reason: &str) {
@@ -56,11 +57,14 @@ pub fn drain<S: Read + Write>(
         bytes: 0,
         packets: 0,
         blocked: false,
+        transport_progress: false,
     };
+    let before=ws.fragment_progress();
     match ws.flush() {
         Ok(()) => {}
         Err(tungstenite::Error::Io(error)) if error.kind() == std::io::ErrorKind::WouldBlock => {
             progress.blocked = true;
+            progress.transport_progress=ws.fragment_progress()!=before;
             return Ok(progress);
         }
         Err(error) => return Err(error.to_string()),
@@ -93,7 +97,7 @@ pub fn drain<S: Read + Write>(
             break;
         }
     }
-    Ok(progress)
+    progress.transport_progress=ws.fragment_progress()!=before;Ok(progress)
 }
 
 #[cfg(test)]
@@ -123,6 +127,37 @@ mod tests {
         fn flush(&mut self) -> io::Result<()> {
             Ok(())
         }
+    }
+    struct PingGate{output:Vec<u8>,input:Vec<u8>,position:usize,allowance:usize}
+    impl Read for PingGate{
+        fn read(&mut self,out:&mut[u8])->io::Result<usize>{
+            if self.output.is_empty()||self.position==self.input.len(){return Err(io::ErrorKind::WouldBlock.into());}
+            let count=out.len().min(self.input.len()-self.position);out[..count].copy_from_slice(&self.input[self.position..self.position+count]);self.position+=count;Ok(count)
+        }
+    }
+    impl Write for PingGate{
+        fn write(&mut self,bytes:&[u8])->io::Result<usize>{if self.allowance==0{return Err(io::ErrorKind::WouldBlock.into());}let count=bytes.len().min(self.allowance);self.output.extend_from_slice(&bytes[..count]);self.allowance-=count;Ok(count)}
+        fn flush(&mut self)->io::Result<()>{Ok(())}
+    }
+    #[test]
+    fn pong_precedes_completion_of_a_partially_sent_large_resource_without_corrupting_message_order(){
+       for large in [Message::Binary(bytes::Bytes::from(vec![37;1024*1024])),Message::Text("中🙂".repeat(150000).into())]{
+        let token=bytes::Bytes::from_static(b"partial-resource-ping");let mut ping=tungstenite::protocol::frame::Frame::ping(token.clone());ping.header_mut().mask=Some([11,29,43,59]);let mut input=vec![];ping.format(&mut input).unwrap();
+        let pool=crate::ws_memory::Pool::new(crate::ws_memory::DEFAULT_BYTES);let mut admission=pool.connection().unwrap();admission.role(crate::ws_memory::Kind::Data).unwrap();
+        let mut socket=crate::ws_memory::Socket::new(WebSocket::from_raw_socket(PingGate{output:vec![],input,position:0,allowance:0},Role::Server,Some(crate::ws_memory::config())),admission);
+        let payload_bytes=large.len();let expected=[large,Message::Text("commit".into())];let mut queue=VecDeque::from(expected.clone());let mut ping_seen=false;
+        let mut partial_progress=false;
+        for _ in 0..24{socket.get_mut().allowance=4096;match socket.read(){Ok(Message::Ping(value))=>{assert_eq!(value,token);ping_seen=true;},Err(tungstenite::Error::Io(error))if error.kind()==io::ErrorKind::WouldBlock=>{},other=>panic!("Unexpected input {other:?}")};let progress=drain(&mut socket,&mut queue,2).unwrap();partial_progress|=progress.transport_progress&&progress.packets==0;}
+        assert!(partial_progress,"Partial transport progress must remain visible when no new logical message is admitted");
+        assert!(ping_seen);assert!(socket.get_ref().output.len()<payload_bytes);
+        let notification=Message::Text("must-not-interleave".into());assert!(matches!(socket.write(notification.clone()),Err(tungstenite::Error::WriteBufferFull(value))if *value==notification));
+        assert!(socket.set_write_limit(68).is_err(),"A pending logical message must retain its admitted length cap");
+        let mut prefix=WebSocket::from_raw_socket(Cursor::new(socket.get_ref().output.clone()),Role::Client,None);
+        assert_eq!(prefix.read().expect("A Pong must be decodable before the large Binary message completes"),Message::Pong(token.clone()));
+        for _ in 0..600{socket.get_mut().allowance=4096;let _=socket.read();drain(&mut socket,&mut queue,2).unwrap();if queue.is_empty()&&socket.flush().is_ok(){break;}}
+        assert!(queue.is_empty());let output=socket.into_inner().output;assert_eq!(pool.stats()["bytes"],0);let mut reader=WebSocket::from_raw_socket(Cursor::new(output),Role::Client,None);
+        assert_eq!(reader.read().unwrap(),Message::Pong(token));for message in expected{assert_eq!(reader.read().unwrap(),message);}assert!(reader.read().is_err());
+       }
     }
     #[test]
     fn partial_writes_preserve_exact_packet_order_without_duplicate_submissions() {
