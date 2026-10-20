@@ -26,14 +26,17 @@ export class RendererRuntime{
   // Retired backings can survive several normal GC cycles. Admit at least
   // the measured initial heap before calling the factory,then reconcile its
   // actual size before creating presentation resources. No GC is requested.
-  const admission=this.memory.reserve('wasmInitialization',this.initialArenaBytes,'wasm');let ck;
+  const admission=this.memory.reserve('wasmInitialization',this.initialArenaBytes,'wasm');let ck,binaryPin;
   try{
+   // The actual factory can outlive dispose(). Deduplicate its verified
+   // backing with existing owners but retain this owner until settlement.
+   binaryPin=this.memory.buffer('wasmBinary',this.wasmBinary);
    ck=await this.factory({wasmBinary:this.wasmBinary,locateFile:this.locateFile});
    admission.resize(ck.HEAPU8.buffer.byteLength);
    if(this.disposed)throw new Error('Renderer runtime disposed during recycle');
    this.presenter=new FramePresenter(ck,this.canvas,{memory:this.memory,gpu:this.gpu,displayCharge:this.displayCarry});this.displayCarry=null;this.recycles++;
    ck=null;
-  }catch(error){if(ck)this.memory.retire(ck);throw error;}finally{admission();}
+  }catch(error){if(ck)this.memory.retire(ck);throw error;}finally{binaryPin?.();admission();}
  }
  async draw(frame,resources){
   if(this.disposed)throw new Error('Renderer runtime is disposed');

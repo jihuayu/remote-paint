@@ -4,9 +4,9 @@ CanvasKit 旧模块释放引用后，正常 GC 不保证在下一次轮换前回
 
 `RendererRuntime` 记录首次初始化实际观察到的堆大小。每次轮换先处置旧 presenter 并退休其堆，再为下一堆保留 `wasmInitialization` 额度；额度不足时不调用 factory。factory 返回后按实际堆大小调整额度，再构造 presenter。这里保留的是已观察到的初始大小，不是任意 factory 的最大分配保证；返回更大的堆仍须检查，失败时如实退休该 backing。
 
-初始化期间取消或销毁，额度保持到实际 Promise 结束。迟到的模块进入退休账本，不重新创建 presenter。factory 拒绝、presenter 构造失败和正常成功均释放临时准入额度。canvas 上下文不可用时，`FramePresenter` 释放已取得的 `wasmBinary` owner。
+初始化期间取消或销毁，额度保持到实际 Promise 结束。迟到的模块进入退休账本，不重新创建 presenter。factory 拒绝、presenter 构造失败和正常成功均释放临时准入额度。每个实际挂起的 factory 另保留一个去重的已验证 `wasmBinary` owner；Runtime 销毁会释放自己的 owner，但 factory 的 owner 持续到其真实 Promise 结束。canvas 上下文不可用时，`FramePresenter` 释放已取得的 `wasmBinary` owner。
 
-6 条 Node 合同覆盖初始化前拒绝、factory 拒绝与显式重试、更大堆、presenter 失败、销毁竞态和并发调用共享一次初始化。CanvasKit/DOM 为明确夹具；实际 Chrome 对照则执行保存的旧版与候选版模块，在主线程和 Worker 各验证一次：
+8 条 Node 合同覆盖初始化前拒绝、factory 拒绝与显式重试、更大堆、presenter 失败、销毁竞态和并发调用共享一次初始化，以及实际初始化成功/拒绝之前的二进制 backing 归属。CanvasKit/DOM 为明确夹具；实际 Chrome 对照则执行保存的旧版与候选版模块，在主线程和 Worker 各验证一次：
 
 | 检查 | 旧版 | 候选版 |
 | --- | --- | --- |

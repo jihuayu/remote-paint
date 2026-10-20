@@ -1,32 +1,55 @@
 {
-  "task": "C5c1",
+  "task": "C5c1+C5c2",
   "scope": "Preflight measuredinitialWasm budget and honest failure ownership;not originalphysicalgrowth fix",
-  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/renderer-arena-admission-v1/frozen-version.json",
-  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/renderer-arena-admission-checkpoint-v1.json",
-  "nodeContracts": 6,
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/renderer-binary-owner-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/renderer-binary-owner-checkpoint-v1.json",
+  "nodeContracts": 8,
   "actualChromeComparison": {
-    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/renderer-admission-browser-v2/report.json",
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/renderer-admission-browser-v3/report.json",
     "actualExitCode": 0,
     "variants": 4,
-    "realms": ["main", "worker"],
+    "realms": [
+      "main",
+      "worker"
+    ],
     "successfulPixelsEach": 3,
-    "factoryCallsBeforeAfter": [4, 3],
-    "failedConstructorRetiredArenasBeforeAfter": [1, 2],
-    "failedConstructorOwnersAfterDisposeBeforeAfter": [1, 0],
+    "factoryCallsBeforeAfter": [
+      4,
+      3
+    ],
+    "failedConstructorRetiredArenasBeforeAfter": [
+      1,
+      2
+    ],
+    "failedConstructorOwnersAfterDisposeBeforeAfter": [
+      1,
+      0
+    ],
     "oldModulesIntentionallyHeld": true,
     "forcedGc": false,
     "nativeSourceAndSkpWorkload": false
   },
   "initialFailuresPreserved": [
     "Original Node beforefix:1pass/5fail;enhanced binary-owner fixture beforeconstructorfix:5pass/1fail",
-    "First actualChrome comparison stopped on oldconstructor leakedowner;rawfailure preserved and baseline expectation made explicit"
+    "First actualChrome comparison stopped on oldconstructor leakedowner;rawfailure preserved and baseline expectation made explicit",
+    "C5c2 additional pendingbinary lifetime contracts:6pass/2fail beforefix,8pass afterfix"
   ],
   "originalEightHourFailureAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-eight-hour-v5-terminal-failure-v1.json",
   "originalGrowthFixed": false,
   "eightHourPassed": false,
   "nativeProductionProviderComplete": false,
   "allAgentCdpFenced": false,
-  "all41": {"completeWithinScope": 9, "partial": 15, "pending": 17},
-  "remaining": ["Actual Native workload attribution and physicalgrowth bounds", "SDK viewport/performance API and Nativecapture/controlpriority", "Owned Native endpoint and allAgent fences", "Fullcandidate/all41/N1/final8h qualification"],
-  "noCommitPush": true
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "remaining": [
+    "Actual Native workload attribution and physicalgrowth bounds",
+    "SDK viewport/performance API and Nativecapture/controlpriority",
+    "Owned Native endpoint and allAgent fences",
+    "Fullcandidate/all41/N1/final8h qualification"
+  ],
+  "noCommitPush": true,
+  "pendingFactoryVerifiedBinaryOwner": "Deduplicated backing remainscharged throughactualsettlement afterRuntime.dispose;lateinit success/rejection releases it."
 }

@@ -66,3 +66,20 @@ test('overlapping recycle callers share one admitted actual initialization',asyn
  finish();await Promise.all([a,b]);assert.equal(s.calls,1);noInitCharge(s.memory);
  s.runtime.dispose();assert.equal(s.memory.snapshot().owners,0);
 });
+
+test('pending factory keeps verified binary backing charged after runtime disposal',async()=>{
+ let finish,provided;const s=setup({factory:options=>{provided=options.wasmBinary;return new Promise(resolve=>{finish=()=>resolve(kit());});}});
+ const pending=s.runtime.recycle();await Promise.resolve();s.runtime.dispose();
+ assert.equal(s.memory.snapshot().jsBufferBytes,provided.byteLength,'Factory still owns the verified bytes');
+ finish();await assert.rejects(pending,/disposed/);
+ assert.equal(s.memory.snapshot().jsBufferBytes,0);assert.equal(s.memory.snapshot().owners,0);
+});
+
+test('pending binary ownership releases on actual factory rejection after disposal',async()=>{
+ let reject,provided;const s=setup({factory:options=>{provided=options.wasmBinary;return new Promise((_,failed)=>{reject=failed;});}});
+ const pending=s.runtime.recycle();await Promise.resolve();s.runtime.dispose();
+ assert.equal(s.memory.snapshot().jsBufferBytes,provided.byteLength);
+ reject(new Error('fixture-late-init-failure'));await assert.rejects(pending,/fixture-late-init-failure/);
+ assert.equal(s.memory.snapshot().jsBufferBytes,0);assert.equal(s.memory.snapshot().owners,0);
+ assert.equal(s.memory.snapshot().retiredArenaCount,1);
+});
