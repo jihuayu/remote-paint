@@ -1,0 +1,248 @@
+{
+  "at": "2026-10-17T20:13:20.253726+00:00",
+  "status": "passed-in-stated-Linux-observer-scope-not-integrated",
+  "scope": "Actual Linux proc-directory FD observer;before/after PID,startTicks,parent,allUIDs;two live observed descendant inventories. Matching witnesses are not atomic/frozen and task children can omit exiting processes. This is not complete-system census or unique physical Session memory. runtimeMetrics/soak wiring is a separate next task.",
+  "limits": {
+    "phaseMs": 5000,
+    "attempts": 2,
+    "processes": 1024,
+    "tasksPerProcess": 4096,
+    "fileBytes": 65536,
+    "issueDetails": 32
+  },
+  "tests": {
+    "linuxPassed": 9,
+    "linuxSkipped": 0,
+    "macPurePassed": 3,
+    "macLinuxOnlySkipped": 6,
+    "actualAllocationGrowthBytes": {
+      "rssBytes": 67588096,
+      "pssBytes": 67543040,
+      "privateDirtyBytes": 67457024
+    },
+    "diagnostics": [
+      {
+        "scope": "ActualLinux64MiBtouchedallocation;pinnedprocFD;notamemoryreleasepromise",
+        "before": {
+          "pid": 3727,
+          "ppid": 3719,
+          "startTicks": 19253472,
+          "state": "S",
+          "identity": {
+            "provider": "linux-proc-start-v1",
+            "pid": 3727,
+            "ppid": 3719,
+            "startTicks": 19253472,
+            "uids": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "cpuTicks": 1,
+          "isChromium": false,
+          "statusRssBytes": 47075328,
+          "rssBytes": 47075328,
+          "rollupRssBytes": 47075328,
+          "pssBytes": 20851712,
+          "privateCleanBytes": 65536,
+          "privateDirtyBytes": 7630848,
+          "swapPssBytes": 0
+        },
+        "after": {
+          "pid": 3727,
+          "ppid": 3719,
+          "startTicks": 19253472,
+          "state": "R",
+          "identity": {
+            "provider": "linux-proc-start-v1",
+            "pid": 3727,
+            "ppid": 3719,
+            "startTicks": 19253472,
+            "uids": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "cpuTicks": 2,
+          "isChromium": false,
+          "statusRssBytes": 114499584,
+          "rssBytes": 114663424,
+          "rollupRssBytes": 114663424,
+          "pssBytes": 88394752,
+          "privateCleanBytes": 131072,
+          "privateDirtyBytes": 75087872,
+          "swapPssBytes": 0
+        }
+      },
+      {
+        "scope": "Actualownedparent+leaf/freshcompleteobservedcohort/leafreaped",
+        "first": {
+          "provider": "linux-pinned-proc-v1",
+          "status": "observed-stable",
+          "rootPid": 3745,
+          "rootIdentity": {
+            "provider": "linux-proc-start-v1",
+            "pid": 3745,
+            "ppid": 3719,
+            "startTicks": 19253477,
+            "uids": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "elapsedMs": 12.03987500000001,
+          "deadlineMs": 5000,
+          "observedProcesses": 2,
+          "readProcesses": 2,
+          "attempts": [
+            {
+              "attempt": 1,
+              "elapsedMs": 11.997084000000001,
+              "status": "observed-stable",
+              "capturedProcesses": 2,
+              "witnessProcesses": 2,
+              "issueCount": 0,
+              "issues": []
+            }
+          ],
+          "scope": "Live pinned-proc-directory reads with before/after PID/startTicks/UID/parent identity and matching observed descendant witnesses;task children may omit exiting processes. Not atomic,not frozen,not a complete-system census."
+        },
+        "last": {
+          "provider": "linux-pinned-proc-v1",
+          "status": "observed-stable",
+          "rootPid": 3745,
+          "rootIdentity": {
+            "provider": "linux-proc-start-v1",
+            "pid": 3745,
+            "ppid": 3719,
+            "startTicks": 19253477,
+            "uids": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "elapsedMs": 2.6112179999999796,
+          "deadlineMs": 5000,
+          "observedProcesses": 1,
+          "readProcesses": 1,
+          "attempts": [
+            {
+              "attempt": 1,
+              "elapsedMs": 2.599342000000007,
+              "status": "observed-stable",
+              "capturedProcesses": 1,
+              "witnessProcesses": 1,
+              "issueCount": 0,
+              "issues": []
+            }
+          ],
+          "scope": "Live pinned-proc-directory reads with before/after PID/startTicks/UID/parent identity and matching observed descendant witnesses;task children may omit exiting processes. Not atomic,not frozen,not a complete-system census."
+        },
+        "limits": {
+          "phaseMs": 5000,
+          "attempts": 2,
+          "processes": 1024,
+          "tasksPerProcess": 4096,
+          "fileBytes": 65536,
+          "issueDetails": 32
+        }
+      },
+      {
+        "scope": "ActualPR_SET_DUMPABLE0/sameUID/kerneldenial;nozerosubstitution",
+        "sampling": {
+          "provider": "linux-pinned-proc-v1",
+          "status": "observed-stable",
+          "rootPid": 3759,
+          "rootIdentity": {
+            "provider": "linux-proc-start-v1",
+            "pid": 3759,
+            "ppid": 3719,
+            "startTicks": 19253483,
+            "uids": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "elapsedMs": 0.8565030000000036,
+          "deadlineMs": 5000,
+          "observedProcesses": 1,
+          "readProcesses": 1,
+          "attempts": [
+            {
+              "attempt": 1,
+              "elapsedMs": 0.8412940000000049,
+              "status": "observed-stable",
+              "capturedProcesses": 1,
+              "witnessProcesses": 1,
+              "issueCount": 0,
+              "issues": []
+            }
+          ],
+          "scope": "Live pinned-proc-directory reads with before/after PID/startTicks/UID/parent identity and matching observed descendant witnesses;task children may omit exiting processes. Not atomic,not frozen,not a complete-system census."
+        },
+        "pss": {
+          "bytes": null,
+          "availableBytes": 0,
+          "completeObservedCohort": false,
+          "sampledProcesses": 0,
+          "totalProcesses": 1,
+          "unavailable": [
+            {
+              "pid": 3759,
+              "code": "EACCES"
+            }
+          ],
+          "scope": "Proportional bytes over the explicitly observed cohort;not unique physical session memory. Missing fields/permission/identity/unstable cohort prevent a complete total."
+        }
+      },
+      {
+        "scope": "ExplicitactualobserverhostSIGSTOP/SIGCONT;unchanged5sdeadline",
+        "elapsedMs": 5502.837044,
+        "receipt": {
+          "event": "result",
+          "passed": false,
+          "code": "LINUX_MEMORY_TIMEOUT",
+          "message": "Linux process memory sample exceeded5s"
+        }
+      }
+    ],
+    "linuxLog": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-process-memory-tests-v2.log",
+      "sha256": "458487fbed8742cd9e161fcce2405137b090035f402cb1cc1ec605d26a1b2be1"
+    },
+    "macLog": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-process-memory-mac-unit-v1.log",
+      "sha256": "fe0cf25ac17b4cf8d8b4b88a37b56a0440d7c73c08fde863a68ed52456309ea0"
+    }
+  },
+  "pssCoverage": "Incomplete reads have bytes:null,availableBytes explicitly partial,completeObservedCohort:false,unavailable code/field. Actual same-UID nondumpable process was rejected by kernel with EACCES. No missing field/permission/identity/unstable inventory is filled with zero or reused data.",
+  "deadline": "Actual sampler host self-SIGSTOP plus parent SIGCONT after5.5s returned LINUX_MEMORY_TIMEOUT,not a late success. One active sampling operation,at most two complete fresh attempts within original5s;no accumulating replacement jobs after timeout.",
+  "fdOwnership": "Data reads use an already-open proc directory through /proc/self/fd;dead target returned ESRCH/ENOENT. Exact owned child close observed;20 repeated successful/rejected probes did not grow FD count.",
+  "sourceFiles": {
+    "native/process-memory-linux.mjs": "be985c654da34df0791e3679e406ef7a0368c1f520f4599f02140404ef99d43f",
+    "tests/process-linux-memory.test.mjs": "b5f9bd09685e5eb966e1617f4f30cfc3b0d09989cb8ccb47770af9935abb0af6",
+    "tests/fixtures/linux-memory-tree.mjs": "b910c8683dadba4081aed1fef344b6bf322245caa857a9fc6cb54b44e3172c37",
+    "tests/fixtures/linux-memory-undumpable.py": "62349c902a84a947fd097ac3d56ee90248cfb26efe6c936b310f5629b3974e82",
+    "tests/fixtures/linux-memory-phase.mjs": "af0fd0d78f103dbade40a98f9d2cf7ef302cb39cd1f8d4f6d958894973484e3e"
+  },
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-memory-soak-integration-checkpoint-v1.json",
+  "noCommitPush": true,
+  "runtimeMetricsUnchanged": true,
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}

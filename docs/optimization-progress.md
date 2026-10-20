@@ -1096,3 +1096,12 @@ RSS、虚拟地址空间与physical footprint分别报告，physical footprint�
 本轮helper通过EOF退出并被回收，Viewer关闭；实际Linux Source、Broker和夹具服务关闭，两端驱动退出0。独立负例仅明确破坏helper构建收据的SHA，工厂在helper/Viewer启动前拒绝，随后同样完成Source/Broker/夹具清理；失败日志与预期Viewer退出1保留。Mac全部228项JS测试通过，Linux224项通过、4项Mac专用检查按平台跳过。macOS本机可用`node native/build-process-memory.mjs`重建测试观察器，再运行`node --test tests/process-native-memory.test.mjs`。
 
 此处验证采样基础设施与列明10分钟负载，不表示无观察器性能改善、完整Session内存回落或八小时通过。Linux PSS的缺失字段、进程身份与进程组变化处理，以及创建销毁Session/跨站/长期增长仍需单独补强；当前Source长期用例仅为单个Source及同源导航。正式B1生产源码和产物哈希未变，旧失败与缓存均保留，没有提交或推送；41项保持9完成/12部分/20待做。
+
+
+## Linux PSS 采集层的身份与缺失值合同
+
+[独立采集层证据](evidence/linux-process-memory-observer.json)记录9项实际Linux/边界检查全部通过；Mac三个纯解析检查通过，六个Linux专用检查按平台跳过。读取通过已打开的/proc目录FD进行，每个进程前后核对PID、启动ticks、父进程与四个UID；目标退出后旧FD读取失败，不以已复用PID或旧行替代。两次观测到的后代身份列表匹配才标为observed-stable，发生变化最多重新执行一轮完整采样。每个采样阶段仍严格5秒，进程1024、单进程task4096、单文件64KiB、诊断详情32条有界。实际主机SIGSTOP约5.5秒后恢复，返回LINUX_MEMORY_TIMEOUT，拒绝迟到成功。
+
+真实64MiB脏页分配使RSS/PSS/Private_Dirty分别增长67588096/67543040/67457024字节。实际同UID、不可dump进程的smaps_rollup被内核拒绝，返回EACCES、bytes:null与completeObservedCohort:false；availableBytes明确仅为可读部分，不冒充完整总量。缺字段、权限、进程身份变化或进程组不稳定均不能变成补零的PSS。父子进程实测覆盖、子进程回收后的新采样、根启动身份不符、单次在途及重复FD回收均已核对。
+
+此处只完成新采集模块的独立合同，尚未接入runtimeMetrics和长测门禁。运行中的children枚举本身可能漏掉正在退出的进程，匹配的时间见证不等于冻结或原子快照；PSS为比例分摊，也不等于独占Session内存。完整Session创建销毁/跨站/长期增长、N1长期和八小时继续；41项仍9完成/12部分/20待做，没有提交或推送。
