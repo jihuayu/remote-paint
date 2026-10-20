@@ -1,0 +1,182 @@
+{
+  "at": "2026-10-19T13:29:37.980593+00:00",
+  "task": "K5-Agent-input-queue-human-handoff-fence",
+  "status": "queued-undispatched-Agent-input-stops-at-handoff",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-input-handoff-after-v1/frozen-version.json",
+  "executedManifestSha256": "9887ce29aef87574c8344f20a58ae5642585df8226ad624c4419778ae0238b83",
+  "canonicalSourceFiles": 961,
+  "beforeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-input-handoff-before-v1/frozen-version.json",
+  "beforeManifestSha256": "b63037b235382cf59d2ae3e3fe110aa06bf78e923c71601e758f26c904bb0996",
+  "onlyCausalProductionDelta": "live/input.mjs captures and rechecks control version/mode immediately before CDP dispatch",
+  "unitActualBefore1TwoFailuresAfter0TwoPasses": true,
+  "actualLocalNativeSourceBefore1After0": true,
+  "actualBeforePageValues": [
+    "A",
+    "ASTALE"
+  ],
+  "actualAfterPageValues": [
+    "A",
+    "AH",
+    "AHF"
+  ],
+  "queuedRejectedCode": "AGENT_PAUSED",
+  "alreadyDispatchedCommandRetainedUntilSettled": true,
+  "heldKeyReleasedBeforeHumanGrant": true,
+  "humanInputThenFreshAgentAfterReleaseQualified": true,
+  "nativeFirstRealCdpAckHeldAsTestImpairment": true,
+  "sourceCdpTestEndpointAdded": false,
+  "sourceCoreProofIsNotProductionAgentServiceAuthorization": true,
+  "freshFullJs": {
+    "mac": {
+      "tests": 955,
+      "pass": 940,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "59dea9398fdc225d2dfd3e41746c9e56c5b4e72eb2d10385b5c681bd2f90b9b0"
+    },
+    "linux": {
+      "tests": 955,
+      "pass": 949,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "ebfb94d5a42aef7669c83361b8f793719720d35f7b7cbd91a6e206cbe58f835e",
+      "containerId": "13ed72d9fea130660bc1b9ea7e4631e97a66852d8d9486cdc5671bdd35319c59"
+    }
+  },
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v18/manifest.json",
+  "fullJsManifestSha256": "f716e7f67d7fbe5c0cc5d3dcf5e4c8157f9217897a2b1f43aa4cf46d2720ee23",
+  "actualProductionNativeSdkRegressionManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-input-handoff-sdk-native-v1/manifest.json",
+  "actualProductionNativeSdkRegressionManifestSha256": "6d955b215bb35890039a37734cfcdcef9cb3b9e6888c6ddcbcb203af566de945",
+  "actualProductionNativeSdkRootExitCode": 0,
+  "actualSdkPixelModes": [
+    "gpu-worker",
+    "cpu-worker",
+    "cpu-main"
+  ],
+  "exactWebGLPlaceholderText": "WebGL 无法显示",
+  "actualSdkInputResizeRolesCspAndTerminalReleaseRegression": true,
+  "actualProductionNativeNamespaceRetiredAndFullCidAbsent": true,
+  "knownHostPidsAbsent": [
+    29182,
+    29189,
+    29881,
+    29894,
+    31939,
+    32016,
+    32020,
+    32085,
+    32086,
+    32087,
+    32253,
+    32257,
+    32258,
+    32259,
+    32292,
+    32296,
+    32297,
+    32298
+  ],
+  "sourceCausalContainerStates": [
+    {
+      "stage": "before",
+      "actualExitCode": 1,
+      "containerId": "81f6aa009f868f0e5d56b6c29901f0761d60b36d27ad496ea8988444ff795f46",
+      "state": "exited",
+      "pid": 0,
+      "oomKilled": false,
+      "knownLinuxNamespaceProcessIdentitiesRetired": [
+        {
+          "pid": 23,
+          "startTicks": "31477829"
+        },
+        {
+          "pid": 77,
+          "startTicks": "31477847"
+        },
+        {
+          "pid": 40,
+          "startTicks": "31477844"
+        },
+        {
+          "pid": 43,
+          "startTicks": "31477845"
+        },
+        {
+          "pid": 20,
+          "startTicks": "31477828"
+        }
+      ],
+      "observedValues": [
+        "A",
+        "ASTALE"
+      ],
+      "queuedOutcome": {
+        "ok": true
+      }
+    },
+    {
+      "stage": "after",
+      "actualExitCode": 0,
+      "containerId": "8521d99d739948e58650b40fd41bdadf8c11ca685cff908fc9517d24f4c87a16",
+      "state": "exited",
+      "pid": 0,
+      "oomKilled": false,
+      "knownLinuxNamespaceProcessIdentitiesRetired": [
+        {
+          "pid": 23,
+          "startTicks": "31482625"
+        },
+        {
+          "pid": 76,
+          "startTicks": "31482641"
+        },
+        {
+          "pid": 41,
+          "startTicks": "31482638"
+        },
+        {
+          "pid": 44,
+          "startTicks": "31482638"
+        },
+        {
+          "pid": 20,
+          "startTicks": "31482623"
+        }
+      ],
+      "observedValues": [
+        "A",
+        "AH",
+        "AHF"
+      ],
+      "queuedOutcome": {
+        "ok": false,
+        "code": "AGENT_PAUSED"
+      }
+    }
+  ],
+  "sdk78Node17PythonBothTscBothMacMypyInheritedExactUnchangedInputs": true,
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "a93654f41a1ac70756220d24eb5e6d4ff5a447fa0a3050714ecafdb92ed1354c",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "d21a3f6d707ba6f778ad2c4c1a0372e01f710d3a6d7ab123790487b26513a669"
+  },
+  "sourceAgentQueueHandoffFenceQualified": true,
+  "explicitUpstreamAgentRequestFenceQualified": false,
+  "managedPlaywrightCdpFacadeQualified": false,
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "physicalLatencyOrN1Claim": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

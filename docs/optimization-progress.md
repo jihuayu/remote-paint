@@ -1920,3 +1920,8 @@ canonical Native先Ready及公共Welcome/FrameCommit，在完整自有CID中按�
 ### 安装后Viewer在实际Session释放后自动终止
 
 CPU主线程controller与实际CPU Worker readonly同时显示真实Native Session，释放后均自动failed，iframe/实际Worker及首帧/遥测/控制清空，终态后无自动票据。可信后端当前状态映射VIEWER_ACCESS_ENDED后，各1次票据直接终止、无新增Source解析。应用主动connect按设计可新建有限尝试，错误的首轮禁止主动重试预期保留；后两轮实际0。三显示路径真实像素再次通过，WebGL精确黑框保持。见[终止策略范围](production-native-sdk-end.md)。原SDK/生产/108单测输入未改，继承本轮953/78Node/17Python及类型收据；未知启动隔离、Agent/N1/设备/原8小时继续，41项9/15/17不变。
+
+
+### Agent排队输入在handoff开始时失效
+
+修复ControlLease.agent只在入队检查模式、接管中仍执行旧队列的窗口；发送CDP前重查控制version/mode，未发出的旧动作AGENT_PAUSED，已发输入仍等结算并清理按键再授予人工。两个单测before1/after0；真实Native页面before A→ASTALE、after A→AH→AHF，根1→0。新双平台955项无失败，当前生产Native公共SDK三像素路径/输入/resize/角色/CSP/终止又实际0，WebGL黑框精确文字保持。见[范围](agent-input-handoff.md)。上游请求token、通用Playwright/CDP/生产Agent服务尚未完成；未知启动见证隔离不弱化，41项9/15/17及原8小时失败保持。

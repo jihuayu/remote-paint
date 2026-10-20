@@ -54,6 +54,18 @@ test('handoff fences accepted Agent work, blocks new Agent work and releases hel
  assert.throws(()=>c.agent(text),{code:'AGENT_PAUSED'});await Promise.resolve();assert.equal(granted,false);release();await agent;await acquisition;
  assert.ok(calls.some(call=>call.params.type==='keyUp'&&call.params.code==='KeyA'));assert.equal(c.mode,'human');await c.close();
 });
+test('human handoff rejects queued Agent input that has not reached CDP',async t=>{
+ const {control:c,cdp,calls}=setup();let release,entered;const enteredPromise=new Promise(r=>entered=r),gate=new Promise(r=>release=r),send=cdp.send;
+ t.after(async()=>{release();await c.close();});cdp.send=async(method,params)=>{await send(method,params);if(params.code==='KeyA'&&params.type==='keyDown'){entered();await gate;}};
+ const active=c.agent({kind:'key',type:'keyDown',key:'a',code:'KeyA'});await enteredPromise;const queued=c.agent({kind:'text',text:'stale-agent-command'}).then(()=>({ok:true}),error=>({ok:false,code:error.code}));let granted=false;const acquiring=c.acquire('a',tags(c)).then(value=>{granted=true;return value;});assert.equal(c.mode,'handoff');assert.equal(granted,false);assert.throws(()=>c.agent(text),{code:'AGENT_PAUSED'});release();await active;await acquiring;
+ assert.deepEqual(await queued,{ok:false,code:'AGENT_PAUSED'});assert.ok(!calls.some(call=>call.params.text==='stale-agent-command'));assert.ok(calls.some(call=>call.params.code==='KeyA'&&call.params.type==='keyUp'));assert.equal(c.mode,'human');
+});
+test('revocation discards queued Agent input before resuming fresh Agent work',async t=>{
+ const {control:c,cdp,calls}=setup();let release,entered;const enteredPromise=new Promise(r=>entered=r),gate=new Promise(r=>release=r),send=cdp.send;
+ t.after(async()=>{release();await c.close();});cdp.send=async(method,params)=>{await send(method,params);if(params.text==='active-agent-command'){entered();await gate;}};
+ const active=c.agent({kind:'text',text:'active-agent-command'});await enteredPromise;const queued=c.agent({kind:'text',text:'revoked-agent-command'}).then(()=>({ok:true}),error=>({ok:false,code:error.code})),revoking=c.revoke('released');assert.equal(c.mode,'handoff');release();await active;await revoking;
+ assert.deepEqual(await queued,{ok:false,code:'AGENT_PAUSED'});assert.ok(!calls.some(call=>call.params.text==='revoked-agent-command'));assert.equal(c.mode,'agent');await c.agent({kind:'text',text:'fresh-agent-command'});assert.ok(calls.some(call=>call.params.text==='fresh-agent-command'));
+});
 test('revocation invalidates queued input, fences inflight input and resumes Agent after cleanup',async()=>{
  const {control:c,cdp,source,calls}=setup();const grant=await c.acquire('a',tags(c));let release,entered;const ready=new Promise(r=>entered=r);const original=cdp.send;
  cdp.send=async(method,params)=>{if(method==='Input.insertText'&&params.text==='first'){entered();await new Promise(r=>release=r);}await original(method,params);};

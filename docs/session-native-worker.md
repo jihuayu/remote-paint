@@ -140,3 +140,8 @@ Node/Python SDK现接受worker-unavailable关闭原因，包括配额尚保留�
 ## 安装后Viewer的Session终止策略
 
 实际Native Session释放后，CPU主线程与实际Worker自动终止并清空显示所有者；可信应用后端识别会话结束，类型化VIEWER_ACCESS_ENDED每条路径仅取票一次。显式应用connect仍可开启有界尝试。见[范围](production-native-sdk-end.md)，不代表全浏览器/设备验收。
+
+
+## 本地Agent输入handoff栅栏
+
+ControlLease.agent在实际发送前重查控制version/mode，人工接管或revoke开始后丢弃未发出的旧队列输入。真实Native Source因果1→0和当前生产Native公共Viewer回归通过；此局部修复不代表上游Agent授权或全部Playwright/CDP接口已覆盖。见[范围](agent-input-handoff.md)。

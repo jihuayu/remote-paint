@@ -1,0 +1,13 @@
+# Agent 输入队列在人工接管时停止旧动作
+
+ControlLease.agent原先只在请求入队时检查mode；实际发送前只核对页面和viewport。人工接管或revoke已进入handoff，尚未发出的旧Agent输入仍会依次执行，然后才清理按键并授予人工租约。现在在入队时同时捕获控制version，实际发送CDP前复查mode仍为agent且version未变；不匹配则异步拒绝AGENT_PAUSED，不再注入旧动作。
+
+已经发送的CDP输入不能撤销，仍由同一队列持有到真实响应结算；人工handoff继续等待它，然后释放已按下的键/鼠标/组合态，最后才授予人工租约。页面/viewport检查顺序保留，原有STALE_AGENT_PAGE语义保持。调用者必须处理已排队Promise的AGENT_PAUSED拒绝，不能把它当作执行成功或盲目重试。人工释放后，新提交的Agent输入可正常继续。
+
+两个针对handoff与revoke的因果单测在修复前实际1（2失败），修复后实际0（2通过）。真实Linux Native Source另做同脚本因果验收：第一个KeyA已经通过真实CDP并使页面独立HTTP报告A，再仅在测试控制器暂缓其真实ACK返回；排入STALE输入，开始人工接管，然后释放ACK。旧代码实际发送了STALE，页面报告ASTALE，根实际1；修复后队列拒绝AGENT_PAUSED，STALE未发CDP，页面仍A，按键释放后人工输入H得到AH，再显式释放人工控制，新Agent输入F得到AHF，根实际0。这个真实ACK暂缓是确定性测试扰动，不是物理时延或丢包测量。前后源码除live/input.mjs修复外逐字节相同，真实Native/Node单测的失败日志与有效内核身份/进程退出证据均保留。
+
+双平台108文件完整955项重新通过：Mac940通过15跳过，Linux949通过6跳过，失败/取消0。当前生产Native worker/provider及已安装公共Viewer又完成GPU Worker、CPU Worker、CPU主线程的真实像素、输入、resize、角色、CSP与会话释放终止回归，根实际0；WebGL精确黑框文字“WebGL 无法显示”保持，其余内容正常。生产Native对象有效namespace退役、完整CID消失；两个本地Source因果容器分别以1/0终止，内核见证与已知浏览器/broker PID+start身份退出核对通过；完整回归Linux容器以0终止，无OOM。18个已知Mac宿主测试/代理/浏览器PID均ESRCH。
+
+SDK源码与安装合同输入未变，精确继承先前新安装的双平台78 Node/17 Python、严格TSC和Mac Mypy；本项未声称重新打包或安装。这个局部修复仅覆盖已经进入本地输入队列、尚未发出CDP的Agent输入。网络中迟到的上游Agent请求、通用Playwright/CDP工具、任务身份/权限与生产服务/SDK Agent接口仍待实现，因此K5不能宣称全部完成。
+
+启动意图已requested却没有有效内核见证的历史隔离仍保留。退役契约明确排除用当前404、单次配置快照或remove204替代namespace证明，本项没有为归还配额而弱化它。下一步应增加明确的上游请求fencing与受限工具facade，再接受权限约束的Native worker/服务/SDK；未知启动收敛、N1/物理时延、更多设备和原8小时增长继续待完成。41项9/15/17、原8小时失败/192MiB门槛保持，未强制浏览器GC、自动重跑8小时、修改公共演示或暂存提交推送。最终963文件；见[范围收据](evidence/agent-input-handoff.json)。

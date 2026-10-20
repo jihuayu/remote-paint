@@ -187,8 +187,8 @@ export class ControlLease {
  }
  agent(event){
   if(this.mode!=='agent')reject('AGENT_PAUSED');validateInput(event,this.source.viewport);
-  const epoch=this.source.pageEpoch,viewport=this.source.viewportVersion;
-  return this.enqueue(async()=>{if(this.source.transitioning||this.source.pageEpoch!==epoch||this.source.viewportVersion!==viewport)reject('STALE_AGENT_PAGE');const release=this.source.acquirePageRun?.();try{await this.dispatch(event);this.source.requestCapture?.();}finally{release?.();}});
+  const epoch=this.source.pageEpoch,viewport=this.source.viewportVersion,version=this.version;
+  return this.enqueue(async()=>{if(this.source.transitioning||this.source.pageEpoch!==epoch||this.source.viewportVersion!==viewport)reject('STALE_AGENT_PAGE');if(this.mode!=='agent'||this.version!==version)reject('AGENT_PAUSED');const release=this.source.acquirePageRun?.();try{await this.dispatch(event);this.source.requestCapture?.();}finally{release?.();}});
  }
  async handle(peer,message){
   try{
