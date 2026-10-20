@@ -11,3 +11,5 @@
 Source/Child 可以先发连接失败事件，宿主会同步销毁 iframe。Frame 在通知宿主前先保留当前视口操作的固定错误和 unknown，避免它被普通 close/abort 覆盖。iframe 重载、角色切换、销毁后，旧端口结果不能更新新代次。
 
 实际 MessageChannel、Node HTTP/WebSocket/SQLite/ControlLease、保存的 Window/Worker 和真实 ViewerInput 验证这条链路。DOM/ShadowRoot/CanvasKit/呈现器/Worker调度、Source.resize/CDP 为明确夹具；没有以这些合同证明真实 Browser/Native capture、新尺寸像素、公共控制优先级或物理资源验收。公开性能/首帧事件、实际 Native 视口和原8小时增长验收仍须继续。证据见[SDK视口检查点](evidence/viewer-viewport-sdk.json)。
+
+后续已完成真实 Native/跨源浏览器的 GPU Worker 与 CPU 主线程短周期验证，包含实际视口像素、WebGL文字、控制优先级、超时未知结果和回收，见[Native验证及剩余矩阵](viewer-viewport-native.md)。上文保留本SDK协议检查点的原始范围；CPU Worker、公开性能/首帧API及完整长期验收仍须继续。

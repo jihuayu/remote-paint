@@ -1775,3 +1775,13 @@ Frame和DOM组件公开有限resizeViewport，要求已持有controller租约；
 最初23条合同实现前全失败，新增30条（含实际HTTP模块依赖图）与相关156项通过，涵盖实际MessageChannel/Node HTTP/WebSocket/SQLite/ControlLease、保存Window/Worker与真实ViewerInput。严格类型及安装包合同补充公开API、readonly结果和有限错误outcome。DOM/CanvasKit/调度、Source.resize/CDP及故意异常回执为明确夹具；API应用Source屏障不代表提交新像素。见[SDK说明](viewer-viewport-sdk.md)与[范围证据](evidence/viewer-viewport-sdk.json)。
 
 实际Native viewport/捕获/像素、公开控制优先级与性能/首帧事件仍须继续验收，不能据协议合同完成K2整体；原8小时失败与增长策略保持。41项9/15/17，未自动重跑8小时、未改采样器/演示实例，未暂存提交推送。
+
+### K2a2b3c2c：真实Native / 公开iframe视口验证
+
+已安装SDK经跨源iframe/实际生产CSP/票据网关/Rust/NativeSource，在Mac Metal GPU Worker与CPU主线程完成六次成功挂载。Source DOM尺寸与viewportVersion、新frame及尺寸编码/右下角/图像/Canvas2D/输入像素相符；noop释放远端按下状态并保留租约/序号。实际绿色WebGL在Viewer呈黑框及精确“WebGL 无法显示”字形，四次文字像素precision/recall均1。
+
+真实图像SHA测试暂停期间，公开控制回执与交还先完成，新图像像素在释放后出现；不能将这种测试关系当作N1物理延迟。Native已应用后测试延迟回执时，超时正确返回unknown，不声称回滚，并保留真实待办直到释放。未列入allowlist的宿主被Chrome frame-ancestors拒绝且票据0。六次销毁后的peer/Worker、两组采样Mac PID、Linux七个固定Source进程身份及服务均回收，Source/Viewer实际退出0。
+
+保留首次Native运行在CPU主线程“帧号应不变”断言的真实失败；较早队列帧可完成，修正为关联图像编码像素，生产代码/策略未放宽。Source/SDK生产字节及859项双平台回归输入与前检查点相同，新增真实Native合同单独执行；不是重跑或替代原8小时。详情见[Native范围](viewer-viewport-native.md)及[收据](evidence/viewer-viewport-native.json)。
+
+CPU Worker、公开性能/首帧API、生产Native端点/所有Agent栅栏、长期资源与轻微丢包完整矩阵仍待继续，K2整体未完成。41项仍9/15/17，原8小时失败/192MiB门槛保持；未改演示/采样器，未暂存提交推送。

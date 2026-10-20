@@ -1,0 +1,129 @@
+{
+  "at": "2026-10-19T09:14:09.875336+00:00",
+  "task": "K2a2b3c2c",
+  "status": "actual-Native-public-viewport-GPUWorker-CPUmain-scoped-pass",
+  "successfulRunManifestSha256": "9260b80e1ba1b93e081abb2ed6807ec15bc3d2fe3ffb98ed8949473d4b747ee5",
+  "actualViewerExitCode": 0,
+  "actualSourceExitCode": 0,
+  "successfulMounts": 6,
+  "ticketRequests": 6,
+  "observedModes": [
+    "gpu-worker",
+    "cpu-main"
+  ],
+  "cpuWorkerPending": true,
+  "sourceBrowser": "155.0.8059.79",
+  "viewerBrowsers": [
+    "155.0.8059.84",
+    "155.0.8059.84"
+  ],
+  "actualHardwareRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)",
+  "nativeSourceAndResizeCdpActual": true,
+  "realInstalledSdkPublicIframeGatewayRustNativeCanvasKit": true,
+  "sourceWebglPixel": [
+    26,
+    191,
+    64,
+    255
+  ],
+  "viewerBlackWebglLabel": "WebGL 无法显示",
+  "labelChecks": [
+    {
+      "mode": "gpu-worker",
+      "text": "WebGL 无法显示",
+      "observed": 572,
+      "wanted": 488,
+      "precision": 1,
+      "recall": 1,
+      "corner": [
+        0,
+        0,
+        0,
+        255
+      ]
+    },
+    {
+      "mode": "gpu-worker",
+      "text": "WebGL 无法显示",
+      "observed": 572,
+      "wanted": 488,
+      "precision": 1,
+      "recall": 1,
+      "corner": [
+        0,
+        0,
+        0,
+        255
+      ]
+    },
+    {
+      "mode": "cpu-main",
+      "text": "WebGL 无法显示",
+      "observed": 556,
+      "wanted": 488,
+      "precision": 1,
+      "recall": 1,
+      "corner": [
+        0,
+        0,
+        0,
+        255
+      ]
+    },
+    {
+      "mode": "cpu-main",
+      "text": "WebGL 无法显示",
+      "observed": 556,
+      "wanted": 488,
+      "precision": 1,
+      "recall": 1,
+      "corner": [
+        0,
+        0,
+        0,
+        255
+      ]
+    }
+  ],
+  "causalNativeViewportDomFrameAndPixelChecks": true,
+  "actualHeldStateCleanupOnNoopAndLeaseSequenceKept": true,
+  "asyncChecksumTestGateControlBypassNotPhysicalLatency": true,
+  "afterActualNativeAppliedCompletionGateTimeoutUnknownNotRollback": true,
+  "actualUnlistedParentCspDeny": [
+    {
+      "unlistedParentRejected": true,
+      "actualBrowserFrameAncestors": true,
+      "ticketsAllocated": 0,
+      "code": "CHANNEL_TIMEOUT"
+    }
+  ],
+  "macSampledOwnedPidCounts": [
+    4,
+    4
+  ],
+  "linuxPinnedSourceProcessesRetired": 7,
+  "sourceNodeCalls": {
+    "map": 0,
+    "publish": 0,
+    "awaitPromise": 0
+  },
+  "cleanupErrors": [],
+  "containerExitedPid0": true,
+  "firstRunActualFixtureAssertionFailurePreserved": true,
+  "firstRunFailureArchiveSha256": "ad8c5f39b6351063d5d72d84cd5536c808ed1b286172b444e445aea9e66e1d74",
+  "productionCodeUnchangedFrom892SdkCheckpoint": true,
+  "fullJsInheritedSame859TestsAndRuntimeBytes": true,
+  "sdkViewportQualifiedWithinObservedModes": true,
+  "allModeNativeViewportQualified": false,
+  "performanceFirstFrameApiComplete": false,
+  "productionNativeProviderQualified": false,
+  "testOnlyProviderWithRealNativeOwner": true,
+  "original8hFailedNotRestarted": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noCommitPush": true
+}
