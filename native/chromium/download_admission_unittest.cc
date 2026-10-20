@@ -53,6 +53,7 @@
 
 #if BUILDFLAG(IS_POSIX)
 #include <sys/stat.h>
+#include <unistd.h>
 #endif
 
 namespace download {
@@ -477,7 +478,21 @@ struct ReadGate : base::RefCountedThreadSafe<ReadGate> {
 #if BUILDFLAG(IS_LINUX)
 struct ReadFileId { dev_t device; ino_t inode; };
 ReadFileId Identity(const base::FilePath& path) {
-  struct stat st{}; EXPECT_EQ(0, stat(path.value().c_str(), &st)); return {st.st_dev, st.st_ino};
+  struct stat st{};
+  if (stat(path.value().c_str(), &st) == 0) return {st.st_dev, st.st_ino};
+  // Ready deliberately has no name. Resolve only this test process's actual
+  // still-owned deleted FD, never a cached/logical identity or another PID.
+  DIR* dir = opendir("/proc/self/fd"); EXPECT_NE(nullptr, dir); if (!dir) return {};
+  bool found = false;
+  while (const auto* entry = readdir(dir)) {
+    int fd = -1; if (!base::StringToInt(entry->d_name, &fd)) continue;
+    base::FilePath target;
+    if (base::ReadSymbolicLink(base::FilePath("/proc/self/fd").AppendASCII(entry->d_name), &target) &&
+        target.value() == path.value() + " (deleted)" && fstat(fd, &st) == 0 && S_ISREG(st.st_mode)) {
+      found = true; break;
+    }
+  }
+  closedir(dir); EXPECT_TRUE(found); return {st.st_dev, st.st_ino};
 }
 int OwnedReferences(ReadFileId identity) {
   int count = 0; DIR* dir = opendir("/proc/self/fd"); EXPECT_NE(nullptr, dir); if (!dir) return -1;
@@ -599,7 +614,7 @@ TEST_F(RemotePaintDownloadReadTest, InvalidRangesAndBusyReadDoNotQueueExtraWork)
 TEST_F(RemotePaintDownloadReadTest, UnlinkDoesNotRetireOwnedFileDescriptorOrReservation) {
   Model model(tasks_); model.Start(true); model.Drain(); const auto path = PathFor(model); const auto identity = Identity(path);
   EXPECT_EQ(0, OwnedReferences(identity)); auto reader = Open(model); ASSERT_TRUE(reader); EXPECT_EQ(1, OwnedReferences(identity));
-  ASSERT_TRUE(base::DeleteFile(path)); EXPECT_EQ(1, OwnedReferences(identity)); EXPECT_EQ(1u, Budget::ReservedItems());
+  EXPECT_FALSE(base::PathExists(path)); EXPECT_EQ(1, OwnedReferences(identity)); EXPECT_EQ(1u, Budget::ReservedItems());
   auto result = Read(*reader); EXPECT_EQ("xxxxxxx", result.bytes);
   reader->Close(); tasks_.RunUntilIdle(); EXPECT_EQ(0, OwnedReferences(identity)); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
 }
@@ -634,8 +649,10 @@ TEST_F(RemotePaintDownloadReadTest, TerminalDeadlineClosesActualReaderAndRecover
   EXPECT_TRUE(model.delegate.items.empty()); model.Start(true); model.Drain(); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
 }
 TEST_F(RemotePaintDownloadReadTest, TruncatedOwnedFileFailsReadAndAutoCloses) {
-  Model model(tasks_); model.Start(true); model.Drain(); auto reader = Open(model); ASSERT_TRUE(reader);
-  ASSERT_TRUE(base::WriteFile(PathFor(model), "a")); auto result = Read(*reader); EXPECT_EQ(ReadError::kIo, result.error);
+  Model model(tasks_); model.Start(true); model.Drain();
+  base::File writer(PathFor(model), base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE); ASSERT_TRUE(writer.IsValid());
+  auto reader = Open(model); ASSERT_TRUE(reader);
+  ASSERT_TRUE(writer.SetLength(1)); auto result = Read(*reader); writer.Close(); EXPECT_EQ(ReadError::kIo, result.error);
   EXPECT_TRUE(result.bytes.empty()); tasks_.RunUntilIdle(); EXPECT_TRUE(reader->closed()); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
 }
 TEST_F(RemotePaintDownloadReadTest, SymlinkDirectoryAndPipeAreRejectedWithoutBlocking) {
@@ -867,7 +884,7 @@ TEST_F(RemotePaintDownloadTransferTest, FailedPhysicalCleanupNeverReportsRelease
   Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry); Start(model, registry, owner);
   auto receipt = registry.Retirement(ticket); ASSERT_TRUE(receipt);
   const auto path = PathFor(model); auto lease = LeaseFor(model); const auto id = Identity(path);
-  ASSERT_TRUE(base::Move(path, model.directory.GetPath().AppendASCII("moved-transfer"))); ASSERT_TRUE(base::CreateDirectory(path));
+  EXPECT_FALSE(base::PathExists(path)); ASSERT_TRUE(base::CreateDirectory(path));
   ASSERT_TRUE(base::WriteFile(path.AppendASCII("keep"), "keep")); base::test::TestFuture<bool> done;
   EXPECT_TRUE(registry.Release(ticket, done.GetCallback())); model.Drain(); ASSERT_TRUE(done.IsReady()); EXPECT_FALSE(done.Take());
   EXPECT_EQ(0, OwnedReferences(id)); EXPECT_TRUE(lease->failed()); EXPECT_FALSE(lease->finished()); EXPECT_EQ(1u, Budget::ReservedItems());
@@ -1546,6 +1563,59 @@ TEST_F(RemotePaintDownloadRetirementTest, TwelveRealDocumentCyclesReuseReceiptsW
   Model model(tasks_); const auto key = base::UnguessableToken::Create();
   for (int i = 0; i < 12; ++i) {
     auto context = RequestContext(); auto client = std::make_unique<Client>(context); const auto ticket = Arm(*client, key); auto receipt = client->Retirement(key, ticket); ASSERT_TRUE(receipt); Start(model, *client, context); client.reset(); model.Drain(); EXPECT_TRUE(receipt->retired()); EXPECT_EQ(0u, Budget::ReservedItems()); receipt.reset(); EXPECT_EQ(0u, Receipt::LiveReceiptsForTesting());
+  }
+  EXPECT_EQ(12, model.delegate.allocations);
+}
+
+class RemotePaintDownloadDetachedReadTest : public RemotePaintDownloadClientTest {};
+TEST_F(RemotePaintDownloadDetachedReadTest, ReadyRemovesOriginalNameAndReadsTheSameOwnedFd) {
+  Model model(tasks_); model.Start(true, 7000); model.Drain(); const auto path = PathFor(model); const auto id = Identity(path); auto reader = Open(model); ASSERT_TRUE(reader); ASSERT_EQ(ReadError::kNone, metadata_.error);
+  EXPECT_FALSE(base::PathExists(path)); EXPECT_EQ(1, OwnedReferences(id)); EXPECT_EQ(1u, Budget::ReservedItems()); EXPECT_EQ(base::HexEncodeLower(crypto::hash::Sha256(std::string(7000, 'x'))), metadata_.sha256);
+  EXPECT_EQ(std::string(3072, 'x'), Read(*reader).bytes); auto last = Read(*reader, 6999); EXPECT_EQ("x", last.bytes); EXPECT_TRUE(last.complete); reader->Close(); tasks_.RunUntilIdle(); EXPECT_EQ(0, OwnedReferences(id)); EXPECT_EQ(1u, Budget::ReservedItems()); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadDetachedReadTest, EmptyReadyHasNoNameAndPreservesEmptyDigestAndEof) {
+  Model model(tasks_); model.Start(true, 0); model.Drain(); const auto path = PathFor(model); const auto id = Identity(path); auto reader = Open(model); ASSERT_TRUE(reader); ASSERT_EQ(ReadError::kNone, metadata_.error);
+  EXPECT_FALSE(base::PathExists(path)); EXPECT_EQ(0u, metadata_.byte_length); EXPECT_EQ(base::HexEncodeLower(crypto::hash::Sha256(std::string_view())), metadata_.sha256); auto chunk = Read(*reader); EXPECT_TRUE(chunk.bytes.empty()); EXPECT_TRUE(chunk.complete); EXPECT_EQ(1, OwnedReferences(id)); reader->Close(); tasks_.RunUntilIdle(); model.RetireAll(); EXPECT_EQ(0, OwnedReferences(id));
+}
+TEST_F(RemotePaintDownloadDetachedReadTest, FourMiBReadyUnlinksBeforeReturningBoundedChunks) {
+  Model model(tasks_); model.Start(true, Budget::kFileBytes); model.Drain(); const auto path = PathFor(model); auto reader = Open(model); ASSERT_TRUE(reader); ASSERT_EQ(ReadError::kNone, metadata_.error);
+  EXPECT_FALSE(base::PathExists(path)); EXPECT_TRUE(base::IsDirectoryEmpty(model.directory.GetPath())); EXPECT_EQ(Budget::kFileBytes, metadata_.byte_length); EXPECT_EQ(base::HexEncodeLower(crypto::hash::Sha256(std::string(Budget::kFileBytes, 'x'))), metadata_.sha256); EXPECT_EQ(3072u, Read(*reader).bytes.size()); EXPECT_EQ("x", Read(*reader, Budget::kFileBytes - 1).bytes); EXPECT_EQ(1u, Budget::ReservedItems()); reader->Close(); tasks_.RunUntilIdle(); model.RetireAll();
+}
+TEST_F(RemotePaintDownloadDetachedReadTest, HardlinkAliasIsRejectedBeforeEitherNameIsRemoved) {
+  Model model(tasks_); model.Start(true); model.Drain(); const auto path = PathFor(model), alias = model.directory.GetPath().AppendASCII("alias"); ASSERT_EQ(0, link(path.value().c_str(), alias.value().c_str())); auto reader = Open(model); ASSERT_TRUE(reader); EXPECT_EQ(ReadError::kIo, metadata_.error); EXPECT_TRUE(reader->closed());
+  EXPECT_EQ(7, base::GetFileSize(path).value_or(-1)); EXPECT_EQ(7, base::GetFileSize(alias).value_or(-1)); EXPECT_EQ(1u, Budget::ReservedItems()); ASSERT_TRUE(base::DeleteFile(alias)); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadDetachedReadTest, ReplacementAtOldNameCannotChangeReadyFdDataOrDigest) {
+  Model model(tasks_); model.Start(true); model.Drain(); const auto path = PathFor(model); const auto id = Identity(path); auto reader = Open(model); ASSERT_TRUE(reader); ASSERT_EQ(ReadError::kNone, metadata_.error); ASSERT_FALSE(base::PathExists(path)); const auto digest = metadata_.sha256;
+  ASSERT_TRUE(base::WriteFile(path, "foreign replacement")); EXPECT_EQ("xxxxxxx", Read(*reader).bytes); EXPECT_EQ(base::HexEncodeLower(crypto::hash::Sha256(std::string(7, 'x'))), digest); std::string replacement; ASSERT_TRUE(base::ReadFileToString(path, &replacement)); EXPECT_EQ("foreign replacement", replacement); EXPECT_EQ(1, OwnedReferences(id)); ASSERT_TRUE(base::DeleteFile(path)); reader->Close(); tasks_.RunUntilIdle(); model.RetireAll();
+}
+TEST_F(RemotePaintDownloadDetachedReadTest, SameSizeWriteWithRestoredMtimeCannotReuseOldDigest) {
+  Model model(tasks_); model.Start(true); model.Drain(); base::File writer(PathFor(model), base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE); ASSERT_TRUE(writer.IsValid()); auto reader = Open(model); ASSERT_TRUE(reader); ASSERT_EQ(ReadError::kNone, metadata_.error);
+  struct stat st{}; ASSERT_EQ(0, fstat(writer.GetPlatformFile(), &st)); ASSERT_EQ(7, pwrite(writer.GetPlatformFile(), "yyyyyyy", 7, 0));
+#if BUILDFLAG(IS_APPLE)
+  const timespec times[2]{st.st_atimespec, st.st_mtimespec};
+#else
+  const timespec times[2]{st.st_atim, st.st_mtim};
+#endif
+  ASSERT_EQ(0, futimens(writer.GetPlatformFile(), times)); auto chunk = Read(*reader); EXPECT_EQ(ReadError::kIo, chunk.error); EXPECT_TRUE(chunk.bytes.empty()); writer.Close(); tasks_.RunUntilIdle(); EXPECT_TRUE(reader->closed()); model.RetireAll();
+}
+TEST_F(RemotePaintDownloadDetachedReadTest, ActualUnlinkPermissionFailureCannotPublishReady) {
+  Model model(tasks_); model.Start(true); model.Drain(); const auto path = PathFor(model); const auto id = Identity(path); ASSERT_TRUE(base::SetPosixFilePermissions(model.directory.GetPath(), 0500));
+  auto restore = base::ScopedClosureRunner(base::BindOnce([](base::FilePath directory) { EXPECT_TRUE(base::SetPosixFilePermissions(directory, 0700)); }, model.directory.GetPath()));
+  auto reader = Open(model); ASSERT_TRUE(reader); EXPECT_EQ(ReadError::kIo, metadata_.error); EXPECT_TRUE(reader->closed()); EXPECT_TRUE(metadata_.sha256.empty()); EXPECT_EQ(0, OwnedReferences(id)); EXPECT_TRUE(base::PathExists(path)); EXPECT_EQ(1u, Budget::ReservedItems()); restore.RunAndReset(); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadDetachedReadTest, CloseBeforeOpenReplyDiscardsLateDetachedFileMetadata) {
+  Model model(tasks_); model.Start(true); model.Drain(); const auto path = PathFor(model); const auto id = Identity(path); auto gate = BlockFileSequence(); auto unblock = ReleaseOnExit(gate); base::test::TestFuture<Reader::Metadata> ready; auto reader = LeaseFor(model)->OpenReader(Budget::kFileBytes, ready.GetCallback()); ASSERT_TRUE(reader); EXPECT_TRUE(reader->Close()); LeaseFor(model)->BeginRetire(); EXPECT_FALSE(ready.IsReady()); EXPECT_EQ(1u, Budget::ReservedItems()); gate->allow.Signal(); model.Drain(); ASSERT_TRUE(ready.IsReady()); EXPECT_EQ(ReadError::kClosed, ready.Get().error); EXPECT_TRUE(ready.Get().sha256.empty()); EXPECT_EQ(0, OwnedReferences(id)); EXPECT_FALSE(base::PathExists(path)); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadDetachedReadTest, RegistryReadyHasNoPathButReceiptWaitsFdAndMetadataAck) {
+  Model model(tasks_); model.delegate.hold_metadata = true; auto context = RequestContext(); Client client(context); const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key); auto receipt = client.Retirement(key, ticket); ASSERT_TRUE(receipt); Start(model, client, context); const auto path = PathFor(model); const auto id = Identity(path); auto info = client.Info(key, ticket); ASSERT_TRUE(info); EXPECT_EQ(TransferState::kReady, info->state); EXPECT_FALSE(base::PathExists(path)); EXPECT_EQ(1, OwnedReferences(id));
+  auto gate = BlockFileSequence(); auto unblock = ReleaseOnExit(gate); base::test::TestFuture<bool> released; ASSERT_TRUE(client.Release(key, ticket, released.GetCallback())); EXPECT_FALSE(released.IsReady()); EXPECT_FALSE(receipt->retired()); EXPECT_EQ(1, OwnedReferences(id)); gate->allow.Signal(); model.Drain(); EXPECT_EQ(0, OwnedReferences(id)); EXPECT_FALSE(released.IsReady()); EXPECT_FALSE(receipt->retired()); EXPECT_EQ(1u, Budget::ReservedItems());
+  for (auto& held : model.delegate.metadata_acks) held->MetadataRetired(); model.delegate.metadata_acks.clear(); model.Drain(); ASSERT_TRUE(released.IsReady()); EXPECT_TRUE(released.Take()); EXPECT_TRUE(receipt->retired()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadDetachedReadTest, TwelveRealReadyCyclesLeaveNoNamedSpoolOrLifetimeQuota) {
+  Model model(tasks_);
+  for (int i = 0; i < 12; ++i) {
+    model.Start(true); model.Drain(); const auto path = PathFor(model); const auto id = Identity(path); auto reader = Open(model); ASSERT_TRUE(reader); ASSERT_EQ(ReadError::kNone, metadata_.error); EXPECT_FALSE(base::PathExists(path)); EXPECT_TRUE(base::IsDirectoryEmpty(model.directory.GetPath())); EXPECT_EQ("xxxxxxx", Read(*reader).bytes); EXPECT_EQ(1, OwnedReferences(id)); reader->Close(); tasks_.RunUntilIdle(); model.RetireAll(); EXPECT_EQ(0, OwnedReferences(id)); EXPECT_EQ(0u, Budget::ReservedItems());
   }
   EXPECT_EQ(12, model.delegate.allocations);
 }

@@ -1,0 +1,114 @@
+--- a/components/download/public/common/native_download_read_session.cc
++++ b/components/download/public/common/native_download_read_session.cc
+@@ -2,6 +2,7 @@
+ 
+ #include <algorithm>
+ #include <array>
++#include <cerrno>
+ #include <utility>
+ #include "base/check.h"
+ #include "base/containers/span.h"
+@@ -17,6 +18,7 @@
+ #if BUILDFLAG(IS_POSIX)
+ #include <fcntl.h>
+ #include <sys/stat.h>
++#include <unistd.h>
+ #include "base/posix/eintr_wrapper.h"
+ #endif
+ 
+@@ -37,8 +39,8 @@
+ #if BUILDFLAG(IS_POSIX)
+     base::ScopedFD fd(HANDLE_EINTR(open(path_.value().c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW | O_NONBLOCK)));
+     base::stat_wrapper_t st{};
+-    if (!fd.is_valid() || base::File::Fstat(fd.get(), &st) != 0 || !S_ISREG(st.st_mode)) return result;
+-    file_ = base::File(std::move(fd));
++    if (!fd.is_valid() || base::File::Fstat(fd.get(), &st) != 0 || !S_ISREG(st.st_mode) || st.st_nlink != 1) return result;
++    file_ = base::File(std::move(fd)); identity_ = st;
+ #else
+     // Source activation for other platforms requires an equivalent verified
+     // regular-file/no-follow/nonblocking ownership contract.
+@@ -49,8 +51,11 @@
+     if (static_cast<uint64_t>(length) > limit_ || static_cast<uint64_t>(length) > NativeDownloadBudget::kFileBytes) {
+       result.error = Error::kLimit; return result;
+     }
+-    if (!file_.GetInfo(&identity_) || identity_.is_directory) return result;
+     size_ = static_cast<uint64_t>(length);
++    // Remove only the validated original name, then hash/read the same FD.
++    // Hash after unlink so the unlink-induced ctime change cannot hide a data
++    // mutation between hashing and detaching the path.
++    if (!DetachPath()) return result;
+     crypto::hash::Hasher hash(crypto::hash::kSha256);
+     std::array<uint8_t, 8192> buffer;
+     for (uint64_t offset = 0; offset < size_;) {
+@@ -77,15 +82,56 @@
+     result.error = Error::kNone; result.complete = offset + count == size_; return result;
+   }
+  private:
++#if BUILDFLAG(IS_POSIX)
++  static bool SameData(const base::stat_wrapper_t& a, const base::stat_wrapper_t& b) {
++    if (!S_ISREG(a.st_mode) || !S_ISREG(b.st_mode) || a.st_dev != b.st_dev ||
++        a.st_ino != b.st_ino || a.st_size != b.st_size) return false;
++#if BUILDFLAG(IS_APPLE)
++    return a.st_mtimespec.tv_sec == b.st_mtimespec.tv_sec && a.st_mtimespec.tv_nsec == b.st_mtimespec.tv_nsec;
++#else
++    return a.st_mtim.tv_sec == b.st_mtim.tv_sec && a.st_mtim.tv_nsec == b.st_mtim.tv_nsec;
++#endif
++  }
++  static bool SameVersion(const base::stat_wrapper_t& a, const base::stat_wrapper_t& b) {
++    if (!SameData(a, b)) return false;
++#if BUILDFLAG(IS_APPLE)
++    return a.st_ctimespec.tv_sec == b.st_ctimespec.tv_sec && a.st_ctimespec.tv_nsec == b.st_ctimespec.tv_nsec;
++#else
++    return a.st_ctim.tv_sec == b.st_ctim.tv_sec && a.st_ctim.tv_nsec == b.st_ctim.tv_nsec;
++#endif
++  }
++#endif
++  bool DetachPath() {
++#if BUILDFLAG(IS_POSIX)
++    base::stat_wrapper_t named{}, detached{}, missing{};
++    if (!Unchanged() || base::File::Lstat(path_, &named) != 0 || named.st_nlink != 1 ||
++        !SameVersion(named, identity_)) return false;
++    if (HANDLE_EINTR(unlink(path_.value().c_str())) != 0) return false;
++    if (base::File::Fstat(file_.GetPlatformFile(), &detached) != 0 || detached.st_nlink != 0 ||
++        !SameData(detached, identity_)) return false;
++    identity_ = detached; expected_links_ = 0;
++    return base::File::Lstat(path_, &missing) != 0 && errno == ENOENT;
++#else
++    return false;
++#endif
++  }
+   bool Unchanged() {
+-    base::File::Info current;
+-    return file_.IsValid() && file_.GetLength() == static_cast<int64_t>(size_) &&
+-           file_.GetInfo(&current) && !current.is_directory && current.last_modified == identity_.last_modified;
++#if BUILDFLAG(IS_POSIX)
++    base::stat_wrapper_t current{};
++    return file_.IsValid() && base::File::Fstat(file_.GetPlatformFile(), &current) == 0 &&
++        current.st_nlink == expected_links_ && current.st_size >= 0 &&
++        static_cast<uint64_t>(current.st_size) == size_ && SameVersion(current, identity_);
++#else
++    return false;
++#endif
+   }
+   const base::FilePath path_;
+   const uint64_t limit_;
+   base::File file_;
+-  base::File::Info identity_;
++#if BUILDFLAG(IS_POSIX)
++  base::stat_wrapper_t identity_{};
++  nlink_t expected_links_ = 1;
++#endif
+   uint64_t size_ = 0;
+   SEQUENCE_CHECKER(sequence_checker_);
+ };
+--- a/components/download/public/common/native_download_read_session.h
++++ b/components/download/public/common/native_download_read_session.h
+@@ -20,6 +20,8 @@
+ 
+ // Origin-sequence owner. Actual file access and destruction stay on its file
+ // sequence, and a separate close ACK holds the existing cleanup/lease gate.
++// Ready requires removal of the validated original single-link POSIX path;
++// hashing/chunks keep its same unlinked FD and never return reservation credit.
+ class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadReadSession {
+  public:
+   enum class Error { kNone, kUnavailable, kIo, kLimit, kClosed };

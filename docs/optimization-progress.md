@@ -23,6 +23,8 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 
 2026-10-20 Native下载清理补充：[原ticket退役收据](native-download-retirement-receipt.md)在arm时建立有界小对象，实际准入原子关联原lease，修复“尚未Offer即视为已清理”的缺口。文档门面销毁后仍等真实creator/FD/URL/item/map结束，原handler保留旧doc/ticket的清理权限，数据命令仍要求活动原文档。24项新增与原436项共460项及4个隔离子进程通过，五个实际浏览器调用方/GN依赖编译通过；实际RFH/导航/CDP会话和新浏览器仍待验收。Source预算/readiness继续关闭，41项状态不变。
 
+2026-10-20 Source Native桥接前置补充：[ready前移除spool](native-download-detached-spool.md)保留既有清理合同：验证原普通文件单链接及FD/路径身份，unlink后同FD计算摘要与分块，纳秒mtime/ctime防止沿用变化前摘要。路径消失不退额度，仍等实际FD关闭、原序列ACK及URL/item/map退休。470项（10新/原460）及4隔离报告通过，实际五调用方/GN编译和双平台13项通过；新浏览器与Source桥接仍待验收，预算/readiness关闭，41项状态不变。
+
 ## 实施顺序
 
 1. WebGL 来源识别、占位协议、Viewer 显示和真实原生链路验收。

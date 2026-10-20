@@ -1,0 +1,13 @@
+# Native ready前移除临时路径
+
+既有SDK合同要求ready前移除已知spool。Native读取改为确认已完成的普通文件、单硬链接、原FD和路径inode/version一致，先unlink并核对原FD的link数为0及路径消失，再用同一FD以固定8192字节缓冲计算SHA256，后续分块最多3072字节。Node不需要保留整份文件。
+
+读取在unlink之后进行，避免把unlink本身的ctime变化误作hash后数据变化的掩护；hash和每次read前后核对同一device/inode、长度、纳秒mtime/ctime及期望link数。unlink失败或身份/内容改变不发布ready或字节。本轮仅验证Linux ARM64原生组件；POSIX实现包含Apple字段分支但Mac实际Native未验收，非POSIX仍明确不可用。父目录的服务端私有归属沿用既有Source0700目录，不声称抵御恶意同权限宿主在系统调用间替换路径。
+
+移除路径不归还额度。实际FD/IOState、独立原序列关闭ACK、URL和item/map结算仍受原lease及ticket收据控制。源路径可已消失而数据仍由FD持有，不能把path不存在当退休证明。
+
+首次编译及Linux ARM64实际470项（10新、原460保留）全部RUN/COMPLETED，0失败/禁用/跳过，编译列表逐项一致；4个真实隔离子进程报告完整通过。新增10项真实文件边界覆盖ready后路径缺失、同FD内容/4MiB/空文件、硬链接拒绝、原路径替换隔离、相同长度写入并恢复mtime、unlink实际权限失败、晚到metadata、FD/map收据门槛和12轮复用。既有460项名称保留：身份夹具只在测试自身/proc/self/fd解析实际已删除FD；截断回归持有真实writer FD；原失败隔离子进程在原路径缺失后创建拒删目录。
+
+实际manager/navigation/owner/PageHandler/instrumentation五个浏览器调用方各一次ARM64编译和GN browser依赖检查通过，两个生成端的4份协议文件未变。双平台各13项构建/打包回归通过；完整1456项JS及专门SDK测试未重跑，JS/TS/Python源码与父检查点逐字节一致。34顺序补丁全重放与实际70路径、35Native副本一致；已应用34补丁未重写。
+
+Source Native桥接、预算及readiness继续关闭；完整新浏览器、真实原Page/RFH/CDP生命周期、network service物理退役、PW元数据物理上限及原失败8小时仍待验收。本项不提升K6或全41项状态。
