@@ -1,7 +1,7 @@
 import {randomUUID,randomBytes} from 'node:crypto';
 import {readPublicEditor,readPointerFeedback} from './feedback.mjs';
 export class InputError extends Error {constructor(code){super(code);this.code=code;}}
-const agentInputCodes=new Set(['AGENT_INPUT_FAILED','AGENT_INVALID_REQUEST','AGENT_METHOD_FORBIDDEN','INVALID_AGENT_FENCE','STALE_AGENT_FENCE','AGENT_PAUSED','STALE_AGENT_PAGE','SESSION_CLOSED','INPUT_QUEUE_FULL','INVALID_EVENT','INVALID_MODIFIERS','INVALID_COORDINATES','INVALID_WHEEL','INVALID_MOUSE','INVALID_KEY','INVALID_TEXT','INVALID_COMPOSITION','INVALID_COMPOSITION_RANGE']);
+const agentInputCodes=new Set(['AGENT_INPUT_FAILED','AGENT_INVALID_REQUEST','AGENT_METHOD_FORBIDDEN','AGENT_NOT_AUTHORIZED','AGENT_RUN_CLOSED','AGENT_RUN_BUSY','AGENT_TARGET_CHANGED','AGENT_INVALID_CONTEXT','AGENT_ACTION_FORBIDDEN','INVALID_AGENT_FENCE','STALE_AGENT_FENCE','AGENT_PAUSED','STALE_AGENT_PAGE','SESSION_CLOSED','INPUT_QUEUE_FULL','INVALID_EVENT','INVALID_MODIFIERS','INVALID_COORDINATES','INVALID_WHEEL','INVALID_MOUSE','INVALID_KEY','INVALID_TEXT','INVALID_COMPOSITION','INVALID_COMPOSITION_RANGE']);
 export class AgentInputError extends InputError {
  constructor(code,outcome='unknown'){super(agentInputCodes.has(code)?code:'AGENT_INPUT_FAILED');this.name='AgentInputError';this.outcome=outcome==='not-dispatched'?'not-dispatched':'unknown';}
 }
@@ -60,8 +60,13 @@ export function validateInput(event,viewport){
  reject('INVALID_EVENT');
 }
 export class ControlLease {
+ #targetPage;
  constructor(source,cdp,{ttl=30000}={}){
   this.source=source;this.cdp=cdp;this.ttl=ttl;this.sessionId=randomUUID();this.mode='agent';this.holder=null;this.lease=null;this.version=0;
+  // Public API identity for this controlled Page, distinct from the control
+  // session and Chromium's private Target ID. A run also binds the Page object.
+  Object.defineProperty(this,'targetId',{value:'target_'+randomUUID(),enumerable:true});
+  this.#targetPage=source.page;
   this.nextSeq=1;this.tail=Promise.resolve();this.queued=0;this.closed=false;this.peers=new Map();this.keys=new Map();this.buttons=new Map();this.pointer={x:0,y:0};this.feedbackNamespace=randomUUID();
   this.viewportRequests=new Map();this.viewportPending=null;
   this.onInvalidate=()=>{this.revoke('page-changed').catch(()=>{});};source.on('invalidate',this.onInvalidate);
@@ -214,6 +219,7 @@ export class ControlLease {
   if(this.closed||this.source.closed===true)reject('SESSION_CLOSED');
   if(this.source.transitioning||fence.controlSessionId!==this.sessionId||fence.controlVersion!==this.version||fence.pageEpoch!==this.source.pageEpoch||fence.viewportVersion!==this.source.viewportVersion)reject('STALE_AGENT_FENCE');
  }
+ agentTargetMatches(page){return page!==undefined&&page===this.#targetPage&&this.source.page===page;}
  agent(event,options){
   const fenced=options!==undefined;let dispatched=false;
   const failure=error=>fenced?new AgentInputError(!dispatched&&error instanceof InputError?error.code:'AGENT_INPUT_FAILED',dispatched?'unknown':'not-dispatched'):error;
@@ -222,6 +228,22 @@ export class ControlLease {
    const epoch=this.source.pageEpoch,viewport=this.source.viewportVersion,version=this.version;
    const work=this.enqueue(async()=>{if(this.source.transitioning||this.source.pageEpoch!==epoch||this.source.viewportVersion!==viewport)reject('STALE_AGENT_PAGE');if(this.mode!=='agent'||this.version!==version)reject('AGENT_PAUSED');if(suppliedFence)this.#checkAgentFence(suppliedFence);const release=this.source.acquirePageRun?.();try{await this.dispatch(event,()=>{dispatched=true;});this.source.requestCapture?.();}finally{release?.();}});
    return fenced?work.catch(error=>{throw failure(error);}):work;
+  }catch(error){throw failure(error);}
+ }
+ // Trusted Source-side composite entry. Capture normalized commands once and
+ // own one queue slot; the managed facade never exports this controller.
+ agentBatch(events,options,assertAllowed){
+  let dispatched=false;const failure=error=>new AgentInputError(!dispatched&&error instanceof InputError?error.code:'AGENT_INPUT_FAILED',dispatched?'unknown':'not-dispatched');
+  try{
+   if(typeof assertAllowed!=='function')reject('AGENT_NOT_AUTHORIZED');
+   const suppliedFence=agentRequestFence(options),version=this.version,epoch=this.source.pageEpoch,viewport=this.source.viewportVersion;
+   const guard=()=>{
+    const current=()=>{if(this.closed||this.source.closed===true)reject('SESSION_CLOSED');if(this.source.transitioning||this.source.pageEpoch!==epoch||this.source.viewportVersion!==viewport)reject('STALE_AGENT_PAGE');if(this.mode!=='agent'||this.version!==version)reject('AGENT_PAUSED');this.#checkAgentFence(suppliedFence);};
+    current();const allowed=assertAllowed();if(allowed!==true){if(allowed instanceof Promise)void allowed.catch(()=>{});reject('AGENT_NOT_AUTHORIZED');}current();
+   };
+   guard();if(!Array.isArray(events))reject('AGENT_INVALID_REQUEST');const length=Object.getOwnPropertyDescriptor(events,'length')?.value;if(!Number.isInteger(length)||length<1||length>32)reject('AGENT_INVALID_REQUEST');
+   const captured=[];for(let i=0;i<length;i++){const descriptor=Object.getOwnPropertyDescriptor(events,String(i));if(!descriptor||!Object.hasOwn(descriptor,'value'))reject('AGENT_INVALID_REQUEST');const {method,params}=validateInput(descriptor.value,this.source.viewport);let event;if(method==='Input.insertText')event={kind:'text',text:params.text};else if(method==='Input.dispatchKeyEvent'){const {commands,...key}=params;event={kind:'key',...key};}else if(method==='Input.imeSetComposition')event={kind:'composition',phase:'update',...params};else event={kind:params.type==='mouseWheel'?'wheel':'mouse',...params};captured.push(Object.freeze(event));}
+   return this.enqueue(async()=>{guard();const release=this.source.acquirePageRun?.();try{for(const event of captured){guard();await this.dispatch(event,()=>{dispatched=true;});this.source.requestCapture?.();}}finally{release?.();}}).catch(error=>{throw failure(error);});
   }catch(error){throw failure(error);}
  }
  async handle(peer,message){

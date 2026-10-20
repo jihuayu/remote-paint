@@ -1,0 +1,203 @@
+{
+  "at": "2026-10-19T14:20:16.787082+00:00",
+  "task": "K5-local-single-writer-bound-Agent-run-composite-tools",
+  "status": "local-bound-Agent-run-composite-tools-qualified",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/managed-agent-input-qualified-v1/frozen-version.json",
+  "parentSha256": "17f73c5d6cdede117aa5ff074cba7c8e537d4f10e5eb4e87f3f501ccfa73f90e",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/managed-agent-run-after-v2/frozen-version.json",
+  "executedManifestSha256": "04c6014ffb520a0c0c430dc5f627891e3bd98c019eefb676ff6cc2b919f15946",
+  "executedSourceFiles": 976,
+  "api": "createManagedAgentRun(ownedControlLease,{tenantId,sessionId,authorize}) -> frozen {context,perform,close}",
+  "tools": [
+    "move",
+    "click",
+    "drag",
+    "scroll",
+    "press",
+    "insertText",
+    "composition"
+  ],
+  "immutableBinding": [
+    "tenantId",
+    "sessionId",
+    "targetId",
+    "runId"
+  ],
+  "opaqueTargetIdIsChromiumCdpId": false,
+  "actualOwnedPageObjectChecked": true,
+  "oneActiveManagedRunUntilRealCloseFenceSettles": true,
+  "scopeIncludesTrustedLegacyCoreOrRemoteAgentWriters": false,
+  "mandatoryExplicitContextAndGenerationFence": true,
+  "compositeOneQueueEntryNoInterleaving": true,
+  "coreMaxEventsPerBatch": 32,
+  "dragMaxSteps": 16,
+  "coreMaxQueuedEntries": 64,
+  "authorizationSynchronousFailClosedAndEveryPrimitive": true,
+  "authorizerSeesFrozenExactToolParameters": true,
+  "authorizationCallbackIsRemoteAuthentication": false,
+  "nativeManagementSessionIdIsFixture": true,
+  "noRawPageCdpControlExposure": true,
+  "humanHandoffOrCloseStopsUnstartedPrimitives": true,
+  "partialActionOutcomeUnknown": true,
+  "automaticReplay": false,
+  "successReceiptIsBusinessSuccess": false,
+  "nativeObservations": {
+    "serialClicks": {
+      "buttonReports": [
+        {
+          "event": "left",
+          "value": 1
+        },
+        {
+          "event": "right",
+          "value": 1
+        }
+      ],
+      "commandXs": [
+        60,
+        60,
+        60,
+        220,
+        220,
+        220
+      ],
+      "oneQueueEntryPerComposite": true
+    },
+    "tools": {
+      "insertText": "A",
+      "selectAllReplacement": "B",
+      "composition": "B拼",
+      "drag": {
+        "x": 430,
+        "y": 130
+      },
+      "scroll": 80
+    },
+    "authorizationDenied": {
+      "ok": false,
+      "code": "AGENT_NOT_AUTHORIZED",
+      "outcome": "not-dispatched"
+    },
+    "handoff": {
+      "partial": {
+        "ok": false,
+        "code": "AGENT_INPUT_FAILED",
+        "outcome": "unknown"
+      },
+      "queued": {
+        "ok": false,
+        "code": "AGENT_PAUSED",
+        "outcome": "not-dispatched"
+      },
+      "stale": {
+        "ok": false,
+        "code": "STALE_AGENT_FENCE",
+        "outcome": "not-dispatched"
+      },
+      "buttonDidNotActivateOnCleanup": true,
+      "humanAndFreshValue": "B拼HF"
+    },
+    "close": {
+      "partial": {
+        "ok": false,
+        "code": "AGENT_INPUT_FAILED",
+        "outcome": "unknown"
+      },
+      "keyUpObserved": true,
+      "oneKeyDown": true,
+      "newRunDistinct": true,
+      "sameOwnedTarget": true,
+      "finalText": "B拼HFXZ",
+      "activityDemand": 0
+    },
+    "outerControllerClose": {
+      "runClosedBeforeActualInputSettled": false,
+      "actualCdpAckHeld": true,
+      "actualEffectValue": "B拼HFXZY",
+      "partial": {
+        "ok": false,
+        "code": "AGENT_INPUT_FAILED",
+        "outcome": "unknown"
+      },
+      "keyUpObserved": true,
+      "completedAfterActualCdpSettlement": true
+    }
+  },
+  "causalCloseBoundary": {
+    "beforeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/managed-agent-run-before-v2/frozen-version.json",
+    "beforeManifestSha256": "a9ed42bf4b337f1db3eddea5fd8af1fc3095e6870c015ffffa5b9403da3f62dd",
+    "onlyBeforeAfterSourceDelta": "live/managed-agent-run.mjs",
+    "unitBeforeActual1TwentyPassOneFailAfterActual0TwentyOnePass": true,
+    "nativeBeforeActual1AfterActual0": true,
+    "beforeRunClosedWhileRealInputStillHeld": true,
+    "afterWaitsActualInputAndKeyUp": true
+  },
+  "unitContracts": 21,
+  "unitActualExitCode": 0,
+  "fullJs": {
+    "mac": {
+      "tests": 996,
+      "pass": 981,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "cc08d275c2949712b2255bf0af06a3a5796956042fbb58c748521cd7bcc7a733"
+    },
+    "linux": {
+      "tests": 996,
+      "pass": 990,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "020bd2651119357acbf23ca8643881d5f534638abcc7d30ddebf870c4e62f19f",
+      "containerId": "f8f8251492e152fbe611ec9f4619f731d808dedc10d49e350b7bac02f31fd39b"
+    }
+  },
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v22/manifest.json",
+  "fullJsManifestSha256": "ff03507d16791e37378812067473bfb336b38d414613442d823c130bf7167762",
+  "fullJsExactExecutedCandidate": true,
+  "sdkInheritedExactUnchangedInputs": {
+    "mac": {
+      "mappedUnchangedInputs": 27,
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true
+    },
+    "linux": {
+      "mappedUnchangedInputs": 27,
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true
+    }
+  },
+  "sdkMacMypyInheritedActual0": true,
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "a93654f41a1ac70756220d24eb5e6d4ff5a447fa0a3050714ecafdb92ed1354c",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "d21a3f6d707ba6f778ad2c4c1a0372e01f710d3a6d7ab123790487b26513a669"
+  },
+  "freshSdkPackageOrPublicViewerPixelRerunClaimed": false,
+  "managedCdpInputSubsetQualified": true,
+  "managedCompositeInputToolsQualified": true,
+  "localBoundAgentRunQualified": true,
+  "managedPlaywrightCdpFacadeQualified": false,
+  "explicitUpstreamAgentRequestFenceQualified": false,
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "physicalLatencyOrN1Claim": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 16,
+    "pending": 16
+  },
+  "k5StatusTransition": {
+    "before": "pending table row; local Core/input-subset appendices already existed",
+    "after": "partial implementation; authenticated Native worker/service/SDK and other mutating tools still incomplete"
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

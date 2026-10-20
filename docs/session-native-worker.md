@@ -155,3 +155,8 @@ ControlLease.agentFence()提供控制器/控制version/文档/viewport的冻结J
 ## 本地受限 Agent CDP 输入适配器
 
 Source 内部可通过 createManagedAgentInput(source.control) 取得仅 fence/send 的冻结工具，四个有界 Input 方法强制请求版本戳及参数捕获，错误标记 not-dispatched/unknown，无自动重试。真实 Native 输入效果及交接验证见[范围](managed-agent-input.md)。尚未接入 worker/服务/SDK 的 Agent 授权链，不授予远端原始 CDP 或 Playwright Page。
+
+
+## 本地单写者 Agent run 与组合工具
+
+createManagedAgentRun(source.control,{tenantId,sessionId,authorize}) 绑定实际 Page 对象、独立 target/run ID，仅提供 context/perform/close。七个有界输入工具一项动作一项控制队列，每步前校验租约与同步可信授权，部分执行后停止为 unknown、不重放；关闭等待实际队列和释放输入，即使外层控制器先开始关闭也不会提前报完成。21 合同、Native 因果前1后0及最终双平台完整996项通过，见[范围](managed-agent-run.md)。这是本地可信集成入口，Native fixture 管理 Session 是夹具 ID；worker/channel/管理HTTP/公共SDK 的真实 Agent 授权传输仍未实现，不可将此视为完整 K5/K10。
