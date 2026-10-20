@@ -1,5 +1,6 @@
 // Build an actual old-format database for migration contracts,not production.
 export function legacyV2(db,{withoutIdentity=false}={}){
+ db.exec("DROP TABLE IF EXISTS agent_invocations;DROP TABLE IF EXISTS agent_runs;DELETE FROM metadata WHERE name='agent_revision'");
  for(const row of db.prepare('SELECT session_id,body FROM runtimes').all()){
   const value=JSON.parse(row.body);delete value.startDispatch;
   db.prepare('UPDATE runtimes SET body=? WHERE session_id=?').run(JSON.stringify(value),row.session_id);

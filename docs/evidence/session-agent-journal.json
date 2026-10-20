@@ -1,0 +1,210 @@
+{
+  "at": "2026-10-19T15:51:01.618850+00:00",
+  "task": "K5-durable-Agent-journal-storage",
+  "status": "durable-Agent-journal-storage-qualified",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/private-agent-rpc-qualified-v1/frozen-version.json",
+  "parentSha256": "6669b1c21fe3b21e40e8a2dafb24d7d97af0caed1e3eabd8485be20c7b631ded",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-journal-candidate-v1/frozen-version.json",
+  "executedManifestSha256": "2fc6b2b8992843cf61e822220496e01ef84d4870d718c4d26084d58a779c1e2d",
+  "executedSourceFiles": 994,
+  "schemaVersion": 4,
+  "migrationVersions": [
+    1,
+    2,
+    3
+  ],
+  "samePrivateSessionSqliteLedger": true,
+  "independentAgentRevision": true,
+  "opaqueControllerOwner": true,
+  "oneReservedAgentWriterPerSession": true,
+  "separateLogicalAgentRunAndInvocationIds": true,
+  "onlyHashedKeysFingerprintsAndReceiptIdentities": true,
+  "noRawActionParamsOrCredentialsInAgentRecords": true,
+  "defaultMaxAgentRuns": 10000,
+  "defaultMaxAgentInvocations": 160000,
+  "maxRecordBytes": 8192,
+  "defaultMaxDatabaseBytes": 268435456,
+  "retentionAtCapacity": "reject; no silent eviction or replay",
+  "oneUseBeginEndInvocationDispatchMarkers": true,
+  "invocationOutcomes": [
+    "intent",
+    "requested",
+    "injected",
+    "rejected",
+    "unknown"
+  ],
+  "injectionIsBusinessSuccess": false,
+  "unknownInvocationIsImmutableAndNeverReplayable": true,
+  "newOwnerRecovery": "only close runs, reject provably unstarted invocation or mark sent invocation unknown; no reactivation or new dispatch",
+  "closureEvidence": [
+    "derived never-dispatched intent digest",
+    "current-owner validated negative begin receipt hash",
+    "validated prior end-dispatch receipt hash",
+    "exact immutable closed/expired Session digest"
+  ],
+  "nativeQuotaRetirementGatePreserved": true,
+  "newContracts": 29,
+  "newContractsPassBothInFullRun": true,
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v27/manifest.json",
+  "fullJsManifestSha256": "3e04ea47a349f26088b8e76dd5d26e8292f7c59d305cbaf1c89d60dde64bdc8d",
+  "freshFullJs": {
+    "mac": {
+      "tests": 1065,
+      "pass": 1050,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "28f8f3e146570989e3346a2db98835322e5fd40f2d921f7fff635b30f9979917"
+    },
+    "linux": {
+      "tests": 1065,
+      "pass": 1059,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "ef34df649fa28689fcbbde0d35a49b7c7af223e098793fb05360a8ee64a8a609"
+    }
+  },
+  "freshInstalledSdk": {
+    "mac": {
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "currentMappedInputs": 28,
+      "freshInstalledOriginalArchives": true
+    },
+    "linux": {
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "currentMappedInputs": 28,
+      "freshInstalledOriginalArchives": true
+    }
+  },
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "a93654f41a1ac70756220d24eb5e6d4ff5a447fa0a3050714ecafdb92ed1354c",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "d21a3f6d707ba6f778ad2c4c1a0372e01f710d3a6d7ab123790487b26513a669"
+  },
+  "freshSdkBuildOrPublishingClaimed": false,
+  "actualLegacyModuleMigration": {
+    "status": "passed",
+    "actualOldV3ModuleCreatedLegacyFile": true,
+    "currentV4MigratedExactOldRecords": true,
+    "instanceAndInodePreserved": true,
+    "typedStartWitnessAndBothRevisionsPreserved": true,
+    "oldV3CodeRejectsV4WithoutMutation": true,
+    "beforeSha256": "efec77577d3202f9251d34fa11233ac5c3fd4641058b289e508518905093fea7",
+    "afterSha256": "5be7de2ae8c870af9186bfe52c2ef4d9c61d64a5ac41f32d75860dc4dfdefaf0",
+    "agentJournalStorageOnly": true,
+    "durableExecutorIntegrated": false,
+    "eightHourPassed": false
+  },
+  "nativeRegressionManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-journal-native-v1/manifest.json",
+  "nativeRegressionManifestSha256": "206290dc5ce80f5bae42178a8e8d09010cc1310cc10b6b0abdc1248e50778d24",
+  "nativeRegressionActualExitCode": 0,
+  "nativeRegressionObservations": {
+    "tools": {
+      "normalButtonClicks": 1,
+      "compositionValue": "B拼",
+      "drag": {
+        "x": 430,
+        "y": 130
+      },
+      "scroll": 80,
+      "concurrentCallDenied": {
+        "ok": false,
+        "code": "AGENT_RPC_BUSY",
+        "outcome": "not-dispatched"
+      },
+      "moreThanEightRpcResults": true
+    },
+    "timeout": {
+      "timeout": {
+        "ok": false,
+        "code": "AGENT_RPC_TIMEOUT",
+        "outcome": "unknown"
+      },
+      "occupied": {
+        "ok": false,
+        "code": "AGENT_RPC_BUSY",
+        "outcome": "not-dispatched"
+      },
+      "endedStage": "run-closed",
+      "oneActualSlowPress": true,
+      "ordinaryButtonNotActivated": true,
+      "noReplay": true,
+      "newRunDistinct": true,
+      "fixtureMainThreadBusyLoopMs": 400,
+      "physicalLatencyClaim": false
+    },
+    "human": {
+      "actualPublicControllerWelcome": true,
+      "paused": {
+        "ok": false,
+        "code": "AGENT_PAUSED",
+        "outcome": "not-dispatched"
+      },
+      "sameGrantKeyup": {
+        "seq": 2,
+        "accepted": true,
+        "stage": "input-injected"
+      },
+      "agentEndPreservedHumanAuthority": true,
+      "beginWhileHuman": {
+        "ok": false,
+        "code": "AGENT_PAUSED",
+        "outcome": "not-dispatched"
+      },
+      "staleRun": {
+        "ok": false,
+        "code": "AGENT_RUN_NOT_FOUND",
+        "outcome": "not-dispatched"
+      },
+      "finalPageValue": "B拼XHFZ"
+    },
+    "retired": {
+      "managementSessionClosed": true,
+      "holdsQuota": false,
+      "oldAgentRouteDenied": {
+        "ok": false,
+        "code": "AGENT_UNAVAILABLE",
+        "outcome": "not-dispatched"
+      }
+    }
+  },
+  "nativeRegressionScope": "canonical worker/private RPC/current installed Session SDK with ledger v4; Agent RPC operations are not yet coupled to Agent journal records",
+  "nativeContainerRetired": true,
+  "developmentInitialFailures": {
+    "actualExitCode": 1,
+    "failures": 2,
+    "reason": "corruption fixture retained FK enforcement; replay assertion kept injected receipt when constructing requested phase",
+    "correctedScopedActualExitCode": 0,
+    "correctedScopedTests": 64,
+    "laterFinalFullNewContracts": 29
+  },
+  "durableAgentJournalQualified": true,
+  "durableExecutorIntegrated": false,
+  "durableRunInvocationRecoveryQualified": false,
+  "publicTenantAgentAuthorizationQualified": false,
+  "publicAgentSdkQualified": false,
+  "allAgentCdpFenced": false,
+  "managedPlaywrightCdpFacadeQualified": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "newRenderedPublicViewerPixelsClaimed": false,
+  "physicalLatencyOrN1Claimed": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 16,
+    "pending": 16
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true,
+  "noAgents": true
+}

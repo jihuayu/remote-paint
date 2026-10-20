@@ -86,7 +86,7 @@ def main() -> None:
         consumer=out/'consumer';consumer.mkdir()
         (consumer/'package.json').write_text(json.dumps({'name':'sdk-installed-consumer','version':'0.0.0','private':True,'type':'module'})+'\n')
         files=['service/session-registry.mjs','service/session-store.mjs','service/session-http.mjs',
-               'service/session-runtime-journal.mjs','service/runtime-witness-binding.mjs','service/viewer-access.mjs',
+               'service/session-runtime-journal.mjs','service/session-agent-journal.mjs','service/runtime-witness-binding.mjs','service/viewer-access.mjs',
                'protocol/live-wire.mjs','protocol/wire.mjs','protocol/client-memory.mjs','protocol/resource-memory.mjs',
                'tests/types/viewer-connection.mts','tests/types/viewer-frame.mts','tests/types/viewer.mts',
                'tests/session-client.test.mjs','tests/session-http.test.mjs','tests/session-registry.test.mjs',

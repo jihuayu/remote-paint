@@ -31,15 +31,15 @@ test('Start history cannot begin at allocation dispatch, after closure, or after
 test('old v2 rows migrate atomically to unknown Start history without changing identity or either revision',enabled,async t=>{
  const f=await fixture(t),identity=f.store.identity(),before=f.store.loadRuntime({owner:f.owner});f.detach();edit(f.path,db=>legacyV2(db));
  const recovered=new SqliteSessionStore({path:f.path}),owner=Symbol('recovered');try{assert.deepEqual(recovered.identity(),identity);assert.equal(recovered.load().revision,1);recovered.claimRuntimeProvider(owner,provider);const state=recovered.loadRuntime({owner});assert.equal(state.revision,before.revision);assert.deepEqual(state.allocations,before.allocations.map(row=>({...row,startDispatch:'legacy-unknown'})));assert.throws(()=>recovered.commitRuntime({...closing(created(f.row)),startDispatch:'not-requested'},{owner}),{code:'STATE_RUNTIME_CONFLICT'});}finally{recovered.releaseRuntimeProvider(owner);recovered.close();}
- edit(f.path,db=>{assert.equal(db.prepare('PRAGMA user_version').get().user_version,3);assert.equal(db.prepare("SELECT value FROM metadata WHERE name='format'").get().value,'remote-paint-session-ledger-v3');});
+ edit(f.path,db=>{assert.equal(db.prepare('PRAGMA user_version').get().user_version,4);assert.equal(db.prepare("SELECT value FROM metadata WHERE name='format'").get().value,'remote-paint-session-ledger-v4');});
 });
 test('invalid old runtime or index is rejected before any format, row or instance backfill changes',enabled,async t=>{
  for(const mode of ['body','index']){const f=await fixture(t);f.detach();edit(f.path,db=>{legacyV2(db,{withoutIdentity:true});if(mode==='body')db.prepare('UPDATE runtimes SET body=?').run('{broken');else db.prepare('UPDATE runtimes SET container_id=?').run('e'.repeat(64));});
   const before=edit(f.path,db=>db.prepare('SELECT * FROM runtimes').all());assert.throws(()=>new SqliteSessionStore({path:f.path}),{code:'STATE_CORRUPT'});edit(f.path,db=>{assert.equal(db.prepare('PRAGMA user_version').get().user_version,2);assert.deepEqual(db.prepare('SELECT * FROM runtimes').all(),before);assert.equal(db.prepare("SELECT value FROM metadata WHERE name='instance_id'").get(),undefined);});
  }
 });
-test('current v3 ledger with missing identity fails instead of being relabeled as an older database',enabled,async t=>{
- const f=await fixture(t);f.detach();edit(f.path,db=>db.exec("DELETE FROM metadata WHERE name='instance_id'"));assert.throws(()=>new SqliteSessionStore({path:f.path}),{code:'STATE_IDENTITY'});edit(f.path,db=>assert.equal(db.prepare('PRAGMA user_version').get().user_version,3));
+test('current v4 ledger with missing identity fails instead of being relabeled as an older database',enabled,async t=>{
+ const f=await fixture(t);f.detach();edit(f.path,db=>db.exec("DELETE FROM metadata WHERE name='instance_id'"));assert.throws(()=>new SqliteSessionStore({path:f.path}),{code:'STATE_IDENTITY'});edit(f.path,db=>assert.equal(db.prepare('PRAGMA user_version').get().user_version,4));
 });
 test('actual SIGKILL after first migrated row and before commit rolls back all format/history changes',enabled,async t=>{
  const f=await fixture(t),identity=f.store.identity();f.detach();edit(f.path,db=>legacyV2(db));const before=edit(f.path,db=>db.prepare('SELECT * FROM runtimes').all()),marker=join(f.directory,'migration.marker');let result;

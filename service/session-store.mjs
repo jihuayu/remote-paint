@@ -3,6 +3,7 @@ import {randomUUID} from 'node:crypto';
 import {openSync,closeSync,lstatSync} from 'node:fs';
 import {isAbsolute} from 'node:path';
 import {createSessionRuntimeJournal,runtimeSchemaSql} from './session-runtime-journal.mjs';
+import {createSessionAgentJournal,agentSchemaSql} from './session-agent-journal.mjs';
 
 let DatabaseSync;
 try{({DatabaseSync}=createRequire(import.meta.url)('node:sqlite'));}catch{}
@@ -58,17 +59,17 @@ function bindingLinks(row,operation,session){
  if(!operation||!session||operation.tenant!==row.tenant||operation.operation.kind!=='create-session'||session.tenant!==row.tenant||row.defaults.region!==session.region||row.defaults.ttlSeconds!==session.ttlSeconds)fail('STATE_REFERENCE','Idempotency binding disagrees with its Session');
 }
 const encode=row=>{const body=JSON.stringify(row);if(Buffer.byteLength(body)>8192)fail('STATE_RECORD_LIMIT','Record metadata limit exceeded');return body;};
-const legacyFormat='remote-paint-session-ledger-v1',previousFormat='remote-paint-session-ledger-v2',format='remote-paint-session-ledger-v3';
+const legacyFormat='remote-paint-session-ledger-v1',previousFormat='remote-paint-session-ledger-v2',stableFormat='remote-paint-session-ledger-v3',format='remote-paint-session-ledger-v4';
 
 // Single-owner ledger for control-plane transitions, not rendering data.
 // EXCLUSIVE locking persists between committed DELETE-journal transactions:
 // https://www.sqlite.org/pragma.html#pragma_locking_mode
 // https://nodejs.org/download/release/latest-v22.x/docs/api/sqlite.html
 export class SqliteSessionStore {
- #db;#maxSessions;#maxOperations;#maxBindings;#revision=0;#registryOwner=null;#runtime=null;#path;#fileIdentity;#instanceId=null;#identityFault=false;
- constructor({path,maxSessions=10000,maxOperations=maxSessions*18,maxBindings=maxSessions,maxDatabaseBytes=256*1024*1024}={}){
+ #db;#maxSessions;#maxOperations;#maxBindings;#revision=0;#registryOwner=null;#runtime=null;#agents=null;#path;#fileIdentity;#instanceId=null;#identityFault=false;
+ constructor({path,maxSessions=10000,maxOperations=maxSessions*18,maxBindings=maxSessions,maxAgentRuns=maxSessions,maxAgentInvocations=maxAgentRuns*16,maxDatabaseBytes=256*1024*1024}={}){
   if(!sessionStoreSupported)fail('STATE_RUNTIME_UNSUPPORTED','Session persistence requires Node.js22.13 or newer with node:sqlite on Linux/macOS');
-  if(typeof path!=='string'||!isAbsolute(path)||!integer(maxSessions,1,100000)||!integer(maxOperations,1,1800000)||!integer(maxBindings,1,100000)||!integer(maxDatabaseBytes,1024*1024,1024*1024*1024))throw new TypeError('Invalid Session store configuration');
+  if(typeof path!=='string'||!isAbsolute(path)||!integer(maxSessions,1,100000)||!integer(maxOperations,1,1800000)||!integer(maxBindings,1,100000)||!integer(maxAgentRuns,1,100000)||!integer(maxAgentInvocations,1,1600000)||!integer(maxDatabaseBytes,1024*1024,1024*1024*1024))throw new TypeError('Invalid Session store configuration');
   this.#maxSessions=maxSessions;this.#maxOperations=maxOperations;this.#maxBindings=maxBindings;this.#path=path;
   try{
    let created=false;
@@ -79,13 +80,14 @@ export class SqliteSessionStore {
    const file=lstatSync(path,{bigint:true});this.#fileIdentity=Object.freeze({device:String(file.dev),inode:String(file.ino)});this.#checkFileIdentity();
    const db=this.#db=new DatabaseSync(path);
    db.exec('PRAGMA busy_timeout=0; PRAGMA trusted_schema=OFF; PRAGMA foreign_keys=ON; PRAGMA locking_mode=EXCLUSIVE; BEGIN EXCLUSIVE');
-   const names=db.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name LIMIT 8").all().map(x=>x.name);
+   const names=db.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name LIMIT 10").all().map(x=>x.name);
    const empty=names.length===0;
    const version=db.prepare('PRAGMA user_version').get().user_version;
    if(empty&&!created)fail('STATE_SCHEMA','Existing ledger has no valid Session schema');
    if(db.prepare("SELECT 1 FROM sqlite_schema WHERE type IN ('trigger','view') LIMIT 1").get())fail('STATE_SCHEMA','Unexpected Session ledger schema objects');
    const legacy=!empty&&version===1&&JSON.stringify(names)===JSON.stringify(['bindings','metadata','operations','sessions']);
-   if(!empty&&(legacy?db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==legacyFormat:![2,3].includes(version)||JSON.stringify(names)!==JSON.stringify(['bindings','metadata','operations','runtime_providers','runtimes','sessions'])||db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==(version===2?previousFormat:format)))fail('STATE_SCHEMA','Unsupported Session ledger schema');
+   const expectedTables=version===4?['agent_invocations','agent_runs','bindings','metadata','operations','runtime_providers','runtimes','sessions']:['bindings','metadata','operations','runtime_providers','runtimes','sessions'];
+   if(!empty&&(legacy?db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==legacyFormat:![2,3,4].includes(version)||JSON.stringify(names)!==JSON.stringify(expectedTables)||db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==({2:previousFormat,3:stableFormat,4:format})[version]))fail('STATE_SCHEMA','Unsupported Session ledger schema');
    const priorInstance=!empty&&!legacy?db.prepare("SELECT value FROM metadata WHERE name='instance_id'").get():null;
    if(priorInstance&&!instance(priorInstance.value))fail('STATE_IDENTITY','Invalid stored Session ledger instance');
    db.exec('COMMIT; PRAGMA journal_mode=DELETE; PRAGMA synchronous=FULL;');
@@ -99,7 +101,8 @@ export class SqliteSessionStore {
      CREATE TABLE operations(operation_id TEXT PRIMARY KEY,session_id TEXT NOT NULL,tenant TEXT NOT NULL,body TEXT NOT NULL CHECK(length(CAST(body AS BLOB))<=8192),UNIQUE(operation_id,tenant),FOREIGN KEY(session_id,tenant) REFERENCES sessions(session_id,tenant)) STRICT;
      CREATE TABLE bindings(tenant TEXT NOT NULL,key_hash TEXT NOT NULL,operation_id TEXT NOT NULL,body TEXT NOT NULL CHECK(length(CAST(body AS BLOB))<=8192),PRIMARY KEY(tenant,key_hash),FOREIGN KEY(operation_id,tenant) REFERENCES operations(operation_id,tenant)) STRICT;
      ${runtimeSchemaSql}
-     INSERT INTO metadata VALUES('format','${format}'),('revision','0'),('runtime_revision','0'),('instance_id','${randomUUID()}');PRAGMA user_version=3;COMMIT;`);
+     ${agentSchemaSql}
+     INSERT INTO metadata VALUES('format','${format}'),('revision','0'),('runtime_revision','0'),('agent_revision','0'),('instance_id','${randomUUID()}');PRAGMA user_version=4;COMMIT;`);
    }
    const rawRevision=db.prepare("SELECT value FROM metadata WHERE name='revision'").get()?.value,revision=Number(rawRevision);
    if(typeof rawRevision!=='string'||!/^(0|[1-9][0-9]*)$/.test(rawRevision)||!Number.isSafeInteger(revision)||revision<0)fail('STATE_CORRUPT','Invalid Session ledger revision');
@@ -108,7 +111,7 @@ export class SqliteSessionStore {
     // Validate every old record and reference before changing its format. A
     // bad existing ledger is never replaced with an empty ownership journal.
     this.load();
-    db.exec(`BEGIN IMMEDIATE;${runtimeSchemaSql}INSERT INTO metadata VALUES('runtime_revision','0'),('instance_id','${randomUUID()}');UPDATE metadata SET value='${format}' WHERE name='format';PRAGMA user_version=3;COMMIT;`);
+    db.exec(`BEGIN IMMEDIATE;${runtimeSchemaSql}${agentSchemaSql}INSERT INTO metadata VALUES('runtime_revision','0'),('agent_revision','0'),('instance_id','${randomUUID()}');UPDATE metadata SET value='${format}' WHERE name='format';PRAGMA user_version=4;COMMIT;`);
    }
    const runtimeOptions={fail,isStoreError:error=>error instanceof SessionStoreError,validateSession:sessionRecord,maxSessions};
    this.#runtime=createSessionRuntimeJournal(db,{...runtimeOptions,legacyRows:!empty&&!legacy&&version===2});
@@ -121,9 +124,17 @@ export class SqliteSessionStore {
      db.prepare('UPDATE runtimes SET body=? WHERE session_id=?').run(encode(value),row.session_id);
     }
     if(!priorInstance)db.prepare('INSERT INTO metadata VALUES(?,?)').run('instance_id',randomUUID());
-    db.prepare("UPDATE metadata SET value=? WHERE name='format'").run(format);db.exec('PRAGMA user_version=3;COMMIT');
+    db.exec(agentSchemaSql);db.prepare('INSERT INTO metadata VALUES(?,?)').run('agent_revision','0');
+    db.prepare("UPDATE metadata SET value=? WHERE name='format'").run(format);db.exec('PRAGMA user_version=4;COMMIT');
     this.#runtime=createSessionRuntimeJournal(db,runtimeOptions);
    }else if(!empty&&!legacy&&!priorInstance)fail('STATE_IDENTITY','Session ledger instance is unavailable');
+   if(!empty&&version===3){
+    // Preserve the v3 instance, revisions and typed Start witnesses. Validate
+    // the original journal before the atomic addition of the Agent tables.
+    this.load();db.exec('BEGIN IMMEDIATE');db.exec(agentSchemaSql);
+    db.prepare('INSERT INTO metadata VALUES(?,?)').run('agent_revision','0');db.prepare("UPDATE metadata SET value=? WHERE name='format'").run(format);db.exec('PRAGMA user_version=4;COMMIT');
+   }
+   this.#agents=createSessionAgentJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,validateSession:sessionRecord,maxAgentRuns,maxAgentInvocations});
    this.#instanceId=db.prepare("SELECT value FROM metadata WHERE name='instance_id'").get()?.value;
    if(!instance(this.#instanceId))fail('STATE_IDENTITY','Session ledger instance is unavailable');this.#checkFileIdentity();
   }catch(error){
@@ -148,6 +159,11 @@ export class SqliteSessionStore {
  loadRuntime({owner}={}){this.#open();return this.#runtime.snapshot(owner);}
  commitRuntime(row,{owner}={}){this.#open();return this.#runtime.commit(row,owner);}
  bindRuntimeClosingWitness(sessionId,startWitness,{owner}={}){this.#open();return this.#runtime.bindClosingWitness(sessionId,startWitness,owner);}
+ claimAgentController(owner){this.load({owner:this.#registryOwner??undefined});return this.#agents.claim(owner);}
+ releaseAgentController(owner){if(!this.#db)fail('STATE_CLOSED','Session ledger is closed');this.#agents.release(owner);}
+ loadAgents({owner}={}){this.#open();return this.#agents.snapshot(owner);}
+ commitAgentRun(row,{owner}={}){this.#open();return this.#agents.commitRun(row,owner);}
+ commitAgentInvocation(row,{owner}={}){this.#open();return this.#agents.commitInvocation(row,owner);}
  claimRegistry(owner){
   this.#open();if(typeof owner!=='symbol')throw new TypeError('Expected an opaque registry owner');
   if(this.#registryOwner!==null&&this.#registryOwner!==owner)fail('STATE_IN_USE','Session ledger already has a Registry owner');
@@ -181,7 +197,7 @@ export class SqliteSessionStore {
    const bound=new Map();for(const binding of bindings){const list=bound.get(binding.operationId)??[];list.push(binding);bound.set(binding.operationId,list);}
    for(const row of sessions){sessionLinks(row,id=>byOperation.get(id));if(bound.get(row.operationId)?.length!==1)fail('STATE_REFERENCE','Each Session requires its original unique creation binding');}
    for(const row of bindings){const operation=byOperation.get(row.operationId);bindingLinks(row,operation,bySession.get(operation?.operation.sessionId));}
-   this.#runtime?.validate();
+   this.#runtime?.validate();this.#agents?.validate();
   }catch(error){fail('STATE_CORRUPT','Session ledger references are inconsistent',error);}
   return {revision:this.#revision,sessions,operations,bindings};
  }
@@ -225,5 +241,5 @@ export class SqliteSessionStore {
    fail('STATE_WRITE','Session ledger transaction failed',error);
   }
  }
- close(){if(!this.#db)return;if(this.#registryOwner!==null||this.#runtime?.claimed)fail('STATE_IN_USE','Registry and runtime providers must release their ledger ownership before closing');this.#db.close();this.#db=null;}
+ close(){if(!this.#db)return;if(this.#registryOwner!==null||this.#runtime?.claimed||this.#agents?.claimed)fail('STATE_IN_USE','Registry, runtime and Agent owners must release their ledger ownership before closing');this.#db.close();this.#db=null;}
 }

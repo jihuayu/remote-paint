@@ -21,3 +21,6 @@ NativeResource 在活动 run 全生命周期持有独立 acquirePageRun 租约�
 边界：私有 owner credential 不是公网 Agent 用户授权。独立 HTTP Agent scope、公共 Node/Python Agent SDK、持久 Run/Invocation/任务恢复、完整 Playwright/Steel及其他修改工具、结构化观察与业务验证、完整取消/事件、异常故障矩阵仍需后续检查点。allAgentCdpFenced=false，productionNativeFullyQualified=false。SDK原有27输入/包未变，继承双平台78 Node/17 Python、严格TSC及Mac Mypy；未重新打包或发布。未做新的公共Viewer渲染像素、物理/设备、N1或8小时验收。41项仍9完成、16部分、16待做，原8小时增长失败保持。WebGL“WebGL 无法显示”黑框与其他显示源码不变。未暂存、提交、推送、修改演示、强制浏览器GC或重跑8小时。
 
 最终仅补充范围文档形成990文件检查点，见[证据](evidence/private-agent-rpc.json)。
+
+
+v4同账本已增加Agent Run/Invocation持久元数据及owner恢复隔离，见[日志范围](session-agent-journal.md)。异步执行器尚未把真实RPC接入该日志，公共授权与SDK继续待做；本节原始1036项是当时检查点记录，最新完整回归为1065项。
