@@ -45,7 +45,21 @@ def main() -> None:
         receipt={'stage':name,'command':command,'actualExitCode':code,'timedOut':timed_out,
                  'seconds':time.monotonic()-start,'logSha256':sha(out/(name+'.log'))}
         stages.append(receipt);save(name+'-exit.json',receipt)
-        if code!=0 or timed_out:raise RuntimeError('Stage failed: '+name)
+        if code!=0 or timed_out:
+            logs=[out/(name+'.log')]
+            installed_failure=out/'installed/failed.json'
+            if installed_failure.is_file():
+                failed_stages=json.loads(installed_failure.read_text()).get('stages',[])
+                if failed_stages:
+                    logs.append(out/'installed'/(failed_stages[-1]['stage']+'.log'))
+            for path in logs:
+                if not path.is_file():
+                    continue
+                lines=path.read_text(errors='replace').splitlines()
+                positions=[i for i,line in enumerate(lines)if line.startswith(('not ok ','FAIL: ','ERROR: '))]
+                detail='\n'.join('\n'.join(lines[i:i+48])for i in positions[:8])
+                print('FAILED STAGE LOG '+str(path)+'\n'+detail[:12000]+'\n'+'\n'.join(lines[-24:]),flush=True)
+            raise RuntimeError('Stage failed: '+name)
         return(out/(name+'.log')).read_text()
     try:
         commit=os.environ.get('GITHUB_SHA')

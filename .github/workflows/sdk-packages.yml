@@ -50,16 +50,27 @@ jobs:
             --tooling "$RUNNER_TEMP/sdk-tooling" \
             --wheelhouse "$RUNNER_TEMP/sdk-wheelhouse" \
             --typescript "$RUNNER_TEMP/sdk-typescript/node_modules/typescript/bin/tsc"
+      - name: Stage verification receipts from the actual container temp directory
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import os,shutil
+          from pathlib import Path
+          source=Path(os.environ['RUNNER_TEMP'])/'sdk-validation'
+          output=Path(os.environ['GITHUB_WORKSPACE'])/'artifacts/sdk-validation'
+          for pattern in ['*.json','*.log','archives/*','installed/*.json','installed/*.log']:
+              for path in source.glob(pattern):
+                  if not path.is_file() or path.is_symlink():
+                      continue
+                  target=output/path.relative_to(source)
+                  target.parent.mkdir(parents=True,exist_ok=True)
+                  shutil.copy2(path,target)
+          PY
       - name: Preserve actual receipts, archives and failure logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: sdk-contracts-linux-arm64-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/sdk-validation/*.json
-            ${{ runner.temp }}/sdk-validation/*.log
-            ${{ runner.temp }}/sdk-validation/archives/*
-            ${{ runner.temp }}/sdk-validation/installed/*.json
-            ${{ runner.temp }}/sdk-validation/installed/*.log
+          path: artifacts/sdk-validation
           if-no-files-found: warn
           retention-days: 14
