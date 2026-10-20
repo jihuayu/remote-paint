@@ -1,0 +1,22 @@
+{
+  "task": "C5-compact-earlier-arena-rotation",
+  "scope": "Earlier compact recycle trigger;hard budgets and retired accounting unchanged",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/compact-arena-rotation-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/compact-arena-rotation-checkpoint-v1.json",
+  "compactTriggerBytes": 150994944,
+  "compactWasmHardLimitBytes": 268435456,
+  "compactTotalBudgetBytes": 671088640,
+  "standardLargeUnchanged": true,
+  "stricterCustomHeapWatermarkPreserved": true,
+  "forcedGc": false,
+  "oldArenasRemainCharged": true,
+  "contextReplacement": false,
+  "baseline": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-c5-arena-diagnostic-v2/checkpoint.json",
+  "baselineRetiredHeapBytes": 193331200,
+  "expectedRetiredHeapBytesToVerifyFor400ImageWorkload": 161087488,
+  "qualificationAuthority": "External immutable actualfullJS and Native comparison checkpoint after execution;not asserted by this pre-run source",
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {"completeWithinScope": 9, "partial": 15, "pending": 17},
+  "noCommitPush": true
+}

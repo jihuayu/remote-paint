@@ -42,6 +42,19 @@ test('actual Wasm arena growth is a restart condition, not pretend memory return
  assert.equal(memoryPolicy({deviceMemory:4}).profile,'compact');assert.equal(memoryPolicy({deviceMemory:8}).profile,'standard');assert.throws(()=>memoryPolicy({profile:'unbounded'}),/profile/);
 });
 
+test('compact recycles after the first observed heap growth while keeping hard limits unchanged',()=>{
+ const MiB=1024*1024,memory=new ClientMemory(memoryPolicy({profile:'compact'}));
+ assert.equal(memory.policy.wasm,256*MiB);assert.equal(memory.policy.total,640*MiB);
+ memory.observed.wasmHeapBytes=128*MiB;assert.equal(memory.shouldRecycle(),false);
+ memory.observed.wasmHeapBytes=144*MiB-1;assert.equal(memory.shouldRecycle(),false);
+ memory.observed.wasmHeapBytes=144*MiB;assert.equal(memory.shouldRecycle(),true);
+ memory.observed.wasmHeapBytes=161087488;assert.doesNotThrow(()=>memory.check());assert.equal(memory.shouldRecycle(),true);
+});
+test('earlier compact rotation preserves standard/large and stricter custom heap watermarks',()=>{
+ const MiB=1024*1024;
+ for(const profile of ['standard','large']){const memory=new ClientMemory(memoryPolicy({profile}));memory.observed.wasmHeapBytes=161087488;assert.equal(memory.shouldRecycle(),false);memory.observed.wasmHeapBytes=Math.ceil(memory.policy.wasm*.7);assert.equal(memory.shouldRecycle(),true);}
+ const memory=new ClientMemory({...memoryPolicy({profile:'compact'}),wasm:128*MiB});memory.observed.wasmHeapBytes=80*MiB;assert.equal(memory.shouldRecycle(),false);memory.observed.wasmHeapBytes=90*MiB;assert.equal(memory.shouldRecycle(),true);
+});
 test('retired Wasm instances remain in the combined budget until garbage collection',()=>{
  const memory=new ClientMemory({...memoryPolicy(),wasm:8192,total:16384}),first={HEAPU8:new Uint8Array(8192)},second={HEAPU8:new Uint8Array(8192)};
  memory.retire(first);memory.retire(second);assert.equal(memory.snapshot().retiredWasmBytes,16384);

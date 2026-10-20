@@ -168,7 +168,13 @@ export class ClientMemory{
  observeWasm(ck){this.observed.wasmHeapBytes=ck.HEAPU8?.buffer.byteLength??this.observed.wasmHeapBytes;this.observed.decodeCacheBytes=ck.getDecodeCacheUsedBytes?.()??this.observed.decodeCacheBytes;this.check();}
  observe(ck,gr){this.sample(ck,gr);this.check();return this.snapshot();
  }
- shouldRecycle(){return this.observed.wasmHeapBytes>=this.policy.wasm*.7;}
+ shouldRecycle(){
+  // Compact starts at128MiB. Rotate after its first growth rather than
+  // carrying the next184MiB arena through nondeterministic collection.
+  // This is an earlier trigger,not a smaller hard limit or returned storage.
+  const threshold=this.policy.profile==='compact'?Math.min(this.policy.wasm*.7,144*MiB):this.policy.wasm*.7;
+  return this.observed.wasmHeapBytes>=threshold;
+ }
  retire(ck){
   // Views may outlive the module wrapper. Keep the retired allocation charged
   // until its actual backing store is collectible, not merely the wrapper.
