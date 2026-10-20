@@ -1,0 +1,380 @@
+{
+  "at": "2026-10-18T16:11:15.252779+00:00",
+  "task": "B1c0",
+  "status": "private-prestart-kernel-witness-and-durable-generation-bound-file-qualified",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-witness-v2/frozen-version.json",
+  "manifestSha256": "0030be41568a5fb5c53768c98298aae6b33301bb3ad3e9ba5aad3016e97d228a",
+  "sourceFiles": 766,
+  "changedFiles": {
+    "service/linux-runtime-witness.mjs": "6eb996c387835d7fd68d85180ea0eda55ac1dce8e196880879b73d6a1b4fe364",
+    "service/runtime-witness-store.mjs": "75db0c65e15443299a9498e695e7f742f9dd50364605746e0346ab0d7fa025a8",
+    "service/session-worker.mjs": "cd0555ffbf393458945989ca08895c9d6c3eae62663e216317a87f676d600468",
+    "service/session-worker-channel.mjs": "b9dff578f608fb493b0f8a2b5e0431e3742797db752285b32a71a84f6796240b",
+    "service/native-session-worker.mjs": "493cc183ff45435c5e3d0ce3ebcf0f1cb5dac0606e43e0207376c4e5e73b70c4",
+    "tests/linux-runtime-witness.test.mjs": "f77f88bc30d78e0060061f0c836ce1b7a94f8af299a77f5bbc74aa94c86a6e54",
+    "tests/runtime-witness-store.test.mjs": "f2766cefa814f25d3fa6aa35ed0274253bdf5accb3ed4c955df4ac0ba8bb4d3d",
+    "tests/runtime-witness-channel.test.mjs": "d0c2de8fb47a0aa883238c437d100d8f7a4a1b41203afa2679b965368370c74b",
+    "tests/fixtures/runtime-witness-records.mjs": "526044a668496e5d461d28c148a94fc5c50d75cf828d9f865c8248ce9a90f293",
+    "tests/fixtures/runtime-witness-store-child.mjs": "f8045ea954d6d92d2ba07f5ff34468cb42613e607e93d4ee5a05979a8624d39d",
+    "tests/fixtures/session-worker-child.mjs": "8b8e601982c35d2405d433049c105dcce4e39bc1c9b65b3348513fe23e7f768a",
+    "tests/fixtures/docker-attach-worker.mjs": "39c1ef857b625827ac2c0c894d289f489c80e87d549f62663f8669ec3f02965d",
+    "tests/verify-docker-attach-worker.mjs": "50427da507419a7df3b366dce54625a09ff508ad6f231dc8b512ed60c67cfa65",
+    "docs/session-native-worker.md": "8876a9540cad97b992bf0d59129ee793753c71078e0637b9578865f0ec3932fb",
+    "docs/optimization-progress.md": "e43d053b0900c9247b46d0da3794cd9983f66f7e3c9891261da3bc0b88c38c20"
+  },
+  "platforms": {
+    "mac": {
+      "scoped": {
+        "tests": 75,
+        "pass": 75,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "actualExitCode": 0,
+        "logSha256": "3d0fd24199d049971c8882059d424c304fbd2da40a59d1b233bf0536bcc2c9cd"
+      },
+      "full": {
+        "tests": 517,
+        "pass": 508,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 9,
+        "actualExitCode": 0,
+        "logSha256": "3e3b790f1527604a64c3b9b44eff249d82945cb94d0a5d64aa603573a780b3a3"
+      }
+    },
+    "linux": {
+      "scoped": {
+        "tests": 75,
+        "pass": 75,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "actualExitCode": 0,
+        "logSha256": "746cb1d0a5ac6ac7874954bbde24c744cf67a5e36ec2d39c7e6c5afdb295b3e3"
+      },
+      "full": {
+        "tests": 517,
+        "pass": 513,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 4,
+        "actualExitCode": 0,
+        "logSha256": "7908c860b913a7c588691b6f2c5352c32de00313b5869916669df915f9dd21f2"
+      }
+    }
+  },
+  "actualFixtures": {
+    "normal": {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-witness-v2/actual-normal-v2",
+      "containerId": "e2b900f533f88c7fc29fc9287dfb333bc04412e6e83604b4a3f9bddbd6fb429f",
+      "proxyPid": 47317,
+      "workerReady": {
+        "version": "node-private-attach-fixture-v1"
+      },
+      "workerClose": "confirmed",
+      "proxyExit": {
+        "code": 0,
+        "signal": null
+      },
+      "unavailableCalls": 0,
+      "beforeRemovalRuntimeState": "exited",
+      "namespace": "pid:[4026535277]",
+      "main": {
+        "pid": 7,
+        "ppid": 1,
+        "pgrp": 7,
+        "session": 1,
+        "startTicks": "24858223"
+      },
+      "detachedLeaf": {
+        "pid": 19,
+        "ppid": 7,
+        "pgrp": 19,
+        "session": 19,
+        "startTicks": "24858249"
+      },
+      "rawFiles": {
+        "plan.json": "76740d2016f8aa1b5fdaefab9d126ec9d336737784401ebfc9ee081936c6c1c9",
+        "project-manifest.json": "70306ec7a0a47e6af9b108167326af469eb2f208e906f23de183f282dac8edcb",
+        "browser-manifest.json": "711911041772f71befc84b7f38d3b790b2c5f9657b1080fd7723de3e2118e505",
+        "create.json": "96f1a60cc772d446e593ac4066cae67fa0b497acfb0ea3ce0c6491e3dd3fcd3c",
+        "start.json": "e26f480c2e627bcdb59db0c3ed7a7b46890b5fdd5d7fdd461509bf49b4a55d77",
+        "before-start.json": "e965a70136955b0e05b4b73b18f62bbab0e5a3ea946887177eb1d7a7bfe02576",
+        "running-witness.json": "8b1a04397b21ff118c8a379dd6a08021e577a5b66f75494c42d867ef63a9eaa2",
+        "namespace-prestart.json": "5acdf3a87172fc9aff9b4f9ede5f2d6e48b0baaeb642dfa17fb450dd8eb163d2",
+        "worker-ready.json": "39af94e41ce2817b482b31890e0f81ed7a3b7b648cd3c65e802680aa76b446ed",
+        "before-removal.json": "80f0b234ddfcb0460718860d4352a2a8b696a60b0bddba148cc9b578e2b64588",
+        "removal.json": "ba9725d72738a99cbae904f7353dc241eed05b21bb4c1077ae21b4bae989cecc",
+        "report.json": "5afc504a4851a3680a87e29140a5c4f97eeee550d9459e4387376314369f6f86"
+      },
+      "independentReopenedSqliteAudit": true,
+      "retirementEvidenceFileHashVerified": true,
+      "privateProjectBytesVerified": true,
+      "sessionQuotaReleased": true,
+      "scope": "Node private worker protocol and actual owned proxy transport;full owned container removal+private namespace/init/process/socket witnesses support namespace retirement inference,not a host-wide census or Native/Registry readiness proof.",
+      "privateKernelWitness": {
+        "file": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-witness-v2/actual-normal-v2/namespace-evidence/ses_160a1b01-da90-4e12-abd3-1f09e0c8a8fa-e2b900f533f88c7fc29fc9287dfb333bc04412e6e83604b4a3f9bddbd6fb429f.namespace.json",
+        "fileSha256": "89155a3fb360046f7f3741f57ed4416a3fae9aedf8e6e45d478c6410379a31c6",
+        "witnessSha256": "fdccc7c479b955ebac40b7b40f765282416536e51fac37998236c1219af61c67",
+        "engineStartedAt": "2026-10-18T16:08:24.916727246Z",
+        "privateWitnessBeforeStart": true,
+        "matchesIndependentProcWitness": true,
+        "reopenedWithoutOwnerKey": true,
+        "receipt": {
+          "sessionId": "ses_160a1b01-da90-4e12-abd3-1f09e0c8a8fa",
+          "containerId": "e2b900f533f88c7fc29fc9287dfb333bc04412e6e83604b4a3f9bddbd6fb429f",
+          "daemonId": "b3aeb5ec-7295-44f7-8576-aa9dc5b40dad",
+          "specDigest": "449907bf5b4cc6714b7a8d836074f22a3bef9b0d24f0db0ae7840e9f717beee5",
+          "witnessSha256": "fdccc7c479b955ebac40b7b40f765282416536e51fac37998236c1219af61c67",
+          "evidenceSha256": "89155a3fb360046f7f3741f57ed4416a3fae9aedf8e6e45d478c6410379a31c6"
+        }
+      },
+      "freshFullIDAbsent": true
+    },
+    "proxy-lost": {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-witness-v2/actual-proxy-lost-v2",
+      "containerId": "93f3f7319e312c376d28d072161f8f6e0ccff047dc0e696aa621e2acdbfa63bb",
+      "proxyPid": 48071,
+      "workerReady": {
+        "version": "node-private-attach-fixture-v1"
+      },
+      "workerClose": "unconfirmed",
+      "proxyExit": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "unavailableCalls": 1,
+      "beforeRemovalRuntimeState": "exited",
+      "namespace": "pid:[4026535170]",
+      "main": {
+        "pid": 7,
+        "ppid": 1,
+        "pgrp": 7,
+        "session": 1,
+        "startTicks": "24862040"
+      },
+      "detachedLeaf": {
+        "pid": 19,
+        "ppid": 7,
+        "pgrp": 19,
+        "session": 19,
+        "startTicks": "24862064"
+      },
+      "rawFiles": {
+        "plan.json": "7d34bd73640f99c853fcd32e1b9e8605747fa6f64b28ed2f5565b3cfa97e697a",
+        "project-manifest.json": "3b85a93d82c1f43c307cd451704a2d0baf2a7438c994ea11b0f0bad3bcb63fe1",
+        "browser-manifest.json": "711911041772f71befc84b7f38d3b790b2c5f9657b1080fd7723de3e2118e505",
+        "create.json": "195706809e06a28b625d797760a99259d1986d6cbcf00c9e0be26b3af8855d95",
+        "start.json": "648c3b618b037e09aa1ece23942d3fc9dde3382175a387a3ffb221a10067d5cf",
+        "before-start.json": "5eb1d9ed78b58efe4ceb9f08b44d15f67429dcef95e9777adc1510e38d0aa2e0",
+        "running-witness.json": "7e6b6e6053d8cb10d0869fe8f461f138dbb1eafaa3ae13670bf4cfffb23ff71a",
+        "namespace-prestart.json": "8365bb3033ac5cf3727936c12d68f416762ab6585120f4995e8c689307f57c99",
+        "worker-ready.json": "9cf31bb1d89035a7557ea1913ec1096895d93267815592ff11ec46a66ebec773",
+        "before-removal.json": "75e7dff19e6068befa581a9e5a96f124df69ab4ecade2037720a50fd1f10c450",
+        "removal.json": "8c21a5c0c345e40c3b724bcb35cfe7b5d0ef3549966250583a86f29979565bc7",
+        "report.json": "32cf97714848fd0d3cc179c987af95ceb2bb08d8c20a9df11f23f905e6ff39ec"
+      },
+      "independentReopenedSqliteAudit": true,
+      "retirementEvidenceFileHashVerified": true,
+      "privateProjectBytesVerified": true,
+      "sessionQuotaReleased": true,
+      "scope": "Node private worker protocol and actual owned proxy transport;full owned container removal+private namespace/init/process/socket witnesses support namespace retirement inference,not a host-wide census or Native/Registry readiness proof.",
+      "privateKernelWitness": {
+        "file": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-witness-v2/actual-proxy-lost-v2/namespace-evidence/ses_2e63840b-6adc-488f-95ef-857e9e102036-93f3f7319e312c376d28d072161f8f6e0ccff047dc0e696aa621e2acdbfa63bb.namespace.json",
+        "fileSha256": "8d1c42ab6c01d77c18c15b7d3b3572bfb62dfecfb89c1bab7c3f75c8e20c4351",
+        "witnessSha256": "b7787261b5eb8f418cf497be0e9af89b77d92c653f82e15f93b1bdbc11011a35",
+        "engineStartedAt": "2026-10-18T16:09:02.955998496Z",
+        "privateWitnessBeforeStart": true,
+        "matchesIndependentProcWitness": true,
+        "reopenedWithoutOwnerKey": true,
+        "receipt": {
+          "sessionId": "ses_2e63840b-6adc-488f-95ef-857e9e102036",
+          "containerId": "93f3f7319e312c376d28d072161f8f6e0ccff047dc0e696aa621e2acdbfa63bb",
+          "daemonId": "b3aeb5ec-7295-44f7-8576-aa9dc5b40dad",
+          "specDigest": "10a32f8b747efff879f5ebfde6ecfe104860fdf3826739d7aa85979d930cb719",
+          "witnessSha256": "b7787261b5eb8f418cf497be0e9af89b77d92c653f82e15f93b1bdbc11011a35",
+          "evidenceSha256": "8d1c42ab6c01d77c18c15b7d3b3572bfb62dfecfb89c1bab7c3f75c8e20c4351"
+        }
+      },
+      "freshFullIDAbsent": true
+    },
+    "runtime-removed": {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-witness-v2/actual-runtime-removed-v2",
+      "containerId": "eb6e6201d3379fff9a001db8af5c8ac4250a27905d388098d54300b059c7dc9f",
+      "proxyPid": 48072,
+      "workerReady": {
+        "version": "node-private-attach-fixture-v1"
+      },
+      "workerClose": "unconfirmed",
+      "proxyExit": {
+        "code": 0,
+        "signal": null
+      },
+      "unavailableCalls": 1,
+      "beforeRemovalRuntimeState": "running",
+      "namespace": "pid:[4026535382]",
+      "main": {
+        "pid": 7,
+        "ppid": 1,
+        "pgrp": 7,
+        "session": 1,
+        "startTicks": "24862046"
+      },
+      "detachedLeaf": {
+        "pid": 19,
+        "ppid": 7,
+        "pgrp": 19,
+        "session": 19,
+        "startTicks": "24862067"
+      },
+      "rawFiles": {
+        "plan.json": "0c78e7e3853a820c84ee73c232baed55b4565578a52fe6814abff14c5a7f5925",
+        "project-manifest.json": "26432a54a4e0a40d1b2eb3d487262dd972941ef11a4c2b0a2f5f1af0597e6ef6",
+        "browser-manifest.json": "711911041772f71befc84b7f38d3b790b2c5f9657b1080fd7723de3e2118e505",
+        "create.json": "f99d55f8af59e88ffdedcb0fcee12ca146883ee5d06281dc8b0a811b419cc2af",
+        "start.json": "02e61e79ac7826a4d35f8b4aab2976bc3af64240a20b748f0e579484be1872f3",
+        "before-start.json": "ce12fb4929df9a46ba301e0afbf6814ed160a05df8085a489a79dc9b797104ae",
+        "running-witness.json": "f00f872de31867f3389025bf27dcdc5eda2a83a568db69eba53cca0843908569",
+        "namespace-prestart.json": "7c6ef43342690253db49300d01c3dd2931df58d7256894a4d26f580454417749",
+        "worker-ready.json": "e687739ec4f6357c6a990ca87b3d6fd561126f561aa53d9e4afc593dfd051895",
+        "before-removal.json": "a347eeb2cbd1a75ded999d8e0fcd7796ac1c9c3d70ae7086357aac910f4e60ec",
+        "removal.json": "ed7f4c8fa318c40b72a9f439135d3ac31dfc99767e81561316a2c98c200e9ea5",
+        "report.json": "cd8e1037ce6d4847c3695cb558cd4ef33ca890b7cb3072a4ebcb35b25ea86b93"
+      },
+      "independentReopenedSqliteAudit": true,
+      "retirementEvidenceFileHashVerified": true,
+      "privateProjectBytesVerified": true,
+      "sessionQuotaReleased": true,
+      "scope": "Node private worker protocol and actual owned proxy transport;full owned container removal+private namespace/init/process/socket witnesses support namespace retirement inference,not a host-wide census or Native/Registry readiness proof.",
+      "privateKernelWitness": {
+        "file": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-witness-v2/actual-runtime-removed-v2/namespace-evidence/ses_9298b384-82cc-4913-a3d6-cfa13c0682ab-eb6e6201d3379fff9a001db8af5c8ac4250a27905d388098d54300b059c7dc9f.namespace.json",
+        "fileSha256": "8a31900f7530a9f8d7f91d4b21f86b00de572270e031da11692699ddb8ae92ec",
+        "witnessSha256": "300d5338667ef3d387339b1ea62ed643c022bf9d85e7967ce554cf0bbdea9362",
+        "engineStartedAt": "2026-10-18T16:09:03.028807635Z",
+        "privateWitnessBeforeStart": true,
+        "matchesIndependentProcWitness": true,
+        "reopenedWithoutOwnerKey": true,
+        "receipt": {
+          "sessionId": "ses_9298b384-82cc-4913-a3d6-cfa13c0682ab",
+          "containerId": "eb6e6201d3379fff9a001db8af5c8ac4250a27905d388098d54300b059c7dc9f",
+          "daemonId": "b3aeb5ec-7295-44f7-8576-aa9dc5b40dad",
+          "specDigest": "33fd960a822fd465f6811cb23aeebcae3aab36bc04f3af373a8f15bd71d995e0",
+          "witnessSha256": "300d5338667ef3d387339b1ea62ed643c022bf9d85e7967ce554cf0bbdea9362",
+          "evidenceSha256": "8a31900f7530a9f8d7f91d4b21f86b00de572270e031da11692699ddb8ae92ec"
+        }
+      },
+      "freshFullIDAbsent": true
+    }
+  },
+  "negativeEvidenceMutationsRejected": 24,
+  "negativeKernelEvidenceMutationsRejected": 24,
+  "nativeEntrySyntaxOnly": true,
+  "unrelatedPeerPreserved": true,
+  "indexEmpty": true,
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "eightHourActive": false,
+  "eightHourFailure": {
+    "at": "2026-10-18T16:00:52.996426+00:00",
+    "status": "failed-not-eight-hour-accepted",
+    "attempt": "v3",
+    "sourceSession": 71679,
+    "sourceActualExitCode": 1,
+    "viewerSession": 16586,
+    "viewerActualExitCode": 1,
+    "dockerExitCode": 1,
+    "dockerRunning": false,
+    "dockerOOMKilled": false,
+    "containerId": "d2e8650b2d46a86b13dfca1c10b45d0063a1de05e5a3e78f86de736c9db5b0ff",
+    "startedAt": "2026-10-18T13:06:24.341280481Z",
+    "finishedAt": "2026-10-18T15:30:47.8968256Z",
+    "failureCycle": 3200,
+    "requestedSeconds": 28800,
+    "lastCompletedSampleElapsedSeconds": 8632.769862625,
+    "sampleCount": 211,
+    "failedGate": "Source metrics.pss.completeObservedCohort === true;observed-stable processSampling passed before the PSS assertion.",
+    "rawFailedSourceMetricsRetained": false,
+    "diagnosticLimitation": "Current measure asserts before saving metrics and RPC forwards only error.stack;failure.source has only error. Actual incomplete row/PSS reason is not retained,so root cause is unproven.",
+    "macHelperPid": 49733,
+    "macHelperCurrentlyAbsent": true,
+    "closedSessionReceiptCount": 70,
+    "closedSessionReceiptsAllClosed": true,
+    "linuxPrivateContainerStopped": true,
+    "hostBrowserCleanupAuditComplete": false,
+    "frozenManifestSha256": "2ccec8079ff04a962d53051538c6e4f23058a3d3ccd16f78bf845b096783b03e",
+    "physicalPolicyUnchanged": true,
+    "eightHourPassed": false,
+    "noElapsedReuseForNextAttempt": true,
+    "noAutomaticRestartPerformed": true,
+    "rawEvidence": {
+      "failure.json": "4f5bfee0b0a37d50c7fdcb4b6506253975b45b1ed6f51eb39ef051666b8c36ae",
+      "status.json": "7a018beba4db304aa4d3459f9cd1ad21ced3a2ef79260cc1003d013b8efe356d",
+      "samples.jsonl": "c05c7a3c647a9488e126c0df9e430d37ac4e818d047078a181a781feb35eb15f",
+      "closed-sessions.jsonl": "4b70690b817ef7b4ea935a236d31f8e188bf8501e88e1e98cb52a5f43a060792",
+      "native-memory-attempts.jsonl": "1a725a0f0da23f3ebf7a8c766648a1d4db073cae8e8e10fb0f339d9382330adb",
+      "cleanup.json": "68065bc634a756812a686ecb7ef42e1ea9c688063ee8d9070af2df58bdfda163",
+      "source-stopped.json": "2e4ac7401af1adb06b4a74df880635624ce48cb7db81d4838320ea3c0f8c5ad7"
+    },
+    "next": "Preserve failed source metrics as bounded diagnostics,identify actual incomplete-PSS cause and reproduce/fix without weakening cohort/physical/5s gates;finish cleanup audit before new actual workloads.",
+    "lastObservedMacCohortPidsAbsent": true,
+    "lastObservedMacCohortPidCount": 12,
+    "hostCleanupScope": "Helper49733 and all12PIDs in final completed before/measured/after browser cohort are currently absent;exact cleanup receipts still audited separately,not a host-wide census.",
+    "nativeObserverActualCleanup": {
+      "pid": 49733,
+      "exited": true,
+      "exitCode": 0,
+      "signal": null
+    },
+    "viewerCleanupErrors": [
+      {
+        "step": "source",
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'failed' !== 'closed'\n\n    at file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v3/project/tests/verify-session-longload.mjs:110:344"
+      }
+    ],
+    "sourceFinalCleanup": {
+      "status": "failed",
+      "fixtureListening": false,
+      "activeSessions": 0,
+      "stats": {
+        "created": 71,
+        "closed": 70,
+        "crosssite": 70,
+        "leaseExpired": 70
+      },
+      "primary": {
+        "status": "failed",
+        "sourceClosed": true,
+        "brokerExited": true,
+        "browserConnected": false,
+        "cleanupErrors": [
+          {
+            "step": "pin",
+            "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n\n    at measure (file:///project/tests/session-memory-owner.mjs:25:154)\n    at async pin (file:///project/tests/session-memory-owner.mjs:26:35)\n    at async file:///project/tests/session-memory-owner.mjs:33:66\n    at async file:///project/tests/serve-session-longload.mjs:37:47\n    at async poll (file:///project/tests/serve-session-longload.mjs:86:136)"
+          }
+        ],
+        "retiredCount": 76
+      },
+      "remainingKinds": [
+        "node"
+      ],
+      "pssCompleteObservedCohort": true,
+      "cgroupMembershipConfirmed": true,
+      "outsideObservedPids": [
+        1
+      ]
+    }
+  },
+  "remaining": [
+    "B1c1 production provider ownership/orphans/unknown-create close-only reconciliation and durable namespace retirement",
+    "Registry TTL/cancel/recovery/health integration",
+    "Actual Native/Chromium after independent8h workload isolation gate",
+    "Rendered readonly/control Viewer roles/tickets",
+    "Full41 backlog and original8h acceptance"
+  ],
+  "all41": {
+    "complete": 9,
+    "partial": 14,
+    "pending": 18
+  }
+}
