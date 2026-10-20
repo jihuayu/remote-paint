@@ -1145,3 +1145,14 @@ Source浏览器后代及Broker在启动、工作集加热和跨站后通过已�
 控制端对已附着并ready的真实Viewer peer调用正常acquire API，但明确不投递ControlGranted token，模拟调用方放弃授予结果，使客户端无法续租。保持默认ttl=30000ms、不导航或resize打断该窗口，实际timer在30002ms完成expired清理并恢复Agent，期间续租数0。此为明确的放弃授予合同，不当作自然丢包或物理键盘测试。首轮在创建附加Session前因初始状态未规范而失败，日志及源码快照保留；修正后完整路径通过，并补强Worker身份见证和创建/关闭计数核对，没有缩短TTL或放宽工作集/截止门槛。
 
 此处只完成Linux CPU控制端基础。Mac GPU Worker/CPU Worker/CPU主线程长期存活、周期附加Session、设备物理增长门槛与N1长期窗口仍需接入和试跑；没有启动八小时，也没有八小时通过。此前20循环及三轮试跑按各自冻结版本保存，不累计为长时验收；41项保持9完成/12部分/20待做，没有提交或推送。
+
+
+## 三个Mac主VM持续存活与附加Session试跑
+
+[硬件Mac试跑](evidence/session-longload-mac-pilot.json)使用冻结575文件版本和正式B1 Linux Source，三个主Viewer为Apple M2 Max Metal GPU Worker、CPU Worker与CPU主线程。主VM实际运行268.12秒（总驱动276.12秒），501次图像/字体更新、42次resize、30次输入、两次实际跨站；六个样本中三个页面nonce与两个Worker target ID均保持相同，GPU模式和零呈现读回检查通过。另有三个CPU主线程Viewer附加Session在后台各消费400次更新、25次resize、12次输入，合计270,043,429字节图像，每次都超过64MiB并发生原生缓存淘汰。主负载未因附加Session完整循环而停止。
+
+每个附加Session七个身份退出，主Source最终八个已绑定身份退出；最终Source创建/关闭均为4，所有fixture/浏览器/Broker/peers及观察器关闭，两端驱动退出0。默认30秒放弃授予探测重复三次，实际在30003/30003/30004ms完成expired并恢复Agent，未把短TTL或自然丢包充作该证据。观测器续租计数只在真实renew成功后增加，拒绝旧token的尝试不冒充续租。
+
+采样覆盖间隔最大62.164秒；原2秒helper就绪/请求、250ms回收、5秒阶段、90秒覆盖及所有逻辑Wasm/JS/render/GPU预算保留。采样期间仅与附加页面创建/关闭做短生命周期协调，普通绘制更新继续；helper没有自动重启/ps回退或旧值补零。RSS、Darwin physical footprint、Linux PSS和cgroup anon/file仍分列，进程组为有身份见证的实时观测，非原子独占内存总量。
+
+此轮无附加Session的physical footprint观测最大约1.81GiB，有附加时约2.33GiB；Linux PSS观测最大分别约0.85/1.27GiB。这只是制定设备物理门槛的试跑数据，本轮未施加该新物理门槛，不作增长平台或八小时验收。接下来须在长测前冻结物理策略、验证更长负载，并集成N1真实网络/帧龄/丢弃窗口。C5/B10/N1完整长期及八小时仍未完成；41项保持9完成/12部分/20待做，无提交、推送或缓存清理。

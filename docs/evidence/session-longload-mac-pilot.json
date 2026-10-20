@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-17T21:21:31.917158+00:00",
+  "status": "passed-realMac-persistent3VM-secondarySession-pilot;physicalpolicy-notyetaccepted",
+  "scope": "Actual formal Linux native Source/Rust Gateway to persistent Mac hardware GPUWorker+CPUWorker+CPUmain;periodic secondary CPUmain Session400+images/cacheturnover/close,primarycrosssite,real30s abandonedgrant expiry. PrimarypageNonce/WorkerIDs retained;Wasm/GPU/VMheap/RSS/physicalfootprint/LinuxPSS/cgroup separate. Livecohorts notatomic,notuniquephysicalSession memory. NotphysicalIME/GPUscanout/N1longacceptance.",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/frozen-version.json",
+    "sha256": "9f0dad09ef8f4d4f45313681515b1b7a0be3aa3177dc53de8b0de7ab123f87e7"
+  },
+  "requestedSeconds": 240,
+  "actualPrimaryExerciseSeconds": 268.121935292,
+  "elapsedSeconds": 276.12417475,
+  "primaryUpdates": 501,
+  "primaryResizes": 42,
+  "primaryInputs": 30,
+  "crosssite": 2,
+  "secondarySessions": 3,
+  "secondaryUpdates": 1200,
+  "secondaryResizes": 75,
+  "secondaryInputs": 36,
+  "secondaryImageBytes": 270043429,
+  "secondaryIdentitiesRetired": 21,
+  "primaryIdentitiesRetired": 8,
+  "actualDefaultLeaseExpiryMs": [
+    30003,
+    30003,
+    30004
+  ],
+  "primaryPageNonces": [
+    "40fde605-2b1f-4f6c-9ed4-2aa72514a51b",
+    "2fd1bd91-a563-40aa-874d-7e5120674744",
+    "ffea39f7-2ae3-4a99-91b4-d77120815cd3"
+  ],
+  "primaryWorkerTargets": [
+    "47BA2EEA0A8D27E536B86F7F3C7DCB21",
+    "B9D06C030C892D63B79D3FB7C0ADF2D6"
+  ],
+  "maxSampleGapSeconds": 62.16399999999999,
+  "nativeSampleMsMax": 1.254291999997804,
+  "linuxSampleMsMax": 107.28506100000232,
+  "physicalObservationsByState": {
+    "primary-only": {
+      "samples": 4,
+      "max": {
+        "viewerRssSumBytes": 3584180224,
+        "viewerFootprintBytes": 1942520440,
+        "sourcePssBytes": 915687424,
+        "sourceAnonBytes": 618151936,
+        "sourceNodePssBytes": 185987072
+      }
+    },
+    "with-secondary": {
+      "samples": 2,
+      "max": {
+        "viewerRssSumBytes": 4516954112,
+        "viewerFootprintBytes": 2500171064,
+        "sourcePssBytes": 1362169856,
+        "sourceAnonBytes": 918659072,
+        "sourceNodePssBytes": 191095808
+      }
+    }
+  },
+  "actualGpu": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+  },
+  "artifacts": {
+    "report.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/results/report.json",
+      "sha256": "4d31b4ec616f249e444ee68871f4efb2543c9985426f4536f9d854a6766def6d"
+    },
+    "samples.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/results/samples.jsonl",
+      "sha256": "fa9aa5f06bd71083e10062aca345c11b30708fca964897249087532fc6a23a23"
+    },
+    "secondary-results.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/results/secondary-results.jsonl",
+      "sha256": "b213bf136634905b43ff42b4ff736818c77833fc51a984a17c7541c4709d4362"
+    },
+    "closed-sessions.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/results/closed-sessions.jsonl",
+      "sha256": "3b2e396b17691dc237f83ed76099677d687643243afb8dcfdc9a1d269d17b71c"
+    },
+    "sampling-phases.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/results/sampling-phases.jsonl",
+      "sha256": "2a454689bc1f7f7ce6243896abb7e127aff416870753160d5e0873e628567ac1"
+    },
+    "native-memory-attempts.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/results/native-memory-attempts.jsonl",
+      "sha256": "be5a29912923ea03afcf5076fbc40a5d0d4707aa82ba93d4fdf5d904ece76a92"
+    },
+    "source-runtime.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/results/source-runtime.jsonl",
+      "sha256": "73611e1a5779fdc493c07361e2715facb7623e8f139a92d696fc3d4468a0f64f"
+    },
+    "source-events.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/results/source-events.jsonl",
+      "sha256": "5200daa6a877bff5ba991c1a4258aaba3149373bf04b2714ce6ee91ed86c967a"
+    },
+    "source-stopped.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/results/source-stopped.json",
+      "sha256": "abe169a8ae4c57f84f647b179501d5ff3155459d38edeea7d710dbe77366e8b6"
+    },
+    "cleanup.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-v1/results/cleanup.json",
+      "sha256": "5c7c158e17f439d9aa405b0f0fb33382b168cdc82b95a6b89dbaef2ffe1ccada"
+    }
+  },
+  "noForcedGC": true,
+  "scopeLimits": [
+    "Noactualphysicalgrowthpolicyenforcedinthispilot;sampler/processobservationswithlogicalbudgetgatesonly. Devicepolicyandlongerphysicalvalidationmustbefrozenbefore8h.",
+    "Default30sabandonedserverAPIgranttoactualreadyViewer;nodonatedtoken/noacceptedrenewal;explicitsetupnotnaturalnetworkloss.",
+    "Cohorts live/non-atomic;RSS shared;Macfootprint notLinuxPSS;nooneuniquephysicalSessiontotal. Pixelread/observeroverheadnotunobservedperformance.",
+    "N1 passiveage/drop/networklongintegration and8hremainunproved. Corecapture/transport/binariesunchanged;onlytestdriverandaccepted-renewalobservationcounterchanged."
+  ],
+  "noCommitPush": true,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  },
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "acceptanceReceipt": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-mac-pilot-acceptance-v1.json",
+    "sha256": "14005144bf908b8cb38d8b856fc7711428cae55012837f7005cc137eb52bfb8a"
+  }
+}
