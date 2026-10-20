@@ -1,0 +1,280 @@
+{
+  "at": "2026-10-19T20:02:45.677959+00:00",
+  "task": "Source screenshot owner and private bounded chunks Native checkpoint",
+  "status": "Source-screenshot-private-qualified-within-scope",
+  "scope": "Source-owned viewport PNG screenshot/one Run file/opaque shot ID/<=3072-byte decoded private chunks and explicit release, fixed original Page/Native world/document/tenant/worker/target/run/version. Shared actual ordinary lifetime with DOM/AX, end cleanup and permission/human/unknown isolation; new private capability on unchanged8KiB frames. Actual canonicalNative PNG pixels/hash/chunks/replacement/release/navigation/human/unknown proof. Public screenshot HTTP/executor/SDK, actual page downloads and raw receiver/physical gates pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-ax-sdk-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "c9b85481471274c89c923de148e0d354e0f21cd5eb777a812c6d9eb922179dcf",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-screenshot-core-candidate-v4/frozen-version.json",
+  "executedManifestSha256": "deb4ff2535c746a8beb01ce2edb82ef942adfbb32b86bf5517f85af26c782629",
+  "newNodeContracts": 25,
+  "testNames": [
+    "screenshot capture and chunk inputs are exact bounded own data without paths format clip or selectors",
+    "Source screenshot pins original viewport Page Native world and version and returns metadata only",
+    "screenshot chunks reconstruct the original PNG with stable hash metadata offset and actual pixels",
+    "fresh screenshot replaces one prior file while failed captures preserve the last successful file",
+    "explicit release invalidates only the owned screenshot and malformed or foreign handles cannot release it",
+    "screenshots recheck permission document original Page capture and CDP before accepting late PNG bytes",
+    "one actual screenshot blocks DOM AX chunks and new capture until real browser work settles",
+    "end awaits actual screenshot work rejects its late result and releases its realm",
+    "pending Native metadata for chunk reads retains real admission and end waits for it",
+    "screenshot read authorization is independent and checked before caller getters without changing writer fence",
+    "human-held keys and lease survive screenshot capture chunk release and Agent end",
+    "PNG acceptance bounds encoded bytes before Buffer decoding and validates chunk CRC dimensions and ending",
+    "malformed PNG and screenshot metadata never replace an already retained successful screenshot",
+    "out of bounds viewport is rejected before pixel capture and resized old contexts cannot read saved bytes",
+    "Native screenshot metadata leaves original DOM and AX handles intact while validating the original document",
+    "screenshot result validators enforce exact identity budget hash metadata and bounded chunk arithmetic",
+    "screenshot owner has one bounded record and close drops its file and forbids foreign documents",
+    "screenshot requires an independent worker capability and 8KiB channel before dispatch",
+    "screenshot private RPC carries exact opaque file/document/version and immutable sanitized result",
+    "screenshot timeout retains actual private ordinary slot while independently admitted end stays available",
+    "screenshot wrong version/target/document/byte size cannot pass worker-channel response correlation",
+    "screenshot private capture refuses caller object IDs, write fences, arbitrary clips, getters and wrong identity",
+    "private screenshot adds no implicit public observation query or unimplemented SDK path",
+    "private screenshot chunks and release correlate file offset byte limits hash version and original document",
+    "maximum screenshot chunk remains below the unchanged 8KiB private channel and has no whole-file payload"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v48/manifest.json",
+  "fullJsManifestSha256": "53dff5cfd4d20e2e2e20bc7d6eb033c452e66fded069ffd9f5cebb0d88fa5d4c",
+  "fullJs": {
+    "mac": {
+      "tests": 1290,
+      "pass": 1275,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "b337685b55bf84a59ca2524106465f7842628bcafb74a87d072989dc2bdc38da"
+    },
+    "linux": {
+      "tests": 1290,
+      "pass": 1284,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "c12aff7984216451b5978b54e17855d0964ed987b0ba12ecf89b1a7bce591fd5"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 132,
+      "pythonTests": 73,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 55,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "nodeArchiveBytesUnchanged": true,
+      "pythonArchiveReadmeOnly": true
+    },
+    "linux": {
+      "nodeTests": 132,
+      "pythonTests": 73,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 55,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "nodeArchiveBytesUnchanged": true,
+      "pythonArchiveReadmeOnly": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "689362d15972a3eab26ff4adb1261f0f66f9fc94fec9f8c14a40c38b2d229138",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "bb674dfc56f968f0b364843f20516abc0ca3ec1c584b2e8c6b4ab8edb60bb5e7"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-screenshot-core-native-v1/manifest.json",
+  "nativeManifestSha256": "0580732e8f3ab51e13fc1dc9e428ed5ef507d8ed9e2f91983360b0856606aa84",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "authorization": {
+      "independentObserveScope": true,
+      "tenantIsolation": true,
+      "noWriterFenceOrMutationOrEndOrSessionReleaseOrViewerMint": true,
+      "forgedLogicalContextRejectedBeforeSource": true
+    },
+    "metadata": {
+      "actualDOM": true,
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "targetId": "target_0d78a8ab-47c9-49a4-b7f2-18059aede50d",
+      "epoch": 1,
+      "observedAt": "2026-10-19T20:00:44.561Z",
+      "passwordRedacted": true,
+      "mainDocumentLightDomOnly": true,
+      "readDoesNotRefreshWriterFence": true
+    },
+    "accessibility": {
+      "browserComputedRoleNameDescriptionValue": true,
+      "readonlyRequiredChecked": true,
+      "nestedTextAndExternalLabelSemantics": true,
+      "sameHandleDifferentBudgets": true,
+      "originalElementReplacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "computedLabelChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLabel": "Shipping changed",
+      "unicodeNameChars": 512,
+      "truncated": true,
+      "oversizedBrowserReplyRejected": {
+        "code": "AGENT_OBSERVATION_LIMIT",
+        "outcome": "not-dispatched"
+      },
+      "passwordFullyRedacted": true,
+      "explicitDomainAndObjectCleanupConfirmedByCompletedSourceRead": true,
+      "noPhysicalPreallocationClaim": true,
+      "publicHttp": true,
+      "sourcePrivateCapabilityRequired": true,
+      "readDuringHumanLease": true,
+      "oldDocumentRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "knownUnknownInputAXObservedWithoutRecovery": true
+    },
+    "screenshot": {
+      "actualPrivateProvider": true,
+      "actualPNGDecoded": true,
+      "pixels": [
+        17,
+        83,
+        151,
+        255
+      ],
+      "width": 960,
+      "height": 640,
+      "byteLength": 26685,
+      "sha256": "9912f9adf3968478b0c6b7e506192c40ea6861267fb8eb2729b3cf652363e007",
+      "chunkMax": 3072,
+      "maxControlRecordBytes": 6144,
+      "failedCapturePreservedPrior": true,
+      "replacementInvalidatedPrior": true,
+      "explicitReleaseInvalidated": true,
+      "noSourceFilesystemWrite": true,
+      "noRawReceiverPhysicalClaim": true,
+      "readDuringHumanLease": true,
+      "oldDocumentAndRunRejected": true,
+      "knownUnknownInputInspectable": true
+    },
+    "unicode": {
+      "sourceChars": 4000,
+      "returnedChars": 1024,
+      "truncated": true,
+      "handleStillResolvable": true
+    },
+    "elements": {
+      "replacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "selectedMetadataChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLocatorGetsDistinctHandle": true,
+      "noAutomaticSelectorRebind": true
+    },
+    "human": {
+      "readDuringHumanLease": true,
+      "writeStillPaused": true,
+      "readAndAgentEndPreservedOriginalHumanGrant": true,
+      "fieldValue": "OBSHF"
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "oldReadContextRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "oldHandleRejectedInNewDocument": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "oldWriteFenceRejected": true,
+      "samePageTarget": true
+    },
+    "bounds": {
+      "largeFixtureNodes": 3000,
+      "visitedCap": 32,
+      "truncated": true,
+      "maxSerializedBytes": 8192,
+      "actualSnapshotBytes": 3314,
+      "noScriptOrArbitraryCdp": true
+    },
+    "unknown": {
+      "actualSlowClickOnce": true,
+      "observedActualDOMAfterUnknown": true,
+      "historyRemainedUnknown": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "httpTimeout": {
+      "http408": true,
+      "actualExecutorSlotRetained": true,
+      "writerRemainedActive": true,
+      "inputAfterActualSettlement": true
+    },
+    "disconnect": {
+      "actualExecutorSlotRetained": true,
+      "priorityEndWithIndependentScope": true,
+      "lateReadCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativeJournal": {
+    "logicalRunsClosed": 4,
+    "injected": 10,
+    "unknown": 1,
+    "rejected": 2
+  },
+  "decodedAxCdpReplyByteCap": 32768,
+  "rawCdpReceiverPreallocationQualified": false,
+  "browserAxPhysicalMemoryQualified": false,
+  "privateAxResultByteCap": 6144,
+  "maxAxTextUnits": 512,
+  "publicObservationResultByteCap": 8192,
+  "privateReadResultByteCap": 6144,
+  "standardProviderFrameByteCap": 8192,
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-screenshot-core-cleanup-v1.json",
+  "cleanupAuditSha256": "02fd3c9805798185b7585f84fe5b2b6e7cc1f8f5fe013f265b057f5410d5536a",
+  "trustedNativeObservationCoreQualified": true,
+  "publicObservationQualified": true,
+  "nodeObservationSdkQualified": true,
+  "pythonObservationSdkQualified": true,
+  "observationSdkQualified": true,
+  "computedAxPrivateQualified": true,
+  "computedAxPublicQualified": true,
+  "nodeComputedAxSdkQualified": true,
+  "pythonComputedAxSdkQualified": true,
+  "computedAxSdkQualified": true,
+  "sourceScreenshotQualified": true,
+  "publicScreenshotQualified": false,
+  "screenshotSdkQualified": false,
+  "K6Complete": false,
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": true,
+  "publicAgentSdkQualified": true,
+  "agentSdkScope": "Node/Python input/DOM/computedAX qualification retained, SDK runtime/types unchanged. Node20file archive byte-identical, Python10file archive README-only correction of obsolete AX-pending sentence.55 current service/contract inputs reinstalled; no screenshot SDK yet.",
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true
+}

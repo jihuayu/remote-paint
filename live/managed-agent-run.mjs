@@ -62,6 +62,9 @@ export function createManagedAgentRun(control,configuration){
   observeAccessibility(elementId,context,limits={}){
    try{allowed(null,'agent:observe');if(!observer)observer=createManagedAgentObserver({source,page,binding,version:config.version,live,authorize:()=>allowed(null,'agent:observe')});return observer.observeAccessibility(elementId,context,limits);}catch(error){return Promise.reject(failure(error));}
   },
+  screenshot(context,limits={}){try{allowed(null,'agent:observe');if(!observer)observer=createManagedAgentObserver({source,page,binding,version:config.version,live,authorize:()=>allowed(null,'agent:observe')});return observer.screenshot(context,limits);}catch(error){return Promise.reject(failure(error));}},
+  readScreenshot(screenshotId,offset,context,maxBytes=3072){try{allowed(null,'agent:observe');if(!observer)fail('STALE_AGENT_SCREENSHOT');return observer.readScreenshot(screenshotId,offset,context,maxBytes);}catch(error){return Promise.reject(failure(error));}},
+  releaseScreenshot(screenshotId,context){try{allowed(null,'agent:observe');if(!observer)fail('STALE_AGENT_SCREENSHOT');return observer.releaseScreenshot(screenshotId,context);}catch(error){return Promise.reject(failure(error));}},
   perform(tool,params,context){
    let submitted=false;
    try{

@@ -94,7 +94,7 @@ Queries are frozen `AgentSnapshotQuery()`, `AgentLocateQuery(by, value)` by `id`
 
 A successful response must match the captured logical Run/Session/version/Source binding/document/query/limits, be HTTP 200 without Location, and satisfy metadata, UTF-16 text, node/visit and Source/public UTF-8 bounds. `scope` is main-document light DOM; role/name are limited DOM attributes, not computed accessibility data. Password/hidden values are redacted. Snapshot revision/time are not a global DOM mutation counter. A fresh snapshot, GC, document or selected metadata changes can expire handles; no automatic selector rebind or context/fence refresh occurs.
 
-Known-bound same-owner `recovery-required` input can be inspected. Observing its actual DOM does not upgrade unknown invocation history, clear writer quarantine or replay input. AX, screenshots/downloads, full locators/frame traversal and write-by-handle remain pending. Qualification is limited by the matching repository evidence and installed Native tests.
+Known-bound same-owner `recovery-required` input can be inspected. Observing its actual DOM does not upgrade unknown invocation history, clear writer quarantine or replay input. Screenshots/downloads, full locators/frame traversal and write-by-handle remain pending. Computed AX is described below. Qualification is limited by the matching repository evidence and installed Native tests.
 
 Computed AX of an existing observed element uses the same explicit read context:
 

@@ -1,3 +1,4 @@
+import {captureManagedAgentScreenshot,captureManagedAgentScreenshotRead,captureManagedAgentScreenshotId,captureAgentScreenshotResult,captureAgentScreenshotChunk,captureAgentScreenshotReleased} from '../live/agent-screenshot.mjs';
 import {captureManagedAgentAccessibility,captureAgentAccessibilityResult} from '../live/agent-accessibility.mjs';
 import {captureManagedAgentObservation,captureAgentObservationResult,captureAgentObservationContext} from '../live/agent-observation.mjs';
 import {InputError,AgentInputError,captureAgentFence} from '../live/input.mjs';
@@ -22,20 +23,24 @@ export function captureAgentRequest(value){
  if(op==='context'||op==='end'||op==='observation-context'){const v=data(value,['op','runId']);if(!id(v.runId,'run'))fail('AGENT_INVALID_REQUEST');return Object.freeze(v);}
  if(op==='observe'){try{const v=data(value,['op','runId','context','query','limits']);if(!id(v.runId,'run'))fail('AGENT_INVALID_REQUEST');const context=captureAgentObservationContext(v.context);if(context.binding.runId!==v.runId)fail('AGENT_INVALID_CONTEXT');const observation=captureManagedAgentObservation(v.query,v.limits);return Object.freeze({op,runId:v.runId,context,...observation});}catch(error){throw agentFailure(error,'not-dispatched');}}
  if(op==='observe-ax'){try{const v=data(value,['op','runId','context','elementId','limits']);if(!id(v.runId,'run'))fail('AGENT_INVALID_REQUEST');const context=captureAgentObservationContext(v.context);if(context.binding.runId!==v.runId)fail('AGENT_INVALID_CONTEXT');const accessibility=captureManagedAgentAccessibility(v.elementId,v.limits);return Object.freeze({op,runId:v.runId,context,...accessibility});}catch(error){throw agentFailure(error,'not-dispatched');}}
+ if(op==='observe-screenshot'||op==='read-screenshot'||op==='release-screenshot'){try{const fields=op==='observe-screenshot'?['op','runId','context','limits']:op==='read-screenshot'?['op','runId','context','screenshotId','offset','maxBytes']:['op','runId','context','screenshotId'],v=data(value,fields);if(!id(v.runId,'run'))fail('AGENT_INVALID_REQUEST');const context=captureAgentObservationContext(v.context);if(context.binding.runId!==v.runId)fail('AGENT_INVALID_CONTEXT');const request=op==='observe-screenshot'?captureManagedAgentScreenshot(v.limits):op==='read-screenshot'?captureManagedAgentScreenshotRead(v.screenshotId,v.offset,v.maxBytes):{screenshotId:captureManagedAgentScreenshotId(v.screenshotId)};return Object.freeze({op,runId:v.runId,context,...request});}catch(error){throw agentFailure(error,'not-dispatched');}}
  if(op==='perform'){const v=data(value,['op','runId','tool','params','context']);if(!id(v.runId,'run'))fail('AGENT_INVALID_REQUEST');const context=captureAgentContext(v.context);if(context.binding.runId!==v.runId)fail('AGENT_INVALID_CONTEXT');const action=captureManagedAgentAction(v.tool,v.params);return Object.freeze({op,runId:v.runId,tool:action.tool,params:action.params,context});}
  fail('AGENT_INVALID_REQUEST');
 }
-export function agentReplyExpectation(request){return Object.freeze({op:request.op,runId:request.runId??null,binding:request.context?.binding??null,fence:request.context?.fence??null,...(request.op==='observe'?{document:request.context.document,observation:{query:request.query,limits:request.limits}}:request.op==='observe-ax'?{document:request.context.document,accessibility:{elementId:request.elementId,limits:request.limits}}:{})});}
+export function agentReplyExpectation(request){return Object.freeze({op:request.op,runId:request.runId??null,binding:request.context?.binding??null,fence:request.context?.fence??null,...(request.op==='observe'?{document:request.context.document,observation:{query:request.query,limits:request.limits}}:request.op==='observe-ax'?{document:request.context.document,accessibility:{elementId:request.elementId,limits:request.limits}}:request.op==='observe-screenshot'?{document:request.context.document,screenshot:{limits:request.limits}}:request.op==='read-screenshot'?{document:request.context.document,screenshotRead:{screenshotId:request.screenshotId,offset:request.offset,maxBytes:request.maxBytes}}:request.op==='release-screenshot'?{document:request.context.document,screenshotId:request.screenshotId}:{})});}
 export function captureAgentResult(value,expected,{sessionId,tenantId,version}={}){
  let result;
  if(expected.op==='observation-context')result=captureAgentObservationContext(value);
  else if(expected.op==='observe')result=captureAgentObservationResult(value,expected);
  else if(expected.op==='observe-ax')result=captureAgentAccessibilityResult(value,expected);
+ else if(expected.op==='observe-screenshot')result=captureAgentScreenshotResult(value,expected);
+ else if(expected.op==='read-screenshot')result=captureAgentScreenshotChunk(value,expected);
+ else if(expected.op==='release-screenshot')result=captureAgentScreenshotReleased(value,expected);
  else if(expected.op==='begin'||expected.op==='context')result=captureAgentContext(value);
  else if(expected.op==='end'){const v=data(value,['stage','binding']);if(v.stage!=='run-closed')fail('AGENT_INVALID_REPLY');result=Object.freeze({stage:v.stage,binding:binding(v.binding)});}
  else if(expected.op==='perform'){const v=data(value,['stage','binding','fence','inputs']);if(v.stage!=='input-injected'||!Number.isInteger(v.inputs)||v.inputs<1||v.inputs>32)fail('AGENT_INVALID_REPLY');result=Object.freeze({stage:v.stage,binding:binding(v.binding),fence:captureAgentFence(v.fence),inputs:v.inputs});}
  else fail('AGENT_INVALID_REPLY');
- if(version!==undefined&&['observe','observe-ax'].includes(expected.op)&&result.version!==version)fail('AGENT_INVALID_REPLY');
+ if(version!==undefined&&['observe','observe-ax','observe-screenshot','read-screenshot','release-screenshot'].includes(expected.op)&&result.version!==version)fail('AGENT_INVALID_REPLY');
  if(sessionId!==undefined&&result.binding.sessionId!==sessionId||tenantId!==undefined&&result.binding.tenantId!==tenantId||expected.runId!==null&&result.binding.runId!==expected.runId||expected.binding&&Object.keys(expected.binding).some(k=>result.binding[k]!==expected.binding[k])||expected.op!=='observe'&&expected.fence&&Object.keys(expected.fence).some(k=>result.fence?.[k]!==expected.fence[k]))fail('AGENT_INVALID_REPLY');
  return result;
 }
