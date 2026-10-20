@@ -1616,3 +1616,12 @@ SQLite日志新增持久UUID，首次建库和v1迁移与元数据事务共同�
 提供器失效事件会同步令 Registry 转为 closing，拒绝 Ready 并取消未完成创建；正常关闭和 TTL 都在回收文件独立读回、runtime retired 后释放配额。正在关闭而尚未退役的对象继续占用提供器容量。当前真实 Engine 验证使用实际提供器和持久 Registry，覆盖 Node 主进程/独立 session 后代、正常关闭、三个取消时点、代理 SIGKILL、无 API 轮询触发的 TTL、源码漂移及关闭期间容量检查；详见[实际提供器检查点](evidence/docker-session-provider.json)。首次夹具误读独占日志的失败与后续修正记录保留。
 
 这仍是分阶段接入：已知 CID 提前消失但无已提交回收文件、恢复后缺少 Start 历史、见证前启动取消、未确认清理后的显式重试还需完成。Native 实际提供器、新候选整份全量回归待原8小时隔离后验证；Viewer角色和 HTTP/SDK 也未验收。41项保持9/14/18，8小时仍未通过，未暂存、提交或推送。
+
+
+### 持久化 Engine Start 历史与只清理恢复（B1c1b2c1）
+
+Session 日志升级为 v3，runtime 新增明确的启动请求历史。新 intent 为 not-requested，只有原 owner 能在 created 阶段、父 Session 仍处于 creating 时，一次性确认 requested 标记；Engine Start 必须消费此确认。关闭、恢复 owner、重复请求和回退标记均被拒绝。Ready 不允许沿用未请求状态。旧 v2 先验证全部记录、索引与引用，再在一个事务中给所有旧 runtime 标为 legacy-unknown 并升级格式，保留原 UUID/inode 和两类修订；v1 直接迁移到空 runtime 的 v3。实际迁移在首个行更新后、提交前被 SIGKILL，回滚后原 v2 完整，随后正常迁移。
+
+未启动退役分支改为消费持久 not-requested 历史，并仍要求实际 created/PID0/零 StartedAt、删除204和新鲜完整CID404；调用方的内存布尔值不能替代该历史。真实提供器在完整 CID 保存后、Start 标记前进程死亡，恢复原日志与绑定后只清理原容器、保存并回读退役证据再释放配额，全程不重放创建/启动/Ready。标记提交后进程死亡、旧 v2 缺少历史两条实际负例均不猜测未启动：对象删除后仍保留 closing 与配额，等待有效命名空间证明。最终双平台与真实路径结果见[启动历史检查点](evidence/runtime-start-history.json)。
+
+这没有完成全部恢复要求。已请求/未知但缺少内核见证、已知 CID 提前消失的历史证明、取消及清理重试仍需推进；Native 提供器、当前候选整份全量回归及 Viewer 角色/HTTP/SDK 待验收。原8小时仍独立运行，41项保持9/14/18，未提交或推送。

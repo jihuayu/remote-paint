@@ -13,7 +13,7 @@ const code=value=>e=>e instanceof DockerEffectError&&e.code===value;
 const send=(res,data,status=200)=>{res.writeHead(status,{'content-type':'application/json'});res.end(status===204?'':JSON.stringify(data));};
 function plan(){return planDockerRuntime({sessionId:'ses_a',tenantId:'tenant-a',region:'test',ownerKeyHash:'a'.repeat(64)},{deploymentId:'deployment-fixture',daemonId,imageId:'sha256:'+'b'.repeat(64),projectPath:'/fixture/project',browserPath:'/fixture/browser',projectManifestSha256:'c'.repeat(64),browserManifestSha256:'d'.repeat(64),imageEnvironment:['PATH=/usr/local/bin']});}
 function document(p){const c=structuredClone(p.create);return {Id:cid,Name:'/'+p.containerName,Image:p.imageId,Config:c,HostConfig:c.HostConfig,Mounts:c.HostConfig.Mounts.map(m=>({Type:'bind',Source:m.Source,Destination:m.Target,RW:false,Propagation:'rprivate'})),State:{Status:'created',Running:false,Pid:0},NetworkSettings:{Ports:{}}};}
-function allocation(p,kind='create'){return {sessionId:p.sessionId,tenant:p.tenantId,region:p.region,deploymentId:p.deploymentId,daemonId:p.daemonId,ownerKeyHash:p.ownerKeyHash,specDigest:p.specDigest,imageId:p.imageId,containerName:p.containerName,containerId:kind==='create'?null:cid,state:{create:'requested',start:'created',remove:'closing'}[kind],requestStarted:true,version:null};}
+function allocation(p,kind='create'){return {sessionId:p.sessionId,tenant:p.tenantId,region:p.region,deploymentId:p.deploymentId,daemonId:p.daemonId,ownerKeyHash:p.ownerKeyHash,specDigest:p.specDigest,imageId:p.imageId,containerName:p.containerName,containerId:kind==='create'?null:cid,state:{create:'requested',start:'created',remove:'closing'}[kind],requestStarted:true,startDispatch:kind==='start'?'requested':'not-requested',version:null};}
 const ack=(p,kind='create')=>({revision:3,allocation:allocation(p,kind)});
 async function fixture(t,handler,options={}){
  const dir=await mkdtemp(join(tmpdir(),'rp-effect-')),socket=join(dir,'engine.sock'),seen=[],sockets=new Set(),p=plan();let n=0;
@@ -95,4 +95,14 @@ test('synchronous authorization cannot extend the deadline or send after it expi
 
 test('an early lease or request timer callback rechecks the same absolute deadline before expiring',async t=>{
  const original=setTimeout;for(const forcedTimer of [1,2]){const f=await fixture(t,(req,res,seen,p)=>{original(()=>normal(req,res,seen,p),5);});let scheduled=0,forced=0;const mock=t.mock.method(globalThis,'setTimeout',(callback,ms,...args)=>{if(++scheduled===forcedTimer){forced++;return original(callback,0,...args);}return original(callback,ms,...args);});try{const s=await f.client.open({kind:'create',plan:f.p});assert.equal(forced,1);assert.equal((await s.perform(()=>ack(f.p))).httpStatus,201);assert.equal((await s.close()).status,'closed');assert.equal(mutations(f.seen).length,1);}finally{mock.mock.restore();}}
+});
+
+test('Engine Start rejects missing,never-requested or migrated-unknown durable fences before sending HTTP',async t=>{
+ const f=await fixture(t,normal);
+ for(const value of [undefined,'not-requested','legacy-unknown']){
+  const session=await f.client.open({kind:'start',plan:f.p,containerId:cid});
+  await assert.rejects(session.perform(()=>{const receipt=ack(f.p,'start');if(value===undefined)delete receipt.allocation.startDispatch;else receipt.allocation.startDispatch=value;return receipt;}),code('EFFECT_AUTHORIZATION'));
+  assert.equal((await session.close()).status,'closed');
+ }
+ assert.equal(mutations(f.seen).length,0);
 });

@@ -1,3 +1,4 @@
+import {legacyV2} from './fixtures/session-ledger-v2.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp,mkdir,rm,readdir,readFile,writeFile,copyFile,rename,chmod,symlink,stat} from 'node:fs/promises';
@@ -35,7 +36,7 @@ test('a second bootstrap cannot overwrite acknowledged bytes or silently act as 
  const f=await fixture(t),first=await bootstrap(f),bytes=await readFile(file(f)),seen=f.seen.length;await assert.rejects(bootstrap(f),code('DEPLOYMENT_EXISTS'));assert.deepEqual(await readFile(file(f)),bytes);assert.deepEqual(open(f),first);assert.equal(f.seen.length,seen);
 });
 test('copied,recreated and UUID-backfilled ledgers cannot borrow the original deployment binding',enabled,async t=>{
- for(const mode of ['copied','recreated','backfilled']){const f=await fixture(t),first=await bootstrap(f);f.store.close();const original=join(f.parent,'original.sqlite');await rename(f.path,original);if(mode!=='recreated')await copyFile(original,f.path);if(mode==='backfilled'){const {DatabaseSync}=createRequire(import.meta.url)('node:sqlite'),db=new DatabaseSync(f.path);db.exec("DELETE FROM metadata WHERE name='instance_id'");db.close();}f.replaceStore(new SqliteSessionStore({path:f.path}));assert.throws(()=>open(f),code('DEPLOYMENT_BINDING'));assert.equal(f.seen.length,3);assert.equal(first.receipt.ledger.instanceId,JSON.parse(await readFile(file(f))).binding.ledger.instanceId);}
+ for(const mode of ['copied','recreated','backfilled']){const f=await fixture(t),first=await bootstrap(f);f.store.close();const original=join(f.parent,'original.sqlite');await rename(f.path,original);if(mode!=='recreated')await copyFile(original,f.path);if(mode==='backfilled'){const {DatabaseSync}=createRequire(import.meta.url)('node:sqlite'),db=new DatabaseSync(f.path);legacyV2(db,{withoutIdentity:true});db.close();}f.replaceStore(new SqliteSessionStore({path:f.path}));assert.throws(()=>open(f),code('DEPLOYMENT_BINDING'));assert.equal(f.seen.length,3);assert.equal(first.receipt.ledger.instanceId,JSON.parse(await readFile(file(f))).binding.ledger.instanceId);}
 });
 test('configuration drift in engine,image,sources,paths,environment or worker entry is rejected on resume',enabled,async t=>{
  const f=await fixture(t);await bootstrap(f);for(const change of [{daemonId:'other'},{deploymentId:'other'},{imageId:'sha256:'+'f'.repeat(64)},{projectManifestSha256:'f'.repeat(64)},{browserManifestSha256:'f'.repeat(64)},{projectPath:'/other/project'},{browserPath:'/other/browser'},{imageEnvironment:['PATH=/other/bin']},{workerEntry:'other.mjs'}])assert.throws(()=>open({...f,configuration:{...f.configuration,...change}}),code('DEPLOYMENT_BINDING'));assert.equal(f.seen.length,3);

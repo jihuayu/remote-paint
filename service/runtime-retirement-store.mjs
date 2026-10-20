@@ -13,11 +13,11 @@ const frozen=v=>{if(v&&typeof v==='object'){for(const x of Object.values(v))froz
 const date=v=>typeof v==='string'&&v.length<=32&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString()===v;
 const started=v=>typeof v==='string'&&/^20[0-9]{2}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,9})?Z$/.test(v)&&Number.isFinite(Date.parse(v));
 const keys=['sessionId','tenantId','region','deploymentId','daemonId','containerId','specDigest','imageId','ownerKeyHash','projectManifestSha256','browserManifestSha256','containerName'];
-const allocationKeys=['sessionId','tenant','region','deploymentId','daemonId','ownerKeyHash','specDigest','imageId','containerName','containerId','state','requestStarted','version','closeReason','retirement','createdAt','updatedAt'];
+const allocationKeys=['sessionId','tenant','region','deploymentId','daemonId','ownerKeyHash','specDigest','imageId','containerName','containerId','state','requestStarted','version','closeReason','retirement','createdAt','updatedAt','startDispatch'];
 const reasons=['released','ttl-expired','registry-shutdown','registry-recovery','registry-storage-fault','startup-failed','startup-cancelled','worker-unavailable'];
 function identity(plan,containerId){dockerRuntimeCreateBody(plan);if(containerId!==null&&!hash(containerId))throw fail('RETIREMENT_BINDING');return Object.fromEntries(keys.map(k=>[k,k==='containerId'?containerId:plan[k]]));}
 function closingReceipt(plan,receipt,requested){
- const row=receipt?.allocation;if(!Number.isSafeInteger(receipt?.revision)||receipt.revision<1||!exact(row,allocationKeys)||row.state!=='closing'||row.requestStarted!==requested||row.retirement!==null||!reasons.includes(row.closeReason)||!date(row.createdAt)||!date(row.updatedAt)||row.updatedAt<row.createdAt||!(row.version===null||typeof row.version==='string'&&row.version.length>0&&row.version.length<=256))throw fail('RETIREMENT_JOURNAL');
+ const row=receipt?.allocation;if(!Number.isSafeInteger(receipt?.revision)||receipt.revision<1||!exact(row,allocationKeys)||row.state!=='closing'||row.requestStarted!==requested||row.retirement!==null||!['not-requested','requested','legacy-unknown'].includes(row.startDispatch)||!reasons.includes(row.closeReason)||!date(row.createdAt)||!date(row.updatedAt)||row.updatedAt<row.createdAt||!(row.version===null||typeof row.version==='string'&&row.version.length>0&&row.version.length<=256))throw fail('RETIREMENT_JOURNAL');
  const binding=identity(plan,row.containerId);if(requested?!hash(row.containerId):row.containerId!==null||row.version!==null)throw fail('RETIREMENT_JOURNAL');
  for(const [key,value]of Object.entries({...binding,tenant:binding.tenantId})){if(key==='tenantId'||key==='projectManifestSha256'||key==='browserManifestSha256')continue;if(row[key]!==value)throw fail('RETIREMENT_JOURNAL');}
  return {binding,revision:receipt.revision,allocationSha256:sha(stable(row))};
@@ -67,11 +67,11 @@ export class RuntimeRetirementStore {
  persistNotDispatched({plan,closing}={}){
   const value=closingReceipt(plan,closing,false);return this.#publish(value.binding,{kind:'not-dispatched',origin:'not-dispatched',journalRevision:value.revision,allocationSha256:value.allocationSha256,startDispatched:false,beforeRemoval:null,removal:null,absence:null,namespace:null});
  }
- persistRemoved({plan,closing,inspection,removal,absence,startDispatched=null}={}){
-  const value=closingReceipt(plan,closing,true),runtime=verifyDockerRuntime(plan,inspection,{containerId:value.binding.containerId});if(![null,true,false].includes(startDispatched))throw fail('RETIREMENT_FORMAT');const state=inspection.document.State;
+ persistRemoved({plan,closing,inspection,removal,absence,startDispatched:claimedStart}={}){
+  const value=closingReceipt(plan,closing,true),runtime=verifyDockerRuntime(plan,inspection,{containerId:value.binding.containerId});const startDispatched=closing.allocation.startDispatch==='not-requested'?false:closing.allocation.startDispatch==='requested'?true:null;if(claimedStart!==undefined&&claimedStart!==startDispatched)throw fail('RETIREMENT_JOURNAL');const state=inspection.document.State;
   const beforeRemoval={status:runtime.state,running:runtime.running,pid:runtime.pid,startedAt:state.StartedAt,inspectionSha256:sha(stable(inspection))},origin=startDispatched===false?'unstarted':'namespace';
-  // false is usable only by a current controller that has fenced every Start
-  // dispatch; an unknown recovered Start must use the namespace branch.
+  // Durable not-requested history plus an actual never-started inspection
+  // permits the unstarted branch; migrated unknown history cannot supply it.
   const namespace=origin==='namespace'?this.#witnessStore?.read({plan,inspection}):null;if(origin==='namespace'&&!namespace)throw fail('RETIREMENT_NAMESPACE');
   const remove=removal&&Object.fromEntries(['kind','containerId','daemonId','connectionId','httpStatus','authorizationRevision','effectAttempted','alreadyAbsent'].map(k=>[k,removal[k]]));
   return this.#publish(value.binding,{kind:'container-removed',origin,journalRevision:value.revision,allocationSha256:value.allocationSha256,startDispatched,beforeRemoval,removal:remove,absence:{found:absence?.found,daemonId:absence?.daemon?.id,selector:absence?.selector},namespace});

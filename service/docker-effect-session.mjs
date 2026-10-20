@@ -22,7 +22,7 @@ class SingleConnectionAgent extends Agent{
 function authorize(receipt,kind,plan,cid){
  if(!receipt||!Number.isSafeInteger(receipt.revision)||receipt.revision<1||!receipt.allocation)throw fail('EFFECT_AUTHORIZATION');const row=receipt.allocation;
  for(const[k,v]of Object.entries({sessionId:plan.sessionId,tenant:plan.tenantId,region:plan.region,deploymentId:plan.deploymentId,daemonId:plan.daemonId,ownerKeyHash:plan.ownerKeyHash,specDigest:plan.specDigest,imageId:plan.imageId,containerName:plan.containerName}))if(row[k]!==v)throw fail('EFFECT_AUTHORIZATION');
- if(row.requestStarted!==true||kind==='create'&&(row.state!=='requested'||row.containerId!==null)||kind==='start'&&(row.state!=='created'||row.containerId!==cid||row.version!==null)||kind==='remove'&&(row.state!=='closing'||row.containerId!==cid))throw fail('EFFECT_AUTHORIZATION');return receipt.revision;
+ if(row.requestStarted!==true||kind==='create'&&(row.state!=='requested'||row.containerId!==null)||kind==='start'&&(row.state!=='created'||row.containerId!==cid||row.version!==null||row.startDispatch!=='requested')||kind==='remove'&&(row.state!=='closing'||row.containerId!==cid))throw fail('EFFECT_AUTHORIZATION');return receipt.revision;
 }
 class EffectSession{
  constructor(client,options){this.client=client;Object.assign(this,options);this.agent=new SingleConnectionAgent(client.socketPath);this.connectionId=randomUUID();this.deadline=performance.now()+client.timeoutMs;this.attempted=false;this.closed=false;this.active=false;this.effectSent=false;this.inspection=null;this.profile=null;this.absent=false;this.currentCancel=null;this.armDeadline();}

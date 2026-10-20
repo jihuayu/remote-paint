@@ -10,10 +10,11 @@ const date=v=>typeof v==='string'&&v.length<=32&&Number.isFinite(Date.parse(v))&
 const region=v=>typeof v==='string'&&v.length>0&&v.length<=64;
 const providerKeys=['region','deploymentId','daemonId','createdAt'];
 const keys=['sessionId','tenant','region','deploymentId','daemonId','ownerKeyHash','specDigest','imageId','containerName','containerId','state','requestStarted','version','closeReason','retirement','createdAt','updatedAt'];
+const legacyKeys=[...keys];keys.push('startDispatch');
 const immutable=['sessionId','tenant','region','deploymentId','daemonId','ownerKeyHash','specDigest','imageId','containerName','createdAt'];
 const transitions={intent:['intent','requested','closing','retired'],requested:['requested','created','closing'],created:['created','ready','closing'],ready:['ready','closing'],closing:['closing','retired'],retired:['retired']};
 const reasons=new Set(['released','ttl-expired','registry-shutdown','registry-recovery','registry-storage-fault','startup-failed','startup-cancelled','worker-unavailable']);
-export function createSessionRuntimeJournal(db,{fail,isStoreError,validateSession,maxSessions}){
+export function createSessionRuntimeJournal(db,{fail,isStoreError,validateSession,maxSessions,legacyRows=false}){
  const owners=new Map(),regions=new Map(),recovery=new Map();
  const reject=(code,message)=>fail('STATE_RUNTIME_'+code,message);
  const encode=row=>{const s=JSON.stringify(row);if(Buffer.byteLength(s)>8192)reject('LIMIT','Runtime metadata exceeds8192bytes');return s;};
@@ -21,14 +22,15 @@ export function createSessionRuntimeJournal(db,{fail,isStoreError,validateSessio
   if(!plain(row,providerKeys)||!region(row.region)||!id(row.deploymentId)||!id(row.daemonId)||!date(row.createdAt))reject('INVALID','Invalid runtime provider identity');return {...row};
  }
  function record(row){
-  if(!plain(row,keys)||!id(row.sessionId)||typeof row.tenant!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(row.tenant)||!region(row.region)||!id(row.deploymentId)||!id(row.daemonId)||!hash(row.ownerKeyHash)||!hash(row.specDigest)||typeof row.imageId!=='string'||!/^sha256:[a-f0-9]{64}$/.test(row.imageId)||typeof row.containerName!=='string'||!/^[a-z0-9][a-z0-9_.-]{0,127}$/.test(row.containerName)||!(row.containerId===null||hash(row.containerId))||typeof row.state!=='string'||!Object.hasOwn(transitions,row.state)||typeof row.requestStarted!=='boolean'||!(row.version===null||typeof row.version==='string'&&row.version.length>0&&row.version.length<=256)||!(row.closeReason===null||reasons.has(row.closeReason))||!date(row.createdAt)||!date(row.updatedAt)||row.updatedAt<row.createdAt)reject('INVALID','Invalid runtime ownership record');
+  if(!plain(row,legacyRows?legacyKeys:keys)||!legacyRows&&!'not-requested requested legacy-unknown'.split(' ').includes(row.startDispatch)||!id(row.sessionId)||typeof row.tenant!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(row.tenant)||!region(row.region)||!id(row.deploymentId)||!id(row.daemonId)||!hash(row.ownerKeyHash)||!hash(row.specDigest)||typeof row.imageId!=='string'||!/^sha256:[a-f0-9]{64}$/.test(row.imageId)||typeof row.containerName!=='string'||!/^[a-z0-9][a-z0-9_.-]{0,127}$/.test(row.containerName)||!(row.containerId===null||hash(row.containerId))||typeof row.state!=='string'||!Object.hasOwn(transitions,row.state)||typeof row.requestStarted!=='boolean'||!(row.version===null||typeof row.version==='string'&&row.version.length>0&&row.version.length<=256)||!(row.closeReason===null||reasons.has(row.closeReason))||!date(row.createdAt)||!date(row.updatedAt)||row.updatedAt<row.createdAt)reject('INVALID','Invalid runtime ownership record');
   if(row.state==='intent'&&(row.requestStarted||row.containerId!==null)||row.state==='requested'&&(!row.requestStarted||row.containerId!==null)||['created','ready'].includes(row.state)&&(!row.requestStarted||row.containerId===null)||row.containerId!==null&&!row.requestStarted||row.state==='ready'&&row.version===null||['intent','requested','created'].includes(row.state)&&row.version!==null)reject('INVALID','Runtime phase and identity disagree');
+  if(!legacyRows&&(row.startDispatch==='requested'&&['intent','requested'].includes(row.state)||row.startDispatch==='not-requested'&&row.state==='ready'))reject('INVALID','Runtime Start history disagrees with phase');
   if(['closing','retired'].includes(row.state)!==(row.closeReason!==null))reject('INVALID','Runtime closure lacks its fixed reason');
   if(row.state==='retired'){
    if(!plain(row.retirement,['kind','evidenceSha256'])||!hash(row.retirement.evidenceSha256)||!['not-dispatched','container-removed'].includes(row.retirement.kind))reject('INVALID','Runtime retirement requires explicit evidence identity');
    if(row.retirement.kind==='not-dispatched'&&(row.requestStarted||row.containerId!==null)||row.retirement.kind==='container-removed'&&(!row.requestStarted||row.containerId===null))reject('INVALID','Unknown allocation cannot be attested retired');
   }else if(row.retirement!==null)reject('INVALID','Live runtime cannot carry retirement evidence');
-  const copy=Object.fromEntries(keys.map(k=>[k,row[k]]));if(copy.retirement)copy.retirement={...copy.retirement};encode(copy);return copy;
+  const copy=Object.fromEntries((legacyRows?legacyKeys:keys).map(k=>[k,row[k]]));if(copy.retirement)copy.retirement={...copy.retirement};encode(copy);return copy;
  }
  function decode(body,validate){try{if(typeof body!=='string'||Buffer.byteLength(body)>8192)throw new Error('Invalid record size');return validate(JSON.parse(body));}catch(error){fail('STATE_CORRUPT','Invalid stored runtime ownership metadata',error);}}
  function revision(){const v=db.prepare("SELECT value FROM metadata WHERE name='runtime_revision'").get()?.value,n=Number(v);if(typeof v!=='string'||!/^(0|[1-9][0-9]*)$/.test(v)||!Number.isSafeInteger(n))fail('STATE_CORRUPT','Invalid runtime ledger revision');return n;}
@@ -67,8 +69,10 @@ export function createSessionRuntimeJournal(db,{fail,isStoreError,validateSessio
     const parent=reference(row),old=runtime(row.sessionId);
     if(recovery.get(owner).has(row.sessionId)&&!['closing','retired'].includes(row.state))reject('RECOVERY_REQUIRED','Recovered allocations can only be closed,never dispatched or made Ready again');
     if(old?.state==='requested'&&row.state==='requested')reject('CONFLICT','Dispatch intent is one-use and cannot authorize a repeated allocation');
-    if(!old){if(row.state!=='intent'||row.requestStarted||row.containerId!==null||parent.state!=='creating'||!parent.reserved)reject('CONFLICT','A new runtime requires a reserved creating Session and an undispatched intent');}
+    if(!old){if(row.state!=='intent'||row.startDispatch!=='not-requested'||row.requestStarted||row.containerId!==null||parent.state!=='creating'||!parent.reserved)reject('CONFLICT','A new runtime requires a reserved creating Session and an undispatched intent');}
     else{
+     if(old.startDispatch!==row.startDispatch&&(old.startDispatch!=='not-requested'||row.startDispatch!=='requested'||old.state!=='created'||row.state!=='created'||parent.state!=='creating'||!parent.reserved))reject('CONFLICT','Engine Start requires a one-use durable fence before dispatch');
+     if(old.startDispatch==='requested'&&old.state==='created'&&row.state==='created')reject('CONFLICT','Engine Start dispatch fence is one-use');
      if(immutable.some(k=>old[k]!==row[k])||row.updatedAt<old.updatedAt||!transitions[old.state].includes(row.state)||old.containerId!==null&&old.containerId!==row.containerId||old.version!==null&&old.version!==row.version||old.closeReason!==null&&old.closeReason!==row.closeReason||old.state==='retired'&&encode(old)!==encode(row))reject('CONFLICT','Runtime ownership or terminal history cannot be rewritten');
      if(!old.requestStarted&&row.requestStarted&&(old.state!=='intent'||row.state!=='requested')||old.requestStarted&&!row.requestStarted)reject('CONFLICT','Runtime dispatch must be durably recorded before allocation and cannot begin after closure');
      if(old.containerId===null&&row.containerId!==null&&(!old.requestStarted||!['created','closing'].includes(row.state)))reject('CONFLICT','Runtime container identity requires an earlier dispatch intent');

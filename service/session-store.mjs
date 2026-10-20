@@ -58,7 +58,7 @@ function bindingLinks(row,operation,session){
  if(!operation||!session||operation.tenant!==row.tenant||operation.operation.kind!=='create-session'||session.tenant!==row.tenant||row.defaults.region!==session.region||row.defaults.ttlSeconds!==session.ttlSeconds)fail('STATE_REFERENCE','Idempotency binding disagrees with its Session');
 }
 const encode=row=>{const body=JSON.stringify(row);if(Buffer.byteLength(body)>8192)fail('STATE_RECORD_LIMIT','Record metadata limit exceeded');return body;};
-const legacyFormat='remote-paint-session-ledger-v1',format='remote-paint-session-ledger-v2';
+const legacyFormat='remote-paint-session-ledger-v1',previousFormat='remote-paint-session-ledger-v2',format='remote-paint-session-ledger-v3';
 
 // Single-owner ledger for control-plane transitions, not rendering data.
 // EXCLUSIVE locking persists between committed DELETE-journal transactions:
@@ -85,7 +85,7 @@ export class SqliteSessionStore {
    if(empty&&!created)fail('STATE_SCHEMA','Existing ledger has no valid Session schema');
    if(db.prepare("SELECT 1 FROM sqlite_schema WHERE type IN ('trigger','view') LIMIT 1").get())fail('STATE_SCHEMA','Unexpected Session ledger schema objects');
    const legacy=!empty&&version===1&&JSON.stringify(names)===JSON.stringify(['bindings','metadata','operations','sessions']);
-   if(!empty&&(legacy?db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==legacyFormat:version!==2||JSON.stringify(names)!==JSON.stringify(['bindings','metadata','operations','runtime_providers','runtimes','sessions'])||db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==format))fail('STATE_SCHEMA','Unsupported Session ledger schema');
+   if(!empty&&(legacy?db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==legacyFormat:![2,3].includes(version)||JSON.stringify(names)!==JSON.stringify(['bindings','metadata','operations','runtime_providers','runtimes','sessions'])||db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==(version===2?previousFormat:format)))fail('STATE_SCHEMA','Unsupported Session ledger schema');
    const priorInstance=!empty&&!legacy?db.prepare("SELECT value FROM metadata WHERE name='instance_id'").get():null;
    if(priorInstance&&!instance(priorInstance.value))fail('STATE_IDENTITY','Invalid stored Session ledger instance');
    db.exec('COMMIT; PRAGMA journal_mode=DELETE; PRAGMA synchronous=FULL;');
@@ -99,7 +99,7 @@ export class SqliteSessionStore {
      CREATE TABLE operations(operation_id TEXT PRIMARY KEY,session_id TEXT NOT NULL,tenant TEXT NOT NULL,body TEXT NOT NULL CHECK(length(CAST(body AS BLOB))<=8192),UNIQUE(operation_id,tenant),FOREIGN KEY(session_id,tenant) REFERENCES sessions(session_id,tenant)) STRICT;
      CREATE TABLE bindings(tenant TEXT NOT NULL,key_hash TEXT NOT NULL,operation_id TEXT NOT NULL,body TEXT NOT NULL CHECK(length(CAST(body AS BLOB))<=8192),PRIMARY KEY(tenant,key_hash),FOREIGN KEY(operation_id,tenant) REFERENCES operations(operation_id,tenant)) STRICT;
      ${runtimeSchemaSql}
-     INSERT INTO metadata VALUES('format','${format}'),('revision','0'),('runtime_revision','0'),('instance_id','${randomUUID()}');PRAGMA user_version=2;COMMIT;`);
+     INSERT INTO metadata VALUES('format','${format}'),('revision','0'),('runtime_revision','0'),('instance_id','${randomUUID()}');PRAGMA user_version=3;COMMIT;`);
    }
    const rawRevision=db.prepare("SELECT value FROM metadata WHERE name='revision'").get()?.value,revision=Number(rawRevision);
    if(typeof rawRevision!=='string'||!/^(0|[1-9][0-9]*)$/.test(rawRevision)||!Number.isSafeInteger(revision)||revision<0)fail('STATE_CORRUPT','Invalid Session ledger revision');
@@ -108,14 +108,22 @@ export class SqliteSessionStore {
     // Validate every old record and reference before changing its format. A
     // bad existing ledger is never replaced with an empty ownership journal.
     this.load();
-    db.exec(`BEGIN IMMEDIATE;${runtimeSchemaSql}INSERT INTO metadata VALUES('runtime_revision','0'),('instance_id','${randomUUID()}');UPDATE metadata SET value='${format}' WHERE name='format';PRAGMA user_version=2;COMMIT;`);
+    db.exec(`BEGIN IMMEDIATE;${runtimeSchemaSql}INSERT INTO metadata VALUES('runtime_revision','0'),('instance_id','${randomUUID()}');UPDATE metadata SET value='${format}' WHERE name='format';PRAGMA user_version=3;COMMIT;`);
    }
-   this.#runtime=createSessionRuntimeJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,validateSession:sessionRecord,maxSessions});
-   if(!empty&&!legacy&&!priorInstance){
-    // Backfill only a fully validated older v2 ledger. Revisions and resource
-    // ownership remain intact; a missing ID never means an empty deployment.
-    this.load();db.exec('BEGIN IMMEDIATE');db.prepare('INSERT INTO metadata VALUES(?,?)').run('instance_id',randomUUID());db.exec('COMMIT');
-   }
+   const runtimeOptions={fail,isStoreError:error=>error instanceof SessionStoreError,validateSession:sessionRecord,maxSessions};
+   this.#runtime=createSessionRuntimeJournal(db,{...runtimeOptions,legacyRows:!empty&&!legacy&&version===2});
+   if(!empty&&!legacy&&version===2){
+    // Validate all legacy bodies,indices and references before any upgrade.
+    // No old missing Start history is interpreted as a never-started resource.
+    this.load();db.exec('BEGIN IMMEDIATE');
+    for(const row of db.prepare('SELECT session_id,body FROM runtimes').all()){
+     const value={...JSON.parse(row.body),startDispatch:'legacy-unknown'};
+     db.prepare('UPDATE runtimes SET body=? WHERE session_id=?').run(encode(value),row.session_id);
+    }
+    if(!priorInstance)db.prepare('INSERT INTO metadata VALUES(?,?)').run('instance_id',randomUUID());
+    db.prepare("UPDATE metadata SET value=? WHERE name='format'").run(format);db.exec('PRAGMA user_version=3;COMMIT');
+    this.#runtime=createSessionRuntimeJournal(db,runtimeOptions);
+   }else if(!empty&&!legacy&&!priorInstance)fail('STATE_IDENTITY','Session ledger instance is unavailable');
    this.#instanceId=db.prepare("SELECT value FROM metadata WHERE name='instance_id'").get()?.value;
    if(!instance(this.#instanceId))fail('STATE_IDENTITY','Session ledger instance is unavailable');this.#checkFileIdentity();
   }catch(error){
