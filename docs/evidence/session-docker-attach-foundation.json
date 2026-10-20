@@ -1,0 +1,172 @@
+{
+  "at": "2026-10-18T14:55:35.168445+00:00",
+  "task": "B1b2a",
+  "status": "bounded-attach-multiplex-and-local-log-rotation-qualified",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-attach-foundation-v1/frozen-version.json",
+  "manifestSha256": "e4caafdff04fadff26f8a887172899bb830c39e45574951264e891cded491398",
+  "sourceFiles": 750,
+  "changedFiles": {
+    "service/docker-multiplex.mjs": "e40a4d244f52e5716c17b7463f334d14f27e2f20023e669aaaa5c35f2ae54cf8",
+    "tests/docker-multiplex.test.mjs": "bf71b012133003865986ca49d92fb83cbe06704b00148b3d03b5ad50eb214caa",
+    "service/docker-runtime-spec.mjs": "4198849138a6f58e7879241a847c50463a92999e7a5d80355545aacb070e7a5d",
+    "tests/docker-runtime-spec.test.mjs": "53cf38c9ed59542ce93e1ecb2edd04e05fb71fd128955f2f9bd9ff89316bfa97",
+    "service/docker-effect-session.mjs": "d739212c74c73ebb7864f9a8087da0ceaf706e9895c52f0ae792c1b4a10b1e76",
+    "tests/docker-effect-session.test.mjs": "71cf688c3b1c842540d6c18d8b0b3004b19744c1248391259e784950bb4f250c",
+    "tests/verify-docker-effect-session.mjs": "932603fec2eca72ed25669e65c80c1f8faecb594ba13c91ef88c360e439a5132",
+    "docs/session-native-worker.md": "7071ab576c65f1780232bfe245cf88d4a015f1d1976c15e0f10a198dc41b8c69",
+    "docs/optimization-progress.md": "416a2f52df3fad4f193631d470ab4dcc844a378038c992f05edc1ce0571ec75b"
+  },
+  "platforms": {
+    "mac": {
+      "scoped": {
+        "tests": 56,
+        "pass": 56,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "actualExitCode": 0,
+        "logSha256": "9ea95db40fe7827bc9b60c2b9d5976c3e3ba4d859d33221f0b2e5c2e62b0e6bc"
+      },
+      "full": {
+        "tests": 475,
+        "pass": 466,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 9,
+        "actualExitCode": 0,
+        "logSha256": "3890461d82734fc3d83616fd444d7628586a83f2a2c9844e72927a910b864a17"
+      }
+    },
+    "linux": {
+      "scoped": {
+        "tests": 56,
+        "pass": 56,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "actualExitCode": 0,
+        "logSha256": "624f368a96cb4191c9e8cdabb771834f58d7f0169fa379499267c5d5f1b9598a"
+      },
+      "full": {
+        "tests": 475,
+        "pass": 471,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 4,
+        "actualExitCode": 0,
+        "logSha256": "b75b9e08300f7cc2e3eadb8338f310862670110d2536268402c08c1b1ddb1111"
+      }
+    }
+  },
+  "actualFixture": {
+    "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-attach-foundation-v1/actual-v1",
+    "invocation": {
+      "at": "2026-10-18T14:52:58.112654+00:00",
+      "manifestSha256": "e4caafdff04fadff26f8a887172899bb830c39e45574951264e891cded491398",
+      "sourceFiles": 750,
+      "entry": "tests/verify-docker-effect-session.mjs",
+      "entrySha256": "932603fec2eca72ed25669e65c80c1f8faecb594ba13c91ef88c360e439a5132",
+      "effectModuleSha256": "d739212c74c73ebb7864f9a8087da0ceaf706e9895c52f0ae792c1b4a10b1e76",
+      "output": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-attach-foundation-v1/actual-v1",
+      "scope": "Node only;actual local log rotation/retained multiplexstream;noHTTPUpgrade/Native",
+      "actualExitCode": 0,
+      "logSha256": "5909b67f6aba64588fff61e599ef8988b02d853106813d1030ea2e66d7e96525",
+      "frozenBytesVerifiedAfterExit": true
+    },
+    "containerId": "a60cbb182465b352c2c3e0c52763515da396a77719fd200f295cb50937c535a7",
+    "namespace": "pid:[4026535384]",
+    "main": {
+      "pid": 7,
+      "ppid": 1,
+      "pgrp": 7,
+      "session": 1,
+      "startTicks": "24405579"
+    },
+    "detachedLeaf": {
+      "pid": 19,
+      "ppid": 7,
+      "pgrp": 19,
+      "session": 19,
+      "startTicks": "24405585"
+    },
+    "transportClosedWhileRunning": true,
+    "effectStatuses": [
+      201,
+      204,
+      204
+    ],
+    "rawFiles": {
+      "plan.json": "b00afda04ee892ebcb4f22870778f968a00bbf1427df11b3eb62c5a235a63d07",
+      "create.json": "6115390d7586f1d2acdd8832527b2959be84f25817b6ae47a92f26bdb3fcd32f",
+      "start.json": "25cbb9e7b58ad777708e04db057d5ba86e8a48feb5e39e79580eb4131f6a755a",
+      "before-start.json": "dc9625942ff236c8410297af3c828405c744b8bf587c7a6787673adeaffae716",
+      "running-witness.json": "b866b9c48277bb3343210f7abade142f367cd91fbdce6e92074df47c15f38ca9",
+      "removal.json": "25e4f06026727c1f4011ceda84516b3ac478c3da820a63103a8beedcb6a470cf",
+      "report.json": "8ad148daa22b981e1fb16f2ce1dc73743c29587d8558cf1de541d622648c38d3",
+      "log-rotation.json": "bf601d6b9f486cf38c2c040178125d30d519ccae3a77dd0b34bb9d3c0c704aed",
+      "logs-wire.bin": "77447768655c7307ed7e360bcb1b970fd89fd5e7b176b6edc7431a796db5a54c"
+    },
+    "retirementEvidenceFileHashVerified": true,
+    "independentReopenedSqliteAudit": true,
+    "sessionQuotaReleased": true,
+    "allActualAttemptContainerIDsFreshAbsent": [
+      "a60cbb182465b352c2c3e0c52763515da396a77719fd200f295cb50937c535a7"
+    ],
+    "scope": "Node-only effective private PID-namespace/init witness + owned exact-ID removal204 + fresh pinned absence + real main/leaf witness socket closure. Namespace retirement is an inference using Linux init semantics,not a host-wide census or Native readiness proof."
+  },
+  "actualLocalLogRotation": {
+    "wireBytes": 147580,
+    "retainedStdoutBytes": 147500,
+    "frames": 10,
+    "maxFrameBytes": 16384,
+    "oldBeginRotated": true,
+    "endMarkerRetained": true,
+    "independentRawWireParse": true,
+    "wireSha256": "77447768655c7307ed7e360bcb1b970fd89fd5e7b176b6edc7431a796db5a54c"
+  },
+  "negativeLogEvidenceMutationsRejected": 7,
+  "preservedDevelopmentFailures": [
+    {
+      "at": "2026-10-18T14:47:57.284555+00:00",
+      "logSha256": "4a9966f585ce213bc5dab1a72ad137f4f1114406df3c1483c1684400670fc451",
+      "testFailures": 6,
+      "cause": "New nested LogConfig was incorrectly put in the existing primitive reference comparison loop;valid independent Config object rejected. Fixed to canonical deep value comparison.",
+      "actualNodeExitCode": null,
+      "exitCaptureLimitation": "Initial shell ran log-tail Python after Node,so final shell0 is not the Node exitcode;not acceptance evidence."
+    },
+    {
+      "at": "2026-10-18T14:49:20.273906+00:00",
+      "actualNodeExitCode": 1,
+      "failedTests": 1,
+      "passedTests": 43,
+      "cause": "Absolute session lease timer may run just before performance deadline. Its close then emitted EFFECT_SESSION_CLOSED. Do not expire early;re-arm only remaining interval against unchanged absolute deadline. Request timer receives same correction.",
+      "logSha256": "5b866c5178978fc04a26bf3d255184c4f4e04f77837ea334ef473a7a70563498",
+      "deadlinesUnchanged": true
+    }
+  ],
+  "negativeEvidenceMutationsRejected": 9,
+  "unrelatedPeerPreserved": true,
+  "indexEmpty": true,
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "eightHourActive": {
+    "manifestSha256": "2ccec8079ff04a962d53051538c6e4f23058a3d3ccd16f78bf845b096783b03e",
+    "elapsedSeconds": 6536.494595166,
+    "cycle": 2487,
+    "status": "running",
+    "actualDockerRunning": true
+  },
+  "remaining": [
+    "B1b2b private attach proxy/actual ChildProcess close and SessionWorkerChannel integration",
+    "Production unknown creation reconciliation and durable retirement files",
+    "Actual Native provider/Chromium after8h isolation gate",
+    "Registry TTL/cancel/recovery/health lifecycle",
+    "Rendered readonly/control Viewer tickets and stable SDK",
+    "Original8h physical acceptance and remaining41 backlog items"
+  ],
+  "all41": {
+    "complete": 9,
+    "partial": 14,
+    "pending": 18
+  }
+}

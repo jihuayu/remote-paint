@@ -60,6 +60,16 @@ perform要求同步返回同一运行时账本的持久确认，逐字段核对S
 
 初版嵌套LogConfig曾错误使用对象引用比较，导致合法配置被拒绝；失败保留后改为规范化内容比较。随后定向测试发现原操作会话的timer偶尔早于performance绝对截止时间触发，误报主动关闭；修正为每次回调检查同一截止时间，只等待剩余间隔。原5秒总预算不变；固定强制早触发的两类回调合同验证不会提前过期，未用加长期限或重试代替。冻结版本、真实日志轮转与双平台回归结果见[attach前置检查点](evidence/session-docker-attach-foundation.json)。实际HTTP Upgrade、私有代理和worker通道集成仍在后续B1b2b，不能用这个解码器或日志读取验收代替。
 
+## 私有 attach 代理（B1b2b）
+
+`DockerAttachClient` 同步持有新建的宿主Node子进程，最多4个活动代理且不排队；名额只在真实ChildProcess close后释放。固定入口、显式精简环境，至多128KiB配置走私有fd3；fd4只回送2KiB内的连接结果，初始URL和owner key继续只走SessionWorkerChannel私有stdin。配置副本不能改变已经捕获的容器/daemon绑定。attached表示运输层升级完成，clientDone严格来自子进程close，不根据socket EOF伪造退出，也不据此宣布容器退役。
+
+子进程在同一实际Unix连接上顺序读取info、完整ID的inspect，然后升级attach。检查daemon、Linux架构、完整归属和固定running配置；要求101、Upgrade tcp及允许的Docker内容类型，拒绝重连、重定向、200降级和原始TTY。启动期限默认5秒且覆盖配置/检查/升级，只按原截止时刻检查剩余时间。每次调用方应先检查持久运行时是否恢复/关闭中；代理不代替provider的账本与并发控制，也不自动重新attach或重发Start。
+
+HTTP升级head也进入同一有界解码器，socket用read(n)逐次取最多64KiB，避免Node异步迭代合并过多缓存。stdout按整帧交付，等实际下游write回调后才清除Buffer；原始输入块和head在消耗后清除。stderr只计数、清除且不转发，生命周期上限1MiB；私有输入只转发完整LF帧，单行最多32768字节。输入EOF保留最多12秒响应收尾，输出EOF会关闭输入读取。停止时先关闭自己的stdio，避免未读stdout阻止真实close，再等SIGTERM最多250ms，必要时SIGKILL再等250ms；未知退出继续报告unconfirmed。这些动作都只涉及宿主代理，运行时进程集合仍需单独回收。
+
+19项代理合同覆盖同连接检查/升级、错误身份/配置、拒绝重连、坏HTTP/升级头/复用帧、输入边界、有限stderr、EOF及总期限、取消、真实SIGKILL、8MiB慢消费背压、stdout阻塞时退出和清除继承Node选项。实际容器夹具复制冻结的runSessionWorker与Node叶子资源，分别测正常关闭、代理丢失和运行时被移除；证据与双平台回归结果见[代理检查点](evidence/session-docker-attach-proxy.json)。该夹具仅验证Node私有控制通道，没有运行Native/Chromium或完成Registry公共Ready、TTL、恢复及Viewer票据。独立720文件8小时保持不变。
+
 ## 当前证据与剩余条件
 
 轻量合同运行真实Node worker与叶子子进程，验证认证前无分配、重复启动、同批Start/Close、父端EOF与租约失效、心跳、晚启动收尾、提前关闭假回执、abort同步重入、失败脱敏、UTF-8分片/限长和期限。stdout在释放中关闭的失败已保留：此前移除了错误处理器，资源虽关闭仍因EPIPE退出1；修复后正常完成关闭。测试夹具自身在setup失败时回收worker，叶子同时在继承stdin失联后结束，避免重复历史上的测试进程泄漏。

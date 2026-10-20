@@ -1535,3 +1535,7 @@ Linux全量JS回归先因夹具缺少可写产物挂载失败，修正后又复�
 ### Session 私有 attach 前置合同（B1b2a）
 
 新增完整帧后才交付的64KiB有界stdout/stderr复用解码，以及单容器local日志有限轮转配置；实际夹具可写3MiB并留存真实已轮转复用字节，由独立检查器核对。修复本轮发现的嵌套日志配置比较和绝对截止时间timer早触发问题，失败保留，原5秒期限保持。版本与完整结果见[attach前置检查点](evidence/session-docker-attach-foundation.json)。HTTP Upgrade代理、实际worker握手及Native provider尚未接入，不改变41项9/14/18计数，也不改变独立720文件8小时负载。
+
+### Session 私有 attach 代理（B1b2b）
+
+实现有界、实际宿主子进程持有的私有代理；固定同一Unix连接检查daemon/完整ID/隔离后升级，接现有SessionWorkerChannel，真实ChildProcess close与worker确认、完整namespace退役分别处理。19项故障/背压/终止合同通过后，实际Node Docker夹具验证正常关闭、代理丢失及容器移除，完整记录见[代理检查点](evidence/session-docker-attach-proxy.json)。尚待生产provider未知创建恢复、持久回收、Registry生命周期和Native/Viewer集成；41项状态不变，独立8小时未被本次新增代码替代。
