@@ -8,4 +8,6 @@
 
 本机冻结快照通过完整1584项（1569通过/15平台跳过）、隔离202项Node/194项Python及类型检查；Node归档与Python wheel哈希均与SSE实现候选相同。固定工具的Linux ARM64/Python3.11 wheels已实际下载，七个runtime wheel已从索引按原哈希重新下载核对。最终工作流额外将同一Node镜像tag固定到Docker官方registry返回的index digest，运行器代码与依赖文件不变；远端实际Linux结果仍待核实。
 
+首个远端作业39485030782成功准备ARM64容器及全部依赖，但Git在测试前因checkout所有权退出128；原失败日志保留。checkout action的临时HOME设置未传到后续容器shell。运行器现在对每条只读Git命令仅信任明确解析的workspace目录，不写全局配置，仍严格核对实际commit和干净源码；远端复验尚待执行。
+
 本入口用于补齐SDK与完整JS的Linux证据；它不替代原Native事件/取消端到端、浏览器完整构建、原8小时失败或全部41项验收。

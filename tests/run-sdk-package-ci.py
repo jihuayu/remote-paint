@@ -50,10 +50,13 @@ def main() -> None:
     try:
         commit=os.environ.get('GITHUB_SHA')
         if commit:
-            actual=subprocess.check_output(['git','rev-parse','HEAD'],cwd=project,text=True).strip()
+            # Checkout's temporary HOME does not carry into later container
+            # steps. Trust only this explicitly resolved checkout per command.
+            git=['git','-c','safe.directory='+str(project)]
+            actual=subprocess.check_output([*git,'rev-parse','HEAD'],cwd=project,text=True).strip()
             assert actual==commit
-            subprocess.run(['git','diff','--exit-code','HEAD','--'],cwd=project,check=True,stdout=subprocess.DEVNULL)
-            names=[n.decode()for n in subprocess.check_output(['git','ls-files','-z'],cwd=project).split(b'\0')if n]
+            subprocess.run([*git,'diff','--exit-code','HEAD','--'],cwd=project,check=True,stdout=subprocess.DEVNULL)
+            names=[n.decode()for n in subprocess.check_output([*git,'ls-files','-z'],cwd=project).split(b'\0')if n]
             files={name:sha(project/name)for name in names}
         else:
             assert args.source_manifest is not None, 'Local verification requires an explicit frozen source manifest'
