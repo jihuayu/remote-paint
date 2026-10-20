@@ -1930,3 +1930,8 @@ CPU主线程controller与实际CPU Worker readonly同时显示真实Native Sessi
 ### Source内部Agent输入显式版本戳
 
 新增agentFence()与agent(event,{fence})，四个严格自有data字段绑定Source控制器/控制version/页面/viewport，入队及实际发送前核对并复制冻结。Native旧实现接管释放后仍A→AH→AHLATE，新的显式路径拒绝旧戳；当前戳AHF、真实resize后旧戳拒绝/新戳AHFV、真实导航后旧戳拒绝/新文档N。7合同before1（含接口不存在）after0，双平台109文件完整962项无失败，3测试容器均终止、已知进程退出。见[版本戳范围](agent-request-fence.md)。这是本地generation guard，不是认证/幂等；兼容的受信任无戳入口保留，受限facade与服务/SDK Agent授权继续，41项9/15/17及原8小时失败保持。
+
+
+### 本地受限 Agent CDP 输入子集
+
+createManagedAgentInput() 强制显式版本戳，仅放行四个 Input 方法，接收时复制冻结参数，不暴露 Page/CDP/Control。发送前拒绝为 not-dispatched、发送后故障为 unknown，禁止自动重放。13 新合同、双平台完整 110 文件/975 项零失败；Native 验证 AMUTATED 与 APLANNED、旧戳拒绝、真实效果后响应故障只执行一次、交接时拒绝未发送排队动作。首轮 fixture 缺显示帧等待导致失败已保留，修正仅 opt-in fixture 后 Native 通过。见[范围](managed-agent-input.md)。本地子集不含远端授权和完整 Playwright；K5 部分完成、41 项 9/15/17、原 8 小时失败保持。

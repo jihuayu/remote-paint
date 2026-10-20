@@ -150,3 +150,8 @@ ControlLease.agent在实际发送前重查控制version/mode，人工接管或re
 ## Source内部Agent请求显式版本戳
 
 ControlLease.agentFence()提供控制器/控制version/文档/viewport的冻结JSON戳，agent(event,{fence})在入队和CDP发送前拒绝旧戳。真实Native接管释放、resize、导航验证通过；该Core API未作为新的公共命令开放，也不替代租户/任务/Agent授权。见[范围](agent-request-fence.md)。
+
+
+## 本地受限 Agent CDP 输入适配器
+
+Source 内部可通过 createManagedAgentInput(source.control) 取得仅 fence/send 的冻结工具，四个有界 Input 方法强制请求版本戳及参数捕获，错误标记 not-dispatched/unknown，无自动重试。真实 Native 输入效果及交接验证见[范围](managed-agent-input.md)。尚未接入 worker/服务/SDK 的 Agent 授权链，不授予远端原始 CDP 或 Playwright Page。

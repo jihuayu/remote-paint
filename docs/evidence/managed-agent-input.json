@@ -1,0 +1,150 @@
+{
+  "at": "2026-10-19T14:01:37.628265+00:00",
+  "task": "K5-local-mandatory-fence-managed-CDP-input-subset",
+  "status": "local-managed-CDP-input-subset-qualified",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-request-fence-qualified-v1/frozen-version.json",
+  "parentSha256": "8667496dd3f103ec13b0f9006779920738bf72ff42cecac04d5ca70d842a6462",
+  "executedNativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/managed-agent-input-candidate-v2/frozen-version.json",
+  "executedNativeManifestSha256": "7dbb5780b10bd205cc9408c04f8fc8e50afdde31aa6b5ebd25b1b1ff61f76dba",
+  "executedSourceFiles": 970,
+  "api": "createManagedAgentInput(ownedControlLease) -> frozen {fence,send}",
+  "methods": [
+    "Input.insertText",
+    "Input.dispatchKeyEvent",
+    "Input.dispatchMouseEvent",
+    "Input.imeSetComposition"
+  ],
+  "mandatoryExplicitFence": true,
+  "immutableBoundedOwnDataParameters": true,
+  "callerMouseParametersCapturedOnce": true,
+  "rawPageCdpControlNotExposed": true,
+  "fenceIsAuthenticationCredential": false,
+  "errorOutcomes": [
+    "not-dispatched",
+    "unknown"
+  ],
+  "postDispatchSpoofedInputErrorRedacted": true,
+  "inputInjectedReceiptIsBusinessSuccess": false,
+  "automaticRetry": false,
+  "nativeObservations": {
+    "rawReference": {
+      "value": "AMUTATED",
+      "scope": "trusted ControlLease reference API, not an exposed Agent transport vulnerability"
+    },
+    "managed": {
+      "copiedValue": "APLANNED",
+      "stale": {
+        "ok": false,
+        "code": "STALE_AGENT_FENCE",
+        "outcome": "not-dispatched"
+      },
+      "unknown": {
+        "ok": false,
+        "code": "AGENT_INPUT_FAILED",
+        "outcome": "unknown"
+      },
+      "unknownEffectValue": "APLANNEDHFU",
+      "unknownEffectInjectedExactlyOnce": true,
+      "automaticReplay": false,
+      "forbidden": {
+        "ok": false,
+        "code": "AGENT_METHOD_FORBIDDEN",
+        "outcome": "not-dispatched"
+      },
+      "forbiddenParameterReads": 0,
+      "receipt": {
+        "stage": "input-injected",
+        "fence": {
+          "controlSessionId": "de0b5047-8762-4ede-8f51-3336027f25be",
+          "controlVersion": 1,
+          "pageEpoch": 2,
+          "viewportVersion": 1
+        }
+      }
+    },
+    "queuedHandoff": {
+      "rejected": {
+        "ok": false,
+        "code": "AGENT_PAUSED",
+        "outcome": "not-dispatched"
+      },
+      "inflightValue": "A",
+      "controlMode": "human",
+      "staleDispatched": false
+    }
+  },
+  "preservedFailedNativeFixture": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/managed-agent-input-candidate-v1/frozen-version.json",
+    "manifestSha256": "eecbcdfa118e584fc6152d7c2db8c01a04df8a2396043cc38fb22ef0954b4402",
+    "actualExitCode": 1,
+    "assertion": "'agent' !== 'handoff'",
+    "observedFinalQueuedValue": "ASTALE",
+    "correction": "Only opt-in fixture changed: wait for actual Source.latest display frame after navigation before attempting human acquire; raw and managed checks had already passed; no production code changed for this correction."
+  },
+  "nativeV1ToV2OnlyDelta": "tests/verify-managed-agent-input-native.mjs",
+  "unitContracts": 13,
+  "unitActualExitCode": 0,
+  "fullJs": {
+    "mac": {
+      "tests": 975,
+      "pass": 960,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "e712af131ac70dba80f899fbae7ac0c5d2166e841f5e3b22be21286b33c63a4a"
+    },
+    "linux": {
+      "tests": 975,
+      "pass": 969,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "6e28769f074fac277422db9962a6d0dad780ccc7c6d74d01eb2f32799a6f0028",
+      "containerId": "23bc2beabda7bf6b4323ff87b9d171cfefac19be85949ad92ec28f8a44982e09"
+    }
+  },
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v20/manifest.json",
+  "fullJsManifestSha256": "a66137c6478c1bc59531c4e1e75ded68210ca6a6cc2177e72809d18ae65ef185",
+  "fullJsExecutedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/managed-agent-input-candidate-v1/frozen-version.json",
+  "fullJsExecutedManifestSha256": "eecbcdfa118e584fc6152d7c2db8c01a04df8a2396043cc38fb22ef0954b4402",
+  "fullJsSameRuntimeDependenciesAnd110UnitFilesAfterOnlyOptInFixtureCorrection": true,
+  "freshFullJsRerunAfterOptInCorrection": false,
+  "sdkInheritedExactUnchangedInputs": {
+    "mac": {
+      "mappedUnchangedInputs": 27,
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true
+    },
+    "linux": {
+      "mappedUnchangedInputs": 27,
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true
+    }
+  },
+  "sdkMacMypyInheritedActual0": true,
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "a93654f41a1ac70756220d24eb5e6d4ff5a447fa0a3050714ecafdb92ed1354c",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "d21a3f6d707ba6f778ad2c4c1a0372e01f710d3a6d7ab123790487b26513a669"
+  },
+  "freshSdkPackageOrViewerPixelRerunClaimed": false,
+  "managedCdpInputSubsetQualified": true,
+  "managedPlaywrightCdpFacadeQualified": false,
+  "explicitUpstreamAgentRequestFenceQualified": false,
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "physicalLatencyOrN1Claim": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}
