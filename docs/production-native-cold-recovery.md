@@ -1,0 +1,13 @@
+# 生产 Native 的控制器死亡与冷恢复
+
+固定Engine、canonical Native worker、合格broker和真实浏览器，两个独立子控制器均先建立真实Native Ready、typed启动见证并成功解析私有端点；父测试随后对自己持有的控制器子进程发送SIGKILL并等待真实退出。第一项恢复时保留原容器，第二项在完整所有权核对后由测试actor移除原容器。两项死亡后的首次Engine检查都仍为running，根测试实际0。
+
+新控制器打开原SQLite和原deployment binding，核对同一存储identity，没有恢复阶段的bootstrap兜底。原Ready记录进入recovery-required，保留配额1，Registry拒绝Ready，provider拒绝端点，私有channel为null。恢复只关闭原对象，全程没有新的intent、创建、Engine启动、attach、见证持久化或Ready事件，没有重建旧私有key或重放Start。
+
+保留容器项按绑定namespace证明删除并记录container-removed；外部移除项使用原typed启动见证与完整CID的404记录container-absent，absenceProbe.effectAttempted为false。两项直到retired事件仍保留配额1，之后为0，终态closed，provider恢复可接纳状态。重复recover不产生新事件；相同幂等创建仍返回原成功operation及原Session，旧Session仍不可解析或连接。
+
+两项原SQLite在关闭后再次独立打开，identity与部署绑定不变；runtime为retired，typed启动见证与死亡前逐字段相同，退役证据哈希校验通过。外层再次核对两个完整CID都不存在，根测试、两个原控制器和两个旧attach代理共5个宿主PID均ESRCH，清理错误为空。未发布容器端口，没有Node资源替身、Source CDP测试接口或公共演示改动。
+
+原945文件与253依赖逐字节保持，新增两个opt-in脚本，最终949文件包括两份新增范围文档。双平台952项JS与77 Node/16 Python、严格TSC和Mac Mypy安装合同按精确输入继承，不宣称新完整回归或安装。
+
+本项限定于Ready后的控制器死亡，不代表全部启动阶段的冷恢复/重试矩阵。Page/renderer真实崩溃、SDK会话终止重试、全部Agent/CDP栅栏、N1/物理时延、更多设备和原8小时增长仍待验收。41项9/15/17及原8小时失败和192MiB门槛保持，未自动重跑、强制浏览器GC或暂存提交推送。见[范围收据](evidence/production-native-cold-recovery.json)。

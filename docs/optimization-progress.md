@@ -1895,3 +1895,8 @@ Native资源绑定四个终止事件并在Ready前重查，worker先建立停止
 ### 生产Native运行中的代理丢失与外部移除
 
 两项真实canonical Native/provider/Registry均先Ready并解析私有端点，再精确作用于自有代理或完整CID；Ready/端点均撤回，分别用namespace删除和绑定启动见证的404退役。两项配额保留至retired事件，独立重开原SQLite/binding均retired，2容器与3宿主PID回收。根实际0；旧952/SDK输入保持，继承原收据。见[运行中故障范围](production-native-runtime-loss.md)。冷恢复、Page崩溃和SDK终止策略继续，41项9/15/17及原8小时失败保持。
+
+
+### 生产Native Ready后控制器死亡与冷恢复
+
+两个实际Native拥有控制器在Ready及端点解析后SIGKILL，死亡后首次Engine检查仍running；分别保留和外部移除原容器，使用同一原SQLite identity与部署绑定执行关闭专用恢复。旧Ready/端点拒绝，无新attach/Start/Ready，配额保留至retired后释放，幂等创建仍绑定原Session。独立重开退役验证及外层2容器/5宿主PID回收通过，根实际0。见[冷恢复范围](production-native-cold-recovery.md)。仅限定Ready后，不宣称全部阶段恢复；旧952/SDK输入保持，41项9/15/17及原8小时失败保持。

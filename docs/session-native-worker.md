@@ -115,3 +115,8 @@ canonical Native执行了2秒自动TTL与7个取消窗口，包括实际关闭�
 ## 真实运行中代理丢失和外部移除
 
 canonical Native实际Ready后完成自有attach代理SIGKILL和完整容器外部删除；两项都撤回Ready/端点并经独立持久退役后释放配额。见[范围](production-native-runtime-loss.md)。冷控制器恢复与Page崩溃仍待验收。
+
+
+## 真实Ready后的控制器死亡与冷恢复
+
+两个自有控制器在真实Native Ready后SIGKILL；新控制器用原SQLite/binding执行关闭专用恢复，拒绝旧授权，不重建私有key或重放Start，原容器保留/消失两条退役路径和配额释放均确认。见[范围](production-native-cold-recovery.md)。全部启动阶段恢复和Page崩溃仍待验收。

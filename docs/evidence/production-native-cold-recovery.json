@@ -1,0 +1,110 @@
+{
+  "at": "2026-10-19T12:40:06.633054+00:00",
+  "task": "production-Native-owning-controller-cold-recovery",
+  "status": "actual-production-Native-Ready-controller-death-cold-recovery-qualified",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/production-native-cold-recovery-v1/manifest.json",
+  "executedManifestSha256": "8680ce891318cb4dd1c1d1890d6c51d22dcce95efe99f9b3d0c9b6a4e1b870fc",
+  "canonicalSourceFiles": 947,
+  "productionRuntimeSourcesUnchangedFrom945": true,
+  "executionDeviations": {
+    "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": {
+      "canonicalSha256": "faa6b3b47a15e4edd659f3fb99c2ca8eb6aace5461a1f12090314e2dda8a5cb0",
+      "fixtureSha256": "4ed13b4cfe989945aab0256eb40b00d026ed74783fd39519df8903d270a61d08"
+    }
+  },
+  "canonicalNativeWorkerUsed": true,
+  "NodeAdapterUsed": false,
+  "sourceCdpTestApiUsed": false,
+  "actualRootExitCode": 0,
+  "actualCases": 2,
+  "cases": [
+    {
+      "mode": "ready-owned-present",
+      "containerId": "b9a872cbebba5d823bf6e271376c6d8626608178943b3c0080132c19c7c6e632",
+      "actualNativeVersion": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "childPid": 83259,
+      "oldProxyPid": 83310,
+      "originalControllerActualSIGKILL": true,
+      "containerStateImmediatelyAfterDeath": "running",
+      "sameOriginalSqliteIdentityAndBinding": true,
+      "oldReadyAndEndpointDenied": true,
+      "noNewAttachOrStartOrReady": true,
+      "typedStartWitnessByteEquivalent": true,
+      "retirementKind": "container-removed",
+      "quotaHeldAtRetiredEvent": true,
+      "originalIdempotentCreateStillSameSession": true,
+      "runtimeRowReopenedRetired": true
+    },
+    {
+      "mode": "ready-owned-absent",
+      "containerId": "7dac8b9e7e72ff61cc83737c7196f792916cbe1d437653c74ce97518f6b0f7b8",
+      "actualNativeVersion": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "childPid": 83314,
+      "oldProxyPid": 83317,
+      "originalControllerActualSIGKILL": true,
+      "containerStateImmediatelyAfterDeath": "running",
+      "sameOriginalSqliteIdentityAndBinding": true,
+      "oldReadyAndEndpointDenied": true,
+      "noNewAttachOrStartOrReady": true,
+      "typedStartWitnessByteEquivalent": true,
+      "retirementKind": "container-absent",
+      "quotaHeldAtRetiredEvent": true,
+      "originalIdempotentCreateStillSameSession": true,
+      "runtimeRowReopenedRetired": true
+    }
+  ],
+  "all2RuntimeRowsIndependentlyReopenedRetired": true,
+  "all2ExactOwnedContainerIdsAbsent": true,
+  "knownHostPidsAbsent": [
+    83258,
+    83259,
+    83310,
+    83314,
+    83317
+  ],
+  "quotaHeldUntilTypedRetirementInBoth": true,
+  "oldActualReadyAndEndpointExistBeforeOriginalControllerSIGKILL": true,
+  "bothContainersStillRunningAtFirstPostDeathInspection": true,
+  "sameOriginalSqliteIdentityDeploymentBindingNoBootstrapFallback": true,
+  "recoveredProviderCloseOnlyNoNewAttachOrStartOrReady": true,
+  "oldEndpointDeniedAndIdempotentCreateDoesNotAdmitNewSession": true,
+  "fullJs952BothInheritedAfterEveryOldCanonicalInputMatched": true,
+  "inheritedFullJs": {
+    "mac": {
+      "tests": 952,
+      "pass": 937,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "83b57a3b59ab593a95b35af508ae654594addc42af3b8d374fb2ec3d7ce010dd"
+    },
+    "linux": {
+      "tests": 952,
+      "pass": 946,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "5312e57a2a74fd2426b43cc2f5be96995dd66d0aa733d1a36a19f7a155ed31c5"
+    }
+  },
+  "sdk77Node16PythonTscBothMacMypyInheritedExactInputs": true,
+  "freshFullUnitOrPackageInstallClaimed": false,
+  "nativeReadyColdRecoveryQualified": true,
+  "nativeAllColdRecoveryStagesQualified": false,
+  "nativePageRendererCrashActualQualified": false,
+  "sdkSessionEndAutomaticRetryPolicyQualified": false,
+  "productionNativeFullyQualified": false,
+  "physicalLatencyOrN1Claim": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}
