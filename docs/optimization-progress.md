@@ -1174,3 +1174,15 @@ Apple M2 Max硬件pilot之后、独立30分钟验证之前冻结 `tests/fixtures
 v1把异步图片和DOM标记所有过渡帧强制视为相等，错误断言导致失败；旧副本及失败/正常清理结果保留。v2逐点核验已发出的合法cycle、恒定Session身份，并逐次等待最终PNG/DOM像素收敛，实际记录24个中间标记差异；每个原始窗口先持久化再校验。
 
 每个窗口分别前后校准，导航/resize及校准间隔不属于帧龄覆盖；此项只验收跨主机适配，不是连续长时全帧覆盖，也未施加网络损伤。Source创建/销毁1/1、8个已知Source身份退出、Broker请求/响应owner与逐帧Node调用为0。N1长测、8小时与全部41项仍未完成。
+
+## 真实Mac路径的单向Gateway丢包试跑
+
+新增测试专用eth0分层qdisc，严格只匹配本次独立NET_ADMIN容器主Gateway TCP源端口，拒绝替换现存qdisc；Source→Mac方向delay40ms/jitter2ms/loss1%/20Mbit，反向未整形。配置不写成对称RTT80ms。每窗口删除本次qdisc并核验恢复noqueue，Source停止路径也负责清理。内核计数必须是实测非空整数，未知/重复队列不能通过。
+
+硬件v3通过：66.553秒、121次更新、三个严格窗口259次成功CPUWorker提交全部自身像素/正常事件配对；实际内核累计100942321bytes、83drops。Mac经同一真实Gateway的额外ACK-only display peer完成30次ping/pong，实际RTT约40.35–127.92ms；其流量及读像素开销包含在本次试跑中。12次文本输入按真实WebSocket.send(seq)与InputAck精确配对，dispatch到ACK最大147.70ms，源文本最终像素均核验；3s输入ACK、5s提交ACK、15s资源进度inactivity、32KiB chunk、16MiB/6帧credit保持原值。恢复事件为0仅指本观测窗口的Worker恢复，不代表TCP或快照无丢失。
+
+三窗口帧龄p95分别460.74/463.50/738.05ms，最大时钟不确定度约14.47ms，且窗口之间导航/resize/校准没有全帧龄覆盖。创建/销毁1/1、8个已知Source身份退出、进程实际exit0、每窗口qdisc移除、清理错误为0。
+
+v1因基础runtime没有tc在施加损伤前失败，保留原记录；另建runtime-netem镜像只安装iproute2并记录镜像ID/构建日志，未改基础镜像或清理缓存。v2的ACK门槛断言失败；旧代码用Source已处理计数寻找ACK，不能保证对应刚发送文本，且当时未保存具体失败数值。v3改为实际send(seq)/text匹配并先保存每条ACK再断言，未放宽3s门槛。旧失败副本均保留。
+
+此项只完成Mac路径网络测试适配与独立pilot；长期连续帧龄、长时丢包/8小时仍待验收，41项计数仍9/12/20。

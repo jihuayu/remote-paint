@@ -1,0 +1,221 @@
+{
+  "at": "2026-10-17T21:37:44.570719+00:00",
+  "status": "passed-Mac-oneway-Gateway-netem-strict-window-pilot",
+  "scope": "Actual Linux Native Source to persistent Mac CPUWorker exact-commit pixel observer;real file-channel scheduler replies calibrated by complete Mac host request/response intervals,unchanged strict renderer/epoch/viewport checks. Three distinct windows exclude calibration and resize/crosssite transition gaps;not continuous all-frame longload/N1/8h/physical display latency. Network loss applied separately inside each strict window;actual kernel queue observations and Mac ping/pong preserved,not symmetric RTT or full continuous N1.",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-network-v3/frozen-version.json",
+    "sha256": "1b55ccfe075ab6b7c1c2e9c51d4a94e7a2e4d8b63ab68ef64a4ab2522fd2dae7"
+  },
+  "elapsedSeconds": 66.553091958,
+  "cycles": 121,
+  "pairedSamples": 259,
+  "configuration": {
+    "direction": "Source-to-Mac primary Gateway TCP egress only",
+    "delayMs": 40,
+    "jitterMs": 2,
+    "lossPercent": 1,
+    "rateMbit": 20,
+    "configuredRttMs": null
+  },
+  "actualKernelDrops": 83,
+  "actualKernelBytes": 100942321,
+  "actualPingRttMs": [
+    41.803457999999864,
+    40.35216700000001,
+    40.47487500000034,
+    41.909415999999965,
+    43.557000000000244,
+    41.511167000000114,
+    43.04262499999959,
+    127.92450000000008,
+    43.56712500000003,
+    41.118375000000015,
+    42.25708300000042,
+    40.28254200000083,
+    41.7667079999992,
+    43.47279100000014,
+    42.26858400000128,
+    40.62804200000028,
+    43.77720899999986,
+    41.50724999999875,
+    41.07720799999879,
+    42.0291670000006,
+    42.68250000000262,
+    41.72504100000515,
+    42.5291670000006,
+    39.881040999993274,
+    45.77845900000102,
+    42.037374999999884,
+    43.91791699999885,
+    43.31550000000425,
+    42.71454100000119,
+    47.990749999997206
+  ],
+  "textInputAcks": 12,
+  "maxTextInputAckMs": 147.69999980926514,
+  "windows": [
+    {
+      "segment": 0,
+      "pairedSamples": 81,
+      "age": {
+        "count": 81,
+        "p50Ms": 316.95294700562954,
+        "p95Ms": 460.73820745944977,
+        "p99Ms": 555.5146039575338,
+        "maxMs": 555.5146039575338,
+        "minMs": 42.01192496716976
+      },
+      "ageUpper": {
+        "count": 81,
+        "p50Ms": 330.70406856632235,
+        "p95Ms": 474.246387595892,
+        "p99Ms": 569.0693824837208,
+        "maxMs": 569.0693824837208,
+        "minMs": 55.67079504823685
+      },
+      "clockUncertainty": {
+        "count": 81,
+        "p50Ms": 13.662019158363336,
+        "p95Ms": 13.79503057396414,
+        "p99Ms": 13.811035061836243,
+        "maxMs": 13.811035061836243,
+        "minMs": 13.507456103920958
+      },
+      "pixelObserverCost": {
+        "count": 81,
+        "p50Ms": 1.4000005722045898,
+        "p95Ms": 2.1000003814697266,
+        "p99Ms": 2.6000003814697266,
+        "maxMs": 2.6000003814697266,
+        "minMs": 0.6999998092651367
+      },
+      "recoverAttempts": 0
+    },
+    {
+      "segment": 1,
+      "pairedSamples": 76,
+      "age": {
+        "count": 76,
+        "p50Ms": 285.04567831754684,
+        "p95Ms": 463.50260934233665,
+        "p99Ms": 684.9359262436628,
+        "maxMs": 684.9359262436628,
+        "minMs": 40.13457269966602
+      },
+      "ageUpper": {
+        "count": 76,
+        "p50Ms": 298.3510658988953,
+        "p95Ms": 477.03313895559313,
+        "p99Ms": 698.4958054671288,
+        "maxMs": 698.4958054671288,
+        "minMs": 53.38767370080948
+      },
+      "clockUncertainty": {
+        "count": 76,
+        "p50Ms": 13.383800859212869,
+        "p95Ms": 13.560657093882558,
+        "p99Ms": 13.578074658870694,
+        "maxMs": 13.578074658870694,
+        "minMs": 13.237003679037116
+      },
+      "pixelObserverCost": {
+        "count": 76,
+        "p50Ms": 1.5,
+        "p95Ms": 2.1999998092651367,
+        "p99Ms": 2.3000001907348633,
+        "maxMs": 2.3000001907348633,
+        "minMs": 0.7999992370605469
+      },
+      "recoverAttempts": 0
+    },
+    {
+      "segment": 2,
+      "pairedSamples": 102,
+      "age": {
+        "count": 102,
+        "p50Ms": 371.45235623419285,
+        "p95Ms": 738.0502357631922,
+        "p99Ms": 983.0310867726803,
+        "maxMs": 1197.6642898321152,
+        "minMs": 47.411046743392944
+      },
+      "ageUpper": {
+        "count": 102,
+        "p50Ms": 385.86523428058626,
+        "p95Ms": 752.4988251278401,
+        "p99Ms": 997.4682190368176,
+        "maxMs": 1212.1040378460884,
+        "minMs": 61.840954805374146
+      },
+      "clockUncertainty": {
+        "count": 102,
+        "p50Ms": 14.429908061981202,
+        "p95Ms": 14.462163324117657,
+        "p99Ms": 14.464753503561017,
+        "maxMs": 14.464882845640204,
+        "minMs": 14.401161516666413
+      },
+      "pixelObserverCost": {
+        "count": 102,
+        "p50Ms": 1.5,
+        "p95Ms": 2.3000001907348633,
+        "p99Ms": 2.6000003814697266,
+        "maxMs": 2.6000003814697266,
+        "minMs": 0.8000001907348633
+      },
+      "recoverAttempts": 0
+    }
+  ],
+  "defaultPolicies": {
+    "postCommitAckMs": 5000,
+    "resourceProgressInactivityMs": 15000,
+    "inputAckMs": 3000,
+    "chunkBytes": 32768,
+    "frameCredit": 6,
+    "windowBytes": 16777216
+  },
+  "sourceIdentitiesRetired": 8,
+  "allProcessesExited": true,
+  "profileRemovedAfterEveryWindow": true,
+  "networkRuntimeImageId": "sha256:42df2c322c1c105d79aff686ebf92b0708f237788daa011186976e852b7cf66e",
+  "runtimeDockerfileSha256": "848998b19d228c07cc194afb3d2e76fa6c2f50a054289cba6320bc2c13590351",
+  "runtimeBuildLogSha256": "6e7ac050636da6b9d7fa832c5f53f09a4d547d00f6b7ed4a96c478e4cce2c833",
+  "preservedFailures": [
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-network-v1/results/frame-age-remote-report.json",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-network-v2/results/frame-age-remote-report.json"
+  ],
+  "pureContracts": {
+    "clock": 12,
+    "networkCounters": 1
+  },
+  "continuousAgeCoverage": false,
+  "eightHourPassed": false,
+  "noCommitPush": true,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  },
+  "artifacts": {
+    "frame-age-remote-report.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-network-v3/results/frame-age-remote-report.json",
+      "sha256": "d1fc2613bc6a78f001aac5906e4115d3befb9570153d3dad9a58e6ac33d4ea00"
+    },
+    "network-segment-0.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-network-v3/results/network-segment-0.json",
+      "sha256": "e2884ed804371a21ee4078c0baf786fc34b516bf195d31ca655f14ec94687a15"
+    },
+    "network-segment-1.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-network-v3/results/network-segment-1.json",
+      "sha256": "6ad24d8283f13794a497eea7ca94c3ca9321a86713a00416b32fd82884e372d1"
+    },
+    "network-segment-2.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-network-v3/results/network-segment-2.json",
+      "sha256": "7e64f719acedefc308108f97ed92da847da3d98394862b8fa4519b97dd4468d2"
+    },
+    "source-stopped.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-network-v3/results/source-stopped.json",
+      "sha256": "e731020d0f04d8f40d7e2b92dfbcd80c066b3a53777e9717807be3363a0137eb"
+    }
+  }
+}

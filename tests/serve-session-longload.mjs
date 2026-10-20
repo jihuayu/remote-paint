@@ -7,9 +7,10 @@ import {randomUUID} from 'node:crypto';
 import {startSessionMemoryFixture} from './session-memory-fixture.mjs';
 import {createSessionMemoryOwner} from './session-memory-owner.mjs';
 import {atomicJson,deadline} from './memory-soak-diagnostics.mjs';
+import {createSessionNetworkProfile} from './session-network-profile.mjs';
 assert.equal(process.platform,'linux');assert.notEqual(process.env.REMOTE_PAINT_DATA_PLANE,'node');
 const directory=resolve(process.env.REMOTE_PAINT_SESSION_LONG_DIR??'artifacts/session-longload'),port=Number(process.env.REMOTE_PAINT_SESSION_LONG_PORT??39546),runId=randomUUID();assert.ok(Number.isInteger(port)&&port>=1024&&port<65532);await mkdir(directory,{recursive:true,mode:0o700});for(const name of ['requests','responses'])await mkdir(join(directory,name),{recursive:true});
-const frameAge=process.env.REMOTE_PAINT_SESSION_LONG_FRAME_AGE==='1';
+const frameAge=process.env.REMOTE_PAINT_SESSION_LONG_FRAME_AGE==='1',networkProfile=process.env.REMOTE_PAINT_SESSION_LONG_NETEM==='1'?createSessionNetworkProfile(port+1):null;
 const fixture=await startSessionMemoryFixture(),handled=new Set(),stats={created:0,closed:0,crosssite:0,leaseExpired:0};let primary,secondary=null,timer,closing=false,stopPromise,primaryHost='127.0.0.1',lastClosed=null,leaseProbe=null;
 const atomic=(name,value)=>atomicJson(directory,name,value),event=value=>appendFile(join(directory,'source-events.jsonl'),JSON.stringify({at:new Date().toISOString(),runId,...value})+'\n');
 function monitor(owner){
@@ -29,16 +30,22 @@ async function closeSecondary(){
  assert.ok(secondary,'No secondary Session');secondaryMonitor.closing();const receipt=await secondary.close();assert.equal(receipt.status,'closed');assert.deepEqual(receipt.errors,[]);assert.equal(receipt.after.sourceProcesses.length,0);await appendFile(join(directory,'closed-sessions.jsonl'),JSON.stringify(receipt)+'\n');stats.closed++;lastClosed={id:receipt.id,number:receipt.number,retiredProcesses:receipt.retired.length,imageBytes:receipt.workload.imageBytes,status:receipt.status,nodeCalls:receipt.nodeCalls,afterPss:receipt.after.metrics.pss,cgroup:receipt.after.metrics.cgroup,controllerVm:receipt.after.controllerVm};secondary=null;secondaryMonitor=null;return lastClosed;
 }
 const stop=()=>stopPromise??=(async()=>{
- closing=true;clearTimeout(timer);const errors=[];let primaryReceipt;
+ closing=true;clearTimeout(timer);const errors=[];let primaryReceipt,networkCleanup;
  try{if(secondary)await closeSecondary();}catch(error){errors.push({step:'secondary',error:error.stack});}
  try{primaryMonitor?.closing();primaryReceipt=await primary?.close();assert.equal(primaryReceipt?.status,'closed');stats.closed++;}catch(error){errors.push({step:'primary',error:error.stack});}
  try{await fixture.close();}catch(error){errors.push({step:'fixture',error:error.stack});}
- const remaining=primaryReceipt?.after?.metrics,receipt={at:new Date().toISOString(),runId,status:errors.length?'failed':'closed',errors,stats,primary:primaryReceipt,fixtureListening:fixture.listening,activeSessions:fixture.activeSessions,remainingProcesses:remaining?.processes,processSampling:remaining?.processSampling,pss:remaining?.pss,cgroupProvenance:remaining?.cgroup.provenance};await atomic('source-stopped.json',receipt);if(errors.length)process.exitCode=1;return receipt;
+ try{networkCleanup=await networkProfile?.close();}catch(error){errors.push({step:'network-profile',error:error.stack});}
+ const remaining=primaryReceipt?.after?.metrics,receipt={at:new Date().toISOString(),runId,status:errors.length?'failed':'closed',errors,networkCleanup,stats,primary:primaryReceipt,fixtureListening:fixture.listening,activeSessions:fixture.activeSessions,remainingProcesses:remaining?.processes,processSampling:remaining?.processSampling,pss:remaining?.pss,cgroupProvenance:remaining?.cgroup.provenance};await atomic('source-stopped.json',receipt);if(errors.length)process.exitCode=1;return receipt;
 })();
 try{
- primary=await createSessionMemoryOwner(fixture,{port,host:'0.0.0.0',frameAgePoints:frameAge?[[20,80],[400,30],[450,30]]:null});primaryMonitor=monitor(primary);stats.created++;await primary.pin();await atomic('ready.json',{at:new Date().toISOString(),runId,primary:{id:primary.id,number:primary.number,url:primary.url},observerProvenance:primary.observerProvenance,platform:process.platform,architecture:process.arch,browser:primary.source.browser.version(),scope:'One long-lived primary Source with crosssite/real30sleaseexpiry;secondary Sessioncreation/working-setpressure/destruction in same controller. Private file commands,normal production FrameGate/Viewer.'});console.log(JSON.stringify({event:'ready',runId,port}));
+ primary=await createSessionMemoryOwner(fixture,{port,host:'0.0.0.0',frameAgePoints:frameAge?[[20,80],[400,30],[450,30]]:null});primaryMonitor=monitor(primary);stats.created++;await primary.pin();await atomic('ready.json',{at:new Date().toISOString(),runId,primary:{id:primary.id,number:primary.number,url:primary.url,streamOrigin:primary.streamOrigin,renderer:primary.renderer},observerProvenance:primary.observerProvenance,platform:process.platform,architecture:process.arch,browser:primary.source.browser.version(),scope:'One long-lived primary Source with crosssite/real30sleaseexpiry;secondary Sessioncreation/working-setpressure/destruction in same controller. Private file commands,normal production FrameGate/Viewer.'});console.log(JSON.stringify({event:'ready',runId,port}));
 }catch(error){await stop();throw error;}
 async function operation(command){
+ if(command.op.startsWith('network-')){
+  assert.ok(networkProfile,'This Source was not launched in the owned NET_ADMIN test namespace');let value;
+  if(command.op==='network-start')value=await networkProfile.start();else if(command.op==='network-snapshot')value=await networkProfile.snapshot();else if(command.op==='network-stop')value=await networkProfile.close();else throw new Error('Unknown network operation');
+  await appendFile(join(directory,'network-profile.jsonl'),JSON.stringify({at:new Date().toISOString(),op:command.op,...value})+'\n');return {network:value};
+ }
  if(command.op==='clock-probe'){
   assert.equal(frameAge,true);const source=primary.source,binding=source.capture.binding?.config.id,epoch=source.pageEpoch,version=source.viewportVersion,document=source.nativeDocumentToken;assert.ok(binding);
   const reply=await source.capture.command('scheduler',binding);assert.equal(source.capture.binding?.config.id,binding);assert.equal(source.pageEpoch,epoch);assert.equal(source.viewportVersion,version);assert.equal(source.nativeDocumentToken,document);assert.equal(reply.ok,true);
