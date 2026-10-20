@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | 原观察/SDK范围保留。新增浏览器请求起点的不可变frame/Page文档见证，贯穿异步检查与真实ResourceDownloader/manager链；lease保留原来源，错误恢复在item/读取前拒绝。348项（11新+61既有Native+276上游）与编译列表一致全通过，双平台专项各13通过，真实manager/navigation捕获TU及GN依赖检查通过。无真实RFH/导航/传输验收，Source仍未接线；见[范围](native-download-request-context.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | 原观察/SDK范围保留。新增Linux Native有界reader，单lease单reader、单在途、4MiB内容及3072字节chunk；实际IO对象完整销毁与origin ACK前不归还额度。365项（17新+72既有Native+276上游）与编译列表一致，另3份子进程各1项，双平台专项各13通过，真实manager/navigation调用方编译和GN检查通过。Source传输未接线或启用，无整浏览器验收；见[范围](native-download-read-session.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -2097,3 +2097,7 @@ Native item取消/Detach/部分和完成文件删除接入可跨item移除保留
 ### Native 请求起点的不可变文档见证
 
 第24补丁在NavigationRequest构造及显式/恢复下载入口捕获浏览器拥有的目标/发起/Page身份与独立请求ID，不在迟到响应时按当前frame重新归属；跨IO只传有界不可变值。实际ResourceDownloader/Mojo/manager链保持同一记录，lease拒绝unknown升级、known丢失或变更Page主文档。最终348项无过滤与编译列表一致，新增11项从父版本逐项比较无移除；子进程另1项通过，双平台专项各13通过。真实manager/navigation ARM64对象及GN依赖检查通过；组件使用合成frame IDs，不等同于真实RFH/导航/cookies验收。三次构建和前两轮失败保留，24补丁/53路径/35组件比对，自有容器退休且缓存/浏览器包/采样器保留。Source接线、传输、PW元数据、早期IO/远端服务及原8小时仍待；41项10/17/14不变。见[范围](native-download-request-context.md)。
+
+### Native 有界读取与实际文件寿命
+
+第25补丁将单reader及实际文件序列owner接入现有文件pending/lease，完整对象及FD销毁后再独立ACK；unlink、关闭投递拒绝或回执丢失均不能提前归还额度。已完成item方可打开，流式SHA256固定8192字节缓冲，读取最多3072字节，终态期限发起关闭。365项无过滤与编译列表一致，新17项从父版本差分无移除；另3份真实子进程各1项，双平台专项各13，实际manager/navigation ARM64调用方及GN依赖检查通过。故障包含实际停止文件线程和活origin上的ACK投递拒绝，后者非真实origin退出；期限使用mock time，文件任务真实。25补丁/55路径/35组件、原浏览器与观察器保留；自有容器已退休且缓存保留。Source、原Page transfer registry、PW元数据、私有目录和整浏览器仍待，早期IO/远端服务/原8小时未通过；41项10/17/14不变。见[范围](native-download-read-session.md)。

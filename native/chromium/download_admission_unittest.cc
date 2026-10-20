@@ -30,6 +30,17 @@
 #include "components/download/public/common/input_stream.h"
 #include "components/download/public/common/native_download_budget.h"
 #include "components/download/public/common/native_download_request_context.h"
+#include "components/download/public/common/native_download_read_session.h"
+#include "base/run_loop.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread.h"
+#include "base/strings/string_number_conversions.h"
+#include "crypto/hash.h"
+#if BUILDFLAG(IS_LINUX)
+#include <dirent.h>
+#include <sys/stat.h>
+#endif
+
 #include "components/download/public/common/url_download_handler.h"
 #include "net/base/io_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,6 +48,18 @@
 #if BUILDFLAG(IS_POSIX)
 #include <sys/stat.h>
 #endif
+
+namespace download {
+class NativeDownloadReadSessionTestPeer {
+ public:
+  static std::unique_ptr<NativeDownloadReadSession> Open(
+      NativeDownloadLease& lease, scoped_refptr<base::SequencedTaskRunner> runner,
+      scoped_refptr<base::SequencedTaskRunner> origin, uint64_t limit,
+      NativeDownloadReadSession::ReadyCallback done) {
+    return lease.OpenReaderOn(std::move(runner), std::move(origin), limit, std::move(done));
+  }
+};
+}
 
 namespace {
 using Budget = download::NativeDownloadBudget;
@@ -382,6 +405,242 @@ TEST_F(RemotePaintDownloadBudgetTest, UnknownOriginalCannotBecomeKnownThroughRes
   auto reads = model.Start(false, 7, true, RequestContext(), true); model.Drain();
   EXPECT_EQ(0, reads->count); EXPECT_EQ(1, model.delegate.allocations);
   EXPECT_FALSE(lease->request_context()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+
+using Reader = download::NativeDownloadReadSession;
+using ReadError = Reader::Error;
+class ReadFaultRunner : public base::SequencedTaskRunner {
+ public:
+  explicit ReadFaultRunner(scoped_refptr<base::SequencedTaskRunner> actual) : actual_(std::move(actual)) {}
+  void RejectNext() { reject_next_ = true; }
+  void RejectAll() { reject_all_ = true; }
+  bool PostDelayedTask(const base::Location& from, base::OnceClosure task, base::TimeDelta delay) override {
+    if (reject_all_ || reject_next_.exchange(false)) return false;
+    return actual_->PostDelayedTask(from, std::move(task), delay);
+  }
+  bool PostNonNestableDelayedTask(const base::Location& from, base::OnceClosure task, base::TimeDelta delay) override {
+    return PostDelayedTask(from, std::move(task), delay);
+  }
+  bool RunsTasksInCurrentSequence() const override { return actual_->RunsTasksInCurrentSequence(); }
+ private:
+  ~ReadFaultRunner() override = default;
+  scoped_refptr<base::SequencedTaskRunner> actual_;
+  std::atomic<bool> reject_next_{false}, reject_all_{false};
+};
+struct ReadGate : base::RefCountedThreadSafe<ReadGate> {
+  base::WaitableEvent entered{base::WaitableEvent::ResetPolicy::MANUAL, base::WaitableEvent::InitialState::NOT_SIGNALED};
+  base::WaitableEvent allow{base::WaitableEvent::ResetPolicy::MANUAL, base::WaitableEvent::InitialState::NOT_SIGNALED};
+ private:
+  friend class base::RefCountedThreadSafe<ReadGate>;
+  ~ReadGate() = default;
+};
+#if BUILDFLAG(IS_LINUX)
+struct ReadFileId { dev_t device; ino_t inode; };
+ReadFileId Identity(const base::FilePath& path) {
+  struct stat st{}; EXPECT_EQ(0, stat(path.value().c_str(), &st)); return {st.st_dev, st.st_ino};
+}
+int OwnedReferences(ReadFileId identity) {
+  int count = 0; DIR* dir = opendir("/proc/self/fd"); EXPECT_NE(nullptr, dir); if (!dir) return -1;
+  while (const auto* entry = readdir(dir)) {
+    int fd = -1; if (!base::StringToInt(entry->d_name, &fd)) continue;
+    struct stat st{};
+    if (fstat(fd, &st) == 0 && st.st_dev == identity.device && st.st_ino == identity.inode) ++count;
+  }
+  closedir(dir); return count;
+}
+#endif
+class RemotePaintDownloadReadTest : public RemotePaintDownloadBudgetTest {
+ protected:
+  scoped_refptr<Lease> LeaseFor(Model& model) {
+    EXPECT_EQ(1u, model.delegate.items.size()); return model.delegate.items.begin()->second->GetRemotePaintAdmission();
+  }
+  base::FilePath PathFor(Model& model) { return model.delegate.items.begin()->second->GetTargetFilePath(); }
+  auto FilesFor(Model& model) { return model.delegate.items.begin()->second->GetRemotePaintFileCleanupState(); }
+  std::unique_ptr<Reader> Open(Model& model, uint64_t maximum = Budget::kFileBytes,
+      scoped_refptr<base::SequencedTaskRunner> runner = nullptr,
+      scoped_refptr<base::SequencedTaskRunner> origin = nullptr) {
+    base::test::TestFuture<Reader::Metadata> done;
+    auto reader = runner ? download::NativeDownloadReadSessionTestPeer::Open(*LeaseFor(model), runner,
+        origin ? origin : base::SequencedTaskRunner::GetCurrentDefault(), maximum, done.GetCallback())
+        : LeaseFor(model)->OpenReader(maximum, done.GetCallback());
+    if (runner) {
+      auto barrier = base::MakeRefCounted<BarrierEvent>();
+      runner->PostTask(FROM_HERE, base::BindOnce([](scoped_refptr<BarrierEvent> event) { event->data.Signal(); }, barrier));
+      Wait(barrier->data);
+    }
+    tasks_.RunUntilIdle(); EXPECT_TRUE(done.IsReady());
+    metadata_ = done.IsReady() ? done.Take() : Reader::Metadata{}; return reader;
+  }
+  Reader::Chunk Read(Reader& reader, uint64_t offset = 0, uint32_t bytes = Reader::kChunkBytes) {
+    base::test::TestFuture<Reader::Chunk> done; EXPECT_TRUE(reader.Read(offset, bytes, done.GetCallback()));
+    tasks_.RunUntilIdle(); EXPECT_TRUE(done.IsReady()); return done.IsReady() ? done.Take() : Reader::Chunk{};
+  }
+  void Wait(base::WaitableEvent& event) {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow; ASSERT_TRUE(event.TimedWait(base::Seconds(10)));
+  }
+  auto BlockFileSequence() {
+    auto gate = base::MakeRefCounted<ReadGate>();
+    download::GetDownloadTaskRunner()->PostTask(FROM_HERE, base::BindOnce([](scoped_refptr<ReadGate> gate) {
+      gate->entered.Signal(); base::ScopedAllowBaseSyncPrimitivesForTesting allow; gate->allow.Wait();
+    }, gate));
+    Wait(gate->entered); return gate;
+  }
+  auto ReleaseOnExit(scoped_refptr<ReadGate> gate) {
+    return base::ScopedClosureRunner(base::BindOnce([](scoped_refptr<ReadGate> gate) { gate->allow.Signal(); }, gate));
+  }
+  void FileBarrier() {
+    auto event = base::MakeRefCounted<BarrierEvent>();
+    download::GetDownloadTaskRunner()->PostTask(FROM_HERE, base::BindOnce([](scoped_refptr<BarrierEvent> e) { e->data.Signal(); }, event));
+    Wait(event->data);
+  }
+  bool Child(const char* kind, const char* test) {
+    const auto* current = base::CommandLine::ForCurrentProcess();
+    if (current->GetSwitchValueASCII("native-reader-failure-child") == kind) return true;
+    auto child = *current; child.AppendSwitchASCII("native-reader-failure-child", kind);
+    child.RemoveSwitch("gtest_filter"); child.AppendSwitchASCII("gtest_filter", std::string("RemotePaintDownloadReadTest.") + test);
+    const auto output = current->GetSwitchValueASCII("gtest_output"); child.RemoveSwitch("gtest_output");
+    if (output.starts_with("json:")) {
+      auto directory = base::FilePath::FromUTF8Unsafe(output.substr(5)).DirName();
+      child.AppendSwitchASCII("gtest_output", "json:" + directory.AppendASCII(std::string("reader-child-") + kind + ".json").AsUTF8Unsafe());
+    }
+    auto process = base::LaunchProcess(child, base::LaunchOptions()); EXPECT_TRUE(process.IsValid()); int code = -1;
+    { base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+      EXPECT_TRUE(process.WaitForExitWithTimeout(base::Seconds(30), &code)); }
+    EXPECT_EQ(0, code); EXPECT_EQ(0u, Budget::ReservedItems()); return false;
+  }
+  Reader::Metadata metadata_;
+};
+
+TEST_F(RemotePaintDownloadReadTest, CompletedFileMetadataHashAndBoundedChunks) {
+  Model model(tasks_); model.Start(true, 7000); model.Drain(); auto reader = Open(model); ASSERT_TRUE(reader);
+  EXPECT_EQ(ReadError::kNone, metadata_.error); EXPECT_EQ(7000u, metadata_.byte_length);
+  EXPECT_EQ(base::HexEncodeLower(crypto::hash::Sha256(std::string(7000, 'x'))), metadata_.sha256);
+  auto first = Read(*reader); EXPECT_EQ(ReadError::kNone, first.error); EXPECT_EQ(3072u, first.bytes.size()); EXPECT_FALSE(first.complete);
+  auto last = Read(*reader, 6999); EXPECT_EQ("x", last.bytes); EXPECT_TRUE(last.complete);
+  reader->Close(); tasks_.RunUntilIdle(); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, EmptyFileHashAndEndOfFileRemainValid) {
+  Model model(tasks_); model.Start(true, 0); model.Drain(); auto reader = Open(model); ASSERT_TRUE(reader);
+  EXPECT_EQ(ReadError::kNone, metadata_.error); EXPECT_EQ(0u, metadata_.byte_length);
+  EXPECT_EQ(base::HexEncodeLower(crypto::hash::Sha256(std::string_view())), metadata_.sha256);
+  auto result = Read(*reader); EXPECT_TRUE(result.bytes.empty()); EXPECT_TRUE(result.complete);
+  reader->Close(); tasks_.RunUntilIdle(); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, ExactFourMiBFileDoesNotRequireWholeFileCopy) {
+  Model model(tasks_); model.Start(true, Budget::kFileBytes); model.Drain(); auto reader = Open(model); ASSERT_TRUE(reader);
+  EXPECT_EQ(ReadError::kNone, metadata_.error); EXPECT_EQ(Budget::kFileBytes, metadata_.byte_length);
+  auto result = Read(*reader, Budget::kFileBytes - 1); EXPECT_EQ("x", result.bytes); EXPECT_TRUE(result.complete);
+  reader->Close(); tasks_.RunUntilIdle(); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, RequestedByteLimitRejectsWithoutTruncatingFile) {
+  Model model(tasks_); model.Start(true, 1048577); model.Drain(); const auto path = PathFor(model);
+  auto reader = Open(model, 1048576); ASSERT_TRUE(reader); EXPECT_EQ(ReadError::kLimit, metadata_.error); EXPECT_TRUE(reader->closed());
+  const auto length = base::GetFileSize(path); ASSERT_TRUE(length); EXPECT_EQ(1048577, *length);
+  model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, ActiveItemAndSecondReaderAreRejectedBeforeOpen) {
+  Model active(tasks_); active.Start(); active.Drain(); base::test::TestFuture<Reader::Metadata> rejected;
+  EXPECT_FALSE(LeaseFor(active)->OpenReader(Budget::kFileBytes, rejected.GetCallback())); EXPECT_FALSE(rejected.IsReady()); active.RetireAll();
+  Model completed(tasks_); completed.Start(true); completed.Drain(); auto reader = Open(completed); ASSERT_TRUE(reader);
+  EXPECT_FALSE(LeaseFor(completed)->OpenReader(Budget::kFileBytes, rejected.GetCallback())); EXPECT_FALSE(rejected.IsReady());
+  reader->Close(); tasks_.RunUntilIdle(); EXPECT_FALSE(LeaseFor(completed)->OpenReader(Budget::kFileBytes, rejected.GetCallback()));
+  completed.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, InvalidRangesAndBusyReadDoNotQueueExtraWork) {
+  Model model(tasks_); model.Start(true); model.Drain(); auto reader = Open(model); ASSERT_TRUE(reader);
+  EXPECT_FALSE(reader->Read(0, 0, base::DoNothing())); EXPECT_FALSE(reader->Read(0, 3073, base::DoNothing()));
+  EXPECT_FALSE(reader->Read(UINT64_MAX, 1, base::DoNothing())); EXPECT_FALSE(reader->Read(8, 1, base::DoNothing()));
+  auto gate = BlockFileSequence(); auto release = ReleaseOnExit(gate);
+  base::test::TestFuture<Reader::Chunk> first; ASSERT_TRUE(reader->Read(0, 1, first.GetCallback()));
+  EXPECT_FALSE(reader->Read(0, 1, base::DoNothing())); EXPECT_FALSE(first.IsReady());
+  gate->allow.Signal(); tasks_.RunUntilIdle(); EXPECT_TRUE(first.IsReady());
+  reader->Close(); tasks_.RunUntilIdle(); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, UnlinkDoesNotRetireOwnedFileDescriptorOrReservation) {
+  Model model(tasks_); model.Start(true); model.Drain(); const auto path = PathFor(model); const auto identity = Identity(path);
+  EXPECT_EQ(0, OwnedReferences(identity)); auto reader = Open(model); ASSERT_TRUE(reader); EXPECT_EQ(1, OwnedReferences(identity));
+  ASSERT_TRUE(base::DeleteFile(path)); EXPECT_EQ(1, OwnedReferences(identity)); EXPECT_EQ(1u, Budget::ReservedItems());
+  auto result = Read(*reader); EXPECT_EQ("xxxxxxx", result.bytes);
+  reader->Close(); tasks_.RunUntilIdle(); EXPECT_EQ(0, OwnedReferences(identity)); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, ActualFileClosureAndOriginAckAreSeparate) {
+  Model model(tasks_); model.Start(true); model.Drain(); auto files = FilesFor(model); const auto identity = Identity(PathFor(model));
+  auto reader = Open(model); ASSERT_TRUE(reader); EXPECT_EQ(1u, files->GetSnapshot().pending);
+  auto gate = BlockFileSequence(); auto release = ReleaseOnExit(gate); bool closed = false;
+  EXPECT_TRUE(reader->Close(base::BindOnce([](bool* closed, bool success) { *closed = success; }, &closed)));
+  LeaseFor(model)->BeginRetire(); EXPECT_EQ(1, OwnedReferences(identity)); EXPECT_EQ(1u, Budget::ReservedItems());
+  gate->allow.Signal(); FileBarrier();
+  EXPECT_EQ(0, OwnedReferences(identity)); EXPECT_FALSE(closed); EXPECT_FALSE(reader->closed());
+  EXPECT_GT(files->GetSnapshot().pending, 0u); EXPECT_EQ(1u, Budget::ReservedItems());
+  model.Drain(); EXPECT_TRUE(closed); EXPECT_TRUE(reader->closed()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, CloseDuringAcceptedReadDiscardsResultBytes) {
+  Model model(tasks_); model.Start(true); model.Drain(); auto reader = Open(model); ASSERT_TRUE(reader);
+  auto gate = BlockFileSequence(); auto release = ReleaseOnExit(gate); base::test::TestFuture<Reader::Chunk> result;
+  ASSERT_TRUE(reader->Read(0, 7, result.GetCallback())); EXPECT_TRUE(reader->Close()); LeaseFor(model)->BeginRetire();
+  EXPECT_EQ(1u, Budget::ReservedItems()); gate->allow.Signal(); model.Drain();
+  ASSERT_TRUE(result.IsReady()); EXPECT_EQ(ReadError::kClosed, result.Get().error); EXPECT_TRUE(result.Get().bytes.empty());
+  EXPECT_TRUE(reader->closed()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, DroppingSessionStillClosesBeforeLeaseRelease) {
+  Model model(tasks_); model.Start(true); model.Drain(); const auto identity = Identity(PathFor(model));
+  auto reader = Open(model); ASSERT_TRUE(reader); auto gate = BlockFileSequence(); auto release = ReleaseOnExit(gate);
+  reader.reset(); LeaseFor(model)->BeginRetire(); EXPECT_EQ(1, OwnedReferences(identity)); EXPECT_EQ(1u, Budget::ReservedItems());
+  gate->allow.Signal(); model.Drain(); EXPECT_EQ(0, OwnedReferences(identity)); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, TerminalDeadlineClosesActualReaderAndRecoversQuota) {
+  Model model(tasks_); model.Start(true); model.Drain(); auto reader = Open(model); ASSERT_TRUE(reader);
+  tasks_.FastForwardBy(base::Seconds(31)); model.Drain(); EXPECT_TRUE(reader->closed()); EXPECT_EQ(0u, Budget::ReservedItems());
+  EXPECT_TRUE(model.delegate.items.empty()); model.Start(true); model.Drain(); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, TruncatedOwnedFileFailsReadAndAutoCloses) {
+  Model model(tasks_); model.Start(true); model.Drain(); auto reader = Open(model); ASSERT_TRUE(reader);
+  ASSERT_TRUE(base::WriteFile(PathFor(model), "a")); auto result = Read(*reader); EXPECT_EQ(ReadError::kIo, result.error);
+  EXPECT_TRUE(result.bytes.empty()); tasks_.RunUntilIdle(); EXPECT_TRUE(reader->closed()); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, SymlinkDirectoryAndPipeAreRejectedWithoutBlocking) {
+  for (int kind = 0; kind < 3; ++kind) {
+    Model model(tasks_); model.Start(true); model.Drain(); const auto path = PathFor(model);
+    const auto saved = model.directory.GetPath().AppendASCII("saved"); ASSERT_TRUE(base::Move(path, saved));
+    if (kind == 0) ASSERT_TRUE(base::CreateSymbolicLink(saved, path));
+    if (kind == 1) ASSERT_TRUE(base::CreateDirectory(path));
+    if (kind == 2) ASSERT_EQ(0, mkfifo(path.value().c_str(), 0600));
+    auto reader = Open(model); ASSERT_TRUE(reader); EXPECT_NE(ReadError::kNone, metadata_.error); EXPECT_TRUE(reader->closed());
+    if (kind == 1) ASSERT_TRUE(base::DeletePathRecursively(path)); else ASSERT_TRUE(base::DeleteFile(path));
+    ASSERT_TRUE(base::Move(saved, path)); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+  }
+}
+TEST_F(RemotePaintDownloadReadTest, RejectedOpenCanAcknowledgeActualEmptyOwnerDestruction) {
+  Model model(tasks_); model.Start(true); model.Drain(); auto fault = base::MakeRefCounted<ReadFaultRunner>(download::GetDownloadTaskRunner());
+  fault->RejectNext(); auto reader = Open(model, Budget::kFileBytes, fault); ASSERT_TRUE(reader);
+  EXPECT_NE(ReadError::kNone, metadata_.error); tasks_.RunUntilIdle(); EXPECT_TRUE(reader->closed());
+  EXPECT_EQ(0u, FilesFor(model)->GetSnapshot().pending); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, StoppedFileSequenceHoldsQuotaUntilActualProcessExit) {
+  if (!Child("stopped", "StoppedFileSequenceHoldsQuotaUntilActualProcessExit")) return;
+  Model model(tasks_); model.Start(true); model.Drain(); const auto identity = Identity(PathFor(model)); auto files = FilesFor(model);
+  base::Thread file_thread("owned-reader-file"); ASSERT_TRUE(file_thread.Start());
+  auto reader = Open(model, Budget::kFileBytes, file_thread.task_runner()); ASSERT_TRUE(reader); ASSERT_EQ(ReadError::kNone, metadata_.error);
+  EXPECT_EQ(1, OwnedReferences(identity)); file_thread.Stop(); EXPECT_FALSE(reader->Close()); LeaseFor(model)->BeginRetire(); model.Drain();
+  EXPECT_EQ(1, OwnedReferences(identity)); EXPECT_EQ(1u, files->GetSnapshot().pending); EXPECT_TRUE(files->GetSnapshot().failed);
+  EXPECT_EQ(1u, Budget::ReservedItems()); EXPECT_FALSE(reader->closed());
+}
+TEST_F(RemotePaintDownloadReadTest, InjectedDroppedCloseAckHoldsEvenAfterActualFileClosure) {
+  if (!Child("ack-drop", "InjectedDroppedCloseAckHoldsEvenAfterActualFileClosure")) return;
+  Model model(tasks_); model.Start(true); model.Drain(); const auto identity = Identity(PathFor(model)); auto files = FilesFor(model);
+  auto origin = base::MakeRefCounted<ReadFaultRunner>(base::SequencedTaskRunner::GetCurrentDefault());
+  auto reader = Open(model, Budget::kFileBytes, download::GetDownloadTaskRunner(), origin); ASSERT_TRUE(reader);
+  origin->RejectAll(); EXPECT_TRUE(reader->Close()); LeaseFor(model)->BeginRetire(); model.Drain();
+  EXPECT_EQ(0, OwnedReferences(identity)); EXPECT_EQ(1u, files->GetSnapshot().pending); EXPECT_FALSE(reader->closed());
+  EXPECT_EQ(1u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadReadTest, TwelveReadSessionsAcrossDownloadsReuseActualQuota) {
+  Model model(tasks_);
+  for (int i = 0; i < 12; ++i) {
+    model.Start(true); model.Drain(); auto reader = Open(model); ASSERT_TRUE(reader); EXPECT_EQ(ReadError::kNone, metadata_.error);
+    EXPECT_EQ("xxxxxxx", Read(*reader).bytes); reader->Close(); tasks_.RunUntilIdle(); model.RetireAll();
+    EXPECT_EQ(0u, Budget::ReservedItems()); EXPECT_TRUE(model.delegate.items.empty()); EXPECT_TRUE(base::IsDirectoryEmpty(model.directory.GetPath()));
+  }
 }
 
 TEST_F(RemotePaintDownloadBudgetTest, FailedCleanupHoldsQuotaUntilActualProcessExit) {

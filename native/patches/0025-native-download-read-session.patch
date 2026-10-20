@@ -1,0 +1,393 @@
+--- a/components/download/public/common/BUILD.gn
++++ b/components/download/public/common/BUILD.gn
+@@ -63,6 +63,8 @@
+     "in_progress_download_manager.h",
+     "native_download_bridge_descriptor.cc",
+     "native_download_bridge_descriptor.h",
++    "native_download_read_session.cc",
++    "native_download_read_session.h",
+     "native_download_request_context.cc",
+     "native_download_request_context.h",
+     "native_download_budget.cc",
+--- a/components/download/public/common/download_file.cc
++++ b/components/download/public/common/download_file.cc
+@@ -27,6 +27,18 @@
+ DownloadFileCleanupState::Snapshot DownloadFileCleanupState::GetSnapshot() const {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   return {pending_, failed_};
++}
++
++base::OnceCallback<void(bool)> DownloadFileCleanupState::HoldReadOwner() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  CHECK_LT(pending_, std::numeric_limits<uint64_t>::max());
++  ++pending_;
++  return base::BindOnce(&DownloadFileCleanupState::Complete, base::WrapRefCounted(this));
++}
++
++void DownloadFileCleanupState::RejectReadOwnerClose() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  failed_ = true;  // Keep the pending owner until actual ACK or namespace retirement.
+ }
+ 
+ void DownloadFileCleanupState::Complete(bool success) {
+--- a/components/download/public/common/download_file.h
++++ b/components/download/public/common/download_file.h
+@@ -154,6 +154,9 @@
+ 
+  private:
+   friend class base::RefCountedThreadSafe<DownloadFileCleanupState>;
++  friend class NativeDownloadReadSession;
++  base::OnceCallback<void(bool)> HoldReadOwner();
++  void RejectReadOwnerClose();
+   ~DownloadFileCleanupState();
+   void PostOwned(scoped_refptr<base::SequencedTaskRunner> runner,
+                  std::unique_ptr<DownloadFile> file, bool destroy);
+--- a/components/download/public/common/native_download_budget.cc
++++ b/components/download/public/common/native_download_budget.cc
+@@ -187,9 +187,31 @@
+   retiring_ = true;
+   Schedule();  // Destruction notification itself is never metadata ACK.
+ }
++std::unique_ptr<NativeDownloadReadSession> NativeDownloadLease::OpenReader(
++    uint64_t maximum_bytes, NativeDownloadReadSession::ReadyCallback done) {
++  return OpenReaderOn(GetDownloadTaskRunner(), base::SequencedTaskRunner::GetCurrentDefault(),
++                       maximum_bytes, std::move(done));
++}
++std::unique_ptr<NativeDownloadReadSession> NativeDownloadLease::OpenReaderOn(
++    scoped_refptr<base::SequencedTaskRunner> runner,
++    scoped_refptr<base::SequencedTaskRunner> origin,
++    uint64_t maximum_bytes, NativeDownloadReadSession::ReadyCallback done) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (!done || !runner || !origin || maximum_bytes == 0 || maximum_bytes > NativeDownloadBudget::kFileBytes ||
++      finished_ || failed_ || retiring_ || reader_seen_ || pending_creators_ || !item_ || !files_ ||
++      item_->GetState() != DownloadItem::COMPLETE || item_->GetTargetFilePath().empty() ||
++      item_->GetFullPath() != item_->GetTargetFilePath()) return nullptr;
++  const auto snapshot = files_->GetSnapshot();
++  if (snapshot.pending || snapshot.failed) return nullptr;
++  auto reader = std::unique_ptr<NativeDownloadReadSession>(new NativeDownloadReadSession(
++      base::WrapRefCounted(this), files_, item_->GetTargetFilePath(), maximum_bytes, std::move(runner), std::move(origin)));
++  reader_seen_ = true; reader_ = reader->GetWeakPtr(); reader->Start(std::move(done)); return reader;
++}
++
+ void NativeDownloadLease::Fail() {
+   failed_ = true;
+   timer_.Stop();
++  if (reader_) reader_->Close();
+   // Keep the self-reference and global reservation until namespace retirement.
+ }
+ void NativeDownloadLease::BeginRetire() {
+@@ -207,6 +229,7 @@
+   if (failed_ || finished_) return;
+   auto self = keepalive_;
+   retiring_ = true;
++  if (reader_) reader_->Close();
+   if (cancel_ && cancel_->data && current_request_) {
+     const auto phase = current_request_->GetPhase();
+     if (phase == RequestPhase::Active || phase == RequestPhase::Queued)
+--- a/components/download/public/common/native_download_budget.h
++++ b/components/download/public/common/native_download_budget.h
+@@ -15,6 +15,7 @@
+ #include "base/sequence_checker.h"
+ #include "components/download/public/common/download_export.h"
+ #include "components/download/public/common/download_item.h"
++#include "components/download/public/common/native_download_read_session.h"
+ 
+ namespace download {
+ class DownloadFileCleanupState;
+@@ -32,6 +33,8 @@
+   void CreationDone(bool returned_item);
+   void MetadataRetired();  // Called only after the owner's erase has returned.
+   void BeginRetire();
++  std::unique_ptr<NativeDownloadReadSession> OpenReader(
++      uint64_t maximum_bytes, NativeDownloadReadSession::ReadyCallback done);
+   const std::string& guid() const { return guid_; }
+   bool failed() const { return failed_; }
+   bool retiring() const { return retiring_; }
+@@ -41,6 +44,11 @@
+ 
+  private:
+   friend class NativeDownloadBudget;
++  friend class NativeDownloadReadSessionTestPeer;
++  std::unique_ptr<NativeDownloadReadSession> OpenReaderOn(
++      scoped_refptr<base::SequencedTaskRunner> runner,
++      scoped_refptr<base::SequencedTaskRunner> origin,
++      uint64_t maximum_bytes, NativeDownloadReadSession::ReadyCallback done);
+   friend class base::RefCountedThreadSafe<NativeDownloadLease>;
+   NativeDownloadLease(base::RepeatingCallback<void(NativeDownloadLease*)> done);
+   ~NativeDownloadLease() override;
+@@ -56,6 +64,8 @@
+   raw_ptr<DownloadItemImpl> item_ = nullptr;
+   scoped_refptr<DownloadFileCleanupState> files_;
+   scoped_refptr<NativeDownloadRequestContext> request_context_;
++  base::WeakPtr<NativeDownloadReadSession> reader_;
++  bool reader_seen_ = false;
+   std::array<scoped_refptr<UrlDownloadHandlerCleanupState>, 4> requests_;
+   scoped_refptr<UrlDownloadHandlerCleanupState> current_request_;
+   scoped_refptr<base::RefCountedData<base::OnceCallback<void(bool)>>> cancel_;
+--- /dev/null
++++ b/components/download/public/common/native_download_read_session.cc
+@@ -0,0 +1,182 @@
++#include "components/download/public/common/native_download_read_session.h"
++
++#include <algorithm>
++#include <array>
++#include <utility>
++#include "base/check.h"
++#include "base/containers/span.h"
++#include "base/files/file.h"
++#include "base/files/scoped_file.h"
++#include "base/functional/bind.h"
++#include "base/strings/string_number_conversions.h"
++#include "base/task/bind_post_task.h"
++#include "build/build_config.h"
++#include "components/download/public/common/download_file.h"
++#include "components/download/public/common/native_download_budget.h"
++#include "crypto/hash.h"
++#if BUILDFLAG(IS_POSIX)
++#include <fcntl.h>
++#include <sys/stat.h>
++#include "base/posix/eintr_wrapper.h"
++#endif
++
++namespace download {
++class NativeDownloadReadSession::IOState {
++ public:
++  IOState(const base::FilePath& path, uint64_t limit)
++      : path_(path), limit_(limit) {
++    DETACH_FROM_SEQUENCE(sequence_checker_);
++  }
++  ~IOState() {
++    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++    file_.Close();
++  }
++  Metadata Open() {
++    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++    Metadata result; result.error = Error::kIo;
++#if BUILDFLAG(IS_POSIX)
++    base::ScopedFD fd(HANDLE_EINTR(open(path_.value().c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW | O_NONBLOCK)));
++    base::stat_wrapper_t st{};
++    if (!fd.is_valid() || base::File::Fstat(fd.get(), &st) != 0 || !S_ISREG(st.st_mode)) return result;
++    file_ = base::File(std::move(fd));
++#else
++    // Source activation for other platforms requires an equivalent verified
++    // regular-file/no-follow/nonblocking ownership contract.
++    result.error = Error::kUnavailable; return result;
++#endif
++    const int64_t length = file_.GetLength();
++    if (length < 0) return result;
++    if (static_cast<uint64_t>(length) > limit_ || static_cast<uint64_t>(length) > NativeDownloadBudget::kFileBytes) {
++      result.error = Error::kLimit; return result;
++    }
++    if (!file_.GetInfo(&identity_) || identity_.is_directory) return result;
++    size_ = static_cast<uint64_t>(length);
++    crypto::hash::Hasher hash(crypto::hash::kSha256);
++    std::array<uint8_t, 8192> buffer;
++    for (uint64_t offset = 0; offset < size_;) {
++      const size_t count = static_cast<size_t>(std::min<uint64_t>(buffer.size(), size_ - offset));
++      auto span = base::span(buffer).first(count);
++      if (!file_.ReadAndCheck(static_cast<int64_t>(offset), span)) return result;
++      hash.Update(span); offset += count;
++    }
++    if (!Unchanged()) return result;
++    std::array<uint8_t, crypto::hash::kSha256Size> digest; hash.Finish(digest);
++    result.error = Error::kNone; result.byte_length = size_; result.sha256 = base::HexEncodeLower(digest);
++    return result;
++  }
++  Chunk Read(uint64_t offset, uint32_t maximum_bytes) {
++    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++    Chunk result; result.error = Error::kIo; result.offset = offset;
++    if (!Unchanged() || offset > size_ || maximum_bytes == 0 || maximum_bytes > kChunkBytes) return result;
++    const size_t count = static_cast<size_t>(std::min<uint64_t>(maximum_bytes, size_ - offset));
++    result.bytes.resize(count);
++    if (count && !file_.ReadAndCheck(static_cast<int64_t>(offset), base::as_writable_byte_span(result.bytes))) {
++      result.bytes.clear(); return result;
++    }
++    if (!Unchanged()) { result.bytes.clear(); return result; }
++    result.error = Error::kNone; result.complete = offset + count == size_; return result;
++  }
++ private:
++  bool Unchanged() {
++    base::File::Info current;
++    return file_.IsValid() && file_.GetLength() == static_cast<int64_t>(size_) &&
++           file_.GetInfo(&current) && !current.is_directory && current.last_modified == identity_.last_modified;
++  }
++  const base::FilePath path_;
++  const uint64_t limit_;
++  base::File file_;
++  base::File::Info identity_;
++  uint64_t size_ = 0;
++  SEQUENCE_CHECKER(sequence_checker_);
++};
++
++NativeDownloadReadSession::NativeDownloadReadSession(
++    scoped_refptr<NativeDownloadLease> lease, scoped_refptr<DownloadFileCleanupState> files,
++    const base::FilePath& path, uint64_t maximum_bytes,
++    scoped_refptr<base::SequencedTaskRunner> runner,
++    scoped_refptr<base::SequencedTaskRunner> origin)
++    : lease_(std::move(lease)), files_(std::move(files)), runner_(std::move(runner)),
++      io_(nullptr, base::OnTaskRunnerDeleter(runner_)) {
++  CHECK(runner_); CHECK(origin);
++  auto settled = base::BindOnce(
++      [](base::OnceCallback<void(bool)> complete, base::WeakPtr<NativeDownloadReadSession> self, bool success) {
++        std::move(complete).Run(success);
++        if (self) self->DidClose(success);
++      }, files_->HoldReadOwner(), weak_.GetWeakPtr());
++  close_ack_ = base::BindPostTask(std::move(origin), std::move(settled));
++  io_.reset(new IOState(path, maximum_bytes));
++}
++NativeDownloadReadSession::~NativeDownloadReadSession() { Close(); }
++base::WeakPtr<NativeDownloadReadSession> NativeDownloadReadSession::GetWeakPtr() { return weak_.GetWeakPtr(); }
++void NativeDownloadReadSession::Start(ReadyCallback done) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  auto completion = base::MakeRefCounted<base::RefCountedData<ReadyCallback>>(std::move(done));
++  const bool posted = runner_->PostTaskAndReplyWithResult(FROM_HERE,
++      base::BindOnce(&IOState::Open, base::Unretained(io_.get())),
++      base::BindOnce([](base::WeakPtr<NativeDownloadReadSession> self,
++                       scoped_refptr<base::RefCountedData<ReadyCallback>> completion, Metadata result) {
++        if (self) self->DidOpen(std::move(completion->data), std::move(result));
++      }, weak_.GetWeakPtr(), completion));
++  if (!posted) {
++    Close();
++    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE, base::BindOnce(
++        [](base::WeakPtr<NativeDownloadReadSession> self,
++           scoped_refptr<base::RefCountedData<ReadyCallback>> completion) {
++          if (self) self->DidOpen(std::move(completion->data), Metadata{});
++        }, weak_.GetWeakPtr(), completion));
++  }
++}
++void NativeDownloadReadSession::DidOpen(ReadyCallback done, Metadata metadata) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (closing_ || lease_->retiring() || lease_->failed()) metadata = {Error::kClosed, 0, {}};
++  if (metadata.error == Error::kNone) { metadata_ = metadata; ready_ = true; }
++  else Close();
++  auto self = weak_.GetWeakPtr();
++  if (done) std::move(done).Run(std::move(metadata));
++  if (self) self->busy_ = false;
++}
++bool NativeDownloadReadSession::Read(uint64_t offset, uint32_t maximum_bytes, ReadCallback done) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (!done || !ready_ || busy_ || closing_ || lease_->retiring() || lease_->failed() ||
++      maximum_bytes == 0 || maximum_bytes > kChunkBytes || offset > metadata_.byte_length) return false;
++  busy_ = true;
++  const bool posted = runner_->PostTaskAndReplyWithResult(FROM_HERE,
++      base::BindOnce(&IOState::Read, base::Unretained(io_.get()), offset, maximum_bytes),
++      base::BindOnce(&NativeDownloadReadSession::DidRead, weak_.GetWeakPtr(), std::move(done)));
++  if (!posted) { busy_ = false; Close(); }
++  return posted;
++}
++void NativeDownloadReadSession::DidRead(ReadCallback done, Chunk chunk) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (closing_ || lease_->retiring() || lease_->failed()) chunk = {Error::kClosed, chunk.offset, {}, false};
++  if (chunk.error != Error::kNone) Close();
++  auto self = weak_.GetWeakPtr();
++  if (done) std::move(done).Run(std::move(chunk));
++  if (self) self->busy_ = false;
++}
++bool NativeDownloadReadSession::Close(base::OnceCallback<void(bool)> done) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (closed_) { if (done) std::move(done).Run(close_success_); return true; }
++  if (done && close_callback_) return false;
++  if (done) close_callback_ = std::move(done);
++  if (closing_) return close_posted_;
++  closing_ = true; ready_ = false;
++  // FIFO behind accepted open/read jobs. Destroy the complete owner (including
++  // its members) before posting the independent ACK. Rejected posting drops
++  // the ACK; the original sequence-safe deleter retains/falls back conservatively.
++  close_posted_ = runner_->PostTask(FROM_HERE, base::BindOnce(
++      [](std::unique_ptr<IOState, base::OnTaskRunnerDeleter> pending,
++         base::OnceCallback<void(bool)> ack) {
++        std::unique_ptr<IOState> state(pending.release());
++        state.reset();
++        std::move(ack).Run(true);
++      }, std::move(io_), std::move(close_ack_)));
++  if (!close_posted_) files_->RejectReadOwnerClose();
++  return close_posted_;
++}
++void NativeDownloadReadSession::DidClose(bool success) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  closed_ = true; close_success_ = success;
++  if (close_callback_) std::move(close_callback_).Run(success);
++}
++}  // namespace download
+--- /dev/null
++++ b/components/download/public/common/native_download_read_session.h
+@@ -0,0 +1,79 @@
++#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_READ_SESSION_H_
++#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_READ_SESSION_H_
++
++#include <cstdint>
++#include <memory>
++#include <string>
++#include "base/files/file_path.h"
++#include "base/functional/callback.h"
++#include "base/memory/ref_counted.h"
++#include "base/memory/weak_ptr.h"
++#include "base/sequence_checker.h"
++#include "base/task/sequenced_task_runner.h"
++#include "base/task/sequenced_task_runner_helpers.h"
++#include "components/download/public/common/download_export.h"
++
++namespace download {
++class DownloadFileCleanupState;
++class NativeDownloadLease;
++class NativeDownloadReadSessionTestPeer;
++
++// Origin-sequence owner. Actual file access and destruction stay on its file
++// sequence, and a separate close ACK holds the existing cleanup/lease gate.
++class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadReadSession {
++ public:
++  enum class Error { kNone, kUnavailable, kIo, kLimit, kClosed };
++  struct Metadata {
++    Error error = Error::kUnavailable;
++    uint64_t byte_length = 0;
++    std::string sha256;
++  };
++  struct Chunk {
++    Error error = Error::kUnavailable;
++    uint64_t offset = 0;
++    std::string bytes;
++    bool complete = false;
++  };
++  using ReadyCallback = base::OnceCallback<void(Metadata)>;
++  using ReadCallback = base::OnceCallback<void(Chunk)>;
++  static constexpr uint32_t kChunkBytes = 3072;
++  ~NativeDownloadReadSession();
++  NativeDownloadReadSession(const NativeDownloadReadSession&) = delete;
++  NativeDownloadReadSession& operator=(const NativeDownloadReadSession&) = delete;
++  bool Read(uint64_t offset, uint32_t maximum_bytes, ReadCallback done);
++  // At most one waiting close callback. Repeated no-callback close is harmless.
++  bool Close(base::OnceCallback<void(bool)> done = {});
++  bool closed() const { return closed_; }
++  bool busy() const { return busy_; }
++
++ private:
++  friend class NativeDownloadLease;
++  friend class NativeDownloadReadSessionTestPeer;
++  class IOState;
++  NativeDownloadReadSession(scoped_refptr<NativeDownloadLease> lease,
++      scoped_refptr<DownloadFileCleanupState> files, const base::FilePath& path,
++      uint64_t maximum_bytes, scoped_refptr<base::SequencedTaskRunner> runner,
++      scoped_refptr<base::SequencedTaskRunner> origin);
++  void Start(ReadyCallback done);
++  void DidOpen(ReadyCallback done, Metadata metadata);
++  void DidRead(ReadCallback done, Chunk chunk);
++  void DidClose(bool success);
++  base::WeakPtr<NativeDownloadReadSession> GetWeakPtr();
++  scoped_refptr<NativeDownloadLease> lease_;
++  scoped_refptr<DownloadFileCleanupState> files_;
++  scoped_refptr<base::SequencedTaskRunner> runner_;
++  std::unique_ptr<IOState, base::OnTaskRunnerDeleter> io_;
++  base::OnceCallback<void(bool)> close_ack_;
++  Metadata metadata_;
++  bool busy_ = true;
++  bool ready_ = false;
++  bool closing_ = false;
++  bool closed_ = false;
++  bool close_success_ = false;
++  bool close_posted_ = false;
++  base::OnceCallback<void(bool)> close_callback_;
++  SEQUENCE_CHECKER(sequence_checker_);
++  base::WeakPtrFactory<NativeDownloadReadSession> weak_{this};
++};
++}  // namespace download
++#endif
