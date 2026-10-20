@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | DOM/AX/截图/原页面下载及Node/Python SDK既有范围保留。新增实际BaseFile固定4MiB写前extent边界，35上游+10新文件系统测试45全通过，当前138文件1425项JS双平台零失败。两次构建环境失败及修复完整保留，第三次构建/ARM64测试退出0。只验收独立BaseFile，完整浏览器写盘/item/partial spool/Playwright集合与完整定位仍待，见[范围](native-download-write-budget.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | DOM/AX/截图/原页面下载及Node/Python SDK既有范围保留。实际BaseFile固定4MiB写前extent边界之外，新增同步取消删除结果，真实ARM64未过滤52项（35上游+10写前+7删除结果）全通过，双平台输入/收据/打包合同各13通过。仅验证BaseFile关闭和路径删除结果；完整item准入/总spool/实际任务及Playwright元数据待做，见[范围](native-download-deletion-result.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -2073,3 +2073,7 @@ arm_download/info/chunk/release/file 同步捕获完整context和输入，冻结
 ### 隔离 Chromium 构建输出与来源收据
 
 所有Chromium准备/构建/收据/打包入口显式选择out/name，删除隐式跨平台补丁收据查找；新format2记录所选目录，包装校验绑定，旧format1仅保留历史校验。符号链接/非目录拒绝、已有缓存保留、明确导入补丁状态和API/CLI缺省拒绝由10个真实临时文件系统合同覆盖；最终139文件1435项JS双平台零失败，11项语法/YAML检查退出0。CI环境、缓存及诊断共用选择器，保留既有缓存布局。没有执行真实源码准备、浏览器/CI或发布打包；C++45与SDK证据仅保留字节相同父版本范围。K6及41项10/17/14不变，见[范围](isolated-chromium-output.md)。
+
+### Native BaseFile 取消删除结果
+
+原Cancel保持既有行为，新增方法同步关闭当前句柄后返回实际DeleteFile结果；缺少确认的Android URI不伪造成功。7新真实文件系统用例覆盖删除失败、已完成/缺失文件及其他打开句柄的明确边界；独立ARM64 ELF未过滤52项全通过，无禁用。双平台输入/收据/打包合同最终各13通过，首轮错误路径导致实际11项的范围修正记录保留。复用自有新输出完成GN/Ninja23步，没有重建canonical浏览器或重跑完整JS/SDK/8小时；容器终态退休并删除，缓存保留。仅原生文件原语，未接入下载任务/准入/总spool/item/Playwright边界，K6和41项10/17/14不变，见[范围](native-download-deletion-result.md)。

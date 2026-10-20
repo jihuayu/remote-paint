@@ -48,6 +48,7 @@ test("download_file_tests") {
   sources = [
     "download_file_test_main.cc",
     "download_file_unittest.cc",
+    "download_file_deletion_unittest.cc",
     "//components/download/internal/common/base_file_unittest.cc",
   ]
   deps = [

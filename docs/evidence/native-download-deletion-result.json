@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-20T02:10:31.824284+00:00",
+  "scope": "Synchronous BaseFile owner close plus DeleteFile result only; Linux ARM64 actual filesystem tests",
+  "qualifiedWithinScope": true,
+  "method": "BaseFile::CancelAndReportDeletion",
+  "legacyCancelBehaviorPreserved": true,
+  "falseOnUnacknowledgedAndroidContentUri": true,
+  "androidRuntimeTested": false,
+  "macCppRuntimeTested": false,
+  "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-deletion-result-candidate-v1/frozen-version.json",
+  "candidateManifestSha256": "306dbf11d9cd1925f3ecf765de0891a991b67426f653c462cfafd68b98ba85f9",
+  "candidateSourceFiles": 1143,
+  "sourceDelta": [
+    "native/chromium/BUILD.gn",
+    "native/chromium/download_file_deletion_unittest.cc",
+    "native/patches/0016-native-download-deletion-result.patch"
+  ],
+  "preparedInputPrerequisiteCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/prepared-source-inputs-checkpoint-v1.json",
+  "build": {
+    "manifestSha256": "11806e39d27fa40c8d8ed9a75be2e2892bfc15b5ae174e662231e6f53b2b554d",
+    "actualExitCode": 0,
+    "gnActualExitCode": 0,
+    "ninjaActualExitCode": 0,
+    "logSha256": "77bbac0efe601ca3785b14611ed5d01361b735a843a88faf4c8e91f982d6cec3",
+    "incrementalSteps": 23,
+    "outputDirectory": "out/RemotePaintDownloadBudget20261020v1",
+    "sameRetainedOwnedCache": true,
+    "argsSha256": "b62b6f08a29354eb0e06f69cc2fb633ae9b787af0e24b13768d9f32707ee5335",
+    "patchStateEntries": 16,
+    "actualSourceCopies": 30
+  },
+  "cpp": {
+    "at": "2026-10-20T02:08:31.678125+00:00",
+    "status": "actual-basefile-tests-passed",
+    "totalTests": 52,
+    "failures": 0,
+    "disabled": 0,
+    "newDeletionTests": 7,
+    "previousWriteCapTests": 10,
+    "upstreamTests": 35,
+    "gtestSha256": "81e6532fef6e8390dad2838a82823e7162aba31d943a5d463d407ecd5529f2cc",
+    "testManifestSha256": "88e6bb6967a5325806c10e512b53b084699ca098839ac21e265e6a4f9a411e0d",
+    "actualExitCode": 0,
+    "runtimeBrowserCapQualified": false,
+    "binarySha256": "d00ddfb7ec09716d1d3519a0981b29fc73c5783873cc9f736dcbad0774d12bb6",
+    "logSha256": "06c735d43154db40f51259bc2d7c583a015d6273c11f7b6a3847bd85ce37d1f1",
+    "all52RunAndCompleted": true,
+    "newCases": [
+      "NoInitializedPathHasNothingToDelete",
+      "RemovesActualEmptyFile",
+      "ClosesAndRemovesWrittenPartialFile",
+      "RemovesAlreadyFinishedFile",
+      "AlreadyUnlinkedFileReportsSuccess",
+      "RealDeletionFailureDoesNotReportSuccess",
+      "OtherOpenHandlesAreOutsideDeletionResult"
+    ]
+  },
+  "jsScoped": {
+    "mac": {
+      "actualExitCode": 0,
+      "tests": 13,
+      "pass": 13,
+      "logSha256": "b6cc192a1105569e92f352d0446daa4c1f993bc00addfb79b7f1fbbdbc4c3d74",
+      "exitSha256": "70a6b56f99bbafd41124ca645b17e22f803f335b54a644e187b6e9d657440123"
+    },
+    "linux": {
+      "actualExitCode": 0,
+      "tests": 13,
+      "pass": 13,
+      "logSha256": "261780251710895a48e2ef0a89cebf68f1b05069114ac41bf542a5846baa1428",
+      "exitSha256": "2df1de1f476ab8a0cd92a665a941db4495aa4ce12acffca6ee670eca73561e15"
+    }
+  },
+  "jsFirstAttempt": {
+    "actualTestsEach": 11,
+    "actualExitEach": 0,
+    "scopeCorrection": "Wrong nonexistent package test path was silently omitted by Node. Corrected to linux-package.test.mjs, asserted all paths exist and exact13 count, reran both actual13. Original logs retained."
+  },
+  "freshWholeJsRun": false,
+  "previousWholeJsEvidenceUnmodified": true,
+  "sdkRerun": false,
+  "canonicalBrowserUnchanged": true,
+  "canonicalBrowserRebuilt": false,
+  "retirementSha256": "5310e10c12489ae3e1b381a42ffce38d558b4fd8d00d832bc650f09055c0e58c",
+  "ownedBuildAndRuntimeContainersRemoved": true,
+  "unarmedDownloadPolicyChanged": false,
+  "managerItemAdmissionImplemented": false,
+  "downloadTaskSettlementImplemented": false,
+  "fileIdentityOrForeignHandleRetirementQualified": false,
+  "browserDownloadSpoolPrewriteHardCapQualified": false,
+  "playwrightDownloadMetadataPhysicalBoundQualified": false,
+  "K6Complete": false,
+  "productionNativeFullyQualified": false,
+  "eightHourPassed": false,
+  "wholeGoalQualified": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true,
+  "noSubagents": true
+}
