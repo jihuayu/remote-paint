@@ -1,0 +1,91 @@
+{
+  "at": "2026-10-18T09:34:58.303785+00:00",
+  "status": "typed-backend-client-HTTP-SQLite72-contracts-and-strict-types-each-Mac-Linux-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/frozen-version.json",
+  "manifestSha256": "d36fad4b86fb1cb554509235207067a0038cf62f7b4676d98e81f1bdaf6d17d1",
+  "sourceFiles": 18,
+  "platforms": {
+    "mac": {
+      "tests": 72,
+      "passed": 72,
+      "failed": 0,
+      "skipped": 0,
+      "actualUnitExitCode": 0,
+      "actualTypeExitCode": 0,
+      "runtime": {
+        "node": "26.4.0",
+        "sqlite": "3.53.2",
+        "platform": "darwin",
+        "arch": "arm64"
+      },
+      "typeCompiler": {
+        "version": "5.9.3",
+        "tscSha256": "e8f349eabd48486bdb2bf9dc1a00c89d58297270c54b745838879e2859194419",
+        "packageLockSha256": "0f4ae1b18d88814073db2b14c6332b05db395f278bfdade335df54710ae30dec"
+      },
+      "typeOptions": [
+        "noEmit",
+        "strict",
+        "exactOptionalPropertyTypes",
+        "module=NodeNext",
+        "moduleResolution=NodeNext",
+        "target=ES2022",
+        "lib=ES2022,DOM"
+      ]
+    },
+    "linux": {
+      "tests": 72,
+      "passed": 72,
+      "failed": 0,
+      "skipped": 0,
+      "actualUnitExitCode": 0,
+      "actualTypeExitCode": 0,
+      "runtime": {
+        "node": "22.23.3",
+        "sqlite": "3.51.3",
+        "platform": "linux",
+        "arch": "arm64"
+      },
+      "typeCompiler": {
+        "version": "5.9.3",
+        "tscSha256": "e8f349eabd48486bdb2bf9dc1a00c89d58297270c54b745838879e2859194419",
+        "packageLockSha256": "0f4ae1b18d88814073db2b14c6332b05db395f278bfdade335df54710ae30dec"
+      },
+      "typeOptions": [
+        "noEmit",
+        "strict",
+        "exactOptionalPropertyTypes",
+        "module=NodeNext",
+        "moduleResolution=NodeNext",
+        "target=ES2022",
+        "lib=ES2022,DOM"
+      ],
+      "container": "remote-paint-session-client-linux-20261018-v1",
+      "dockerConfirmedTerminal": true
+    }
+  },
+  "scope": "Node ESM backend client with matching d.mts declarations and actual strict TypeScript consumer contracts. Immutable prepared create captures original body/key across caller mutation, manual resend and explicit bounded transient retries. Default no auto-retry; cancellation/timeout distinguish not-dispatched/unknown outcomes, no raw transport errors or credentials in public errors. Response body/UTF8/JSON/schema/requestID/target/kind/status validated, stream read bounded and cancelled. Actual Node fetch rejects redirect before reaching target. Actual client->loopback HTTP->SQLite first accepted response dropped via socket destruction, automatic original-key retry plus manual repeat produce one fixture Session and creation operation; query and release succeed. No actual Native lifecycle, Viewer tickets, public package or rolling-version acceptance.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/frozen-version.json": "d36fad4b86fb1cb554509235207067a0038cf62f7b4676d98e81f1bdaf6d17d1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/mac/unit.log": "a5830a4ffafcdfae7be8a7b509b50c4a76f31d69e88fb0d13b0c97a715b76936",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/mac/type.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/mac/exit.json": "4b081a7751da7b56228da1a6d6b337425ce12113dd573d704ca0a84d17f3c1ae",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/mac/runtime.json": "c914262369874764e33c14a8837d550408b75aead2110ac883d9c58d715b03c6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/mac/compiler.json": "49a776eb97bfa06eedb833f00adaa9aa961f255ef3fcc6cc28870e67e7ed6cb7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/linux/unit.log": "6b0f71c2c4d1f2c84256ea902a35e414eccd2cf308a812cb8392d1858f2f5d07",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/linux/type.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/linux/exit.json": "d27337e37be76a27ba43be1089acd4c877c3d175a2e05235454adac55877040b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/linux/runtime.json": "8963b774885b81fbb2c362a94f3344f2898da77ad15b1e111f79df45bb2f9a75",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-v1/linux/compiler.json": "49a776eb97bfa06eedb833f00adaa9aa961f255ef3fcc6cc28870e67e7ed6cb7"
+  },
+  "httpCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-http-checkpoint-v1.json",
+  "remaining": [
+    "Scoped Viewer connection tickets tied to real Native provider ownership",
+    "Actual Native create/connect/expiry/release lifecycle after active soak",
+    "Public packaging/Python/version compatibility and broader41 requirements"
+  ],
+  "frozen649EightHourUnchanged": true,
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true
+}

@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-18T09:52:40.104914+00:00",
+  "status": "Python-async-backend-client16-contracts-each-Mac-Linux-passed-strict-type-contracts-Mac-targetPython311-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/frozen-version.json",
+  "manifestSha256": "c08504f14826e71a767cbac9b2ecacf9b7e621025c51ff81f0613ed46091189b",
+  "sourceFiles": 26,
+  "platforms": {
+    "mac": {
+      "tests": 16,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "actualUnitExitCode": 0,
+      "runtime": {
+        "python": "3.14.6",
+        "platform": "darwin",
+        "arch": "arm64",
+        "dependencies": {
+          "httpx": "0.28.1",
+          "httpcore": "1.0.9",
+          "anyio": "4.15.1",
+          "h11": "0.16.0",
+          "idna": "3.20",
+          "certifi": "2026.7.22",
+          "typing_extensions": "4.16.0"
+        }
+      },
+      "actualTypeExitCode": 0,
+      "typeCompiler": {
+        "mypy": "1.19.1",
+        "targetPython": "3.11",
+        "options": [
+          "strict",
+          "no-incremental",
+          "cache-dir=/dev/null"
+        ]
+      }
+    },
+    "linux": {
+      "tests": 16,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "actualUnitExitCode": 0,
+      "runtime": {
+        "python": "3.11.2",
+        "platform": "linux",
+        "arch": "aarch64",
+        "dependencies": {
+          "httpx": "0.28.1",
+          "httpcore": "1.0.9",
+          "anyio": "4.15.1",
+          "h11": "0.16.0",
+          "idna": "3.20",
+          "certifi": "2026.7.22",
+          "typing_extensions": "4.16.0"
+        }
+      },
+      "container": "remote-paint-session-python-client-linux-20261018-v1",
+      "dockerConfirmedTerminal": true
+    }
+  },
+  "scope": "Python3.11+ typed asyncio backend client; immutable prepared body/key and frozen result models; actual Python->Node loopback HTTP->SQLite deliberately drops first accepted response, automatic replay plus manual resend make3 requests and one fixture allocation, then tenant fencing/query/release/reaping. Default no auto-retry, bounded explicit retries, total attempt deadline, Task cancellation preserves asyncio cancellation and uncertainty, streaming/schema/ID/size/UTF8 validation, no redirect/cookie propagation, bounded requests, singleflight client close. Tracked HTTPX automatic stream close failures fence new calls and surface fixed errors; explicit Node fixture process exits0 and durable closed attestation required. No Native/browser source, rendered Viewer/tickets, public wheel/PyPI/npm release or version compatibility acceptance.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/frozen-version.json": "c08504f14826e71a767cbac9b2ecacf9b7e621025c51ff81f0613ed46091189b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/dependencies.json": "740230dca453763c87dc0eced7de7b0c39b40add7b6c126d3028939736f84f90",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/mac/unit.log": "73e930f9b7a54b8d22d5c36a507e7ed445fb424a8c13c2ab2ab38e439057e45f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/mac/exit.json": "4b081a7751da7b56228da1a6d6b337425ce12113dd573d704ca0a84d17f3c1ae",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/mac/runtime.json": "10665f401475cc2d6ce301c2ef0096cf800491892d1eca8613dfe28058fa66c5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/mac/type.log": "8228fcc5ce46d42d01caf3cd941f4e9c5f2bcc372bb5b147a2f0572d2dd675a8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/mac/type-runtime.json": "182c1eb7dce9a1a6787216846d2c1c4de86f022c85bf0dbfeb4e310898c574e5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/linux/unit.log": "95e83f4fb95f0402e3612e5bc48a7c0d1c8165631251e92021c8946ae38bbdf8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/linux/exit.json": "57d57c9a20a092de9e5065beec78fb8bd04c796ce6aaab68cb2a247aece336d7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-v1/linux/runtime.json": "956efd1a38beb88a3d32b12d731eae968b70acb74db1e08a7a064e28dfce57cb"
+  },
+  "existingNode72AndTSTypes": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-client-checkpoint-v1.json",
+  "unchangedExistingNodeCodeAndContractsVerified": true,
+  "typeFailurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-type-failure-v1/receipt.json",
+  "cleanupFailurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-cleanup-failure-v1/receipt.json",
+  "remaining": [
+    "Build/install and inspect an independent Python package and Node package with version/export/compatibility contracts before public release",
+    "Native Gateway currently authorizes all display peers through legacy key; rendered read/control Viewer roles need Native changes and actual verification after active soak",
+    "Session-bound Viewer ticket/revocation and actual Native provider lifecycle, full K8 events and broader41 requirements"
+  ],
+  "frozen649EightHourUnchanged": true,
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true
+}

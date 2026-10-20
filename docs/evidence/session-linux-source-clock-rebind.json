@@ -1,0 +1,87 @@
+{
+  "at": "2026-10-18T11:03:21.349082+00:00",
+  "status": "actual-Linux-Native-clock-readiness-rebind-gates-passed",
+  "native": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-v2/frozen-version.json",
+    "manifestSha256": "14dd3ccf8946f60b2018ea8f7c058a37eeda16d7046a702226353a48d3cc7cc2",
+    "checks": 5,
+    "acceptedProbes": 17,
+    "intentionallyRejectedProbes": 2,
+    "actualExit": {
+      "at": "2026-10-18T11:02:38.402927+00:00",
+      "actualExitCode": 0,
+      "dockerRunning": false,
+      "dockerExitCode": 0,
+      "container": "remote-paint-linux-source-clock-rebind-20261018-v2"
+    },
+    "cleanup": {
+      "closeErrors": [],
+      "retiredProcesses": 6,
+      "browserConnected": false,
+      "brokerExited": true,
+      "pending": 0,
+      "requestOwners": 0,
+      "responseOwners": 0,
+      "bindingPresent": false,
+      "fixtureListening": false
+    },
+    "deadlineRejectionElapsedMs": 5000.804211,
+    "versions": {
+      "browserSha256": "c5d29a3b5a22ff27ee3914c68650feea3e342dd1c4d2dc502e9ff0e596ae1b4e",
+      "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c"
+    }
+  },
+  "unit": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-v1/frozen-version.json",
+    "manifestSha256": "c2b62114d3b0f8f78cb1b2737a80f1ca5c4cf6cb6823c3d6882c7b48cf17ef41",
+    "platforms": {
+      "mac": {
+        "tests": 12,
+        "pass": 12,
+        "fail": 0,
+        "skipped": 0,
+        "at": "2026-10-18T11:01:47.775488+00:00",
+        "actualExitCode": 0
+      },
+      "linux": {
+        "tests": 12,
+        "pass": 12,
+        "fail": 0,
+        "skipped": 0,
+        "at": "2026-10-18T11:01:48.272749+00:00",
+        "actualExitCode": 0,
+        "container": "remote-paint-clock-rebind-unit-linux-20261018-v1",
+        "dockerRunning": false,
+        "dockerExitCode": 0
+      }
+    },
+    "allUnitInputsIdenticalToNativeSnapshot": true
+  },
+  "failurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-before-v2/results/clock-rebind.json",
+  "setupFailurePreserved": {
+    "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-before-v1/results/clock-rebind.json",
+    "reason": "Snapshot copyfile omitted executable mode: Broker0644 versus source0755. Before-v2 preserves same bytes and correct source modes; initial failure occurred before regression."
+  },
+  "scope": "Wait for coherent actual registered binding/document/viewport/producer within the original5000ms total accepted-proof budget. No retries after a scheduler proof starts; exact context before/after plus renderer proc start identity,time namespace and hrtime interval with original1000ns integer allowance retained. Bounded first/last acquisition diagnostics and failed-probe log added. Actual controlled resize reproduces same precheck failure; does not prove sole cause of original8h failure. No browser/C++/Broker binaries changed.",
+  "remaining": [
+    "Fresh full current Mac/Linux tests,baseline600s,netem600s and independent8h",
+    "All other unaccepted41 backlog requirements"
+  ],
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true,
+  "unrelatedPeerPreserved": true,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-v2/frozen-version.json": "14dd3ccf8946f60b2018ea8f7c058a37eeda16d7046a702226353a48d3cc7cc2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-v2/results/clock-rebind.json": "01c4349e2feebc68e1e65883a7a5794e0bdaf8fd5d3a376c062a1ff376a6d174",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-v2/native.log": "314e0e0764d097e7c9b52272d8baa5d3434fade1a56c96f16614422ff4ce32a7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-v2/exit.json": "92f31b842ae734079325ac475852e4ca45bf6d219f3da5f3c7f3a15f936f5e51",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-before-v2/frozen-version.json": "1466550adb093e28a888c83925b8484dddcbf206c37ec148c0c22ce93c185d61",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-before-v2/results/clock-rebind.json": "05c322cc16c66fea1f5b53ba0948768101306123c3aedfe92127e4833212535a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-before-v2/exit.json": "84fb9e55dd2f5389a4bff664bb1f9722118f127643413c347f529ee07e38421e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-v1/mac/unit.log": "86aa7af1686d4a27f2d197b22d55cc6def368d713e74ee5b3f27eff19061b524",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-v1/mac/exit.json": "ecad9d939a13ce5090aa14b3b2fdd75fc870f4081f7f5eb158c7a4def30bfd6f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-v1/linux/unit.log": "d2d81506191e39ac6ad0904a0dff21fe145a7f22d50e991c169b9a7f8df2b16c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/linux-source-clock-rebind-v1/linux/exit.json": "9dc945755ccffb6100380a754f166aa8ff72a3f88d1d4443688d57cf1d2ee38b"
+  }
+}

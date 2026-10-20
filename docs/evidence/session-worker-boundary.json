@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-18T10:28:25.321810+00:00",
+  "status": "owned-Session-worker-boundary23-contracts-each-Mac-Linux-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-v1/frozen-version.json",
+  "manifestSha256": "c02e15413350cceaf7424f2f4caaa231c7627b00583be6987c654db560c784be",
+  "sourceFiles": 8,
+  "platforms": {
+    "mac": {
+      "tests": 23,
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "actualUnitExitCode": 0,
+      "productionNativeEntrypointSyntaxExitCode": 0,
+      "runtime": {
+        "node": "26.4.0",
+        "platform": "darwin",
+        "arch": "arm64"
+      }
+    },
+    "linux": {
+      "tests": 23,
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "actualUnitExitCode": 0,
+      "productionNativeEntrypointSyntaxExitCode": 0,
+      "runtime": {
+        "node": "22.23.3",
+        "platform": "linux",
+        "arch": "arm64"
+      },
+      "container": "remote-paint-session-worker-boundary-linux-20261018-v1",
+      "dockerConfirmedTerminal": true
+    }
+  },
+  "scope": "One-Session private worker channel authenticates fixed Session/tenant/region/owner-hash before resource construction; bounded UTF8/JSON frames, single Start, owner EOF/signal/lease closure and heartbeat. Synchronous resource ownership precedes async initialize; close fence published before abort callbacks, late owner waits/closes and cannot emit Ready, premature close acknowledgements rejected, cleanup failure/timeouts nonzero. Real Node worker and leaf process reaping, including setup rejection/worker SIGKILL with inherited leaf owner EOF; redacted failure and closed-pipe final status race reproduced/fixed. Fixed32KiB input backing cleared after parse. Native Source wrapper code validates modeled readiness and modeled logical closure; production Native entrypoint syntax checked only, not executed. No Chromium, actual Native provider/container ownership, Session TTL/health propagation, Viewer role/ticket or kernel-wide process retirement acceptance.",
+  "failurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-pipe-failure-v1/receipt.json",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-v1/frozen-version.json": "c02e15413350cceaf7424f2f4caaa231c7627b00583be6987c654db560c784be",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-v1/mac/unit.log": "cc9b1b07f21726f4ed46bc922d019823e5488688bf126b8f0a4cb55d8a8ae1e6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-v1/mac/syntax.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-v1/mac/exit.json": "81bf98af48625e1dae7d1c9f7c2da6d69e59d3297046885374f76e8608f20d20",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-v1/mac/runtime.json": "722f075188f4a1628fc3ae5803eacecd7346e8dfba8e1ba78d0612b6b5f64afd",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-v1/linux/unit.log": "74f045594faedccb2b0f7b1b96f46bbacabce0ce369b136f789b8aa408ed0a0e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-v1/linux/syntax.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-v1/linux/exit.json": "a3ee53e82960debf00e82bcf1c6e05dca639a83d7c25f40715a6fe591ba7e5a0",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-v1/linux/runtime.json": "0d7aa0e36a645bfd0dab14238729ba08b16636afd3dad2592eb2d73278f9922a"
+  },
+  "remaining": [
+    "Connect parent channel and stable runtime identity to actual Native Session provider; persist/verify resource ownership before startup and return quota only after full namespace retirement",
+    "Registry cancellation/TTL/health/restart recovery integration and independent worker expiry/activation semantics",
+    "Direct Native Gateway rendered read/control roles, Session-bound single-use Viewer tickets and revocation",
+    "Actual Native/browser integration after active soak, remaining41 requirements and N1/8h acceptance"
+  ],
+  "frozen649EightHourUnchanged": true,
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true
+}

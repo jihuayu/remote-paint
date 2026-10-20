@@ -1,0 +1,97 @@
+{
+  "at": "2026-10-18T11:24:27.491274+00:00",
+  "status": "bounded-whole-browser-native-memory-census-repair-qualified",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-v2/frozen-version.json",
+  "manifestSha256": "7d97472b37dd108646f459b39e14aef85344f31464110b9b2f129336506679f1",
+  "unit": {
+    "mac": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "at": "2026-10-18T11:22:47.903049+00:00",
+      "exitCode": 0
+    },
+    "linux": {
+      "tests": 14,
+      "pass": 10,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 4,
+      "at": "2026-10-18T11:22:48.463123+00:00",
+      "exitCode": 0,
+      "container": "remote-paint-browser-memory-census-unit-linux-20261018-v2",
+      "dockerRunning": false,
+      "dockerExitCode": 0
+    }
+  },
+  "actualMac": {
+    "checks": 3,
+    "browserVersion": "155.0.8059.84",
+    "correctedElapsedMs": 30.86008300000003,
+    "kernelRequestIds": [
+      6,
+      7
+    ],
+    "persistentHelperPid": 44517,
+    "cleanup": {
+      "errors": [],
+      "trackedProcessIdentities": 13,
+      "unconfirmedProcessIdentities": 0,
+      "helper": {
+        "pid": 44517,
+        "exited": true,
+        "exitCode": 0,
+        "signal": null
+      },
+      "fixtureListening": false
+    },
+    "nativeHelper": {
+      "executable": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-v2/project/native/bin/process-memory-sampler-arm64-darwin",
+      "binarySha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+      "sourceSha256": "0cb30b76e3eafd67e68cbf1d32693224a61c46812c3ab7dc8a3fd0390f8bc167",
+      "buildReceipt": {
+        "at": "2026-10-17T19:45:04.289Z",
+        "purpose": "Test-only persistent Darwin libproc memory observer;not Source/browser production code",
+        "platform": "darwin",
+        "arch": "arm64",
+        "sourceSha256": "0cb30b76e3eafd67e68cbf1d32693224a61c46812c3ab7dc8a3fd0390f8bc167",
+        "binarySha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+        "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+        "sdk": "26.5",
+        "protocol": {
+          "requestMagic": "RPQ1",
+          "responseMagic": "RPM1",
+          "headerBytes": 32,
+          "rowBytes": 56,
+          "maxPids": 1024,
+          "maxOutputBytes": 65536
+        }
+      }
+    }
+  },
+  "scope": "Test-only longload measurement now uses complete before/after census and persistent primary page/Worker witness. Only native kernel ESRCH (statuses2/4/5) plus failedPID absent from complete fresh CDP census permits one entire new native batch through the same helper. Native success followed by changed census fails with original positive rows retained;permissions,identity,protocol,timeout,still-listed PID,second failure and lifetime changes fail closed. Same5000ms total/2000ms native request/250ms reap/caps;discovery and evidence included in total;late discovery cannot start another native request. Every raw request/failure and joined requestID retained. No Native binary or production Viewer changes.",
+  "failurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9-baseline-failure-checkpoint-v1.json",
+  "actualMechanismReproduction": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-reproduction-checkpoint-v1.json",
+  "remaining": [
+    "Fresh complete current tests plus independent600s baseline/netem after changed observation cadence",
+    "New independent8h under original physical caps/growth policy;never accumulate failed time",
+    "Remaining41 requirements including Native provider/roles/SDK integration"
+  ],
+  "noCommitPush": true,
+  "unrelatedPeerPreserved": true,
+  "indexEmpty": true,
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-v2/frozen-version.json": "7d97472b37dd108646f459b39e14aef85344f31464110b9b2f129336506679f1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-v2/results/census.json": "d46bac50e34769accfd269a016b5b023312cc1a6eaac8a0929f2c42fc2e55135",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-v2/mac-native.log": "39daf8cb156d1491cbbac72d24cf1d49189ec121c4c57b0bd3c7014bc03ac74f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-v2/native-exit.json": "7e0f330a73103570367aa274c2b4a806a4d3475a3da9014c98baed47e5b70c0c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-v2/mac/unit.log": "a98d10f40e683c3cbf633810d8b3f78339da5bfb75266858f37e3a07e0d11858",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-v2/mac/exit.json": "557e5db85699e2342e1641b90a7aeb4169ac8f5b50726a4a1b5b8d12c3d95f22",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-v2/linux/unit.log": "3e1b3194201371ce55bb9af810232429599cb9f3b9c7829e73daa1428e62df46",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-v2/linux/exit.json": "e2daca39dda75d2027aa8e2df43b8906ab7ed2b02b144dfa75e5c99904a41183"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "at": "2026-10-18T09:16:37.978715+00:00",
+  "status": "registry-durable-integration49-contracts-each-Mac-Linux-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-persistence-v1/frozen-version.json",
+  "manifestSha256": "3b15363516f290a9c74a62b9ad698bb28bda70dd5df4bcb89a5f2ffd9220dc57",
+  "sourceFiles": 10,
+  "platforms": {
+    "mac": {
+      "tests": 49,
+      "passed": 49,
+      "failed": 0,
+      "skipped": 0,
+      "actualExitCode": 0
+    },
+    "linux": {
+      "tests": 49,
+      "passed": 49,
+      "failed": 0,
+      "skipped": 0,
+      "actualExitCode": 0,
+      "runtime": {
+        "node": "22.23.3",
+        "sqlite": "3.51.3",
+        "platform": "linux",
+        "arch": "arm64"
+      },
+      "container": "remote-paint-session-registry-persistence-linux-20261018-v1",
+      "sourceRuntimeImageId": "sha256:42df2c322c1c105d79aff686ebf92b0708f237788daa011186976e852b7cf66e",
+      "dockerConfirmedTerminal": true
+    }
+  },
+  "scope": "Real SQLite/owned Node process integration with explicit in-memory or file-backed fixture providers, not actual Native/billing/HTTP acceptance. Accepted Session/createOperation/hashed key/defaults commit before provider.create; monotonic revision acknowledgement required. Restart retains IDs and original resolved defaults, fences active records, never resubmits create, and reuses a pending release operation. Failed/ambiguous state writes pause new allocation and confirmed queries while physical cleanup still proceeds. Ledger claims fence concurrent/stale Registries; shutdown waits for late start/close tasks before releasing ownership. Missing original creation bindings fail closed. Actual SIGKILL exercised creating/ready/closing process phases without duplicate fixture allocation.",
+  "initialFixtureMismatch": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-durable-fixture-error-v1/receipt.json",
+  "remaining": [
+    "HTTP control API and TypeScript client/type contracts with tenant-scoped authentication",
+    "Connection ticket authorization and actual Native provider lifecycle/ownership verification after active soak",
+    "Public SDK packaging/docs/rolling-version compatibility and broader41 requirements"
+  ],
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-persistence-v1/frozen-version.json": "3b15363516f290a9c74a62b9ad698bb28bda70dd5df4bcb89a5f2ffd9220dc57",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-persistence-v1/mac/unit.log": "6ac96fe729bfd176908046df13223b84941ee1ec4b577b938b563ded482ee084",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-persistence-v1/mac/exit.json": "73920cb3b85a098e9eb9eb1d9f37099ac142511d948bc6c53e0a073ce1559c0a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-persistence-v1/linux/unit.log": "c701270587315233225e2fbdcbe881af005db5cb6604f9bae4ee135705a558e7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-persistence-v1/linux/exit.json": "1bffc56aeb05bd77b7a51e0915a6803dbbb2dc9b70b030fded4208850d166ecc",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-persistence-v1/linux/runtime.json": "8963b774885b81fbb2c362a94f3344f2898da77ad15b1e111f79df45bb2f9a75",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-persistence-v1/linux/runner.mjs": "15ab0e2598f88a87855dd4ce27d5bc86cbf6bc7487f6238d81b7c4bbe9e5433d"
+  },
+  "frozen649EightHourUnchanged": true,
+  "lightweightContractsOnly": true,
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true
+}

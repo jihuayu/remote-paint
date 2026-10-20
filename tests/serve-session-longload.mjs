@@ -53,7 +53,9 @@ async function operation(command){
   if(command.op==='network-start')value=await networkProfile.start();else if(command.op==='network-snapshot')value=await networkProfile.snapshot();else if(command.op==='network-stop')value=await networkProfile.close();else throw new Error('Unknown network operation');
   await appendFile(join(directory,'network-profile.jsonl'),JSON.stringify({at:new Date().toISOString(),op:command.op,...value})+'\n');return {network:value};
  }
- if(command.op==='clock-probe-shared'){assert.equal(frameAge,true);return {nativeProbe:await linuxClockProbe()};}
+ if(command.op==='clock-probe-shared'){
+  assert.equal(frameAge,true);try{return {nativeProbe:await linuxClockProbe()};}catch(error){await appendFile(join(directory,'source-clock-probe-failures.jsonl'),JSON.stringify({at:new Date().toISOString(),runId,error:error.message,diagnostic:error.clockProbe??null})+'\n');throw error;}
+ }
  if(command.op==='clock-probe'){
   assert.equal(frameAge,true);const source=primary.source,binding=source.capture.binding?.config.id,epoch=source.pageEpoch,version=source.viewportVersion,document=source.nativeDocumentToken;assert.ok(binding);
   const reply=await source.capture.command('scheduler',binding);assert.equal(source.capture.binding?.config.id,binding);assert.equal(source.pageEpoch,epoch);assert.equal(source.viewportVersion,version);assert.equal(source.nativeDocumentToken,document);assert.equal(reply.ok,true);

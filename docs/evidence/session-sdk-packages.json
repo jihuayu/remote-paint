@@ -1,0 +1,117 @@
+{
+  "at": "2026-10-18T10:04:54.004269+00:00",
+  "status": "private-SDK-archives-installed-offline-Mac-Linux-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/frozen-version.json",
+  "manifestSha256": "0e0366920ac2b0b1b356d449e9bc9996ba9aeb4424c654720425043f717257ed",
+  "sourceFiles": 31,
+  "platforms": {
+    "mac": {
+      "actualExitCode": 0,
+      "nodeTests": 74,
+      "nodeFailed": 0,
+      "nodeSkipped": 0,
+      "pythonTests": 16,
+      "pythonFailed": 0,
+      "pythonSkipped": 0,
+      "typescriptExitCode": 0,
+      "pythonInstalledTypeCheckActual0": true,
+      "runtime": {
+        "python": "3.14.6",
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "v26.4.0",
+        "npm": "11.17.0"
+      },
+      "sourceFallbackUnavailable": true
+    },
+    "linux": {
+      "actualExitCode": 0,
+      "nodeTests": 74,
+      "nodeFailed": 0,
+      "nodeSkipped": 0,
+      "pythonTests": 16,
+      "pythonFailed": 0,
+      "pythonSkipped": 0,
+      "typescriptExitCode": 0,
+      "pythonInstalledTypeCheckActual0": false,
+      "runtime": {
+        "python": "3.11.2",
+        "platform": "linux",
+        "arch": "aarch64",
+        "node": "v22.23.3",
+        "npm": "10.9.9"
+      },
+      "sourceFallbackUnavailable": true,
+      "container": "remote-paint-session-sdk-packages-linux-20261018-v2",
+      "dockerConfirmedTerminal": true
+    }
+  },
+  "build": {
+    "npmExitCode": 0,
+    "wheelExitCode": 0
+  },
+  "archiveSha256": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "a49c6b7a29be8ff5d08f26c22db375ef5caf186f3a12837e6f980f9b73da2043",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "cabbac864439e1e8d66bf644f9b20326e9b3544c20d01746963cae4fb21fd6da"
+  },
+  "scope": "Private Node ESM tgz4 exact source/readme/metadata files and Python pure py3-none-any wheel7 exact code/type-marker/distinfo files. Archives checked against source hashes; no tests/Native/server/credentials included. Fresh offline npm consumer and Python venv fully install original archive/dependencies without SDK source tree. Public root/backend exports and deliberate refusal of internal/CommonJS paths verified, installed TypeScript exports resolve; PEP561 discovery and strict Python consumer positive/negative types checked on Mac only. Matrix each platform74 Node/HTTP/SQLite contracts plus16 Python contracts includes actual accepted-response loss/retry with one fixture allocation, tenant/query/release and process reaping. No actual Native/Viewer/tickets, all-runtime compatibility or public publishing acceptance.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/frozen-version.json": "0e0366920ac2b0b1b356d449e9bc9996ba9aeb4424c654720425043f717257ed",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/result.json": "d9420b24559a39d81302a984d2225ad9f87b9c55a1758ea87b401a2b52b62d06",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/archives.json": "8f41fb4c25d1d83e8c109c9b10709f6ef33a85358b0edb171fa1f19cfd6d3e39",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/contract-source-map.json": "4ebd97681b738bc125494f0d3922f0a8a45504d93df095480aec5b3643ee4c03",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac-runner-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/runtime-exit.json": "47100dbd7986109ad16a912862e615f9a621275201348f9de9cfe7a3d8b1ea5a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/python-origin-exit.json": "28c64380ca80d3ef755aa4fb5de6d0b7b43d118583c5499a664293b6c606eb5b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/node-unit-exit.json": "1c57a96d4b81be238e0ee0235882ad9a7fdbe85204f82da8b6da64e98ae16bd3",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/typescript-exit.json": "e397d85cfa70ed24304f8fbc2d0b12882b53a341b8c047d3209d447d57c1908b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/python-types-exit.json": "d4994f2b9f0705e3883ad4177987efbf962f06c6f47c5833df43989bd75e0c4a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/python-unit-exit.json": "6b944de832c078d43a7a7a111c5da5acf1ad10365981981b3c34c2b003bcd173",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/npm-install-exit.json": "453175d54757286da6996bfbb5f909eaaff96788828aaa61e898343dced7c446",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/python-install-exit.json": "516e444cb1be80f7ed747f364df76b143d6c8f636267c2cc7587b97f382b96c5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/typescript.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/python-types.log": "5d4b6d285b77932e3d08212c3b4974d0a803f98ec60408ac6ccf6a063fa6c19e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/python-origin.log": "3e744f6aecf6d3441e6cf2c2522c91e47a4634c7f9a6ba7ab625a4c5e04ce766",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/python-unit.log": "38113ee3c68477638effa627f7b93234cb8992e0654657abe7e0d50dc096f6d6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/node-unit.log": "de0773b7c0093589af35b8076caafb302958840661f85f6d2d8b3d703cfc7382",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/runtime.log": "a776929f45936f832e9b07bd7bf6fe025500d7a8b03ba49eb73c79934ecccb65",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/python-install.log": "efdd45ab9eae1175c533eccf7aa9db002304b511233b2889a62b611eb7d2e884",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/mac/npm-install.log": "1e32dd689dc1a785172baf24d8b2bae07f5af03c6dcf6762e92efd4d860b98b5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/result.json": "4df7722a1fc6b53240051ee58d778a8e79f8549b9c3469fa490027302242aa5b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/archives.json": "8f41fb4c25d1d83e8c109c9b10709f6ef33a85358b0edb171fa1f19cfd6d3e39",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/contract-source-map.json": "4ebd97681b738bc125494f0d3922f0a8a45504d93df095480aec5b3643ee4c03",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux-runner-exit.json": "bab6b3851993a8ac955bad6dbdf3c86edcf663587b2e57e6b645d43d3ddc8389",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/runtime-exit.json": "061299fd85c2ed4fb3f238a94c0bdebf143983d0f1aae1a4e35f402c7661a2a3",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/python-origin-exit.json": "68ef5a63686d70042d0f931c93d60f18b2aaecba773c7a22e9e655e65d63ef62",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/node-unit-exit.json": "1bf8b97feb2bcfecc913ca954d8162c9d6eda33949a7f58cd7f0c7c0fc7a93a4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/typescript-exit.json": "2ddc09c71b0bf4b85d16b98e2a5232f603f0f8124c51ec71222f37b1096f9694",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/python-unit-exit.json": "95336134649e93b1913c6c175eb87e2683235cac9c36f70708ec6bfd389c0fb1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/npm-install-exit.json": "f3a9dfe482113c2f222d65bf17beac3149e8f9fb0048e8d2b28eb9e1abfece59",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/python-install-exit.json": "ab687c815c5c897e36adcd424aa72dc7494db85cdda861cdbc51059e14a2ab82",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/typescript.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/python-origin.log": "5d1a42c320563451cd92233a5a4ca9ad89fa7eefde05371aa8bd4d043fa87d7f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/python-unit.log": "569d74d6aff023a6c2601434e9c7a65f3907d32424d27e2b8d269fe11abc6cf4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/node-unit.log": "53727302def055eef01ad90595db1f8936f9dbc92241d039c59bffe8fea00eda",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/runtime.log": "18f4de0ca646b6661dbd46017552403959b15b256477ba145e79456d93baca1b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/python-install.log": "a64f0b4638599b4605354a84cfe3d5e840fb8fdf1a5c5f48a3cbc9aca65c3066",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v2/linux/npm-install.log": "e5b7dc3d07b893d0788b1af9543b8eee67ed3f41d631ae31b5a2f43994027a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v1/archives/remote-paint-session-client-0.0.0-dev.0.tgz": "a49c6b7a29be8ff5d08f26c22db375ef5caf186f3a12837e6f980f9b73da2043",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-packages-v1/archives/remote_paint_session-0.0.0.dev0-py3-none-any.whl": "cabbac864439e1e8d66bf644f9b20326e9b3544c20d01746963cae4fb21fd6da"
+  },
+  "firstInstallFixtureFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-sdk-package-install-failure-v1.json",
+  "previousClientCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-python-client-checkpoint-v1.json",
+  "remaining": [
+    "Session-bound Viewer read/control tickets, revocation and actual Native provider ownership",
+    "Rendered Viewer embedding, full long-task events and Agent integration",
+    "Protocol/runtime/version compatibility matrix and public release, broader41 requirements"
+  ],
+  "noPublicPublish": true,
+  "frozen649EightHourUnchanged": true,
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true,
+  "preview": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/outputs/sdk-client-preview-20261018-v1.zip",
+    "sha256": "d8f4772f1a4e944ccef7c3a1090df0bedd10e8b439d101839b89b5eff7e5f170"
+  }
+}

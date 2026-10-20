@@ -28,8 +28,8 @@ export async function startFrameAgeStream(page,provenance,{nativeProbe,directory
   if(proofs.has(key)){assert.deepEqual(proofs.get(key).rendererIdentity,proof.rendererIdentity);assert.equal(proofs.get(key).domainId,proof.domainId);}else{assert.ok(proofs.size<1024);if(proofs.size)assert.equal(proof.domainId,proofs.values().next().value.domainId);proofs.set(key,proof);}
  }
  async function calibrate(){const value=await calibrateFrameAge(null,page,{nativeProbe,sharedLinuxClock:true});for(const sample of value.native.samples)register(sample);history.push(value);if(history.length>6)history.shift();return value;}
- await calibrate();await page.waitForTimeout(100);const enabled=await page.evaluate(()=>window.__rpAge.request('enable'));let previous=enabled;
- const lifetime={initialAll:enabled.all,initialWindow:enabled.window,initialWorkerMs:enabled.now};
+ await calibrate();await page.waitForTimeout(100);const enabled=await page.evaluate(()=>window.__rpAge.request('enable'));let previous={window:enabled.window,all:enabled.all,protocolOrdinal:enabled.protocolOrdinal};
+ const lifetime={initialAll:enabled.all,initialWindow:enabled.window,initialWorkerMs:enabled.now,acceptanceFailed:false};
  return {totals,lifetime,get active(){return active;},async witness(){const value=await nativeProbe();register(value);return value;},async drain({stop=false}={}){
   assert.ok(active&&!busy&&(!failed||stop),'No overlapping stream drains, continued failed stream or drain after stop');busy=true;
   try{
@@ -37,10 +37,25 @@ export async function startFrameAgeStream(page,provenance,{nativeProbe,directory
    // Once disable replied, cleanup must not send it again if persistence or
    // post-window calibration fails. Retain the failure as an incomplete window.
    if(stop){assert.equal(reply.operation,'disable');active=false;}
+   const windowStart=previous;
+   // This is the Worker's acknowledged control cursor, independent of whether
+   // the completed window can subsequently be calibrated and accepted. Do not
+   // retain reply.completed in the cursor or roll it back on validation failure.
+   if(!stop&&reply.operation==='rotate')previous={window:reply.nextWindow,all:reply.all,protocolOrdinal:reply.protocolOrdinal};
    const raw=reply.completed;assert.ok(raw);const id=++ordinal;
    // Persist the exact completed raw window before calibrating or validating.
    await appendFile(join(directory,'stream-raw-windows.jsonl'),JSON.stringify({id,at:new Date().toISOString(),raw})+'\n');
-   const after=await calibrate(),coverage=streamingCoverage(raw,previous);if(!stop){assert.equal(reply.nextWindow,previous.window+1);previous={...reply,window:reply.nextWindow,observed:0};}
+   if(failed&&stop){
+    // Cleanup still owns disable after an earlier observation failure. Preserve
+    // raw structural diagnostics, but never retry calibration, add acceptance
+    // totals or turn an incomplete observation into a passing one.
+    let rawCoverage=null,coverageError=null;try{rawCoverage=streamingCoverage(raw,windowStart);}catch(error){coverageError=error.message;}
+    const result={id,operation:reply.operation,window:raw.start?.window??null,aborted:true,validation:'not-accepted',rawCoverage,coverageError};
+    Object.assign(lifetime,{finalAll:reply.all,finalWorkerMs:reply.now,finalWindow:reply.window,producerProofs:proofs.size});
+    await appendFile(join(directory,'stream-aborted-windows.jsonl'),JSON.stringify({at:new Date().toISOString(),...result})+'\n');return result;
+   }
+   assert.equal(reply.operation,stop?'disable':'rotate');if(!stop)assert.equal(reply.nextWindow,windowStart.window+1);
+   const after=await calibrate(),coverage=streamingCoverage(raw,windowStart);
    assert.equal(provenance.actualServed.length,1);assert.equal(provenance.actualServed[0].status,200);assert.equal(provenance.actualServed[0].sha256,provenance.served[0].instrumentedServedSha256);if(id===1)await writeFile(join(directory,'stream-observer-provenance.json'),JSON.stringify(provenance)+'\n',{flag:'wx'});
    let before=null,samples=[];
    if(raw.samples.length){
@@ -56,6 +71,6 @@ export async function startFrameAgeStream(page,provenance,{nativeProbe,directory
    assert.equal(totals.successfulCommits,reply.all-lifetime.initialAll);assert.equal(totals.paired,totals.successfulCommits);if(stop){lifetime.finalAll=reply.all;lifetime.finalWorkerMs=reply.now;lifetime.finalWindow=reply.window;lifetime.producerProofs=proofs.size;}
    await appendFile(join(directory,'stream-windows.jsonl'),JSON.stringify({at:new Date().toISOString(),...result})+'\n');
    return result;
-  }catch(error){failed=true;throw error;}finally{busy=false;}
+  }catch(error){failed=true;lifetime.acceptanceFailed=true;throw error;}finally{busy=false;}
  }};
 }

@@ -1,0 +1,186 @@
+{
+  "at": "2026-10-18T11:15:36.368029+00:00",
+  "status": "actual-Mac-browser-obsolete-full-census-ESRCH-reproduced",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-before-v1/frozen-version.json",
+  "manifestSha256": "d46c0531b4516cfc8964c5416afe8d8c1807728d6207fd908123c32915f8dd4d",
+  "actualExitCode": 0,
+  "checks": [
+    "A real positive full census becomes an ESRCH batch after this test closes its secondary context; legacy direct sampling rejects the entire unchanged batch",
+    "The same persistent helper can measure a complete fresh census and original primary page/Worker identity remains unchanged; not a fixed production integration"
+  ],
+  "browserVersion": "155.0.8059.84",
+  "nativeHelper": {
+    "executable": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-before-v1/project/native/bin/process-memory-sampler-arm64-darwin",
+    "binarySha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+    "sourceSha256": "0cb30b76e3eafd67e68cbf1d32693224a61c46812c3ab7dc8a3fd0390f8bc167",
+    "buildReceipt": {
+      "at": "2026-10-17T19:45:04.289Z",
+      "purpose": "Test-only persistent Darwin libproc memory observer;not Source/browser production code",
+      "platform": "darwin",
+      "arch": "arm64",
+      "sourceSha256": "0cb30b76e3eafd67e68cbf1d32693224a61c46812c3ab7dc8a3fd0390f8bc167",
+      "binarySha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+      "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+      "sdk": "26.5",
+      "protocol": {
+        "requestMagic": "RPQ1",
+        "responseMagic": "RPM1",
+        "headerBytes": 32,
+        "rowBytes": 56,
+        "maxPids": 1024,
+        "maxOutputBytes": 65536
+      }
+    }
+  },
+  "reproduction": {
+    "initialPids": [
+      36724,
+      36743,
+      36744,
+      36742,
+      36730,
+      36731,
+      36732
+    ],
+    "before": [
+      {
+        "id": 36724,
+        "type": "browser"
+      },
+      {
+        "id": 36747,
+        "type": "renderer"
+      },
+      {
+        "id": 36745,
+        "type": "renderer"
+      },
+      {
+        "id": 36744,
+        "type": "renderer"
+      },
+      {
+        "id": 36746,
+        "type": "renderer"
+      },
+      {
+        "id": 36742,
+        "type": "renderer"
+      },
+      {
+        "id": 36730,
+        "type": "GPU"
+      },
+      {
+        "id": 36731,
+        "type": "network.mojom.NetworkService"
+      },
+      {
+        "id": 36732,
+        "type": "storage.mojom.StorageService"
+      }
+    ],
+    "after": [
+      {
+        "id": 36724,
+        "type": "browser"
+      },
+      {
+        "id": 36744,
+        "type": "renderer"
+      },
+      {
+        "id": 36742,
+        "type": "renderer"
+      },
+      {
+        "id": 36730,
+        "type": "GPU"
+      },
+      {
+        "id": 36731,
+        "type": "network.mojom.NetworkService"
+      },
+      {
+        "id": 36732,
+        "type": "storage.mojom.StorageService"
+      }
+    ],
+    "retiredIds": [
+      36747,
+      36745,
+      36746
+    ],
+    "error": {
+      "code": "NATIVE_MEMORY_OS_READ",
+      "nativeStatus": 2,
+      "errno": 3,
+      "failedPid": 36747,
+      "receipt": {
+        "provider": "darwin-libproc-v1",
+        "requestId": 3,
+        "helperPid": 36723,
+        "status": "NATIVE_MEMORY_OS_READ",
+        "elapsedMs": 0.2733330000000933,
+        "requestedPids": [
+          36724,
+          36747,
+          36745,
+          36744,
+          36746,
+          36742,
+          36730,
+          36731,
+          36732
+        ],
+        "requestDeadlineMs": 2000,
+        "phaseDeadlineMs": 5000,
+        "nativeStatus": 2,
+        "errno": 3,
+        "failedPid": 36747
+      }
+    },
+    "initialLifetime": {
+      "page": {
+        "nonce": "83a2661a-2959-4fcd-a87c-d54fce685dab",
+        "workerNonce": "73f0d183-9bf6-47fa-bdf8-5b59cc71fe79"
+      },
+      "workers": [
+        "2F3B72AA4936F14A15DC129C3154B4DB"
+      ]
+    },
+    "finalLifetime": {
+      "page": {
+        "nonce": "83a2661a-2959-4fcd-a87c-d54fce685dab",
+        "workerNonce": "73f0d183-9bf6-47fa-bdf8-5b59cc71fe79"
+      },
+      "workers": [
+        "2F3B72AA4936F14A15DC129C3154B4DB"
+      ]
+    }
+  },
+  "cleanup": {
+    "errors": [],
+    "trackedProcessIdentities": 10,
+    "unconfirmedProcessIdentities": 0,
+    "helper": {
+      "pid": 36723,
+      "exited": true,
+      "exitCode": 0,
+      "signal": null
+    },
+    "fixtureListening": false
+  },
+  "cleanupEveryNegativeAttemptWasKernelESRCH": true,
+  "scope": "Actual known positive full browser census,owned secondary context close,retired renderer disappears from fresh census,unchanged original full batch fails with kernel ESRCH. Same original primary page/Worker lifetime persists and manual fresh full census succeeds through same helper. Controlled mechanism reproduced; exact original failedPID31928 lifetime/type not recorded,so sole cause remains unproven. No production change or600s acceptance.",
+  "baselineFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9-baseline-failure-checkpoint-v1.json",
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-before-v1/frozen-version.json": "d46c0531b4516cfc8964c5416afe8d8c1807728d6207fd908123c32915f8dd4d",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-before-v1/results/census.json": "db6b683d3b17e52d77039ab65b0dc6bc350e9b562135a7c74ca191cc46b60ae2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-before-v1/mac.log": "42d865f213301bda8d4969e3706ce8f6f960631ee531e7ca04f3a6107353a051",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/browser-native-memory-census-before-v1/exit.json": "e42657c09126b92ccefd1135e3af94de0de4efc48e157b91eaaf4eab64b2c64c"
+  }
+}

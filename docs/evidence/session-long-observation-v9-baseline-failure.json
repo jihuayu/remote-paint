@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-18T11:12:16.120509+00:00",
+  "status": "failed-current600s-baseline-native-memory-OS-read",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-frozen-version.json",
+  "manifestSha256": "bcb699074bad36071439325f139c1d5fd0eb46b5c891efce2c118e5b9c557892",
+  "sourceFiles": 706,
+  "actualTerminal": {
+    "sourceSession": 41086,
+    "sourceExitCode": 0,
+    "viewerSession": 81218,
+    "viewerExitCode": 1,
+    "container": "remote-paint-session-long-observation-baseline-20261018-v9",
+    "dockerExitCode": 0,
+    "finishedAt": "2026-10-18T11:09:50.215462343Z"
+  },
+  "failure": {
+    "at": "2026-10-18T11:09:48.161Z",
+    "cycle": 460,
+    "error": "Error: Native process memory batch could not be sampled\n    at fail (file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/project/tests/process-native-memory.mjs:8:52)\n    at decodeNativeMemoryReply (file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/project/tests/process-native-memory.mjs:19:160)\n    at NativeProcessMemorySampler._data (file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/project/tests/process-native-memory.mjs:73:16)\n    at Socket.<anonymous> (file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/project/tests/process-native-memory.mjs:41:43)\n    at Socket.emit (node:events:509:20)\n    at addChunk (node:internal/streams/readable:568:12)\n    at readableAddChunkPushByteMode (node:internal/streams/readable:519:3)\n    at Readable.push (node:internal/streams/readable:399:5)\n    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)"
+  },
+  "nativeAttempt": {
+    "at": "2026-10-18T11:09:47.674Z",
+    "cycle": 460,
+    "provider": "darwin-libproc-v1",
+    "requestId": 5,
+    "helperPid": 28978,
+    "status": "NATIVE_MEMORY_OS_READ",
+    "elapsedMs": 0.4103330000070855,
+    "requestedPids": [
+      28979,
+      31342,
+      29017,
+      29015,
+      31343,
+      29012,
+      31341,
+      29010,
+      29002,
+      29000,
+      28993,
+      28994,
+      28995,
+      31928
+    ],
+    "requestDeadlineMs": 2000,
+    "phaseDeadlineMs": 5000,
+    "nativeStatus": 2,
+    "errno": 3,
+    "failedPid": 31928
+  },
+  "nativeAttempts": 5,
+  "completedSamples": 4,
+  "completedSampleSpanSeconds": 121.581,
+  "failedPidAbsentFromEveryPriorCompletedSample": true,
+  "cleanup": {
+    "sourceStatus": "closed",
+    "sourceErrors": [],
+    "sourceCreatedClosed": {
+      "created": 3,
+      "closed": 3,
+      "crosssite": 1,
+      "leaseExpired": 2
+    },
+    "controllerFds": {
+      "baseline": 20,
+      "after": 19,
+      "allowedOverBaseline": 8,
+      "scope": "This Source controller after allSource/fixture/network/observer cleanup;baseline already included fixture. Counts actualFDs after ownership probes closed,not earlier metrics taken while history FDs were intentionally held."
+    },
+    "fixtureListening": false,
+    "activeSessions": 0,
+    "viewerCleanupErrors": [],
+    "continuousObservation": {
+      "status": "closed",
+      "failures": [],
+      "errors": []
+    },
+    "nativeObserver": {
+      "pid": 28978,
+      "exited": true,
+      "exitCode": 0,
+      "signal": null
+    }
+  },
+  "scope": "Actual fresh baseline failed at live Mac libproc process identity lookup (status2/errno3/failedPID31928), after SystemInfo.getProcessInfo returned an inventory containing that PID. No row was zero-filled,cached,filtered or accepted; sample5 failed and prior4 alone are not600s/8h acceptance. Ephemeral/stale inventory race is a hypothesis requiring controlled actual-browser reproduction and a complete fresh bounded cohort measurement; exact failed PID type/exit timing was not persisted. Source clock/stream cleanup had no logged failure. No policy or deadline changes authorized by this receipt.",
+  "next": [
+    "Controlled actual Mac browser census followed by owned renderer termination before native batch; preserve the failed fresh batch.",
+    "If reproduced, reconcile full before/after inventories with bounded fresh retry inside original5s; no cached rows or filtering failed PID and no helper restart. Original2s request/250ms reap/deadlines/caps remain.",
+    "Repeat full current tests and independent600s baseline/netem before a fresh independent8h."
+  ],
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "baselineAccepted": false,
+  "netemStarted": false,
+  "all41Complete": false,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-frozen-version.json": "bcb699074bad36071439325f139c1d5fd0eb46b5c891efce2c118e5b9c557892",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-source-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-viewer-exit.json": "e153f5bd2ee7416d77570b30ba1de5bb9196c55f8d145e34df9dab12190ffe43",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-source.log": "d163860127ffa818bf1f2cc6b572127ee057603fe87074e4ef5ce1cbf6d22894",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-viewer.log": "03854ea1898fb8cb05a8c040dad7542f258aec2507833f33c8a28c538e29fbbd",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/session-input-observations.jsonl": "ab49d4df86f722910cb61987cf0bd69cd192ddb76f81c97ad634e15a47ef18a2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/source-loss-windows.jsonl": "b204d94db74c21fef5125dbb3d0e023e9e3ebc7416268c19e7269aaf56622280",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/sampling-phases.jsonl": "a2c76be974fd49abd6ff61d86f283d9860450ad69bbecb6923a5742ff6fc0049",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/session-marker-boundaries.jsonl": "ffc6f2903cb82873c5806f05234bb6db425799f970d6e540ceb78e8f5592154f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/session-network-windows.jsonl": "36c71c15656852255e93c3e640bfb5f59416ade06c30aac2098e0d99009f0966",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/source-stopped.json": "3f5e6b158d4ee5fcf3d0ade9f15fd9263b916fafa767294993cfba7ad3d22871",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/secondary-results.jsonl": "3905cda0b141e30c3cb93441c8e447af75988ee603d4dbaf65c7c98792d4b1e8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/native-memory-observer.json": "097415131aec54dd45ebacc736eef5932187c1aa74ff117910226dc912ced31e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/cleanup.json": "88927933c67526d00896aada4509a8dfefd1584d5d110441c274b673087703f7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/session-input-frame-proofs.jsonl": "845f087d6e7c1bcf41a4d7039a637ec3624bea665a7838e43a59968da27bfc14",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/session-loss-windows.jsonl": "6baf3fec1b83b60172d1bcbe83cde7e01dade85610a31adfa32426151fbc35d4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/session-observation-cleanup.jsonl": "198cb7fe570c8378fe46cd805e6bf47ef577fbb1b9802be150e51f33986cde02",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/stream-observer-provenance.json": "560e33b17caf05bac0135ce339b5bd054a7a6eeac8ab74d1ec27f1f7d3ab6c86",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/closed-sessions.jsonl": "9b8651d5507c79016f61eb1b457836ce3c894e531709fdefbd6906576ff19ad7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/stream-windows.jsonl": "876f82b7a6e2d6e692ebed7e9b6998fdc44ee45bff183653e2cff6785fdf44a1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/source-events.jsonl": "bf181002c1365fb3b59029c7841605ee5efcb00f2a7b1039663cfd3912880a93",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/stream-raw-windows.jsonl": "192cb5c30e0f95d7f5c38e42bd52469f225730b3dc0e01d4a232d561e8a5af21",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/samples.jsonl": "b47aa177dc3ed3b2faaf85ca72ab7b1a09eabbc355fe7f6892d56b69fbd5dcc4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/native-memory-attempts.jsonl": "683bd7373d8abff01baa8a068c8d12d4c2447cf892743ea7f1e1f3edc9d4b090",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/failure.json": "8aeb66c2c6c4b3792e0652c50ee45573c66434f58dceb040880f5249d6e2e665",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/session-observation-windows.jsonl": "9345b7c579f8239c223a8d12cd36343e4999096b46393c4b0e653bd20912f818",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/session-rtt-consumer.jsonl": "2ea2b279cbe16960b4ff77021c37187d674ae03a98daf384c43146fc8dbc77d8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/status.json": "34f11f8e49b38170286480a05b2937fe086d97f5b7ffcf8c9421d40cdba30b44",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v9/baseline-results/source-runtime.jsonl": "90181e0d8593a1ffcf7aaa287acdb67598aebd55f80b73860f97ba3c19323fc7"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-18T07:30:52.105905+00:00",
+  "status": "passed272-tests-eachplatform-sampling-and-fixture-ownership-candidate",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v8/baseline-frozen-version.json",
+  "manifestSha256": "3f2e9a3f62a2d0057d72770a32ac974659e09db09b03792abae72684764f4398",
+  "sourceFiles": 646,
+  "changesSince642": [
+    "docs/evidence/owned-native-fixture.json",
+    "docs/evidence/session-long-observation-v7-js-failure.json",
+    "docs/optimization-progress.md",
+    "tests/owned-test-child.mjs",
+    "tests/owned-test-child.test.mjs",
+    "tests/process-native-memory.test.mjs"
+  ],
+  "testfileConcurrency": 4,
+  "fullJS": {
+    "testsEach": 272,
+    "macPass": 264,
+    "macLinuxOnlySkip": 8,
+    "linuxPass": 268,
+    "linuxMacOnlySkip": 4,
+    "failed": 0
+  },
+  "realNativeControlBeforeAfter": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-native-checkpoint-v1.json",
+  "realIPCSetupFailureCleanup": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/owned-native-fixture-checkpoint-v1.json",
+  "priorMac271FailurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v7-js-failure-checkpoint-v1.json",
+  "priorSecondarySamplingFailurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-secondary-sampling-failure-checkpoint-v1.json",
+  "productionRuntimeUnchangedSince636": true,
+  "samplingCadenceChangedSince636": true,
+  "budgetsAndOriginalDeadlinesUnchanged": true,
+  "hardwareCandidatePilotsAccepted": false,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v8/js-results/mac.log": "ec7f8c9ef120ce0c616e3d2fef39aaa6782caab63ea9587c679a92fd9c732f0d",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v8/js-results/linux.log": "f0ad240a050d8d283b66ff37eb8e8d67d39f47d8bdbe169713ad556cf634b6fe",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v8/js-results/mac-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v8/js-results/linux-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

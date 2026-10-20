@@ -1,0 +1,63 @@
+{
+  "at": "2026-10-18T07:54:09.190679+00:00",
+  "status": "independent-coupled-eight-hour-v2-running-not-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/frozen-version.json",
+  "manifestSha256": "bc16b580226b2355b4a5a85cce4ead7525c569af3cef97fdd513f4e4d7da203c",
+  "sourceFiles": 649,
+  "preflight": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/preflight.json",
+  "preflightSha256": "2f1b9d3ae5e13f7ceff34bfa49d4d11d5baf139d85aa61f91207756068d652d9",
+  "sourceSession": 62817,
+  "viewerSession": 9688,
+  "sourceContainer": "remote-paint-session-coupled-eight-hour-20261018-v2",
+  "sourceConfirmedRunning": true,
+  "requestedSeconds": 28800,
+  "physicalPolicySha256": "49254837e00ab4c39afd6b284fb66637988797ab6f781f45f69ccfc7b022bcbf",
+  "sampling": {
+    "osProcessMemory": "darwin-libproc-v1+LinuxPSS/cgroup",
+    "nativeAllocationSampling": false,
+    "memoryInfra": false,
+    "forcedGC": false
+  },
+  "workload": {
+    "seconds": 28800,
+    "burst": 400,
+    "intervalMs": 2000,
+    "navigationEvery": 40,
+    "secondaryEvery": 40,
+    "secondaryCycles": 400
+  },
+  "previousFailedTimesNotAccumulated": true,
+  "statusAtCheckpoint": {
+    "at": "2026-10-18T07:53:55.247Z",
+    "runId": "4cc78919-76bb-4e50-828c-a62da189a9d8",
+    "status": "running",
+    "elapsedSeconds": 66.662347542,
+    "requestedSeconds": 28800,
+    "cycle": 92,
+    "resizes": 8,
+    "inputs": 5,
+    "navigations": 0,
+    "secondaryCompleted": 0,
+    "leaseExpired": 0,
+    "physical": {
+      "viewerRssSumBytes": 3205414912,
+      "viewerFootprintBytes": 1797276328,
+      "sourcePssBytes": 751905792,
+      "sourceAnonBytes": 460685312,
+      "sourceNodePssBytes": 163182592
+    }
+  },
+  "qualification": {
+    "fullJS": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v8-js-checkpoint-v1.json",
+    "baseline": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v8-baseline-checkpoint-v1.json",
+    "netem": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v8-netem-checkpoint-v1.json"
+  },
+  "scope": "Started only. Must observe exact handles/container and validate full28800s coverage, all original physical caps/state-matched growth, every secondary actual cohort sample and continuous frame/input/clock/source/kernel/readonly-role proof after real terminal success. No forcedGC/allocation traces/VM replacement; no8h/all41 acceptance now.",
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "all41": {
+    "complete": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@remote-paint/session-client",
+  "version": "0.0.0-dev.0",
+  "description": "Experimental backend Session control client",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {"node": ">=22"},
+  "exports": {
+    ".": {"types": "./backend.d.mts", "import": "./backend.mjs"},
+    "./backend": {"types": "./backend.d.mts", "import": "./backend.mjs"}
+  },
+  "files": ["backend.mjs", "backend.d.mts", "README.md"],
+  "sideEffects": false
+}

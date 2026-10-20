@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "remote-paint-session"
+version = "0.0.0.dev0"
+description = "Experimental backend Session control client"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["httpx==0.28.1"]
+classifiers = ["Development Status :: 2 - Pre-Alpha", "Programming Language :: Python :: 3", "Typing :: Typed"]
+
+[tool.setuptools]
+packages = ["remote_paint_session"]
+
+[tool.setuptools.package-data]
+remote_paint_session = ["py.typed"]

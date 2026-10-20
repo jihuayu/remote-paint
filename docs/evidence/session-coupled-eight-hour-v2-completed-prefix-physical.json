@@ -1,0 +1,130 @@
+{
+  "at": "2026-10-18T10:47:42.744872+00:00",
+  "status": "failed-run-completed-physical-prefix-analysis-not-acceptance",
+  "sourceConfirmedStopped": true,
+  "sampleCount": 238,
+  "completedSampleCoverageSeconds": 9755.908,
+  "lastCompletedSampleElapsedSeconds": 9761.336428125001,
+  "raw": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/results/samples.jsonl",
+    "bytes": 10820559,
+    "sha256": "b58f14c769df8962b2be489390f1e84c220c02f51b7269063d4c92b077a5f925"
+  },
+  "policySha256": "49254837e00ab4c39afd6b284fb66637988797ab6f781f45f69ccfc7b022bcbf",
+  "absoluteBreachesInCompletedPrefix": [],
+  "stateMatchedPrefixGrowth": {
+    "primary-only": {
+      "postWarmSamples": 87,
+      "earlyCycles": [
+        425,
+        464,
+        505,
+        548,
+        588
+      ],
+      "lateCycles": [
+        3435,
+        3477,
+        3516,
+        3537,
+        3559
+      ],
+      "domains": {
+        "viewerFootprintBytes": {
+          "firstMedianBytes": 1492745936,
+          "lastMedianBytes": 1374928736,
+          "growthBytes": -117817200,
+          "allowedGrowthBytes": 201326592,
+          "withinOriginalGrowthBound": true
+        },
+        "viewerRssSumBytes": {
+          "firstMedianBytes": 2395258880,
+          "lastMedianBytes": 2187689984,
+          "growthBytes": -207568896,
+          "allowedGrowthBytes": 268435456,
+          "withinOriginalGrowthBound": true
+        },
+        "sourcePssBytes": {
+          "firstMedianBytes": 660285440,
+          "lastMedianBytes": 666943488,
+          "growthBytes": 6658048,
+          "allowedGrowthBytes": 134217728,
+          "withinOriginalGrowthBound": true
+        },
+        "sourceAnonBytes": {
+          "firstMedianBytes": 475799552,
+          "lastMedianBytes": 502415360,
+          "growthBytes": 26615808,
+          "allowedGrowthBytes": 134217728,
+          "withinOriginalGrowthBound": true
+        },
+        "sourceNodePssBytes": {
+          "firstMedianBytes": 189713408,
+          "lastMedianBytes": 210449408,
+          "growthBytes": 20736000,
+          "allowedGrowthBytes": 67108864,
+          "withinOriginalGrowthBound": true
+        }
+      }
+    },
+    "with-secondary": {
+      "postWarmSamples": 146,
+      "earlyCycles": [
+        404,
+        416,
+        445,
+        455,
+        485
+      ],
+      "lateCycles": [
+        3456,
+        3456,
+        3495,
+        3497,
+        3535
+      ],
+      "domains": {
+        "viewerFootprintBytes": {
+          "firstMedianBytes": 1945719136,
+          "lastMedianBytes": 1854509696,
+          "growthBytes": -91209440,
+          "allowedGrowthBytes": 201326592,
+          "withinOriginalGrowthBound": true
+        },
+        "viewerRssSumBytes": {
+          "firstMedianBytes": 3157540864,
+          "lastMedianBytes": 3173007360,
+          "growthBytes": 15466496,
+          "allowedGrowthBytes": 268435456,
+          "withinOriginalGrowthBound": true
+        },
+        "sourcePssBytes": {
+          "firstMedianBytes": 1266737152,
+          "lastMedianBytes": 1261704192,
+          "growthBytes": -5032960,
+          "allowedGrowthBytes": 134217728,
+          "withinOriginalGrowthBound": true
+        },
+        "sourceAnonBytes": {
+          "firstMedianBytes": 892022784,
+          "lastMedianBytes": 928641024,
+          "growthBytes": 36618240,
+          "allowedGrowthBytes": 134217728,
+          "withinOriginalGrowthBound": true
+        },
+        "sourceNodePssBytes": {
+          "firstMedianBytes": 184520704,
+          "lastMedianBytes": 210379776,
+          "growthBytes": 25859072,
+          "allowedGrowthBytes": 67108864,
+          "withinOriginalGrowthBound": true
+        }
+      }
+    }
+  },
+  "allTenCompletedPrefixGrowthDomainsWithinOriginalBounds": true,
+  "scope": "Independent recomputation after actualSource0/Viewer1 termination from completed238sample prefix of a FAILED8h attempt. Original caps and first5/last5 nonoverlapping postwarm state medians. Not28800s/plateau acceptance; original result directory unchanged. No GC/traces/new sampling, no gate relaxation or accumulation of failed time.",
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true
+}

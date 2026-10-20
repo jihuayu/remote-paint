@@ -24,3 +24,21 @@ test('a confirmed disable remains stopped when subsequent clock calibration fail
  const page={waitForTimeout:async()=>{},evaluate:async(_fn,op)=>{if(op==='clock')return {clock:'worker-performance-v1',now:100};if(op===undefined)return {window:1,all:0,protocolOrdinal:0,now:100};assert.equal(op,'disable');disables++;return {operation:'disable',completed:{unvalidated:true}};}};
  try{const stream=await startFrameAgeStream(page,{streaming:true,diagnosticFaults:false},{nativeProbe,directory});await assert.rejects(stream.drain({stop:true}),/clock unavailable/);assert.equal(stream.active,false);await assert.rejects(stream.drain({stop:true}),/drain after stop/);assert.equal(disables,1);assert.equal(JSON.parse((await readFile(join(directory,'stream-raw-windows.jsonl'),'utf8')).trim()).raw.unvalidated,true);}finally{await rm(directory,{recursive:true,force:true});}
 });
+
+test('failed rotate calibration still advances the actual window cursor and cleanup disables once without accepting uncalibrated frames',async()=>{
+ const {mkdtemp,readFile,rm}=await import('node:fs/promises'),{tmpdir}=await import('node:os'),{join}=await import('node:path'),{startFrameAgeStream}=await import('./frame-age-stream.mjs');
+ for(const corruptCleanup of [false,true]){
+ const directory=await mkdtemp(join(tmpdir(),'remote-paint-rotate-failure-'));let probes=0,rotates=0,disables=0;
+ const nativeProbe=async()=>{if(++probes>12)throw new Error('injected post-rotate clock failure');return {reply:{clock:'chromium-time-ticks-v1',nowMicros:1000000,rendererProcessId:9},pageEpoch:1,viewportVersion:1,provenance:{producer:'9:2',linuxMonotonic:{schema:'linux-native-monotonic-probe-v1',domainId:'a'.repeat(64),rendererIdentity:{pid:9},interval:{nativeMicros:1000000,beforeNs:'1000000000',afterNs:'1000000000'}}}};};
+ const raw=window=>({errors:[],workerCount:1,pending:0,start:{window,all:window-1,protocolOrdinal:0,productionFrames:window-1},end:{window,all:window,observed:1,protocolOrdinal:0,productionFrames:window},paired:1,protocolEvents:[],socketStarts:[],socketCloses:[],samples:[{window,windowOrdinal:1,commitOrdinal:window,productionFramePaired:true,connectionGeneration:1,pageEpoch:1,viewportVersion:1,frameId:window,pixels:[[1,2,3,255]],pixelReadMs:0,requiredResourceCount:0,requiredResourceBytes:0,largestRequiredResourceBytes:0}]});
+ const page={waitForTimeout:async()=>{},evaluate:async(_fn,op)=>{if(op==='clock')return {clock:'worker-performance-v1',now:100};if(op===undefined)return {window:1,all:0,protocolOrdinal:0,now:100};if(op==='rotate'){rotates++;return {operation:'rotate',window:1,nextWindow:2,all:1,protocolOrdinal:0,now:101,completed:raw(1)};}assert.equal(op,'disable');disables++;const completed=raw(2);if(corruptCleanup)completed.start.window=1;return {operation:'disable',window:2,all:2,protocolOrdinal:0,now:102,completed};}};
+ try{
+  const stream=await startFrameAgeStream(page,{streaming:true,diagnosticFaults:false},{nativeProbe,directory});
+  await assert.rejects(stream.drain(),/injected post-rotate clock failure/);assert.equal(stream.active,true);
+  const stopped=await stream.drain({stop:true});assert.equal(stopped.aborted,true);assert.equal(stopped.validation,'not-accepted');assert.equal(stream.active,false);assert.equal(rotates,1);assert.equal(disables,1);assert.equal(probes,13);assert.equal(stream.totals.windows,0);assert.equal(stream.totals.successfulCommits,0);assert.equal(stream.lifetime.acceptanceFailed,true);
+  const rows=(await readFile(join(directory,'stream-raw-windows.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);assert.deepEqual(rows.map(x=>x.raw.start.window),[1,corruptCleanup?1:2]);assert.equal(rows.flatMap(x=>x.raw.samples).length,2);
+  const cleanup=JSON.parse((await readFile(join(directory,'stream-aborted-windows.jsonl'),'utf8')).trim());assert.equal(cleanup.window,corruptCleanup?1:2);if(corruptCleanup){assert.equal(cleanup.rawCoverage,null);assert.equal(typeof cleanup.coverageError,'string');}else{assert.equal(cleanup.rawCoverage.paired,1);assert.equal(cleanup.coverageError,null);}assert.equal(cleanup.validation,'not-accepted');
+  await assert.rejects(stream.drain({stop:true}),/drain after stop/);assert.equal(disables,1);
+ }finally{await rm(directory,{recursive:true,force:true});}
+ }
+});

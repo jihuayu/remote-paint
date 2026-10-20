@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-18T09:20:47.079120+00:00",
+  "status": "optional-exact-blank-page-core-contracts-passed",
+  "sourceFiles": {
+    "service/session-registry.mjs": "0658574dded32cd2ef76c34b6223f2ea664db8fec358184ed9fcd595f9290d9e",
+    "tests/session-registry.test.mjs": "6a437f8658a23b91c11d846a64835e2e505f8f68651fe5bad538ba6553a443c8"
+  },
+  "snapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-blank-v1",
+  "tests": 51,
+  "passed": 51,
+  "failed": 0,
+  "skipped": 0,
+  "actualExitCode": 0,
+  "rawSha256": "1c2b2ad079b8303eb5cab74daf450697407998f6a14e90010baa346672400037",
+  "scope": "Optional initial URL defaults to exact about:blank and normalizes to the same binding as explicit blank. Non-exact about variants, null, data, file and javascript are rejected before allocation. Other core/lifecycle/SQLite contracts remain passing. Pure fixture providers only; no public HTTP/Native acceptance.",
+  "noCommitPush": true,
+  "frozenEightHourUnchanged": true
+}

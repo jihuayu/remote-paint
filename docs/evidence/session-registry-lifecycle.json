@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-18T08:20:26.341163+00:00",
+  "status": "session-registry-lifecycle22-contracts-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-lifecycle-v1/frozen-version.json",
+  "manifestSha256": "18c77a20e0b21c953bff7285ef3abe0d2dd98c9d27960cbefd33d748bac757b1",
+  "tests": 22,
+  "passed": 22,
+  "failed": 0,
+  "exitCode": 0,
+  "scope": "Process-local K1 lifecycle core, pure in-memory provider and injected-clock contracts. TTL starts on ready and uses monotonic time; one registry timer; expired IDs cannot become ready or be rebound. Release fences pending creation and keeps quota until explicit closed attestation. Pending/successful release retries return the same operation; retry after a failed cleanup creates a distinct operation, retains old terminal results, and respects a bounded close-attempt budget. Reentrant shutdown waits for actual start/close completion. Not durable/public HTTP/SDK/authentication/Native provider acceptance.",
+  "previousCoreCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-core-checkpoint-v1.json",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-lifecycle-v1/frozen-version.json": "18c77a20e0b21c953bff7285ef3abe0d2dd98c9d27960cbefd33d748bac757b1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-lifecycle-v1/unit.log": "d83c62d263056f93ea85b2be2fcf90a5710012b9e48572f159d858a81d8f73d1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-lifecycle-v1/exit.json": "20e7fd67f82e881134eb847636c4c3837d5b7d0efd495b9d16ecb1ed1a6b7a80"
+  },
+  "remaining": [
+    "Durable idempotency/write-ahead state and fail-closed restart reconciliation",
+    "HTTP and TypeScript SDK/types with scoped authentication and connection tickets",
+    "Actual Native provider creation, connection, expiry/release ownership verification after active soak"
+  ],
+  "frozen649EightHourUnchanged": true,
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "all41Complete": false
+}

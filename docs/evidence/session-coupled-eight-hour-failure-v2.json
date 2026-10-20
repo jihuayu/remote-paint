@@ -1,0 +1,65 @@
+{
+  "at": "2026-10-18T10:41:07.792665+00:00",
+  "status": "failed-independent-coupled-eight-hour-attempt",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/frozen-version.json",
+  "manifestSha256": "bc16b580226b2355b4a5a85cce4ead7525c569af3cef97fdd513f4e4d7da203c",
+  "requestedSeconds": 28800,
+  "errorLabel": "Error: AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:",
+  "failureArtifact": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/results/failure.json",
+  "completedSamples": 238,
+  "lastCompletedSampleElapsedSeconds": 9761.336428125001,
+  "completedSampleTimeSpanSeconds": 9755.908,
+  "actualFailureCycle": 3575,
+  "actualViewerExitCode": 1,
+  "actualSourceState": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-10-18T07:52:47.457269901Z",
+    "FinishedAt": "2026-10-18T10:36:20.60545481Z"
+  },
+  "cleanupErrors": [
+    {
+      "step": "continuous-observation",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   {\n+     error: 'Expected values to be strictly equal:\\n\\n240 !== 239\\n',\n+     step: 'frame-age-stop'\n+   }\n+ ]\n- []\n\n    at file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/project/tests/session-long-observation.mjs:90:170\n    at async file:///Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/project/tests/verify-session-longload.mjs:101:143"
+    }
+  ],
+  "sourceClosureStatus": "closed",
+  "sourceCreatedClosed": {
+    "created": 81,
+    "closed": 81,
+    "crosssite": 79,
+    "leaseExpired": 80
+  },
+  "nativeObserverCleanup": {
+    "pid": 39824,
+    "exited": true,
+    "exitCode": 0,
+    "signal": null
+  },
+  "physicalGrowthIfComputed": null,
+  "scope": "Failedrunremainspreserved;lastcompleted-sample elapsed/spanisnotexactexercisefailuretime. No timesaccumulatedwithotherattempts,norestart/nogateorpolicyrelaxation. Doesnotclaimcleanupwhenmissing/failed.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/frozen-version.json": "bc16b580226b2355b4a5a85cce4ead7525c569af3cef97fdd513f4e4d7da203c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/viewer-exit.json": "8df62a28a5225bfa8e7a33c16c51ba49daf1ffa95ed7eb684b89dcf7cf6bf274",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/source-exit.json": "bdf1db78225b1ade81389225d5c9eb4c870575c432cab03fc43d5495cf6c69ff",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/viewer-start.json": "5d5b6ac7bd048e429f1ea14497cc7abd1926ec0fc0415364b9e93b4f8cf7afd0",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/source-start.json": "64f3eaf3fc0921afe7aabc27a5008968549f7836e6f7c440252e89ad7b278235",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/viewer.log": "b764dac384bcd18d7d385bb1ca549c464446ad21c233be087fd48e6ca53a1ba7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/results/failure.json": "5dbf6b5f64672837e3d50e14f4962d507d184b6bbbba7bee3cc90254aab3bbca",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/results/status.json": "f6d128a9b42b93d8fff0b2a957ffb18838cd97eaabee6ee2755bb527ffe7effa",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/results/cleanup.json": "9136e14e1624cdf4af088e3d42d48e563a4cc1f5c8f3ce2497dc97326594c14b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/results/source-stopped.json": "56e1bc692984203b10725910edeb87920ba9aa86ec0234798050e0b3187009d8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/results/samples.jsonl": "b58f14c769df8962b2be489390f1e84c220c02f51b7269063d4c92b077a5f925",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-v2/results/sampling-phases.jsonl": "c8e73755a21c4cdcb3656878b8813eaa31b5d9f692399b98fe7f45481aafcac3"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "all41GoalComplete": false
+}

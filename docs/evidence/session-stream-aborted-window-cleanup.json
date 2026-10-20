@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-18T10:56:56.836305+00:00",
+  "status": "aborted-window-cleanup-contracts-passed-Mac-Linux",
+  "platforms": {
+    "mac": {
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "skipped": 0,
+      "at": "2026-10-18T10:56:41.898732+00:00",
+      "actualExitCode": 0
+    },
+    "linux": {
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "skipped": 0,
+      "at": "2026-10-18T10:56:42.547355+00:00",
+      "actualExitCode": 0,
+      "container": "remote-paint-stream-aborted-window-linux-20261018-v1",
+      "dockerRunning": false,
+      "dockerExitCode": 0
+    }
+  },
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/stream-aborted-window-v1/frozen-version.json",
+  "manifestSha256": "06084a122eb8e47973c0ed0b9249d8c001356d6e6051ef9f1c1ff097d59327cf",
+  "scope": "Acknowledged rotate cursor advances before persistence/calibration. Confirmed disable stops once even after earlier observation failure; exact raw windows retained, structural gap recorded diagnostically, no re-calibration or acceptance totals during abort cleanup. Lifetime acceptanceFailed stays true. Existing strict calibrated-success validations retained. Tests use modeled Worker/Native clock; not an actual-browser or 8h pass.",
+  "failurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/stream-aborted-window-before-v1/receipt.json",
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true,
+  "unrelatedPeerPreserved": true,
+  "artifacts": {
+    "frozen-version.json": "06084a122eb8e47973c0ed0b9249d8c001356d6e6051ef9f1c1ff097d59327cf",
+    "mac/unit.log": "332f49d4adf967474d73627b4230b15a83c0f3f47c1da90669b0e271700c2871",
+    "mac/exit.json": "6324436ec0641f7c421d21408713838811988fc7e54d779ef9e86315c430fd5c",
+    "linux/unit.log": "a8383166f5bb6e8d8b83dd97c6f82d078c69e7e21f3130bc0c95e448c6c691e8",
+    "linux/exit.json": "479153b09f3a2b9fd0e339789e003f97d87cbb1ca026ac4692d85bd10d545875"
+  }
+}

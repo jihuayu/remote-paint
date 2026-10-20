@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-18T08:04:57.379202+00:00",
+  "status": "session-registry-core-eight-contracts-passed",
+  "files": {
+    "service/session-registry.mjs": "53c9123e472314727e00b60b061f82eeb356f1d6347ddc4a72f99a2a49d985a8",
+    "tests/session-registry.test.mjs": "a0e9b49fc707b36010edf35d91ab6c0b9ad3dd47dede4136c24c5478c8e7088a"
+  },
+  "tests": 8,
+  "passed": 8,
+  "failed": 0,
+  "exitCode": 0,
+  "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-core-v1/unit.log",
+  "logSha256": "4d916291dea2393e73b4c3d4d6c30f07a8440e2fd420e2eed9d2ba64a505fc1e",
+  "scope": "Internal process-local K1 foundation with explicit region provider interface, tenant-scoped idempotent asynchronous creation/query, pending/quarantined resource quotas, bounded retained operation records, redacted public metadata/errors. Tests use explicit in-memory providers; no real Native/HTTP/durability/TTL/release/connect acceptance.",
+  "remaining": [
+    "TTL and idempotent release with resource cleanup fencing",
+    "Durable idempotency and restart recovery",
+    "HTTP/server SDK/types and authentication policy integration",
+    "Real Native Source provider/connection and end-to-end verification after active soak"
+  ],
+  "activeFrozen8hUnchanged": true,
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "all41Complete": false
+}

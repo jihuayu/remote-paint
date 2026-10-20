@@ -5,7 +5,7 @@
 WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变换、裁剪、透明度和层级，页面其余内容应正常提交。原 C12/B13 的 WebGL 位图或视频回退暂不实施。
 
 
-最新长测状态：原始物理策略的独立30分钟测试已通过，见[物理验收](evidence/wasm-binary-handoff-physical.json)，当前仍没有8小时通过。先前8小时尝试在预热第16轮输入发送为0时失败，控制权提前显示可操作的竞态已完成[真实Native前后对照](evidence/control-grant-native.json)，修复版本Mac/Linux各269项JS及新的600秒基线通过。但该版本的丢包试跑因周期采样错过全部三个附加Session存活期而被最终断言正确拒绝，见[采样覆盖失败](evidence/session-secondary-sampling-failure.json)；输入/帧观察和清理未失败，仍不记作通过。新的642文件副本只调整测试采样：每个附加Session完成压力负载、关闭前须取真实样本，同时保留独立60秒周期时钟。全部旧失败保留，不累计时长；八小时仍被前置验收阻挡。下文早期“正在运行”描述属于其检查点当时状态。
+最新长测状态：原始物理策略的独立30分钟测试与646文件基线/轻丢包试跑已通过，但649文件独立8小时v2在第3575轮失败。Source时钟探针未取得有效binding/PID，失败与一次resize重绑定重叠，具体缺失字段未留诊断，原因仍需真实复现。连续观察的清理又暴露旋转已到240但本地游标仍239的计数问题。238个完整样本覆盖约9755.908秒，原始绝对上限及10项状态匹配增长域在该失败前缀内未越界，不能替代28800秒验收。Viewer实际退出1、Source退出0，81个Session均关闭、Native观察助手退出0；观察清理错误如实保留。没有8小时通过，旧失败不累计为通过时长，不放宽策略。下文早期“正在运行”属于当时检查点状态。
 
 ## 实施顺序
 
@@ -25,7 +25,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | C2 | 屏幕损伤区域重绘 | 部分实现 | 持久 pass surface、旧/新矩阵位置和子 pass 损伤传播、整数 scissor/不可见 quad 剔除；相同画面跳过呈现。120 轮完整重画像素对照和 Mac/Linux GPU/CPU 两路径通过。GPU 根图与 bitmaprenderer 仍有整图传递，CPU raster snapshot 的拷贝尚待减少。 |
 | C3 | 取消对单个输入 ACK 的逐条等待 | 已完成（已测范围） | 16 个有界有序输入；合并仅限未发送且语义一致的移动/滚轮；租约撤销清队列，重连重置序号。真实原生输入/IME 回归保留；默认原生Source的两个独立13组矩阵、共26,000次文本输入完整到达且实际Worker像素确认，每组均通过动画、22次移动拖动、300ms全丢包及重连租约清理，见[最新网络证据](evidence/native-source-loss-default.json)。 |
 | C4 | 优化启动与版本缓存 | 已完成（Chrome 两条路径） | 公开静态资源以整体内容指纹发布，immutable/ETag/gzip；入口和会话配置 no-store。预加载不重复下载，Wasm 执行前 SHA 校验。69 项单测与实际浏览器缓存/损坏/版本拒绝验收通过；启动资产异步压缩并与浏览器并行准备。 |
-| C5 | 管理完整客户端内存 | 部分实现 | buffer/解码/pass/元数据预算、增量记账、Wasm/Skia观察及轮换保留；修复退役Wasm backing归属和CanvasKit忽略wasmBinary导致的重复Base64分配。原始物理策略独立30分钟测试通过，逐项重算两种状态的全部10项增长域及绝对上限。新8小时尝试在预热输入阶段失败，尚未通过；控制权就绪修复已通过真实Native前后对照和Mac/Linux各269项JS，新长测须独立验收。 |
+| C5 | 管理完整客户端内存 | 部分实现 | buffer/解码/pass/元数据预算、增量记账、Wasm/Skia观察及轮换保留；修复退役Wasm backing归属和CanvasKit忽略wasmBinary导致的重复Base64分配。原始物理策略独立30分钟测试通过，逐项重算两种状态的全部10项增长域及绝对上限。两次独立8小时失败均保留；649文件v2在约164分钟因时钟探针失败，238完整样本的原上限/10增长域未越界，尚未通过8小时。 |
 | C6 | 有权限边界的持久资源缓存 | 待实现 | 按原清单验收，记录实际证据 |
 | C7 | 改善指针和编辑的即时反馈 | 已完成（公开文本、Chrome 两路径） | input-feedback-v1 显式协商；仅标记公开且非敏感的文本可预览，待确认新字始终遮挡；光标/hover、接管与输入阶段区分。独立版本化 FeedbackState 不阻塞 InputAck，焦点/租约/原生画面屏障拒绝迟到状态。93 项单测及真实 Rust/Node × Worker/主线程 4 组通过；系统 IME、访问性和跨浏览器另属 C8/C12，不预测滚动。 |
 | C8 | 完整 IME 与访问性 | 待实现 | 物理系统候选窗与语义层仍待验收。C7 实验发现 CDP 取消替换选区的组合文本后不恢复原选区；已保留失败与独立复现，未描述为完整 IME 支持。 |
@@ -34,15 +34,15 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | C11 | 页面隐藏与设备故障恢复 | 部分实现 | 显示与 Agent 活动分离；真实 Chrome 隐藏/冻结恢复、导航后新基线、Worker 异常与静默退出回退、旧输入租约清理通过。128项单测；物理休眠及其他目标设备生命周期仍待验收。 |
 | C12 | 浏览器兼容与区域回退 | 部分实现 | WebGL 黑框及文字占位通过真实 Linux/CanvasKit Worker 像素验证；矩阵、裁剪、透明度单测通过。其他纹理、浏览器和复杂合成仍待验收。 |
 | C13 | 控制消息与重放队列调度 | 部分实现 | 默认 Worker 的控制连接改在主线程，绕过慢 SHA 和 Worker 的同步忙碌：注入 1.2 秒 Worker 阻塞时输入确认约 8 ms、撤销约 19 ms。主线程兼容路径仍可能被同步重放阻塞；数据解码切片和过期 viewport 取消待补。 |
-| K1 | 稳定 Session API | 待实现 | 按原清单验收，记录实际证据 |
+| K1 | 稳定 Session API | 部分实现 | SQLite注册表与HTTP创建/查询/释放已接通，可信Bearer租户与独立scope，幂等/TTL/配额/重启隔离及请求限制。Node ESM客户端带TypeScript声明、固定原请求/键的手动或显式重试、响应校验与取消/未知结果分类；实际丢失HTTP响应后重试仅分配一次。Mac/Linux各72项通过及严格类型检查退出0。连接票据与实际Native provider仍待接入，未发布完整公共SDK。见[客户端证据](evidence/session-client.json)及[接口说明](session-control-api.md)。 |
 | K2 | 可嵌入 Viewer | 待实现 | 按原清单验收，记录实际证据 |
-| K3 | 安全授权 | 部分实现 | 控制子连接使用绑定原 Viewer/Session 的 10 秒一次性随机票据；错误 Origin、跨 Viewer、重放与过期拒绝。主 Viewer 的本地 key 尚未替换成租户/角色 Viewer ticket；后端 API key 分离仍待实现。 |
+| K3 | 安全授权 | 部分实现 | 后端HTTP已使用可信Bearer租户认证与创建/读取/释放独立scope，管理客户端禁重定向和浏览器运行。现有控制子连接使用绑定原Viewer/Session的10秒一次性票据，错误Origin/跨Viewer/重放/过期拒绝；主Viewer本地key仍待替换为绑定租户、Session、角色、期限、audience且可撤销的Viewer ticket，不能据后端认证声明K3完成。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 待实现 | 按原清单验收，记录实际证据 |
 | K6 | 结构化观察与结果 | 待实现 | 按原清单验收，记录实际证据 |
 | K7 | 动作和业务成功分离 | 待实现 | 按原清单验收，记录实际证据 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
-| K9 | 开发者体验和发布 | 待实现 | 按原清单验收，记录实际证据 |
+| K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts及Python3.11+ asyncio客户端已生成私有tgz/纯Pythonwheel；白名单核对源码/类型/元数据，Mac/Linux离线独立安装各74项Node及16项Python合同通过，TypeScript两平台通过、Python安装包PEP561/严格类型Mac通过。没有SDK源码回退。包仍是未发布开发版，缺完整Viewer/Agent示例、Native/票据与滚动版本验收。见[包证据](evidence/session-sdk-packages.json)及[复验说明](session-sdk-packages.md)。 |
 | K10 | Agent 与文件集成 | 待实现 | 按原清单验收，记录实际证据 |
 | B1 | 原生持续采集与按需订阅 | 已完成（Linux ARM64 受管 Source） | 浏览器原生订阅/真实document与frame token、输入水位及credit交给Rust自主Mapper/Gateway；正式浏览器与双平台Broker已更新并保存旧产物。[正式路径验收](evidence/native-source-default-acceptance.json)含76项C++、Mac/Linux各221项JS、当前57MiB/2MiB压力/45MiB旧RPC/423回滚、完整直播/Node回退/WebGL文字占位/真实9MiB及200ms Gateway关闭、12 Source/48进程身份清理；24次跨站导航、重置/实际Retry/64MiB压力/六消费与完整内核矩阵保留精确版本证据。Linux BeginFrame页面时钟仍由Node驱动，取消逐帧捕获登记/map/publish/Runtime.awaitPromise。标准构建图/双架构发布、其他平台兼容、完整Session/PSS及长时N1分别继续。 |
 | B2 | 更精确的时钟和消费需求 | 已完成（Linux受管Source） | 显示/观察/录制/页面运行独立计数，受管Agent输入临时持有页面运行租约；零显示观察/录制真实像素、输入与新帧屏障、导航/resize、慢端隔离、64MiB压力恢复、延迟首消费者及关闭通过。198项JS每平台、137项Rust同修订及22组冻结/7组正式复验，见[需求与消费证据](evidence/source-consumer-demand.json)。B1原生持续订阅与完整SDK另列。 |
@@ -63,7 +63,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | B17 | 更快且更稳的 Session 首帧 | 已完成（本地原生链路） | 导航 commit 后建立捕获，导航/捕获/首场景分开。实际持续加载 HTML、慢图和 SSE 均未结束时可显示首帧；资产准备与浏览器并行，3 对冷进程诊断串行/并行中位约 296/196 ms（不是 SLA）。 |
 | B18 | 减少服务器重复绘制 | 待实现 | 按原清单验收，记录实际证据 |
 
-当前 9 项在列明范围内完成，12 项部分实现，20 项待实现；N1 的真实大资源14组及小资源两轮完整13组同帧帧龄矩阵已通过；真实大资源同帧帧龄14组及3组试跑已通过，千次输入扩展版的两个完整14组独立运行已通过，分层丢弃与恢复指标已通过当次用例验收，长时负载继续。
+当前 9 项在列明范围内完成，14 项部分实现，18 项待实现；N1 的真实大资源14组及小资源两轮完整13组同帧帧龄矩阵已通过；真实大资源同帧帧龄14组及3组试跑已通过，千次输入扩展版的两个完整14组独立运行已通过，分层丢弃与恢复指标已通过当次用例验收，长时负载继续。
 
 ## 本轮可复查证据
 
@@ -1402,3 +1402,97 @@ with-secondary：burst后14个样本，footprint前后中位数1878544520→1926
 636文件的丢包试跑在607.018秒、第496轮最终断言失败：11份实际样本全部为primary-only，虽然三个附加Session均完成400次更新、超过64MiB图片压力并正确销毁。32次主输入及1789个配对帧通过已完成窗口校验，缺失0；Source退出0、Viewer退出1，Native采样助手退出0，qdisc移除、清理无错误。这次不授予验收，也不推断不存在的with-secondary内存数据。
 
 新副本增加每个附加Session关闭前的真实完整采样，采样记录绑定同一个仍存活的Source与Viewer及其负载；该检查点不重置独立60秒周期时钟。两项合同覆盖周期时钟不被连续短生命周期饿死，以及错误身份、缺失Viewer、压力不足或伪造采样种类被拒绝。原始内存策略、采样阶段/ACK/租约期限均未放宽。新的采样分布与旧试跑不同，必须按新冻结版本分别验收基线和丢包。
+
+## Mac完整检查失败与测试IPC归属修复
+
+642文件副本完整JS：Linux267通过、4平台跳过，实际退出0；Mac260通过、3失败、8平台跳过，实际退出1。Broker部分输出未在原5秒内达到预期，两次Native助手启动超过原2秒；两名助手均被SIGKILL并回收。一个分配夹具在异步助手初始化之前fork、却在其之后才进入try/finally，初始化失败因此留下IPC进程。保存归属/停滞快照后，已只清理这个确切夹具PID2535，使失败检查自然报告终态；记录的全部进程已消失。日志总423.889秒包含等待该遗留夹具的时间，不作为正常吞吐数据。
+
+修复用外层作用域在初始化前持有真实夹具。3项针对性合同通过；真实Node IPC夹具先就绪，再显式拒绝异步初始化，原错误在SIGKILL、close和IPC断开后才返回，36.755ms完成。生产Source/Viewer/Gateway、Native采样器和原2秒/5秒期限未修改。宿主同期1分钟load约244、12逻辑CPU，保存了有界只读快照，不将其直接解释为244核CPU或唯一原因，也未操作其他工作与系统安全设置。新的完整检查仍须独立执行，见`docs/evidence/session-long-observation-v7-js-failure.json`及`docs/evidence/owned-native-fixture.json`。
+
+## 清理修复新副本完整检查
+
+646文件新副本的Mac/Linux完整JS各272项均通过，实际退出0；Mac264通过8平台跳过，Linux268通过4平台跳过。Mac检查与Linux顺序运行，测试文件并发仍为4。旧642副本的三项Mac失败保留，不将后来的通过解释为高负载是唯一原因或只改夹具归属就解决了助手冷启动期限问题。生产Source/Viewer/Gateway、采样器与原始期限均未修改；新的真实基线正在验证每个附加Session关闭前取得实际同归属样本，尚不授予8小时或完整N1验收。见`docs/evidence/session-long-observation-v8-js.json`。
+
+## 同归属采样新基线
+
+646文件副本的新基线请求600秒，实际驱动618.522秒，660次更新、52次resize、44次主输入、6次跨站、7个附加Session及7次默认租约到期。18份实际样本中11份周期采样、7份关闭前生命周期采样；独立验证每个关闭记录都对应同一存活Source/Viewer、超过64MiB图像压力的真实样本。2152个帧/像素全部配对，44次主输入关联实际水位/像素，缺失0。Source/Viewer实际退出0，清理无错误。观察采样分布与旧副本不同，这次独立验收不替代8小时物理策略；同版丢包正在执行。见`docs/evidence/session-long-observation-v8-baseline.json`。
+
+## 新采样版本丢包验收与独立八小时v2启动
+
+646文件副本丢包试跑请求600秒，实际605.282秒，498次更新、43次resize、32次主输入、2次跨站、3个附加Session及3次默认租约到期。14份实际样本包含11份周期采样与3份关闭前采样，每个已关闭附加Session都通过同归属Source/Viewer/负载核对；1780个帧/像素全部配对、32次输入关联实际水位/像素，缺失0。Gateway实际内核计数907785040bytes、1577drops；Source/Viewer实际退出0，qdisc移除和清理均通过。见`docs/evidence/session-long-observation-v8-netem.json`。
+
+原始个体样本帧龄估计p50约197.748ms、p95约768.213ms、p99约997.188ms、最大1681.262ms，保留时钟/观察器开销与误差范围，不作为物理扫描或业务成功承诺。全部前置哈希、浏览器/硬件与磁盘检查通过后，新649文件副本独立8小时v2已启动：新目录、容器与40096–40099端口，原492548物理策略、原输入/采样期限、持续三主Viewer/两Worker、真实租约及Source单向netem均保持；新增每个附加Session关闭前真实采样，独立周期时钟继续。历史30分钟物理证据使用旧采样分布，本次8小时须独立验证原上限及两种状态全部增长域。此前失败时长不累计；当前仅启动，尚无8小时通过。见`docs/evidence/session-coupled-eight-hour-v2-start.json`。
+
+## K1 会话生命周期核心第一步
+
+新增`service/session-registry.mjs`，在第一次异步provider调用前原子预留配额并绑定租户/幂等键；并发重试和完成后重试均返回同一操作，同键不同请求拒绝。初始化失败时必须收到明确closed回执才归还配额，清理失败/不确定保留资源槽。会话与操作公开快照不暴露provider句柄、页面URL、租户或异常凭据，已有幂等记录在容量满时仍可查询，新的记录按容量拒绝。8项轻量内存provider合同通过。
+
+这是K1的部分实现；当前进程内记录在重启后不持久，尚缺TTL/释放、持久恢复、传输/SDK及真实Native整合与验收。未声明可发布的稳定公共SDK。新代码未加入正在运行的649文件冻结长测副本，未改其Native/Viewer/采样代码，也未运行其他浏览器负载或重型测试。41项当前为9项按范围完成、13项部分实现、19项待实现；8小时仍未通过。
+
+## K1 生命周期核心：TTL与释放
+
+独立源码快照通过22项轻量合同，实际退出0。TTL从就绪开始，用单调时钟计时；一个注册表只保留最近到期计时器，墙钟回退不延长会话寿命，计时器尚未投递时readiness查询也会同步隔离过期ID。释放先撤销可用状态，等待创建完成后才关闭晚到的资源；确认closed才归还配额。关闭失败保留隔离槽和可查询失败操作，再次显式释放会创建新操作但不改写旧终态，关闭尝试次数有界。
+
+初始化与关闭的完成等待点在通知provider取消之前建立，直接/间接重入shutdown仍等待真实归属收尾。尚缺持久化/重启恢复、HTTP/SDK与认证票据和真实Native适配验证；没有把内存provider合同当成这些能力的验收。正在运行的649文件八小时副本保持原样，只运行轻量纯逻辑合同检查。见`docs/evidence/session-registry-lifecycle.json`。
+
+## K1 独立持久账本组件
+
+新增`service/session-store.mjs`，用SQLite原子事务保存会话、操作及租户/幂等键hash/默认参数绑定；排他所有权在提交之间保持，同库第二个活服务实例拒绝启动。历史绑定、会话身份与操作终态不允许重写，容量/跨租户外键/引用不一致会整批回滚；已有空文件、丢表、外来/损坏数据或非私有权限文件均拒绝重新初始化，不用空账本覆盖未知历史。模块需要Linux/macOS上的Node22.13+及node:sqlite；前端SDK平台支持另行验收。
+
+同一五文件快照在Mac与固定Linux/arm64镜像中各10项检查通过，均无跳过、实际退出0；Linux镜像实际Node22.23.3/SQLite3.51.3。真实独立写进程提交后被SIGKILL，已提交数据可恢复、锁释放；被杀写进程未提交的更新回滚。这里只验证进程终止/重启场景，不作硬件断电/文件系统认证。
+
+账本尚未接入SessionRegistry，不能据此宣称整个API已经具备重启幂等或计费不重复保证。下一步是受理意图先持久化、存储失败/提交结果不确定时停止新分配、重启仅隔离/核对原资源而不自动重发create；HTTP/TypeScript SDK、认证连接票据与真实Native整合仍待完成。见`docs/evidence/session-store-ledger.json`。
+
+## 独立八小时v2的中途物理观察
+
+当前运行的已完成样本前缀覆盖1977.946秒、47份样本，按原492548策略独立重算：无绝对上限超标，两种状态各自预热后首5/当前末5的全部10个增长域都在原界限内。这是运行中前缀观察，不是最终平台期或28800秒验收，未修改驱动的最终physical-growth输出、采样或策略；完整八小时继续。
+
+## K1 注册表与账本集成
+
+同一十文件源码快照在Mac及固定Linux/arm64镜像中各49项轻量合同通过，实际退出0，无跳过。新创建的会话、操作与原始区域/TTL默认值及租户幂等键hash必须先原子提交并取得递增修订号确认，provider.create才可执行；账本缺少确认、确认丢失或提交后确认异常都阻止再次分配。已知幂等键在服务默认参数改变后仍查回原操作；已有空/损坏账本不回退成空内存状态。
+
+重启后旧活动记录变为recovery-required，不重置TTL、不重新调用create；核对/关闭原资源后才归还配额，原操作ID和终态保持。创建中、就绪后、释放中三个真实Node进程SIGKILL夹具均验证外部文件资源只分配一次；释放中重启继续原pending释放操作。失败或结果不确定的存储写入使分配与确认查询暂停，清理仍继续，晚到的创建结果收尾后才能移交账本。单库排他锁加注册表所有权令牌拒绝并发控制者与旧令牌写入。
+
+早期两项恢复夹具误把键做JSON字符串哈希，已保留失败源码与说明后修正为接口约定的原始键哈希。以上provider是明确的内存/文件夹具，不等于实际Native资源或真实计费验收。HTTP、TypeScript SDK、认证票据与Native适配仍待完成，K1保持部分实现；正在运行的649文件长测副本未改动。见`docs/evidence/session-registry-persistence.json`。
+
+## K1 后端HTTP控制边界
+
+新增明确配置的HTTP服务工厂与后端key认证器，创建/读取/释放分别授权；租户仅取可信认证结果。工厂要求已确认的持久注册表，异步认证完成及正文完整接收后再次确认状态；请求超时、正文中止或迟到的认证成功均不能启动创建。未结束认证调用在请求超时后仍占额度，避免无界积累。错误只映射固定公开代码/消息，每次响应生成requestId，不回显原始认证/provider异常。
+
+同一13文件快照在Mac与固定Linux/arm64镜像中各62项测试通过，实际退出0且无跳过；真实loopback HTTP响应在持久受理后被客户端故意丢弃，原键重试仍找到同一操作/Session，仅一次夹具资源分配。HTTP parser本身拒绝的报文可能由Node关闭或返回自身响应。可选初始URL默认精确about:blank，不接受其他about变体及file/data/javascript。尚无实际Native provider、Viewer票据或完整SDK发布验收，K1仍部分实现；649文件长测副本未改，八小时未完成。详见`docs/evidence/session-http.json`及`docs/session-control-api.md`。
+
+## K1/K9 后端客户端与类型合同
+
+新增Node ESM客户端及匹配.d.mts声明。prepared创建对象先捕获原始正文/幂等键，调用方修改输入不会改变后续发送；默认不自动重试，显式重试最多三次且保持原键/正文。取消前未派发与派发后结果未知分开，取消不能撤回受理后的资源。响应按流限制大小、校验UTF8/JSON及精确schema/ID/操作类型/状态，请求ID须与header一致；管理请求拒绝重定向，不把原始传输异常/响应凭据附到公开错误。
+
+18文件快照在Mac与固定Linux/arm64镜像中各72项测试通过，无跳过，实际退出0；TypeScript5.9.3同版strict/exactOptionalPropertyTypes/NodeNext/noEmit正反向类型合同也在两平台实际退出0。真实客户端至HTTP/SQLite链路在受理后销毁第一次响应socket，自动重试加手动重发仍仅创建一个夹具Session/操作，查询和释放完成；真实redirect目标未收到管理请求。K9因此从待实现推进为部分实现，41项当前9完成/14部分/18待实现。尚缺Native资源接入、Viewer票据、独立包/Python和完整兼容发布，未把类型和夹具当作这些验收。正在运行的649文件八小时副本不含本轮SDK代码，保持原样。见`docs/evidence/session-client.json`。
+
+## K9 Python asyncio后端客户端
+
+新增Python3.11+带py.typed的独立包源码及不可变dataclass/NewType模型，HTTPX固定0.28.1。原始请求/幂等键捕获后，手动或显式有界重试不改变；默认无自动重试。每次尝试总期限覆盖headers与流读取，取消保留asyncio Task语义并报告未派发/结果未知；客户端自有请求Task、响应流与连接池显式关闭，关闭single-flight，活动请求数有界。不跟随重定向，不传回服务cookie，不使用环境代理；响应逐流限字节并验证schema/ID/类型/状态。
+
+初次严格类型检查发现NoReturn函数残留return语句；另一个真实故障注入发现HTTPX在aiter_raw迭代尾自动关闭时，关闭异常会被泛化为传输异常，后续aclose幂等调用掩盖失败。均已保留原始源码/日志并修复：跟踪实际流关闭结果，清理不确认后禁止新请求，报告固定错误，取消仍保留原Task语义。26文件快照在MacPython3.14.6与Linux/arm64Python3.11.2各16项实际通过，无跳过，退出0；Macmypy1.19.1严格以Python3.11为目标，含正/反向类型合同的3源码文件退出0。原Node72/TypeScript证据按未变源码hash复用。
+
+两个真实Python到Node HTTP/SQLite夹具场景含受理后第一次响应socket销毁：自动重试加手动重发共3次HTTP，仅一次Session分配，原操作ID保持，租户隔离/查询/释放通过；每个夹具进程明确退出0、账本关闭确认且无保留资源。并非实际Native或计费资源验证。包尚未独立构建安装/公开发布，Viewer票据、长任务事件与版本兼容继续；41项保持9完成/14部分/18待实现。Native源码审查确认目前display仍共享可输入授权，真正read/control显示角色需在长测结束后修改Gateway并验证真实呈现。八小时649文件副本不含本轮SDK代码，未修改。见`docs/evidence/session-python-client.json`。
+
+## K9 私有客户端包与安装合同
+
+Node包保留private:true，根与backend ESM导出共享实现及.d.mts类型；Python包明确固定构建后端setuptools80.9.0与py.typed/依赖元数据。已生成4文件tgz和7文件py3-none-any wheel，逐文件比对源码hash，归档不含服务/Native/测试凭据。首次安装夹具把同一空npmrc同时作为用户/全局配置，npm拒绝；原v1失败已保留，v2改为独立文件，SDK包本身未改，复用原构建产物。
+
+31文件v2快照将产物离线装入新npm consumer与Python venv，验证实际import来自安装位置且consumer无SDK源码目录；仅将两处Node合同import改为公开包名，测试主体保持。Mac与Linux/arm64各74项Node/HTTP/SQLite及16项Python实际通过，无跳过、实际退出0；TypeScript通过已安装exports解析且两平台退出0。Mac的mypy通过venv PEP561发现安装包，正反向类型合同退出0；Linux本轮未执行Python安装包类型编译，未把Mac结果冒称双平台类型结果。测试仍为明确provider夹具，Native/Viewer角色/票据、完整长任务/Agent集成、兼容矩阵与公开发布继续。开发预览ZIP保存相同已验证包、说明和校验和；不代表全目标或八小时通过。见`docs/evidence/session-sdk-packages.json`。
+
+## K1 Native worker 生命周期边界
+
+新增私有worker控制通道、Native异步资源包装器及待接入的Linux入口：固定Session/租户/区域/owner-hash在启动前校验，默认32KiB固定输入缓冲，三种有限命令，无URL/key/底层异常回显。资源对象先建立再异步初始化，关闭等待真实启动结果，晚到资源回收且不发布Ready；abort通知前建立single-flight关闭等待点，初始化仍可能分配时的提前closed回执拒绝。owner EOF、信号、失联和独立owner心跳租约触发清理。
+
+关闭中stdout被父端关闭的竞态实际复现：旧版本先撤错误处理器，资源已关闭仍因最后状态写入EPIPE而异常退出；22项中21通过1失败已保留。修复为进程存续期内不捕获Session对象的错误接收器，并改为固定缓冲/解析后清除。测试夹具setup抛错时worker会被回收，叶子也在继承stdin失联后自动结束，避免Root被杀留下测试资源。
+
+同一8文件快照在MacNode26.4与Linux/arm64Node22.23.3各23项合同实际通过，无跳过，退出0；生产Native入口仅语法检查退出0。实际运行的是Node/叶子进程与模拟Native逻辑资源，不是Chromium或完整内核进程集合验收；worker Closed只表示资源close逻辑回执，外层runtime仍必须用持久资源身份核对整个容器/namespace退役。尚未接Registry的实际Native provider、TTL/健康传播、恢复、真实Viewer权限/票据；K1保持部分实现，41项仍9完成/14部分/18待实现。当前649文件独立8小时副本未改，不把本轮合同当作八小时或Native通过。见`docs/evidence/session-worker-boundary.json`及`docs/session-native-worker.md`。
+
+## K1 父端worker通道与8小时v2失败
+
+父端通道已接真实Node worker，固定请求/身份、等待Hello后只发一次Start、自动owner心跳、启动中与Ready后取消、关闭和真实客户端退出分别记录。关闭超时保持uncertain，terminal继续等待真实退出；客户端退出0没有worker Closed不算逻辑关闭，整组Native进程仍需外层runtime证明。首次40项中38通过2失败（退出回调被提前清除、关闭后重复start复用历史Ready）已保留并修复。同一11文件快照Mac/Linux各40项实际通过、无跳过、退出0，Native入口仍仅语法检查；未接实际provider/TTL/健康持久化或Viewer票据。见`docs/evidence/session-worker-channel.json`。
+
+独立8小时v2已真实结束失败，Viewer1/Source0，Docker退出0；第3575轮resize对应的时钟探针前置条件失败。之前/之后viewport254到255、Source仍健康且同一producer，提示重绑定短窗竞态，但原失败未记录binding/PID各字段，尚不认定唯一原因。失败后流停止暴露第二个已确认问题：raw239已旋转到240，后置校准失败使本地previous未前移，disable240又与239比较。三份原始窗口238/239/240均保留，失败窗118帧与清理窗6帧不冒称已校准。
+
+238样本按原492548物理策略重算：绝对上限及两状态共10增长域均在原界内，只是失败前缀分析，不是8小时/最终平台验收。Source81创建81关闭且无Source清理错误，FD19相对baseline20；Mac观察助手39824明确退出0。连续观察清理错误仍作为失败证据保留。下一步修复/真实复现时钟获取与窗口停止；新版本须重新完整检查、600秒基线/丢包预验和独立8小时，不合并旧时间，不替换旧证据。见`docs/evidence/session-coupled-eight-hour-failure-v2.json`及`docs/evidence/session-coupled-eight-hour-v2-completed-prefix-physical.json`。

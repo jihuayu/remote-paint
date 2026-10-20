@@ -1,0 +1,63 @@
+{
+  "at": "2026-10-18T08:49:11.296341+00:00",
+  "status": "standalone-sqlite-session-ledger-ten-contracts-each-Mac-Linux-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-store-ledger-v1/frozen-version.json",
+  "manifestSha256": "8071dfcc86b5c0d17234dde03460674a6ce6d8ebe29a9ebb581e47d206717624",
+  "tests": 10,
+  "passed": 10,
+  "skipped": 0,
+  "failed": 0,
+  "exitCode": 0,
+  "scope": "Standalone actual SQLite control-plane ledger: atomic Session/operation/hashed-key/default records, retained exclusive single-owner access across commits verified across live processes, bounded rows/metadata/database, tenant and operation references, immutable bindings/terminal outcomes, explicit rejection of existing empty/foreign/corrupt/unsafe-permission files. Verified committed rows survive actual owned SIGKILL; uncommitted update rolls back and lock releases. Not power-loss/filesystem hardware certification, SessionRegistry integration, durable whole-API acceptance, or Native provider acceptance. Same exact five source files qualified on actual Mac and pinned Linux/arm64 image; no Native Source/browser test started in this check.",
+  "requires": "Node22.13+ with node:sqlite on Linux/macOS; unsupported service persistence refuses rather than falling back to memory. Frontend SDK support is separate.",
+  "sources": [
+    "https://www.sqlite.org/pragma.html#pragma_locking_mode",
+    "https://nodejs.org/download/release/latest-v22.x/docs/api/sqlite.html"
+  ],
+  "remaining": [
+    "Integrate write-ahead accepted intent before Registry provider effects",
+    "Reconcile recovered active records without recreating Source or trusting prior monotonic deadline",
+    "Handle failed/ambiguous state commits without duplicate allocation or false ready/closed outcomes",
+    "HTTP/TypeScript SDK/authentication/Native integration remain"
+  ],
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-store-ledger-v1/frozen-version.json": "8071dfcc86b5c0d17234dde03460674a6ce6d8ebe29a9ebb581e47d206717624",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-store-ledger-v1/unit.log": "7a7ba72914c1d8cd5f83b01dac199757e635c914c5c8296e0f119314b66d4d13",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-store-ledger-v1/exit.json": "71d5a91a6ee7fefb45e1a00c823c0cb914754ddf5d776791736347054f276d58",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-store-ledger-v1/linux/unit.log": "add57eb546a1e2495f418b3f554d1eb6367c5729af02199a8946bfe12160d4f5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-store-ledger-v1/linux/runtime.json": "8963b774885b81fbb2c362a94f3344f2898da77ad15b1e111f79df45bb2f9a75",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-store-ledger-v1/linux/exit.json": "1d5e84ab94de51778ac6558d95455740271856f46dd45f33533c6855387c64c2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-store-ledger-v1/linux/runner.mjs": "54313bb5b036302e7365fcdd2e338a9da647d9c6498ce8f401cf330374848bb6"
+  },
+  "lightweightContractsOnlyDuringFrozen8h": true,
+  "frozen649Unchanged": true,
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true,
+  "previousMacCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-store-ledger-checkpoint-v1.json",
+  "platformChecks": {
+    "mac": {
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "skip": 0,
+      "actualExitCode": 0
+    },
+    "linux": {
+      "tests": 10,
+      "pass": 10,
+      "fail": 0,
+      "skip": 0,
+      "actualExitCode": 0,
+      "runtime": {
+        "node": "22.23.3",
+        "sqlite": "3.51.3",
+        "platform": "linux",
+        "arch": "arm64"
+      },
+      "container": "remote-paint-session-store-ledger-linux-20261018-v1",
+      "sourceRuntimeImageId": "sha256:42df2c322c1c105d79aff686ebf92b0708f237788daa011186976e852b7cf66e",
+      "dockerConfirmedNotRunning": true
+    }
+  }
+}

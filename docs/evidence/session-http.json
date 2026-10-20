@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-18T09:26:57.561985+00:00",
+  "status": "actual-loopback-HTTP-SQLite62-contracts-each-Mac-Linux-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-http-v1/frozen-version.json",
+  "manifestSha256": "3e6ec4e72b64e795e25ab28d8e40d509eeb9031a02ec32f3be072a16a7696cd9",
+  "sourceFiles": 13,
+  "platforms": {
+    "mac": {
+      "tests": 62,
+      "passed": 62,
+      "failed": 0,
+      "skipped": 0,
+      "actualExitCode": 0,
+      "runtime": {
+        "node": "26.4.0",
+        "sqlite": "3.53.2",
+        "platform": "darwin",
+        "arch": "arm64"
+      }
+    },
+    "linux": {
+      "tests": 62,
+      "passed": 62,
+      "failed": 0,
+      "skipped": 0,
+      "actualExitCode": 0,
+      "runtime": {
+        "node": "22.23.3",
+        "sqlite": "3.51.3",
+        "platform": "linux",
+        "arch": "arm64"
+      },
+      "container": "remote-paint-session-http-linux-20261018-v1",
+      "dockerConfirmedTerminal": true
+    }
+  },
+  "scope": "Backend create/read/release API with tenant-scoped Bearer resolver, independent scopes, request IDs and bounded redacted error mapping; requires durable confirmed Registry. Actual lost HTTP response after durable admission replays original operation with one fixture allocation. UTF8/body/header/method/Origin limits, incomplete body and authentication timeout, late authentication fencing, bounded unresolved auth calls, client disconnect, quota, and confirmed-state rechecks exercised. Only explicit fixture providers; not Native, Viewer tickets, public deployment or SDK compatibility acceptance.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-http-v1/frozen-version.json": "3e6ec4e72b64e795e25ab28d8e40d509eeb9031a02ec32f3be072a16a7696cd9",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-http-v1/mac/unit.log": "a5289182b9600a65c1fcd3cf0182f2ade1ab52a5fdfb260b5da09f2e73b4dac5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-http-v1/mac/exit.json": "6852d45e3032e471088dd5136faa98b5f7f5157cf06ba8b57a37fd85b17d44c3",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-http-v1/mac/runtime.json": "c914262369874764e33c14a8837d550408b75aead2110ac883d9c58d715b03c6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-http-v1/linux/unit.log": "a650c91382adaea777384c53b92685cd0fc22f371f0c9f2a85d69436984f9b51",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-http-v1/linux/exit.json": "030882740d338fe6ddb87ccdf71c678bb947085a97feacb22f1dd6eeae21cd90",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-http-v1/linux/runtime.json": "8963b774885b81fbb2c362a94f3344f2898da77ad15b1e111f79df45bb2f9a75"
+  },
+  "blankCore": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-registry-blank-checkpoint-v1.json",
+  "remaining": [
+    "Typed backend client, runtime response validation and type contracts",
+    "Scoped Viewer connection tickets and actual Native provider lifecycle",
+    "Public packaging/documentation/version compatibility and broader41 requirements"
+  ],
+  "frozen649EightHourUnchanged": true,
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true
+}

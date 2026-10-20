@@ -1,0 +1,59 @@
+{
+  "at": "2026-10-18T10:49:21.529841+00:00",
+  "status": "parent-worker-channel40-contracts-each-Mac-Linux-passed",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-v1/frozen-version.json",
+  "manifestSha256": "66c47587bcd2351a5f6f5f872ecbc4bb0d4ee98c3d2d605163a60527cd081f3e",
+  "sourceFiles": 11,
+  "platforms": {
+    "mac": {
+      "tests": 40,
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0,
+      "actualUnitExitCode": 0,
+      "productionNativeEntrypointSyntaxExitCode": 0,
+      "runtime": {
+        "node": "26.4.0",
+        "platform": "darwin",
+        "arch": "arm64"
+      }
+    },
+    "linux": {
+      "tests": 40,
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0,
+      "actualUnitExitCode": 0,
+      "productionNativeEntrypointSyntaxExitCode": 0,
+      "runtime": {
+        "node": "22.23.3",
+        "platform": "linux",
+        "arch": "arm64"
+      },
+      "container": "remote-paint-session-worker-channel-linux-20261018-v1",
+      "dockerConfirmedTerminal": true
+    }
+  },
+  "scope": "Parent private channel plus existing worker boundary: actual Node worker start/heartbeats/cancel/close/exit, stream-model readiness/close race, malformed/foreign/size/deadline/backpressure and delayed exit proof. Request captures original body and key, no Start replay, completed channel cannot return historical Ready as available. One unavailable callback with installed close fence, worker-close acknowledgement and actual client close recorded separately, exit0 alone unconfirmed, timeout never implies observed termination. Two initial failures preserved/fixed: exit callback cleared before notification and completed start reusing resolved history. No actual Native Source/browser/container ownership/SessionTTL or Viewer/ticket acceptance; production Native syntax only.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-v1/frozen-version.json": "66c47587bcd2351a5f6f5f872ecbc4bb0d4ee98c3d2d605163a60527cd081f3e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-v1/mac/unit.log": "53c298ea9201fdb2e0390c05edc57e43d9f19598323a70c8baaac283a77ad68a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-v1/mac/syntax.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-v1/mac/exit.json": "81bf98af48625e1dae7d1c9f7c2da6d69e59d3297046885374f76e8608f20d20",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-v1/mac/runtime.json": "722f075188f4a1628fc3ae5803eacecd7346e8dfba8e1ba78d0612b6b5f64afd",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-v1/linux/unit.log": "c93266527560dad1de1457a5f62527c2e08ec0ce6bc211f8199d2c3aaed66ee5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-v1/linux/syntax.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-v1/linux/exit.json": "a3ee53e82960debf00e82bcf1c6e05dca639a83d7c25f40715a6fe591ba7e5a0",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-v1/linux/runtime.json": "0d7aa0e36a645bfd0dab14238729ba08b16636afd3dad2592eb2d73278f9922a"
+  },
+  "failurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-channel-failure-v1/receipt.json",
+  "previousWorkerCheckpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-worker-boundary-checkpoint-v1.json",
+  "remaining": [
+    "Persistent runtime resource identity and real Native provider / full namespace retirement",
+    "Registry TTL/health/cancel/recovery integration and direct rendered Viewer roles/tickets",
+    "Failed8h clock-probe readiness and aborted stream-window cleanup repair, fresh prereqs and independent8h, broader41 requirements"
+  ],
+  "eightHourPassed": false,
+  "all41Complete": false,
+  "noCommitPush": true
+}
