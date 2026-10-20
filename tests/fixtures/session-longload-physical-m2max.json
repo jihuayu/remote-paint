@@ -1,0 +1,39 @@
+{
+  "schema": "darwin-session-long-v1",
+  "deviceScope": "Apple M2 Max;one hardware Chromium with GPUWorker/CPUWorker/CPUmain primary and optional CPUmain secondary;formal ARM64 Linux Source container. These are proposed test acceptance bounds, not measured product guarantees.",
+  "pilotAcceptanceSha256": "14005144bf908b8cb38d8b856fc7711428cae55012837f7005cc137eb52bfb8a",
+  "states": {
+    "primary-only": {
+      "viewerFootprintBytes": 2281701376,
+      "viewerRssSumBytes": 4294967296,
+      "sourcePssBytes": 1073741824,
+      "sourceAnonBytes": 805306368,
+      "sourceNodePssBytes": 268435456
+    },
+    "with-secondary": {
+      "viewerFootprintBytes": 2952790016,
+      "viewerRssSumBytes": 5368709120,
+      "sourcePssBytes": 1610612736,
+      "sourceAnonBytes": 1207959552,
+      "sourceNodePssBytes": 268435456
+    }
+  },
+  "plateau": {
+    "windowSamples": 5,
+    "minSamplesPerState": 10,
+    "growthBytes": {
+      "viewerFootprintBytes": 201326592,
+      "viewerRssSumBytes": 268435456,
+      "sourcePssBytes": 134217728,
+      "sourceAnonBytes": 134217728,
+      "sourceNodePssBytes": 67108864
+    }
+  },
+  "basis": {
+    "viewerFootprint": "3 or4 compact640MiB logical profiles plus256MiB shared browser/driver allowance. Logical accounting does not itself imply an OS footprint guarantee; the actual physical gate must pass separately.",
+    "viewerRss": "Separate shared-page-inclusive RSS sum caps4096/5120MiB, selected above actual pilot maxima3584180224/4516954112;never labelled unique physical memory.",
+    "source": "Single/dual Source cohortPSS1024/1536MiB,containeranon768/1152MiB,nodePSS256MiB;pilot maxima915687424/1362169856PSS,618151936/918659072anon,191095808node. Explicit frozen headroom;no claim of continuous peaks.",
+    "growth": "First5 vs last5 distinct post-burst state-matched samples;no forced GC,context replacement or post-run relaxation. Positive growth allowances192/256/128/128/64MiB.",
+    "coverage": "60s scheduled;actual gaps<90s;minimum10 post-warm samples in each state. Sparse state coverage fails acceptance. Sampling can miss transient OS peaks."
+  }
+}

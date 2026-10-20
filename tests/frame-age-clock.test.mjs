@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {interpolateClock,calibratedFrameAge,summarizeFrameResources} from './frame-age-observer.mjs';
+import {interpolateClock,calibratedFrameAge,summarizeFrameResources,calibrateFrameAge} from './frame-age-observer.mjs';
 
 const probe=(domainMs,lower,upper,pid=7)=>({domainMs,lower,upper,pid});
 const before={native:{best:probe(1000,100,104)},worker:{best:probe(500,600,604)}};
@@ -57,4 +57,19 @@ test('missing, duplicate, non-byte and over-budget dependency sets cannot masque
  const resources=new Map([['valid',new Uint8Array(10)],['empty',new Uint8Array(0)],['fake',{byteLength:10*1024*1024}]]);
  for(const ids of [['missing'],['valid','valid'],['empty'],['fake'],Array.from({length:257},(_,i)=>String(i))])assert.throws(()=>summarizeFrameResources(ids,resources));
  assert.throws(()=>summarizeFrameResources(['valid'],{}));
+});
+test('explicit remote probes include the complete asynchronous transport interval and its actual scope witness',async()=>{
+ const page={evaluate:async()=>({clock:'worker-performance-v1',now:performance.now()})};
+ const r=await calibrateFrameAge(null,page,{samples:2,nativeProbe:async()=>{
+  const stamp=Math.round(performance.now()*1000);await new Promise(resolve=>setTimeout(resolve,10));
+  return {reply:{clock:'chromium-time-ticks-v1',nowMicros:stamp,rendererProcessId:7},pageEpoch:2,viewportVersion:3,provenance:{kind:'test-transport-interval'}};
+ }});
+ assert.equal(r.pageEpoch,2);assert.equal(r.viewportVersion,3);
+ for(const p of r.native.samples){assert.ok(p.roundTripMs>=5);assert.equal(p.upper,p.after-p.domainMs+.001);assert.equal(p.lower,p.before-p.domainMs-.001);assert.equal(p.provenance.kind,'test-transport-interval');}
+});
+test('remote probes reject ambiguous Source facades and state changes inside a calibration',async()=>{
+ const page={evaluate:async()=>({clock:'worker-performance-v1',now:performance.now()})};let calls=0;
+ const nativeProbe=async()=>({reply:{clock:'chromium-time-ticks-v1',nowMicros:Math.round(performance.now()*1000),rendererProcessId:7},pageEpoch:++calls,viewportVersion:1});
+ await assert.rejects(calibrateFrameAge({},page,{samples:2,nativeProbe}),/explicit remote/);
+ await assert.rejects(calibrateFrameAge(null,page,{samples:2,nativeProbe}));
 });

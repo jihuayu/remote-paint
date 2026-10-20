@@ -9,6 +9,7 @@ import {createSessionMemoryOwner} from './session-memory-owner.mjs';
 import {atomicJson,deadline} from './memory-soak-diagnostics.mjs';
 assert.equal(process.platform,'linux');assert.notEqual(process.env.REMOTE_PAINT_DATA_PLANE,'node');
 const directory=resolve(process.env.REMOTE_PAINT_SESSION_LONG_DIR??'artifacts/session-longload'),port=Number(process.env.REMOTE_PAINT_SESSION_LONG_PORT??39546),runId=randomUUID();assert.ok(Number.isInteger(port)&&port>=1024&&port<65532);await mkdir(directory,{recursive:true,mode:0o700});for(const name of ['requests','responses'])await mkdir(join(directory,name),{recursive:true});
+const frameAge=process.env.REMOTE_PAINT_SESSION_LONG_FRAME_AGE==='1';
 const fixture=await startSessionMemoryFixture(),handled=new Set(),stats={created:0,closed:0,crosssite:0,leaseExpired:0};let primary,secondary=null,timer,closing=false,stopPromise,primaryHost='127.0.0.1',lastClosed=null,leaseProbe=null;
 const atomic=(name,value)=>atomicJson(directory,name,value),event=value=>appendFile(join(directory,'source-events.jsonl'),JSON.stringify({at:new Date().toISOString(),runId,...value})+'\n');
 function monitor(owner){
@@ -35,9 +36,14 @@ const stop=()=>stopPromise??=(async()=>{
  const remaining=primaryReceipt?.after?.metrics,receipt={at:new Date().toISOString(),runId,status:errors.length?'failed':'closed',errors,stats,primary:primaryReceipt,fixtureListening:fixture.listening,activeSessions:fixture.activeSessions,remainingProcesses:remaining?.processes,processSampling:remaining?.processSampling,pss:remaining?.pss,cgroupProvenance:remaining?.cgroup.provenance};await atomic('source-stopped.json',receipt);if(errors.length)process.exitCode=1;return receipt;
 })();
 try{
- primary=await createSessionMemoryOwner(fixture,{port,host:'0.0.0.0'});primaryMonitor=monitor(primary);stats.created++;await primary.pin();await atomic('ready.json',{at:new Date().toISOString(),runId,primary:{id:primary.id,number:primary.number,url:primary.url},platform:process.platform,architecture:process.arch,browser:primary.source.browser.version(),scope:'One long-lived primary Source with crosssite/real30sleaseexpiry;secondary Sessioncreation/working-setpressure/destruction in same controller. Private file commands,normal production FrameGate/Viewer.'});console.log(JSON.stringify({event:'ready',runId,port}));
+ primary=await createSessionMemoryOwner(fixture,{port,host:'0.0.0.0',frameAgePoints:frameAge?[[20,80],[400,30],[450,30]]:null});primaryMonitor=monitor(primary);stats.created++;await primary.pin();await atomic('ready.json',{at:new Date().toISOString(),runId,primary:{id:primary.id,number:primary.number,url:primary.url},observerProvenance:primary.observerProvenance,platform:process.platform,architecture:process.arch,browser:primary.source.browser.version(),scope:'One long-lived primary Source with crosssite/real30sleaseexpiry;secondary Sessioncreation/working-setpressure/destruction in same controller. Private file commands,normal production FrameGate/Viewer.'});console.log(JSON.stringify({event:'ready',runId,port}));
 }catch(error){await stop();throw error;}
 async function operation(command){
+ if(command.op==='clock-probe'){
+  assert.equal(frameAge,true);const source=primary.source,binding=source.capture.binding?.config.id,epoch=source.pageEpoch,version=source.viewportVersion,document=source.nativeDocumentToken;assert.ok(binding);
+  const reply=await source.capture.command('scheduler',binding);assert.equal(source.capture.binding?.config.id,binding);assert.equal(source.pageEpoch,epoch);assert.equal(source.viewportVersion,version);assert.equal(source.nativeDocumentToken,document);assert.equal(reply.ok,true);
+  return {nativeProbe:{reply,pageEpoch:epoch,viewportVersion:version,provenance:{kind:'actual-current-Source-private-scheduler',sourceId:primary.id,bindingId:binding,documentToken:document,producer:source.producer}}};
+ }
  if(command.op==='create-secondary'){assert.equal(secondary,null);secondary=await createSessionMemoryOwner(fixture,{port:port+2,host:'0.0.0.0'});secondaryMonitor=monitor(secondary);stats.created++;await secondary.pin();return {secondary:{id:secondary.id,number:secondary.number,url:secondary.url}};}
  if(command.op==='close-secondary'){assert.equal(command.sessionId,secondary?.id,'Stale secondary Session');return {closed:await closeSecondary()};}
  if(command.op==='lease-probe'){

@@ -1156,3 +1156,21 @@ Source浏览器后代及Broker在启动、工作集加热和跨站后通过已�
 采样覆盖间隔最大62.164秒；原2秒helper就绪/请求、250ms回收、5秒阶段、90秒覆盖及所有逻辑Wasm/JS/render/GPU预算保留。采样期间仅与附加页面创建/关闭做短生命周期协调，普通绘制更新继续；helper没有自动重启/ps回退或旧值补零。RSS、Darwin physical footprint、Linux PSS和cgroup anon/file仍分列，进程组为有身份见证的实时观测，非原子独占内存总量。
 
 此轮无附加Session的physical footprint观测最大约1.81GiB，有附加时约2.33GiB；Linux PSS观测最大分别约0.85/1.27GiB。这只是制定设备物理门槛的试跑数据，本轮未施加该新物理门槛，不作增长平台或八小时验收。接下来须在长测前冻结物理策略、验证更长负载，并集成N1真实网络/帧龄/丢弃窗口。C5/B10/N1完整长期及八小时仍未完成；41项保持9完成/12部分/20待做，无提交、推送或缓存清理。
+
+## Mac持续Session的运行前物理门槛
+
+新增独立物理策略校验与失败取证：缺失/非有限测量、未知域、缺失状态、重叠的前后中位数窗口均拒绝；8小时必须含增长门槛。超上限时先保存完整实测值与门槛，不静默丢弃失败样本。三个策略契约测试通过。
+
+Apple M2 Max硬件pilot之后、独立30分钟验证之前冻结 `tests/fixtures/session-longload-physical-m2max.json`：主VM3×compact640MiB加共享256MiB的footprint门槛2176MiB，有附加VM时2816MiB；单独RSS和Linux PSS/anon/node域均有明确门槛及实测pilot依据。前后各5个同状态、burst之后样本互不重叠，要求每状态至少10个；允许增长192/256/128/128/64MiB。它们是待真实验证的测试验收门槛，非已证明的产品承诺。未强制GC、未替换主VM、未放宽原采样deadline。
+
+本小任务仅完成策略与失败记录实现及运行前冻结；30分钟结果、8小时、N1长测仍待验收。继续不提交、不推送。
+
+## 真实Linux到Mac的Native时钟适配
+
+跨主机校准现在接受明确的Native probe回调，直接返回真实当前Source的scheduler回复、binding/document/producer及epoch/viewport见证。Mac performance.now区间覆盖完整私有文件通道往返，不伪造Source/capture对象，不采用Linux Node时钟替代Mac时钟。默认同机严格PID/epoch/viewport门槛保留，host参数默认仍为loopback。12个时钟契约通过，包括异步通道区间与跨状态拒绝。
+
+独立硬件pilot v2通过：25.190秒、121次更新、三窗口201个成功CPUWorker提交全部与其自身像素读取及正常frame事件配对；同一Worker/页面跨真实resize及跨站持续存活，校准PID从78换为102时另开严格窗口。三个窗口帧龄p95为67.307/68.166/73.658ms，各自最大时钟不确定度13.697/14.055/14.102ms；这是包含同步读像素开销的观测值，非无观察器性能或物理显示scanout。
+
+v1把异步图片和DOM标记所有过渡帧强制视为相等，错误断言导致失败；旧副本及失败/正常清理结果保留。v2逐点核验已发出的合法cycle、恒定Session身份，并逐次等待最终PNG/DOM像素收敛，实际记录24个中间标记差异；每个原始窗口先持久化再校验。
+
+每个窗口分别前后校准，导航/resize及校准间隔不属于帧龄覆盖；此项只验收跨主机适配，不是连续长时全帧覆盖，也未施加网络损伤。Source创建/销毁1/1、8个已知Source身份退出、Broker请求/响应owner与逐帧Node调用为0。N1长测、8小时与全部41项仍未完成。

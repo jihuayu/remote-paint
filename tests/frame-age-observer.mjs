@@ -105,11 +105,11 @@ async function prepareFrameAgeAssets(points,diagnosticFaults){
  const provenance={diagnosticFaults,baseTemplateSha256:hash(template),instrumentedTemplateSha256:hash(instrumented),productionBuild:production.build,observerBuild:assets.build,mode:'test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting',points,limit,timerRounding:{nativeStampAllowanceMs,workerStampAllowanceMs,basis:'Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints.'},served:[{originalServedSha256:hash(original),instrumentedServedSha256:hash(observed),instrumentationBytes:Buffer.byteLength(instrumented)-Buffer.byteLength(template)}],actualServed:[]};
  return {assets,provenance};
 }
-export async function startFrameAgeLive({url,port=0,points=[[412,72],[610,190],[690,190]],diagnosticFaults=false}={}){
+export async function startFrameAgeLive({url,port=0,host='127.0.0.1',points=[[412,72],[610,190],[690,190]],diagnosticFaults=false}={}){
  assert.ok(points.length>0&&points.length<=8&&points.every(p=>p.length===2&&p.every(n=>Number.isSafeInteger(n)&&n>=0)));
  assert.equal(typeof diagnosticFaults,'boolean');const prepared=prepareFrameAgeAssets(points,diagnosticFaults);prepared.catch(()=>{});let source,transport,closing;
  const close=()=>closing??=(async()=>{const errors=[];for(const dispose of [()=>transport?.close(),()=>source?.control?.close(),()=>source?.close()])try{await dispose();}catch(e){errors.push(e);}if(errors.length)throw new AggregateError(errors,'Observed Live cleanup failed');})();
- try{source=await startLiveSource({url});source.control=await createControl(source);const{assets,provenance}=await prepared;transport=await startLiveTransport(source,{port,preparedAssets:assets});return {...transport,source,observerProvenance:provenance,close};}
+ try{source=await startLiveSource({url});source.control=await createControl(source);const{assets,provenance}=await prepared;transport=await startLiveTransport(source,{port,host,preparedAssets:assets});return {...transport,source,observerProvenance:provenance,close};}
  catch(error){try{await close();}catch(cleanup){throw new AggregateError([error,cleanup],'Observed Live startup/cleanup failed');}throw error;}
 }
 export async function installFrameAgeObserver(page,provenance){
@@ -159,24 +159,32 @@ export async function installFrameAgeObserver(page,provenance){
 
 async function workerRequest(page,operation){return page.evaluate(operation=>window.__rpAge.request(operation),operation);}
 function best(samples){assert.ok(samples.length);return samples.reduce((a,b)=>a.roundTripMs<=b.roundTripMs?a:b);}
-export async function calibrateFrameAge(source,page,{samples=12}={}){
+export async function calibrateFrameAge(source,page,{samples=12,nativeProbe}={}){
  assert.ok(Number.isSafeInteger(samples)&&samples>=2&&samples<=32);
  const native=[],worker=[];
+ // A remote callback returns the real Source reply and its actual scope witness.
+ // The caller's performance interval includes the complete file/RPC transport;
+ // neither the remote host clock nor a fabricated capture binding is reused.
+ assert.ok(nativeProbe===undefined||typeof nativeProbe==='function');
+ if(nativeProbe)assert.equal(source,null,'Use an explicit remote probe, not a Source-shaped facade');
+ const probe=nativeProbe??(async()=>({reply:await source.capture.command('scheduler',source.capture.binding.config.id),pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion}));
  for(let i=0;i<samples;i++){
-  const before=performance.now(),r=await source.capture.command('scheduler',source.capture.binding.config.id),after=performance.now();
+  const before=performance.now(),witness=await probe(),after=performance.now(),r=witness.reply;
+  assert.ok(Number.isSafeInteger(witness.pageEpoch)&&witness.pageEpoch>0&&Number.isSafeInteger(witness.viewportVersion)&&witness.viewportVersion>0);
+  if(native.length){assert.equal(witness.pageEpoch,native[0].pageEpoch);assert.equal(witness.viewportVersion,native[0].viewportVersion);}
   assert.equal(r.clock,nativeClock);assert.ok(Number.isSafeInteger(r.nowMicros)&&r.nowMicros>0);assert.ok(Number.isInteger(r.rendererProcessId)&&r.rendererProcessId>0);
-  native.push({before,after,roundTripMs:after-before,domainMs:r.nowMicros/1000,pid:r.rendererProcessId,clock:r.clock,quantizationMs:nativeStampAllowanceMs,lower:before-r.nowMicros/1000-nativeStampAllowanceMs,upper:after-r.nowMicros/1000+nativeStampAllowanceMs});
+  native.push({pageEpoch:witness.pageEpoch,viewportVersion:witness.viewportVersion,...(witness.provenance?{provenance:witness.provenance}:{}),before,after,roundTripMs:after-before,domainMs:r.nowMicros/1000,pid:r.rendererProcessId,clock:r.clock,quantizationMs:nativeStampAllowanceMs,lower:before-r.nowMicros/1000-nativeStampAllowanceMs,upper:after-r.nowMicros/1000+nativeStampAllowanceMs});
  }
  assert.ok(native.every(s=>s.pid===native[0].pid));
  for(let i=0;i<samples;i++){
   const before=performance.now(),r=await workerRequest(page,'clock'),after=performance.now();assert.equal(r.clock,workerClock);assert.ok(Number.isFinite(r.now)&&r.now>=0);
   worker.push({before,after,roundTripMs:after-before,domainMs:r.now,clock:r.clock,quantizationMs:workerStampAllowanceMs,lower:before-r.now-workerStampAllowanceMs,upper:after-r.now+workerStampAllowanceMs});
  }
- return {native:{samples:native,best:best(native)},worker:{samples:worker,best:best(worker)},pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion};
+ return {native:{samples:native,best:best(native)},worker:{samples:worker,best:best(worker)},pageEpoch:native[0].pageEpoch,viewportVersion:native[0].viewportVersion};
 }
 
-export async function beginFrameAge(source,page){
- const before=await calibrateFrameAge(source,page);
+export async function beginFrameAge(source,page,options){
+ const before=await calibrateFrameAge(source,page,options);
  // This precedes any network impairment. Let pre-calibration in-flight
  // frames finish so every measured capture is inside the calibration bracket.
  await page.waitForTimeout(100);
@@ -207,8 +215,8 @@ export function calibratedFrameAge(sample,before,after){
 function distribution(values){assert.ok(values.length&&values.every(Number.isFinite));const sorted=values.slice().sort((a,b)=>a-b),p=n=>sorted[Math.ceil(n*sorted.length)-1];return {count:values.length,p50Ms:p(.5),p95Ms:p(.95),p99Ms:p(.99),maxMs:sorted.at(-1),minMs:sorted[0]};}
 export {distribution as frameAgeDistribution};
 function drift(a,b){const duration=b.domainMs-a.domainMs;assert.ok(duration>0);return {domainDurationMs:duration,midpointOffsetChangeMs:(b.lower+b.upper-a.lower-a.upper)/2,estimatedPpm:(b.lower+b.upper-a.lower-a.upper)/2/duration*1e6,lowerPpm:(b.lower-a.upper)/duration*1e6,upperPpm:(b.upper-a.lower)/duration*1e6};}
-export async function finishFrameAge(source,page,window,provenance){
- const disabled=await workerRequest(page,'disable'),after=await calibrateFrameAge(source,page);
+export async function finishFrameAge(source,page,window,provenance,options){
+ const disabled=await workerRequest(page,'disable'),after=await calibrateFrameAge(source,page,options);
  const raw=await page.evaluate(()=>{const s=window.__rpAge;return {samples:s.samples,errors:s.errors,paired:s.paired,start:s.start,end:s.end,workerCount:s.workerCount,pending:s.pending.size,protocolEvents:s.protocolEvents,socketStarts:s.socketStarts,socketCloses:s.socketCloses};});
  assert.deepEqual(raw.errors,[]);assert.equal(raw.workerCount,1);assert.equal(raw.pending,0);assert.ok(raw.samples.length>0&&raw.samples.length<=limit);
  const expected=disabled.all-window.enabled.all;

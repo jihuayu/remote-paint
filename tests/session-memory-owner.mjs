@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import net from 'node:net';
 import {setTimeout as delay} from 'node:timers/promises';
 import {startLive} from '../live.mjs';
+import {startFrameAgeLive} from './frame-age-observer.mjs';
 import {runtimeMetrics} from '../native/runtime-metrics.mjs';
 import {LinuxProcessProbe} from '../native/process-memory-linux.mjs';
 import {deadline} from './memory-soak-diagnostics.mjs';
@@ -13,9 +14,9 @@ function closedSource(source){
 function sourceRows(metrics,rootPid,brokerPid){
  const rows=new Map(metrics.processes.map(row=>[row.pid,row]));return metrics.processes.filter(row=>{if(row.pid===brokerPid)return true;const seen=new Set();while(row){if(row.pid===rootPid)return true;if(seen.has(row.pid))throw new Error('Observed process ancestry cycle');seen.add(row.pid);row=rows.get(row.ppid);}return false;});
 }
-export async function createSessionMemoryOwner(fixture,{port=0,host='127.0.0.1'}={}){
+export async function createSessionMemoryOwner(fixture,{port=0,host='127.0.0.1',frameAgePoints=null}={}){
  const workload=fixture.create();let live,source,phase='startup',closed=false,closePromise,rootPid;const errors=[],transitions=[],probes=new Map(),nodeCalls={map:0,publish:0,awaitPromise:0};
- try{live=await startLive({url:workload.url(),port,host});assert.equal(live.source.nativeAutopublish,true);source=live.source;
+ try{live=await (frameAgePoints?startFrameAgeLive({url:workload.url(),port,host,points:frameAgePoints}):startLive({url:workload.url(),port,host}));assert.equal(live.source.nativeAutopublish,true);source=live.source;
   source.on('captureError',error=>{const value={phase,message:error.message,code:error.code};if(['navigation','resize'].includes(phase)&&/Navigation invalidated|Execution context was destroyed|Cannot find context|Inspected target navigated or closed/.test(error.message)){if(transitions.length<32)transitions.push(value);}else if(errors.length<32)errors.push(value);});
   const request=source.broker.request.bind(source.broker);source.broker.request=(op,...args)=>{if(op==='map'||op==='publish')nodeCalls[op]++;return request(op,...args);};const send=source.capture.cdp.send.bind(source.capture.cdp);source.capture.cdp.send=(op,...args)=>{if(op==='Runtime.awaitPromise')nodeCalls.awaitPromise++;return send(op,...args);};
   const lease=source.acquirePageRun();try{await deadline(source.page.evaluate(()=>window.loaded),15000,'initial Session page image');}finally{lease();}
@@ -23,7 +24,7 @@ export async function createSessionMemoryOwner(fixture,{port=0,host='127.0.0.1'}
  }catch(error){await live?.close().catch(()=>{});workload.release();throw error;}
  const measure=async()=>{const metrics=await runtimeMetrics(source,{details:true});assert.equal(metrics.processSampling.status,'observed-stable');assert.equal(metrics.pss.completeObservedCohort,true);assert.equal(metrics.cgroup.provenance.processMembershipConfirmed,true);const owned=sourceRows(metrics,rootPid,source.broker.child.pid);return {at:new Date().toISOString(),controllerVm:process.memoryUsage(),metrics,sourceProcesses:owned,sourcePssBytes:owned.reduce((sum,row)=>sum+row.pssBytes,0),workload:workload.stats(),sourceState:{pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,inputSeq:source.inputSeq,nativeDocumentToken:source.nativeDocumentToken,producer:source.producer,stats:structuredClone(source.stats)},nodeCalls:{...nodeCalls},errors:[...errors],transitions:[...transitions]};};
  const pin=async()=>{const sample=await measure();assert.ok(sample.sourceProcesses.some(row=>row.pid===rootPid));assert.ok(sample.sourceProcesses.some(row=>row.pid===source.broker.child.pid));for(const row of sample.sourceProcesses){const key=`${row.pid}:${row.startTicks}`;if(probes.has(key))continue;if(probes.size>=1024)throw new Error('Session ownership probe cap');const probe=await LinuxProcessProbe.open(row.pid);try{await probe.sample({details:false,children:false,expectedIdentity:row.identity});}catch(error){await probe.close();throw error;}probes.set(key,{probe,identity:row.identity,kind:row.kind});}return sample;};
- const owner={id:workload.id,number:workload.number,url:live.url,origin:live.origin,streamOrigin:live.streamOrigin,get source(){return closed?null:source;},get closed(){return closed;},stats:workload.stats,measure,pin,
+ const owner={id:workload.id,number:workload.number,url:live.url,origin:live.origin,streamOrigin:live.streamOrigin,get source(){return closed?null:source;},get observerProvenance(){return live?.observerProvenance??null;},get closed(){return closed;},stats:workload.stats,measure,pin,
   async update(n){assert.ok(!closed);phase='update';await deadline(source.page.evaluate(n=>window.update(n),n),15000,'Session image update');source.requestCapture();},
   async resize(viewport){assert.ok(!closed);phase='resize';await deadline(source.resize(viewport),15000,'Session resize');},
   async navigate(n,host='localhost'){assert.ok(!closed);phase='navigation';const before={epoch:source.pageEpoch,documentToken:source.nativeDocumentToken,producer:source.producer};await source.page.goto(workload.url(host,n),{waitUntil:'domcontentloaded',timeout:15000});await deadline(source.page.evaluate(()=>window.loaded),15000,'crosssite Session image');source.requestCapture();return before;},

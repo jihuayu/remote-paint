@@ -1,0 +1,150 @@
+{
+  "at": "2026-10-17T21:30:53.412551+00:00",
+  "status": "passed-cross-host-strict-window-native-clock-adapter",
+  "scope": "Actual Linux Native Source to persistent Mac CPUWorker exact-commit pixel observer;real file-channel scheduler replies calibrated by complete Mac host request/response intervals,unchanged strict renderer/epoch/viewport checks. Three distinct windows exclude calibration and resize/crosssite transition gaps;not continuous all-frame longload/N1/8h/physical display latency.",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-remote-v2/frozen-version.json",
+    "sha256": "f84848e74d3c9eb3e98bea76dd84d325a99cf46afc01dd73dc06806ac0622c46"
+  },
+  "elapsedSeconds": 25.190422917,
+  "cycles": 121,
+  "windows": [
+    {
+      "segment": 0,
+      "pairedSamples": 67,
+      "intermediateImageDomMarkerDifferences": 10,
+      "age": {
+        "count": 67,
+        "p50Ms": 56.03888429701328,
+        "p95Ms": 67.3071289807558,
+        "p99Ms": 69.18679425120354,
+        "maxMs": 69.18679425120354,
+        "minMs": 4.4048911184072495
+      },
+      "clockUncertainty": {
+        "count": 67,
+        "p50Ms": 13.468432689666745,
+        "p95Ms": 13.67746176815033,
+        "p99Ms": 13.696598390698433,
+        "maxMs": 13.696598390698433,
+        "minMs": 13.228802541851994
+      },
+      "nativePid": 78
+    },
+    {
+      "segment": 1,
+      "pairedSamples": 69,
+      "intermediateImageDomMarkerDifferences": 10,
+      "age": {
+        "count": 69,
+        "p50Ms": 53.59309034049511,
+        "p95Ms": 68.16633854806423,
+        "p99Ms": 96.19761157035828,
+        "maxMs": 96.19761157035828,
+        "minMs": 3.554705411195755
+      },
+      "clockUncertainty": {
+        "count": 69,
+        "p50Ms": 13.905469457268712,
+        "p95Ms": 14.043898562550545,
+        "p99Ms": 14.054745222091675,
+        "maxMs": 14.054745222091675,
+        "minMs": 13.732257688999173
+      },
+      "nativePid": 78
+    },
+    {
+      "segment": 2,
+      "pairedSamples": 65,
+      "intermediateImageDomMarkerDifferences": 4,
+      "age": {
+        "count": 65,
+        "p50Ms": 67.87172710895538,
+        "p95Ms": 73.65785336494446,
+        "p99Ms": 78.47452157735825,
+        "maxMs": 78.47452157735825,
+        "minMs": 12.446539416909218
+      },
+      "clockUncertainty": {
+        "count": 65,
+        "p50Ms": 13.757750878691674,
+        "p95Ms": 14.062600369215005,
+        "p99Ms": 14.10206549859047,
+        "maxMs": 14.10206549859047,
+        "minMs": 13.391661385655404
+      },
+      "nativePid": 102
+    }
+  ],
+  "pairedSamples": 201,
+  "transitions": [
+    {
+      "kind": "resize",
+      "atHostMs": 7582.428,
+      "doneHostMs": 7773.017083,
+      "before": {
+        "epoch": 1,
+        "viewportVersion": 1,
+        "producer": "78:2"
+      },
+      "after": {
+        "epoch": 1,
+        "viewportVersion": 2,
+        "producer": "78:2"
+      }
+    },
+    {
+      "kind": "crosssite",
+      "atHostMs": 13609.436792,
+      "doneHostMs": 13879.463042,
+      "before": {
+        "epoch": 1,
+        "viewportVersion": 2,
+        "producer": "78:2"
+      },
+      "after": {
+        "epoch": 2,
+        "viewportVersion": 2,
+        "producer": "102:1"
+      }
+    }
+  ],
+  "workerTargets": [
+    "B45DCC9BFB59A0D88CE3072CA969BA3D"
+  ],
+  "sourceIdentitiesRetired": 8,
+  "allControllerAndViewerProcessesExited": true,
+  "pureClockContractsPassed": 12,
+  "previousFailurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-remote-v1/results/frame-age-remote-report.json",
+  "artifacts": {
+    "frame-age-remote-report.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-remote-v2/results/frame-age-remote-report.json",
+      "sha256": "21c7a4becf022bcd81e10fb1800c9e6bef8d3a707f81a3852bf19c0c59ca82fa"
+    },
+    "raw-frame-age-segment-0.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-remote-v2/results/raw-frame-age-segment-0.json",
+      "sha256": "2abcd3db35b2001c4a5d1b30741bc6ba2b7226d2650f96c8a4684efb35eb33be"
+    },
+    "raw-frame-age-segment-1.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-remote-v2/results/raw-frame-age-segment-1.json",
+      "sha256": "588ba09e15e16d1154f66b29293a59a8a3c3afdd2892f05849256ba0f13dbc3e"
+    },
+    "raw-frame-age-segment-2.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-remote-v2/results/raw-frame-age-segment-2.json",
+      "sha256": "91a9806dc92089226278a46a0fe948404d08e4fb9dcc7ce3f78e5e85ef0aa79c"
+    },
+    "source-stopped.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-remote-v2/results/source-stopped.json",
+      "sha256": "9ac651889dbe9007558db88cb643d41aeeb4cf7224892e3e80dc9d5cc3c0fed3"
+    }
+  },
+  "noCommitPush": true,
+  "continuousAgeCoverage": false,
+  "networkImpairmentApplied": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}
