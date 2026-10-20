@@ -40,6 +40,11 @@ export function createSessionInputFrameProofs(persist){
  },finish(){assert.equal(pending.length,0,'Primary input lacks a same-epoch/viewport/watermark/pixel CPUWorker commit');assert.equal(proved,queued);}};
 }
 
+export function validateSessionRttWelcome(message,renderer){
+ assert.equal(message.type,'Welcome');assert.equal(message.protocol,4);assert.deepEqual(message.renderer,renderer);assert.equal(message.consumerKind,'recording');assert.equal(message.ackStage,'consumer-released');assert.equal(message.input,false);assert.equal(message.inputFeedback,false);assert.equal(message.control,null);
+ return true;
+}
+
 export async function prepareSessionLongObservation(page,ready){
  const provenance=structuredClone(ready.observerProvenance);
  assert.equal(provenance?.streaming,true);assert.equal(provenance.diagnosticFaults,false);
@@ -50,6 +55,7 @@ export async function prepareSessionLongObservation(page,ready){
 export async function startSessionLongObservation({page,ready,provenance,command,directory,readCycle,impaired=false}){
  assert.equal(typeof readCycle,'function');
  const save=(name,value)=>appendFile(join(directory,name),JSON.stringify({at:new Date().toISOString(),...value})+'\n');
+ const rttConsumer={kind:'recording',ackStage:'consumer-released',welcomeValidated:false,releaseMessagesQueued:0,receivedBinaryBytes:0,scope:'Read-onlyconsumerusingrecordinglifetime acrossscopechanges;bytesreleased,norender/recordingartifactclaim. Counterscoverwholeconnection,notexactCPUWorkerenabledwindow.'};
  const errors=[],rtt={count:0,minMs:null,maxMs:null};let echo,stream,networkActive=false,closed,lossOrdinal=0,lossWindow=0,windows=0;
  let sourceCloseLoss=null;
  const inputs=createSessionInputFrameProofs(value=>save('session-input-frame-proofs.jsonl',value));
@@ -65,28 +71,32 @@ export async function startSessionLongObservation({page,ready,provenance,command
   assert.ok(value>=0&&value<3000);rtt.count++;rtt.minMs=Math.min(rtt.minMs??Infinity,value);rtt.maxMs=Math.max(rtt.maxMs??0,value);return value;
  }
  async function openEcho(){
-  const url=new URL(ready.primary.streamOrigin),viewer=new URL(ready.primary.url);url.protocol='ws:';url.pathname='/stream';url.searchParams.set('key',new URLSearchParams(viewer.hash.slice(1)).get('key'));
-  echo=new WebSocket(url.href,{origin:viewer.origin,handshakeTimeout:3000});
-  echo.on('error',()=>fail('ACK-only Gateway peer socket error'));
-  echo.on('message',(bytes,binary)=>{if(binary)return;try{const m=JSON.parse(bytes);if(m.type==='FrameCommit')echo.send(JSON.stringify({type:'FrameAck',pageEpoch:m.pageEpoch,frameId:m.frameId}));}catch{fail('ACK-only Gateway peer could not process actual metadata');}});
-  await new Promise((resolve,reject)=>{echo.once('open',resolve);echo.once('error',reject);});
-  echo.send(JSON.stringify({type:'Hello',protocol:4,renderer:ready.primary.renderer}));
+  const grant=(await command('rtt-consumer-ticket')).grant;assert.equal(grant.consumerKind,'recording');assert.equal(grant.ackStage,'consumer-released');assert.equal(grant.capability,'scene-consumer-v1');assert.equal(grant.origin,new URL(ready.primary.url).origin);assert.deepEqual(grant.renderer,ready.primary.renderer);
+  const url=new URL(grant.url),streamOrigin=new URL(ready.primary.streamOrigin);assert.ok(url.protocol==='ws:'&&url.host===streamOrigin.host&&url.pathname==='/consume'&&!url.searchParams.has('key'),'Invalid read-only RTT endpoint');assert.ok(/^[a-f0-9]{64}$/.test(url.searchParams.get('ticket')??''),'Invalid bounded RTT consumer ticket');
+  echo=new WebSocket(url.href,{origin:grant.origin,handshakeTimeout:3000});
+  let accept,reject;const admitted=new Promise((resolve,no)=>{accept=resolve;reject=no;}),timer=setTimeout(()=>reject(new Error('RTT read-only consumer handshake exceeded3000ms')),3000);admitted.catch(()=>{});
+  echo.on('error',()=>{fail('ACK-only read-only Gateway consumer socket error');reject(new Error('RTT read-only consumer socket error'));});
+  echo.on('close',()=>{if(!rttConsumer.welcomeValidated)reject(new Error('RTT consumer closed before authorization'));else if(!closed)fail('RTT consumer closed unexpectedly');});
+  echo.on('message',(bytes,binary)=>{if(binary){rttConsumer.receivedBinaryBytes+=bytes.byteLength;return;}try{const message=JSON.parse(bytes);if(message.type==='Welcome'){assert.equal(rttConsumer.welcomeValidated,false);validateSessionRttWelcome(message,grant.renderer);rttConsumer.welcomeValidated=true;accept();}else if(message.type==='FrameCommit'){assert.ok(rttConsumer.welcomeValidated);assert.ok(Number.isSafeInteger(message.frameId)&&message.frameId>0&&Number.isSafeInteger(message.pageEpoch)&&message.pageEpoch>0);echo.send(JSON.stringify({type:'FrameAck',pageEpoch:message.pageEpoch,frameId:message.frameId,stage:'consumer-released'}));rttConsumer.releaseMessagesQueued++;}}catch{fail('Read-only RTT consumer received invalid protocol metadata');reject(new Error('Invalid read-only RTT consumer authorization or metadata'));echo.terminate();}});
+  echo.once('open',()=>{try{echo.send(JSON.stringify({type:'Hello',protocol:4,renderer:grant.renderer,consumerKind:'recording',capabilities:['scene-consumer-v1']}));}catch{fail('RTT consumer Hello could not be queued');reject(new Error('RTT consumer Hello failed'));}});
+  try{await admitted;await save('session-rtt-consumer.jsonl',{phase:'authorized',...rttConsumer});}finally{clearTimeout(timer);}
  }
+
  async function close(){return closed??=(async()=>{
   const failures=[];
   try{if(stream?.active)await stream.drain({stop:true});}catch(error){failures.push({step:'frame-age-stop',error:error.message});}
   try{if(networkActive){const removed=(await command('network-stop')).network;await save('session-network-windows.jsonl',{phase:'removed',network:removed});assert.equal(removed.status,'removed');networkActive=false;}}catch(error){failures.push({step:'network-stop',error:error.message});}
   try{if(echo&&echo.readyState!==WebSocket.CLOSED)await new Promise((resolve,reject)=>{const timer=setTimeout(()=>{echo.terminate();reject(new Error('ACK-only Gateway peer close exceeded3000ms'));},3000);echo.once('close',()=>{clearTimeout(timer);resolve();});echo.close();});}catch(error){failures.push({step:'echo-close',error:error.message});}
-  await save('session-observation-cleanup.jsonl',{failures,errors,activeStream:stream?.active??false,networkActive,echoState:echo?.readyState??null});assert.deepEqual(failures,[]);assert.deepEqual(errors,[]);return {status:'closed',failures,errors};
+  await save('session-observation-cleanup.jsonl',{failures,errors,activeStream:stream?.active??false,networkActive,echoState:echo?.readyState??null,rttConsumer});assert.deepEqual(failures,[]);assert.deepEqual(errors,[]);return {status:'closed',failures,errors};
  })();}
  try{
-  // Both baseline and impaired runs include the same fourth, ACK-only peer.
+  // Both variants include the same read-only recording-lifetime consumer.
   await openEcho();await loss('before-enabled-window');
   if(impaired){const network=(await command('network-start')).network;networkActive=true;await save('session-network-windows.jsonl',{phase:'started',network});}
   const measuredRttMs=[];for(let n=0;n<10;n++)measuredRttMs.push(await ping());await save('session-network-windows.jsonl',{phase:'initial-rtt',impaired,measuredRttMs});
   stream=await startFrameAgeStream(page,provenance,{nativeProbe,directory});
  }catch(error){try{await close();}catch(cleanup){error.cleanup=cleanup.message;}throw error;}
- return {async finishSource(value){await save('session-loss-windows.jsonl',{phase:'after-source-close',loss:value});assert.equal(value.observerFailure,null);assert.equal(value.windowOrdinal,lossWindow+1);assert.equal(value.afterObservationOrdinal,lossOrdinal);assert.equal(value.throughObservationOrdinal-value.afterObservationOrdinal,value.rejections.length);assert.equal(value.receivedRejectionEvents,value.rejectionCount);value.rejections.forEach((r,i)=>assert.equal(r.observationOrdinal,lossOrdinal+i+1));sourceCloseLoss={windowOrdinal:value.windowOrdinal,throughObservationOrdinal:value.throughObservationOrdinal};},enqueueInput:(n,ack)=>inputs.enqueue(n,ack),witness:()=>stream.witness(),close,get active(){return stream.active;},get summary(){return {impaired,windows,frameAge:stream.totals,lifetime:stream.lifetime,inputProofs:inputs.stats,rtt,receivedNativeRejections:lossOrdinal,lossWindows:lossWindow,sourceCloseLoss,errors};},async drain({stop=false}={}){
+ return {async finishSource(value){await save('session-loss-windows.jsonl',{phase:'after-source-close',loss:value});assert.equal(value.observerFailure,null);assert.equal(value.windowOrdinal,lossWindow+1);assert.equal(value.afterObservationOrdinal,lossOrdinal);assert.equal(value.throughObservationOrdinal-value.afterObservationOrdinal,value.rejections.length);assert.equal(value.receivedRejectionEvents,value.rejectionCount);value.rejections.forEach((r,i)=>assert.equal(r.observationOrdinal,lossOrdinal+i+1));sourceCloseLoss={windowOrdinal:value.windowOrdinal,throughObservationOrdinal:value.throughObservationOrdinal};},enqueueInput:(n,ack)=>inputs.enqueue(n,ack),witness:()=>stream.witness(),close,get active(){return stream.active;},get summary(){return {impaired,windows,frameAge:stream.totals,lifetime:stream.lifetime,inputProofs:inputs.stats,rtt,receivedNativeRejections:lossOrdinal,lossWindows:lossWindow,sourceCloseLoss,rttConsumer,errors};},async drain({stop=false}={}){
   const {result,bounds}=await drainSessionMarkerWindow(stream,readCycle,ready.primary.number,{stop,onBoundary:b=>save('session-marker-boundaries.jsonl',b)});
   await inputs.consume(result);const sourceLoss=await loss(stop?'final-enabled-window':'enabled-window'),measuredRttMs=[];for(let n=0;n<3;n++)measuredRttMs.push(await ping());
   let network=null;if(impaired){network=(await command('network-snapshot')).network;await save('session-network-windows.jsonl',{phase:'window',window:result.window,network,measuredRttMs});}

@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-18T01:05:15.963304+00:00",
+  "status": "passed267-tests-eachplatform-cycle-bound-candidate",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v4/baseline-frozen-version.json",
+  "manifestSha256": "9f9a49a1ce81b909f80a7b876c5d0168e4d866a38a9c2820c585d4bd17b0b864",
+  "sourceFiles": 625,
+  "sourceChanges": [
+    "docs/evidence/session-marker-cycle-bound.json",
+    "docs/evidence/test-runner-concurrency.json",
+    "docs/optimization-progress.md",
+    "tests/session-long-observation.mjs",
+    "tests/session-long-observation.test.mjs",
+    "tests/verify-session-longload.mjs"
+  ],
+  "testfileConcurrency": 4,
+  "fullJS": {
+    "testsEach": 267,
+    "macPass": 259,
+    "macLinuxOnlySkip": 8,
+    "linuxPass": 263,
+    "linuxMacOnlySkip": 4,
+    "failed": 0
+  },
+  "cycleBoundContracts": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-marker-cycle-bound-checkpoint-v1.json",
+  "actualLocalWSFailureCleanup": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-preflight-contract-v2/receipt.json",
+  "runtimeNativeAndProductionUnchanged": true,
+  "budgetsAndOriginalDeadlinesUnchanged": true,
+  "hardwareCandidatePilotsAccepted": false,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v4/js-results/mac.log": "906e87e896ec2e053f8c084a44dd9341347fa8282632ebc9eedaf3ebe4462367",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v4/js-results/linux.log": "73fd470701074e90ccfc9677a6711fbe729e63fc6ca5adf596e798ff8eac5415",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v4/js-results/mac-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v4/js-results/linux-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

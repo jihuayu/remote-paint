@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {createSessionInputFrameProofs,drainSessionMarkerWindow} from './session-long-observation.mjs';
+import {createSessionInputFrameProofs,drainSessionMarkerWindow,validateSessionRttWelcome} from './session-long-observation.mjs';
 const ack={seq:17,pageEpoch:3,viewportVersion:4,accepted:true,stage:'input-injected'};
 const sample={productionFramePaired:true,pageEpoch:3,viewportVersion:4,inputSeq:17,commitOrdinal:21,frameId:8,pixels:[[1,0,199,255],[1,0,199,255],[1,0,211,255],[0,2,42,255]],age:{estimateMs:12}};
 test('input proof rejects stale epoch, viewport, input watermark, pixel and unpaired commits',async()=>{
@@ -28,4 +28,8 @@ test('the post-rotation counter still rejects future markers, wrong Session pixe
  const boundaries=[];await assert.rejects(drainSessionMarkerWindow({drain:async()=>({window:7,samples:[{...valid,pixels:[[3,0,199,255],...valid.pixels.slice(1)]}]})},()=>2,1,{onBoundary:async b=>boundaries.push(b)}));assert.deepEqual(boundaries,[{window:7,invocationCycle:2,throughCycle:2}]);
  let reads=0;await assert.rejects(drainSessionMarkerWindow({drain:async()=>({samples:[]})},()=>++reads===1?2:1,1),/went backwards/);
  for(const n of [-1,1.5,NaN,65536])await assert.rejects(drainSessionMarkerWindow({drain:async()=>({samples:[]})},()=>n,1),/Invalid actual/);
+});
+test('the RTT consumer must be read-only and acknowledge release rather than claim scene submission',()=>{
+ const renderer={canvaskit:'fixture',wasmSha256:'a'.repeat(64)},welcome={type:'Welcome',protocol:4,renderer,consumerKind:'recording',ackStage:'consumer-released',input:false,inputFeedback:false,control:null};assert.equal(validateSessionRttWelcome(welcome,renderer),true);
+ for(const change of [m=>m.consumerKind='display',m=>m.ackStage='scene-submitted',m=>m.input=true,m=>m.inputFeedback=true,m=>m.control={ticket:'fixture-only'},m=>m.renderer={...renderer,wasmSha256:'b'.repeat(64)},m=>m.protocol=3]){const m=structuredClone(welcome);change(m);assert.throws(()=>validateSessionRttWelcome(m,renderer));}
 });
