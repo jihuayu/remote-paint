@@ -1,0 +1,19 @@
+{
+  "task": "K2a2b3c2b0",
+  "scope": "Source queued viewport input neutralization prerequisite for Viewer pause/noop resume",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewport-input-barrier-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewport-input-barrier-checkpoint-v1.json",
+  "contract": {
+    "queue": "Prior input settles,strict cleanup,recheck lease,then resize or noop",
+    "noop": "Preservelease/fence/epoch/nextseq,clear held state,invalidate stale feedback",
+    "failure": "Fixed VIEWPORT_INPUT_RESET_FAILED/not-applied before Source.resize entry;revoke oldlease,retry known held set"
+  },
+  "NodeSourceAndCdpAreFixtures": true,
+  "qualificationAuthority": "External immutable fullJS and realRust TCP receipts afterexecution",
+  "sdkViewportComplete": false,
+  "nativeViewportControlQualified": false,
+  "allAgentCdpFenced": false,
+  "eightHourPassed": false,
+  "all41": {"completeWithinScope": 9, "partial": 15, "pending": 17},
+  "noCommitPush": true
+}

@@ -2,7 +2,7 @@ import {randomUUID,randomBytes} from 'node:crypto';
 import {readPublicEditor,readPointerFeedback} from './feedback.mjs';
 export class InputError extends Error {constructor(code){super(code);this.code=code;}}
 const reject=code=>{throw new InputError(code);};
-const viewportCodes=new Set(['INVALID_VIEWPORT_REQUEST','UNSUPPORTED_VIEWPORT','VIEWPORT_BUSY','STALE_VIEWPORT_REQUEST','STALE_SESSION','PAGE_TRANSITION','STALE_EPOCH','STALE_VIEWPORT','STALE_LEASE','INPUT_QUEUE_FULL','SESSION_CLOSED','VIEWPORT_RESIZE_FAILED','VIEWPORT_SUPERSEDED']);
+const viewportCodes=new Set(['INVALID_VIEWPORT_REQUEST','UNSUPPORTED_VIEWPORT','VIEWPORT_BUSY','STALE_VIEWPORT_REQUEST','STALE_SESSION','PAGE_TRANSITION','STALE_EPOCH','STALE_VIEWPORT','STALE_LEASE','INPUT_QUEUE_FULL','SESSION_CLOSED','VIEWPORT_INPUT_RESET_FAILED','VIEWPORT_RESIZE_FAILED','VIEWPORT_SUPERSEDED']);
 const viewportId=value=>Number.isSafeInteger(value)&&value>=1;
 const number=(n,limit=1e7)=>Number.isFinite(n)&&Math.abs(n)<=limit;
 export function validateInput(event,viewport){
@@ -140,9 +140,17 @@ export class ControlLease {
   if(message.requestId<=(this.viewportRequests.get(peer)??0))reject('STALE_VIEWPORT_REQUEST');this.viewportRequests.set(peer,message.requestId);
   const version=this.version,work=this.enqueue(async()=>{
    this.validLease(peer,message);if(this.version!==version)reject('STALE_LEASE');
+   // The Viewer pauses input during this operation,including a size noop.
+   // Fence earlier injections,release held state and discard old feedback
+   // before changing coordinates or returning the still-held noop lease.
+   this.inputRevision++;this.feedbackSignature=null;this.compositionEvent=null;this.injecting=true;
+   try{await this.cleanup({strict:true});}catch{
+    void this.revoke('viewport-input-reset-failed').catch(()=>{});const failure=new InputError('VIEWPORT_INPUT_RESET_FAILED');failure.outcome='not-applied';throw failure;
+   }finally{this.injecting=false;}
+   this.validLease(peer,message);if(this.version!==version)reject('STALE_LEASE');
    const changed=this.source.viewport.cssWidth!==message.width||this.source.viewport.cssHeight!==message.height;
    const result=()=>({type:'ViewportResized',requestId:message.requestId,changed,pageEpoch:this.source.pageEpoch,viewportVersion:this.source.viewportVersion,viewport:{cssWidth:this.source.viewport.cssWidth,cssHeight:this.source.viewport.cssHeight,deviceScaleFactor:1}});
-   if(!changed)return result();
+   if(!changed){this.source.requestCapture?.();this.scheduleFeedback();return result();}
    try{
     await this.source.resize({width:message.width,height:message.height});
     if(this.source.closed||!Number.isSafeInteger(this.source.pageEpoch)||this.source.pageEpoch<message.pageEpoch||!Number.isSafeInteger(this.source.viewportVersion)||this.source.viewportVersion<=message.viewportVersion||this.source.viewport.cssWidth!==message.width||this.source.viewport.cssHeight!==message.height||this.source.viewport.deviceScaleFactor!==1)reject('VIEWPORT_SUPERSEDED');
@@ -154,14 +162,18 @@ export class ControlLease {
    }
   });this.viewportPending=work;void work.finally(()=>{if(this.viewportPending===work)this.viewportPending=null;}).catch(()=>{});return work;
  }
- async cleanup(){
+ async cleanup({strict=false}={}){
   const commands=[['Input.imeSetComposition',{text:'',selectionStart:0,selectionEnd:0}],
    ...[...this.keys.values()].map(params=>['Input.dispatchKeyEvent',params]),
    // A lease can end between press and release. Moving outside the page
    // before releasing prevents ordinary HTML button activation on cleanup.
    ...(this.buttons.size?[['Input.dispatchMouseEvent',{type:'mouseMoved',x:-1,y:-1,button:'none',buttons:[...this.buttons.keys()].reduce((bits,b)=>bits|({left:1,right:2,middle:4}[b]??0),0),clickCount:0}]]:[]),
    ...[...this.buttons.keys()].map(button=>['Input.dispatchMouseEvent',{type:'mouseReleased',x:-1,y:-1,button,buttons:0,clickCount:0}])];
-  this.keys.clear();this.buttons.clear();for(const [method,params] of commands){try{await this.cdp.send(method,params);}catch{}}
+  let failed=false;for(const [method,params] of commands){try{await this.cdp.send(method,params);}catch{failed=true;}}
+  // A strict viewport failure keeps the known held set for the revocation
+  // fence to retry. Existing best-effort close/handoff semantics remain.
+  if(!strict||!failed){this.keys.clear();this.buttons.clear();}
+  if(strict&&failed)reject('VIEWPORT_INPUT_RESET_FAILED');
  }
  fence(fn){const promise=this.tail.then(fn);this.tail=promise.catch(()=>{});return promise;}
  async revoke(reason='released'){
