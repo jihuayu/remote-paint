@@ -1858,3 +1858,10 @@ provider持有当前Native派生密钥，关闭/不可用/存储故障/shutdown�
 生产provider/Registry/ViewerAccess及已安装后端SDK创建4个真实命名空间；完整CID/Engine代次/内核见证/网络绑定，实际HTTP+私有WS、readonly/controller ticket代理、IP复用时旧密钥拒绝、迟到查找释放栅栏、TTL和外部删除通过。4组退役、精确CID消失及5个已知宿主PID回收均确认。执行项目独立shim明确只运行Node，真实Native未验收，生产worker未改。见[实际Node路由范围](owned-node-endpoint-route.md)。
 
 旧生产/测试/SDK输入字节未变，精确继承938项双平台及既有安装/类型收据；不冒充新重跑。下一步真正Native worker健康与生命周期/公开SDK像素。41项9/15/17和原8小时失败保持，未自动重跑或提交推送。
+
+
+### 真正Native启动与浏览器死亡后的健康撤销失败
+
+canonical Native worker、合格broker和真实浏览器通过生产provider/attach/内核见证/持久journal及公开ticket，收到Native Welcome与FrameCommit，尚不是SDK像素验收。确切拥有的浏览器PID经boot/namespace/父子/startTicks/exe再次验证后SIGKILL，2秒后provider/Registry仍Ready且解析器仍返回端点；验收实际1。外层清理closed、证据retired、精确CID消失和两个宿主PID回收均确认，错误为空。见[Native健康失败证据](native-provider-health-failure.md)。
+
+下一步资源健康事件经私有Unavailable立即传播，先撤销能力再慢清理，随后同一真实故障和完整Native生命周期/像素验收。生产代码和旧测试/SDK字节不变，精确继承既有938项等收据，不把失败变成成功。41项9/15/17及原8小时失败保持，未自动重跑或提交推送。

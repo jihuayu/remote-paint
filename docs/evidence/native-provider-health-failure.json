@@ -1,0 +1,159 @@
+{
+  "at": "2026-10-19T11:37:28.960206+00:00",
+  "task": "actual-Native-provider-health-baseline",
+  "status": "actual-Native-startup-frame-passed-health-revocation-failed",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-provider-health-before-v1/manifest.json",
+  "executedManifestSha256": "2c3e034b28beea61466e0730c32a5b5369703d040819e65e6625b5cb010a569e",
+  "canonicalSourceFiles": 930,
+  "productionRuntimeSourcesUnchangedFrom928": true,
+  "executionDeviations": {
+    "native/bin/aarch64-unknown-linux-gnu/remote-paint-broker": {
+      "canonicalSha256": "faa6b3b47a15e4edd659f3fb99c2ca8eb6aace5461a1f12090314e2dda8a5cb0",
+      "fixtureSha256": "4ed13b4cfe989945aab0256eb40b00d026ed74783fd39519df8903d270a61d08"
+    }
+  },
+  "canonicalProductionNativeWorkerExecuted": true,
+  "NodeAdapterUsed": false,
+  "qualifiedBrokerStagedOnlyInsideExecutionProject": true,
+  "actualPinnedBrowserExecuted": true,
+  "actualEngineDaemon": "b3aeb5ec-7295-44f7-8576-aa9dc5b40dad",
+  "imageId": "sha256:42df2c322c1c105d79aff686ebf92b0708f237788daa011186976e852b7cf66e",
+  "actualRootNodeExitCode": 1,
+  "actualNativeContainerId": "504807941d7d1c37afb8961a23f5311ae002f11d53b1c69a8179d71719b2903f",
+  "actualNativeVersion": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+  "actualCanonicalNativeReady": true,
+  "actualNativePrivateDerivedKeyAndOriginGatewayAgreement": true,
+  "actualPublicReadonlyWelcome": true,
+  "actualNativeFrameCommit": true,
+  "renderedPublicSdkPixelsQualified": false,
+  "physicalOwnedBrowserLoss": {
+    "scope": "exact owned browser process identity revalidated before signal",
+    "bootId": "b4055da7-94b0-4014-a2a3-0fe10d3f843d",
+    "root": {
+      "pid": 7,
+      "ppid": 1,
+      "startTicks": "30827313",
+      "namespace": "pid:[4026535170]",
+      "exe": "/usr/local/bin/node"
+    },
+    "target": {
+      "pid": 22,
+      "ppid": 7,
+      "startTicks": "30827354",
+      "namespace": "pid:[4026535170]",
+      "exe": "/browser/headless_shell"
+    },
+    "signal": "SIGKILL",
+    "signalDelivered": true
+  },
+  "actualDirectNativeProcessSnapshot": {
+    "scope": "actual direct children of witnessed worker only",
+    "bootId": "b4055da7-94b0-4014-a2a3-0fe10d3f843d",
+    "root": {
+      "pid": 7,
+      "ppid": 1,
+      "startTicks": "30827313",
+      "namespace": "pid:[4026535170]",
+      "exe": "/usr/local/bin/node"
+    },
+    "children": [
+      {
+        "pid": 19,
+        "ppid": 7,
+        "startTicks": "30827352",
+        "namespace": "pid:[4026535170]",
+        "exe": "/project/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker"
+      },
+      {
+        "pid": 22,
+        "ppid": 7,
+        "startTicks": "30827354",
+        "namespace": "pid:[4026535170]",
+        "exe": "/browser/headless_shell"
+      }
+    ]
+  },
+  "healthFailure": {
+    "budgetMs": 2000,
+    "elapsedMs": 2061.1146250000006,
+    "providerAvailable": true,
+    "registryStillReady": true,
+    "privateEndpointReturnedAfterLoss": true,
+    "privateControlChannel": {
+      "phase": "ready",
+      "closeOnly": false,
+      "startSent": true,
+      "available": true,
+      "workerClose": "unconfirmed",
+      "transportExited": false,
+      "closeTimedOut": false,
+      "runtimeWitness": "confirmed",
+      "failure": null
+    },
+    "physicalBrowserTermination": {
+      "scope": "exact owned browser process identity revalidated before signal",
+      "bootId": "b4055da7-94b0-4014-a2a3-0fe10d3f843d",
+      "root": {
+        "pid": 7,
+        "ppid": 1,
+        "startTicks": "30827313",
+        "namespace": "pid:[4026535170]",
+        "exe": "/usr/local/bin/node"
+      },
+      "target": {
+        "pid": 22,
+        "ppid": 7,
+        "startTicks": "30827354",
+        "namespace": "pid:[4026535170]",
+        "exe": "/browser/headless_shell"
+      },
+      "signal": "SIGKILL",
+      "signalDelivered": true
+    }
+  },
+  "causeScope": "Canonical NativeResource verifies startup only and worker keeps accepting owner heartbeats after the browser dies; no health notification reaches channel/provider/Registry",
+  "isUniqueCauseForOriginalEightHourGrowth": false,
+  "namespaceRetirementConfirmedAfterFailedProbe": true,
+  "retirementKind": "container-removed",
+  "knownOwnedHostPidsAbsent": [
+    6711,
+    6771
+  ],
+  "exactOwnedContainerIdAbsent": true,
+  "allRetirementCleanupErrors": [],
+  "fullJs938BothInheritedOnlyAfterAllOldCanonicalInputsMatched": true,
+  "inheritedFullJs": {
+    "mac": {
+      "tests": 938,
+      "pass": 923,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "0373cce71bf8f3c0b8d62c1a8074c068acb2d5af1f3e7ee2bb1df6af3deeaf1e"
+    },
+    "linux": {
+      "tests": 938,
+      "pass": 932,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "cec428411f61b8b5176e802c6c160aaed86532202d902d62d5d4c7b80d227934"
+    }
+  },
+  "sdk77Node16PythonTscBothMacMypyInheritedExactInputs": true,
+  "freshFullUnitOrPackageInstallClaimed": false,
+  "productionNativeProviderQualified": false,
+  "nativeHealthLossPropagationQualified": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

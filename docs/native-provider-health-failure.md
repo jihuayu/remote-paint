@@ -1,0 +1,13 @@
+# 生产 Native 启动基线与健康撤销失败
+
+第一次通过真正canonical Native worker运行生产DockerSessionProvider/私有attach、持久内核见证和启动journal、Registry/ViewerAccess及已安装后端SDK。没有Node ABI shim；唯一执行目录偏差是把已合格Linux broker放到该隔离目录的canonical路径，生产目录与公共演示未改。真实固定浏览器155.0.8059.79启动，派生流密钥与Origin通过Native gateway，公开readonly ticket收到Welcome和Native FrameCommit。FrameCommit不证明公开SDK已经绘制像素。
+
+随后从实际见证的Node根进程只读取直接子进程的exe、namespace、startTicks，找到确切/browser/headless_shell；再次验证固定Engine/fullCID/spec/StartedAt，以及bootID、父子关系、namespace、startTicks、exe后，只向这个拥有的浏览器PID发送SIGKILL。没有读取或归档子进程argv/环境，也未操作其他命名空间。
+
+验收实际失败：2秒观察后，provider仍available、Registry仍Ready、私有控制通道仍ready，解析器仍返回私有端点。根Node实际退出1。现有NativeSessionResource只验证初始化，runSessionWorker没有资源健康订阅；owner heartbeat保活无法说明浏览器仍存活。这是需要修复的明确缺口，不能以启动或FrameCommit通过宣称生产Native已合格。
+
+失败后仍完成正常外层清理：Registry和provider shutdown均closed；独立重开持久运行记录为retired，container-removed证据存在，精确CID再次查询确认消失，两个已知宿主Node/attach PID均ESRCH，清理错误为空。保留实际进程身份、失败观察、SQLite、见证、退役记录与原始退出日志。
+
+下一小步让Native资源监听Browser disconnected、Page crash/close和Broker终止故障；私有worker需在开始关闭后、等待慢清理前发固定Unavailable通知，让channel/provider/Registry立即撤销Ready和派生密钥。应防止晚到初始化、重复通知及监听器残留，不把可恢复capture/pressure事件当作进程死亡。先因果合同，再用同一真实浏览器死亡验收，以及broker死亡、TTL/取消/恢复与公开SDK像素继续验证。
+
+生产代码及既有测试/SDK输入字节未变，精确继承双平台938项JS和原安装/类型收据；本次新Native验收退出1，不能冒充新的完整回归或健康通过。生产Native、全部Agent/CDP栅栏、N1轻微丢包/物理时延和原8小时增长仍未完成。41项9/15/17、原8小时失败与192MiB门槛不变，未自动重跑、强制浏览器GC、改演示/采样器或暂存提交推送。见[失败范围收据](evidence/native-provider-health-failure.json)。
