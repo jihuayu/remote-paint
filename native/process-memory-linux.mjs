@@ -28,14 +28,25 @@ export function parseLinuxChildren(text){
 function check(signal){if(signal?.aborted)throw signal.reason??fail('LINUX_MEMORY_ABORTED','Linux memory read aborted');}
 function identity(stat,status){if(stat.ppid!==status.ppid)throw fail('LINUX_MEMORY_IDENTITY','Linux stat/status parent changed',{pid:stat.pid});return {provider:'linux-proc-start-v1',pid:stat.pid,ppid:stat.ppid,startTicks:stat.startTicks,uids:status.uids};}
 const sameIdentity=(a,b)=>b&&Array.isArray(b.uids)&&b.uids.length===4&&a.pid===b.pid&&a.ppid===b.ppid&&a.startTicks===b.startTicks&&a.uids.every((v,n)=>v===b.uids[n]);
-export async function readLinuxMemoryText(path,signal){
- check(signal);const file=await open(path,'r');try{
-  check(signal);const buffer=Buffer.allocUnsafeSlow(LINUX_MEMORY_LIMITS.fileBytes+1),{bytesRead}=await file.read(buffer,0,buffer.length,null);check(signal);if(bytesRead>LINUX_MEMORY_LIMITS.fileBytes)throw fail('LINUX_MEMORY_FILE_LIMIT','Linux process file exceeded64KiB');
-  // Rollup fits a single bounded read. Reject a continuation instead of joining
-  // potentially different live map snapshots across partial reads.
-  const tail=Buffer.alloc(1),more=await file.read(tail,0,1,null);check(signal);if(more.bytesRead)throw fail('LINUX_MEMORY_FILE_LIMIT','Linux process file required a partial continuation');return buffer.toString('utf8',0,bytesRead);
- }finally{await file.close();}
+// Internal bounded descriptor reader. Only the mount-table wrapper permits
+// continuations;smaps_rollup and process records retain their single-read rule.
+export async function readLinuxMemoryDescriptor(file,signal,{continuations=false}={}){
+ check(signal);const buffer=Buffer.allocUnsafeSlow(LINUX_MEMORY_LIMITS.fileBytes+1);let bytesRead=0;
+ for(;;){
+  const part=await file.read(buffer,bytesRead,buffer.length-bytesRead,null);check(signal);bytesRead+=part.bytesRead;
+  if(bytesRead>LINUX_MEMORY_LIMITS.fileBytes)throw fail('LINUX_MEMORY_FILE_LIMIT','Linux process file exceeded64KiB');
+  if(!part.bytesRead)return buffer.toString('utf8',0,bytesRead);
+  if(!continuations){const tail=Buffer.alloc(1),more=await file.read(tail,0,1,null);check(signal);if(more.bytesRead)throw fail('LINUX_MEMORY_FILE_LIMIT','Linux process file required a partial continuation');return buffer.toString('utf8',0,bytesRead);}
+ }
 }
+async function readLinuxMemoryFile(path,signal,continuations){
+ check(signal);const file=await open(path,'r');try{return await readLinuxMemoryDescriptor(file,signal,{continuations});}finally{await file.close();}
+}
+export async function readLinuxMemoryText(path,signal){return readLinuxMemoryFile(path,signal,false);}
+// proc mountinfo uses seq_file and can return multiple legal chunks even when
+// the whole table is below64KiB. Read one open descriptor through EOF;the
+// cgroup sampler also requires the complete before/after mount tables to match.
+export async function readLinuxMountinfoText(signal){return readLinuxMemoryFile('/proc/self/mountinfo',signal,true);}
 export class LinuxProcessProbe{
  static async open(pid,{signal}={}){
   if(process.platform!=='linux')throw fail('LINUX_MEMORY_PLATFORM','Linux proc observer requires Linux');pid=pidNumber(pid);check(signal);const directory=await open(`/proc/${pid}`,constants.O_RDONLY|constants.O_DIRECTORY);if(signal?.aborted){await directory.close();check(signal);}return new LinuxProcessProbe(pid,directory,signal);
