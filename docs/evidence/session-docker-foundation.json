@@ -1,0 +1,130 @@
+{
+  "at": "2026-10-18T14:12:41.695418+00:00",
+  "status": "Docker-metadata-and-fixed-runtime-profile-foundation-qualified",
+  "task": "B1a",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v2/frozen-version.json",
+  "manifestSha256": "70c3527c0accfd485291cde27d54ff28c0d5f3880b5c1cb6393465a417c316b3",
+  "sourceFiles": 743,
+  "platforms": {
+    "mac": {
+      "full": {
+        "tests": 437,
+        "pass": 428,
+        "fail": 0,
+        "skipped": 9,
+        "cancelled": 0,
+        "actualExitCode": 0
+      },
+      "scoped": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "skip": 0,
+        "actualExitCode": 0,
+        "v1ProductAndTestFilesIdenticalToV2": true
+      }
+    },
+    "linux": {
+      "full": {
+        "tests": 437,
+        "pass": 433,
+        "fail": 0,
+        "skipped": 4,
+        "cancelled": 0,
+        "actualExitCode": 0
+      },
+      "scoped": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0,
+        "skip": 0,
+        "actualExitCode": 0,
+        "v1ProductAndTestFilesIdenticalToV2": true
+      }
+    }
+  },
+  "changedFiles": {
+    "service/docker-metadata-client.mjs": "921afc49095c8f663cd30557f76fe6a6bd6a3370fcf99e2c133ff193e73aff32",
+    "service/docker-runtime-spec.mjs": "26dfe008711402ddb37251258ae84b0fb8386a3eeb61e358235f2ef8e8bdd7d4",
+    "tests/docker-metadata-client.test.mjs": "e25f14e870be72c54990f756b5e4ff7ba14a1686a6b7b076a454ccaaa3cffc70",
+    "tests/docker-runtime-spec.test.mjs": "90779fa9e89f0190314d112d9d783b91d654e43bdfde67454a2ce6c2ebe178eb",
+    "tests/verify-docker-runtime-spec.mjs": "e38199be2da6743251f432e7c9c8a5558be0fd2b37d72f26885e576d01f10938"
+  },
+  "contracts": [
+    "Read-onlypinnedlocalUnixEngineJSONoperations:5swholeoperationbudget,128KiBbody,4active/zeroqueue,UTF8/JSON/status/platform/daemonandimagechecks,noRedirect/proxy/implicitretry,ownedSocketreaping.",
+    "Canonicalfixedruntimeplan/image/environment/specHash/ownerlabels;onlyapprovedread-onlysourcebinds,privatePID/IPC/cgroupnamespaces,init,runc,capDropALL,no-new-privileges,read-onlyroot,noautoresume,finiteCPU/memory/PIDs/tmpfs,disabledimagehealthcheck,noexposedhostports.",
+    "Ownershipandisolationvalidationseparate:ownedunsafeobjectcanbecleanedbutcannotbeattestedisolated. Fullmergedimage+workerEnvchecked;unapprovedenvandplanmutationsreject.",
+    "ActualpinnedOrbStack29.4.0Engineacceptedfinalprofileincreated/PID0state;exactCIDremoved,all5metadata-onlyattemptIDsabsent. Finalactualv5Sessionquotaandruntime-retirementrecordconfirmed,storedproofhashmatchesactualsavedbytes."
+  ],
+  "actualMetadataFixture": {
+    "report": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/actual-v5/report.json",
+    "containerId": "d59b392482049356fda1ab0b0b7f9f0e66bf98d7fa5348e5841643559774dcc5",
+    "neverStarted": true,
+    "ledgerAudit": {
+      "at": "2026-10-18T14:12:41.322Z",
+      "state": "retired",
+      "containerId": "d59b392482049356fda1ab0b0b7f9f0e66bf98d7fa5348e5841643559774dcc5",
+      "evidenceSha256": "8ab44e70a9d90d152e19b5b6dd4c8d4a6df22432b029cdf321af46fb47d97e33",
+      "rawFileHashVerified": true,
+      "sessionQuotaReleased": true,
+      "scope": "Metadata-only object cleanup and persisted evidence binding;no started processes or Native proof."
+    },
+    "allFiveOwnedMetadataObjectsAbsent": true
+  },
+  "limitations": [
+    "NOproductioncreate/start/attach/removallifecycledriverorNodeworker/Chromium/NativeSource/PIDnamespace-retirement/TTL/SDK-roleproof. TheseareB1b/B2/C/Dremaininggates.",
+    "Original437Macv1failedonehelperstartupatunchanged2s,helper5747reaped;binary/source/receiptunchanged. Fixed8fresh-pathcopyprobesallpassed0.19-1.23s;solecauseunproven,notdeclaredfixed. Finalv2full437passesoriginal4concurrency/deadlines.",
+    "IntermediateEnvhardeningeditfailedbeforewritesandoldexecutionsretained;finalfullEnvvariantrequalified. MetadatafixtureinitialcompactJSONproofhashcorrectedtoactualsavedfilebytesandindependentlyaudited."
+  ],
+  "references": [
+    {
+      "title": "LinuxPIDnamespaces",
+      "url": "https://man7.org/linux/man-pages/man7/pid_namespaces.7.html",
+      "scope": "Futureinit-exitteardownrationale,notcurrentprocessproof"
+    },
+    {
+      "title": "Dockercontainercreate",
+      "url": "https://docs.docker.com/reference/cli/docker/container/create/"
+    },
+    {
+      "title": "Dockercontainerremove",
+      "url": "https://docs.docker.com/reference/cli/docker/container/rm/"
+    }
+  ],
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v2/frozen-version.json": "70c3527c0accfd485291cde27d54ff28c0d5f3880b5c1cb6393465a417c316b3",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v2/results/mac-full.log": "80bec208cac552cb3febc4ce812846617d8b5d69490b402014ff5bbfac7f0d3c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v2/results/mac-full-exit.json": "2fce83ecfa5cb2837d2847ca8103e741dda4130e8bd49c865b6e460086778b28",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/results/mac-scoped.log": "97f1407ac12fe7df1808f1209dadb43ee7a79642493e162221899e3109ede9e6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/results/mac-scoped-exit.json": "407034c00ee16f87d366e598842d065a99f6c456bde969033f2bb58f14134be8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v2/results/linux-full.log": "a62f5780f35816d68fc79f45e89cdb65a51bc9d599f386f7fd6d85a7237c7573",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v2/results/linux-full-exit.json": "5e8a56742cf229605b814757cd2c335b3efbca3269c0ede1a84f9bdf7e424153",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/results/linux-scoped.log": "e805249b7765e98f9b4409895ce830d24257e7ee7e13a9600eb3f51fca98e189",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/results/linux-scoped-exit.json": "0071f8397198992fefb2a6bed4a77c53b4dde5cc0d54f4075fccf21ed6369e08",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/actual-v5/ledger-audit.json": "c526f9509101b1b8ea0bf07f6044aa3c0d34d9226d38d6458f164b59a608d188",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/actual-v5/plan.json": "cbd0011089ba4616288245c76135707b7e6696757e3281c091db8ed706b42530",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/actual-v5/report.json": "f1cb4de1ab13c924a5051d196997509ed59a1b0d6887aaf656d39859035c8f51",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/actual-v5/removal.json": "8ab44e70a9d90d152e19b5b6dd4c8d4a6df22432b029cdf321af46fb47d97e33",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/actual-v5/inspection.json": "222a71eca9844b35922c18f0c42f6a83ba70f00e4601bb312dd9c0cba68a2eeb",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/actual-v5/journal.sqlite": "71810ab2e0c5563de95df6b18f342a8b13d27e2857f5ab29296bbda15f61561e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/actual-v5.log": "558b10eb15f791e6b37ddc362b8b37e846c814193b8f9026bfe911e797b648fd",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/cleanup-audit.json": "7a912ec8df99e88a7833f8d15982e0febfb8083ca63e99522e1feb75519b597e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/full-mac-failure-v1.json": "08b38a338e8b16ec70ec784d683e94f08740692a8c62b6eea663d3f53fb9113e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/cold-helper-investigation-checkpoint.json": "ac0d9797fa7435c686258090bfb7e2b836e75cc59274b0a19208676319207d5b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/pre-env-hardening/edit-error.json": "e92c9b9ac5d1a4f19d80dd48c0abef0d2be7e8bb5fdf041e7e97561712af48be",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-foundation-v1/proof-file-hash-fix.json": "bac9de17c71c65ab033cdf49bf98204887ff9b55ab6fd86641b278c37c21d4b4"
+  },
+  "frozenEightHourUnmodified": true,
+  "notInFrozenEightHour": true,
+  "eightHourPassed": false,
+  "all41": {
+    "complete": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "head": "3ff9512c6d53f2a657ffa27ba1c8b3bb5f16190b",
+  "indexEmpty": true,
+  "unrelatedPeerPreserved": true,
+  "noCommitPush": true,
+  "next": "B1b journal-awareone-usecreation/privateattach/unknowncreatequarantine/knownCIDremoval/actualNode-descendantlifecycleproof;actualNative/browserworkloadafterongoing8hisolationgate."
+}

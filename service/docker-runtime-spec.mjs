@@ -31,6 +31,7 @@ function validatePlan(plan){
  let fresh;try{fresh=planDockerRuntime(plan,{...plan,projectPath:c.HostConfig.Mounts[0].Source,browserPath:c.HostConfig.Mounts[1].Source,workerEntry:c.Cmd[0].slice('/project/'.length)});}catch{reject();}
  if(!same(plan,fresh))reject();return c;
 }
+export function dockerRuntimeCreateBody(plan){return structuredClone(validatePlan(plan));}
 export function verifyDockerRuntimeOwnership(plan,inspection,{containerId=null}={}){
  validatePlan(plan);if(!inspection||inspection.daemon?.id!==plan.daemonId||inspection.found!==true)reject();const d=inspection.document,c=d?.Config;
  if(!d||!hash(d.Id)||containerId!==null&&d.Id!==containerId||d.Name!=='/'+plan.containerName||d.Image!==plan.imageId||!c||c.Image!==plan.imageId)reject();

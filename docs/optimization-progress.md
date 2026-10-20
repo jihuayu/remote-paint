@@ -1518,3 +1518,16 @@ Linux全量JS回归先因夹具缺少可写产物挂载失败，修正后又复�
 最终737文件快照在Mac与Linux各46项定向合同通过、无跳过；完整419项均无失败，分别410/415通过及9/4平台跳过。实际Node进程SIGKILL覆盖intent、requested、created、Ready与未提交事务，Ready后的Registry恢复不重复创建；测试资源是明确的外部文件和模拟容器身份。初版错误地查询不存在的Session.region列、其后夹具误用Registry.get的失败均保留并修正。见[运行时意图证据](evidence/session-runtime-intent-store.json)及[worker说明](session-native-worker.md)。
 
 运行时driver/完整namespace退役、实际Native provider及Registry TTL/取消/健康传播、真实read/control显示票据与完整SDK仍未接通。当前720文件独立8小时副本保持原样，不含本服务层修改；没有把数据库或文件夹具当作真实Native关闭证明。41项保持9项列明范围完成、14项部分实现、18项待实现。
+
+
+## K1 Docker 读取与运行配置基础
+
+新增只读Unix Engine元数据客户端及规范化运行配置/归属/隔离校验，固定daemon、镜像和来源指纹，完整匹配合并环境与私有namespace、只读挂载、能力和资源限制。743文件最终快照的Mac/Linux完整437项均无失败，18项定向合同也全部通过。实际引擎接受配置，元数据夹具从未启动进程，完整ID删除和最终SQLite证据文件原字节hash均确认；全部5次夹具ID已核对不存在。不能据此声明实际进程或Native namespace退役。
+
+首版Mac完整回归有一次原2秒助手启动超时，已回收并保留失败；8个全新路径副本对照均正常，但唯一原因未证明，未修改观察助手或延长期限。最终原4并发回归通过。中间环境补丁编辑未应用的旧版本结果、证据JSON字节hash修正也如实保留，详见[本轮检查点](evidence/session-docker-foundation.json)和[worker边界](session-native-worker.md)。
+
+下一步是B1b实际派发、私有通道、未知创建结果隔离与Node子进程生命周期证明；实际Native集成仍需完整内核/容器回收、Registry TTL/取消/健康和Viewer角色票据。正在运行的720文件独立8小时副本未修改，尚未通过；41项保持9/14/18。
+
+### Session 容器操作会话检查点（B1b1）
+
+新增同一Unix连接上的daemon检查与一次create/start/remove，持久回执先于实际操作、原总期限与限额、断线不重连、结果不确定不重试。20项新合同及实际Node主进程/脱离进程组叶子的私有namespace、安全状态和完整ID移除见证已建立；证据先落盘、账本后退役、配额最后释放。冻结版本和双平台回归见[操作检查点](evidence/session-docker-effects.json)。实际Native provider、私有attach、未知创建恢复、Registry生命周期与Viewer票据仍未完成；独立720文件8小时副本继续运行，不受新增服务代码影响，41项完成计数维持9/14/18。
