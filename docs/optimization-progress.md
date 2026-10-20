@@ -1539,3 +1539,7 @@ Linux全量JS回归先因夹具缺少可写产物挂载失败，修正后又复�
 ### Session 私有 attach 代理（B1b2b）
 
 实现有界、实际宿主子进程持有的私有代理；固定同一Unix连接检查daemon/完整ID/隔离后升级，接现有SessionWorkerChannel，真实ChildProcess close与worker确认、完整namespace退役分别处理。19项故障/背压/终止合同通过后，实际Node Docker夹具验证正常关闭、代理丢失及容器移除，完整记录见[代理检查点](evidence/session-docker-attach-proxy.json)。尚待生产provider未知创建恢复、持久回收、Registry生命周期和Native/Viewer集成；41项状态不变，独立8小时未被本次新增代码替代。
+
+### Session 启动前内核见证（B1c0）
+
+固定Linux内核见证接入私有WorkerHello和Native入口，父端在同一Hello期限内核对容器启动代次并持久化后才发Start。私有不可覆盖文件绑定CID/来源/owner哈希及StartedAt，支持不持有原key的关闭恢复核对；异步处理晚到、关闭重入和损坏证据均不能启动资源。结果见[见证检查点](evidence/session-runtime-witness.json)。实际Node夹具与Native浏览器验收分开；生产控制器及41项9/14/18未完成计数保持，独立720文件8小时副本不变。

@@ -1,4 +1,5 @@
 import {createHash} from 'node:crypto';
+import {validateLinuxRuntimeWitness,runtimeWitnessSha256} from './linux-runtime-witness.mjs';
 const protocol='session-worker-v1',sink=()=>{};
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const plain=v=>v!==null&&typeof v==='object'&&Object.getPrototypeOf(v)===Object.prototype;
@@ -26,21 +27,25 @@ export class SessionWorkerChannel {
  #signal=null;#abort=null;#phase='waiting-hello';#failure=null;#notified=false;#closing=false;#tornDown=false;
  #closePromise=null;#closeResolve;#closeExpired=false;#writing=null;#queuedClose=null;#closeSent=false;#endedInput=false;
  #helloTimer;#readyTimer=null;#closeTimer=null;#heartbeat=null;#helloMs;#readyMs;#closeMs;#heartbeatMs;
+ #requireWitness;#onWitness;#binding;#witnessReceipt=null;#witnessController=new AbortController();#helloDeadline;
  #buffer;#bytes=0;#frames=0;#data;#outputEnd;#streamError;#inputClose;
- constructor({sessionId,region,ownerKey,input,output,clientDone,onUnavailable=sink,
+ constructor({sessionId,region,ownerKey,input,output,clientDone,onUnavailable=sink,requireRuntimeWitness=false,onRuntimeWitness=null,runtimeBinding=null,
   helloTimeoutMs=5000,readyTimeoutMs=65000,closeTimeoutMs=12000,heartbeatMs=5000,maxFrameBytes=2048}={}){
   if(!session(sessionId)||typeof region!=='string'||!region.length||region.length>64||typeof ownerKey!=='string'||!/^[a-f0-9]{64}$/.test(ownerKey)||typeof input?.write!=='function'||typeof input?.end!=='function'||typeof input?.on!=='function'||typeof input?.off!=='function'||typeof output?.on!=='function'||typeof output?.off!=='function'||typeof output?.pause!=='function'||typeof output?.resume!=='function'||typeof clientDone?.then!=='function'||typeof onUnavailable!=='function')throw new TypeError('Configure explicit private streams, identity and actual client close observation');
   for(const [v,min,max]of [[helloTimeoutMs,50,30000],[readyTimeoutMs,50,125000],[closeTimeoutMs,50,35000],[heartbeatMs,10,10000],[maxFrameBytes,512,8192]])if(!integer(v,min,max))throw new TypeError('Invalid worker channel bounds');
+  if(typeof requireRuntimeWitness!=='boolean'||requireRuntimeWitness&&(typeof onRuntimeWitness!=='function'||!exact(runtimeBinding,['containerId','daemonId','specDigest'])||!/^[a-f0-9]{64}$/.test(runtimeBinding.containerId)||!/^[a-f0-9]{64}$/.test(runtimeBinding.specDigest)||typeof runtimeBinding.daemonId!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/.test(runtimeBinding.daemonId))||!requireRuntimeWitness&&(onRuntimeWitness!==null||runtimeBinding!==null))throw new TypeError('Configure a bound private runtime witness gate');
+  this.#requireWitness=requireRuntimeWitness;this.#onWitness=onRuntimeWitness;this.#binding=runtimeBinding?Object.freeze(structuredClone(runtimeBinding)):null;
   this.#session=sessionId;this.#region=region;this.#key=ownerKey;this.#input=input;this.#output=output;this.#onUnavailable=onUnavailable;
   this.#helloMs=helloTimeoutMs;this.#readyMs=readyTimeoutMs;this.#closeMs=closeTimeoutMs;this.#heartbeatMs=heartbeatMs;this.#buffer=Buffer.alloc(maxFrameBytes);
   this.#data=chunk=>this.#read(chunk);this.#streamError=()=>this.#fault('CHANNEL_STREAM_FAILED');this.#outputEnd=()=>{if(!this.#closing)this.#fault('CHANNEL_OUTPUT_CLOSED');};this.#inputClose=()=>{if(!this.#closing)this.#fault('CHANNEL_INPUT_CLOSED');};
   input.on('error',this.#streamError);input.on('close',this.#inputClose);output.on('data',this.#data);output.on('error',this.#streamError);output.on('end',this.#outputEnd);
-  this.#helloTimer=setTimeout(()=>this.#fault('CHANNEL_HELLO_TIMEOUT'),this.#helloMs);
+  this.#helloDeadline=performance.now()+this.#helloMs;this.#helloTimer=setTimeout(()=>this.#fault('CHANNEL_HELLO_TIMEOUT'),this.#helloMs);
   void Promise.resolve(clientDone).then(exit=>this.#observeExit(exit),()=>this.#fault('CHANNEL_EXIT_OBSERVATION_FAILED'));
   output.resume?.();
  }
  get terminal(){return this.#terminal.promise;}
- status(){return Object.freeze({phase:this.#phase,startSent:this.#startSent,available:this.#phase==='ready',workerClose:this.#workerAck?.type==='Closed'?'confirmed':'unconfirmed',transportExited:this.#exit!==null,closeTimedOut:this.#closeExpired,failure:this.#failure});}
+ get runtimeWitnessReceipt(){return this.#witnessReceipt;}
+ status(){return Object.freeze({phase:this.#phase,startSent:this.#startSent,available:this.#phase==='ready',workerClose:this.#workerAck?.type==='Closed'?'confirmed':'unconfirmed',transportExited:this.#exit!==null,closeTimedOut:this.#closeExpired,runtimeWitness:this.#requireWitness?(this.#witnessReceipt?'confirmed':'unconfirmed'):'not-required',failure:this.#failure});}
  start(request,{signal}={}){
   const body=capture(request,this.#region),fingerprint=createHash('sha256').update(body).digest('hex');
   if(signal!==undefined&&!(signal instanceof AbortSignal))throw new SessionWorkerChannelError('CHANNEL_INVALID_SIGNAL',this.#startSent);
@@ -57,7 +62,7 @@ export class SessionWorkerChannel {
   this.#dispatchStart();return this.#startPromise;
  }
  #dispatchStart(){
-  if(!this.#hello||!this.#pendingStart||this.#closing||this.#startSent)return;
+  if(!this.#hello||this.#requireWitness&&!this.#witnessReceipt||!this.#pendingStart||this.#closing||this.#startSent)return;
   const frame=this.#pendingStart;this.#pendingStart=null;this.#startSent=true;this.#phase='starting';
   this.#readyTimer=setTimeout(()=>this.#fault('CHANNEL_READY_TIMEOUT'),this.#readyMs);this.#write(frame);
   if(!this.#closing)this.#heartbeat=setInterval(()=>{if(!this.#closing&&!this.#writing)this.#write(this.#command('OwnerHeartbeat'));},this.#heartbeatMs);
@@ -102,8 +107,20 @@ export class SessionWorkerChannel {
  #message(message){
   if(exact(message,['type','protocol','code'])&&message.type==='WorkerConfigurationFailed'&&message.protocol===protocol&&message.code==='WORKER_CONFIGURATION_FAILED'&&!this.#hello){this.#fault('CHANNEL_WORKER_CONFIGURATION_FAILED');this.#endInput();return;}
   if(!plain(message)||message.protocol!==protocol||message.sessionId!==this.#session){this.#fault('CHANNEL_PROTOCOL_MISMATCH');return;}
-  if(message.type==='WorkerHello'&&exact(message,['type','protocol','sessionId'])&&!this.#hello&&!this.#startSent){
-   this.#hello=true;clearTimeout(this.#helloTimer);this.#dispatchStart();return;
+  if(message.type==='WorkerHello'&&!this.#hello&&!this.#startSent){
+   if(this.#closing)return;
+   if(performance.now()>=this.#helloDeadline){this.#fault('CHANNEL_HELLO_TIMEOUT');return;}
+   if(!this.#requireWitness){if(!exact(message,['type','protocol','sessionId'])){this.#fault('CHANNEL_RUNTIME_WITNESS_UNEXPECTED');return;}this.#hello=true;clearTimeout(this.#helloTimer);this.#dispatchStart();return;}
+   if(!exact(message,['type','protocol','sessionId','runtimeWitness'])){this.#fault('CHANNEL_RUNTIME_WITNESS_MISSING');return;}
+   let witness;try{witness=validateLinuxRuntimeWitness(message.runtimeWitness);}catch{this.#fault('CHANNEL_RUNTIME_WITNESS_INVALID');return;}
+   this.#hello=true;let pending;
+   try{pending=this.#onWitness(witness,Object.freeze({signal:this.#witnessController.signal}));}catch{this.#fault('CHANNEL_RUNTIME_WITNESS_FAILED');return;}
+   void Promise.resolve(pending).then(receipt=>{
+    if(this.#closing||this.#tornDown)return;
+    if(performance.now()>=this.#helloDeadline){this.#fault('CHANNEL_HELLO_TIMEOUT');return;}
+    if(!exact(receipt,['sessionId','containerId','daemonId','specDigest','witnessSha256','evidenceSha256'])||receipt.sessionId!==this.#session||receipt.containerId!==this.#binding.containerId||receipt.daemonId!==this.#binding.daemonId||receipt.specDigest!==this.#binding.specDigest||receipt.witnessSha256!==runtimeWitnessSha256(witness)||typeof receipt.evidenceSha256!=='string'||!/^[a-f0-9]{64}$/.test(receipt.evidenceSha256)){this.#fault('CHANNEL_RUNTIME_WITNESS_RECEIPT');return;}
+    this.#witnessReceipt=Object.freeze({...receipt});clearTimeout(this.#helloTimer);this.#dispatchStart();
+   },()=>{if(!this.#closing)this.#fault('CHANNEL_RUNTIME_WITNESS_FAILED');});return;
   }
   if(message.type==='Ready'&&exact(message,['type','protocol','sessionId','version'])&&this.#hello&&this.#startSent&&!this.#everReady&&typeof message.version==='string'&&message.version.length>0&&message.version.length<=256){
    this.#everReady=true;if(this.#closing)return;
@@ -127,7 +144,7 @@ export class SessionWorkerChannel {
  close(){
   if(this.#closePromise)return this.#closePromise;
   this.#closing=true;if(this.#exit===null)this.#phase='closing';
-  this.#closePromise=new Promise(resolve=>{this.#closeResolve=resolve;});
+  this.#closePromise=new Promise(resolve=>{this.#closeResolve=resolve;});this.#witnessController.abort();
   clearTimeout(this.#helloTimer);clearTimeout(this.#readyTimer);clearInterval(this.#heartbeat);
   this.#pendingStart?.fill(0);this.#pendingStart=null;
   this.#ready.reject(new SessionWorkerChannelError(this.#failure??'CHANNEL_CLOSED',this.#startSent));
@@ -142,7 +159,7 @@ export class SessionWorkerChannel {
   this.#input.off('error',this.#streamError);this.#input.off('close',this.#inputClose);this.#output.off('data',this.#data);this.#output.off('error',this.#streamError);this.#output.off('end',this.#outputEnd);
   this.#input.on('error',sink);this.#output.on('error',sink);this.#output.pause();
   if(this.#abort)this.#signal.removeEventListener('abort',this.#abort);this.#signal=null;this.#abort=null;
-  this.#pendingStart?.fill(0);this.#pendingStart=null;this.#queuedClose?.fill(0);this.#queuedClose=null;this.#writing?.fill(0);this.#writing=null;this.#key='';this.#buffer.fill(0);this.#onUnavailable=sink;
+  this.#pendingStart?.fill(0);this.#pendingStart=null;this.#queuedClose?.fill(0);this.#queuedClose=null;this.#writing?.fill(0);this.#writing=null;this.#key='';this.#buffer.fill(0);this.#onUnavailable=sink;this.#onWitness=null;this.#binding=null;
   this.#closeResolve(Object.freeze({workerClose:this.#workerAck?.type==='Closed'?'confirmed':'unconfirmed',workerCode:this.#workerAck?.code??null,transportExit:this.#exit,closeTimedOut:this.#closeExpired,startSent:this.#startSent,failure:this.#failure}));
  }
 }

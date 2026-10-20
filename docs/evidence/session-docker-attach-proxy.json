@@ -1,0 +1,233 @@
+{
+  "at": "2026-10-18T15:23:02.840223+00:00",
+  "task": "B1b2b",
+  "status": "private-owned-Docker-attach-proxy-and-real-Node-worker-channel-qualified",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-attach-proxy-v1/frozen-version.json",
+  "manifestSha256": "c14676b6e65ba52c862bc8ff18a9f0a9b622657ee3af56d8485fec299d5fbffa",
+  "sourceFiles": 757,
+  "changedFiles": {
+    "service/docker-attach-config.mjs": "c745e2ed8115cf19c295d2e9f8700ec47cedf378cf55843ce99e914d5fc5f1e7",
+    "service/docker-attach-client.mjs": "fc9866230aeacdafe48af43f07438c54902076612f17cfc3defe27b07e381c4e",
+    "service/docker-attach-proxy.mjs": "4767cd1914bc7350df47edb24cdb4bbd89dda8cef9aa738bc61b9b04bfecdad7",
+    "tests/docker-attach-client.test.mjs": "43a9f0cb6630efae9ed979ba99d2cbe44faeac807054ab5c2c5f6ea1aaa87d41",
+    "tests/fixtures/docker-attach-worker.mjs": "d747af099844c04b88cc004ffc06c9ffc7991c056e166088c254563311aad5e0",
+    "tests/verify-docker-attach-worker.mjs": "f274a73985814db0ddd4c4dbd48dbb0852e84ac2b436079970940b71b6f775ca",
+    "docs/session-native-worker.md": "75dbe1a686ba8787ea0d3a6fb12f4d63802cdd5f2122c5d236f8c05e9a541c55",
+    "docs/optimization-progress.md": "5e63bb824ed96d80c602938b92dcfce1b8d5e8973197c6b85c8df0ec7c92522e"
+  },
+  "platforms": {
+    "mac": {
+      "scoped": {
+        "tests": 75,
+        "pass": 75,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "actualExitCode": 0,
+        "logSha256": "a1b0c91cc9c79f88d45dba44f8c1e2172e9fb48135a752f2cd6d9f1cfe6e33aa"
+      },
+      "full": {
+        "tests": 494,
+        "pass": 485,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 9,
+        "actualExitCode": 0,
+        "logSha256": "740e0447ec6d3f8b4e1e65610231c20ebf345bd275526d5f3ea762bea5d9f846"
+      }
+    },
+    "linux": {
+      "scoped": {
+        "tests": 75,
+        "pass": 75,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "actualExitCode": 0,
+        "logSha256": "c5ece61800373800a03b34325224d10c8c8a056267c052c89549f4fe2c40369a"
+      },
+      "full": {
+        "tests": 494,
+        "pass": 490,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 4,
+        "actualExitCode": 0,
+        "logSha256": "435dd4e06f526473300e1cea3eccdbe15e06b87284ab29a46ee5461c58e3321e"
+      }
+    }
+  },
+  "actualFixtures": {
+    "normal": {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-attach-proxy-v1/actual-normal-v1",
+      "containerId": "849575e14f3e032b6488f796e32103897e55e520d5c37e17fdfbfb32b9507948",
+      "proxyPid": 89739,
+      "workerReady": {
+        "version": "node-private-attach-fixture-v1"
+      },
+      "workerClose": "confirmed",
+      "proxyExit": {
+        "code": 0,
+        "signal": null
+      },
+      "unavailableCalls": 0,
+      "beforeRemovalRuntimeState": "exited",
+      "namespace": "pid:[4026535384]",
+      "main": {
+        "pid": 7,
+        "ppid": 1,
+        "pgrp": 7,
+        "session": 1,
+        "startTicks": "24560991"
+      },
+      "detachedLeaf": {
+        "pid": 19,
+        "ppid": 7,
+        "pgrp": 19,
+        "session": 19,
+        "startTicks": "24561007"
+      },
+      "rawFiles": {
+        "plan.json": "31f45a11547973ae2b7f80db455b924b884ac4e0897758ad67b28d9ca71944ca",
+        "project-manifest.json": "2cea4c4323a08acff83521896b50b7e60d34be7120d8010eea11ddd7025c4a3a",
+        "browser-manifest.json": "711911041772f71befc84b7f38d3b790b2c5f9657b1080fd7723de3e2118e505",
+        "create.json": "2fcc373711320d9805d3cd8b229a12c943c678df74bc21e6f1c2321e0313a0a2",
+        "start.json": "aeb69dd85f69c051c865c24118c8db2c79df9d77bb0f93fea9fc0a4a03b53777",
+        "before-start.json": "ef45c204e2284dbc34054aa743c8b9e13152897bd5799d4c2f60adfb4df83db8",
+        "running-witness.json": "486daa368518a14afb6b6ef7061b93fe98514a03541732793f156d07544cf68b",
+        "worker-ready.json": "7ac338dd56823ef209e4ed775d8040efdaa8597d15c3ae17818ffc83756c97a4",
+        "before-removal.json": "f49e5bfe6c76886d80cb4591f412c0ddebc25159dc78f5d2ff420c9688c00afd",
+        "removal.json": "bba450c580d6c03551948ae09e3f9413f67558de12ef3fdb4ef45709f4a15a56",
+        "report.json": "e47e2b3a51649f5b2fd01bb6d43b33b61201eb459af888c242de6631185fddd1"
+      },
+      "independentReopenedSqliteAudit": true,
+      "retirementEvidenceFileHashVerified": true,
+      "privateProjectBytesVerified": true,
+      "sessionQuotaReleased": true,
+      "scope": "Node private worker protocol and actual owned proxy transport;full owned container removal+private namespace/init/process/socket witnesses support namespace retirement inference,not a host-wide census or Native/Registry readiness proof.",
+      "freshFullIDAbsent": true
+    },
+    "proxy-lost": {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-attach-proxy-v1/actual-proxy-lost-v1",
+      "containerId": "6f3e245598634085392a2e2b7f6f2ea988d17228419253b858e66422cd7e910d",
+      "proxyPid": 90183,
+      "workerReady": {
+        "version": "node-private-attach-fixture-v1"
+      },
+      "workerClose": "unconfirmed",
+      "proxyExit": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "unavailableCalls": 1,
+      "beforeRemovalRuntimeState": "exited",
+      "namespace": "pid:[4026535491]",
+      "main": {
+        "pid": 7,
+        "ppid": 1,
+        "pgrp": 7,
+        "session": 1,
+        "startTicks": "24563660"
+      },
+      "detachedLeaf": {
+        "pid": 19,
+        "ppid": 7,
+        "pgrp": 19,
+        "session": 19,
+        "startTicks": "24563675"
+      },
+      "rawFiles": {
+        "plan.json": "faed1f309f6f2fab6175023525e728888c93d49ef525ede49bf3770b568672c8",
+        "project-manifest.json": "8820d6a50cca3d4267115c24bf9d96bab233e1cee7bffe3050c21461522c00e6",
+        "browser-manifest.json": "711911041772f71befc84b7f38d3b790b2c5f9657b1080fd7723de3e2118e505",
+        "create.json": "bdb9034228fecab4283a757eb0b623db2fb949438ae19d4f0ae217b5654373ed",
+        "start.json": "1e3195a9d5e2e9a632b0f6754a6fe4e9001fd8789825d633360f8a83927bdead",
+        "before-start.json": "b434cf222ece8fab6cd2c57fb5133d2b31dcedccca3ffd454f8f3889cb2f4128",
+        "running-witness.json": "764cfe0d83b22efecbdd6569f2f27158aa070e93e7ca22d573b5189dff063a45",
+        "worker-ready.json": "a82b1c7c9b7031b31e7cf7d85b9c999ed4c90a26cb40b6f9c1fb78944ef40ee7",
+        "before-removal.json": "c4e596be3d290860de506d73704af88cd30e4cc8708daaf4cb1200d2d8166497",
+        "removal.json": "1287522cccf7c054684d60c363709bd301e0148e6ab4b9b22192e43ce4ab4796",
+        "report.json": "f3a0210bfd54cb8bb9111e9150168a22777b2dc1478e29a7b917f5a7c0baf9ed"
+      },
+      "independentReopenedSqliteAudit": true,
+      "retirementEvidenceFileHashVerified": true,
+      "privateProjectBytesVerified": true,
+      "sessionQuotaReleased": true,
+      "scope": "Node private worker protocol and actual owned proxy transport;full owned container removal+private namespace/init/process/socket witnesses support namespace retirement inference,not a host-wide census or Native/Registry readiness proof.",
+      "freshFullIDAbsent": true
+    },
+    "runtime-removed": {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-docker-attach-proxy-v1/actual-runtime-removed-v1",
+      "containerId": "65dcbc1dfd6b1eaeef5f80cda79513d9f9adf9b309b03958b8bf4b5565cf8d85",
+      "proxyPid": 90182,
+      "workerReady": {
+        "version": "node-private-attach-fixture-v1"
+      },
+      "workerClose": "unconfirmed",
+      "proxyExit": {
+        "code": 0,
+        "signal": null
+      },
+      "unavailableCalls": 1,
+      "beforeRemovalRuntimeState": "running",
+      "namespace": "pid:[4026535384]",
+      "main": {
+        "pid": 7,
+        "ppid": 1,
+        "pgrp": 7,
+        "session": 1,
+        "startTicks": "24563649"
+      },
+      "detachedLeaf": {
+        "pid": 19,
+        "ppid": 7,
+        "pgrp": 19,
+        "session": 19,
+        "startTicks": "24563669"
+      },
+      "rawFiles": {
+        "plan.json": "5de6771b74b680531db507edeebc2dd0fa58b36cc71cbabaec0d4eaf03ef3c2f",
+        "project-manifest.json": "c569dca9816c09d8f5fe5204e59cebb817f2eefa103f349d4e9ad571b16b38b8",
+        "browser-manifest.json": "711911041772f71befc84b7f38d3b790b2c5f9657b1080fd7723de3e2118e505",
+        "create.json": "99dfe2192d3538558f3bc1014c2d88a31afd75f9f869e25810e7a8f05f00140e",
+        "start.json": "12e902e974ba58e9b9c368eb2352558401f301879454e25b3122ec589fe9f95e",
+        "before-start.json": "6cd282e254913142c03182c9033b225e0152a05a27635615980be2ee81f8b176",
+        "running-witness.json": "51bb37eea6e4d8afffc7cea3322c9737dea7907ad4ee0ef9623ead3e95b0bc02",
+        "worker-ready.json": "46a936b7dcad404feedcb9ffe1eecf1b97fea716a5dffc8ddb1364d36551ff54",
+        "before-removal.json": "167e14d2881bb6479a7c26df6501185404b5c203f4553c45102ec75967c78ca3",
+        "removal.json": "d05cf6309a2510132e1700eb0dfc028c762aec13dc776e51ee4f8acf3184acd1",
+        "report.json": "bed8d74e30f91e32ea2e5ccedc960ca113664f9c4ecdda51b9a8ab8e9a594861"
+      },
+      "independentReopenedSqliteAudit": true,
+      "retirementEvidenceFileHashVerified": true,
+      "privateProjectBytesVerified": true,
+      "sessionQuotaReleased": true,
+      "scope": "Node private worker protocol and actual owned proxy transport;full owned container removal+private namespace/init/process/socket witnesses support namespace retirement inference,not a host-wide census or Native/Registry readiness proof.",
+      "freshFullIDAbsent": true
+    }
+  },
+  "negativeEvidenceMutationsRejected": 24,
+  "unrelatedPeerPreserved": true,
+  "indexEmpty": true,
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "eightHourActive": {
+    "manifestSha256": "2ccec8079ff04a962d53051538c6e4f23058a3d3ccd16f78bf845b096783b03e",
+    "elapsedSeconds": 8137.842216540999,
+    "cycle": 3024,
+    "status": "running",
+    "actualDockerRunning": true
+  },
+  "remaining": [
+    "Production provider ownership/recovery/unknown-create reconciliation and durable namespace retirement",
+    "Registry TTL/cancel/recovery/health integration",
+    "Actual Native/Chromium after independent8h workload isolation gate",
+    "Rendered readonly/control Viewer roles/tickets",
+    "Full41 backlog and original8h acceptance"
+  ],
+  "all41": {
+    "complete": 9,
+    "partial": 14,
+    "pending": 18
+  }
+}

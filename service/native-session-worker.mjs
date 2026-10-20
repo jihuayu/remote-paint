@@ -1,4 +1,5 @@
 import {runSessionWorker} from './session-worker.mjs';
+import {collectLinuxRuntimeWitness} from './linux-runtime-witness.mjs';
 import {NativeSessionResource} from './native-session-resource.mjs';
 // Launched by a separately owned Linux runtime. Page URL/owner credential are
 // received only over private stdin; neither appears in argv or stdout logs.
@@ -6,7 +7,7 @@ let exitCode=1;
 try{
  if(process.platform!=='linux'||process.env.REMOTE_PAINT_WORKER_BOUNDARY!=='owned-container-v1'||process.env.REMOTE_PAINT_DATA_PLANE!=='native')throw new Error('Unsupported worker runtime');
  const identity={sessionId:process.env.REMOTE_PAINT_WORKER_SESSION,tenantId:process.env.REMOTE_PAINT_WORKER_TENANT,region:process.env.REMOTE_PAINT_WORKER_REGION,ownerKeyHash:process.env.REMOTE_PAINT_WORKER_OWNER_HASH};
- const worker=runSessionWorker({identity,createResource:context=>new NativeSessionResource({...context,startLive:async options=>{
+ const worker=runSessionWorker({identity,runtimeWitness:collectLinuxRuntimeWitness,createResource:context=>new NativeSessionResource({...context,startLive:async options=>{
   const {startLive}=await import('../live.mjs');return startLive({...options,port:4175,host:'0.0.0.0'});
  }})});
  const outcome=await worker.done;exitCode=outcome.exitCode;

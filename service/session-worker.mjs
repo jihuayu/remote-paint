@@ -1,4 +1,5 @@
 import {createHash,timingSafeEqual} from 'node:crypto';
+import {validateLinuxRuntimeWitness} from './linux-runtime-witness.mjs';
 
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const plain=v=>v!==null&&typeof v==='object'&&Object.getPrototypeOf(v)===Object.prototype;
@@ -15,9 +16,9 @@ function request(value,region){
 // One Session per private byte channel. The runtime must independently fence
 // and retire the complete process/container namespace; Closed is a resource
 // close attestation, not a kernel-wide process census or Registry commit.
-export function runSessionWorker({identity,createResource,input=process.stdin,output=process.stdout,owner=process,
+export function runSessionWorker({identity,createResource,runtimeWitness=null,input=process.stdin,output=process.stdout,owner=process,
  startTimeoutMs=5000,initializationTimeoutMs=60000,ownerLeaseMs=30000,closeTimeoutMs=10000,maxFrameBytes=32768}={}){
- if(!exact(identity,['sessionId','tenantId','region','ownerKeyHash'])||!session(identity.sessionId)||!tenant(identity.tenantId)||typeof identity.region!=='string'||!identity.region.length||identity.region.length>64||!hash(identity.ownerKeyHash)||typeof createResource!=='function')throw new TypeError('Configure a fixed worker identity and resource factory');
+ if(!exact(identity,['sessionId','tenantId','region','ownerKeyHash'])||!session(identity.sessionId)||!tenant(identity.tenantId)||typeof identity.region!=='string'||!identity.region.length||identity.region.length>64||!hash(identity.ownerKeyHash)||typeof createResource!=='function'||runtimeWitness!==null&&typeof runtimeWitness!=='function')throw new TypeError('Configure a fixed worker identity and resource factory');
  for(const [value,min,max]of [[startTimeoutMs,50,30000],[initializationTimeoutMs,50,120000],[ownerLeaseMs,50,60000],[closeTimeoutMs,50,30000],[maxFrameBytes,1024,65536]])if(!integer(value,min,max))throw new TypeError('Invalid worker bounds');
  identity=structuredClone(identity);
  const expected=Buffer.from(identity.ownerKeyHash,'hex'),controller=new AbortController(),frameBuffer=Buffer.alloc(maxFrameBytes);
@@ -110,6 +111,8 @@ export function runSessionWorker({identity,createResource,input=process.stdin,ou
  }
  input.on('data',data);input.once('end',lost);input.on('error',lost);output.on('error',lost);owner.on('SIGTERM',terminate);owner.on('SIGINT',terminate);owner.on('disconnect',lost);
  startTimer=setTimeout(()=>{void stop('start-expired','WORKER_START_HANDSHAKE_TIMEOUT');},startTimeoutMs);
- emit({type:'WorkerHello'});input.resume();
+ let witness=null;
+ if(runtimeWitness!==null){try{const value=runtimeWitness();if(value&&typeof value.then==='function'){void Promise.resolve(value).catch(()=>{});throw new TypeError('Asynchronous runtime collector is unsupported');}witness=validateLinuxRuntimeWitness(value);}catch{void stop('startup-failed','WORKER_RUNTIME_WITNESS_FAILED');}}
+ if(!stopping){emit({type:'WorkerHello',...(witness?{runtimeWitness:witness}:{})});input.resume();}
  return Object.freeze({done,stop:()=>stop('runtime-stop')});
 }

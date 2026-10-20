@@ -2,9 +2,11 @@ import {createHash} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {runSessionWorker} from '../../service/session-worker.mjs';
+import {witness} from './runtime-witness-records.mjs';
 const mode=process.argv[2]??'normal',key='a'.repeat(64),delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 let closes=0,initializes=0,reentries=0,reentryHadFence=false,leaf=null,worker;
-const result=runSessionWorker({identity:{sessionId:'ses_fixture',tenantId:'a',region:'test',ownerKeyHash:createHash('sha256').update(key).digest('hex')},
+const runtimeWitness=mode==='witness-invalid'?()=>({...witness(),security:{...witness().security,noNewPrivs:0}}):mode==='witness-throw'?()=>{throw Error('private-proof-secret');}:mode==='witness-async'?()=>Promise.reject(Error('private-proof-secret')):null;
+const result=runSessionWorker({runtimeWitness,identity:{sessionId:'ses_fixture',tenantId:'a',region:'test',ownerKeyHash:createHash('sha256').update(key).digest('hex')},
  startTimeoutMs:mode==='handshake-timeout'?80:2000,ownerLeaseMs:mode==='lease-expiry'?100:2000,initializationTimeoutMs:mode==='startup-timeout'?80:2000,closeTimeoutMs:mode==='close-timeout'?80:1000,
  createResource:context=>{
   if(mode==='factory-fail')throw new Error('private-start-secret');

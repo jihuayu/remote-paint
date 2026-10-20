@@ -5,6 +5,7 @@ import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {request} from 'node:http';
 import {runSessionWorker} from './session-worker.mjs';
+import {collectLinuxRuntimeWitness} from './linux-runtime-witness.mjs';
 const config=JSON.parse(readFileSync('/project/config.json','utf8')),role=process.argv.includes('--leaf')?'leaf':'main';
 function stat(path){const value=readFileSync(path,'utf8'),n=value.lastIndexOf(') '),parts=value.slice(n+2).trim().split(/\s+/);return {pid:Number(value.slice(0,value.indexOf(' '))),ppid:Number(parts[1]),pgrp:Number(parts[2]),session:Number(parts[3]),startTicks:parts[19]};}
 function witness(){
@@ -15,7 +16,7 @@ function witness(){
 const observer=witness();
 if(role==='main'){
  let leaf=null,starting,closing;
- const worker=runSessionWorker({identity:{sessionId:process.env.REMOTE_PAINT_WORKER_SESSION,tenantId:process.env.REMOTE_PAINT_WORKER_TENANT,region:process.env.REMOTE_PAINT_WORKER_REGION,ownerKeyHash:process.env.REMOTE_PAINT_WORKER_OWNER_HASH},createResource:()=>({
+ const worker=runSessionWorker({runtimeWitness:collectLinuxRuntimeWitness,identity:{sessionId:process.env.REMOTE_PAINT_WORKER_SESSION,tenantId:process.env.REMOTE_PAINT_WORKER_TENANT,region:process.env.REMOTE_PAINT_WORKER_REGION,ownerKeyHash:process.env.REMOTE_PAINT_WORKER_OWNER_HASH},createResource:()=>({
   initialize:()=>starting??=(async()=>{leaf=spawn(process.execPath,['/project/worker.mjs','--leaf'],{detached:true,stdio:'ignore'});await once(leaf,'spawn');return {version:'node-private-attach-fixture-v1'};})(),
   close:()=>closing??=(async()=>{try{await starting;}catch{}if(leaf&&leaf.exitCode===null&&leaf.signalCode===null){const closed=once(leaf,'close');leaf.kill('SIGTERM');await closed;}return {status:'closed'};})()
  })});

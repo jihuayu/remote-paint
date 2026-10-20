@@ -70,6 +70,16 @@ HTTP升级head也进入同一有界解码器，socket用read(n)逐次取最多64
 
 19项代理合同覆盖同连接检查/升级、错误身份/配置、拒绝重连、坏HTTP/升级头/复用帧、输入边界、有限stderr、EOF及总期限、取消、真实SIGKILL、8MiB慢消费背压、stdout阻塞时退出和清除继承Node选项。实际容器夹具复制冻结的runSessionWorker与Node叶子资源，分别测正常关闭、代理丢失和运行时被移除；证据与双平台回归结果见[代理检查点](evidence/session-docker-attach-proxy.json)。该夹具仅验证Node私有控制通道，没有运行Native/Chromium或完成Registry公共Ready、TTL、恢复及Viewer票据。独立720文件8小时保持不变。
 
+## 启动前内核见证与持久文件（B1c0）
+
+`linux-runtime-witness.mjs` 只读固定的Linux proc路径：有限stat/status/boot_id和PID namespace链接，复读self/init出生标识与namespace，拒绝变化、截断或超量。stat最多4KiB、status最多16KiB、boot_id最多64字节；局部读取总检查期限5秒，不执行shell、exec、CDP或任何系统设置。有效见证要求worker是PID1的直接子进程，init为PID1/ppid0，同一PID namespace，出生ticks有序；UID/GID均0、五类capability为0、NoNewPrivs=1、seccomp=2。字段取自实际内核，参见[stat](https://man7.org/linux/man-pages/man5/proc_pid_stat.5.html)、[status](https://man7.org/linux/man-pages/man5/proc_pid_status.5.html)。它配合已检查的Docker私有PID/init配置使用，不单凭一个namespace字符串证明隔离。
+
+Native入口固定提供实际收集器，读取失败会在资源工厂前退出；本轮Native入口仍只作语法检查，真实浏览器负载继续等当前8小时结束。通用worker可保留旧无见证合同，新私有WorkerHello带runtimeWitness时父端必须显式配置requireRuntimeWitness、已核对的daemon/CID/spec绑定和证据处理器。原Hello总期限覆盖异步元数据核对及落盘，处理器回执绑定Session、daemon、CID、spec及见证/文件hash，通过后才发送Start。关闭先安装同一等待点再abort处理器；晚到回执不再启动，异常与坏回执不回显原始错误。
+
+`RuntimeWitnessStore` 把见证、租户/Session/区域/deployment、完整CID、镜像/来源/owner哈希及Engine StartedAt代次写入私有文件。目录0700、文件0600，临时文件先fsync，再以不覆盖的link发布并fsync目录；同一文件不能重新持久化。读取限8KiB并拒绝符号链接、宽权限、损坏hash和不匹配的启动代次。已退出的原代次可读，重新启动的同CID不能借用旧见证。恢复读取无需原始owner key，不会重放Start。文件hash与回执本身仍由可信运行时控制器使用，不能单独充当资源已退役的证明；缺失或损坏时保留不确定状态。
+
+结构、存储与私有通道的56项合同通过，包括实际文件写入进程SIGKILL后重读及关闭重入/晚写入/原期限；结构夹具没有被当作真实内核见证。实际Docker Node夹具通过同一收集器和私有代理，在Start前核对固定配置、落盘见证，叶子初次出现时要求证据已存在，之后交叉核对独立/proc见证并无需owner key重新打开文件。冻结版本、三条真实关闭路径及双平台结果见[见证检查点](evidence/session-runtime-witness.json)。生产provider、未知创建恢复、Registry生命周期和实际Native整组回收仍待下一步实现。
+
 ## 当前证据与剩余条件
 
 轻量合同运行真实Node worker与叶子子进程，验证认证前无分配、重复启动、同批Start/Close、父端EOF与租约失效、心跳、晚启动收尾、提前关闭假回执、abort同步重入、失败脱敏、UTF-8分片/限长和期限。stdout在释放中关闭的失败已保留：此前移除了错误处理器，资源虽关闭仍因EPIPE退出1；修复后正常完成关闭。测试夹具自身在setup失败时回收worker，叶子同时在继承stdin失联后结束，避免重复历史上的测试进程泄漏。
