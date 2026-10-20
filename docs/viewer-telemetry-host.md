@@ -15,3 +15,5 @@ DOM Viewer 和 ViewerFrameConnection 提供只读 performance、firstFrame，以
 相关214项通过。103文件/885项完整回归：Mac870通过、15平台跳过；Linux879通过、6平台跳过，实际均0、无失败或取消。新的16文件私有SDK双平台离线安装各77 Node/16 Python、严格TSC及Mac安装版Mypy均通过，公开遥测类型、readonly与私有字段不存在、初始/销毁状态均覆盖；未发布。
 
 新接口仍须实际Native GPU Worker、CPU Worker、CPU主线程公开浏览器验证。此前三模式视口证据不代替此次遥测验收。生产Native端点、全部Agent/CDP栅栏、物理时延与N1轻微丢包、物理IME、多设备及原8小时增长验收均待继续。41项仍9完成（范围内）/15部分/17待做，原8小时失败与192MiB门槛保持，未自动重跑、强制浏览器GC、修改演示/采样器或暂存提交推送。见[有限证据](evidence/viewer-telemetry-host.json)。
+
+后续计时器品牌问题经真实失败定位/修复后，新安装包的GPU Worker、CPU Worker与CPU主线程实际Native公开遥测通过，见[真实Native范围与清理](viewer-telemetry-native.md)。上述Node合同原始范围保留，物理时延/8小时和生产端点仍未完成。

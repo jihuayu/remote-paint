@@ -1821,3 +1821,10 @@ Frame与DOM公开只读performance/firstFrame、有限回调/订阅；内部信�
 新增安排/取消接收者检查，14项中1项先失败；词法包装修复后相关215项通过。103文件886项Mac871/15平台跳过、Linux880/6平台跳过，实际均0；新16文件包双平台77 Node/16 Python、严格TSC及Mac Mypy通过。见[浏览器计时器修复及验收边界](viewer-telemetry-timer.md)。
 
 此Node范围检查点不覆盖或取消真实Native失败，下一步必须以新安装包重跑三模式。41项9/15/17，原8小时失败/192MiB门槛、演示/采样器不变，未自动重跑/强制浏览器GC/暂存提交推送。
+
+
+### K2a2b3c3c：新性能/首帧API真实三模式验收
+
+计时器修复后新安装包的GPU Worker/CPU Worker/CPU主线程实际Native通过，8挂载加9次同组件重连/角色切换，17条授权连接均检查当前首帧与有限性能；新尺寸的Source回执、真实Canvas像素和性能版本对应。六次精确WebGL黑框字形及正常图像/Canvas2D/输入像素、noop状态清理/异步SHA控制优先级、已应用后超时unknown和实际CSP拒绝均通过。Source/Viewer实际均0，七Linux身份与三组12采样Mac PID/Worker/服务全部清理，无错误。见[真实公开遥测证据](viewer-telemetry-native.md)。
+
+首次Native真实失败独立保留；本次没有Illegal invocation。909执行候选运行时/SDK与886项双平台及16文件安装包检查点相同，只补文档，不伪称物理资源/时延或更多设备通过。实际Source归测试provider拥有，生产Native端点、全部Agent栅栏、同步Wasm优先级、N1轻微丢包/物理IME/原8小时仍待继续。41项9/15/17，原失败与192MiB门槛保持，未自动重跑8小时/强制GC/改演示采样器/暂存提交推送。

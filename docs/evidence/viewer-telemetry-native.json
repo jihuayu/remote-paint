@@ -1,0 +1,80 @@
+{
+  "at": "2026-10-19T10:11:09.479192+00:00",
+  "task": "K2a2b3c3c",
+  "status": "actual-Native-public-telemetry-three-supported-paths-scoped-qualified",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-telemetry-native-v2/manifest.json",
+  "executedManifestSha256": "487ffc2f46ef3feee0776e6a64948f4448d20c4bd1914a9c1bded74683fdf44e",
+  "sourceFilesExecuted": 909,
+  "actualSourceExitCode": 0,
+  "actualViewerExitCode": 0,
+  "supportedRenderingModes": [
+    "gpu-worker",
+    "cpu-worker",
+    "cpu-main"
+  ],
+  "successfulMounts": 8,
+  "actualTicketedConnectionPaths": 17,
+  "additionalSameComponentReconnectAndRoleTransitions": 9,
+  "realInstalledSdkJsModules": 6,
+  "sdkArchiveSha256": "eba83b1de6afd850d86bbf719673fcf04d6d55fdbe09672874dc8b8cba6a1bda",
+  "realCrossOriginIframeAndCsp": true,
+  "firstAndPerformanceSceneNamespaceAndResizePixelsQualified": true,
+  "fixedSnapshotFields": {
+    "performance": 22,
+    "firstFrame": 13
+  },
+  "clock": "viewer-ui-receipt",
+  "memoryScope": "client-estimate",
+  "observedWasmHeapBytesAllSixInitialMounts": 134217728,
+  "physicalMemoryOrLatencyClaim": false,
+  "preciseWebGLLabelPixelChecks": 6,
+  "normalNativeImageCanvasInputPixelsQualified": true,
+  "gpuActualHardwareAndCpuPathsExplicit": true,
+  "noopHeldCleanupAndAsyncShaPriorityRecheckedAllThree": true,
+  "synchronousWasmReplayPriorityQualified": false,
+  "appliedAfterNativeTestGateTimeoutUnknownRechecked": true,
+  "cspUnlistedParentTickets": 0,
+  "sourceCleanup": {
+    "status": "closed",
+    "retiredOwnedIdentities": 7,
+    "nodeCalls": {
+      "map": 0,
+      "publish": 0,
+      "awaitPromise": 0
+    },
+    "errors": []
+  },
+  "viewerCleanup": {
+    "sampledMacPidCohorts": 3,
+    "sampledMacPidsAbsent": 12,
+    "hostListening": false,
+    "browserConnected": false,
+    "errors": []
+  },
+  "nativeTimerReceiverFailureResolvedWithinThisActualMatrix": true,
+  "preservedFirstFailure": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/outputs/remote-paint-viewer-telemetry-native-failure-20261019-v1.zip",
+    "sha256": "40b5f9676a0a3bce485efa8e4cc1f67d4416d365bf2092bc9392e2200780d6e7",
+    "bytes": 78914,
+    "files": 15,
+    "actualSourceExitCode": 0,
+    "actualViewerExitCode": 1,
+    "actualNativeTelemetryQualified": false,
+    "eightHourPassed": false
+  },
+  "fullNode886InheritedExactRuntimeAnd103Tests": true,
+  "installedSdk77Node16PythonAndTscBothMacMypyInheritedExactBytes": true,
+  "fullDeviceBrowserMatrixQualified": false,
+  "productionNativeProviderQualified": false,
+  "testProviderOwnsActualNative": true,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedGc": true,
+  "noCommitPush": true
+}
