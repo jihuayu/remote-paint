@@ -45,3 +45,6 @@ TTL 从实际 ready 开始，运行时使用单调时钟。过期记录保留为
 ## 后端客户端
 
 开发中的 Node ESM/TypeScript 客户端和固定请求重试契约见[客户端说明](session-backend-client.md)。当前包尚未封装 Viewer 票据方法与嵌入组件。
+
+
+后续检查点已提供[公共Agent HTTP](public-agent-http.md)：独立agents:read/write/end、可信租户和原始context/fence，持久状态/幂等重试、HTTP观察取消与独立end通道；真实Native授权及票据矩阵通过。此前“公共Agent授权/API待实现”属于当时检查点范围，公共Node/Python Agent SDK仍待做。原K3公共授权合同现有逐项完成审计，完整Playwright/工具覆盖及所有生产故障不在该结论内。

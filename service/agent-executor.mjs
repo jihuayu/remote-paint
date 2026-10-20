@@ -29,11 +29,11 @@ function invocationView(row){const {invocationId,agentRunId,sessionId,tool,fence
 // Trusted backend service, not a public HTTP authorizer. Each acknowledged
 // intent is durable before work is scheduled. No action payload is persisted.
 export class DurableAgentExecutor {
- #store;#registry;#providers;#actionKey;#owner=Symbol('durable-Agent-executor');#claimed=false;#fault=false;#stopping=false;#ordinary=new Map();#ending=new Map();#recovered=new Set();#max;#timeout;#shutdown=null;
+ #store;#registry;#registryIdentity;#providers;#actionKey;#owner=Symbol('durable-Agent-executor');#claimed=false;#fault=false;#stopping=false;#ordinary=new Map();#ending=new Map();#recovered=new Set();#max;#timeout;#shutdown=null;
  constructor({store,registry,providers,actionKey,maxConcurrent=64,timeoutMs=5000}={}){
   if(!(store instanceof SqliteSessionStore)||!registry||typeof registry.requireReady!=='function'||!(providers instanceof Map)||!providers.size||providers.size>64||typeof actionKey!=='string'||!/^[a-f0-9]{64}$/.test(actionKey)||!Number.isInteger(maxConcurrent)||maxConcurrent<1||maxConcurrent>256||!Number.isInteger(timeoutMs)||timeoutMs<50||timeoutMs>120000)throw TypeError('Configure a private Session store, Registry, Agent providers and 32-byte action key');
   this.#providers=new Map();for(const [region,provider]of providers){if(!bounded(region,64)||!provider||typeof provider.agent!=='function')throw TypeError('Configure bounded Agent provider regions');this.#providers.set(region,provider.agent.bind(provider));}
-  this.#store=store;this.#registry=registry.requireReady.bind(registry);this.#actionKey=Buffer.from(actionKey,'hex');this.#max=maxConcurrent;this.#timeout=timeoutMs;
+  this.#store=store;this.#registry=registry.requireReady.bind(registry);this.#registryIdentity=registry;this.#actionKey=Buffer.from(actionKey,'hex');this.#max=maxConcurrent;this.#timeout=timeoutMs;
   try{
    const snapshot=store.claimAgentController(this.#owner,{compact:true});this.#claimed=true;this.#recovered=new Set(snapshot.recoveryRequired);
    for(const row of this.#records('invocations',{unfinishedOnly:true})){if(row.state==='intent')this.#writeInvocation({...row,state:'rejected',error:{code:'AGENT_OWNER_LOST',outcome:'not-dispatched'},updatedAt:stamp(row)});else if(row.state==='requested')this.#writeInvocation({...row,state:'unknown',error:{code:'AGENT_OWNER_LOST',outcome:'unknown'},updatedAt:stamp(row)});}
@@ -114,6 +114,7 @@ export class DurableAgentExecutor {
   }catch(error){if(!this.#fault)this.#uncertainRun(initial.agentRunId,agentFailure(error));}
  }
  status(){return Object.freeze({state:this.#fault?'fault':!this.#claimed?'closed':this.#stopping?'stopping':'active',ordinary:this.#ordinary.size,ending:this.#ending.size,ownerHeld:this.#claimed});}
+ usesRegistry(registry){return this.#registryIdentity===registry;}
  shutdown({timeoutMs=5000}={}){
   if(!Number.isInteger(timeoutMs)||timeoutMs<1||timeoutMs>120000)throw TypeError('Configure a bounded shutdown observation');
   if(!this.#shutdown){this.#stopping=true;this.#shutdown=Promise.resolve().then(async()=>{

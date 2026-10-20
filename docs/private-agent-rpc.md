@@ -27,3 +27,6 @@ v4同账本已增加Agent Run/Invocation持久元数据及owner恢复隔离，�
 
 
 后续检查点已将真实provider/RPC接入[持久执行器](durable-agent-executor.md)，支持幂等状态、unknown不重放与限定窗口的关闭式恢复；真实Native效果后控制进程SIGKILL及原Session退役已验证。本文此前“执行器尚未接入”属于当时检查点范围；公共Agent授权/API/SDK仍未实现。
+
+
+后续检查点已提供[公共Agent HTTP](public-agent-http.md)：独立agents:read/write/end、可信租户和原始context/fence，持久状态/幂等重试、HTTP观察取消与独立end通道；真实Native授权及票据矩阵通过。此前“公共Agent授权/API待实现”属于当时检查点范围，公共Node/Python Agent SDK仍待做。原K3公共授权合同现有逐项完成审计，完整Playwright/工具覆盖及所有生产故障不在该结论内。

@@ -23,3 +23,6 @@ end 在未派发 begin 前关闭其确定未开始的意图；begin 正在执行
 durableExecutorIntegrated=true，trustedDurableAgentExecutorQualified=true，durableRunInvocationRecoveryQualified=true，仅按上述关闭式恢复范围。公共HTTP Agent scope、Node/Python Agent SDK、完整Playwright/其他修改工具、结构化观察/业务验证、完整取消/事件/故障矩阵继续待做。allAgentCdpFenced=false，productionNativeFullyQualified=false；原未知Engine Start隔离、N1/物理/设备与8小时增长仍未通过。41项9完成、16部分、16待做。WebGL“WebGL 无法显示”黑框与其他显示代码保持。未暂存、提交、推送、修改演示、强制浏览器GC、放宽门槛或启动新8小时。
 
 见[证据](evidence/durable-agent-executor.json)。
+
+
+后续检查点已提供[公共Agent HTTP](public-agent-http.md)：独立agents:read/write/end、可信租户和原始context/fence，持久状态/幂等重试、HTTP观察取消与独立end通道；真实Native授权及票据矩阵通过。此前“公共Agent授权/API待实现”属于当时检查点范围，公共Node/Python Agent SDK仍待做。原K3公共授权合同现有逐项完成审计，完整Playwright/工具覆盖及所有生产故障不在该结论内。

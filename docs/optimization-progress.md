@@ -46,15 +46,15 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | C11 | 页面隐藏与设备故障恢复 | 部分实现 | 显示与 Agent 活动分离；真实 Chrome 隐藏/冻结恢复、导航后新基线、Worker 异常与静默退出回退、旧输入租约清理通过。128项单测；物理休眠及其他目标设备生命周期仍待验收。 |
 | C12 | 浏览器兼容与区域回退 | 部分实现 | WebGL 黑框及文字占位通过真实 Linux/CanvasKit Worker 像素验证；矩阵、裁剪、透明度单测通过。其他纹理、浏览器和复杂合成仍待验收。 |
 | C13 | 控制消息与重放队列调度 | 部分实现 | 默认 Worker 的控制连接改在主线程，绕过慢 SHA 和 Worker 的同步忙碌：注入 1.2 秒 Worker 阻塞时输入确认约 8 ms、撤销约 19 ms。主线程兼容路径仍可能被同步重放阻塞；数据解码切片和过期 viewport 取消待补。 |
-| K1 | 稳定 Session API | 部分实现 | SQLite注册表与HTTP创建/查询/释放已接通，可信Bearer租户与独立scope，幂等/TTL/配额/重启隔离及请求限制。Node ESM客户端带TypeScript声明、固定原请求/键的手动或显式重试、响应校验与取消/未知结果分类；实际丢失HTTP响应后重试仅分配一次。Mac/Linux各72项通过及严格类型检查退出0。连接票据与实际Native provider仍待接入，未发布完整公共SDK。见[客户端证据](evidence/session-client.json)及[接口说明](session-control-api.md)。 |
+| K1 | 稳定 Session API | 部分实现 | SQLite与HTTP创建/查询/释放、幂等/TTL/区域/version/配额/重启隔离已有合同；标准Native provider及安装版Node SDK实际创建/连接/退役通过，unknown Engine Start继续保守隔离。现有Node/Python包双平台78/17及类型通过，公共Agent HTTP已接持久Run/Invocation；完整Agent SDK、滚动兼容/故障与发布仍待做，见[公共API](public-agent-http.md)。 |
 | K2 | 可嵌入 Viewer | 部分实现 | 原生JS公共票据连接已接入现有主线程/Worker，含刷新、重连、取消和断开栅栏；真实Node数据链路及保存入口脚本接线通过。iframe/CSP/宿主组件、完整resize/接管/事件API和真实渲染多次挂载卸载仍待验收。 |
-| K3 | 安全授权 | 部分实现 | 后端HTTP已使用可信Bearer租户认证与创建/读取/释放独立scope，管理客户端禁重定向和浏览器运行。现有控制子连接使用绑定原Viewer/Session的10秒一次性票据，错误Origin/跨Viewer/重放/过期拒绝；现有可选公共网关已用短Viewer ticket绑定租户/Session/区域/Ready代次/角色/期限/audience，并在真实Node Source消息路径执行只读限制、撤销和刷新；本地key留在私有Source。实际Native worker端点桥接、嵌入刷新和Agent/CDP独立授权仍待实现，不能据此声明K3完成。 |
+| K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
-| K5 | 输入与多角色控制 | 部分实现 | 七个受管工具经标准Native私有RPC接同一Page；v4持久执行器已先落盘后派发，同键查询不重放、unknown隔离、优先end及关闭式恢复。真实Native页面效果后控制进程SIGKILL、恢复零Agent RPC与原namespace退役通过。31新合同、双平台完整1096项、原SDK重新安装及人控同页通过。公共独立Agent scope/API/SDK、完整Playwright/观察/其余故障待做，见[执行器范围](durable-agent-executor.md)。 |
+| K5 | 输入与多角色控制 | 部分实现 | 七个受管工具经独立授权的公共HTTP、v4持久执行器与标准Native私有RPC接同一Page；原始fence、unknown不重放、优先end和限定窗口关闭式恢复通过，HTTP丢失响应同键找回同ID/一次效果。真实Native人控grant保留、K3票据权限矩阵及namespace退役通过。24新合同、双平台完整1120项。公共Agent SDK、完整Playwright/其他修改工具/观察及其余故障待做，见[范围](public-agent-http.md)。 |
 | K6 | 结构化观察与结果 | 待实现 | 按原清单验收，记录实际证据 |
-| K7 | 动作和业务成功分离 | 待实现 | 按原清单验收，记录实际证据 |
+| K7 | 动作和业务成功分离 | 部分实现 | 公共Invocation区分intent/requested/injected/rejected/unknown，注入不当作业务成功；持久幂等、结果未知不重放及真实Native丢HTTP响应/超时/控制进程死亡验证通过。尚无业务后置条件观察API与完整可恢复/不可恢复分类，见[执行器](durable-agent-executor.md)和[公共API](public-agent-http.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
-| K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts及Python3.11+ asyncio客户端已生成私有tgz/纯Pythonwheel；白名单核对源码/类型/元数据，Mac/Linux离线独立安装各74项Node及16项Python合同通过，TypeScript两平台通过、Python安装包PEP561/严格类型Mac通过。没有SDK源码回退。包仍是未发布开发版，缺完整Viewer/Agent示例、Native/票据与滚动版本验收。见[包证据](evidence/session-sdk-packages.json)及[复验说明](session-sdk-packages.md)。 |
+| K9 | 开发者体验和发布 | 部分实现 | 现有Node ESM/.d.mts与Python3.11+ asyncio开发包双平台离线独立安装78Node/17Python、TSC及Mac Mypy通过；34个当前后端输入核对，无SDK源码回退。安装版Node SDK实际Native Session生命周期和既有Viewer证据保留；本轮Agent仅原始HTTP测试消费者，公共Node/Python Agent SDK、完整示例、滚动版本策略与发布待后续检查点。见[公共API](public-agent-http.md)。 |
 | K10 | Agent 与文件集成 | 待实现 | 按原清单验收，记录实际证据 |
 | B1 | 原生持续采集与按需订阅 | 已完成（Linux ARM64 受管 Source） | 浏览器原生订阅/真实document与frame token、输入水位及credit交给Rust自主Mapper/Gateway；正式浏览器与双平台Broker已更新并保存旧产物。[正式路径验收](evidence/native-source-default-acceptance.json)含76项C++、Mac/Linux各221项JS、当前57MiB/2MiB压力/45MiB旧RPC/423回滚、完整直播/Node回退/WebGL文字占位/真实9MiB及200ms Gateway关闭、12 Source/48进程身份清理；24次跨站导航、重置/实际Retry/64MiB压力/六消费与完整内核矩阵保留精确版本证据。Linux BeginFrame页面时钟仍由Node驱动，取消逐帧捕获登记/map/publish/Runtime.awaitPromise。标准构建图/双架构发布、其他平台兼容、完整Session/PSS及长时N1分别继续。 |
 | B2 | 更精确的时钟和消费需求 | 已完成（Linux受管Source） | 显示/观察/录制/页面运行独立计数，受管Agent输入临时持有页面运行租约；零显示观察/录制真实像素、输入与新帧屏障、导航/resize、慢端隔离、64MiB压力恢复、延迟首消费者及关闭通过。198项JS每平台、137项Rust同修订及22组冻结/7组正式复验，见[需求与消费证据](evidence/source-consumer-demand.json)。B1原生持续订阅与完整SDK另列。 |
@@ -1960,3 +1960,8 @@ createManagedAgentInput() 强制显式版本戳，仅放行四个 Input 方法�
 ### 可信后端持久 Agent 执行器
 
 create/perform先同步提交意图再异步调用标准provider，稳定幂等身份和HMAC动作/fence，发送前后查当前owner/Ready/阶段；unknown隔离不重放、优先end、迟到begin只关闭，重建仅元数据收尾。改为索引单行查询及64条分页，保留同名完整历史复制合同前1后0。新增31合同，最终双平台118文件1096项零失败；原SDK重新安装双平台78Node/17Python/TSC及Mac Mypy通过。真实标准Native七工具、超时unknown/无重放、人控grant保留与结果B拼HFZ通过；实际页面CRASH一次后、结果尚未落盘时控制进程SIGKILL，重开unknown、同键同ID、恢复零Agent RPC，原Session/namespace退役并释放配额。范围见[执行器](durable-agent-executor.md)。公共Agent scope/API/SDK及其余工具/观察/故障、原N1/物理/设备/8小时仍未完成，41项9/16/16。
+
+
+### 独立公共 Agent HTTP 与原K3完成审计
+
+新增agents:read/write/end分离，可信租户、固定schema/context/fence、持久接收202/Location，同键状态查询不重放；普通HTTP/真实认证pending与独立end名额有界，HTTP观察断线不取消已接收任务，只读context观察不能撤销writer。24新合同、双平台119文件1120项零失败，原SDK34输入独立安装78Node/17Python/TSC与Mac Mypy通过。真实HTTP→标准Native七工具、80px无人观看滚动、丢HTTP响应同ID/一次效果、旧fence拒绝、unknown+end、人控原grant保留、B拼LHFZ及namespace退役通过。补充Native只读/票据audience/租户/刷新/撤销/到期矩阵，逐项证明原K3公共授权合同，K3完成；K7注入/业务分离已有部分契约，业务后置条件仍缺。41项现在10完成、16部分、15待做。Agent SDK/Playwright/观察/事件取消、原N1/物理/设备/8小时仍未完成，见[范围与审计](public-agent-http.md)。

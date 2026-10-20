@@ -2,8 +2,9 @@ import {createServer} from 'node:http';
 import {createHash,randomUUID} from 'node:crypto';
 import {SessionRegistry,SessionApiError} from './session-registry.mjs';
 import {ViewerAccess} from './viewer-access.mjs';
+import {AGENT_HTTP_SCOPES,agentHttpRoute,createAgentHttpAccess,handleAgentHttp,agentHttpError} from './agent-http.mjs';
 
-const SCOPES=new Set(['sessions:create','sessions:read','sessions:release','viewers:read','viewers:control']);
+const SCOPES=new Set(['sessions:create','sessions:read','sessions:release','viewers:read','viewers:control',...AGENT_HTTP_SCOPES]);
 const ERRORS={
  INVALID_REQUEST:[400,'Invalid request'],INVALID_URL:[400,'Invalid initial page URL'],INVALID_TENANT:[401,'Invalid authenticated tenant'],
  INVALID_TTL:[400,'TTL is outside the configured range'],UNSUPPORTED_REGION:[400,'Requested region is unavailable'],
@@ -76,6 +77,7 @@ function body(req,maxBytes,signal){
 function route(req){
  const path=req.url;
  if(typeof path!=='string'||path.length>2048||/[?#%]/.test(path))fail('ROUTE_NOT_FOUND');
+ const agent=agentHttpRoute(path);if(agent)return agent;
  let match;
  if(path==='/v1/sessions')return {method:'POST',scope:'sessions:create',kind:'create'};
  if((match=/^\/v1\/sessions\/(ses_[A-Za-z0-9_-]{1,124})\/viewer-tickets$/.exec(path)))return {method:'POST',scope:'viewers:read',kind:'viewer-issue',id:match[1]};
@@ -88,39 +90,49 @@ function route(req){
 // An unbound backend HTTP server. The caller owns TLS/proxy binding, ledger,
 // Registry recovery and shutdown. Disconnection never cancels accepted creation.
 // HTTP options follow Node22: https://r2.nodejs.org/docs/latest-jod/api/http.html
-export function createSessionControlServer({registry,authenticate,viewerAccess=null,maxBodyBytes=16384,maxConcurrentRequests=64,requestTimeoutMs=10000}={}){
+export function createSessionControlServer({registry,authenticate,viewerAccess=null,agentExecutor=null,maxBodyBytes=16384,maxAgentBodyBytes=32768,maxConcurrentRequests=64,maxAgentEndRequests=8,requestTimeoutMs=10000}={}){
  if(!(registry instanceof SessionRegistry)||typeof authenticate!=='function')throw new TypeError('Configure an explicit Registry and trusted authenticator');
  if(viewerAccess!==null&&(!(viewerAccess instanceof ViewerAccess)||!viewerAccess.usesRegistry(registry)))throw new TypeError('Viewer access must use this Registry');
- if(!integer(maxBodyBytes,128,1048576)||!integer(maxConcurrentRequests,1,10000)||!integer(requestTimeoutMs,50,60000))throw new TypeError('Invalid HTTP request bounds');
- confirmed(registry);let active=0,authenticating=0;
+ const agentAccess=createAgentHttpAccess(agentExecutor,registry);
+ if(!integer(maxBodyBytes,128,1048576)||!integer(maxAgentBodyBytes,128,32768)||!integer(maxConcurrentRequests,1,10000)||!integer(maxAgentEndRequests,1,256)||!integer(requestTimeoutMs,50,60000))throw new TypeError('Invalid HTTP request bounds');
+ confirmed(registry);let active=0,activeEnds=0,authenticating=0,authenticatingEnds=0;
  const handle=async(req,res)=>{
-  const requestId='req_'+randomUUID();let held=false,controller,timer,onAbort,onClose;
+  const requestId='req_'+randomUUID();let held=false,controller,timer,onAbort,onClose,selected;
   try{
-   if(active>=maxConcurrentRequests)fail('SERVICE_BUSY');active++;held=true;
+   if(req.rawHeaders.length>128)fail('INVALID_REQUEST');
+   if(header(req,'origin')!==undefined)fail('MANAGEMENT_ORIGIN_FORBIDDEN');
+   if(header(req,'expect')!==undefined)fail('INVALID_REQUEST');
+   selected=route(req);const priority=selected.kind==='agent-end'&&req.method===selected.method;
+   if(priority){if(activeEnds>=maxAgentEndRequests)fail('SERVICE_BUSY');activeEnds++;held='end';}
+   else{if(active>=maxConcurrentRequests)fail('SERVICE_BUSY');active++;held='ordinary';}
    controller=new AbortController();const {signal}=controller;
    timer=setTimeout(()=>controller.abort(new SessionApiError('REQUEST_TIMEOUT','Request deadline exceeded',408)),requestTimeoutMs);timer.unref();
    onAbort=()=>controller.abort(new SessionApiError('INVALID_REQUEST','Request disconnected',400));onClose=()=>{if(!res.writableFinished)onAbort();};
    req.once('aborted',onAbort);res.once('close',onClose);req.on('error',onAbort);
-   if(req.rawHeaders.length>128)fail('INVALID_REQUEST');
-   if(header(req,'origin')!==undefined)fail('MANAGEMENT_ORIGIN_FORBIDDEN');
-   if(header(req,'expect')!==undefined)fail('INVALID_REQUEST');
-   const selected=route(req);
    if(req.method!==selected.method){res.setHeader('allow',selected.allow??selected.method);fail('METHOD_NOT_ALLOWED');}
    const length=header(req,'content-length'),transfer=header(req,'transfer-encoding'),encoding=header(req,'content-encoding'),contentType=header(req,'content-type');
    if(length!==undefined&&(!/^(0|[1-9][0-9]*)$/.test(length)||!Number.isSafeInteger(Number(length))))fail('INVALID_REQUEST');
-   if(length!==undefined&&Number(length)>maxBodyBytes)fail('REQUEST_TOO_LARGE');
-   const needsBody=['create','viewer-issue','viewer-refresh'].includes(selected.kind);
+   const bodyLimit=selected.agent?maxAgentBodyBytes:maxBodyBytes;
+   if(length!==undefined&&Number(length)>bodyLimit)fail('REQUEST_TOO_LARGE');
+   const needsBody=selected.agent?selected.needsBody:['create','viewer-issue','viewer-refresh'].includes(selected.kind);
    if(!needsBody&&(transfer!==undefined||Number(length??0)!==0))fail('INVALID_REQUEST');
    if(needsBody&&(encoding!==undefined||!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(contentType??'')))fail('UNSUPPORTED_MEDIA_TYPE');
    const authorization=header(req,'authorization'),match=/^Bearer ([A-Za-z0-9_-]{32,256})$/i.exec(authorization??'');if(!match)fail('UNAUTHENTICATED');
    let authenticated;
-   if(authenticating>=maxConcurrentRequests)fail('SERVICE_BUSY');
-   authenticating++;
+   if(priority?authenticatingEnds>=maxAgentEndRequests:authenticating>=maxConcurrentRequests)fail('SERVICE_BUSY');
+   if(priority)authenticatingEnds++;else authenticating++;
    const attempt=Promise.resolve().then(()=>{aborted(signal);return authenticate({token:match[1],signal});});
-   void attempt.then(()=>{authenticating--;},()=>{authenticating--;});
+   const authDone=()=>{if(priority)authenticatingEnds--;else authenticating--;};void attempt.then(authDone,authDone);
    try{authenticated=await wait(attempt,signal);}catch(error){if(signal.aborted)throw signal.reason;fail('AUTHENTICATION_UNAVAILABLE');}
    aborted(signal);if(authenticated===null||authenticated===undefined)fail('UNAUTHENTICATED');const principal=identity(authenticated);
    if(!principal.scopes.has(selected.scope))fail('FORBIDDEN');confirmed(registry);
+   if(selected.agent){
+    const needsKey=['agent-create','agent-invocations'].includes(selected.kind),idempotencyKey=needsKey?header(req,'idempotency-key'):undefined;
+    if(needsKey&&(typeof idempotencyKey!=='string'||!/^[\x21-\x7e]{1,128}$/.test(idempotencyKey)))fail('INVALID_IDEMPOTENCY_KEY');
+    const input=needsBody?await body(req,bodyLimit,signal):undefined;aborted(signal);confirmed(registry);
+    const response=await handleAgentHttp({selected,principal,input,idempotencyKey,access:agentAccess,registry,wait,signal});
+    send(res,requestId,response.status,{data:response.data},response.location?{location:response.location}:{});return;
+   }
    let result;
    if(selected.kind==='create'){
     const idempotencyKey=header(req,'idempotency-key');if(typeof idempotencyKey!=='string'||!/^[\x21-\x7e]{1,128}$/.test(idempotencyKey))fail('INVALID_IDEMPOTENCY_KEY');
@@ -141,15 +153,16 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
    const operation=selected.kind==='create'||selected.kind==='release';
    send(res,requestId,operation&&result.status==='pending'?202:200,{data:result},operation?{location:'/v1/operations/'+result.operationId}:{});
   }catch(error){
-   const code=error instanceof SessionApiError&&Object.hasOwn(ERRORS,error.code)?error.code:'INTERNAL_ERROR',entry=ERRORS[code];
-   send(res,requestId,entry[0],{error:{code,message:entry[1]}});
+   const agentError=selected?.agent?agentHttpError(error):null;
+   if(agentError)send(res,requestId,agentError.status,{error:{code:agentError.code,message:agentError.message,outcome:agentError.outcome}});
+   else{const code=error instanceof SessionApiError&&Object.hasOwn(ERRORS,error.code)?error.code:'INTERNAL_ERROR',entry=ERRORS[code];send(res,requestId,entry[0],{error:{code,message:entry[1]}});}
   }finally{
    if(timer)clearTimeout(timer);if(onAbort){req.off('aborted',onAbort);req.off('error',onAbort);res.off('close',onClose);}
-   if(held)active--;
+   if(held==='end')activeEnds--;else if(held)active--;
   }
  };
  const server=createServer({maxHeaderSize:16384,headersTimeout:requestTimeoutMs,requestTimeout:requestTimeoutMs,connectionsCheckingInterval:1000,keepAliveTimeout:1000},(req,res)=>{void handle(req,res);});
- server.maxHeadersCount=64;server.maxRequestsPerSocket=1;server.maxConnections=Math.min(20000,maxConcurrentRequests*2);
+ server.maxHeadersCount=64;server.maxRequestsPerSocket=1;server.maxConnections=Math.min(20000,(maxConcurrentRequests+maxAgentEndRequests)*2);
  server.on('checkContinue',(req,res)=>{void handle(req,res);});server.on('checkExpectation',(req,res)=>{void handle(req,res);});
  server.on('upgrade',(req,socket,head)=>{if(viewerAccess)viewerAccess.handleUpgrade(req,socket,head);else socket.destroy();});server.on('connect',(req,socket)=>socket.destroy());
  server.once('close',()=>viewerAccess?.close());
