@@ -1,0 +1,13 @@
+# 原Source Native下载接线
+
+本项把上一个独立owner接到原Source及Managed Agent observer。仅受信任本地后端调用`startLive`/`startLiveSource`时可显式传布尔`nativeDownloadBudget:true`；默认false、无CLI或Agent DTO选项。真正的开关为`--remote-paint-download-budget-v1`。浏览器的`transfersReady=false`保持不变，适配器在发现未就绪或缺失命令时拒绝arm，不能转用Playwright Download。
+
+原browser/newPage及私有downloadsPath保持。创建原Page后即注册Native模式，捕获初始化完成后绑定原capture、CDP对象、原send方法与token，然后才返回Source。未绑定、已关闭或原capture/CDP方法/token替换均明确失败；WeakMap留下模式墓碑，不能因关闭或初始化未完成而切换回legacy。arm的实际documentToken来自observer已验证的原capture快照，Agent只提供原有有界limits。
+
+一个Source最多保留一个observer下载owner。Native文件/票据清理成功本身不足以释放Source占位；整个observer必须排空实际pending、清理AX/realm对象组且无失败，才由私有确认释放。Native模式的end在全部关闭阶段使用原30秒上限，超时返回unknown并保留实际请求和Source占位；迟到group或arm回复不能恢复为成功。默认legacy关闭行为保持。
+
+正常Source关闭先执行整个observer清理，再关闭capture/frame/browser及既有viz/broker/spool。渲染器崩溃时保留原browser优先顺序，以便实际传输退出后继续清理，capture/frame使用detach=false。每个关闭分项即使前项失败仍尝试，错误聚合返回；Source.close不是远端网络服务或完整namespace退休证明。
+
+新增17项测试调用真实ManagedAgentRun/observer、Source模式注册及Source关闭编排，传输层为可控异步夹具。覆盖原CDP选路、Native未就绪/缺失命令拒绝、唯一绑定/模式墓碑、身份变化、迟到旧票据、读取未返时独立清理、group ACK前独占、同Source的新Run复用、正常及崩溃顺序、失败仍清理所有分项、实际realm/arm/group未返回时的30秒unknown和迟到不返占位。首次17项中16通过，发现阶段失败可安全关闭的夹具预期修正后17项通过；原失败日志及源码保留，生产逻辑未为该失败放宽。最终同一候选macOS完整1496项=1481通过/15平台跳过，Linux1496项=1490通过/6平台跳过，两端0失败/取消，17新项均实际运行且无跳过，原1479名称保留。macOS前两次完整运行分别2/1个既有时序失败，相关代码和夹具与父版相同；单独30项通过后，暂将自有构建从4核降到0.5核，原代码/时限下完整运行通过，随后恢复4核且构建PID未变。原失败、30项结果及资源调整记录全部保留。完整两平台结果见[结构化证据](evidence/source-native-download-wiring.json)。
+
+这证明接线及异步夹具边界，不证明实际浏览器认证、RFH token相等、原PW事件/对象缺席、cookies/Blob/resume、CDP分配前上限或远端服务物理退休。完整浏览器v2在独立输出构建，105项原补丁/副本输入加3项根配置已在启动前固定，仍执行32GiB磁盘门槛；本项不prepare或修改Chromium。Native470项和五个ARM64调用方/GN继承前检查点，专门SDK与8小时不重跑。预算默认关闭、readiness未就绪，41项10/17/14、K6部分及原8小时失败保持。正式浏览器和采样器不执行/改写，缓存与无关修改保留，未提交/推送。

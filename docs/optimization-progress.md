@@ -1,5 +1,7 @@
 # Remote Paint 优化实施进度
 
+2026-10-20 原Source Native下载接线增加仅后端布尔opt-in、原Page模式注册和初始化后原capture/CDP/token绑定；默认关闭，发现未就绪明确失败。Source占位必须等整个observer及实际对象组退休，Native end全阶段30秒失败保留未知状态，迟到回复不返占位。17项真实Run/observer及Source关闭编排夹具与两平台各1496项完整JS通过（macOS1481通过/15跳过、Linux1490通过/6跳过，原时限零失败），完整双平台结果与未完成真实浏览器验收见[范围](source-native-download-wiring.md)。独立完整浏览器v2仍构建，预算/readiness未激活，41项10/17/14及原8小时失败保持。
+
 2026-10-20 Source Native下载owner增加独立适配器：一份原ticket、一个实际普通CDP请求及独立退休通道，未知arm/30秒观察失败均保留状态；复用原SDK DTO/文件名/chunk验证，不保存整文件Node Buffer。新增23项异步边界夹具及两平台各1479项完整JS通过（macOS1464通过/15跳过、Linux1473通过/6跳过，零失败），完整双平台结果见[独立范围](native-download-source-owner.md)。尚未接入原Source/capture选路，Native开关与readiness保持关闭；真实浏览器构建在原32GiB门槛处停止143，容器移除、缓存保留，不能算通过。41项10/17/14及原失败8小时不变。
 
 目标覆盖 [41 项优化清单](optimization-backlog.md)及轻微丢包下的体验优化。当前实现保留在本地工作区，不提交、不推送（用户最新要求）。既有 `live/peer.mjs` 无关修改保持原状。Chromium 与 Cargo 构建缓存保留。

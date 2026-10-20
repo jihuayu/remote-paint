@@ -1,4 +1,5 @@
 import {createAgentDownloadOwner,captureManagedAgentDownload,captureManagedAgentDownloadId,captureManagedAgentDownloadRead} from './agent-download.mjs';
+import {createSourceNativeAgentDownloadOwner} from './source-download-native.mjs';
 import {captureManagedAgentScreenshot,captureManagedAgentScreenshotRead,captureManagedAgentScreenshotId,decodeAgentScreenshot,createAgentScreenshotOwner,AGENT_SCREENSHOT_LIMITS} from './agent-screenshot.mjs';
 import {captureManagedAgentAccessibility,captureAgentAccessibilityResult,boundAgentAxReply,projectAgentAccessibility} from './agent-accessibility.mjs';
 import {randomUUID} from 'node:crypto';
@@ -40,7 +41,7 @@ export function captureAgentObservationResult(value,{binding:expectedBinding=nul
 // Source-owned read side. One actual transaction includes evaluation and object
 // cleanup; observer deadlines in the outer channel never free that admission.
 export function createManagedAgentObserver({source,page,binding:bound,version,authorize,live}){
- if(!string(version,256,1)||typeof authorize!=='function'||typeof live!=='function')fail('AGENT_OBSERVATION_UNAVAILABLE');const capture=source.capture,transport=capture?.cdp;if(capture?.page!==page||typeof transport?.send!=='function')fail('AGENT_OBSERVATION_UNAVAILABLE');const send=transport.send.bind(transport),b=binding(bound),group='agent-observe-'+randomUUID();let state=null,pending=null,closed=false,closing=null,poisoned=false,auxiliary=null;const axGroup=group+'-ax',screenshots=createAgentScreenshotOwner();let screenshotRevision=0;const downloads=createAgentDownloadOwner({page,binding:b,version});
+ if(!string(version,256,1)||typeof authorize!=='function'||typeof live!=='function')fail('AGENT_OBSERVATION_UNAVAILABLE');const capture=source.capture,transport=capture?.cdp;if(capture?.page!==page||typeof transport?.send!=='function')fail('AGENT_OBSERVATION_UNAVAILABLE');const send=transport.send.bind(transport),b=binding(bound),group='agent-observe-'+randomUUID();let state=null,pending=null,closed=false,closing=null,poisoned=false,auxiliary=null;const axGroup=group+'-ax',screenshots=createAgentScreenshotOwner();let screenshotRevision=0;const nativeDownloads=createSourceNativeAgentDownloadOwner({page,capture,transport,binding:b,version,closeObserver});const downloads=nativeDownloads??createAgentDownloadOwner({page,binding:b,version});
  const current=()=>{live();if(closed)fail('AGENT_RUN_CLOSED');if(poisoned)fail('AGENT_OBSERVATION_UNAVAILABLE');const c=source.capture,config=c?.binding?.config;if(c!==capture||c?.page!==page||c?.cdp!==transport||typeof c.cdp.send!=='function'||!integer(c.world,1)||!string(c.documentToken,64,1)||c.stopped||c.transitioning||source.transitioning||config?.documentToken!==c.documentToken||c.binding.world!==c.world||c.binding.revision!==c.revision||config.pageEpoch!==source.pageEpoch||config.viewportVersion!==source.viewportVersion||source.control.closed||source.page!==page||page.isClosed())fail('STALE_AGENT_PAGE');return {capture:c,cdp:c.cdp,send,world:c.world,documentToken:c.documentToken,revision:c.revision,pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion,controlSessionId:source.control.sessionId,subscriptionId:config.id,token:c.token};};
  const guard=(expected,document)=>{const now=current();if(Object.keys(expected).some(k=>now[k]!==expected[k])||document&&['controlSessionId','pageEpoch','viewportVersion'].some(k=>document[k]!==now[k]))fail('STALE_AGENT_PAGE');authorize();const after=current();if(Object.keys(expected).some(k=>after[k]!==expected[k]))fail('STALE_AGENT_PAGE');return after;};
  const release=async()=>{const old=state;if(old){try{await old.send('Runtime.releaseObjectGroup',{objectGroup:group});}catch(error){poisoned=true;throw error;}if(state===old)state=null;}};
@@ -55,7 +56,7 @@ export function createManagedAgentObserver({source,page,binding:bound,version,au
   }catch(error){if(state?.objectId===null){try{await release();}catch{poisoned=true;}}throw error instanceof AgentInputError?error:new AgentInputError('AGENT_OBSERVATION_FAILED','not-dispatched');}});const work=pending;void work.finally(()=>{if(pending===work)pending=null;}).catch(()=>{});return work;
  }catch(error){return Promise.reject(error instanceof AgentInputError?error:new AgentInputError('AGENT_OBSERVATION_FAILED','not-dispatched'));}};
  const downloadRead=(operation,context,value)=>{try{if(closed)fail('AGENT_RUN_CLOSED');authorize();const ctx=captureAgentObservationContext(context);if(Object.keys(b).some(k=>ctx.binding[k]!==b[k]))fail('AGENT_INVALID_CONTEXT');const request=operation==='arm'?captureManagedAgentDownload(value):operation==='read'?captureManagedAgentDownloadRead(value.downloadId,value.offset,value.maxBytes):captureManagedAgentDownloadId(value);if(pending)fail('AGENT_OBSERVATION_BUSY');const expected=current();guard(expected,ctx.document);
-  pending=Promise.resolve().then(async()=>{try{await ensureRealm(expected,ctx.document);await screenshotMetadata(expected,ctx.document);guard(expected,ctx.document);if(operation==='arm')return downloads.arm(ctx,request,()=>guard(expected,ctx.document));if(operation==='info')return downloads.info(request,ctx);if(operation==='read')return downloads.read(request,ctx);const released=await downloads.release(request,ctx);guard(expected,ctx.document);return released;}catch(error){throw error instanceof AgentInputError?error:new AgentInputError('AGENT_DOWNLOAD_FAILED','not-dispatched');}});const work=pending;void work.finally(()=>{if(pending===work)pending=null;}).catch(()=>{});return work;
+  pending=Promise.resolve().then(async()=>{try{await ensureRealm(expected,ctx.document);await screenshotMetadata(expected,ctx.document);guard(expected,ctx.document);if(operation==='arm')return downloads.arm(ctx,request,()=>guard(expected,ctx.document),expected);if(operation==='info')return downloads.info(request,ctx);if(operation==='read')return downloads.read(request,ctx);const released=await downloads.release(request,ctx);guard(expected,ctx.document);return released;}catch(error){throw error instanceof AgentInputError?error:new AgentInputError('AGENT_DOWNLOAD_FAILED','not-dispatched');}});const work=pending;void work.finally(()=>{if(pending===work)pending=null;}).catch(()=>{});return work;
  }catch(error){return Promise.reject(error instanceof AgentInputError?error:new AgentInputError('AGENT_DOWNLOAD_FAILED','not-dispatched'));}};
  return Object.freeze({
   armDownload:(context,limits={})=>downloadRead('arm',context,limits),
@@ -100,7 +101,26 @@ export function createManagedAgentObserver({source,page,binding:bound,version,au
     });const work=pending;void work.finally(()=>{if(pending===work)pending=null;}).catch(()=>{});return work;
    }catch(error){return Promise.reject(error instanceof AgentInputError?error:new AgentInputError('AGENT_OBSERVATION_FAILED','not-dispatched'));}
   },
-  close(){if(closing)return closing;closed=true;const downloadClose=downloads.close();void downloadClose.catch(()=>{});closing=(async()=>{try{await pending;}catch{}screenshots.close();let failed=false;try{await downloadClose;}catch{failed=true;}try{await cleanAuxiliary();}catch{failed=true;}try{await release();}catch{failed=true;}if(failed)throw new AgentInputError('AGENT_OBSERVATION_FAILED','unknown');})() ;return closing;},
+  close:closeObserver,
   status:()=>Object.freeze({pending:pending!==null,closed,realm:state!==null,accessibilityResources:auxiliary!==null,screenshots:screenshots.status(),downloads:downloads.status()})
  });
+ function closeObserver(){
+  if(closing)return closing;closed=true;const downloadClose=downloads.close();void downloadClose.catch(()=>{});
+  let expired=false;
+  const actual=(async()=>{
+   if(nativeDownloads){
+    await Promise.all([Promise.resolve(pending).catch(()=>{}),downloadClose]);
+   }else{try{await pending;}catch{}}
+   screenshots.close();let failed=false;try{await downloadClose;}catch{failed=true;}try{await cleanAuxiliary();}catch{failed=true;}try{await release();}catch{failed=true;}
+   if(failed||expired){nativeDownloads?.observerFailed();throw new AgentInputError('AGENT_OBSERVATION_FAILED','unknown');}
+   nativeDownloads?.observerClosed();
+  })();
+  if(nativeDownloads){
+   // Cover pending work AND actual group retirement. Expiry never clears
+   // pending admission; a late successful group reply cannot free the slot.
+   let timer;const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{expired=true;reject(new AgentInputError('AGENT_OBSERVATION_FAILED','unknown'));},30000);});
+   closing=Promise.race([actual,deadline]).catch(()=>{screenshots.close();nativeDownloads.observerFailed();throw new AgentInputError('AGENT_OBSERVATION_FAILED','unknown');}).finally(()=>clearTimeout(timer));
+  }else closing=actual;
+  return closing;
+ }
 }
