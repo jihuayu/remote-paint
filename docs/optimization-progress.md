@@ -1360,3 +1360,33 @@ with-secondary：burst后14个样本，footprint前后中位数1878544520→1926
 623文件的首轮600秒实际基线通过：总驱动620.190秒，660次更新、52次resize、44次主输入、6次跨站、7个400次更新的附加Session及7次默认30秒租约到期，12个连续窗口的2142帧全部配对、44次输入均有独立CPUWorker同水位和像素证明。三个主页面及两个Worker身份保持，Source创建/关闭8/8，清理错误0。该版本仍用调用时周期界限，尚未在本次实际数据中触发静态分析发现的并发误判，不当作新修正版已经实跑。
 
 补全后625文件新副本完整JS每端267项：Mac259通过8平台跳过，Linux263通过4平台跳过，实际退出0。测试文件并发4、原2秒ready/request/250ms回收/5秒阶段与全部原断言保持；新增周期边界合同与实际本地WS启动失败清理合同通过。生产运行模块及Native二进制相对623副本不变，新的基线和netem各600秒仍需实际验收，8小时和41项总体仍未完成。证据见`docs/evidence/session-long-observation-v3-baseline.json`和`docs/evidence/session-long-observation-v4-js.json`。
+
+## RTT附加连接使用只读消费确认
+
+核对C10语义发现，既有RTT负载夹具虽然明确不绘制画面，仍使用display连接和旧式FrameAck；这些旧记录不能作为该额外连接scene-submitted的证明。新夹具复用已有Native生产消费票据，选recording生命周期以跨导航持续连接，校验Welcome的consumer-released、input=false、inputFeedback=false、control=null和renderer，再发送明确的consumer-released。它只消费并释放数据，不宣称录制了文件或绘制了像素。三个真实Viewer及其实际输入/像素/提交验证保持原样。
+
+修改仅限四个测试所有者/控制器/观察器/合同文件，生产Node/C++/Rust和原超时额度未改；五项纯合同通过。实际本地TCP/WebSocket合同完成1次释放ACK、10次ping/pong及合成Source时钟失败后的网络/连接清理，并在另一例拒绝伪造显示端Welcome且不发ACK。票据与display key未保存到日志。这些票据/Source/网络为合成夹具，真实Native授权和组合硬件负载仍须新628文件副本独立验证。旧625文件丢包试跑继续，原样保存；八小时入口已改为要求新只读副本的完整JS与两组实际试跑，不会用旧夹具直接启动。C10和41项整体状态仍未完成。证据见`docs/evidence/session-rtt-consumer.json`。
+
+## 修正版单向丢包试跑与只读RTT新副本完整检查
+
+625文件的单向40ms/2ms抖动/1%配置丢包/20Mbit Gateway试跑通过：请求600秒，总驱动608.695秒，498次更新、43次resize、32次主输入、2次跨站、3个400更新附加Session及3次默认租约到期。11个连续窗口1782帧全部配对、32次输入均连接到实际CPUWorker水位/像素，缺失0；内核末窗口记录907449922bytes、1534drops，真实Gateway43次ping/pong的RTT为41.12–2677.18ms。Source/Viewer实际退出0，qdisc移除、清理无错误。
+
+原始个体样本的帧龄估计p50约202.82ms、p95约737.97ms、最大1887.09ms，最大时钟不确定度13.99ms，最高同步像素观察成本11.90ms；保留时钟/观察器限制，不把配置40ms当实际RTT，也不把各层计数拼成同一丢帧账本。该副本仍用明确的旧ACK-only负载连接，不证明额外连接已绘制画面或完成C10语义，不用它直接放行八小时。
+
+新增只读消费语义的628文件新副本已完成全JS每端268项：Mac260通过8平台跳过，Linux264通过4平台跳过，实际退出0，测试文件并发仍4且原采样期限未改。生产Node/C++/Rust、浏览器/Wasm字节与物理策略均未修改；新的真实基线和丢包试跑仍须独立验收。证据见`docs/evidence/session-long-observation-v4-netem.json`与`docs/evidence/session-long-observation-v5-js.json`。
+
+## 只读RTT的两组600秒实际组合验收
+
+同一628文件副本在真实Mac三主Viewer/两个Worker、Linux ARM64 Native Source上完成基线及单向40ms/2ms抖动/1%配置丢包/20Mbit试跑，均保持原窗口、采样、3秒输入ACK/RTT与默认30秒租约期限。基线总驱动630.455秒、661更新、2188帧、44次主输入、6次跨站、7个400更新附加Session与7次租约到期；丢包总驱动609.772秒、499更新、1788帧、32次主输入、2次跨站、3个附加Session与3次到期。全部成功CPUWorker提交均与自身四点像素/正常frame事件配对，缺失0；所有主输入均连接到独立CPUWorker的同epoch/viewport/水位和输入像素。三个页面与两个Worker身份保持，两端实际退出0，清理无错误。
+
+附加RTT连接实际通过Native一次性recording生命周期票据，欢迎消息无输入权限/控制票据，使用consumer-released；Source窗口实际只有三个display及一个recording角色。它采用明确的原生消费协议释放字节，不声称解码、绘制或产出录像。额外连接仍使用既有legacy资源传输默认，基线和丢包均相同；这些结果不是仅三个现代Viewer、无观察器或物理scanout性能。
+
+丢包末窗口内核记录910898394bytes/1556drops；个体观测帧龄估计p95约696.68ms，最大1929.68ms，时钟区间与同步读像素成本限制保留。各层丢弃/恢复/内核包数独立保存，不合并单位。
+
+原物理策略30分钟及新版268项每端JS已独立通过。八小时前置检查核对四份检查点、同副本两组负载、19个浏览器文件、依赖及二进制、Mac14,6/M2 Max/64GiB/Chrome155.0.8059.84、原492548物理策略与磁盘余量；尚未把检查完成当成八小时通过。准备独立冻结28800秒，仍不累计旧失败时长，41项9完成/12部分/20待做。证据见`docs/evidence/session-long-observation-v5-baseline.json`与`docs/evidence/session-long-observation-v5-netem.json`。
+
+## 八小时预热失败与接管就绪状态修复
+
+首个633文件独立八小时请求在预热cycle16失败：首次文本探测超过原3秒期限，但发送观察器sent/acked/pending均0，Source inputSeq也为0；Source实际human holder已是该Viewer。Source与Viewer实际退出0/1，清理错误0，唯一已完成采样时间跨度0秒，不能算八小时或并入任何其他运行。原冻结副本、日志与失败检查点全部保留，未重启或放宽期限。
+
+确定性合同在该原633冻结版ViewerInput上复现：只收到自身持有ControlState时active仍false，界面却提前显示“你正在操作”，因此真实授权尚未到达的交错会让输入被忽略。修复为此时显示“正在接管”并禁用按钮，只有有效ControlGranted后显示可操作；原active/租约/作用域和ACK期限均保留。完全相同的新合同在旧版失败、修复后输入17项合同通过。原八小时失败没有保存逐条控制消息时序，因此暂不宣称该交错是唯一原因；仍需真实Native延迟授权复现、完整双平台检查、新两组负载与独立八小时。证据见`docs/evidence/control-grant-readiness.json`。

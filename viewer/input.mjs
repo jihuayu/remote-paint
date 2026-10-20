@@ -140,7 +140,8 @@ export class ViewerInput {
  message(message){
   if(message.type==='ControlState'){
    this.mode=message.mode;if(message.mode!=='human'||message.holder!==this.peerId){this.reset();this.button.disabled=!this.enabled||!this.frame||message.mode!=='agent';}
-   this.label.textContent=message.mode==='handoff'?'正在交接':message.mode==='agent'?'Agent 控制':message.holder===this.peerId?'你正在操作':'其他 Viewer 控制';return true;
+   if(message.mode==='human'&&message.holder===this.peerId&&!this.active)this.button.disabled=true;
+   this.label.textContent=message.mode==='handoff'?'正在交接':message.mode==='agent'?'Agent 控制':message.holder===this.peerId?(this.active?'你正在操作':'正在接管'):'其他 Viewer 控制';return true;
   }
   if(message.type==='ControlGranted'){
    if(message.pageEpoch!==this.frame?.pageEpoch||message.viewportVersion!==this.frame?.viewportVersion){this.send({...message,type:'ReleaseControl'});return true;}

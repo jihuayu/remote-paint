@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-18T01:26:53.358225+00:00",
+  "status": "readonly-rtt-consumer-implemented-contracts-passed-hardware-pending",
+  "problem": "ExtraRTTloadfixtureconnectedasdisplayandACKedwithoutdrawing. EarlierrecordslabelleditACK-onlyanddidnotproveitsrendering;itmustnotbeusedasC10scene-submissionproof.",
+  "change": "UseexistingNativeproductionrecording-lifetime one-useticket/consumeendpoint,validateWelcome hasconsumer-released/inputfalse/inputFeedbackfalse/controlnull andmatchingrenderer;sendonlyconsumer-released FrameAck. No capturedrecordingartifactorrealrenderclaim. Same3actualViewers unchanged. Sourceowner exposesexistingproductionticketAPI via privatefilecommand.",
+  "testOnlyFiles": {
+    "tests/session-memory-owner.mjs": "2363c6a445eaaa27e74446741056f0c08abe8bb0ee7f68c12ad9634561899959",
+    "tests/serve-session-longload.mjs": "676884d1285f273c6a26fb3e7752f3b9219866f1ed6ffaf06af36756d4ae6cde",
+    "tests/session-long-observation.mjs": "678128a626d9c805343bbf15f2052e5a875e42bd04c6d43fdffb55ce7ae761fd",
+    "tests/session-long-observation.test.mjs": "a22b0011bbb6497a3d0eb9126470be0f6110eb5f00e280ed139647c0e12bc51a"
+  },
+  "version": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v5/baseline-frozen-version.json",
+  "versionSha256": "82b7d1275e5277aa4c9b2eb24636f9d4d7a4b00b593c429ad35e54f137cdd420",
+  "sourceFiles": 628,
+  "pureContracts": {
+    "tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v5/contracts/tests.log",
+    "sha256": "5a1841dcad231c746fe36afd795b5adf4c6fe2c215c5d6f6c48208ce5bae715d"
+  },
+  "actualLocalWSContracts": {
+    "receipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-readonly-rtt-contract-v1/receipt.json",
+    "sha256": "be2134745af1c308fed15c9e96e29351635af131d207e38ae1b4dffe5824ed18",
+    "cases": 2,
+    "releaseAcks": 1,
+    "pingPongs": 10,
+    "forgedDisplayWelcomeRejected": true,
+    "scope": "Actual localTCP/WS withsyntheticSource/ticket/network,notrealNativeGateway/netem/browseracceptance."
+  },
+  "productionCppRustNodeRuntimeUnchanged": true,
+  "originalBudgetsAndDeadlinesUnchanged": true,
+  "olderFrozenV4RunUntouched": true,
+  "eightHourGateNowRequiresV5": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/freeze-session-coupled-eight-hour-v2.py",
+  "fullJS268Pending": true,
+  "hardwareBaselineAndNetemPending": true,
+  "all41": {
+    "complete": 9,
+    "partial": 12,
+    "pending": 20
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

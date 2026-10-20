@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-18T02:00:29.735557+00:00",
+  "status": "control-readiness-before-grant-regression-reproduced-and-ui-fixed",
+  "failureReference": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-coupled-eight-hour-failure-checkpoint-v1.json",
+  "failureFacts": "Firsttext atcycle16 timedout3s whileobserver sent/acked/pending all0 andSource inputSeq0;Source holderwasthisdisplay. Actualorderingnotlogged,so notproofthisissolecause.",
+  "deterministicRegression": "Samecurrenttest againstoriginalfrozen633 ViewerInput falselyadvertisesyou-are-operating onown-holderControlState despiteactivefalse;newvalidgrantrequired beforeinputreadiness.",
+  "productionChange": "Own-holderhuman state now shows正在接管anddisablesbutton until actualscopedControlGranted;existingactive gate/lease/inputdeadline remain unchanged.",
+  "files": {
+    "viewer/input.mjs": "b49c09e563efad82669ccb71c89ff0771beca9dbbfa2b7662724a8e4d9565001",
+    "tests/viewer-input.test.mjs": "5cb1dba63a63cac7248577e65fe597e04541bf3f2f12658428872d4193617b4e"
+  },
+  "beforeViewerSha256": "c488ad11d274e55bb9263fed62f9390dc38647413b4e76f77828f0e1e326a8a6",
+  "beforeContracts": {
+    "tests": 1,
+    "failedExpected": 1
+  },
+  "afterContracts": {
+    "tests": 17,
+    "passed": 17
+  },
+  "results": {
+    "before": {
+      "exitCode": 1,
+      "command": [
+        "node",
+        "--test",
+        "--test-name-pattern=own-holder control state",
+        "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-readiness-v1/before.test.mjs"
+      ],
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-readiness-v1/before.log",
+      "sha256": "cbc9bfaf2e3347b4ff43a4a317e4a7baaa9f068b67002e1b4ed22896728c7f4d"
+    },
+    "after": {
+      "exitCode": 0,
+      "command": [
+        "node",
+        "--test",
+        "tests/viewer-input.test.mjs"
+      ],
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/control-grant-readiness-v1/after.log",
+      "sha256": "89b2234562f13a3dd1bf17cdc506268597c016ae75aaa4faf84b8c22eff949d0"
+    }
+  },
+  "realDelayedNativeGrantContractPending": true,
+  "fullJSPending": true,
+  "freshBaselineNetemAnd8hPending": true,
+  "oldFailedAttemptPreserved": true,
+  "noCommitPush": true,
+  "eightHourPassed": false
+}

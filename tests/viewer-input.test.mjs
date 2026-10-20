@@ -25,6 +25,16 @@ function inputHarness(options={}){
  return {input,sent,label,close(){input.reset();globalThis.window=prior;}};
 }
 const key=type=>({kind:'key',type,key:'a',code:'KeyA',text:type==='keyDown'?'a':undefined});
+test('own-holder control state waits for the actual lease grant before advertising input readiness',()=>{
+ const h=inputHarness();try{
+  h.input.reset();h.input.message({type:'ControlState',mode:'human',holder:'p',pageEpoch:1,viewportVersion:1});
+  assert.equal(h.input.active,false);assert.equal(h.label.textContent,'正在接管');assert.equal(h.input.button.disabled,true);
+  h.input.push({kind:'text',text:'x'});assert.equal(h.sent.length,0);
+  h.input.message({type:'ControlGranted',lease:'l',feedbackEpoch:1,nextSeq:1,pageEpoch:1,viewportVersion:1});assert.equal(h.input.active,true);assert.equal(h.label.textContent,'你正在操作');assert.equal(h.input.button.disabled,false);
+  h.input.push({kind:'text',text:'x'});assert.equal(h.sent.length,1);assert.equal(h.sent[0].type,'Input');assert.equal(h.sent[0].seq,1);
+  h.input.message({type:'InputAck',seq:1,accepted:true});
+ }finally{h.close();}
+});
 test('bounded input window keeps key pairs and composition ordered through delayed acknowledgements',()=>{
  const h=inputHarness({inputWindow:4});
  try{

@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-18T01:31:41.883782+00:00",
+  "status": "passed268-tests-eachplatform-readonly-rtt-candidate",
+  "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v5/baseline-frozen-version.json",
+  "manifestSha256": "82b7d1275e5277aa4c9b2eb24636f9d4d7a4b00b593c429ad35e54f137cdd420",
+  "sourceFiles": 628,
+  "sourceChanges": [
+    "docs/evidence/session-long-observation-v3-baseline.json",
+    "docs/evidence/session-long-observation-v4-baseline.json",
+    "docs/evidence/session-long-observation-v4-js.json",
+    "docs/optimization-progress.md",
+    "tests/serve-session-longload.mjs",
+    "tests/session-long-observation.mjs",
+    "tests/session-long-observation.test.mjs",
+    "tests/session-memory-owner.mjs"
+  ],
+  "testfileConcurrency": 4,
+  "fullJS": {
+    "testsEach": 268,
+    "macPass": 260,
+    "macLinuxOnlySkip": 8,
+    "linuxPass": 264,
+    "linuxMacOnlySkip": 4,
+    "failed": 0
+  },
+  "readonlyContracts": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-rtt-consumer-checkpoint-v1.json",
+  "actualLocalWSCases": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-readonly-rtt-contract-v1/receipt.json",
+  "productionNativeAndNodeRuntimeUnchanged": true,
+  "budgetsAndOriginalDeadlinesUnchanged": true,
+  "hardwareCandidatePilotsAccepted": false,
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v5/js-results/mac.log": "788de1424f957a1a33072cde971ee19e186a2ee69a711de8a40ccb60e1a02ea8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v5/js-results/linux.log": "d6fc70e8601277a3468f12051865e3e3190d28bfd5178bbe9c42c54eda9509ac",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v5/js-results/mac-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-observation-v5/js-results/linux-exit.json": "982b9e9bfb10ffe83cad665807abcfd3fa97b37822db5ab7831157a499548a9e"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false
+}
