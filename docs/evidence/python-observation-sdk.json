@@ -1,0 +1,207 @@
+{
+  "at": "2026-10-19T18:57:38.943454+00:00",
+  "task": "Python Agent observation SDK frozen models/runtime/types/installed Native checkpoint",
+  "status": "Python-observation-SDK-qualified-within-scope",
+  "scope": "Installed Python backend AgentClient observations.context/read with frozen snake_case reference/context/document/query/limits/node/result models, tuple nodes, before-await capture, exact binding/version/document/query/budget/metadata/bytes and one HTTP attempt. Actual task/body/close/end ownership preserved. Installed Python public HTTP-to-canonical-Native unknown-input inspection leaves quarantine/history unchanged. Node observation runtime/declarations unchanged. No computed AX/screenshot/download/full locator/write-by-handle/business-postcondition/full-CDP/fault qualification.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/node-observation-sdk-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "15fbd47ceb4b0c9429f60e2d6475b2f08e49d517e77cd10d1d6c4000b834ebd4",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-observation-sdk-candidate-v2/frozen-version.json",
+  "executedManifestSha256": "72cda863f1fe8d675dad9487ec54459b3aa323b93ee9632493f01585d3fc19a7",
+  "newPythonContracts": 19,
+  "testNames": [
+    "test_context_captured_before_await_and_frozen_without_writer_fence",
+    "test_context_query_limits_and_private_timeout_capture_before_await",
+    "test_snapshot_locate_and_element_queries_with_exact_limits_and_zero_text",
+    "test_invalid_reference_context_and_accessor_subclasses_do_not_send",
+    "test_query_limits_bool_unicode_css_arbitrary_code_and_timeout_rejected",
+    "test_context_response_exact_ids_version_document_status_location",
+    "test_reply_must_match_captured_logical_worker_document_query_and_budget",
+    "test_metadata_handles_redaction_and_utf16_budget_are_validated",
+    "test_source_and_public_utf8_caps_are_distinct_from_transport_budget",
+    "test_observation_sends_once_despite_mutation_retries_and_redacts_remote_messages",
+    "test_envelope_phase_correlation_encoding_and_content_type",
+    "test_noncooperative_timeout_retains_real_admission_and_separate_end",
+    "test_caller_cancellation_does_not_release_noncooperative_read_or_retry",
+    "test_actual_body_close_remains_counted_after_local_timeout",
+    "test_aclose_is_single_flight_and_stays_pending_until_real_read_settles",
+    "test_body_close_failure_fails_client_closed_without_sensitive_details",
+    "test_independent_scope_and_real_sqlite_executor_metadata",
+    "test_known_unknown_input_observable_without_recovery_or_history_upgrade",
+    "test_http_deadline_retains_executor_slot_and_independent_end"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v42/manifest.json",
+  "fullJsManifestSha256": "e2f96a2140b6c58357f4407fcda63a0dae7afc7327e4fb1590f6ead3da7498cb",
+  "fullJs": {
+    "mac": {
+      "tests": 1205,
+      "pass": 1190,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "ba689e856beed4c4399f1929104d950256cf83c1d3b693e07d43394908ed8722"
+    },
+    "linux": {
+      "tests": 1205,
+      "pass": 1199,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "739b21eb6b5c04492ca5cf53469de7aba363344d0b89f3d9023947118ce7b764"
+    }
+  },
+  "sdk": {
+    "mac": {
+      "nodeTests": 115,
+      "pythonTests": 56,
+      "typescriptActual0": true,
+      "mypyActual0": true,
+      "mappedCurrentInputs": 49,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "newPythonObservationWheel": true,
+      "nodeRuntimeDeclarationsUnchanged": true,
+      "nodeReadmeUpdated": true
+    },
+    "linux": {
+      "nodeTests": 115,
+      "pythonTests": 56,
+      "typescriptActual0": true,
+      "mypyActual0": false,
+      "mappedCurrentInputs": 49,
+      "sourceFallbackUnavailable": true,
+      "freshOfflineInstall": true,
+      "newPythonObservationWheel": true,
+      "nodeRuntimeDeclarationsUnchanged": true,
+      "nodeReadmeUpdated": true
+    }
+  },
+  "archives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "0810b04ea371205396cc585cde8eb5937fcc6c693218a03c0c4f7f6f8cc9e92e",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "165f7944bc3b49e677d7f2597f60cdfee0d3e36aee187290d750554cf3f53b39"
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-observation-sdk-native-v1/manifest.json",
+  "nativeManifestSha256": "b587043e11ac8248f22084294f4b3c2d05b4c6f60761780445f74ef787ed3201",
+  "nativeActualExitCode": 0,
+  "nativeObservations": {
+    "authorization": {
+      "independentObserveScope": true,
+      "tenantIsolation": true,
+      "noWriterFenceOrMutationOrEndOrSessionReleaseOrViewerMint": true,
+      "forgedLogicalContextRejectedBeforeSource": true
+    },
+    "metadata": {
+      "actualDOM": true,
+      "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "targetId": "target_d8b3796d-a553-464a-b89b-08e1852d3103",
+      "epoch": 1,
+      "observedAt": "2026-10-19T18:54:43.222Z",
+      "passwordRedacted": true,
+      "mainDocumentLightDomOnly": true,
+      "readDoesNotRefreshWriterFence": true
+    },
+    "unicode": {
+      "sourceChars": 4000,
+      "returnedChars": 1024,
+      "truncated": true,
+      "handleStillResolvable": true
+    },
+    "elements": {
+      "replacementRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "selectedMetadataChangeRejected": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "freshLocatorGetsDistinctHandle": true,
+      "noAutomaticSelectorRebind": true
+    },
+    "human": {
+      "readDuringHumanLease": true,
+      "writeStillPaused": true,
+      "readAndAgentEndPreservedOriginalHumanGrant": true,
+      "fieldValue": "OBSHF"
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "oldReadContextRejected": {
+        "code": "STALE_AGENT_PAGE",
+        "outcome": "not-dispatched"
+      },
+      "oldHandleRejectedInNewDocument": {
+        "code": "STALE_AGENT_ELEMENT",
+        "outcome": "not-dispatched"
+      },
+      "oldWriteFenceRejected": true,
+      "samePageTarget": true
+    },
+    "bounds": {
+      "largeFixtureNodes": 3000,
+      "visitedCap": 32,
+      "truncated": true,
+      "maxSerializedBytes": 8192,
+      "actualSnapshotBytes": 4813,
+      "noScriptOrArbitraryCdp": true
+    },
+    "unknown": {
+      "actualSlowClickOnce": true,
+      "observedActualDOMAfterUnknown": true,
+      "historyRemainedUnknown": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "httpTimeout": {
+      "http408": true,
+      "actualExecutorSlotRetained": true,
+      "writerRemainedActive": true,
+      "inputAfterActualSettlement": true
+    },
+    "disconnect": {
+      "actualExecutorSlotRetained": true,
+      "priorityEndWithIndependentScope": true,
+      "lateReadCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "sessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativeJournal": {
+    "logicalRunsClosed": 4,
+    "injected": 7,
+    "unknown": 1,
+    "rejected": 2
+  },
+  "publicObservationResultByteCap": 8192,
+  "privateReadResultByteCap": 6144,
+  "standardProviderFrameByteCap": 8192,
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-observation-sdk-cleanup-v1.json",
+  "cleanupAuditSha256": "a69092879a2f8124e6275d4c1f5880d2ddf549267c4e2f82e3c675515ab4a79c",
+  "trustedNativeObservationCoreQualified": true,
+  "publicObservationQualified": true,
+  "nodeObservationSdkQualified": true,
+  "pythonObservationSdkQualified": true,
+  "observationSdkQualified": true,
+  "K6Complete": false,
+  "publicNodeAgentSdkQualified": true,
+  "publicPythonAgentSdkQualified": true,
+  "publicAgentSdkQualified": true,
+  "agentSdkScope": "Both Node and Python seven managed input tools and main-light-DOM observation runtime/types/native qualified within scope. New Python wheel10members/6packagefiles; Node20files has README-only update.49 current dependency/contract inputs reinstalled.",
+  "allAgentCdpFenced": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true
+}

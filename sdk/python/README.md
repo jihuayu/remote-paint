@@ -70,3 +70,28 @@ Authorize independent `agents:read`, `agents:write`, `agents:end` backend scopes
 `AgentClientError` extends SessionClientError. Executing task cancellation raises `AgentClientCancelledError`, preserving asyncio.CancelledError semantics and dispatch uncertainty. `rpc_timeout_ms` (50–120000) is a private-RPC observation limit; local `timeout_seconds` (.05–60) bounds HTTP waiting. Neither deadline undoes an admitted action. `transport_status()` returns frozen ordinary/ending actual counts. Agent end has separate admission (default 8, range 1–64) and its own HTTPX connection pool, so ordinary in-flight requests cannot consume its connections. The ordinary default cap is 64. `CLIENT_BUSY` rejects local capacity immediately. End still requires server authorization and confirmed Source cleanup.
 
 This is the managed seven-tool API. General CDP/Playwright, business postconditions, resumable task recovery, full fault coverage and release/version guarantees remain outside its qualification.
+
+
+## DOM observations
+
+`agents:observe` is an independent backend scope. `client.observations.context(run)` requires an `AgentRun` or `AgentObservationReference(agent_run_id, session_id, version)`. The returned frozen read context has `binding` and `document`, without an input fence/control version. Observation credentials cannot create/end a Run, inject, release a Session, mint Viewer tickets or obtain the input fence.
+
+```python
+from remote_paint_session import AgentClient, AgentObservationInput, AgentLocateQuery, AgentObservationLimits
+
+async with AgentClient(base_url=base_url, api_key=observation_key) as reader:
+    context = (await reader.observations.context(run)).data
+    observation = (await reader.observations.read(context, AgentObservationInput(
+        AgentLocateQuery('id', 'status'),
+        AgentObservationLimits(max_nodes=8, max_chars=1024, max_visited=128),
+        rpc_timeout_ms=5000,
+    ))).data
+    for node in observation.nodes:
+        print(node.text)
+```
+
+Queries are frozen `AgentSnapshotQuery()`, `AgentLocateQuery(by, value)` by `id`/`tag`/`testId`, and `AgentElementQuery(element_id)`. Nodes are an immutable tuple of frozen models. Input, reference and nested context/query/limits values are validated and copied before the method returns its coroutine. Each call sends exactly one HTTP attempt even if client mutation retries are configured. No read `retries` or idempotency argument is accepted. Cancel the caller task to stop waiting; noncooperative transport/body/close work remains counted until actual completion. `aclose()` keeps its existing bounded single-flight close and independent end pool semantics.
+
+A successful response must match the captured logical Run/Session/version/Source binding/document/query/limits, be HTTP 200 without Location, and satisfy metadata, UTF-16 text, node/visit and Source/public UTF-8 bounds. `scope` is main-document light DOM; role/name are limited DOM attributes, not computed accessibility data. Password/hidden values are redacted. Snapshot revision/time are not a global DOM mutation counter. A fresh snapshot, GC, document or selected metadata changes can expire handles; no automatic selector rebind or context/fence refresh occurs.
+
+Known-bound same-owner `recovery-required` input can be inspected. Observing its actual DOM does not upgrade unknown invocation history, clear writer quarantine or replay input. AX, screenshots/downloads, full locators/frame traversal and write-by-handle remain pending. Qualification is limited by the matching repository evidence and installed Native tests.

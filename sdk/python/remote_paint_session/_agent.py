@@ -1,12 +1,15 @@
-"""Managed seven-tool Agent API for trusted Python backends."""
+"""Managed Agent input and observation API for trusted Python backends."""
 from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, field
-from typing import Any, Generic, Literal, NewType, NoReturn, NotRequired, TypeVar, TypedDict, cast
+from typing import TYPE_CHECKING, Any, Generic, Literal, NewType, NoReturn, NotRequired, TypeVar, TypedDict, cast
 import httpx
 from ._client import SessionId, _date as _session_date, _integer
 from ._transport import ApiResult, BackendTransport, Outcome, RetryCount, SessionClientError, SessionClientCancelledError, TransportStatus
+
+if TYPE_CHECKING:
+    from ._observation import ObservationExpected
 
 AgentRunId = NewType('AgentRunId', str)
 AgentInvocationId = NewType('AgentInvocationId', str)
@@ -227,7 +230,10 @@ class _Expected:
     fence: AgentFence | None = None
     inputs: int | None = None
 
-def _validate(status: int, v: Any, e: _Expected, headers: httpx.Headers) -> Any:
+def _validate(status: int, v: Any, e: _Expected | ObservationExpected, headers: httpx.Headers) -> Any:
+    from ._observation import ObservationExpected, validate_observation
+    if isinstance(e,ObservationExpected):
+        return validate_observation(status,v,e,headers)
     if e.kind=='context':
         if status!=200 or not _exact(v,['binding','fence']) or not _binding(v['binding']) or not _fence(v['fence']) or v['binding']['sessionId']!=e.session_id:
             _fail()
@@ -379,7 +385,8 @@ class AgentClient:
         if not _integer(max_concurrent_end_requests,1,64):
             _invalid()
         self._transport = BackendTransport(base_url=base_url,api_key=api_key,timeout_seconds=timeout_seconds,retries=retries,max_response_bytes=max_response_bytes,max_concurrent_requests=max_concurrent_requests,max_concurrent_end_requests=max_concurrent_end_requests,transport=transport,validate=_validate,error_type=AgentClientError,cancelled_type=AgentClientCancelledError,agent_errors=True)
-        self.runs,self.invocations = _Runs(self._transport),_Invocations(self._transport)
+        from ._observation import _Observations
+        self.runs,self.invocations,self.observations = _Runs(self._transport),_Invocations(self._transport),_Observations(self._transport)
     async def __aenter__(self) -> AgentClient:
         self._transport.ensure_open()
         return self

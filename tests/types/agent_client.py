@@ -33,3 +33,24 @@ async def use(client: AgentClient) -> None:
     except AgentClientCancelledError as cancelled:
         outcome: str = cancelled.outcome
         _ = outcome
+
+
+from remote_paint_session import (AgentObservation,AgentObservationContext,AgentObservationReference,
+    AgentObservationInput,AgentObservationLimits,AgentSnapshotQuery,AgentLocateQuery,AgentElementQuery,AgentElementId)
+
+async def observe(client: AgentClient, run: AgentObservationReference) -> None:
+    context: AgentObservationContext = (await client.observations.context(run)).data
+    result: AgentObservation = (await client.observations.read(context,AgentObservationInput(AgentSnapshotQuery(),AgentObservationLimits(max_chars=0)))).data
+    selected = (await client.observations.read(context,AgentObservationInput(AgentLocateQuery('testId','status')))).data
+    if selected.nodes:
+        element_id: AgentElementId = selected.nodes[0].element_id
+        await client.observations.read(context,AgentObservationInput(AgentElementQuery(element_id)))
+    await client.observations.context(AgentRunReference(run.agent_run_id,run.session_id))  # type: ignore[arg-type]
+    await client.observations.read(context,AgentObservationInput(AgentSnapshotQuery()),retries=1)  # type: ignore[call-arg]
+    _ = context.fence  # type: ignore[attr-defined]
+    context.document.page_epoch = 2  # type: ignore[misc]
+    result.nodes[0].text = 'changed'  # type: ignore[misc]
+    result.nodes.append(selected.nodes[0])  # type: ignore[attr-defined]
+    _ = AgentLocateQuery('css','*')  # type: ignore[arg-type]
+    _ = AgentElementQuery(run.agent_run_id)  # type: ignore[arg-type]
+    await client.invocations.create(context,{'tool':'insertText','params':{'text':'private'}},idempotency_key='key')  # type: ignore[arg-type]
