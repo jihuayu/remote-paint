@@ -10,6 +10,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/json/string_escape.h"
+#include "base/strings/string_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -1014,6 +1016,107 @@ TEST_F(RemotePaintDownloadClientTest, ActualCancelObserverCanDestroyCoreInsideEx
     }
     EXPECT_FALSE(registry); model.Drain(); EXPECT_EQ(0u, Budget::ReservedItems());
   }
+}
+
+
+TEST_F(RemotePaintDownloadClientTest, SuggestedNameUnitBoundRejectsBeforeClaimAndAcceptsExactLimit) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  model.Start(true, 7, true, context); auto lease = LeaseFor(model);
+  EXPECT_FALSE(client.Offer(lease, std::string(514, 'a')));
+  ASSERT_TRUE(client.Info(key, ticket)); EXPECT_TRUE(client.Info(key, ticket)->suggested_name.empty());
+  const std::string name(513, 'a'); ASSERT_TRUE(client.Offer(lease, name)); model.Drain();
+  ASSERT_TRUE(client.Info(key, ticket)); EXPECT_EQ(name, client.Info(key, ticket)->suggested_name);
+  Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, SuggestedNameUtf8ByteBoundAcceptsExactThreeByteUnits) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  model.Start(true, 7, true, context); auto lease = LeaseFor(model);
+  std::string name; for (int i = 0; i < 513; ++i) name += "\xe4\xb8\xad";
+  ASSERT_EQ(Client::kSuggestedNameBytes, name.size());
+  EXPECT_FALSE(client.Offer(lease, name + "\xe4\xb8\xad"));
+  ASSERT_TRUE(client.Offer(lease, name)); model.Drain();
+  ASSERT_TRUE(client.Info(key, ticket)); EXPECT_EQ(name, client.Info(key, ticket)->suggested_name);
+  Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, SuggestedNameCountsSurrogatePairAcrossSourceSliceBoundary) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  model.Start(true, 7, true, context); auto lease = LeaseFor(model);
+  EXPECT_FALSE(client.Offer(lease, std::string(512, 'a') + "\xf0\x9f\x98\x80"));
+  const auto name = std::string(511, 'a') + "\xf0\x9f\x98\x80";
+  ASSERT_TRUE(client.Offer(lease, name)); model.Drain();
+  ASSERT_TRUE(client.Info(key, ticket)); EXPECT_EQ(name, client.Info(key, ticket)->suggested_name);
+  Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, SuggestedNameInvalidUtf8CannotConsumeActualLeaseClaim) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  model.Start(true, 7, true, context); auto lease = LeaseFor(model);
+  EXPECT_FALSE(client.Offer(lease, "\xff")); EXPECT_FALSE(client.Offer(lease, "\xed\xa0\x80"));
+  ASSERT_TRUE(client.Offer(lease, "actual.txt")); model.Drain();
+  ASSERT_TRUE(client.Info(key, ticket)); EXPECT_EQ("actual.txt", client.Info(key, ticket)->suggested_name);
+  Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, SuggestedNameCopiesOnlyAcceptedBorrowedPrefix) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  model.Start(true, 7, true, context); std::string name = "kept.txt";
+  ASSERT_TRUE(client.Offer(LeaseFor(model), name)); name.assign(10000, 'z'); model.Drain();
+  ASSERT_TRUE(client.Info(key, ticket)); EXPECT_EQ("kept.txt", client.Info(key, ticket)->suggested_name);
+  Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, OtherPageSuggestedNameDoesNotReplaceOriginalMetadata) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  model.Start(true, 7, true, RequestContext()); EXPECT_FALSE(client.Offer(LeaseFor(model), "other.txt"));
+  ASSERT_TRUE(client.Info(key, ticket)); EXPECT_TRUE(client.Info(key, ticket)->suggested_name.empty());
+  model.RetireAll(); model.Start(true, 7, true, context);
+  ASSERT_TRUE(client.Offer(LeaseFor(model), "original.txt")); model.Drain();
+  ASSERT_TRUE(client.Info(key, ticket)); EXPECT_EQ("original.txt", client.Info(key, ticket)->suggested_name);
+  Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, DuplicateOfferCannotRewriteClaimedSuggestedName) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  model.Start(true, 7, true, context); auto lease = LeaseFor(model);
+  ASSERT_TRUE(client.Offer(lease, "first.txt")); EXPECT_FALSE(client.Offer(lease, "changed.txt")); model.Drain();
+  ASSERT_TRUE(client.Info(key, ticket)); EXPECT_EQ("first.txt", client.Info(key, ticket)->suggested_name);
+  Release(model, client, key, ticket);
+}
+TEST_F(RemotePaintDownloadClientTest, SuccessfulRetirementClearsNameBeforeOtherClientAndDefaultOffer) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto first = base::UnguessableToken::Create(), second = base::UnguessableToken::Create();
+  const auto a = Arm(client, first); model.Start(true, 7, true, context);
+  ASSERT_TRUE(client.Offer(LeaseFor(model), "old.txt")); model.Drain(); Release(model, client, first, a);
+  const auto b = Arm(client, second); ASSERT_TRUE(client.Info(second, b));
+  EXPECT_TRUE(client.Info(second, b)->suggested_name.empty());
+  model.Start(true, 7, true, context); ASSERT_TRUE(client.Offer(LeaseFor(model), "")); model.Drain();
+  ASSERT_TRUE(client.Info(second, b)); EXPECT_EQ("download.bin", client.Info(second, b)->suggested_name);
+  Release(model, client, second, b);
+}
+TEST_F(RemotePaintDownloadClientTest, SuggestedNameWorstJsonEscapingRemainsBounded) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  model.Start(true, 7, true, context); const std::string name(513, '\x01');
+  ASSERT_TRUE(client.Offer(LeaseFor(model), name)); model.Drain(); auto info = client.Info(key, ticket); ASSERT_TRUE(info);
+  std::string encoded; base::EscapeJSONString(info->suggested_name, true, &encoded);
+  EXPECT_EQ(513u * 6 + 2, encoded.size()); EXPECT_LT(encoded.size() + 1024, 6144u);
+  Release(model, client, key, ticket);
+}
+
+
+TEST_F(RemotePaintDownloadClientTest, SuggestedNamePreservesValidUnicodeNoncharacters) {
+  Model model(tasks_); auto context = RequestContext(); Client client(context);
+  const auto key = base::UnguessableToken::Create(); const auto ticket = Arm(client, key);
+  model.Start(true, 7, true, context);
+  const std::string name = "name_\xef\xbf\xbf_\xf4\x8f\xbf\xbe.txt";
+  EXPECT_FALSE(base::IsStringUTF8(name));
+  EXPECT_TRUE(base::IsStringUTF8AllowingNoncharacters(name));
+  ASSERT_TRUE(client.Offer(LeaseFor(model), name)); model.Drain();
+  ASSERT_TRUE(client.Info(key, ticket)); EXPECT_EQ(name, client.Info(key, ticket)->suggested_name);
+  Release(model, client, key, ticket);
 }
 
 TEST_F(RemotePaintDownloadBudgetTest, FailedCleanupHoldsQuotaUntilActualProcessExit) {

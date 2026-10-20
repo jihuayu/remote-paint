@@ -1,0 +1,11 @@
+--- a/components/download/public/common/native_download_transfer_client.cc
++++ b/components/download/public/common/native_download_transfer_client.cc
+@@ -47,7 +47,7 @@
+     std::string_view suggested_name) {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   if (closed_ || suggested_name.size() > kSuggestedNameBytes ||
+-      !base::IsStringUTF8(suggested_name) ||
++      !base::IsStringUTF8AllowingNoncharacters(suggested_name) ||
+       base::UTF8ToUTF16(suggested_name).size() > kSuggestedNameUnits) return false;
+   auto self = weak_.GetWeakPtr();
+   const bool accepted = registry_.Offer(std::move(lease));

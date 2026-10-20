@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | 原观察/SDK范围保留。Native文档封装单客户端键、最多一个读取和一个释放回复；失效/析构明确失败结算，真实清理独立保留，过期回复及同步取消重入有存活保护。405项（18新+111既有Native+276上游）与编译列表、4份既有子进程通过，双平台专项各13和实际浏览器四TU/GN通过。handler键/断连、Page传输命令及真实WebContents/PW/整浏览器仍待；见[范围](native-download-transfer-client.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | 原观察/SDK范围保留。真实可信Page四个私有下载命令已接不可变handler键、目标切换/析构退出和原文档回复检查；有界文件名、3072字节chunk。415项（10新+129既有Native+276上游）与编译列表、4份既有子进程通过；双平台专项各13、真实协议生成/Blink排除及浏览器五TU/GN通过。真实Page会话认证/断开、PW/Source/整浏览器仍待，transfersReady=false；见[范围](native-download-page-protocol.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -2113,3 +2113,7 @@ Native item取消/Detach/部分和完成文件删除接入可跨item移除保留
 ### Native 客户端绑定与等待回复
 
 第28补丁以单一非空客户端键绑定文档ticket，最多保留一个读取与一个释放回复；读取以原arm期限结束，独立operation ID丢弃迟到回复。失效或析构先移动回调再交付closed/false，实际lease仍需文件/URL/item/map结算；false释放后必须等真实结算才能换键复用。同步item取消观察者可销毁owner，核心及封装在退休回调后检查weak。405项无过滤与编译列表一致，新18项从父版本差分无移除，4份既有子进程和双平台专项各13通过；实际owner/PageHandler/manager/navigation四TU及GN检查通过。阻塞文件时UI期限已释放真实回调捕获而预约保持1，放行真实任务后归零，非PW或进程内存证明。28补丁/64路径/35组件一致，自有容器退休且缓存/浏览器/观察器保留。实际handler键/断连及Page命令仍待，Source/PW和整浏览器未启用/验收，41项10/17/14不变。见[范围](native-download-transfer-client.md)。
+
+### Native 真实 Page 传输命令接线
+
+第29和30补丁增加可信版本化arm/info/read/release，handler自有不可变key，目标切换/析构退出时清理原owner，异步回复复查实际主文档且不创建新owner。文件名保留原Page算法所需513个UTF-16单元、Native复制前限1539字节，chunk最多3072原始字节。415项无过滤及编译列表一致，新10项元数据边界和实际lease行为从父版差分确认、无移除，4份既有子进程和双平台专项各13通过；浏览器/Blink生成协议存在/排除检查及实际owner/PageHandler/生成Page协议/manager/navigation五TU、GN通过。真实handler认证/断开/协议网络envelope尚未运行，整浏览器未链接，Source/PW未接、开关关闭且transfersReady=false。30补丁/64路径/35组件相同，容器退休、缓存/正式浏览器/观察器保留；41项10/17/14保持。见[范围](native-download-page-protocol.md)。

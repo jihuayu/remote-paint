@@ -1,0 +1,542 @@
+--- a/components/download/public/common/native_download_transfer_client.cc
++++ b/components/download/public/common/native_download_transfer_client.cc
+@@ -3,6 +3,8 @@
+ #include <algorithm>
+ #include <utility>
+ #include "base/functional/bind.h"
++#include "base/strings/string_util.h"
++#include "base/strings/utf_string_conversions.h"
+ #include "components/download/public/common/native_download_budget.h"
+ #include "components/download/public/common/native_download_request_context.h"
+ 
+@@ -18,7 +20,7 @@
+   return OwnsClient(client) && ticket.size() == ticket_.size() && ticket == ticket_;
+ }
+ void NativeDownloadTransferClient::ClearBinding() {
+-  client_ = {}; ticket_.clear(); deadline_ = {};
++  client_ = {}; ticket_.clear(); suggested_name_.clear(); deadline_ = {};
+ }
+ bool NativeDownloadTransferClient::Refresh() {
+   // A release reply may already have failed its 30s response deadline. Only
+@@ -41,9 +43,18 @@
+   if (ticket) { client_ = client; ticket_ = *ticket; deadline_ = start + timeout; }
+   return ticket;
+ }
+-bool NativeDownloadTransferClient::Offer(scoped_refptr<NativeDownloadLease> lease) {
++bool NativeDownloadTransferClient::Offer(scoped_refptr<NativeDownloadLease> lease,
++    std::string_view suggested_name) {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+-  return !closed_ && registry_.Offer(std::move(lease));
++  if (closed_ || suggested_name.size() > kSuggestedNameBytes ||
++      !base::IsStringUTF8(suggested_name) ||
++      base::UTF8ToUTF16(suggested_name).size() > kSuggestedNameUnits) return false;
++  auto self = weak_.GetWeakPtr();
++  const bool accepted = registry_.Offer(std::move(lease));
++  // Actual cancellation observers may destroy the facade inside Offer.
++  if (self && accepted)
++    suggested_name_ = suggested_name.empty() ? "download.bin" : std::string(suggested_name);
++  return accepted;
+ }
+ std::optional<NativeDownloadTransferClient::Snapshot> NativeDownloadTransferClient::Info(
+     const base::UnguessableToken& client, std::string_view ticket) {
+@@ -52,7 +63,8 @@
+   auto self = weak_.GetWeakPtr(); auto info = registry_.Info(ticket);
+   if (!self) return std::nullopt;
+   if (!info && !read_reply_ && !release_reply_) ClearBinding();
+-  return info;
++  if (!info) return std::nullopt;
++  return Snapshot{std::move(*info), suggested_name_};
+ }
+ bool NativeDownloadTransferClient::Read(const base::UnguessableToken& client, std::string_view ticket,
+     uint64_t offset, uint32_t maximum_bytes, ReadCallback done) {
+--- a/components/download/public/common/native_download_transfer_client.h
++++ b/components/download/public/common/native_download_transfer_client.h
+@@ -10,7 +10,13 @@
+ // authentication and transport-disconnect hooks remain the browser's job.
+ class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadTransferClient {
+  public:
+-  using Snapshot = NativeDownloadTransferRegistry::Snapshot;
++  // Bounds apply before retaining metadata. 513 UTF-16 units preserve the
++  // Source's first-512-unit filename operation, including a crossing surrogate.
++  static constexpr size_t kSuggestedNameUnits = 513;
++  static constexpr size_t kSuggestedNameBytes = 1539;
++  struct Snapshot : NativeDownloadTransferRegistry::Snapshot {
++    std::string suggested_name;
++  };
+   using ReadCallback = NativeDownloadReadSession::ReadCallback;
+   explicit NativeDownloadTransferClient(scoped_refptr<NativeDownloadRequestContext> owner);
+   ~NativeDownloadTransferClient();
+@@ -18,7 +24,7 @@
+   NativeDownloadTransferClient& operator=(const NativeDownloadTransferClient&) = delete;
+   std::optional<std::string> Arm(const base::UnguessableToken& client,
+       uint64_t maximum_bytes, base::TimeDelta timeout);
+-  bool Offer(scoped_refptr<NativeDownloadLease> lease);
++  bool Offer(scoped_refptr<NativeDownloadLease> lease, std::string_view suggested_name = "download.bin");
+   std::optional<Snapshot> Info(const base::UnguessableToken& client, std::string_view ticket);
+   bool Read(const base::UnguessableToken& client, std::string_view ticket,
+       uint64_t offset, uint32_t maximum_bytes, ReadCallback done);
+@@ -38,6 +44,7 @@
+   NativeDownloadTransferRegistry registry_;
+   base::UnguessableToken client_;
+   std::string ticket_;
++  std::string suggested_name_;
+   base::TimeTicks deadline_;
+   bool closed_ = false;
+   base::UnguessableToken read_operation_;
+--- a/content/browser/devtools/protocol/page_handler.cc
++++ b/content/browser/devtools/protocol/page_handler.cc
+@@ -31,6 +31,8 @@
+ #include "base/timer/timer.h"
+ #include "base/trace_event/trace_event.h"
+ #include "components/back_forward_cache/disabled_reason_id.h"
++#include "components/download/public/common/native_download_budget.h"
++#include "components/download/public/common/native_download_transfer_client.h"
+ #include "content/browser/back_forward_cache/back_forward_cache_can_store_document_result.h"
+ #include "content/browser/back_forward_cache/back_forward_cache_disable.h"
+ #include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
+@@ -528,7 +530,187 @@
+   CHECK(emulation_handler_, base::NotFatalUntil::M159);
+ }
+ 
+-PageHandler::~PageHandler() = default;
++PageHandler::~PageHandler() {
++  weak_factory_.InvalidateWeakPtrs();
++  DetachRemotePaintDownloads();
++}
++
++void PageHandler::DetachRemotePaintDownloads() {
++  auto owner = std::move(remote_paint_download_owner_);
++  remote_paint_download_owner_.reset();
++  remote_paint_download_document_.clear();
++  if (owner) owner->ClientDetached(remote_paint_download_client_key_);
++  // Client cancellation may synchronously destroy the handler. No member use.
++}
++
++bool PageHandler::RemotePaintDownloadDocumentMatches(std::string_view document) {
++  if (!is_trusted_ || !AssureTopLevelActiveFrame().IsSuccess() ||
++      host_->IsNestedWithinFencedFrame()) return false;
++  auto* contents = WebContents::FromRenderFrameHost(host_);
++  return contents && contents->GetPrimaryMainFrame() == host_ &&
++      document == host_->GetDocumentToken().ToString();
++}
++
++bool PageHandler::RemotePaintDownloadReplyValid(const std::string& document,
++    base::WeakPtr<NativeDownloadTransferOwner> owner) {
++  return owner && owner.get() == remote_paint_download_owner_.get() &&
++      document == remote_paint_download_document_ &&
++      RemotePaintDownloadDocumentMatches(document) && owner->OwnsDocument(host_);
++}
++
++download::NativeDownloadTransferClient* PageHandler::RemotePaintDownloadClient(
++    int version, const std::string& token, const std::string& document) {
++  if (version != 1 || token.size() < 32 || token.size() > 256 ||
++      document.empty() || document.size() > 64 ||
++      !RemotePaintDownloadDocumentMatches(document) ||
++      !remote_paint_download_bridge_.Describe(token, document, document, is_trusted_, true))
++    return nullptr;
++  auto self = weak_factory_.GetWeakPtr();
++  auto owner = NativeDownloadTransferOwner::GetOrCreateForWebContents(
++      WebContents::FromRenderFrameHost(host_))->GetWeakPtr();
++  if (remote_paint_download_owner_.get() != owner.get() ||
++      remote_paint_download_document_ != document) {
++    DetachRemotePaintDownloads();
++    if (!self || !owner || !RemotePaintDownloadDocumentMatches(document)) return nullptr;
++  }
++  auto* client = owner->ClientForDocument(host_);
++  if (!self || !owner || !client || !RemotePaintDownloadDocumentMatches(document) ||
++      !owner->OwnsDocument(host_)) return nullptr;
++  remote_paint_download_owner_ = owner;
++  remote_paint_download_document_ = document;
++  return client;
++}
++
++Response PageHandler::ArmRemotePaintDownload(int descriptor_version, const std::string& token,
++    const std::string& document_token, int max_bytes, int timeout_ms,
++    int* out_version, std::string* out_document, std::string* out_ticket) {
++  if (max_bytes <= 0 || max_bytes > static_cast<int>(download::NativeDownloadBudget::kFileBytes) ||
++      timeout_ms <= 0 || timeout_ms > 30000)
++    return Response::InvalidParams("Remote Paint download bounds exceeded");
++  auto self = weak_factory_.GetWeakPtr();
++  auto* client = RemotePaintDownloadClient(descriptor_version, token, document_token);
++  if (!self || !client) return Response::ServerError("Remote Paint download bridge unavailable");
++  auto owner = remote_paint_download_owner_;
++  auto ticket = client->Arm(remote_paint_download_client_key_, max_bytes, base::Milliseconds(timeout_ms));
++  if (!self || !ticket || !RemotePaintDownloadReplyValid(document_token, owner))
++    return Response::ServerError("Remote Paint download arm unavailable");
++  *out_version = 1; *out_document = document_token; *out_ticket = std::move(*ticket);
++  return Response::Success();
++}
++
++Response PageHandler::GetRemotePaintDownloadInfo(int descriptor_version, const std::string& token,
++    const std::string& document_token, const std::string& ticket,
++    int* out_version, std::string* out_document, std::string* out_ticket,
++    std::string* phase, std::string* error, int* byte_length,
++    std::string* sha256, std::string* suggested_filename) {
++  if (ticket.size() != 39) return Response::InvalidParams("Invalid Remote Paint download ticket");
++  auto self = weak_factory_.GetWeakPtr();
++  auto* client = RemotePaintDownloadClient(descriptor_version, token, document_token);
++  if (!self || !client) return Response::ServerError("Remote Paint download bridge unavailable");
++  auto owner = remote_paint_download_owner_;
++  auto info = client->Info(remote_paint_download_client_key_, ticket);
++  if (!self || !info || !RemotePaintDownloadReplyValid(document_token, owner))
++    return Response::ServerError("Remote Paint download info unavailable");
++  using State = download::NativeDownloadTransferRegistry::State;
++  using Error = download::NativeDownloadTransferRegistry::Error;
++  switch (info->state) {
++    case State::kIdle: *phase = "idle"; break;
++    case State::kArmed: *phase = "armed"; break;
++    case State::kPending: *phase = "pending"; break;
++    case State::kReady: *phase = "ready"; break;
++    case State::kRetiring: *phase = "retiring"; break;
++    case State::kFailed: *phase = "failed"; break;
++  }
++  switch (info->error) {
++    case Error::kNone: *error = ""; break;
++    case Error::kCancelled: *error = "cancelled"; break;
++    case Error::kTimeout: *error = "timeout"; break;
++    case Error::kUnavailable: *error = "unavailable"; break;
++    case Error::kIo: *error = "io"; break;
++    case Error::kLimit: *error = "limit"; break;
++  }
++  CHECK_LE(info->byte_length, download::NativeDownloadBudget::kFileBytes);
++  CHECK_LE(info->sha256.size(), 64u);
++  CHECK_LE(info->suggested_name.size(), download::NativeDownloadTransferClient::kSuggestedNameBytes);
++  *out_version = 1; *out_document = document_token; *out_ticket = ticket;
++  *byte_length = static_cast<int>(info->byte_length);
++  *sha256 = std::move(info->sha256); *suggested_filename = std::move(info->suggested_name);
++  return Response::Success();
++}
++
++void PageHandler::ReadRemotePaintDownload(int descriptor_version, const std::string& token,
++    const std::string& document_token, const std::string& ticket,
++    int offset, int max_bytes, std::unique_ptr<ReadRemotePaintDownloadCallback> callback) {
++  if (ticket.size() != 39 || offset < 0 ||
++      offset > static_cast<int>(download::NativeDownloadBudget::kFileBytes) ||
++      max_bytes <= 0 || max_bytes > 3072) {
++    callback->sendFailure(Response::InvalidParams("Remote Paint download bounds exceeded")); return;
++  }
++  auto self = weak_factory_.GetWeakPtr();
++  auto* client = RemotePaintDownloadClient(descriptor_version, token, document_token);
++  if (!self || !client) {
++    callback->sendFailure(Response::ServerError("Remote Paint download bridge unavailable")); return;
++  }
++  auto owner = remote_paint_download_owner_;
++  using Reply = base::RefCountedData<std::unique_ptr<ReadRemotePaintDownloadCallback>>;
++  auto reply = base::MakeRefCounted<Reply>(std::move(callback));
++  const bool accepted = client->Read(remote_paint_download_client_key_, ticket, offset, max_bytes,
++      base::BindOnce([](base::WeakPtr<PageHandler> self,
++          base::WeakPtr<NativeDownloadTransferOwner> owner, std::string document,
++          std::string ticket, int offset, int maximum, scoped_refptr<Reply> reply,
++          download::NativeDownloadReadSession::Chunk chunk) {
++        auto callback = std::move(reply->data);
++        if (!callback) return;
++        if (!self || !self->RemotePaintDownloadReplyValid(document, owner) ||
++            chunk.error != download::NativeDownloadReadSession::Error::kNone ||
++            chunk.offset != static_cast<uint64_t>(offset) || chunk.bytes.size() > static_cast<size_t>(maximum) ||
++            chunk.offset + chunk.bytes.size() > download::NativeDownloadBudget::kFileBytes) {
++          callback->sendFailure(Response::ServerError("Remote Paint download read unavailable")); return;
++        }
++        const int next = offset + static_cast<int>(chunk.bytes.size());
++        callback->sendSuccess(1, document, ticket, offset, next, chunk.complete,
++            Binary::fromString(std::move(chunk.bytes)));
++      }, self, owner, document_token, ticket, offset, max_bytes, reply));
++  // Rejection destroys the Native callback; the local shared slot still owns
++  // the protocol callback and explicitly answers it. An accepted synchronous
++  // callback can destroy this handler; only locals are used below.
++  if (!accepted && reply->data) {
++    auto rejected = std::move(reply->data);
++    rejected->sendFailure(Response::ServerError("Remote Paint download read rejected"));
++  }
++}
++
++void PageHandler::ReleaseRemotePaintDownload(int descriptor_version, const std::string& token,
++    const std::string& document_token, const std::string& ticket,
++    std::unique_ptr<ReleaseRemotePaintDownloadCallback> callback) {
++  if (ticket.size() != 39) {
++    callback->sendFailure(Response::InvalidParams("Invalid Remote Paint download ticket")); return;
++  }
++  auto self = weak_factory_.GetWeakPtr();
++  auto* client = RemotePaintDownloadClient(descriptor_version, token, document_token);
++  if (!self || !client) {
++    callback->sendFailure(Response::ServerError("Remote Paint download bridge unavailable")); return;
++  }
++  auto owner = remote_paint_download_owner_;
++  using Reply = base::RefCountedData<std::unique_ptr<ReleaseRemotePaintDownloadCallback>>;
++  auto reply = base::MakeRefCounted<Reply>(std::move(callback));
++  const bool accepted = client->Release(remote_paint_download_client_key_, ticket, base::BindOnce(
++      [](base::WeakPtr<PageHandler> self, base::WeakPtr<NativeDownloadTransferOwner> owner,
++          std::string document, std::string ticket, scoped_refptr<Reply> reply, bool success) {
++        auto callback = std::move(reply->data);
++        if (!callback) return;
++        // Successful physical settlement already cleared the key binding. Check
++        // the original handler/owner/document, not the now-absent ticket.
++        if (!self || !self->RemotePaintDownloadReplyValid(document, owner)) {
++          callback->sendFailure(Response::ServerError("Remote Paint download release unavailable")); return;
++        }
++        callback->sendSuccess(1, document, ticket, success);
++      }, self, owner, document_token, ticket, reply));
++  if (!accepted && reply->data) {
++    auto rejected = std::move(reply->data);
++    rejected->sendFailure(Response::ServerError("Remote Paint download release rejected"));
++  }
++}
+ 
+ Response PageHandler::GetRemotePaintDownloadBridge(
+     const std::string& token,
+@@ -547,11 +729,8 @@
+   if (!descriptor)
+     return Response::ServerError("Remote Paint download bridge unavailable");
+   auto self = weak_factory_.GetWeakPtr();
+-  auto* contents = WebContents::FromRenderFrameHost(host_);
+-  if (!contents || !NativeDownloadTransferOwner::GetOrCreateForWebContents(contents)
+-                        ->ClientForDocument(host_) || !self ||
+-      !AssureTopLevelActiveFrame().IsSuccess() ||
+-      host_->GetDocumentToken().ToString() != actual_document)
++  auto* client = RemotePaintDownloadClient(1, token, document_token);
++  if (!self || !client)
+     return Response::ServerError("Remote Paint download bridge unavailable");
+   *descriptor_version = descriptor->descriptor_version;
+   *transfers_ready = descriptor->transfers_ready;
+@@ -589,6 +768,12 @@
+   if (host_ == frame_host) {
+     return;
+   }
++
++  auto self = weak_factory_.GetWeakPtr();
++  const auto old_host = host_;
++  auto next_host = frame_host ? frame_host->GetWeakPtr() : base::WeakPtr<RenderFrameHostImpl>();
++  DetachRemotePaintDownloads();
++  if (!self || host_ != old_host || (frame_host && !next_host)) return;
+ 
+   RenderWidgetHostImpl* widget_host =
+       host_ ? host_->GetRenderWidgetHost() : nullptr;
+--- a/content/browser/devtools/protocol/page_handler.h
++++ b/content/browser/devtools/protocol/page_handler.h
+@@ -10,12 +10,14 @@
+ #include <memory>
+ #include <optional>
+ #include <string>
++#include <string_view>
+ #include <variant>
+ #include <vector>
+ 
+ #include "base/memory/raw_ptr.h"
+ #include "base/memory/weak_ptr.h"
+ #include "base/scoped_observation.h"
++#include "base/unguessable_token.h"
+ #include "build/build_config.h"
+ #include "cc/trees/render_frame_metadata.h"
+ #include "components/download/public/common/native_download_bridge_descriptor.h"
+@@ -37,8 +39,8 @@
+ 
+ class SkBitmap;
+ 
+-namespace base {
+-class UnguessableToken;
++namespace download {
++class NativeDownloadTransferClient;
+ }
+ 
+ namespace gfx {
+@@ -52,6 +54,7 @@
+ class DevToolsIOContext;
+ class FrameTreeNode;
+ class NavigationRequest;
++class NativeDownloadTransferOwner;
+ class RenderFrameHostImpl;
+ class WebContentsImpl;
+ 
+@@ -139,6 +142,21 @@
+       int* max_items,
+       int* max_file_bytes) override;
+ 
++  Response ArmRemotePaintDownload(int descriptor_version, const std::string& token,
++      const std::string& document_token, int max_bytes, int timeout_ms,
++      int* out_version, std::string* out_document, std::string* out_ticket) override;
++  Response GetRemotePaintDownloadInfo(int descriptor_version, const std::string& token,
++      const std::string& document_token, const std::string& ticket,
++      int* out_version, std::string* out_document, std::string* out_ticket,
++      std::string* phase, std::string* error, int* byte_length,
++      std::string* sha256, std::string* suggested_filename) override;
++  void ReadRemotePaintDownload(int descriptor_version, const std::string& token,
++      const std::string& document_token, const std::string& ticket,
++      int offset, int max_bytes, std::unique_ptr<ReadRemotePaintDownloadCallback> callback) override;
++  void ReleaseRemotePaintDownload(int descriptor_version, const std::string& token,
++      const std::string& document_token, const std::string& ticket,
++      std::unique_ptr<ReleaseRemotePaintDownloadCallback> callback) override;
++
+   Response Crash() override;
+   Response Close() override;
+   void Reload(std::optional<bool> bypassCache,
+@@ -276,6 +294,16 @@
+   using ResponseOrWebContents = std::variant<Response, WebContentsImpl*>;
+   ResponseOrWebContents GetWebContentsForTopLevelActiveFrame();
+ 
++  download::NativeDownloadTransferClient* RemotePaintDownloadClient(
++      int version, const std::string& token, const std::string& document);
++  bool RemotePaintDownloadDocumentMatches(std::string_view document);
++  bool RemotePaintDownloadReplyValid(const std::string& document,
++      base::WeakPtr<NativeDownloadTransferOwner> owner);
++  void DetachRemotePaintDownloads();
++  const base::UnguessableToken remote_paint_download_client_key_ = base::UnguessableToken::Create();
++  base::WeakPtr<NativeDownloadTransferOwner> remote_paint_download_owner_;
++  std::string remote_paint_download_document_;
++
+   const bool allow_unsafe_operations_;
+   const bool is_trusted_;
+   const std::optional<url::Origin> navigation_initiator_origin_;
+--- a/content/browser/devtools/protocol_config.json
++++ b/content/browser/devtools/protocol_config.json
+@@ -157,14 +157,14 @@
+             },
+             {
+                 "domain": "Page",
+-                "include": ["enable", "disable", "reload", "navigate", "stopLoading", "getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "getRemotePaintDownloadBridge", "captureScreenshot",
++                "include": ["enable", "disable", "reload", "navigate", "stopLoading", "getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "getRemotePaintDownloadBridge", "armRemotePaintDownload", "getRemotePaintDownloadInfo", "readRemotePaintDownload", "releaseRemotePaintDownload", "captureScreenshot",
+                     "startScreencast", "stopScreencast", "startScreenRecording", "stopScreenRecording", "screencastFrameAck", "handleJavaScriptDialog", "setColorPickerEnabled",
+                     "bringToFront", "setDownloadBehavior", "getAppManifest", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "setBypassCSP", "getAppId", "addCompilationCache", "setPrerenderingAllowed", "getAnnotatedPageContent",
+                     "addScriptToEvaluateOnNewDocument", "removeScriptToEvaluateOnNewDocument", "addScriptToEvaluateOnLoad", "removeScriptToEvaluateOnLoad"],
+                 "include_events": ["frameDetached", "colorPicked", "interstitialShown", "interstitialHidden", "javascriptDialogOpening",
+                      "javascriptDialogClosed", "downloadWillBegin", "downloadProgress", "screencastVisibilityChanged", "screencastFrame",
+                      "backForwardCacheNotUsed", "frameStartedLoading", "frameStoppedLoading", "frameStartedNavigating"],
+-                "async": ["captureScreenshot", "navigate", "getAppManifest", "reload", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "getAppId", "getAnnotatedPageContent", "stopScreenRecording"]
++                "async": ["readRemotePaintDownload", "releaseRemotePaintDownload", "captureScreenshot", "navigate", "getAppManifest", "reload", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "getAppId", "getAnnotatedPageContent", "stopScreenRecording"]
+             },
+             {
+                 "domain": "Preload",
+--- a/content/browser/download/native_download_transfer_owner.cc
++++ b/content/browser/download/native_download_transfer_owner.cc
+@@ -1,6 +1,8 @@
+ #include "content/browser/download/native_download_transfer_owner.h"
+ 
+ #include <utility>
++#include "base/strings/utf_string_conversions.h"
++#include "net/base/filename_util.h"
+ #include "components/download/public/common/download_item.h"
+ #include "components/download/public/common/native_download_budget.h"
+ #include "components/download/public/common/native_download_request_context.h"
+@@ -56,6 +58,16 @@
+   }
+   return client_.get();
+ }
++bool NativeDownloadTransferOwner::OwnsDocument(RenderFrameHost* current) const {
++  DCHECK_CURRENTLY_ON(BrowserThread::UI);
++  if (!enabled_ || closed_ || !manager_ || !client_ || !original_page_ || !web_contents() ||
++      !current || current != web_contents()->GetPrimaryMainFrame() || !current->IsActive() ||
++      current->IsNestedWithinFencedFrame()) return false;
++  auto* actual = static_cast<RenderFrameHostImpl*>(current);
++  auto captured = DownloadManagerImpl::CaptureNativeRequestContext(
++      actual, actual, download::NativeDownloadRequestContext::Origin::kExplicitRequest);
++  return captured && original_page_->SamePageDocument(*captured);
++}
+ void NativeDownloadTransferOwner::ClientDetached(const base::UnguessableToken& client) {
+   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+   if (client_ && client_->OwnsClient(client)) RetireDocument();
+@@ -67,7 +79,16 @@
+   // original immutable Page and arm-time/lifetime claim; no current frame can
+   // repair missing provenance or adopt a historical/other-Page item here.
+   auto lease = item->GetRemotePaintAdmission();
+-  if (lease) client_->Offer(std::move(lease));
++  if (!lease || !original_page_ || !lease->request_context() ||
++      !original_page_->SamePageDocument(*lease->request_context())) return;
++  // Use the same browser filename calculation as Page.downloadWillBegin, then
++  // retain only the prefix needed by the existing Source filename contract.
++  auto suggested = net::GetSuggestedFilename(item->GetURL(), item->GetContentDisposition(),
++      std::string(), item->GetSuggestedFilename(), item->GetMimeType(), "download");
++  if (suggested.size() > download::NativeDownloadTransferClient::kSuggestedNameUnits)
++    suggested.resize(download::NativeDownloadTransferClient::kSuggestedNameUnits);
++  const auto bounded = base::UTF16ToUTF8(suggested);
++  client_->Offer(std::move(lease), bounded);
+ }
+ void NativeDownloadTransferOwner::UnobserveManager() {
+   if (manager_) manager_->RemoveObserver(this);
+--- a/content/browser/download/native_download_transfer_owner.h
++++ b/content/browser/download/native_download_transfer_owner.h
+@@ -27,6 +27,8 @@
+   ~NativeDownloadTransferOwner() override;
+   download::NativeDownloadTransferClient* ClientForDocument(RenderFrameHost* current);
+   void ClientDetached(const base::UnguessableToken& client);
++  bool OwnsDocument(RenderFrameHost* current) const;
++  base::WeakPtr<NativeDownloadTransferOwner> GetWeakPtr() { return weak_.GetWeakPtr(); }
+   void OnDownloadCreated(DownloadManager* manager, download::DownloadItem* item) override;
+   void ManagerGoingDown(DownloadManager* manager) override;
+   void PrimaryPageChanged(Page& page) override;
+--- a/third_party/blink/public/devtools_protocol/domains/Page.pdl
++++ b/third_party/blink/public/devtools_protocol/domains/Page.pdl
+@@ -26,6 +26,65 @@
+       string currentDocumentToken
+       integer maxItems
+       integer maxFileBytes
++
++  # Private staged transfer operations. The browser supplies the session key;
++  # every operation authenticates its active original primary document.
++  experimental command armRemotePaintDownload
++    parameters
++      integer descriptorVersion
++      string token
++      string documentToken
++      integer maxBytes
++      integer timeoutMs
++    returns
++      integer descriptorVersion
++      string currentDocumentToken
++      string ticket
++
++  experimental command getRemotePaintDownloadInfo
++    parameters
++      integer descriptorVersion
++      string token
++      string documentToken
++      string ticket
++    returns
++      integer descriptorVersion
++      string currentDocumentToken
++      string ticket
++      string phase
++      string error
++      integer byteLength
++      string sha256
++      string suggestedFilename
++
++  experimental command readRemotePaintDownload
++    parameters
++      integer descriptorVersion
++      string token
++      string documentToken
++      string ticket
++      integer offset
++      integer maxBytes
++    returns
++      integer descriptorVersion
++      string currentDocumentToken
++      string ticket
++      integer offset
++      integer nextOffset
++      boolean eof
++      binary data
++
++  experimental command releaseRemotePaintDownload
++    parameters
++      integer descriptorVersion
++      string token
++      string documentToken
++      string ticket
++    returns
++      integer descriptorVersion
++      string currentDocumentToken
++      string ticket
++      boolean released
+ 
+   # Unique frame identifier.
+   type FrameId extends string
+--- a/third_party/blink/renderer/core/inspector/inspector_protocol_config.json
++++ b/third_party/blink/renderer/core/inspector/inspector_protocol_config.json
+@@ -91,7 +91,7 @@
+             },
+             {
+                 "domain": "Page",
+-                "exclude": ["getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "getRemotePaintDownloadBridge", "captureScreenshot", "startScreencast", "stopScreencast", "screencastFrameAck", "handleJavaScriptDialog", "setColorPickerEnabled",
++                "exclude": ["getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "getRemotePaintDownloadBridge", "armRemotePaintDownload", "getRemotePaintDownloadInfo", "readRemotePaintDownload", "releaseRemotePaintDownload", "captureScreenshot", "startScreencast", "stopScreencast", "screencastFrameAck", "handleJavaScriptDialog", "setColorPickerEnabled",
+                             "getAppManifest", "getAnnotatedPageContent", "setControlNavigations", "processNavigation", "printToPDF", "bringToFront", "setDownloadBehavior", "navigate", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "getAppId", "setSPCTransactionMode", "setRPHRegistrationMode", "setPrerenderingAllowed", "startScreenRecording", "stopScreenRecording"],
+                 "pass_associated_data": [
+                     "addScriptToEvaluateOnNewDocument",
