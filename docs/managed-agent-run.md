@@ -19,3 +19,6 @@ context 恰含 binding 与四字段 fence；binding 恰含 tenantId/sessionId/ta
 K5 从表中的待实现更新为部分实现；41 项当前 9 项在既定范围完成、16 项部分实现、16 项待做。完整 Playwright/CDP facade、真正 Agent 授权传输、K6 结构化观察与业务验证、未知启动收敛、N1/物理/设备和原 8 小时增长仍未完成，allAgentCdpFenced=false。SDK 27 个合同输入未变，继承双平台 78 Node/17 Python、严格 TSC 和 Mac Mypy；没有新 SDK 打包/发布或公共 Viewer 像素验证。WebGL“WebGL 无法显示”黑框及其他显示代码保持。
 
 见[范围收据](evidence/managed-agent-run.json)。未提交、暂存、推送代码或修改演示进程；未强制浏览器 GC、放宽原增长策略或重跑 8 小时。
+
+
+补充修复：结束 Agent run 时若处于 human 或 handoff，只停止该 run 并等待现有队列/交接栅栏，不撤销人的租约、不取消交接、不释放人持有的键/按钮。只有 agent 模式主动撤销和清理 Agent 状态。三个合同和真实 Native 前1后0、原组合工具重新通过，见[人工优先级](agent-run-human-priority.md)。

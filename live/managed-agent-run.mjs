@@ -66,9 +66,10 @@ export function createManagedAgentRun(control,configuration){
   },
   close(){
    if(closing)return closing;closed=true;
-   // Revoke synchronously before awaiting active work. Keep ownership until
-   // the shared queue and held-input cleanup fence have actually settled.
-   const revoked=revoke('agent-run-closed'),idle=fenceQueue(()=>{});
+   // Agent-mode held state belongs to this writer. A human lease or pending
+   // handoff already fences Agent work and owns its own cleanup: ending the
+   // run must not revoke that authority or release human-held keys/buttons.
+   const revoked=control.mode==='agent'?revoke('agent-run-closed'):Promise.resolve(),idle=fenceQueue(()=>{});
    closing=Promise.all([revoked,idle]).then(()=>{if(owners.get(control)===owner)owners.delete(control);return Object.freeze({stage:'run-closed',binding});},error=>{throw failure(error,true);});
    return closing;
   }

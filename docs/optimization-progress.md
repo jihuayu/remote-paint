@@ -50,7 +50,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K2 | 可嵌入 Viewer | 部分实现 | 原生JS公共票据连接已接入现有主线程/Worker，含刷新、重连、取消和断开栅栏；真实Node数据链路及保存入口脚本接线通过。iframe/CSP/宿主组件、完整resize/接管/事件API和真实渲染多次挂载卸载仍待验收。 |
 | K3 | 安全授权 | 部分实现 | 后端HTTP已使用可信Bearer租户认证与创建/读取/释放独立scope，管理客户端禁重定向和浏览器运行。现有控制子连接使用绑定原Viewer/Session的10秒一次性票据，错误Origin/跨Viewer/重放/过期拒绝；现有可选公共网关已用短Viewer ticket绑定租户/Session/区域/Ready代次/角色/期限/audience，并在真实Node Source消息路径执行只读限制、撤销和刷新；本地key留在私有Source。实际Native worker端点桥接、嵌入刷新和Agent/CDP独立授权仍待实现，不能据此声明K3完成。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
-| K5 | 输入与多角色控制 | 部分实现 | 本地受管 run 绑定租户/Session/实际 Page/独立 run，强制版本戳和同步授权；七个组合输入工具一项动作一项队列，每步前复查，接管/撤权/关闭阻止未发送部分，部分效果报告 unknown。21 合同及真实 Native 按钮/文本/组合/拖动/滚动/关闭前后验证通过。真正 worker/服务/SDK Agent 授权、完整 Playwright/Steel 及其他修改路径待完成，见[范围](managed-agent-run.md)。 |
+| K5 | 输入与多角色控制 | 部分实现 | 本地受管 run 绑定租户/Session/实际 Page/独立 run，强制版本戳和同步授权；七个组合输入工具一项动作一项队列，每步前复查，接管/撤权/关闭阻止未发送部分，部分效果报告 unknown。结束 run 保留人控租约/交接及人持有输入；21 组合合同、3 人控关闭合同及真实 Native 按钮/文本/组合/拖动/滚动/关闭前后验证通过。真正 worker/服务/SDK Agent 授权、完整 Playwright/Steel 及其他修改路径待完成，见[范围](managed-agent-run.md)。 |
 | K6 | 结构化观察与结果 | 待实现 | 按原清单验收，记录实际证据 |
 | K7 | 动作和业务成功分离 | 待实现 | 按原清单验收，记录实际证据 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
@@ -1940,3 +1940,8 @@ createManagedAgentInput() 强制显式版本戳，仅放行四个 Input 方法�
 ### 本地单写者 Agent run 与组合输入
 
 新增 context/perform/close 冻结接口，绑定 tenant/管理 Session/真实 Page 对象的不透明 target ID/独立 run ID；一个受管 run 占有写者直到清理实际结束，七个组合工具每个仅占一个队列项，每步前复查权限和版本。真实 Native 验证双按钮各一次、全选/组合输入、拖动和滚动、人工按下途中接管不激活按钮、后续旧动作拒绝、run 关闭 keyup。补充边界在外层控制器先关闭时原 run 过早报完成，单一模块前后差异在 21 合同及真实 Native 均 before1/after0；现等实际输入/keyup。最终双平台 112 文件完整 996 项零失败。见[范围](managed-agent-run.md)。K5 表格由待实现更正为部分实现，41 项成为 9/16/16；该本地回调不是远端授权，完整 Agent 传输/Playwright 与其他验收仍待完成。
+
+
+### 结束 Agent run 保留人工控制优先级
+
+修复 run.close 在 human/handoff 下无条件 revoke 的问题：原版本会清理人的按键并使租约失效、取消交接；现在只在 agent 模式撤销 Agent，人工模式等待已有队列而保留原 holder/version/lease/expiry/seq 和按键按钮。3 合同 before1/after0；真实 Native 原 H 后旧 grant STALE_LEASE，新版同 grant 主动 keyup/F 得 HF，明确归还后新 Agent Z 得 HFZ。原组合工具 Native 重新通过，完整双平台 113 文件/999 项零失败。见[人工优先级](agent-run-human-priority.md)。worker/服务/SDK 真实 Agent 授权传输仍待实现，41 项 9/16/16 及原 8 小时失败保持。

@@ -160,3 +160,8 @@ Source 内部可通过 createManagedAgentInput(source.control) 取得仅 fence/s
 ## 本地单写者 Agent run 与组合工具
 
 createManagedAgentRun(source.control,{tenantId,sessionId,authorize}) 绑定实际 Page 对象、独立 target/run ID，仅提供 context/perform/close。七个有界输入工具一项动作一项控制队列，每步前校验租约与同步可信授权，部分执行后停止为 unknown、不重放；关闭等待实际队列和释放输入，即使外层控制器先开始关闭也不会提前报完成。21 合同、Native 因果前1后0及最终双平台完整996项通过，见[范围](managed-agent-run.md)。这是本地可信集成入口，Native fixture 管理 Session 是夹具 ID；worker/channel/管理HTTP/公共SDK 的真实 Agent 授权传输仍未实现，不可将此视为完整 K5/K10。
+
+
+## Agent 结束与人工租约分离
+
+本地 run.close 在 human/handoff 模式不调用 revoke，只停止该 run 并等待已有队列/交接；人的租约、交接与按键按钮继续由人控流程拥有。仅 agent 模式撤销和清理 Agent。3 合同、真实 Native 前1后0及原组合工具重新通过，双平台完整999项零失败，见[范围](agent-run-human-priority.md)。这项是 worker 远端 Agent 接线前的优先级修复，真实 Agent 授权传输尚待实现。

@@ -1,0 +1,144 @@
+{
+  "at": "2026-10-19T14:28:31.429765+00:00",
+  "task": "K5-Agent-run-close-preserves-human-control-priority",
+  "status": "local-Agent-run-close-preserves-human-lease-qualified",
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/managed-agent-run-qualified-v1/frozen-version.json",
+  "parentSha256": "adcb4cf4d9f103ac68f7eeaad9bd18ea24d55b2cffffa81a7ffbf5c7ee3f85cf",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-run-human-priority-after-v1/frozen-version.json",
+  "executedManifestSha256": "6063690f604b115d507fdea19ffdb6b055638f799ba62f253f9f28271543894f",
+  "executedSourceFiles": 980,
+  "beforeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-run-human-priority-before-v1/frozen-version.json",
+  "beforeManifestSha256": "9b0d20424b58035f5a817e46310877c91d5bbc32637447ca0597fff3f78b4df9",
+  "onlyBeforeAfterSourceDelta": "live/managed-agent-run.mjs",
+  "agentModeCloseStillRevokesAndCleansAgentState": true,
+  "humanOrHandoffCloseDoesNotRevokeHumanAuthority": true,
+  "humanLeaseVersionExpiryNextSeqHeldKeysButtonsPreserved": true,
+  "pendingHumanHandoffStillGrants": true,
+  "activeHumanInputStillFencedBeforeRunClosed": true,
+  "causalUnitBefore1ThreeFailuresAfter0ThreePasses": true,
+  "causalNativeBefore1After0": true,
+  "nativeBeforeObservation": {
+    "before": {
+      "mode": "human",
+      "holder": "human-fixture",
+      "version": 1,
+      "keyHeld": true,
+      "leaseMatches": true,
+      "nextSeq": 2
+    },
+    "after": {
+      "mode": "agent",
+      "holder": null,
+      "version": 2,
+      "keyHeld": false,
+      "leaseMatches": false,
+      "nextSeq": 2,
+      "closeCdpCommands": 2
+    },
+    "continued": {
+      "ok": false,
+      "code": "STALE_LEASE"
+    },
+    "runBinding": {
+      "tenantId": "tenant_fixture",
+      "sessionId": "ses_00000000-0000-4000-8000-000000000001",
+      "targetId": "target_9ea030a9-6e37-44bd-b881-8520e7d6da0b",
+      "runId": "run_f4f21c68-e837-4621-b49e-3845afd7a086"
+    }
+  },
+  "nativeAfterObservation": {
+    "before": {
+      "mode": "human",
+      "holder": "human-fixture",
+      "version": 1,
+      "keyHeld": true,
+      "leaseMatches": true,
+      "nextSeq": 2
+    },
+    "after": {
+      "mode": "human",
+      "holder": "human-fixture",
+      "version": 1,
+      "keyHeld": true,
+      "leaseMatches": true,
+      "nextSeq": 2,
+      "closeCdpCommands": 0
+    },
+    "continued": {
+      "ok": true
+    },
+    "runBinding": {
+      "tenantId": "tenant_fixture",
+      "sessionId": "ses_00000000-0000-4000-8000-000000000001",
+      "targetId": "target_746eea4d-cdfa-4977-8ada-1c7398a353b0",
+      "runId": "run_7c1a8919-7951-434d-931b-8e24a1f92771"
+    },
+    "actualHumanKeyUpObserved": true,
+    "humanContinuedValue": "HF",
+    "freshAgentAfterHumanReleaseValue": "HFZ",
+    "activityDemand": 0
+  },
+  "nativeHumanInputAndKeyupReportsIndependentHttp": true,
+  "newRunOnlyAfterExplicitHumanRelease": true,
+  "previousCompositeAndOuterControllerCloseActualNativeRerun0": true,
+  "fullJs": {
+    "mac": {
+      "tests": 999,
+      "pass": 984,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "0efa46d7ced5682b644166c13b9996c8c3ebadb24dc5bf81f695828a3db9fbdd"
+    },
+    "linux": {
+      "tests": 999,
+      "pass": 993,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "b1173444e01087b540d58d913859f1c34823ffcc95cafc970b1bef862c24f9f1",
+      "containerId": "3d69723a3828a81c3bf5533db1a19fd557d0fd13d82ae3149d3878fe60395c55"
+    }
+  },
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v23/manifest.json",
+  "fullJsManifestSha256": "8f296a00c1f42671f6b7a2a6032cf9a85d7b7db1e350e923c02131581f46f76f",
+  "fullJsExactExecutedCandidate": true,
+  "sdkInheritedExactUnchangedInputs": {
+    "mac": {
+      "mappedUnchangedInputs": 27,
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true
+    },
+    "linux": {
+      "mappedUnchangedInputs": 27,
+      "nodeTests": 78,
+      "pythonTests": 17,
+      "typescriptActual0": true
+    }
+  },
+  "sdkMacMypyInheritedActual0": true,
+  "sdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "a93654f41a1ac70756220d24eb5e6d4ff5a447fa0a3050714ecafdb92ed1354c",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "d21a3f6d707ba6f778ad2c4c1a0372e01f710d3a6d7ab123790487b26513a669"
+  },
+  "freshSdkPackageOrPublicViewerPixelRerunClaimed": false,
+  "nativeManagementSessionIdIsFixture": true,
+  "remoteAgentAuthorizationQualified": false,
+  "allAgentCdpFenced": false,
+  "managedPlaywrightCdpFacadeQualified": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "physicalLatencyOrN1Claim": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 16,
+    "pending": 16
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}
