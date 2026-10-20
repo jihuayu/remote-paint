@@ -1,0 +1,967 @@
+{
+  "at": "2026-10-17T21:57:08.909668+00:00",
+  "status": "passed-continuous-Mac-exact-commit-rotation/realCrosssite/onewayLoss-pilots",
+  "scope": "Bounded atomic rotation never disables the observed persistent CPUWorker between firstenable/finaldisable;successful commits include Source crosssite/epoch/viewport transitions. Native Linux monotonic-domain proof with actual renderer identities;bounded6-calibration history/1024producerProofs/4096samples and512protocol events perwindow/32socket events;all actual samples kept on disk,not retained unbounded in main/Worker. NativeRootTake to synchronous CPU pixel-read,not physical scanout/unobservedperformance/8h/fullN1.",
+  "runs": [
+    {
+      "name": "session-frame-age-stream-v1",
+      "manifest": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-v1/frozen-version.json",
+        "sha256": "bd3ee8a1ff2bc7d17bbdd9ec14fdbb821418743180db7f49dcf78bc622a047d5"
+      },
+      "impaired": false,
+      "elapsedSeconds": 51.48521754200001,
+      "enabledSeconds": 48.4475,
+      "cycles": 400,
+      "sourceImageBytes": 90015365,
+      "knownPinnedSourceIdentitiesRetired": 8,
+      "sourceCgroupOnlyInitOutsideController": true,
+      "totals": {
+        "windows": 6,
+        "successfulCommits": 660,
+        "pixelSamples": 660,
+        "normalFrameEvents": 660,
+        "paired": 660,
+        "missing": 0,
+        "protocolEvents": 2,
+        "socketStarts": 1,
+        "socketCloses": 0,
+        "minAgeMs": -2.222765192389488,
+        "maxAgeMs": 99.86406075954437,
+        "maxUncertaintyMs": 13.68616362905502,
+        "maxPixelReadMs": 13
+      },
+      "lifetime": {
+        "initialAll": 1,
+        "initialWindow": 1,
+        "initialWorkerMs": 745.8999996185303,
+        "finalAll": 661,
+        "finalWorkerMs": 49193.39999961853,
+        "finalWindow": 6,
+        "producerProofs": 3
+      },
+      "windows": [
+        {
+          "id": 1,
+          "window": 1,
+          "coverage": {
+            "successfulCommits": 123,
+            "pixelSamples": 123,
+            "normalFrameEvents": 123,
+            "paired": 123,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": {
+            "count": 123,
+            "p50Ms": 56.351697623729706,
+            "p95Ms": 68.50582394003868,
+            "p99Ms": 79.01935330033302,
+            "maxMs": 93.67241835594177,
+            "minMs": 6.055711880326271
+          },
+          "clockUncertainty": {
+            "count": 123,
+            "p50Ms": 13.61904924607277,
+            "p95Ms": 13.681307176709176,
+            "p99Ms": 13.685082952141762,
+            "maxMs": 13.68616362905502,
+            "minMs": 13.557876313686371
+          },
+          "epochs": [
+            1
+          ],
+          "viewportVersions": [
+            1,
+            2,
+            3
+          ],
+          "producers": [
+            "79:2"
+          ],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        },
+        {
+          "id": 2,
+          "window": 2,
+          "coverage": {
+            "successfulCommits": 132,
+            "pixelSamples": 132,
+            "normalFrameEvents": 132,
+            "paired": 132,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": {
+            "count": 132,
+            "p50Ms": 46.085971027612686,
+            "p95Ms": 58.835430175065994,
+            "p99Ms": 74.44180150330067,
+            "maxMs": 86.363271728158,
+            "minMs": -2.222765192389488
+          },
+          "clockUncertainty": {
+            "count": 132,
+            "p50Ms": 13.607120225787163,
+            "p95Ms": 13.630340824484826,
+            "p99Ms": 13.63253615295887,
+            "maxMs": 13.632720733642579,
+            "minMs": 13.577840174198151
+          },
+          "epochs": [
+            1,
+            2
+          ],
+          "viewportVersions": [
+            3,
+            4,
+            5,
+            6
+          ],
+          "producers": [
+            "79:2",
+            "102:1"
+          ],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        },
+        {
+          "id": 3,
+          "window": 3,
+          "coverage": {
+            "successfulCommits": 136,
+            "pixelSamples": 136,
+            "normalFrameEvents": 136,
+            "paired": 136,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": {
+            "count": 136,
+            "p50Ms": 59.41296473145485,
+            "p95Ms": 70.02097597718239,
+            "p99Ms": 73.72303216159344,
+            "maxMs": 99.86406075954437,
+            "minMs": 7.223828971385956
+          },
+          "clockUncertainty": {
+            "count": 136,
+            "p50Ms": 13.60048336780071,
+            "p95Ms": 13.617807919740674,
+            "p99Ms": 13.61965149140358,
+            "maxMs": 13.619717592954636,
+            "minMs": 13.58403744792938
+          },
+          "epochs": [
+            2
+          ],
+          "viewportVersions": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "producers": [
+            "102:1"
+          ],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        },
+        {
+          "id": 4,
+          "window": 4,
+          "coverage": {
+            "successfulCommits": 132,
+            "pixelSamples": 132,
+            "normalFrameEvents": 132,
+            "paired": 132,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": {
+            "count": 132,
+            "p50Ms": 51.095194935798645,
+            "p95Ms": 60.294479712843895,
+            "p99Ms": 77.3367562443018,
+            "maxMs": 84.571851298213,
+            "minMs": -0.4269893169403076
+          },
+          "clockUncertainty": {
+            "count": 132,
+            "p50Ms": 13.570772225618363,
+            "p95Ms": 13.572561989188191,
+            "p99Ms": 13.57269528007507,
+            "maxMs": 13.57272272801399,
+            "minMs": 13.568850854992863
+          },
+          "epochs": [
+            2,
+            3
+          ],
+          "viewportVersions": [
+            9,
+            10,
+            11
+          ],
+          "producers": [
+            "102:1",
+            "120:1"
+          ],
+          "protocol": {
+            "recoverAttempts": 1,
+            "keyframeRequests": 1,
+            "commitsSkipped": 0
+          }
+        },
+        {
+          "id": 5,
+          "window": 5,
+          "coverage": {
+            "successfulCommits": 137,
+            "pixelSamples": 137,
+            "normalFrameEvents": 137,
+            "paired": 137,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": {
+            "count": 137,
+            "p50Ms": 55.055975168943405,
+            "p95Ms": 65.9650226533413,
+            "p99Ms": 67.45833566784859,
+            "maxMs": 96.65563771128654,
+            "minMs": 3.9429914355278015
+          },
+          "clockUncertainty": {
+            "count": 137,
+            "p50Ms": 13.229738766908646,
+            "p95Ms": 13.354164729475972,
+            "p99Ms": 13.362118417978284,
+            "maxMs": 13.364684889674184,
+            "minMs": 13.106244126915932
+          },
+          "epochs": [
+            3
+          ],
+          "viewportVersions": [
+            11,
+            12,
+            13,
+            14
+          ],
+          "producers": [
+            "120:1"
+          ],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        },
+        {
+          "id": 6,
+          "window": 6,
+          "coverage": {
+            "successfulCommits": 0,
+            "pixelSamples": 0,
+            "normalFrameEvents": 0,
+            "paired": 0,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": null,
+          "clockUncertainty": null,
+          "epochs": [],
+          "viewportVersions": [],
+          "producers": [],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        }
+      ],
+      "maxTextAckMs": 33.69999980926514,
+      "network": null,
+      "runtimeImageId": "sha256:ba52f926ae3c951e29dc1625d70537c18db389cf166f4465a1e5b836d802c133",
+      "allExitCodes": 0,
+      "artifacts": {
+        "stream-report.json": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-v1/results/stream-report.json",
+          "sha256": "7523c9ad20eb698e90b6c38435034ae280c32041d31542f118d4a8d377b1b7ae"
+        },
+        "stream-windows.jsonl": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-v1/results/stream-windows.jsonl",
+          "sha256": "15ac7e824b2736ebcc3b30fbfc4496b9acd2c5e0c79a09f381c4f330f1d1251c"
+        },
+        "stream-raw-windows.jsonl": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-v1/results/stream-raw-windows.jsonl",
+          "sha256": "ccee266f1d332e0b84ed4d0f7f15cb1428d41125ab6346a68ae720a426ee2986"
+        },
+        "source-stopped.json": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-v1/results/source-stopped.json",
+          "sha256": "a3a6df5168d0cf5f2f8a51a0b4d52e66e4b02e5fbeee0bc22f8f7b5797de586d"
+        }
+      }
+    },
+    {
+      "name": "session-frame-age-stream-netem-v1",
+      "manifest": {
+        "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-netem-v1/frozen-version.json",
+        "sha256": "1f05130aad950811dc9edda86ace8c76fabc297495f7b8997c4cfefdaaf04ecb"
+      },
+      "impaired": true,
+      "elapsedSeconds": 209.21241845900002,
+      "enabledSeconds": 205.779,
+      "cycles": 400,
+      "sourceImageBytes": 90015365,
+      "knownPinnedSourceIdentitiesRetired": 8,
+      "sourceCgroupOnlyInitOutsideController": true,
+      "totals": {
+        "windows": 6,
+        "successfulCommits": 770,
+        "pixelSamples": 770,
+        "normalFrameEvents": 770,
+        "paired": 770,
+        "missing": 0,
+        "protocolEvents": 0,
+        "socketStarts": 1,
+        "socketCloses": 0,
+        "minAgeMs": 39.33468523621559,
+        "maxAgeMs": 1408.4655741900206,
+        "maxUncertaintyMs": 13.871299977064126,
+        "maxPixelReadMs": 5.800000190734863
+      },
+      "lifetime": {
+        "initialAll": 2,
+        "initialWindow": 1,
+        "initialWorkerMs": 832,
+        "finalAll": 772,
+        "finalWorkerMs": 206611,
+        "finalWindow": 6,
+        "producerProofs": 3
+      },
+      "windows": [
+        {
+          "id": 1,
+          "window": 1,
+          "coverage": {
+            "successfulCommits": 134,
+            "pixelSamples": 134,
+            "normalFrameEvents": 134,
+            "paired": 134,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": {
+            "count": 134,
+            "p50Ms": 366.05152866244316,
+            "p95Ms": 722.0131335109472,
+            "p99Ms": 834.4235821813345,
+            "maxMs": 988.9811812788248,
+            "minMs": 48.946099907159805
+          },
+          "clockUncertainty": {
+            "count": 134,
+            "p50Ms": 13.643513957619689,
+            "p95Ms": 13.787635723710082,
+            "p99Ms": 13.797659854054473,
+            "maxMs": 13.800383890628837,
+            "minMs": 13.564667756319047
+          },
+          "epochs": [
+            1
+          ],
+          "viewportVersions": [
+            1,
+            2,
+            3
+          ],
+          "producers": [
+            "80:2"
+          ],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        },
+        {
+          "id": 2,
+          "window": 2,
+          "coverage": {
+            "successfulCommits": 143,
+            "pixelSamples": 143,
+            "normalFrameEvents": 143,
+            "paired": 143,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": {
+            "count": 143,
+            "p50Ms": 390.1314247995615,
+            "p95Ms": 580.6375379413366,
+            "p99Ms": 665.7142350226641,
+            "maxMs": 1408.4655741900206,
+            "minMs": 39.33468523621559
+          },
+          "clockUncertainty": {
+            "count": 143,
+            "p50Ms": 13.851402352213857,
+            "p95Ms": 13.868741715908072,
+            "p99Ms": 13.87129277980327,
+            "maxMs": 13.871299977064126,
+            "minMs": 13.838575045228026
+          },
+          "epochs": [
+            1,
+            2
+          ],
+          "viewportVersions": [
+            3,
+            4,
+            5,
+            6
+          ],
+          "producers": [
+            "80:2",
+            "110:1"
+          ],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        },
+        {
+          "id": 3,
+          "window": 3,
+          "coverage": {
+            "successfulCommits": 184,
+            "pixelSamples": 184,
+            "normalFrameEvents": 184,
+            "paired": 184,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": {
+            "count": 184,
+            "p50Ms": 392.86966021358967,
+            "p95Ms": 830.7674475312233,
+            "p99Ms": 983.6829688698053,
+            "maxMs": 1244.7462504059076,
+            "minMs": 49.103148221969604
+          },
+          "clockUncertainty": {
+            "count": 184,
+            "p50Ms": 13.503674055099495,
+            "p95Ms": 13.524701962828658,
+            "p99Ms": 13.52588085329532,
+            "maxMs": 13.525932262301467,
+            "minMs": 13.483700732350343
+          },
+          "epochs": [
+            2
+          ],
+          "viewportVersions": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "producers": [
+            "110:1"
+          ],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        },
+        {
+          "id": 4,
+          "window": 4,
+          "coverage": {
+            "successfulCommits": 153,
+            "pixelSamples": 153,
+            "normalFrameEvents": 153,
+            "paired": 153,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": {
+            "count": 153,
+            "p50Ms": 318.5096388012171,
+            "p95Ms": 544.5178836137056,
+            "p99Ms": 605.9395286440849,
+            "maxMs": 837.0618691146374,
+            "minMs": 49.95532965660095
+          },
+          "clockUncertainty": {
+            "count": 153,
+            "p50Ms": 13.625473345279687,
+            "p95Ms": 13.684839064836495,
+            "p99Ms": 13.689833129405997,
+            "maxMs": 13.689976001739495,
+            "minMs": 13.557292158365247
+          },
+          "epochs": [
+            2,
+            3
+          ],
+          "viewportVersions": [
+            9,
+            10,
+            11
+          ],
+          "producers": [
+            "110:1",
+            "128:1"
+          ],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        },
+        {
+          "id": 5,
+          "window": 5,
+          "coverage": {
+            "successfulCommits": 156,
+            "pixelSamples": 156,
+            "normalFrameEvents": 156,
+            "paired": 156,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": {
+            "count": 156,
+            "p50Ms": 297.4862485677004,
+            "p95Ms": 446.9256245046854,
+            "p99Ms": 722.7271131128073,
+            "maxMs": 840.5837922394276,
+            "minMs": 44.602702274918556
+          },
+          "clockUncertainty": {
+            "count": 156,
+            "p50Ms": 13.46575188136103,
+            "p95Ms": 13.470629642367356,
+            "p99Ms": 13.471239919424058,
+            "maxMs": 13.471376846194264,
+            "minMs": 13.459963122963927
+          },
+          "epochs": [
+            3
+          ],
+          "viewportVersions": [
+            11,
+            12,
+            13,
+            14
+          ],
+          "producers": [
+            "128:1"
+          ],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        },
+        {
+          "id": 6,
+          "window": 6,
+          "coverage": {
+            "successfulCommits": 0,
+            "pixelSamples": 0,
+            "normalFrameEvents": 0,
+            "paired": 0,
+            "missing": 0,
+            "fraction": 1
+          },
+          "age": null,
+          "clockUncertainty": null,
+          "epochs": [],
+          "viewportVersions": [],
+          "producers": [],
+          "protocol": {
+            "recoverAttempts": 0,
+            "keyframeRequests": 0,
+            "commitsSkipped": 0
+          }
+        }
+      ],
+      "maxTextAckMs": 142,
+      "network": {
+        "started": {
+          "at": "2026-10-17T21:50:03.879Z",
+          "configuration": {
+            "interface": "eth0",
+            "gatewayPort": 39657,
+            "direction": "Source-to-Mac Gateway TCP egress only;reverse direction unshaped",
+            "delayMs": 40,
+            "jitterMs": 2,
+            "lossPercent": 1,
+            "rateMbit": 20,
+            "queuePackets": 1000,
+            "configuredRttMs": null
+          },
+          "qdiscs": [
+            {
+              "kind": "prio",
+              "handle": "1:",
+              "root": true,
+              "refcnt": 13,
+              "options": {
+                "bands": 3,
+                "priomap": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "multiqueue": false
+              },
+              "bytes": 0,
+              "packets": 0,
+              "drops": 0,
+              "overlimits": 0,
+              "requeues": 0,
+              "backlog": 0,
+              "qlen": 0
+            },
+            {
+              "kind": "netem",
+              "handle": "30:",
+              "parent": "1:3",
+              "options": {
+                "limit": 1000,
+                "delay": {
+                  "delay": 0.04,
+                  "jitter": 0.002,
+                  "correlation": 0
+                },
+                "loss-random": {
+                  "loss": 0.01,
+                  "correlation": 0
+                },
+                "rate": {
+                  "rate": 2500000,
+                  "packetoverhead": 0,
+                  "cellsize": 0,
+                  "celloverhead": 0
+                },
+                "ecn": false,
+                "gap": 0
+              },
+              "bytes": 0,
+              "packets": 0,
+              "drops": 0,
+              "overlimits": 0,
+              "requeues": 0,
+              "backlog": 0,
+              "qlen": 0
+            }
+          ],
+          "counters": {
+            "bytes": 0,
+            "packets": 0,
+            "drops": 0,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 0,
+            "qlen": 0
+          }
+        },
+        "observed": {
+          "at": "2026-10-17T21:53:30.116Z",
+          "configuration": {
+            "interface": "eth0",
+            "gatewayPort": 39657,
+            "direction": "Source-to-Mac Gateway TCP egress only;reverse direction unshaped",
+            "delayMs": 40,
+            "jitterMs": 2,
+            "lossPercent": 1,
+            "rateMbit": 20,
+            "queuePackets": 1000,
+            "configuredRttMs": null
+          },
+          "qdiscs": [
+            {
+              "kind": "prio",
+              "handle": "1:",
+              "root": true,
+              "refcnt": 13,
+              "options": {
+                "bands": 3,
+                "priomap": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "multiqueue": false
+              },
+              "bytes": 381839495,
+              "packets": 254640,
+              "drops": 225,
+              "overlimits": 0,
+              "requeues": 0,
+              "backlog": 113550,
+              "qlen": 3
+            },
+            {
+              "kind": "netem",
+              "handle": "30:",
+              "parent": "1:3",
+              "options": {
+                "limit": 1000,
+                "delay": {
+                  "delay": 0.04,
+                  "jitter": 0.002,
+                  "correlation": 0
+                },
+                "loss-random": {
+                  "loss": 0.01,
+                  "correlation": 0
+                },
+                "rate": {
+                  "rate": 2500000,
+                  "packetoverhead": 0,
+                  "cellsize": 0,
+                  "celloverhead": 0
+                },
+                "ecn": false,
+                "gap": 0
+              },
+              "bytes": 381838775,
+              "packets": 254628,
+              "drops": 225,
+              "overlimits": 0,
+              "requeues": 0,
+              "backlog": 113550,
+              "qlen": 3
+            }
+          ],
+          "counters": {
+            "bytes": 381838775,
+            "packets": 254628,
+            "drops": 225,
+            "overlimits": 0,
+            "requeues": 0,
+            "backlog": 113550,
+            "qlen": 3
+          }
+        },
+        "removed": {
+          "status": "removed",
+          "before": {
+            "at": "2026-10-17T21:53:30.172Z",
+            "configuration": {
+              "interface": "eth0",
+              "gatewayPort": 39657,
+              "direction": "Source-to-Mac Gateway TCP egress only;reverse direction unshaped",
+              "delayMs": 40,
+              "jitterMs": 2,
+              "lossPercent": 1,
+              "rateMbit": 20,
+              "queuePackets": 1000,
+              "configuredRttMs": null
+            },
+            "qdiscs": [
+              {
+                "kind": "prio",
+                "handle": "1:",
+                "root": true,
+                "refcnt": 13,
+                "options": {
+                  "bands": 3,
+                  "priomap": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "multiqueue": false
+                },
+                "bytes": 381953045,
+                "packets": 254715,
+                "drops": 225,
+                "overlimits": 0,
+                "requeues": 0,
+                "backlog": 115064,
+                "qlen": 3
+              },
+              {
+                "kind": "netem",
+                "handle": "30:",
+                "parent": "1:3",
+                "options": {
+                  "limit": 1000,
+                  "delay": {
+                    "delay": 0.04,
+                    "jitter": 0.002,
+                    "correlation": 0
+                  },
+                  "loss-random": {
+                    "loss": 0.01,
+                    "correlation": 0
+                  },
+                  "rate": {
+                    "rate": 2500000,
+                    "packetoverhead": 0,
+                    "cellsize": 0,
+                    "celloverhead": 0
+                  },
+                  "ecn": false,
+                  "gap": 0
+                },
+                "bytes": 381952325,
+                "packets": 254703,
+                "drops": 225,
+                "overlimits": 0,
+                "requeues": 0,
+                "backlog": 115064,
+                "qlen": 3
+              }
+            ],
+            "counters": {
+              "bytes": 381952325,
+              "packets": 254703,
+              "drops": 225,
+              "overlimits": 0,
+              "requeues": 0,
+              "backlog": 115064,
+              "qlen": 3
+            }
+          },
+          "after": [
+            {
+              "kind": "noqueue",
+              "handle": "0:",
+              "root": true,
+              "refcnt": 2,
+              "options": {},
+              "bytes": 0,
+              "packets": 0,
+              "drops": 0,
+              "overlimits": 0,
+              "requeues": 0,
+              "backlog": 0,
+              "qlen": 0
+            }
+          ]
+        },
+        "measuredRttMs": [
+          43.39433300000019,
+          40.90908399999989,
+          43.09508400000004,
+          40.40491699999984,
+          44.45308400000022,
+          41.47470800000019,
+          40.33658299999979,
+          39.9227920000003,
+          42.98233399999981,
+          42.11200000000008
+        ]
+      },
+      "runtimeImageId": "sha256:42df2c322c1c105d79aff686ebf92b0708f237788daa011186976e852b7cf66e",
+      "allExitCodes": 0,
+      "artifacts": {
+        "stream-report.json": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-netem-v1/results/stream-report.json",
+          "sha256": "b2f87ffb24361d71ca2360be6ad753fcb4ee170ddc0726a27b85b9cc21649c40"
+        },
+        "stream-windows.jsonl": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-netem-v1/results/stream-windows.jsonl",
+          "sha256": "7dd1c4c920804ab201a1b2eeb8f87db7138bfec7aaecedde9cb23c17286e1bff"
+        },
+        "stream-raw-windows.jsonl": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-netem-v1/results/stream-raw-windows.jsonl",
+          "sha256": "746249c862d52d610cd5e0f0b2d9002ae74b4ec6f56ea9bb3c2ff2d8d4a50017"
+        },
+        "source-stopped.json": {
+          "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-netem-v1/results/source-stopped.json",
+          "sha256": "e548504ca946f48cf32906a2b59748a455d6edce6166310fc0d6c9a464f9dea0"
+        }
+      }
+    }
+  ],
+  "totalPaired": 1430,
+  "missing": 0,
+  "legacyCompatibility": {
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-frame-age-stream-legacy-v1/frozen-version.json",
+    "reportSha256": "a08b2c2197a26ed6307922f72d0f10df6994fbec4295d6d690d99dd6c4049b4b",
+    "strictWindows": 3,
+    "paired": 213,
+    "passed": true
+  },
+  "algorithmIdenticalBetweenPilots": true,
+  "networkRunAddsReceiptPersistenceOnly": [
+    "tests/frame-age-stream.mjs"
+  ],
+  "pureContractsPassed": 19,
+  "negativeAgePointEstimatesRetained": "Baseline minimum midpoint estimate is negative within nonnegative-upper calibration interval;not clipped or interpreted as negative physical time. Interpolation assumes affine drift,with full asymmetric probe intervals and timer rounding.",
+  "organicRecovery": "Baseline actual commit-resources-unavailable causes1 recovery+1 actually queuedkeyframerequest. Network run0;successful final pixels through400updates in both. Different units from kerneldrops/Source/Gateway counters;Source rejected-outcome drain integration stillpending.",
+  "scopeLimits": [
+    "Both runs use one CPUWorker,not combined persistent3VM+secondary+defaultlease physicallongload.",
+    "SourceOS proof pins initial/finalknowncohort only;all intermediate renderer PID identities probed alive forclock,not all retained to retirement. Finalwholecgroup onlyinit outside controller verified.",
+    "No separate Mac Chrome version persisted in these observer pilots;not a cross-version result.",
+    "InputACK is actual textsend(seq)/dispatch match plus final page pixel check;additional paired inputmarker/Native watermark coverage belongs to combined integration.",
+    "Physical30min and8h/N1long are separate incomplete gates."
+  ],
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}

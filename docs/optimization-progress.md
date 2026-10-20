@@ -1193,4 +1193,14 @@ v1因基础runtime没有tc在施加损伤前失败，保留原记录；另建run
 
 真实硬件pilot通过：35.323秒、跨站前后两个实际renderer、72个Native戳全部通过同Linux单调区间及固定身份/namespace检查，一个Worker持续存活，三旧式严格窗口仍独立按PID验收。新增1个区间门槛契约通过；此前12个时钟契约沿用父检查点。此步只是共享时钟前置依据，尚未允许跨PID连续帧龄验收，也不证明任意后续时钟覆盖/非线性漂移或其他平台。Source与Viewer实际exit0、8个已知Source身份退出、清理错误0。
 
-冻结时read-only git diff触发长时索引刷新，仅终止本次自建git子进程；随后直接读取3个HEAD对象并与工作文件/快照SHA对照完成核验，未清理缓存或修改Git索引。8小时/N1长时仍未通过。
+冻结时read-only git diff触发长时索引刷新，仅终止本次自建git子进程；随后直接读取3个HEAD对象并与工作文件/快照SHA对照完成核验，未清理缓存、未暂存或提交代码。8小时/N1长时仍未通过。
+
+## 跨导航与丢包的连续有界帧龄窗口
+
+新增测试专用atomic rotate：同一真实Worker在主线程消息顺序边界上关闭旧窗口并立即开启下一窗口，过程中enabled不关闭；每窗口4096样本/512协议事件/32socket事件，累计ordinal持续核对、原始窗口先落盘再校准/校验，页面只保留当前窗口，Node保留6次真实校准与最多1024个producer证明。Linux共享时钟路径显式启用并验证每个当前renderer的真实区间/固定身份/namespace，未伪造或重标PID。旧式严格PID/epoch/viewport窗口默认保持；两者共用原区间数学，未知renderer/域不匹配/提交缺失/替换Worker/ordinal断裂都会失败。19个数学、边界、物理策略、网络计数契约通过。
+
+真实无损伤pilot51.485秒：400图片更新/90,015,365bytes、13resize、2跨站、10文本输入、同页同Worker跨3个真实Source renderer，6个有界窗口（末窗口真实0提交也保留）连续配对660次成功提交，首尾Worker.all差值正好660且缺失0。包含跨epoch/PID/viewport的单个窗口。实际出现一次commit-resources-unavailable恢复及一次真正排队的keyframe request，随后最终像素收敛；未注入诊断故障。点估计最低-2.223ms处于校准不确定区间内，上界仍非负，原样保留，不裁成0或解释成真实负延迟。
+
+独立单向Gateway netem pilot209.212秒，同一方法连续配对770次成功提交，2次真实跨站仍在enabled窗口内，缺失0；一次网络配置覆盖全部窗口及转换，实测内核丢包/RTT/输入ACK和每窗口原始帧见独立evidence。协议恢复事件0不表示TCP或Source快照没有丢失。两试跑的算法完全相同，网络副本仅多持久化实际served-module SHA receipt；生产Worker、Source、Broker与浏览器二进制均未改。最新590文件副本另通过三旧式严格窗口实机兼容检查。
+
+所有Source与Viewer实际exit0，最终cohort完整、容器外观测范围只有init PID1，已固定的8个Source身份均退出；中间renderer只做了在世身份/时钟证明，尚未全部持有FD至销毁，因此不宣称完整历史身份退休集合。仍需把连续观测、Source/Gateway/native-rejection有界窗口、精确输入marker/watermark及每次导航前固定身份并入三个主VM/附加Session/默认租约长测，再验收物理门槛和8小时。全部41项仍9/12/20，不提交、不推送。

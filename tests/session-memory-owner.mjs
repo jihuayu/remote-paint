@@ -14,9 +14,9 @@ function closedSource(source){
 function sourceRows(metrics,rootPid,brokerPid){
  const rows=new Map(metrics.processes.map(row=>[row.pid,row]));return metrics.processes.filter(row=>{if(row.pid===brokerPid)return true;const seen=new Set();while(row){if(row.pid===rootPid)return true;if(seen.has(row.pid))throw new Error('Observed process ancestry cycle');seen.add(row.pid);row=rows.get(row.ppid);}return false;});
 }
-export async function createSessionMemoryOwner(fixture,{port=0,host='127.0.0.1',frameAgePoints=null}={}){
+export async function createSessionMemoryOwner(fixture,{port=0,host='127.0.0.1',frameAgePoints=null,frameAgeStreaming=false}={}){
  const workload=fixture.create();let live,source,phase='startup',closed=false,closePromise,rootPid;const errors=[],transitions=[],probes=new Map(),nodeCalls={map:0,publish:0,awaitPromise:0};
- try{live=await (frameAgePoints?startFrameAgeLive({url:workload.url(),port,host,points:frameAgePoints}):startLive({url:workload.url(),port,host}));assert.equal(live.source.nativeAutopublish,true);source=live.source;
+ try{live=await (frameAgePoints?startFrameAgeLive({url:workload.url(),port,host,points:frameAgePoints,streaming:frameAgeStreaming}):startLive({url:workload.url(),port,host}));assert.equal(live.source.nativeAutopublish,true);source=live.source;
   source.on('captureError',error=>{const value={phase,message:error.message,code:error.code};if(['navigation','resize'].includes(phase)&&/Navigation invalidated|Execution context was destroyed|Cannot find context|Inspected target navigated or closed/.test(error.message)){if(transitions.length<32)transitions.push(value);}else if(errors.length<32)errors.push(value);});
   const request=source.broker.request.bind(source.broker);source.broker.request=(op,...args)=>{if(op==='map'||op==='publish')nodeCalls[op]++;return request(op,...args);};const send=source.capture.cdp.send.bind(source.capture.cdp);source.capture.cdp.send=(op,...args)=>{if(op==='Runtime.awaitPromise')nodeCalls.awaitPromise++;return send(op,...args);};
   const lease=source.acquirePageRun();try{await deadline(source.page.evaluate(()=>window.loaded),15000,'initial Session page image');}finally{lease();}

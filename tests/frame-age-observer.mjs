@@ -9,6 +9,7 @@ import {prepareViewerAssets} from '../live/viewer-assets.mjs';
 import {startLiveSource} from '../live/source.mjs';
 import {startLiveTransport} from '../live/transport.mjs';
 import {createControl} from '../live/input.mjs';
+import {verifyLinuxClockInterval} from './linux-source-clock.mjs';
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const nativeClock='chromium-time-ticks-v1';
@@ -38,18 +39,19 @@ export function summarizeFrameResources(required,resources){
  }
  return {requiredResourceCount:required.length,requiredResourceBytes:bytes,largestRequiredResourceBytes:largest};
 }
-export function instrumentFrameAgeWorker(template,points,{diagnosticFaults=false}={}){
+export function instrumentFrameAgeWorker(template,points,{diagnosticFaults=false,streaming=false}={}){
   // These exact insertion points bracket neither network nor decode. They
   // run after this frame's real draw and before the next queued commit.
   let body=replaceOnce(template,'self.onmessage=async event=>{try{',`
-const __rpAge={enabled:false,window:0,all:0,observed:0,points:${JSON.stringify(points)},limit:${limit},protocolOrdinal:0,fault:null};
-const __rpProtocol=(kind,fields)=>{if(__rpAge.protocolOrdinal>=512)throw new Error('Protocol observer retention bound');ui('__rpAgeProtocol',{record:{kind,ordinal:++__rpAge.protocolOrdinal,window:__rpAge.window,enabled:__rpAge.enabled,workerMs:performance.now(),...fields}});};
+const __rpAge={enabled:false,window:0,all:0,observed:0,points:${JSON.stringify(points)},limit:${limit},protocolOrdinal:0,fault:null${streaming?',protocolRetained:0':''}};
+const __rpProtocol=(kind,fields)=>{if(${streaming?'__rpAge.protocolRetained++':'__rpAge.protocolOrdinal'}>=512)throw new Error('Protocol observer retention bound');ui('__rpAgeProtocol',{record:{kind,ordinal:++__rpAge.protocolOrdinal,window:__rpAge.window,enabled:__rpAge.enabled,workerMs:performance.now(),...fields}});};
 const __rpAgeResources=${summarizeFrameResources.toString()};
 self.onmessage=async event=>{try{`);
   body=replaceOnce(body," if(message.type==='ping'){ui('pong',{nonce:message.nonce});}",`
  if(message.type==='__rpAgeCommand'){
   if(message.operation==='enable'){if(__rpAge.enabled)throw new Error('Age observer already enabled');__rpAge.enabled=true;__rpAge.window++;__rpAge.observed=0;}
   else if(message.operation==='disable')__rpAge.enabled=false;
+  ${streaming?`else if(message.operation==='rotate'){if(!__rpAge.enabled)throw new Error('Cannot rotate a disabled observer');const ended={window:__rpAge.window,all:__rpAge.all,observed:__rpAge.observed,protocolOrdinal:__rpAge.protocolOrdinal};__rpAge.window++;__rpAge.observed=0;__rpAge.protocolRetained=0;ui('__rpAgeReply',{nonce:message.nonce,operation:'rotate',...ended,nextWindow:__rpAge.window,clock:'${workerClock}',now:performance.now()});return;}`:''}
   ${diagnosticFaults?"else if(['fault:delta-base','fault:missing-resource'].includes(message.operation)){if(!__rpAge.enabled||__rpAge.fault)throw new Error('Diagnostic fault must be armed inside an idle enabled window');__rpAge.fault=message.operation;}":''}
   else if(message.operation!=='clock')throw new Error('Unknown age observer operation');
   ui('__rpAgeReply',{nonce:message.nonce,operation:message.operation,window:__rpAge.window,all:__rpAge.all,observed:__rpAge.observed,protocolOrdinal:__rpAge.protocolOrdinal,clock:'${workerClock}',now:performance.now()});
@@ -80,7 +82,7 @@ ${marker}`);
   body=replaceOnce(body,"socket=ws;ws.binaryType='arraybuffer';","socket=ws;ws.binaryType='arraybuffer';ui('__rpAgeSocketStart',{connectionGeneration:current,window:__rpAge.window,enabled:__rpAge.enabled,workerMs:performance.now(),host:new URL(ws.url).host,path:new URL(ws.url).pathname,keyChars:new URL(ws.url).searchParams.get('key')?.length,keyMatchesArgument:new URL(ws.url).searchParams.get('key')===key,origin:self.origin,locationOrigin:location.origin,nativePort:config.nativePort});");
  return body;
 }
-async function prepareFrameAgeAssets(points,diagnosticFaults){
+async function prepareFrameAgeAssets(points,diagnosticFaults,streaming){
  const root=new URL('../',import.meta.url),files=new Map([
   ['/', ['viewer/live.html','text/html; charset=utf-8']],['/live.mjs',['viewer/live.mjs','text/javascript']],
   ['/input.mjs',['viewer/input.mjs','text/javascript']],['/control-channel.mjs',['viewer/control-channel.mjs','text/javascript']],
@@ -99,15 +101,15 @@ async function prepareFrameAgeAssets(points,diagnosticFaults){
  // The complete copied input map must reproduce the real production bundle
  // exactly. Changes to its file set or types fail instead of silently forking it.
  const production=await prepareViewerAssets(),baseline=await makeStaticAssets(inputs);assert.equal(baseline.build,production.build,'Observer assets no longer reproduce production asset inputs');
- const template=inputs.get('/stream-worker.mjs').bytes.toString('utf8'),instrumented=instrumentFrameAgeWorker(template,points,{diagnosticFaults});
+ const template=inputs.get('/stream-worker.mjs').bytes.toString('utf8'),instrumented=instrumentFrameAgeWorker(template,points,{diagnosticFaults,streaming});
  inputs.set('/stream-worker.mjs',{...inputs.get('/stream-worker.mjs'),bytes:Buffer.from(instrumented)});
  const assets=await makeStaticAssets(inputs),original=production.get('/stream-worker.mjs').bytes,observed=assets.get('/stream-worker.mjs').bytes;
- const provenance={diagnosticFaults,baseTemplateSha256:hash(template),instrumentedTemplateSha256:hash(instrumented),productionBuild:production.build,observerBuild:assets.build,mode:'test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting',points,limit,timerRounding:{nativeStampAllowanceMs,workerStampAllowanceMs,basis:'Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints.'},served:[{originalServedSha256:hash(original),instrumentedServedSha256:hash(observed),instrumentationBytes:Buffer.byteLength(instrumented)-Buffer.byteLength(template)}],actualServed:[]};
+ const provenance={diagnosticFaults,streaming,baseTemplateSha256:hash(template),instrumentedTemplateSha256:hash(instrumented),productionBuild:production.build,observerBuild:assets.build,mode:'test-instrumented-production-Worker/cpu-2d;normalproductionassetbuilder/transport,withoutbrowserrouting',points,limit,timerRounding:{nativeStampAllowanceMs,workerStampAllowanceMs,basis:'Pinned Chromium time_clamper.h coarse100us;performance.cc clamps now and time-origin. Conservative200us per Worker stamp and1us per native stamp,atprobes andendpoints.'},served:[{originalServedSha256:hash(original),instrumentedServedSha256:hash(observed),instrumentationBytes:Buffer.byteLength(instrumented)-Buffer.byteLength(template)}],actualServed:[]};
  return {assets,provenance};
 }
-export async function startFrameAgeLive({url,port=0,host='127.0.0.1',points=[[412,72],[610,190],[690,190]],diagnosticFaults=false}={}){
+export async function startFrameAgeLive({url,port=0,host='127.0.0.1',points=[[412,72],[610,190],[690,190]],diagnosticFaults=false,streaming=false}={}){
  assert.ok(points.length>0&&points.length<=8&&points.every(p=>p.length===2&&p.every(n=>Number.isSafeInteger(n)&&n>=0)));
- assert.equal(typeof diagnosticFaults,'boolean');const prepared=prepareFrameAgeAssets(points,diagnosticFaults);prepared.catch(()=>{});let source,transport,closing;
+ assert.equal(typeof diagnosticFaults,'boolean');assert.equal(typeof streaming,'boolean');assert.ok(!streaming||!diagnosticFaults);const prepared=prepareFrameAgeAssets(points,diagnosticFaults,streaming);prepared.catch(()=>{});let source,transport,closing;
  const close=()=>closing??=(async()=>{const errors=[];for(const dispose of [()=>transport?.close(),()=>source?.control?.close(),()=>source?.close()])try{await dispose();}catch(e){errors.push(e);}if(errors.length)throw new AggregateError(errors,'Observed Live cleanup failed');})();
  try{source=await startLiveSource({url});source.control=await createControl(source);const{assets,provenance}=await prepared;transport=await startLiveTransport(source,{port,host,preparedAssets:assets});return {...transport,source,observerProvenance:provenance,close};}
  catch(error){try{await close();}catch(cleanup){throw new AggregateError([error,cleanup],'Observed Live startup/cleanup failed');}throw error;}
@@ -118,22 +120,29 @@ export async function installFrameAgeObserver(page,provenance){
   assert.ok(provenance.actualServed.length<4);const record={status:response.status(),sha256:null};provenance.actualServed.push(record);
   void response.body().then(bytes=>{record.sha256=hash(bytes);},()=>{record.error='Cannot read actual observer module response';});
  }});
- await page.addInitScript(({limit})=>{
+ await page.addInitScript(({limit,streaming})=>{
   const NativeWorker=Worker,key=m=>[m.connectionGeneration,m.pageEpoch,m.viewportVersion,m.frameId].join(':');
-  const state=window.__rpAge={worker:null,workerCount:0,nonce:0,pending:new Map(),samples:[],errors:[],protocolEvents:[],socketCloses:[],socketStarts:[],active:false,productionFrames:0,paired:0,start:null,end:null};
+  const state=window.__rpAge={worker:null,workerCount:0,nonce:0,pending:new Map(),samples:[],errors:[],protocolEvents:[],socketCloses:[],socketStarts:[],active:false,productionFrames:0,paired:0,start:null,end:null,lastProtocolOrdinal:0};
   const fail=message=>{if(state.errors.length<32)state.errors.push(message);};
   window.Worker=class extends NativeWorker{
    constructor(url,options){
     super(url,options);if(!new URL(String(url),location.href).pathname.endsWith('/stream-worker.mjs'))return;
     if(++state.workerCount!==1)fail('Observed production Worker was replaced');state.worker=this;
     this.addEventListener('message',({data})=>{
-     if(data.type==='__rpAgeProtocol'){const r=data.record;if(state.protocolEvents.length>=512){fail('Protocol event retention bound');return;}if(r.ordinal!==state.protocolEvents.length+1){fail('Protocol event coverage gap');return;}state.protocolEvents.push(r);return;}
+     if(data.type==='__rpAgeProtocol'){const r=data.record;if(state.protocolEvents.length>=512){fail('Protocol event retention bound');return;}if(r.ordinal!==state.lastProtocolOrdinal+1){fail('Protocol event coverage gap');return;}state.lastProtocolOrdinal=r.ordinal;state.protocolEvents.push(r);return;}
      if(data.type==='__rpAgeSocketStart'){if(state.socketStarts.length>=32)fail('Socket start retention bound');else state.socketStarts.push({...data});return;}
      if(data.type==='__rpAgeSocketClose'){if(state.socketCloses.length>=32)fail('Socket close retention bound');else state.socketCloses.push({...data});return;}
      if(data.type==='__rpAgeReply'){
+      let completed;
+      if(streaming&&['rotate','disable'].includes(data.operation)){
+       if(!state.active)fail('Closed an inactive streaming observer');
+       completed={samples:state.samples,errors:state.errors.slice(),paired:state.paired,start:state.start,end:{...data,productionFrames:state.productionFrames},workerCount:state.workerCount,pending:state.pending.size-1,protocolEvents:state.protocolEvents,socketStarts:state.socketStarts,socketCloses:state.socketCloses};
+       state.samples=[];state.paired=0;state.protocolEvents=[];state.socketStarts=[];state.socketCloses=[];
+       if(data.operation==='rotate')state.start={...data,window:data.nextWindow,observed:0,productionFrames:state.productionFrames};
+      }
       if(data.operation==='enable'){state.samples=[];state.paired=0;state.active=true;state.start={...data,productionFrames:state.productionFrames};}
       if(data.operation==='disable'){state.active=false;state.end={...data,productionFrames:state.productionFrames};}
-      const pending=state.pending.get(data.nonce);if(!pending){fail('Unexpected observer response');return;}state.pending.delete(data.nonce);clearTimeout(pending.timer);pending.resolve(data);return;
+      const pending=state.pending.get(data.nonce);if(!pending){fail('Unexpected observer response');return;}state.pending.delete(data.nonce);clearTimeout(pending.timer);pending.resolve(completed?{...data,completed}:data);return;
      }
      if(data.type==='__rpAgeSample'){
       if(!state.active){fail('Pixel sample outside enabled window');return;}if(state.samples.length>=limit){fail('Main observer sample bound');return;}
@@ -153,13 +162,13 @@ export async function installFrameAgeObserver(page,provenance){
    const nonce=++state.nonce,timer=setTimeout(()=>{state.pending.delete(nonce);reject(new Error('Observer clock/control response deadline'));},3000);
    state.pending.set(nonce,{resolve,reject,timer});state.worker.postMessage({type:'__rpAgeCommand',operation,nonce});
   });
- },{limit});
+ },{limit,streaming:provenance.streaming===true});
  return provenance;
 }
 
 async function workerRequest(page,operation){return page.evaluate(operation=>window.__rpAge.request(operation),operation);}
 function best(samples){assert.ok(samples.length);return samples.reduce((a,b)=>a.roundTripMs<=b.roundTripMs?a:b);}
-export async function calibrateFrameAge(source,page,{samples=12,nativeProbe}={}){
+export async function calibrateFrameAge(source,page,{samples=12,nativeProbe,sharedLinuxClock=false}={}){
  assert.ok(Number.isSafeInteger(samples)&&samples>=2&&samples<=32);
  const native=[],worker=[];
  // A remote callback returns the real Source reply and its actual scope witness.
@@ -167,20 +176,21 @@ export async function calibrateFrameAge(source,page,{samples=12,nativeProbe}={})
  // neither the remote host clock nor a fabricated capture binding is reused.
  assert.ok(nativeProbe===undefined||typeof nativeProbe==='function');
  if(nativeProbe)assert.equal(source,null,'Use an explicit remote probe, not a Source-shaped facade');
+ if(sharedLinuxClock)assert.ok(nativeProbe,'Linux shared clock requires an explicit verified native probe');
  const probe=nativeProbe??(async()=>({reply:await source.capture.command('scheduler',source.capture.binding.config.id),pageEpoch:source.pageEpoch,viewportVersion:source.viewportVersion}));
  for(let i=0;i<samples;i++){
   const before=performance.now(),witness=await probe(),after=performance.now(),r=witness.reply;
   assert.ok(Number.isSafeInteger(witness.pageEpoch)&&witness.pageEpoch>0&&Number.isSafeInteger(witness.viewportVersion)&&witness.viewportVersion>0);
-  if(native.length){assert.equal(witness.pageEpoch,native[0].pageEpoch);assert.equal(witness.viewportVersion,native[0].viewportVersion);}
+  if(native.length&&!sharedLinuxClock){assert.equal(witness.pageEpoch,native[0].pageEpoch);assert.equal(witness.viewportVersion,native[0].viewportVersion);}
   assert.equal(r.clock,nativeClock);assert.ok(Number.isSafeInteger(r.nowMicros)&&r.nowMicros>0);assert.ok(Number.isInteger(r.rendererProcessId)&&r.rendererProcessId>0);
-  native.push({pageEpoch:witness.pageEpoch,viewportVersion:witness.viewportVersion,...(witness.provenance?{provenance:witness.provenance}:{}),before,after,roundTripMs:after-before,domainMs:r.nowMicros/1000,pid:r.rendererProcessId,clock:r.clock,quantizationMs:nativeStampAllowanceMs,lower:before-r.nowMicros/1000-nativeStampAllowanceMs,upper:after-r.nowMicros/1000+nativeStampAllowanceMs});
+  native.push({nativeMicros:r.nowMicros,pageEpoch:witness.pageEpoch,viewportVersion:witness.viewportVersion,...(witness.provenance?{provenance:witness.provenance}:{}),before,after,roundTripMs:after-before,domainMs:r.nowMicros/1000,pid:r.rendererProcessId,clock:r.clock,quantizationMs:nativeStampAllowanceMs,lower:before-r.nowMicros/1000-nativeStampAllowanceMs,upper:after-r.nowMicros/1000+nativeStampAllowanceMs});
  }
- assert.ok(native.every(s=>s.pid===native[0].pid));
+ if(sharedLinuxClock){const domains=native.map(s=>{const p=s.provenance?.linuxMonotonic;assert.equal(p?.schema,'linux-native-monotonic-probe-v1');assert.match(p.domainId,/^[a-f0-9]{64}$/);assert.equal(p.rendererIdentity.pid,s.pid);assert.equal(p.interval.nativeMicros,s.nativeMicros);verifyLinuxClockInterval({clock:s.clock,nowMicros:s.nativeMicros},BigInt(p.interval.beforeNs),BigInt(p.interval.afterNs));return p.domainId;});assert.equal(new Set(domains).size,1);}else assert.ok(native.every(s=>s.pid===native[0].pid));
  for(let i=0;i<samples;i++){
   const before=performance.now(),r=await workerRequest(page,'clock'),after=performance.now();assert.equal(r.clock,workerClock);assert.ok(Number.isFinite(r.now)&&r.now>=0);
   worker.push({before,after,roundTripMs:after-before,domainMs:r.now,clock:r.clock,quantizationMs:workerStampAllowanceMs,lower:before-r.now-workerStampAllowanceMs,upper:after-r.now+workerStampAllowanceMs});
  }
- return {native:{samples:native,best:best(native)},worker:{samples:worker,best:best(worker)},pageEpoch:native[0].pageEpoch,viewportVersion:native[0].viewportVersion};
+ return {native:{samples:native,best:best(native)},worker:{samples:worker,best:best(worker)},pageEpoch:sharedLinuxClock?null:native[0].pageEpoch,viewportVersion:sharedLinuxClock?null:native[0].viewportVersion};
 }
 
 export async function beginFrameAge(source,page,options){
@@ -201,9 +211,18 @@ export function interpolateClock(before,after,domainMs){
  return {fraction,lower:before.lower*(1-fraction)+after.lower*fraction,upper:before.upper*(1-fraction)+after.upper*fraction};
 }
 export function calibratedFrameAge(sample,before,after){
- assert.equal(sample.captureClock,nativeClock);assert.equal(sample.workerClock,workerClock);
  assert.equal(before.native.best.pid,after.native.best.pid,'Producer renderer changed inside measurement window');
  assert.equal(sample.producer.split(':')[0],String(before.native.best.pid),'Frame producer is outside calibrated renderer');
+ return frameAgeIntervals(sample,before,after);
+}
+export function calibratedLinuxSharedFrameAge(sample,before,after,producerProof){
+ const a=before.native.best.provenance?.linuxMonotonic,b=after.native.best.provenance?.linuxMonotonic;
+ for(const p of [a,b,producerProof]){assert.equal(p?.schema,'linux-native-monotonic-probe-v1');assert.match(p.domainId,/^[a-f0-9]{64}$/);}
+ assert.equal(a.domainId,b.domainId);assert.equal(a.domainId,producerProof.domainId);assert.equal(sample.producer.split(':')[0],String(producerProof.rendererIdentity.pid),'Unknown or unverified Source renderer');
+ return frameAgeIntervals(sample,before,after);
+}
+function frameAgeIntervals(sample,before,after){
+ assert.equal(sample.captureClock,nativeClock);assert.equal(sample.workerClock,workerClock);
  assert.ok(Number.isSafeInteger(sample.captureStartedMicros)&&sample.captureStartedMicros>0);
  const c=sample.captureStartedMicros/1000,v=sample.observedMs,producer=interpolateClock(before.native.best,after.native.best,c),viewer=interpolateClock(before.worker.best,after.worker.best,v);
  const endpointAllowanceMs=Math.max(before.native.best.quantizationMs??0,after.native.best.quantizationMs??0)+Math.max(before.worker.best.quantizationMs??0,after.worker.best.quantizationMs??0);
