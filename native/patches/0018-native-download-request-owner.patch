@@ -1,0 +1,223 @@
+--- a/components/download/public/common/BUILD.gn
++++ b/components/download/public/common/BUILD.gn
+@@ -70,6 +70,8 @@
+     "simple_download_manager.h",
+     "simple_download_manager_coordinator.h",
+     "stream_handle_input_stream.h",
++    "url_download_handler.cc",
++    "url_download_handler.h",
+     "url_download_handler_factory.h",
+     "url_download_request_handle.h",
+     "url_loader_factory_provider.h",
+--- a/components/download/public/common/url_download_handler.h
++++ b/components/download/public/common/url_download_handler.h
+@@ -5,6 +5,9 @@
+ #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_URL_DOWNLOAD_HANDLER_H_
+ #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_URL_DOWNLOAD_HANDLER_H_
+ 
++#include <atomic>
++
++#include "base/memory/ref_counted.h"
+ #include "components/download/public/common/download_export.h"
+ #include "components/download/public/common/download_url_parameters.h"
+ #include "components/download/public/common/url_loader_factory_provider.h"
+@@ -12,6 +15,7 @@
+ namespace download {
+ struct DownloadCreateInfo;
+ class InputStream;
++class UrlDownloadHandler;
+ 
+ // Identifier for a UrlDownloadHandler to scope the lifetime of references.
+ // UrlDownloadHandlerID are derived from UrlDownloadHandler*, used in
+@@ -19,6 +23,23 @@
+ // match the size of a pointer, and to prevent dereferencing. Also, our
+ // tooling complains about dangling pointers if we pass around a raw ptr.
+ using UrlDownloadHandlerID = std::uintptr_t;
++
++// Browser-side handler ownership only. Even Acknowledged does not prove that
++// the remote network service has retired its request or buffers.
++class COMPONENTS_DOWNLOAD_EXPORT UrlDownloadHandlerCleanupState
++    : public base::RefCountedThreadSafe<UrlDownloadHandlerCleanupState> {
++ public:
++  enum class Phase { Active, Queued, OwnerDestroyed, Acknowledged, Failed };
++  UrlDownloadHandlerCleanupState() = default;
++  Phase GetPhase() const { return phase_.load(std::memory_order_acquire); }
++ private:
++  friend class base::RefCountedThreadSafe<UrlDownloadHandlerCleanupState>;
++  friend class UrlDownloadHandler;
++  friend void RetireUrlDownloadHandler(
++      std::unique_ptr<UrlDownloadHandler, base::OnTaskRunnerDeleter> handler);
++  ~UrlDownloadHandlerCleanupState() = default;
++  std::atomic<Phase> phase_{Phase::Active};
++};
+ 
+ // Class for handling the download of a url. Implemented by child classes.
+ class COMPONENTS_DOWNLOAD_EXPORT UrlDownloadHandler {
+@@ -44,13 +65,23 @@
+         UniqueUrlDownloadHandlerPtr downloader) {}
+   };
+ 
+-  UrlDownloadHandler() = default;
++  UrlDownloadHandler();
+ 
+   UrlDownloadHandler(const UrlDownloadHandler&) = delete;
+   UrlDownloadHandler& operator=(const UrlDownloadHandler&) = delete;
+ 
+-  virtual ~UrlDownloadHandler() = default;
++  virtual ~UrlDownloadHandler();
++  scoped_refptr<UrlDownloadHandlerCleanupState>
++  GetRemotePaintRequestCleanupState() const { return cleanup_state_; }
++ private:
++  const scoped_refptr<UrlDownloadHandlerCleanupState> cleanup_state_;
++
+ };
++
++// Takes ownership, destroys the complete handler on its IO sequence, and only
++// acknowledges on the calling sequence. Rejection/dropped replies fail closed.
++COMPONENTS_DOWNLOAD_EXPORT void RetireUrlDownloadHandler(
++    UrlDownloadHandler::UniqueUrlDownloadHandlerPtr handler);
+ 
+ }  // namespace download
+ 
+--- /dev/null
++++ b/components/download/public/common/url_download_handler.cc
+@@ -0,0 +1,63 @@
++// Native browser-side URL-handler retirement. This is not network-service ACK.
++#include "components/download/public/common/url_download_handler.h"
++
++#include <utility>
++
++#include "base/command_line.h"
++#include "base/functional/bind.h"
++#include "base/task/sequenced_task_runner.h"
++
++namespace download {
++UrlDownloadHandler::UrlDownloadHandler()
++    : cleanup_state_(base::CommandLine::ForCurrentProcess()->HasSwitch(
++                         "remote-paint-token")
++                         ? base::MakeRefCounted<UrlDownloadHandlerCleanupState>()
++                         : nullptr) {}
++
++UrlDownloadHandler::~UrlDownloadHandler() {
++  if (cleanup_state_) {
++    auto expected = UrlDownloadHandlerCleanupState::Phase::Active;
++    // Destruction outside the retirement wrapper has no origin acknowledgement.
++    cleanup_state_->phase_.compare_exchange_strong(
++        expected, UrlDownloadHandlerCleanupState::Phase::Failed);
++  }
++}
++
++void RetireUrlDownloadHandler(
++    UrlDownloadHandler::UniqueUrlDownloadHandlerPtr handler) {
++  if (!handler)
++    return;
++  auto state = handler->GetRemotePaintRequestCleanupState();
++  if (!state)
++    return;  // Original non-Native deleter behavior.
++  using Phase = UrlDownloadHandlerCleanupState::Phase;
++  auto expected = Phase::Active;
++  if (!state->phase_.compare_exchange_strong(expected, Phase::Queued) ||
++      !base::SequencedTaskRunner::HasCurrentDefault()) {
++    state->phase_.store(Phase::Failed, std::memory_order_release);
++    return;
++  }
++  auto runner = handler.get_deleter().task_runner_;
++  const bool posted = runner->PostTaskAndReplyWithResult(
++      FROM_HERE,
++      base::BindOnce(
++          [](UrlDownloadHandler::UniqueUrlDownloadHandlerPtr pending,
++             scoped_refptr<UrlDownloadHandlerCleanupState> state) {
++            std::unique_ptr<UrlDownloadHandler> owner(pending.release());
++            owner.reset();  // Derived members and endpoints gone before reply.
++            state->phase_.store(Phase::OwnerDestroyed, std::memory_order_release);
++            return true;
++          }, std::move(handler), state),
++      base::BindOnce([](scoped_refptr<UrlDownloadHandlerCleanupState> state,
++                        bool destroyed) {
++        auto expected = Phase::OwnerDestroyed;
++        if (!destroyed || !state->phase_.compare_exchange_strong(
++                              expected, Phase::Acknowledged))
++          state->phase_.store(Phase::Failed, std::memory_order_release);
++      }, state));
++  if (!posted)
++    state->phase_.store(Phase::Failed, std::memory_order_release);
++  // A rejected IO post keeps sequence-safe ownership in the original deleter.
++  // A dropped origin reply leaves OwnerDestroyed, never Acknowledged.
++}
++}  // namespace download
+--- a/components/download/public/common/download_create_info.h
++++ b/components/download/public/common/download_create_info.h
+@@ -32,6 +32,7 @@
+ }
+ 
+ namespace download {
++class UrlDownloadHandlerCleanupState;
+ // Server support for range request inferred from the response headers.
+ // |kSupport| value means the server supports range requests. |kNoSupport|
+ // means no range request is accepted by server. and |kUnknown| is used if
+@@ -63,6 +64,10 @@
+   // The unique identifier for the download.
+   std::string guid;
+ 
++  // Native-only browser-side URL handler ownership witness for this attempt.
++  scoped_refptr<UrlDownloadHandlerCleanupState> remote_paint_request_cleanup;
++
++
+   // The chain of redirects that leading up to and including the final URL.
+   std::vector<GURL> url_chain;
+ 
+--- a/components/download/internal/common/download_create_info.cc
++++ b/components/download/internal/common/download_create_info.cc
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
+ 
+ #include "components/download/public/common/download_create_info.h"
++#include "components/download/public/common/url_download_handler.h"
+ 
+ #include <memory>
+ #include <string>
+--- a/components/download/internal/common/resource_downloader.cc
++++ b/components/download/internal/common/resource_downloader.cc
+@@ -246,6 +246,8 @@
+     mojom::DownloadStreamHandlePtr stream_handle) {
+   download_create_info->is_new_download = is_new_download_;
+   download_create_info->guid = guid_;
++  download_create_info->remote_paint_request_cleanup =
++      GetRemotePaintRequestCleanupState();
+   download_create_info->serialized_embedder_download_data =
+       serialized_embedder_download_data_;
+   download_create_info->tab_url = tab_url_;
+--- a/components/download/internal/common/in_progress_download_manager.cc
++++ b/components/download/internal/common/in_progress_download_manager.cc
+@@ -217,7 +217,10 @@
+   Initialize(in_progress_db_dir, db_provider);
+ }
+ 
+-InProgressDownloadManager::~InProgressDownloadManager() = default;
++InProgressDownloadManager::~InProgressDownloadManager() {
++  for (auto& handler : url_download_handlers_)
++    RetireUrlDownloadHandler(std::move(handler));
++}
+ 
+ void InProgressDownloadManager::OnUrlDownloadStarted(
+     std::unique_ptr<DownloadCreateInfo> download_create_info,
+@@ -246,7 +249,9 @@
+   for (auto ptr = url_download_handlers_.begin();
+        ptr != url_download_handlers_.end(); ++ptr) {
+     if (reinterpret_cast<UrlDownloadHandlerID>(ptr->get()) == downloader) {
++      auto retired = std::move(*ptr);
+       url_download_handlers_.erase(ptr);
++      RetireUrlDownloadHandler(std::move(retired));
+       return;
+     }
+   }
+--- a/components/download/internal/common/BUILD.gn
++++ b/components/download/internal/common/BUILD.gn
+@@ -14,6 +14,7 @@
+ source_set("internal") {
+   visibility = [
+     ":for_tests",
++    "//components/remote_paint:download_file_tests",
+     "//components/download/public/common:public",
+   ]
+ 

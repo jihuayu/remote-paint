@@ -50,6 +50,7 @@ test("download_file_tests") {
     "download_file_unittest.cc",
     "download_file_deletion_unittest.cc",
     "download_task_settlement_unittest.cc",
+    "download_request_owner_unittest.cc",
     "//components/download/internal/common/base_file_unittest.cc",
   ]
   deps = [
@@ -57,6 +58,7 @@ test("download_file_tests") {
     "//base",
     "//base/test:test_support",
     "//components/download/public/common:public",
+    "//components/download/internal/common:internal",
     "//components/download/public/common:test_support",
     "//mojo/core/embedder",
     "//testing/gmock",
