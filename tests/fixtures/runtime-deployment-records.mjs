@@ -1,0 +1,1 @@
+export function deployment(){return {region:'test',deploymentId:'deployment-fixture',daemonId:'daemon-fixture',imageId:'sha256:'+'b'.repeat(64),projectPath:'/fixture/project',browserPath:'/fixture/browser',projectManifestSha256:'c'.repeat(64),browserManifestSha256:'d'.repeat(64),imageEnvironment:['PATH=/usr/local/bin']};}

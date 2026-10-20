@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-18T20:06:28.064106+00:00",
+  "task": "B1c1b2a2",
+  "scope": "Immutable deployment configuration/ledger continuity binding with separate explicit trusted new-deployment bootstrap and ordinary resume;not production admission or resource retirement.",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/runtime-deployment-binding-checkpoint-v1.json",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/runtime-deployment-binding-v2/frozen-version.json",
+  "contract": {
+    "recordBytes": 8192,
+    "privateMode": "0600/0700 with inode-bound directory",
+    "bootstrap": "Temporary exclusive regional owner,empty target Session/runtime history and actual pinned all-state inventory,then recheck after await;no Engine effects.",
+    "ordinaryResume": "Existing private directory/file only,strict configuration digest and actual stable ledger/file identity,no implicit bootstrap or Engine request.",
+    "credentials": "Only normalized configuration hash stored;no raw paths or image environment values in binding.",
+    "durability": "Filefsync/no-overwrite link/directoryfsync,ordinary resume can adopt a committed binding after bootstrap writerdeath;pendingpartial data never succeeds."
+  },
+  "qualification": "Final checkpoint records actual per-platform Node-only contracts and opt-in actual pinned Engine/SQLite/unstarted-container/parentdeath evidence;whole-source full regression pending active8h isolation.",
+  "initialFixtureFailures": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/runtime-deployment-binding-v1/initial-fixture-failure.json",
+  "remaining": [
+    "Production provider must consume this binding before inventory/orphan admission,write-ahead effects/private attach/preStart witness and actual immutable retirement.",
+    "Existing recovered unknown allocations remain close-only;empty inventory is not retirement proof.",
+    "Registry unavailable/TTL/cancel/recovery/renderedViewer roles and original8h final acceptance remain pending."
+  ],
+  "activeEightHourSourceFiles": 783,
+  "eightHourPassed": false,
+  "nativeProductionProviderComplete": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "noCommitPush": true
+}
