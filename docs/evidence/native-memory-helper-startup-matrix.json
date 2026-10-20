@@ -1,0 +1,86 @@
+{
+  "at": "2026-10-18T18:26:38.788157+00:00",
+  "task": "H2",
+  "status": "fixed-eight-cell-actual-startup-diagnosis-complete-all-outcomes-retained",
+  "sourceManifestSha256": "c5acf5e353d44b8d5a3bb073148c3b84f8c11a7c0244ee1873f7acb47e761b9d",
+  "cases": 8,
+  "actualHelpersObservedClosed": 8,
+  "ownedSourceContainersObservedClosed": 4,
+  "groups": {
+    "qualified": {
+      "count": 4,
+      "minHandshakeMs": 2.102375000000393,
+      "medianHandshakeMs": 3.8386249999999507,
+      "maxHandshakeMs": 5.199749999999767
+    },
+    "fresh": {
+      "count": 4,
+      "minHandshakeMs": 274.78570800000034,
+      "medianHandshakeMs": 293.15893800000026,
+      "maxHandshakeMs": 774.6005
+    }
+  },
+  "qualifiedDistinctInodes": 1,
+  "freshDistinctInodes": 4,
+  "systemLogTemporalJoins": [
+    {
+      "timestamp": "2026-10-19 02:16:15.451626+0800",
+      "case": 2,
+      "kind": "fresh",
+      "offsetMs": 772.6260000000001,
+      "beforeHandshakeMs": 1.9744999999999209
+    },
+    {
+      "timestamp": "2026-10-19 02:16:18.090703+0800",
+      "case": 4,
+      "kind": "fresh",
+      "offsetMs": 289.703,
+      "beforeHandshakeMs": 5.414084000000003
+    },
+    {
+      "timestamp": "2026-10-19 02:16:18.629888+0800",
+      "case": 5,
+      "kind": "fresh",
+      "offsetMs": 269.88800000000003,
+      "beforeHandshakeMs": 4.897708000000307
+    },
+    {
+      "timestamp": "2026-10-19 02:16:19.855766+0800",
+      "case": 7,
+      "kind": "fresh",
+      "offsetMs": 285.766,
+      "beforeHandshakeMs": 5.434792000000527
+    }
+  ],
+  "systemLogInterpretation": "Four same-identifier Gatekeeper evaluation records each fall inside a fresh-file startup interval. Temporal association is observed;result enum/pathhash are not decoded and oldv4solecause remainsunproven.",
+  "copyMethod": "Node fs.copyFile;not asserted equivalent to Python shutil.copy2 metadata/admission behavior or cold host caches",
+  "observedQualificationGap": "v13 short pilots and v4 fresh project executed byte-identical helper files at different paths/inodes;new file admission state was not held identical.",
+  "limitsUnchanged": {
+    "requestMs": 2000,
+    "reapMs": 250,
+    "phaseMs": 5000,
+    "stdoutBytes": 65536,
+    "stderrBytes": 8192,
+    "processes": 1024,
+    "headerBytes": 32,
+    "rowBytes": 56
+  },
+  "noStartupRetry": true,
+  "noSecurityOrCacheChanges": true,
+  "originalEightHourV4SoleCauseProven": false,
+  "nextTask": "H3 pin the exact qualified Mac observer file identity across prerequisite andsoak;fresh process and original2s guard stillrequired;no fallback or automatic retry.",
+  "rawFiles": {
+    "plan.json": "9a5f087aa8dcb23b06646c93186c1e032db6e84a69c4e92fc34f858e496fd35c",
+    "probe.mjs": "7932d5d3dc05ffaa638c3dd8940cc36be8df33f00606b22188503400c647d0ad",
+    "report.json": "d420062b968e9b3be06c72aea22c884f1995ca66024f4132b1e24f17717f4390",
+    "system-log.json": "d81204f0241f605f82ed6ae8f3dacd5a289ea683ef5b6520a4b76df899642c03",
+    "system-log-query.json": "6722209bd77f4e86727e13ac599d0311a75ab79c5eae3375d3dea9e81f06aee5"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  }
+}
