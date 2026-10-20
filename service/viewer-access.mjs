@@ -7,7 +7,7 @@ const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const data=(v,k)=>v&&typeof v==='object'?Object.getOwnPropertyDescriptor(v,k)?.value:undefined;
 const hash=v=>createHash('sha256').update(v).digest('hex');
 const fail=(code,status=400)=>{throw new SessionApiError(code,'Viewer access request failed',status);};
-const controls=new Set(['AcquireControl','RenewControl','ReleaseControl','Input']);
+const controls=new Set(['AcquireControl','RenewControl','ReleaseControl','Input','ResizeViewport']);
 function fields(value,allowed){
  if(!value||typeof value!=='object'||Array.isArray(value)||Reflect.ownKeys(value).some(k=>!allowed.includes(k)||!Object.hasOwn(Object.getOwnPropertyDescriptor(value,k),'value')))fail('INVALID_VIEWER_GRANT');
 }
@@ -129,8 +129,8 @@ export class ViewerAccess {
        if(bytes.length>LIVE_LIMITS.sceneBytes)throw new Error('Metadata limit');const message=JSON.parse(bytes.toString());
        if(message.type==='Welcome'){
         // Inline upstream control avoids exposing private pairing credentials.
-        packet=JSON.stringify({type:'Welcome',protocol:message.protocol,renderer:message.renderer,producer:message.producer,mode:message.mode,peerId:message.peerId,sessionId:message.sessionId,frameWindow:message.frameWindow,ackStage:message.ackStage,resourceMemory:message.resourceMemory,input:row.role==='controller'&&message.input===true,inputFeedback:row.role==='controller'&&message.inputFeedback===true,control:null,viewerRole:row.role,viewerSessionId:row.sessionId,viewerVersion:row.version,viewerGrantId:row.id});
-       }else if(row.role==='readonly'&&['ControlGranted','ControlState','ControlDenied','InputAck','FeedbackState'].includes(message.type))return;
+        packet=JSON.stringify({type:'Welcome',protocol:message.protocol,renderer:message.renderer,producer:message.producer,mode:message.mode,peerId:message.peerId,sessionId:message.sessionId,frameWindow:message.frameWindow,ackStage:message.ackStage,resourceMemory:message.resourceMemory,input:row.role==='controller'&&message.input===true,inputFeedback:row.role==='controller'&&message.inputFeedback===true,viewportControl:row.role==='controller'&&message.viewportControl===true,control:null,viewerRole:row.role,viewerSessionId:row.sessionId,viewerVersion:row.version,viewerGrantId:row.id});
+       }else if(row.role==='readonly'&&['ControlGranted','ControlState','ControlDenied','InputAck','FeedbackState','ViewportResized','ViewportResizeDenied'].includes(message.type))return;
       }
       if(!bounded(ws,Buffer.byteLength(packet)))throw new Error('Queue limit');ws.send(packet,{binary});
      }catch{close(1011,'Viewer transport unavailable');}

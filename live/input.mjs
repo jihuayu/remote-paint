@@ -2,6 +2,8 @@ import {randomUUID,randomBytes} from 'node:crypto';
 import {readPublicEditor,readPointerFeedback} from './feedback.mjs';
 export class InputError extends Error {constructor(code){super(code);this.code=code;}}
 const reject=code=>{throw new InputError(code);};
+const viewportCodes=new Set(['INVALID_VIEWPORT_REQUEST','UNSUPPORTED_VIEWPORT','VIEWPORT_BUSY','STALE_VIEWPORT_REQUEST','STALE_SESSION','PAGE_TRANSITION','STALE_EPOCH','STALE_VIEWPORT','STALE_LEASE','INPUT_QUEUE_FULL','SESSION_CLOSED','VIEWPORT_RESIZE_FAILED','VIEWPORT_SUPERSEDED']);
+const viewportId=value=>Number.isSafeInteger(value)&&value>=1;
 const number=(n,limit=1e7)=>Number.isFinite(n)&&Math.abs(n)<=limit;
 export function validateInput(event,viewport){
  if(!event||typeof event!=='object')reject('INVALID_EVENT');
@@ -42,12 +44,13 @@ export class ControlLease {
  constructor(source,cdp,{ttl=30000}={}){
   this.source=source;this.cdp=cdp;this.ttl=ttl;this.sessionId=randomUUID();this.mode='agent';this.holder=null;this.lease=null;this.version=0;
   this.nextSeq=1;this.tail=Promise.resolve();this.queued=0;this.closed=false;this.peers=new Map();this.keys=new Map();this.buttons=new Map();this.pointer={x:0,y:0};this.feedbackNamespace=randomUUID();
+  this.viewportRequests=new Map();this.viewportPending=null;
   this.onInvalidate=()=>{this.revoke('page-changed').catch(()=>{});};source.on('invalidate',this.onInvalidate);
   this.inputRevision=0;this.feedbackRevision=0;this.lastFeedbackAt=0;
   this.onFrame=()=>this.scheduleFeedback();source.on('frame',this.onFrame);
  }
  attach(peer){this.peers.set(peer.id,peer);this.sendState(peer);}
- detach(id){this.peers.delete(id);if(this.holder===id)this.revoke('disconnected').catch(()=>{});}
+ detach(id){this.peers.delete(id);this.viewportRequests.delete(id);if(this.holder===id)this.revoke('disconnected').catch(()=>{});}
  state(){return {mode:this.mode,holder:this.holder,expiresAt:this.expiresAt??null,pageEpoch:this.source.pageEpoch,viewportVersion:this.source.viewportVersion};}
  sendState(peer){if(peer.ready&&!peer.closed)peer.send({type:'ControlState',...this.state()});}
  broadcast(){for(const peer of this.peers.values())this.sendState(peer);}
@@ -130,6 +133,27 @@ export class ControlLease {
   });
   this.nextSeq++;return promise;
  }
+ resizeViewport(peer,message){
+  const fields=['type','requestId','width','height','sessionId','pageEpoch','viewportVersion','lease'];
+  if(!message||typeof message!=='object'||Array.isArray(message)||Object.keys(message).length!==fields.length||!fields.every(k=>Object.hasOwn(message,k))||message.type!=='ResizeViewport'||!viewportId(message.requestId)||![message.width,message.height].every(n=>Number.isInteger(n)&&n>=1&&n<=4096))reject('INVALID_VIEWPORT_REQUEST');
+  this.validLease(peer,message);if(!this.peers.has(peer))reject('STALE_LEASE');if(typeof this.source.resize!=='function'||this.source.viewport.deviceScaleFactor!==1)reject('UNSUPPORTED_VIEWPORT');if(this.viewportPending)reject('VIEWPORT_BUSY');
+  if(message.requestId<=(this.viewportRequests.get(peer)??0))reject('STALE_VIEWPORT_REQUEST');this.viewportRequests.set(peer,message.requestId);
+  const version=this.version,work=this.enqueue(async()=>{
+   this.validLease(peer,message);if(this.version!==version)reject('STALE_LEASE');
+   const changed=this.source.viewport.cssWidth!==message.width||this.source.viewport.cssHeight!==message.height;
+   const result=()=>({type:'ViewportResized',requestId:message.requestId,changed,pageEpoch:this.source.pageEpoch,viewportVersion:this.source.viewportVersion,viewport:{cssWidth:this.source.viewport.cssWidth,cssHeight:this.source.viewport.cssHeight,deviceScaleFactor:1}});
+   if(!changed)return result();
+   try{
+    await this.source.resize({width:message.width,height:message.height});
+    if(this.source.closed||!Number.isSafeInteger(this.source.pageEpoch)||this.source.pageEpoch<message.pageEpoch||!Number.isSafeInteger(this.source.viewportVersion)||this.source.viewportVersion<=message.viewportVersion||this.source.viewport.cssWidth!==message.width||this.source.viewport.cssHeight!==message.height||this.source.viewport.deviceScaleFactor!==1)reject('VIEWPORT_SUPERSEDED');
+    if(this.version===version)void this.revoke('viewport-changed').catch(()=>{});return result();
+   }catch(error){
+    // Once Source.resize was entered, a failed transport/CDP/capture wait does
+    // not prove no mutation. Revoke without awaiting our own queue tail.
+    void this.revoke('viewport-failed').catch(()=>{});const failure=new InputError(error instanceof InputError&&error.code==='VIEWPORT_SUPERSEDED'?'VIEWPORT_SUPERSEDED':'VIEWPORT_RESIZE_FAILED');failure.outcome='unknown';throw failure;
+   }
+  });this.viewportPending=work;void work.finally(()=>{if(this.viewportPending===work)this.viewportPending=null;}).catch(()=>{});return work;
+ }
  async cleanup(){
   const commands=[['Input.imeSetComposition',{text:'',selectionStart:0,selectionEnd:0}],
    ...[...this.keys.values()].map(params=>['Input.dispatchKeyEvent',params]),
@@ -160,9 +184,10 @@ export class ControlLease {
    else if(message.type==='RenewControl'){peer.send({type:'ControlGranted',...this.renew(peer.id,message)});}
    else if(message.type==='ReleaseControl'){this.validLease(peer.id,message);await this.revoke('released');}
    else if(message.type==='Input'){peer.send(await this.input(peer.id,message));}
+   else if(message.type==='ResizeViewport'){const result=await this.resizeViewport(peer.id,message);if(!peer.closed)peer.send(result);}
    else reject('UNKNOWN_CONTROL_MESSAGE');
   }catch(error){
-   if(!peer.closed)peer.send(message.type==='Input'?{type:'InputAck',seq:message.seq,accepted:false,code:error.code??'CDP_ERROR',lastProcessedInputSeq:this.source.inputSeq}:{type:'ControlDenied',code:error.code??'CDP_ERROR'});
+   if(!peer.closed)peer.send(message.type==='ResizeViewport'?{type:'ViewportResizeDenied',requestId:viewportId(message.requestId)?message.requestId:null,code:viewportCodes.has(error.code)?error.code:'VIEWPORT_RESIZE_FAILED',outcome:error.outcome==='unknown'?'unknown':'not-applied'}:message.type==='Input'?{type:'InputAck',seq:message.seq,accepted:false,code:error.code??'CDP_ERROR',lastProcessedInputSeq:this.source.inputSeq}:{type:'ControlDenied',code:error.code??'CDP_ERROR'});
   }
  }
  close(){
@@ -173,7 +198,7 @@ export class ControlLease {
    const errors=[];
    if(this.source.targetCrashed){try{await this.source.close();}catch(error){errors.push(error);}}
    try{await closing;await this.tail;if(!this.source.targetCrashed)await this.cdp.detach?.();}catch(error){errors.push(error);}
-   this.peers.clear();if(errors.length)throw new AggregateError(errors,'Control close failed');
+   this.peers.clear();this.viewportRequests.clear();if(errors.length)throw new AggregateError(errors,'Control close failed');
   })();
  }
 }

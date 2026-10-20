@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-19T03:07:43.236794+00:00",
+  "task": "K2a2b3c2a",
+  "scope": "Source/Node+Rust finite viewport control protocol;Source.resize/CDP fixture,SDK and actualNativecapture/pixels pending.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewport-control-protocol-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewport-control-protocol-checkpoint-v1.json",
+  "tests": {
+    "nodeCases": 9,
+    "broaderNodeCases": 49,
+    "rustControlCases": 2,
+    "rustPacketsCases": 9,
+    "nativeTcpVariants": 2,
+    "sourceResizeCdpCaptureAreFixtures": true,
+    "realBrowserLaunched": false,
+    "linuxNativeBinaryQualified": false
+  },
+  "regressionNotes": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewport-protocol-regression-notes-v1.json",
+  "contract": {
+    "authorization": "HeldSourcelease+tags twice,controllergatewayonly,finite verb sharedRustpaired/inline.",
+    "admission": "OneactualpendingSourceResize survivesdetach;peer monotonicrequestID clearedondetach/close.",
+    "outcome": "ActualappliedSourceviewport ack distinctfrompixels;beforeentry not-applied;postentryfailed/superseded unknown/revoke,rawdiagnostics hidden.",
+    "capability": "Welcome.viewportControl onlySource+controller;missing meansfalse."
+  },
+  "remaining": [
+    "SDK/Window/Worker request/wait/cancel/unknown and late renew/input guards.",
+    "Linux Native Source/capture/epoch/pixels/resource and publiccontrolpriority proof.",
+    "Sanitizedperformance/firstframe/error API;ownedNativeendpoint/allAgentpermissions/fences.",
+    "Original8hterminal physicalaudit,wholecandidatefullregression and all41/N1audit."
+  ],
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "sdkViewportComplete": false,
+  "nativeViewportCaptureQualified": false,
+  "wholeFullJsQualified": false,
+  "nativeProductionProviderComplete": false,
+  "allAgentCdpFenced": false,
+  "eightHourPassed": false,
+  "noCommitPush": true
+}

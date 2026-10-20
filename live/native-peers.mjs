@@ -30,7 +30,7 @@ export async function startNativePeers(source,{renderer,producer,key,origin,host
  };
  broker.on('event',onEvent);
  try{
-  const result=await broker.request('listen',{config:{renderer,producer,key,origin,host,port,ackTimeout,viewerBuild,input:!!source.control,resourceMemory:source.resourceMemoryVersion===1,sessionId:source.control?.sessionId}});
+  const result=await broker.request('listen',{config:{renderer,producer,key,origin,host,port,ackTimeout,viewerBuild,input:!!source.control,viewportControl:!!source.control&&typeof source.resize==='function',resourceMemory:source.resourceMemoryVersion===1,sessionId:source.control?.sessionId}});
   return {port:result.port,async createConsumerTicket(kind){
    if(source.closed)throw new Error('Source is closed');
    if(!['observation','recording'].includes(kind))throw new Error('Invalid native consumer kind');

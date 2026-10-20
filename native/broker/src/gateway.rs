@@ -583,10 +583,7 @@ impl Gateway {
                         chunk_bytes = 0;
                         force_full = true;
                     } else if role.kind.display() && self.config["input"] == true
-                        && matches!(
-                            message["type"].as_str(),
-                            Some("AcquireControl" | "RenewControl" | "ReleaseControl" | "Input")
-                        )
+                        && crate::control::viewer_message(message["type"].as_str())
                     {
                         if control.enabled.load(Ordering::Acquire) {
                             policy(&mut ws, "Use paired control connection");

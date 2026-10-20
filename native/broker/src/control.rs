@@ -11,6 +11,10 @@ use std::{
 };
 use tungstenite::Message;
 
+pub fn viewer_message(kind:Option<&str>)->bool {
+    matches!(kind,Some("AcquireControl"|"RenewControl"|"ReleaseControl"|"Input"|"ResizeViewport"))
+}
+
 // A channel belongs to one data peer and is never transferable to a new data
 // connection. Claiming the ticket consumes it, including on failed handshakes.
 pub struct Channel {
@@ -139,10 +143,7 @@ impl Channel {
                     }
                     count += 1;
                     if count > 512
-                        || !matches!(
-                            message["type"].as_str(),
-                            Some("AcquireControl" | "RenewControl" | "ReleaseControl" | "Input")
-                        )
+                        || !viewer_message(message["type"].as_str())
                     {
                         crate::writer::close(
                             &mut ws,
@@ -181,6 +182,12 @@ impl Channel {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn viewport_is_a_finite_control_verb_without_generic_execution() {
+        for name in ["AcquireControl","RenewControl","ReleaseControl","Input","ResizeViewport"] {assert!(viewer_message(Some(name)));}
+        for name in ["Runtime.evaluate","Page.setDeviceMetricsOverride","execute","ViewportResized","FrameAck"] {assert!(!viewer_message(Some(name)));}
+        assert!(!viewer_message(None));
+    }
     #[test]
     fn tickets_are_independent_single_use_and_invalid_after_close() {
         let first = Channel::new().unwrap();

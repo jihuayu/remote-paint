@@ -48,7 +48,7 @@ export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackT
  };
  wss.on('connection',ws=>{
   const peer=new LivePeer(ws,source,{renderer,producer,ackTimeout,codec,onReady:updateDemand});peers.add(peer);
-  const send=peer.send.bind(peer);peer.send=message=>send(message?.type==='Welcome'?{...message,inputFeedback:peer.feedback===true,resourceMemory:peer.memory===true}:message);
+  const send=peer.send.bind(peer);peer.send=message=>send(message?.type==='Welcome'?{...message,inputFeedback:peer.feedback===true,resourceMemory:peer.memory===true,viewportControl:!!source.control&&typeof source.resize==='function'}:message);
   ws.on('message',(bytes,binary)=>{try{if(binary)throw new Error('Client binary unsupported');const message=JSON.parse(bytes.toString());if(message.type==='Hello'){if(message.viewerBuild!=null&&message.viewerBuild!==assets.build)throw new Error('Incompatible Viewer build');if(!peer.ready){peer.feedback=!!source.control&&Array.isArray(message.capabilities)&&message.capabilities.includes('input-feedback-v1');peer.memory=source.resourceMemoryVersion===1&&Array.isArray(message.capabilities)&&message.capabilities.includes('resource-memory-v1');}}Promise.resolve(peer.message(message)).catch(()=>peer.close(1008,'Message processing failed'));}catch(error){peer.close(1008,error.message.slice(0,100));}});
   const detach=()=>{peer.dispose();peers.delete(peer);updateDemand();};ws.on('close',detach);ws.on('error',detach);
  });

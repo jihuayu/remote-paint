@@ -1732,3 +1732,12 @@ DOM resize(width/height) 设置自己的宿主 CSS 请求尺寸，resize() 恢�
 4 条合同用实际 Node Source/MessageChannel 与保存的 Window/Worker、真实 ViewerInput 验证本地变化不索票、不重连、不变更 Source viewport/epoch 或持有租约；DOM/CSS/CanvasKit/realm 仍为夹具，真实布局/像素与物理资源待验收。双平台范围与私有安装包结果见[显示检查点](evidence/viewer-display-resize.json)。
 
 带租约的远端 resizeViewport 是独立且必须完成的后续工作，不能用本地CSS替代；性能/首帧事件、Native端点、所有Agent/CDP栅栏、原8小时与整份候选仍待验收。41项仍9/15/17。未额外启动Native浏览器，原783长测源未动，未暂存提交推送。
+
+
+### K2a2b3c2a：Source/网关 viewport 协议
+
+新增带租约的有限 ResizeViewport：前置与排队执行两次代次/租约检查，一个实际未结束 resize，peer 内单调 requestId；同尺寸也经 Source 验证。等待现有 Source.resize 返回并核对实际尺寸/新代次后才回复，进入后异常按 unknown 处理并撤销旧租约，不能把等待取消当作回滚。Node 公开网关限制控制角色，Rust 内联/配对路径使用同一有限控制集合，Welcome 带 viewportControl 能力位。
+
+9 条 Node 合同和独立 macOS Rust 的2条控制/9条包内存合同、2种真实TCP通道验证通过；Source.resize/CDP/capture结果为夹具，未启动浏览器。初次TCP夹具遗漏配对key的403保留，修正夹具后通过，未放宽生产认证。证据见[协议检查点](evidence/viewport-control-protocol.json)。
+
+SDK/Window/Worker、迟到续租与取消/未知结果、Linux Native捕获/像素/资源、公开控制优先级仍待后续；原8小时不能代替新候选验收。41项仍9/15/17。未提交/推送，未改原长测/采样器或演示实例。
