@@ -37,7 +37,7 @@ export class SessionRegistry {
  #owned=new Set();#clock;#defaultTtl;#maxTtl;#maxCloseAttempts;
  #timer=null;#scheduleQueued=false;#stopping=false;#shutdownPromise;
  #store;#storeOwner=Symbol('session-registry');#storageError=false;#writing=false;#initializing=true;#detached=false;#storeRevision=0;
- #tasks=new Set();#recovered=new Set();#recoveryPromise=null;
+ #tasks=new Set();#recovered=new Set();#recoveryPromise=null;#providerSubscriptions=[];
  constructor({providers,defaultRegion,tenantQuota=4,globalQuota=16,maxRecords=10000,
   defaultTtlSeconds=900,maxTtlSeconds=86400,maxCloseAttempts=4,clock,store=null}={}){
   if(!(providers instanceof Map)||!providers.size||!providers.has(defaultRegion))throw new TypeError('Configure explicit region providers and a default region');
@@ -58,7 +58,29 @@ export class SessionRegistry {
    try{const claim=store.claimRegistry(this.#storeOwner);claimed=true;if(claim&&typeof claim.then==='function'){void Promise.resolve(claim).catch(()=>{});throw new TypeError('Asynchronous ledger is unsupported');}const snapshot=store.load({owner:this.#storeOwner});if(snapshot&&typeof snapshot.then==='function'){void Promise.resolve(snapshot).catch(()=>{});throw new TypeError('Asynchronous ledger is unsupported');}this.#hydrate(snapshot);}
    catch{if(claimed)store.releaseRegistry(this.#storeOwner);this.#stopping=true;refuse('REGISTRY_STORAGE_UNAVAILABLE','Session state could not be loaded or fenced',503);}
   }
+  try{
+   for(const [region,provider]of this.#providers)if(provider.subscribeUnavailable!==undefined){
+    if(typeof provider.subscribeUnavailable!=='function')throw new TypeError('Invalid provider subscription');
+    const unsubscribe=provider.subscribeUnavailable(event=>this.#providerUnavailable(region,event));
+    if(typeof unsubscribe!=='function'){if(unsubscribe?.then)void Promise.resolve(unsubscribe).catch(()=>{});throw new TypeError('Provider must return an unsubscribe function');}
+    this.#providerSubscriptions.push(unsubscribe);
+   }
+  }catch{
+   this.#unsubscribeProviders();this.#stopping=true;this.#detached=true;
+   if(this.#store!==null)this.#store.releaseRegistry(this.#storeOwner);
+   refuse('REGISTRY_PROVIDER_UNAVAILABLE','Provider event subscription could not be established',503);
+  }
   this.#initializing=false;
+ }
+ #unsubscribeProviders(){for(const unsubscribe of this.#providerSubscriptions.splice(0)){try{unsubscribe();}catch{}}}
+ #providerUnavailable(region,event){
+  if(this.#initializing||this.#stopping||this.#detached||!event||event.region!==region)return;
+  const row=this.#sessions.get(event.sessionId);
+  if(!row||row.tenant!==event.tenantId||row.region!==region||!row.reserved)return;
+  try{this.#beginRelease(row,'worker-unavailable');}catch{
+   row.closeRequested=true;row.closeReason??='worker-unavailable';row.deadline=null;row.state='cleanup-failed';
+   this.#persist([row]);row.controller.abort(row.closeReason);this.#schedule();
+  }
  }
  #guard(){
   if(this.#detached)refuse('REGISTRY_CLOSED','Registry has released its ledger ownership',503);
@@ -247,7 +269,7 @@ export class SessionRegistry {
  shutdown(){
   if(this.#shutdownPromise)return this.#shutdownPromise;
   let resolveShutdown;this.#shutdownPromise=new Promise(resolve=>{resolveShutdown=resolve;});
-  this.#stopping=true;
+  this.#stopping=true;this.#unsubscribeProviders();
   if(this.#timer!==null){this.#clock.clearTimer(this.#timer);this.#timer=null;}
   for(const row of this.#owned){try{this.#beginRelease(row,'registry-shutdown');}catch{}}
   void (async()=>{

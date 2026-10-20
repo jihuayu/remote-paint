@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-18T20:38:04.244112+00:00",
+  "task": "B1c1b2b",
+  "scope": "Actual owning DockerSessionProvider and durable SessionRegistry event/cancel/TTL integration,qualified on real Node workers only.",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/docker-session-provider-checkpoint-v1.json",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/docker-session-provider-v4/frozen-version.json",
+  "contract": {
+    "admission": "Existing immutable deployment binding;actual pinned source bytes,required Worker entries,image environment and scoped orphan inventory before one-use write-ahead Create/CID acknowledgment and EngineStart. Closing nonretired resources continue to consume provider capacity.",
+    "privateStart": "Effective generation-bound kernel witness persisted/read before private Start;raw owner key and URL remain in memory/private channel. Runtime Ready is persisted before returning to Registry.",
+    "unavailable": "Provider events synchronously revoke Registry Ready and abort pending creation,without waiting for an API read.",
+    "close": "Synchronous dispatch fence;closing journal before removal;real namespace/remove204/fresh404 evidence persisted and independently read before runtime retired and quota release.",
+    "sourceManifests": "runtime-source-files-v1;1MiB manifest,4096 files,1GiB each/2GiB total,required worker entries,relative paths,byte digests and bounded reads."
+  },
+  "qualification": "Final checkpoint records dual-platform Node contracts and eight actual provider/Registry modes:normal,cancel-intent,cancel-created,cancel-witness,proxy-lost,TTL,source-changed,closing-capacity. Each actual Engine mode uses Node only.",
+  "remaining": [
+    "Known full-CID already absent without committed retirement record needs historical namespace witness/absence proof;unknown requested CID still cannot retire from404.",
+    "Recovered created-before-EngineStart lacks durable dispatch history;uncertain pre-witness removal remains unconfirmed.",
+    "Explicit retry after unconfirmed cleanup and recovery fault matrix remain pending.",
+    "Native production-provider/whole-candidate full regression waits for original8h isolation.",
+    "Rendered Viewer readonly/control roles,tickets,HTTP/SDK and remaining all41/N1 validation."
+  ],
+  "nativeProductionProviderComplete": false,
+  "wholeFullJsQualified": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "noCommitPush": true
+}

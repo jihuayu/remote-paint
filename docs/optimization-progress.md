@@ -1607,3 +1607,12 @@ SQLite日志新增持久UUID，首次建库和v1迁移与元数据事务共同�
 文件fsync后无覆盖发布，再同步目录；私有模式与固定目录身份在读写时检查，支持初始化写入者死亡后的已发布文件回读。合同覆盖复制/重建/ID重新补齐的日志、配置/daemon/source漂移、区域并发、失败/取消、符号链接/FIFO、部分/损坏记录、子进程umask及真实SIGKILL。真实Engine夹具只创建一个从不启动的自有容器，验证另一份空日志仍被遗留对象拦截、删除后普通恢复仍不自动补建绑定，以及初始化发布后进程死亡的恢复。最终结果见[部署绑定检查点](evidence/runtime-deployment-binding.json)。
 
 绑定仅证明配置与日志连续性，不是分配入场、Engine副作用授权或退役结论。生产控制器、Registry与渲染Viewer角色仍待接入；新候选整份全量回归和原8小时终验保持未完成，41项计数仍9/14/18。
+
+
+### 实际提供器与 Registry 生命周期（B1c1b2b）
+
+`DockerSessionProvider` 已接入原部署绑定、源码逐文件摘要与实际镜像环境核对、遗留候选屏障、共享 SQLite 日志、一次性 Engine 副作用和私有 attach 通道。源码清单必须包含实际 Worker 入口，Native 入口另需核心模块与浏览器；空清单仅用于明确的 Node 浏览器夹具。创建前保存 intent，请求前确认 requested，完整 CID 确认后才启动 Engine；有效内核见证保存并回读后才允许私有资源 Start，runtime Ready 落盘后才返回 Registry。原始 owner key 与 URL 不进入环境变量、启动参数和日志。
+
+提供器失效事件会同步令 Registry 转为 closing，拒绝 Ready 并取消未完成创建；正常关闭和 TTL 都在回收文件独立读回、runtime retired 后释放配额。正在关闭而尚未退役的对象继续占用提供器容量。当前真实 Engine 验证使用实际提供器和持久 Registry，覆盖 Node 主进程/独立 session 后代、正常关闭、三个取消时点、代理 SIGKILL、无 API 轮询触发的 TTL、源码漂移及关闭期间容量检查；详见[实际提供器检查点](evidence/docker-session-provider.json)。首次夹具误读独占日志的失败与后续修正记录保留。
+
+这仍是分阶段接入：已知 CID 提前消失但无已提交回收文件、恢复后缺少 Start 历史、见证前启动取消、未确认清理后的显式重试还需完成。Native 实际提供器、新候选整份全量回归待原8小时隔离后验证；Viewer角色和 HTTP/SDK 也未验收。41项保持9/14/18，8小时仍未通过，未暂存、提交或推送。
