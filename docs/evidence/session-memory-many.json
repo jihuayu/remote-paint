@@ -1,0 +1,238 @@
+{
+  "at": "2026-10-17T21:00:19.892426+00:00",
+  "status": "passed20actualLinuxSessions-with-predeclared-physicalgrowth-gates;notfullB10or8h",
+  "scope": "Actual Linux default B1 NativeSource/Cpp capture/Rust Broker+Gateway/FrameGate/CanvasKit CPU-main Viewer;each Session consumes400+ realPNG/font updates exceeding64MiB with25+resizes/12+textinputs/crosssite document+renderer replacement. Entire Source/Broker/browser descendant identities pinned via proc FDs and proven retired after close;actual cohortPSS/cgroup are temporal separate observations,not unique physical attribution. Linux CPU lifecycle test,notMac/8h/growth plateau/allB10 orfullSessionSDK acceptance.",
+  "frozenVersion": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-many-v1/frozen-version.json",
+    "sha256": "a95f6c8b16c7fb74b03fca8d5c315dbccabfb5033e84ffad5583e634dac53a10"
+  },
+  "limits": {
+    "schema": "session-memory-plateau-v1",
+    "at": "2026-10-17T20:40:08.743394+00:00",
+    "scope": "ActualLinuxCPUmainSessionlifecycle-controllerincludingPNGfixture+observerandpersistentViewerbrowser. PostSessionCPUViewercontextsclosed. NotMac/8h/fullclientVMlongevity oruniquephysicalmemory.",
+    "derivedFromPilot": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/session-memory-pilot-v1/artifacts/session-memory/report.json",
+      "sha256": "157829e5de2a151c046ab85498f0866fbdd8069853b59400f1f7f2e086898372",
+      "iterations": 3
+    },
+    "derivation": "Beforeformalrun:pilotmaxpostNodePSS+64MiB;pilotmaxpostcohortPSS+128MiB;pilotmaxpostcgroupanon+128MiB. Medianfirst5vsfinal5same64/128/128MiBheadroom. Alsooldfixed64MiBminimumwarmclosePSSdrop,andFD/process/orphan/OOM gates. NoGCforce orafter-failurelimitrelaxation.",
+    "bounds": {
+      "minSessions": 20,
+      "postNodePssBytes": 286285824,
+      "postCohortPssBytes": 537814016,
+      "postCgroupAnonBytes": 375750656,
+      "fdOverFirst": 8,
+      "processesOverFirst": 2,
+      "window": 5,
+      "nodeMedianGrowthBytes": 67108864,
+      "cohortMedianGrowthBytes": 134217728,
+      "anonMedianGrowthBytes": 134217728
+    }
+  },
+  "limitsSha256": "efea4dc7e8533b1d11263e86e35c1a6d04097647e6edf3167960ea53e06419fc",
+  "actualSeconds": 797.0885807200001,
+  "sessions": 20,
+  "updates": 8000,
+  "resizes": 500,
+  "inputs": 260,
+  "crosssiteReplacements": 20,
+  "imageBytes": 1804787054,
+  "retiredProcessIdentities": 160,
+  "postMetrics": [
+    {
+      "node": 215514112,
+      "cohort": 400282624,
+      "anon": 224718848,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 214557696,
+      "cohort": 399428608,
+      "anon": 237895680,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 166531072,
+      "cohort": 351232000,
+      "anon": 205815808,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 187686912,
+      "cohort": 372379648,
+      "anon": 225021952,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 186554368,
+      "cohort": 370595840,
+      "anon": 225165312,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 190928896,
+      "cohort": 374686720,
+      "anon": 231673856,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 185122816,
+      "cohort": 369045504,
+      "anon": 226590720,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 186392576,
+      "cohort": 370520064,
+      "anon": 229703680,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 189759488,
+      "cohort": 374087680,
+      "anon": 233271296,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 186204160,
+      "cohort": 370499584,
+      "anon": 230543360,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 185974784,
+      "cohort": 370388992,
+      "anon": 229769216,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 186810368,
+      "cohort": 371351552,
+      "anon": 230494208,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 187490304,
+      "cohort": 372269056,
+      "anon": 231919616,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 180355072,
+      "cohort": 359852032,
+      "anon": 232919040,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 172100608,
+      "cohort": 351745024,
+      "anon": 227770368,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 184107008,
+      "cohort": 369090560,
+      "anon": 232153088,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 171491328,
+      "cohort": 350181376,
+      "anon": 226340864,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 190296064,
+      "cohort": 374841344,
+      "anon": 237977600,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 185311232,
+      "cohort": 370089984,
+      "anon": 233402368,
+      "fd": 26,
+      "processes": 6
+    },
+    {
+      "node": 186163200,
+      "cohort": 370982912,
+      "anon": 234188800,
+      "fd": 26,
+      "processes": 6
+    }
+  ],
+  "lateFiveMinusFirstFiveMedianBytes": {
+    "node": -2375680,
+    "cohort": -2289664,
+    "anon": 8380416
+  },
+  "minCohortPssDropBytes": 789907456,
+  "maxPostNodePssBytes": 215514112,
+  "maxPostCohortPssBytes": 400282624,
+  "maxPostCgroupAnonBytes": 237977600,
+  "fdCountEachPost": 26,
+  "sourceFamilyAfterEachClose": 0,
+  "cgroupOutsideObservedPidsEachPost": [
+    1
+  ],
+  "cgroupOomKills": 0,
+  "versions": {
+    "browserSha256": "c5d29a3b5a22ff27ee3914c68650feea3e342dd1c4d2dc502e9ff0e596ae1b4e",
+    "brokerSha256": "ed9d5a4c8088a0d7ae369002f777615d22bd2cc072f439b2ee37acef225dcb4c"
+  },
+  "artifacts": {
+    "report.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-many-v1/results/report.json",
+      "sha256": "08741d6981ba0ee2d783b4f0af4a581b557b9955bba3235f2419bf0d56f122f9"
+    },
+    "sessions.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-many-v1/results/sessions.jsonl",
+      "sha256": "cca808030dab666e1a2b96ad20e69af4b1bc777ffc08e0e314bcf6c5bf4418ed"
+    },
+    "cleanup.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-many-v1/results/cleanup.json",
+      "sha256": "0d448bb75a1a2b0ec68208cf9bdbb12c045d9d49065affbe5a5613c7e421132a"
+    }
+  },
+  "log": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-many-v1/run.log",
+    "sha256": "a906274ddd4e98f27ae9c563b0840318f2d6a3d3aba9627002241616c5038b40"
+  },
+  "scopeLimits": [
+    "ActualLinuxCPU-mainlifecycle;per-SessionViewercontextsrecreated. NotMacGPU/primaryclientVM8hlongevity.",
+    "PinnedFDretirementprovesactualknownSourceprocessesgone;liveprocinventoriesandPSS/cgroupnotatomicoruniquephysicalattribution. CohortdropincludesViewercontextclose.",
+    "ControllerincludesPNGfixture/observer;limitsderivedfrom3Sessionpilotbeforeformalrun,noGCforceornativeproductioncodechanges. Boundsareforstatedworkload,notSessiondensitypromise.",
+    "FullB10/C5/N1longload/eighthoursandSDK/other41requirementsremain."
+  ],
+  "noCommitPush": true,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  },
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "acceptanceReceipt": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-many-acceptance-v1.json",
+    "sha256": "4eb348ad9bce17f113003b7192f46289985e8bcdffbd18b3653881db4a353ee8"
+  }
+}

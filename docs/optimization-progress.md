@@ -1127,3 +1127,12 @@ Mac首次全量运行有一项NATIVE_MEMORY_READY_TIMEOUT：实际helper未在�
 Source浏览器后代及Broker在启动、工作集加热和跨站后通过已打开的proc目录FD绑定身份；每个Session八个身份均在关闭后返回ESRCH/ENOENT，合计24个，父进程或UID变化不会被当作退出。Source最新帧/生产者/需求、Broker缓冲与RPC所有者、Gateway peers及HTTP/流端口均核对关闭，夹具仅保留活动Session的标量统计。Source家族加热PSS约670至675MiB；关闭Source及该Session Viewer上下文后，整个观测后代组PSS分别下降约964/795/806MiB。该下降包含Viewer上下文，未冒称全部归于Source。控制器还包含PNG夹具和观察器；三轮关闭后的控制Node PSS约207.5/209.0/161.6MiB，分配器驻留按实记录，不要求瞬间归零。
 
 此处为可复用Session所有者与真实生命周期的独立试跑。三个样本不证明大量Session增长平台；Viewer浏览器虽持续存活，各Session页面上下文明确重建，不能替代三个主Viewer VM持续八小时。接下来先按本试跑数据冻结多Session物理增长门槛，再接入长存活主Viewer的跨站/附加Session负载。完整B10/C5/N1长期和八小时继续；41项仍9完成/12部分/20待做，无提交或推送。
+
+
+## 预先冻结物理门槛的20次完整Session循环
+
+[20次实际循环](evidence/session-memory-many.json)从三轮试跑预先生成并挂载只读物理门槛，使用固定源码/正式B1产物在独立容器执行797.09秒。每次400次实际图像/字体更新、25次resize、13次输入、一次跨站document token及renderer更换，工作集均超过64MiB且原生image cache真实淘汰。合计8000次更新、500次resize、260次输入、1,804,787,054字节PNG，160个绑定proc目录FD的Source/Broker/浏览器身份均通过ESRCH/ENOENT确认退出；关闭后Source家族为空，RPC所有者/缓冲/peers/端口清理核对，过期夹具路由返回410。
+
+每次Source及Viewer上下文关闭后的控制Node PSS上限273.02MiB、观测后代组上限512.90MiB、cgroup anon上限358.34MiB均在运行前冻结，分别来自试跑最大值加64/128/128MiB余量；实际最大值为205.53/381.74/226.95MiB。末五轮与首五轮中位数相比，Node PSS下降2,375,680字节、组PSS下降2,289,664字节，anon增加8,380,416字节，均低于预先门槛。FD每轮固定26，进程数未超过冻结增长上限，cgroup未发生OOM kill，观测树之外仅有已知init PID1，没有新孤儿/不可见成员。没有强制GC或运行后放宽门槛；节点采集与cgroup仍使用原有5秒截止。
+
+每轮完整Source/Viewer上下文关闭后，观测组PSS下降至少789,907,456字节。该下降包含Viewer上下文，控制Node仍含PNG夹具与观察器；PSS和cgroup各自记录，不混为独占内存或会话密度承诺。TCP端口关闭探测不创建每Session的HTTP客户端池；夹具与Source引用释放、FD关闭、字节缓存和逻辑客户端预算均单独核对。此处证明所列20轮Linux CPU场景中的回收及冻结增长门槛，不表示永久平台、不替代主Viewer VM八小时，也不完成全部B10/C5/N1。41项仍9完成/12部分/20待做，无提交或推送。
