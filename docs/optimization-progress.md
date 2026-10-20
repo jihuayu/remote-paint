@@ -1828,3 +1828,12 @@ Frame与DOM公开只读performance/firstFrame、有限回调/订阅；内部信�
 计时器修复后新安装包的GPU Worker/CPU Worker/CPU主线程实际Native通过，8挂载加9次同组件重连/角色切换，17条授权连接均检查当前首帧与有限性能；新尺寸的Source回执、真实Canvas像素和性能版本对应。六次精确WebGL黑框字形及正常图像/Canvas2D/输入像素、noop状态清理/异步SHA控制优先级、已应用后超时unknown和实际CSP拒绝均通过。Source/Viewer实际均0，七Linux身份与三组12采样Mac PID/Worker/服务全部清理，无错误。见[真实公开遥测证据](viewer-telemetry-native.md)。
 
 首次Native真实失败独立保留；本次没有Illegal invocation。909执行候选运行时/SDK与886项双平台及16文件安装包检查点相同，只补文档，不伪称物理资源/时延或更多设备通过。实际Source归测试provider拥有，生产Native端点、全部Agent栅栏、同步Wasm优先级、N1轻微丢包/物理IME/原8小时仍待继续。41项9/15/17，原失败与192MiB门槛保持，未自动重跑8小时/强制GC/改演示采样器/暂存提交推送。
+
+
+### Native私有启动：认证后派生流密钥
+
+后端HMAC绑定owner/Session/租户/区域，worker仅在合法Start后派生并交同步资源工厂；Native入口固定内部端口，资源要求实际transport确认密钥再发布版本Ready。无新Ready凭据字段、账本/标签/argv密钥或通用worker默认秘密；关闭和Source来源指纹约束保持。Node实际私有管道、HTTP/WS和明确Native配置stub验证，生产Native provider/解析器仍未完成。
+
+新增14合同、相关69项通过；初版9失败和补充启动密钥回执1失败先复现，夹具30s观察超时独立保留且不计完整结果。104文件900项Mac885/15平台跳过、Linux894/6平台跳过，无失败取消。SDK和全部已记录安装输入字节未变，继承既有安装/类型收据，不伪造重跑。见[私有启动范围](native-private-bootstrap.md)。
+
+下一步拥有端点解析与实际生产Native生命周期；41项9/15/17，原8小时失败/192MiB门槛不变，未自动重跑、强制浏览器GC、改演示/采样器或暂存提交推送。

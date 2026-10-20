@@ -90,3 +90,8 @@ Native入口固定提供实际收集器，读取失败会在资源工厂前退�
 
 
 Source 长测的 PSS 失败现在会在原三项断言之前保存完整有界诊断，并经私有 RPC 保留到 Viewer；关闭阶段采样失败也先落盘。实际受控 Native 权限拒绝、真实 Linux 僵尸对照及双平台回归见[诊断证据](evidence/source-memory-diagnostic.json)。它们只验证观察路径：原 v3 缺失逐进程指标的历史事实不变，唯一原因仍未知，未改写失败回执或放宽 PSS 完整性。
+
+
+## Native私有流密钥启动（Node合同范围）
+
+worker现从认证后的owner Start与固定Session/租户/区域派生独立流密钥，经资源工厂传给固定4175/4176 Native transport；实际启动必须确认同一密钥，Ready仍只返回版本，不通过stdout分发密钥。普通worker没有默认派生能力。Node协议/真实子进程/HTTP+WS通过，Native适配器端口使用stub，实际生产Native worker与拥有端点解析仍待后续。见[私有启动检查点](native-private-bootstrap.md)。

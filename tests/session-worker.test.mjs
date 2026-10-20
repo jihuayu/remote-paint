@@ -93,3 +93,9 @@ test('a setup rejection reaps the worker and the owned leaf also exits on inheri
  await assert.rejects(owned('owned-child',async h=>{start(h);await until(()=>h.messages.some(m=>m.type==='Ready')&&h.events.some(e=>e.event==='OwnedLeaf'));pid=h.events.find(e=>e.event==='OwnedLeaf').pid;throw new Error('fixture setup rejected after child allocation');}),/fixture setup rejected/);
  assert.ok(pid>0);await until(()=>{try{process.kill(pid,0);return false;}catch(error){if(error.code==='ESRCH')return true;throw error;}});
 });
+test('actual worker private stdin derives the Native capability once and emits only version readiness',()=>owned('private-bootstrap',async h=>{
+ start(h);await until(()=>h.messages.some(m=>m.type==='Ready'));h.send({type:'Close'});const result=await h.closed,r=receipt(result);assert.equal(result.code,0);assert.equal(r.secretDerivations,1);assert.equal(r.secretMatched,true);assert.equal(r.initializes,1);assert.equal(r.closes,1);assert.deepEqual(h.messages.find(m=>m.type==='Ready'),{protocol:'session-worker-v1',sessionId,type:'Ready',version:'fixture-worker-v1'});assert.ok(!JSON.stringify(result).includes(key));assert.doesNotMatch(JSON.stringify(result),/2a395cfe440399a197af01fea9bf2e2be3cd31d96c762e8fb5d64c9449ea6047/);assert.ok(!h.child.spawnargs.join(' ').includes(key));
+}));
+test('actual worker with a wrong owner cannot invoke Native capability derivation',()=>owned('private-bootstrap',async h=>{
+ h.send({type:'Start',ownerKey:'b'.repeat(64),request:{url:'about:blank',region:'test',ttlSeconds:60}});const result=await h.closed,r=receipt(result);assert.equal(result.code,1);assert.equal(r.secretDerivations,0);assert.equal(r.secretMatched,false);assert.equal(r.initializes,0);assert.equal(h.messages.at(-1).code,'WORKER_AUTHENTICATION_FAILED');
+}));

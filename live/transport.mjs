@@ -7,11 +7,12 @@ import {encodeResource} from '../protocol/wire.mjs';
 import {startNativePeers} from './native-peers.mjs';
 import {acceptsGzip} from './static-assets.mjs';
 import {prepareViewerAssets} from './viewer-assets.mjs';
-export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackTimeout=5000,preparedAssets}={}){
+export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackTimeout=5000,preparedAssets,transportKey,nativePort}={}){
+ if(transportKey!==undefined&&(typeof transportKey!=='string'||!/^[a-f0-9]{64}$/.test(transportKey))||nativePort!==undefined&&(!Number.isSafeInteger(nativePort)||nativePort<0||nativePort>65535))throw new TypeError('Invalid private transport configuration');
  const assets=await(preparedAssets??prepareViewerAssets());
  const renderer={canvaskit:'0.42.0',wasmSha256:assets.wasmSha256};
  const producer={chromium:source.browser?.version()??'test',skiaRevision:'29ed1e87a0a50f3d8347e988842d9d59e7573efa',skpVersion:110};
- const key=randomBytes(24).toString('hex'),peers=new Set();let origin,closed=false,nativePeers;
+ const key=transportKey??randomBytes(24).toString('hex'),peers=new Set();let origin,closed=false,nativePeers;
  const sceneCache=new WeakMap(),deltaCache=new WeakMap(),resourceCache=new WeakMap();
  const cachedScene=scene=>{let value=sceneCache.get(scene);if(!value){value=JSON.stringify(scene);sceneCache.set(scene,value);}return value;};
  const codec={
@@ -58,7 +59,7 @@ export async function startLiveTransport(source,{port=4175,host='127.0.0.1',ackT
  try{await new Promise((ok,fail)=>{server.once('error',fail);server.listen(port,host,ok);});}
  catch(error){source.off('frame',frame);source.off('captureError',failure);await new Promise(r=>wss.close(r));throw error;}
  origin=`http://127.0.0.1:${server.address().port}`;
- try{if(source.broker)nativePeers=await startNativePeers(source,{renderer,producer,key,origin,host,port:port?Number(process.env.REMOTE_PAINT_GATEWAY_PORT??port+1):0,ackTimeout,viewerBuild:assets.build,peers,onDemand:updateDemand});}
+ try{if(source.broker)nativePeers=await startNativePeers(source,{renderer,producer,key,origin,host,port:nativePort??(port?Number(process.env.REMOTE_PAINT_GATEWAY_PORT??port+1):0),ackTimeout,viewerBuild:assets.build,peers,onDemand:updateDemand});}
  catch(error){source.off('frame',frame);source.off('captureError',failure);await new Promise(r=>wss.close(r));await new Promise(r=>server.close(r));throw error;}
  let closing;
  return {origin,key,streamOrigin:nativePeers?`http://127.0.0.1:${nativePeers.port}`:origin,url:`${origin}/#key=${key}`,renderer,peers,

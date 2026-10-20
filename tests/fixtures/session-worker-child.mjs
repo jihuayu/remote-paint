@@ -3,12 +3,15 @@ import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {runSessionWorker} from '../../service/session-worker.mjs';
 import {witness} from './runtime-witness-records.mjs';
+import {deriveNativeTransportKey} from '../../service/native-transport-key.mjs';
 const mode=process.argv[2]??'normal',key='a'.repeat(64),delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-let closes=0,initializes=0,reentries=0,reentryHadFence=false,leaf=null,worker;
+let closes=0,initializes=0,reentries=0,reentryHadFence=false,leaf=null,worker,secretDerivations=0,secretMatched=false;
 const runtimeWitness=mode==='witness-invalid'?()=>({...witness(),security:{...witness().security,noNewPrivs:0}}):mode==='witness-throw'?()=>{throw Error('private-proof-secret');}:mode==='witness-async'?()=>Promise.reject(Error('private-proof-secret')):null;
 const result=runSessionWorker({runtimeWitness,identity:{sessionId:'ses_fixture',tenantId:'a',region:'test',ownerKeyHash:createHash('sha256').update(key).digest('hex')},
+ deriveResourceSecret:mode==='private-bootstrap'?value=>{secretDerivations++;return deriveNativeTransportKey(value);}:null,
  startTimeoutMs:mode==='handshake-timeout'?80:2000,ownerLeaseMs:mode==='lease-expiry'?100:2000,initializationTimeoutMs:mode==='startup-timeout'?80:2000,closeTimeoutMs:mode==='close-timeout'?80:1000,
  createResource:context=>{
+  if(mode==='private-bootstrap'){secretMatched=context.resourceSecret==='2a395cfe440399a197af01fea9bf2e2be3cd31d96c762e8fb5d64c9449ea6047'&&!Object.hasOwn(context,'ownerKey');if(!secretMatched)throw new Error('Private bootstrap mismatch');}
   if(mode==='factory-fail')throw new Error('private-start-secret');
   if(mode==='async-factory')return Promise.reject(new Error('private-async-secret'));
   let starting,initialized=false,closePromise;
@@ -36,5 +39,5 @@ const result=runSessionWorker({runtimeWitness,identity:{sessionId:'ses_fixture',
 worker=result;
 const outcome=await result.done;
 // Non-secret fixture counts/owned PID are test-only stderr, never production Ready.
-process.stderr.write(JSON.stringify({closes,initializes,reentries,reentryHadFence,leafPid:leaf?.pid??null,leafReaped:leaf?leaf.exitCode!==null||leaf.signalCode!==null:true,outcome})+'\n');
+process.stderr.write(JSON.stringify({closes,initializes,reentries,reentryHadFence,leafPid:leaf?.pid??null,leafReaped:leaf?leaf.exitCode!==null||leaf.signalCode!==null:true,outcome,...(mode==='private-bootstrap'?{secretDerivations,secretMatched}:{})})+'\n');
 await new Promise(resolve=>process.stdout.write('',resolve));process.exit(outcome.exitCode);

@@ -1,0 +1,81 @@
+{
+  "at": "2026-10-19T10:31:06.827191+00:00",
+  "task": "native-private-bootstrap",
+  "status": "private-bootstrap-Node-scoped-qualified",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-private-bootstrap-v1/frozen-version.json",
+  "executedManifestSha256": "cba1e4c8c06da6b48cd64cd17d348d0a443a420e60a263293f723bc8c49bb392",
+  "sourceFilesExecuted": 913,
+  "fullJs": {
+    "mac": {
+      "tests": 900,
+      "pass": 885,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "b527f2769e2d9c7acf62d88cde88ae3b6379f890c63ec55c60b55a276dd8bfbc"
+    },
+    "linux": {
+      "tests": 900,
+      "pass": 894,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "43e6571bd8af3b443cf0762428619b06e120366fbff0b3f16e4917ff4d127b07"
+    }
+  },
+  "testFiles": 104,
+  "newContracts": 14,
+  "inProcessAndTransportContracts": 12,
+  "actualNodeChildPrivatePipeContracts": 2,
+  "relatedContracts": 69,
+  "initialBeforeFix": {
+    "tests": 11,
+    "pass": 2,
+    "fail": 9,
+    "actualExitCode": 1
+  },
+  "additionalActualStartedKeyReceiptBeforeFix": {
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "actualExitCode": 1
+  },
+  "initialFixtureObservationTimeoutPreserved": true,
+  "timedOutAttemptCountedAsTestResult": false,
+  "productionDeadlinesUnchanged": true,
+  "derivation": "HMAC-SHA256 over fixed domain/session/tenant/region keyed by authenticated owner bytes",
+  "domain": "remote-paint-native-transport-v1",
+  "derivedKeyHexCharacters": 64,
+  "independentPythonVectorVerified": true,
+  "authenticatedStartBeforeDeriveBeforeResourceFactory": true,
+  "ReadyStillProtocolSessionVersionOnly": true,
+  "derivedSecretInReadyOrLedgerLabelsArgv": false,
+  "genericWorkerNoSecretWithoutTrustedHook": true,
+  "actualPrivateWebSocketKeyOriginAndHttpConfigChecked": true,
+  "nativeBrokerListenPortKeyCheckedWithExplicitStub": true,
+  "nativeStartedTransportKeyReceiptRequired": true,
+  "internalNativeOriginPort": 4175,
+  "internalNativeStreamPort": 4176,
+  "nativeCriticalBootstrapModulesRequiredInSourceManifest": true,
+  "sdkBytesAndAllRecordedInstalledContractInputsUnchanged": true,
+  "inheritedSdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "eba83b1de6afd850d86bbf719673fcf04d6d55fdbe09672874dc8b8cba6a1bda",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "cabbac864439e1e8d66bf644f9b20326e9b3544c20d01746963cae4fb21fd6da"
+  },
+  "sdkInstalled77Node16PythonTscBothMacMypyInherited": true,
+  "privateNativeBootstrapRealContainerQualified": false,
+  "ownedEndpointResolverImplemented": false,
+  "productionNativeProviderQualified": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

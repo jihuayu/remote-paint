@@ -16,9 +16,10 @@ function request(value,region){
 // One Session per private byte channel. The runtime must independently fence
 // and retire the complete process/container namespace; Closed is a resource
 // close attestation, not a kernel-wide process census or Registry commit.
-export function runSessionWorker({identity,createResource,runtimeWitness=null,input=process.stdin,output=process.stdout,owner=process,
+export function runSessionWorker({identity,createResource,deriveResourceSecret=null,runtimeWitness=null,input=process.stdin,output=process.stdout,owner=process,
  startTimeoutMs=5000,initializationTimeoutMs=60000,ownerLeaseMs=30000,closeTimeoutMs=10000,maxFrameBytes=32768}={}){
  if(!exact(identity,['sessionId','tenantId','region','ownerKeyHash'])||!session(identity.sessionId)||!tenant(identity.tenantId)||typeof identity.region!=='string'||!identity.region.length||identity.region.length>64||!hash(identity.ownerKeyHash)||typeof createResource!=='function'||runtimeWitness!==null&&typeof runtimeWitness!=='function')throw new TypeError('Configure a fixed worker identity and resource factory');
+ if(deriveResourceSecret!==null&&typeof deriveResourceSecret!=='function')throw new TypeError('Configure an explicit trusted private resource derivation');
  for(const [value,min,max]of [[startTimeoutMs,50,30000],[initializationTimeoutMs,50,120000],[ownerLeaseMs,50,60000],[closeTimeoutMs,50,30000],[maxFrameBytes,1024,65536]])if(!integer(value,min,max))throw new TypeError('Invalid worker bounds');
  identity=structuredClone(identity);
  const expected=Buffer.from(identity.ownerKeyHash,'hex'),controller=new AbortController(),frameBuffer=Buffer.alloc(maxFrameBytes);
@@ -76,7 +77,9 @@ export function runSessionWorker({identity,createResource,runtimeWitness=null,in
    if(started||!exact(value,['type','sessionId','ownerKey','request'])||!request(value.request,identity.region)){void stop('protocol-rejected','WORKER_INVALID_START');return;}
    started=true;clearTimeout(startTimer);armLease();
    try{
-    resource=createResource({sessionId:identity.sessionId,tenantId:identity.tenantId,request:structuredClone(value.request),signal:controller.signal});
+    let secret;
+    if(deriveResourceSecret){secret=deriveResourceSecret({ownerKey:value.ownerKey,sessionId:identity.sessionId,tenantId:identity.tenantId,region:identity.region});if(secret&&typeof secret.then==='function'){void Promise.resolve(secret).catch(()=>{});throw new TypeError('Asynchronous resource derivation is unsupported');}if(!hash(secret))throw new TypeError('Invalid private resource secret');}
+    resource=createResource({sessionId:identity.sessionId,tenantId:identity.tenantId,request:structuredClone(value.request),signal:controller.signal,...(deriveResourceSecret?{resourceSecret:secret}:{})});
     if(resource&&typeof resource.then==='function'){void Promise.resolve(resource).catch(()=>{});throw new TypeError('Asynchronous resource factory is unsupported');}
     if(!resource||typeof resource.initialize!=='function'||typeof resource.close!=='function')throw new TypeError('Expected a synchronous resource owner');
    }catch{invalidOwner=true;void stop('startup-failed','WORKER_RESOURCE_FACTORY_FAILED');return;}

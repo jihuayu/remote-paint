@@ -1,0 +1,15 @@
+# Native 私有流启动密钥
+
+新增后端HMAC-SHA256派生：使用已认证owner密钥和固定domain、Session、租户、区域生成独立的64位十六进制流密钥；解码密钥缓冲在派生后清零。父端后续解析器可用相同身份重算，worker无需在会被Docker记录的stdout Ready里发送另一个凭据。当前只接入worker端，provider端持有和端点解析是下一检查点。
+
+通用Session worker新增显式受信任deriveResourceSecret钩子。只有通过身份认证、有限Start请求验证、一次启动检查后才同步派生，再交给同步资源工厂；异步/错误/非法结果在资源分配前失败且不泄漏异常内容。未配置钩子的普通资源工厂保持没有resourceSecret。owner原文不交给资源工厂，Ready仍只有protocol/session/type/version，不改私有协议报文或公共SDK合同。
+
+Native入口配置固定内部4175/4176端口并要求有效派生结果，Native资源把私有密钥传给startLive/transport；实际启动返回的transport必须确认同一密钥后才发布版本Ready，缺少或改变密钥时拒绝并清理。资源关闭清除自身密钥字段，外层仍须证明完整namespace退役。普通本地默认随机密钥/端口行为保留。Native启动的关键新增模块以及资源/transport必须包含在已验证来源清单中；密钥不写入账本、标签或argv。
+
+新增12项直接协议/资源/真实HTTP+WebSocket合同，加2项真实Node子进程私有stdin合同。独立Python HMAC向量验证身份分离；错误owner和多余请求字段不能触发派生；Ready、错误、HTTP配置和实际子进程argv不回传owner或流密钥。Node WebSocket实际验证正确密钥+Origin、拒绝错误密钥/Origin；Native broker端口/key的配置检查明确使用适配器stub，并未运行Native。
+
+实现前初版11项中2通过/9失败；另补实际transport确认密钥的1项，先失败再修复。最初夹具沿用默认30s租约造成观察超时，没有完整Node退出收据，原日志保留且不当作完整测试；只将该直接函数夹具租约改为500ms，生产期限不变。相关69项通过，104文件/900项完整回归Mac885通过15平台跳过、Linux894通过6平台跳过，无失败/取消，实际均0。
+
+SDK、验证器、类型及所有已记录安装合同输入字节未变，继承16文件包双平台77 Node/16 Python、严格TSC及Mac Mypy的精确既有收据，没有虚构新打包或新安装结果。此前Native公开遥测证据不代表本次生产worker已完成真实Native验证；当前入口仅语法检查，实际子进程是明确Node资源夹具。
+
+下一步需在持久Ready/通道/内核见证/Engine StartedAt/fullCID/spec绑定下解析拥有的私有端点，关闭即移除派生能力；再通过真实DockerSessionProvider/Native worker验证启动、TTL/取消/健康、崩溃恢复和整组退役。生产Native provider、全部Agent/CDP栅栏、N1轻微丢包/物理时延、更多设备与原8小时增长仍未完成。41项9/15/17，原8小时失败和192MiB门槛保持，未自动重跑、强制浏览器GC、改演示/采样器或暂存提交推送。见[范围收据](evidence/native-private-bootstrap.json)。
