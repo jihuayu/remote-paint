@@ -13,11 +13,18 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "components/download/internal/common/resource_downloader.h"
 #include "components/download/public/common/download_create_info.h"
+#include "components/download/public/common/native_download_request_context.h"
+#include "components/download/public/common/native_download_budget.h"
+#include "base/unguessable_token.h"
+#include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "components/download/public/common/in_progress_download_manager.h"
 #include "components/download/public/common/url_download_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -107,6 +114,7 @@ class CapturingDelegate : public Handler::Delegate {
       download::UrlDownloadHandlerID downloader,
       download::DownloadUrlParameters::OnStartedCallback callback) override {
     info_state = info->remote_paint_request_cleanup;
+    info_context = info->remote_paint_request_context;
     EXPECT_EQ(id, downloader);
     io_->DeleteSoon(FROM_HERE, std::move(stream));
     if (started) std::move(started).Run();
@@ -118,6 +126,7 @@ class CapturingDelegate : public Handler::Delegate {
   std::unique_ptr<download::InProgressDownloadManager> manager;
   scoped_refptr<State> state;
   scoped_refptr<State> info_state;
+  scoped_refptr<download::NativeDownloadRequestContext> info_context;
   download::UrlDownloadHandlerID id = 0;
   base::OnceClosure started;
   base::OnceClosure stopped;
@@ -155,7 +164,9 @@ class RemotePaintRequestOwnerTest : public testing::Test {
   }
   void Intercept(CapturingDelegate& delegate,
                  mojo::ScopedMessagePipeHandle* loader_peer,
-                 mojo::Remote<network::mojom::URLLoaderClient>* client) {
+                 mojo::Remote<network::mojom::URLLoaderClient>* client,
+                 scoped_refptr<download::NativeDownloadRequestContext> context = nullptr,
+                 base::OnceClosure before_response = {}) {
     mojo::MessagePipe loader, factory;
     *loader_peer = std::move(loader.handle1);
     auto endpoints = network::mojom::URLLoaderClientEndpoints::New();
@@ -179,22 +190,48 @@ class RemotePaintRequestOwnerTest : public testing::Test {
          mojo::ScopedDataPipeConsumerHandle consumer,
          network::mojom::URLLoaderClientEndpointsPtr endpoints,
          mojo::ScopedMessagePipeHandle factory,
-         scoped_refptr<base::SingleThreadTaskRunner> ui) {
+         scoped_refptr<base::SingleThreadTaskRunner> ui,
+         scoped_refptr<download::NativeDownloadRequestContext> context) {
         auto shared = base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
             mojo::PendingRemote<network::mojom::URLLoaderFactory>(std::move(factory), 0));
         download::ResourceDownloader::InterceptNavigationResponse(
             delegate, std::move(request), 1, 1, "", GURL(), GURL(),
             std::vector<GURL>{GURL("https://example.test/download")}, 0,
             std::move(head), std::move(consumer), std::move(endpoints), shared,
-            base::BindRepeating([](int, const GURL&) { return true; }), {}, ui, false);
+            base::BindRepeating([](int, const GURL&) { return true; }), {}, ui, false, std::move(context));
       }, delegate.weak.GetWeakPtr(), std::move(request), std::move(head),
          std::move(consumer), std::move(endpoints), std::move(factory.handle0),
-         base::SingleThreadTaskRunner::GetCurrentDefault()));
+         base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(context)));
+    if (before_response) std::move(before_response).Run();
     loop.Run();
   }
   base::test::TaskEnvironment tasks_{base::test::TaskEnvironment::MainThreadType::IO};
   base::test::ScopedCommandLine command_;
   base::Thread io_{"request-owner-io"};
+};
+
+using Context = download::NativeDownloadRequestContext;
+scoped_refptr<Context> ContextForTest() {
+  Context::Frame frame{17, 19, base::UnguessableToken::Create().ToString()};
+  return Context::Create(Context::Origin::kExplicitRequest, frame, frame, frame);
+}
+class ResponseFactory : public network::mojom::URLLoaderFactory {
+ public:
+  void CreateLoaderAndStart(mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t, uint32_t, const network::ResourceRequest&,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag&) override {
+    mojo::Remote<network::mojom::URLLoaderClient> reply(std::move(client));
+    auto head = network::mojom::URLResponseHead::New(); head->mime_type = "application/octet-stream";
+    head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n");
+    mojo::ScopedDataPipeProducerHandle producer; mojo::ScopedDataPipeConsumerHandle consumer;
+    CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
+    reply->OnReceiveResponse(std::move(head), std::move(consumer), std::nullopt);
+    reply->OnComplete(network::URLLoaderCompletionStatus(net::OK));
+  }
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) override {
+    mojo::MakeSelfOwnedReceiver(std::make_unique<ResponseFactory>(), std::move(receiver));
+  }
 };
 
 TEST_F(RemotePaintRequestOwnerTest, ActualDestructorAndOriginReplyAreSeparate) {
@@ -278,5 +315,80 @@ TEST_F(RemotePaintRequestOwnerTest, ActualManagerDestructionRetiresActiveResourc
   auto state = delegate.state; delegate.manager.reset();
   EXPECT_EQ(Phase::Queued, state->GetPhase()); Barrier(); tasks_.RunUntilIdle();
   EXPECT_TRUE(Closed(peer)); EXPECT_EQ(Phase::Acknowledged, state->GetPhase());
+}
+
+TEST_F(RemotePaintRequestOwnerTest, LateNavigationResponseKeepsOriginalContextObject) {
+  command_.GetProcessCommandLine()->AppendSwitch("remote-paint-download-budget-v1");
+  auto original = ContextForTest(); ASSERT_TRUE(original); const auto id = original->request_id();
+  auto current_page = original->page().document_token;
+  CapturingDelegate delegate(io_.task_runner()); mojo::ScopedMessagePipeHandle peer;
+  mojo::Remote<network::mojom::URLLoaderClient> client;
+  Intercept(delegate, &peer, &client, original, base::BindOnce(
+      [](scoped_refptr<Context>* original, std::string* current_page) {
+        original->reset(); *current_page = base::UnguessableToken::Create().ToString();
+      }, base::Unretained(&original), base::Unretained(&current_page)));
+  ASSERT_TRUE(delegate.info_context); EXPECT_EQ(id, delegate.info_context->request_id());
+  EXPECT_NE(current_page, delegate.info_context->page().document_token);
+  delegate.manager.reset(); Barrier(); tasks_.RunUntilIdle();
+  EXPECT_TRUE(Closed(peer)); EXPECT_EQ(Phase::Acknowledged, delegate.state->GetPhase());
+}
+TEST_F(RemotePaintRequestOwnerTest, ActualExplicitBeginDownloadCarriesParameterContext) {
+  command_.GetProcessCommandLine()->AppendSwitch("remote-paint-download-budget-v1");
+  auto context = ContextForTest(); ASSERT_TRUE(context); CapturingDelegate delegate(io_.task_runner());
+  base::RunLoop started; delegate.started = started.QuitClosure();
+  io_.task_runner()->PostTask(FROM_HERE, base::BindOnce(
+      [](base::WeakPtr<CapturingDelegate> delegate, scoped_refptr<Context> context,
+         scoped_refptr<base::SingleThreadTaskRunner> ui) {
+        mojo::PendingRemote<network::mojom::URLLoaderFactory> remote;
+        mojo::MakeSelfOwnedReceiver(std::make_unique<ResponseFactory>(), remote.InitWithNewPipeAndPassReceiver());
+        auto shared = base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(std::move(remote));
+        auto params = std::make_unique<download::DownloadUrlParameters>(GURL("https://example.test/explicit"), TRAFFIC_ANNOTATION_FOR_TESTS);
+        params->remote_paint_request_context = std::move(context);
+        auto request = std::make_unique<network::ResourceRequest>(); request->url = params->url(); request->method = "GET";
+        auto downloader = download::ResourceDownloader::BeginDownload(delegate, std::move(params), std::move(request), shared,
+            base::BindRepeating([](int, const GURL&) { return true; }), "", GURL(), GURL(), true, false, {}, false, ui);
+        ui->PostTask(FROM_HERE, base::BindOnce(&CapturingDelegate::OnUrlDownloadHandlerCreated, delegate,
+            Owner(std::move(downloader).release(), base::OnTaskRunnerDeleter(base::SingleThreadTaskRunner::GetCurrentDefault()))));
+      }, delegate.weak.GetWeakPtr(), context, base::SingleThreadTaskRunner::GetCurrentDefault()));
+  started.Run(); EXPECT_EQ(context, delegate.info_context);
+  delegate.manager.reset(); Barrier(); tasks_.RunUntilIdle();
+  EXPECT_EQ(Phase::Acknowledged, delegate.state->GetPhase());
+}
+TEST_F(RemotePaintRequestOwnerTest, ActualManagerNavigationDispatchPreservesContext) {
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(20));
+  command_.GetProcessCommandLine()->AppendSwitch("remote-paint-download-budget-v1");
+  class Intercept : public download::InProgressDownloadManager::Delegate {
+   public:
+    bool InterceptDownload(const download::DownloadCreateInfo& info) override {
+      context = info.remote_paint_request_context; std::move(done).Run(); return true;
+    }
+    scoped_refptr<Context> context; base::OnceClosure done;
+  } intercept;
+  auto secure = base::BindRepeating([](const GURL&) { return true; });
+  auto manager = std::make_unique<download::InProgressDownloadManager>(&intercept, base::FilePath(), nullptr,
+      secure, base::BindRepeating([](int, const GURL&) { return true; }), base::NullCallback());
+  auto context = ContextForTest(); ASSERT_TRUE(context);
+  mojo::MessagePipe loader, factory; mojo::Remote<network::mojom::URLLoaderClient> client;
+  auto endpoints = network::mojom::URLLoaderClientEndpoints::New();
+  endpoints->url_loader = mojo::PendingRemote<network::mojom::URLLoader>(std::move(loader.handle0), 0);
+  endpoints->url_loader_client = client.BindNewPipeAndPassReceiver();
+  mojo::ScopedDataPipeProducerHandle producer; mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
+  auto head = network::mojom::URLResponseHead::New(); head->mime_type = "application/octet-stream";
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n");
+  auto request = std::make_unique<network::ResourceRequest>(); request->url = GURL("https://example.test/managed"); request->method = "GET";
+  auto pending = std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(mojo::PendingRemote<network::mojom::URLLoaderFactory>(std::move(factory.handle0), 0));
+  base::RunLoop started; intercept.done = started.QuitClosure();
+  manager->InterceptDownloadFromNavigation(std::move(request), 73, 79, "", GURL(), GURL(),
+      std::vector<GURL>{GURL("https://example.test/managed")}, 0, std::move(head), std::move(consumer), std::move(endpoints), std::move(pending), false, context);
+  started.Run(); EXPECT_EQ(context, intercept.context);
+  // Wait for real IO/origin ownership ACK and the lease's actual poll, not an
+  // invented completion from this test's timeout.
+  base::RunLoop settled; base::RepeatingTimer poll;
+  poll.Start(FROM_HERE, base::Milliseconds(10), base::BindRepeating(
+      [](base::RepeatingClosure done) {
+        if (download::NativeDownloadBudget::ReservedItems() == 0) done.Run();
+      }, settled.QuitClosure()));
+  settled.Run(); EXPECT_EQ(0u, download::NativeDownloadBudget::ReservedItems()); manager.reset();
 }
 }  // namespace

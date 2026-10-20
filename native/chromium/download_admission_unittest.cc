@@ -29,6 +29,7 @@
 #include "components/download/public/common/in_progress_download_manager.h"
 #include "components/download/public/common/input_stream.h"
 #include "components/download/public/common/native_download_budget.h"
+#include "components/download/public/common/native_download_request_context.h"
 #include "components/download/public/common/url_download_handler.h"
 #include "net/base/io_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -152,7 +153,9 @@ class Model {
     delegate.items.clear(); Drain();
   }
   scoped_refptr<Reads> Start(bool finish = false, size_t bytes = 7,
-                             bool tracked = true) {
+                             bool tracked = true,
+                             scoped_refptr<download::NativeDownloadRequestContext> context = nullptr,
+                             bool resume = false) {
     auto owner = Handler::UniqueUrlDownloadHandlerPtr(new Handler,
         base::OnTaskRunnerDeleter(download::GetIOTaskRunner()));
     auto request = owner->GetRemotePaintRequestCleanupState();
@@ -160,7 +163,9 @@ class Model {
     static_cast<Handler::Delegate*>(manager.get())->OnUrlDownloadHandlerCreated(std::move(owner));
     requests.emplace_back(id, request);
     auto info = std::make_unique<download::DownloadCreateInfo>();
-    info->is_new_download = true; info->result = kNone;
+    info->is_new_download = !resume; info->result = kNone;
+    if (resume) info->guid = delegate.items.begin()->second->GetGuid();
+    info->remote_paint_request_context = std::move(context);
     info->url_chain.emplace_back("https://example.test/file");
     info->save_info = std::make_unique<download::DownloadSaveInfo>();
     if (standalone_) info->save_info->file_path = directory.GetPath().AppendASCII("standalone.bin");
@@ -353,6 +358,31 @@ TEST_F(RemotePaintDownloadBudgetTest, FailedCrossFilesystemRenameLeavesNoPlaceho
   EXPECT_TRUE(file.CancelAndReportDeletion());
 }
 #endif
+
+scoped_refptr<download::NativeDownloadRequestContext> RequestContext() {
+  using Context = download::NativeDownloadRequestContext;
+  Context::Frame frame{1, 1, base::UnguessableToken::Create().ToString()};
+  return Context::Create(Context::Origin::kExplicitRequest, frame, frame, frame);
+}
+TEST_F(RemotePaintDownloadBudgetTest, RetainedOriginalContextRejectsChangedDocumentBeforeResumeItem) {
+  Model model(tasks_); auto original = RequestContext(); ASSERT_TRUE(original);
+  model.Start(false, 7, true, original); model.Drain();
+  auto lease = model.delegate.items.begin()->second->GetRemotePaintAdmission();
+  EXPECT_EQ(original, lease->request_context());
+  auto changed = RequestContext(); ASSERT_TRUE(changed);
+  auto reads = model.Start(false, 7, true, changed, true); model.Drain();
+  EXPECT_EQ(0, reads->count); EXPECT_EQ(1, model.delegate.allocations);
+  EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, model.last_started_reason);
+  EXPECT_EQ(original, lease->request_context()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadBudgetTest, UnknownOriginalCannotBecomeKnownThroughResume) {
+  Model model(tasks_); model.Start(); model.Drain();
+  auto lease = model.delegate.items.begin()->second->GetRemotePaintAdmission();
+  EXPECT_FALSE(lease->request_context());
+  auto reads = model.Start(false, 7, true, RequestContext(), true); model.Drain();
+  EXPECT_EQ(0, reads->count); EXPECT_EQ(1, model.delegate.allocations);
+  EXPECT_FALSE(lease->request_context()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
 
 TEST_F(RemotePaintDownloadBudgetTest, FailedCleanupHoldsQuotaUntilActualProcessExit) {
   const auto* current = base::CommandLine::ForCurrentProcess();

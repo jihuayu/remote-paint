@@ -42,7 +42,7 @@ test("serializer_tests") {
   ]
 }
 
-# Actual upstream BaseFile and native pre-write filesystem contracts only.
+# Upstream filesystem/job and staged Native download component contracts.
 # Keep this independent of the headless_shell output and its retained graph.
 test("download_file_tests") {
   sources = [
@@ -53,6 +53,7 @@ test("download_file_tests") {
     "download_request_owner_unittest.cc",
     "download_admission_unittest.cc",
     "download_bridge_descriptor_unittest.cc",
+    "download_request_context_unittest.cc",
     "//components/download/internal/common/base_file_unittest.cc",
   ]
   deps = [
@@ -66,6 +67,7 @@ test("download_file_tests") {
     "//testing/gmock",
     "//crypto",
     "//net",
+    "//net/traffic_annotation:test_support",
     "//testing/gtest",
     "//url",
   ]

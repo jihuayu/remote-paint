@@ -1,0 +1,19 @@
+# Native 下载请求的不可变文档见证
+
+第24顺序补丁定义浏览器拥有的NativeDownloadRequestContext：目标frame、发起frame及所属Page主frame各包含process/routing ID与最多64字节的文档token；每次创建另有独立UnguessableToken请求ID和明确入口种类。只在Native双开关下捕获。记录不可变、引用计数线程安全，不跨IO携带RFH/WebContents指针，也不因保留记录而保留页面对象。它只约束单条记录大小，不是整个浏览器或早期网络请求数量的准入上限。
+
+NavigationRequest在构造时捕获，而不是等响应到来或允许下载的异步检查结束。显式DownloadUrl在BeginDownloadInternal异步检查前覆盖本次params中的见证；浏览器的恢复入口也经过该方法。真实RFH捕获函数拒绝缺失、非活动、fenced及跨WebContents发起者。导航缺少可确认来源时保持unknown，不在响应阶段用当前frame补齐。原有Chromium用于路由的当前frame ID仍按原逻辑处理，不能据它替换原文档身份。
+
+同一记录穿过异步允许检查、服务工作线程params链、UI→IO、ResourceDownloader构造和DownloadCreateInfo回传。lease保留首次来源：unknown不能通过恢复变成known，known不能丢失见证或换成另一Page主文档。请求ID允许每次尝试不同；Page比较包含process、routing和document三项，不能只凭URL或复用frame ID。真正成功恢复、源页面/文档切换及cookies仍需浏览器运行验收。
+
+新增11个组件用例：6个不可变记录/边界/身份/实际params与info持有合同；3个实际ResourceDownloader导航响应、显式BeginDownload的真实Mojo应答及InProgressDownloadManager UI→IO→info链；2个实际manager/lease在item回调及流读取前拒绝错误恢复见证、保留原来源并实际完成额度清理。IO测试用合成frame IDs与真实UnguessableToken值，不包含真实RFH或浏览器导航。迟到应答用例在IO响应前改变测试中的“当前文档”变量，并验证原记录仍相同，不把它称为真实页面导航实验。URL退休使用真实对象、IO线程和Mojo端点，没有模拟成功退休。
+
+最终ARM64测试ELF无过滤348项全部RUN/COMPLETED、零失败/禁用，编译列表与结果逐一相同。新增用例从父版本源码逐项比较，恰为11项、全部执行且无移除。另有既有失败清理合同的实际子进程1项。Mac/Linux最终专项各13项通过，没有重跑完整1435项JS或SDK。
+
+保留三次组件构建：首轮GN检查拒绝遗漏的net/traffic_annotation:test_support直接依赖；补齐后生产组件对象通过，测试夹具的捕获式base::Bind被Chromium拒绝；改为无捕获函数及显式绑定参数后，第三轮GN/Ninja4步与348项通过。前两轮未执行旧ELF。生成脚本的含糊锚点及准备脚本版本引用也在改动/运行前被拒绝，过程记录保留。
+
+真实DownloadManagerImpl和NavigationRequest使用实际GN/Ninja命令分别编译成ARM64对象，content/browser:browser依赖检查通过；缺失生成头只在所选专用输出按明确目标生成。这里没有整浏览器链接/运行，也没有真实RFH、导航、cookies或传输验收。24补丁完整回放与53实际修改路径、35个Native组件逐项一致。原浏览器包19文件与采样器哈希/文件身份保持，自有容器终态后删除，专用输出与Go缓存保留。未访问禁止旧输出或演示，未提交、推送或使用子代理。
+
+Source仍未接线或启用预算第二开关，Page描述符仍报告transfersReady=false。下一步连接原Page/document绑定的arm/ticket/info/read/release和实际文件任务所有权，再处理原Playwright会话事件/元数据、Source私有目录及unarmed策略，最后才启用并验证整浏览器。早期IO、远端网络服务物理退休、原8小时增长失败及其他全局门槛未通过。K6部分，41项保持10完成/17部分/14待办。
+
+见[结构化证据](evidence/native-download-request-context.json)、[桥发现](native-download-bridge-descriptor.md)、[下载准入](native-download-admission.md)及[进度](optimization-progress.md)。

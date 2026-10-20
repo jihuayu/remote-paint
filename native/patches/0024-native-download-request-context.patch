@@ -1,0 +1,503 @@
+--- a/components/download/internal/common/download_create_info.cc
++++ b/components/download/internal/common/download_create_info.cc
+@@ -5,6 +5,7 @@
+ #include "components/download/public/common/download_create_info.h"
+ #include "components/download/public/common/url_download_handler.h"
+ #include "components/download/public/common/native_download_budget.h"
++#include "components/download/public/common/native_download_request_context.h"
+ 
+ #include <memory>
+ #include <string>
+--- a/components/download/internal/common/in_progress_download_manager.cc
++++ b/components/download/internal/common/in_progress_download_manager.cc
+@@ -141,7 +141,8 @@
+     const URLSecurityPolicy& url_security_policy,
+     mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider,
+     const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
+-    bool is_transient) {
++    bool is_transient,
++    scoped_refptr<NativeDownloadRequestContext> native_context) {
+   DCHECK(GetIOTaskRunner()->BelongsToCurrentThread());
+ 
+   ResourceDownloader::InterceptNavigationResponse(
+@@ -153,7 +154,7 @@
+       network::SharedURLLoaderFactory::Create(
+           std::move(pending_url_loader_factory)),
+       url_security_policy, std::move(wake_lock_provider), main_task_runner,
+-      is_transient);
++      is_transient, std::move(native_context));
+ }
+ 
+ #if BUILDFLAG(IS_ANDROID)
+@@ -359,7 +360,8 @@
+     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+     std::unique_ptr<network::PendingSharedURLLoaderFactory>
+         pending_url_loader_factory,
+-    bool is_transient) {
++    bool is_transient,
++    scoped_refptr<NativeDownloadRequestContext> native_context) {
+   mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider;
+   if (wake_lock_provider_binder_) {
+     wake_lock_provider_binder_.Run(
+@@ -377,7 +379,8 @@
+           std::move(url_loader_client_endpoints),
+           std::move(pending_url_loader_factory), url_security_policy_,
+           std::move(wake_lock_provider),
+-          base::SingleThreadTaskRunner::GetCurrentDefault(), is_transient));
++          base::SingleThreadTaskRunner::GetCurrentDefault(), is_transient,
++          std::move(native_context)));
+ }
+ 
+ void InProgressDownloadManager::Initialize(
+--- a/components/download/internal/common/resource_downloader.cc
++++ b/components/download/internal/common/resource_downloader.cc
+@@ -83,7 +83,7 @@
+       params->render_frame_host_routing_id(), serialized_embedder_download_data,
+       tab_url, tab_referrer_url, is_new_download, task_runner,
+       std::move(url_loader_factory), url_security_policy,
+-      std::move(wake_lock_provider));
++      std::move(wake_lock_provider), params->remote_paint_request_context);
+ 
+   downloader->Start(std::move(params), is_parallel_request, is_background_mode);
+   return downloader;
+@@ -107,12 +107,13 @@
+     const URLSecurityPolicy& url_security_policy,
+     mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider,
+     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+-    bool is_transient) {
++    bool is_transient,
++    scoped_refptr<NativeDownloadRequestContext> native_context) {
+   auto downloader = std::make_unique<ResourceDownloader>(
+       delegate, std::move(resource_request), render_process_id, render_frame_id,
+       serialized_embedder_download_data, tab_url, tab_referrer_url, true,
+       task_runner, std::move(url_loader_factory), url_security_policy,
+-      std::move(wake_lock_provider));
++      std::move(wake_lock_provider), std::move(native_context));
+   ResourceDownloader* raw_downloader = downloader.get();
+   task_runner->PostTask(
+       FROM_HERE,
+@@ -140,12 +141,14 @@
+     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+     const URLSecurityPolicy& url_security_policy,
+-    mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider)
++    mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider,
++    scoped_refptr<NativeDownloadRequestContext> native_context)
+     : delegate_(delegate),
+       resource_request_(std::move(resource_request)),
+       is_new_download_(is_new_download),
+       render_process_id_(render_process_id),
+       render_frame_id_(render_frame_id),
++      native_context_(std::move(native_context)),
+       serialized_embedder_download_data_(serialized_embedder_download_data),
+       tab_url_(tab_url),
+       tab_referrer_url_(tab_referrer_url),
+@@ -246,6 +249,7 @@
+     mojom::DownloadStreamHandlePtr stream_handle) {
+   download_create_info->is_new_download = is_new_download_;
+   download_create_info->guid = guid_;
++  download_create_info->remote_paint_request_context = native_context_;
+   download_create_info->remote_paint_request_cleanup =
+       GetRemotePaintRequestCleanupState();
+   download_create_info->serialized_embedder_download_data =
+--- a/components/download/internal/common/resource_downloader.h
++++ b/components/download/internal/common/resource_downloader.h
+@@ -62,7 +62,8 @@
+       const URLSecurityPolicy& url_security_policy,
+       mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider,
+       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+-      bool is_transient);
++      bool is_transient,
++      scoped_refptr<NativeDownloadRequestContext> native_context = nullptr);
+ 
+   ResourceDownloader(
+       base::WeakPtr<UrlDownloadHandler::Delegate> delegate,
+@@ -76,7 +77,8 @@
+       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+       const URLSecurityPolicy& url_security_policy,
+-      mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider);
++      mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider,
++      scoped_refptr<NativeDownloadRequestContext> native_context = nullptr);
+ 
+   ResourceDownloader(const ResourceDownloader&) = delete;
+   ResourceDownloader& operator=(const ResourceDownloader&) = delete;
+@@ -145,6 +147,7 @@
+   // Frame and process id associated with the request.
+   int render_process_id_;
+   int render_frame_id_;
++  const scoped_refptr<NativeDownloadRequestContext> native_context_;
+ 
+   // Serialized embedder data download for the site instance that initiated the
+   // download.
+--- a/components/download/public/common/BUILD.gn
++++ b/components/download/public/common/BUILD.gn
+@@ -63,6 +63,8 @@
+     "in_progress_download_manager.h",
+     "native_download_bridge_descriptor.cc",
+     "native_download_bridge_descriptor.h",
++    "native_download_request_context.cc",
++    "native_download_request_context.h",
+     "native_download_budget.cc",
+     "native_download_budget.h",
+     "input_stream.cc",
+--- a/components/download/public/common/download_create_info.h
++++ b/components/download/public/common/download_create_info.h
+@@ -68,6 +68,7 @@
+   // Native-only browser-side URL handler ownership witness for this attempt.
+   scoped_refptr<UrlDownloadHandlerCleanupState> remote_paint_request_cleanup;
+   scoped_refptr<NativeDownloadLease> remote_paint_admission;
++  scoped_refptr<NativeDownloadRequestContext> remote_paint_request_context;
+ 
+ 
+   // The chain of redirects that leading up to and including the final URL.
+--- a/components/download/public/common/download_url_parameters.h
++++ b/components/download/public/common/download_url_parameters.h
+@@ -19,6 +19,7 @@
+ #include "components/download/public/common/download_interrupt_reasons.h"
+ #include "components/download/public/common/download_save_info.h"
+ #include "components/download/public/common/download_source.h"
++#include "components/download/public/common/native_download_request_context.h"
+ #include "net/base/isolation_info.h"
+ #include "net/traffic_annotation/network_traffic_annotation.h"
+ #include "net/url_request/referrer_policy.h"
+@@ -316,6 +317,9 @@
+   void set_skip_service_worker_interception(bool skip) {
+     skip_service_worker_interception_ = skip;
+   }
++
++  // Browser-owned start snapshot, overwritten at each explicit request entry.
++  scoped_refptr<NativeDownloadRequestContext> remote_paint_request_context;
+ 
+   OnStartedCallback& callback() { return callback_; }
+   bool content_initiated() const { return content_initiated_; }
+--- a/components/download/public/common/in_progress_download_manager.h
++++ b/components/download/public/common/in_progress_download_manager.h
+@@ -133,7 +133,8 @@
+       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+       std::unique_ptr<network::PendingSharedURLLoaderFactory>
+           pending_url_loader_factory,
+-      bool is_transient);
++      bool is_transient,
++      scoped_refptr<NativeDownloadRequestContext> native_context = nullptr);
+ 
+   void StartDownload(std::unique_ptr<DownloadCreateInfo> info,
+                      std::unique_ptr<InputStream> stream,
+--- a/components/download/public/common/native_download_budget.cc
++++ b/components/download/public/common/native_download_budget.cc
+@@ -8,6 +8,7 @@
+ #include "base/functional/bind.h"
+ #include "base/notreached.h"
+ #include "components/download/public/common/download_create_info.h"
++#include "components/download/public/common/native_download_request_context.h"
+ #include "components/download/public/common/download_file.h"
+ #include "components/download/public/common/download_item_impl.h"
+ #include "components/download/public/common/download_task_runner.h"
+@@ -95,12 +96,20 @@
+ bool NativeDownloadLease::AddAttempt(
+     DownloadCreateInfo& info, base::OnceCallback<void(bool)>* cancel) {
+   if (retiring_ || failed_ || pending_creators_ || !info.remote_paint_request_cleanup) return false;
++  if (context_seen_ &&
++      (bool(request_context_) != bool(info.remote_paint_request_context) ||
++       (request_context_ && !request_context_->SamePageDocument(*info.remote_paint_request_context))))
++    return false;
+   for (auto& request : requests_) {
+     if (request && request->GetPhase() == RequestPhase::Acknowledged) request.reset();
+     if (request && request->GetPhase() == RequestPhase::Failed) return false;
+   }
+   for (auto& request : requests_) {
+     if (!request) {
++      if (!context_seen_) {
++        context_seen_ = true;
++        request_context_ = info.remote_paint_request_context;
++      }
+       request = info.remote_paint_request_cleanup;
+       current_request_ = request;
+       cancel_ = base::MakeRefCounted<base::RefCountedData<
+--- a/components/download/public/common/native_download_budget.h
++++ b/components/download/public/common/native_download_budget.h
+@@ -22,6 +22,7 @@
+ struct DownloadCreateInfo;
+ class UrlDownloadHandlerCleanupState;
+ class NativeDownloadBudget;
++class NativeDownloadRequestContext;
+ 
+ class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadLease
+     : public base::RefCountedThreadSafe<NativeDownloadLease>,
+@@ -34,6 +35,7 @@
+   const std::string& guid() const { return guid_; }
+   bool failed() const { return failed_; }
+   bool retiring() const { return retiring_; }
++  const scoped_refptr<NativeDownloadRequestContext>& request_context() const { return request_context_; }
+   void OnDownloadUpdated(DownloadItem* item) override;
+   void OnDownloadDestroyed(DownloadItem* item) override;
+ 
+@@ -53,6 +55,7 @@
+   base::RepeatingCallback<void(NativeDownloadLease*)> done_;
+   raw_ptr<DownloadItemImpl> item_ = nullptr;
+   scoped_refptr<DownloadFileCleanupState> files_;
++  scoped_refptr<NativeDownloadRequestContext> request_context_;
+   std::array<scoped_refptr<UrlDownloadHandlerCleanupState>, 4> requests_;
+   scoped_refptr<UrlDownloadHandlerCleanupState> current_request_;
+   scoped_refptr<base::RefCountedData<base::OnceCallback<void(bool)>>> cancel_;
+@@ -61,6 +64,7 @@
+   base::OneShotTimer timer_;
+   base::TimeTicks deadline_;
+   size_t pending_creators_ = 0;
++  bool context_seen_ = false;
+   bool had_item_ = false;
+   bool terminal_ = false;
+   bool retiring_ = false;
+--- /dev/null
++++ b/components/download/public/common/native_download_request_context.cc
+@@ -0,0 +1,41 @@
++#include "components/download/public/common/native_download_request_context.h"
++#include <utility>
++#include "base/command_line.h"
++
++namespace download {
++namespace {
++bool Valid(const NativeDownloadRequestContext::Frame& frame) {
++  return frame.process_id >= 0 && frame.routing_id >= 0 &&
++         !frame.document_token.empty() && frame.document_token.size() <= 64;
++}
++}  // namespace
++bool NativeDownloadRequestContext::EnabledForProcess() {
++  const auto* cmd = base::CommandLine::ForCurrentProcess();
++  return cmd->HasSwitch("remote-paint-token") &&
++         cmd->HasSwitch("remote-paint-download-budget-v1");
++}
++scoped_refptr<NativeDownloadRequestContext> NativeDownloadRequestContext::Create(
++    Origin origin, Frame target, Frame initiator, Frame page) {
++  if (!EnabledForProcess() || !Valid(target) || !Valid(initiator) || !Valid(page))
++    return nullptr;
++  switch (origin) {
++    case Origin::kBrowserNavigation:
++    case Origin::kRendererNavigation:
++    case Origin::kExplicitRequest: break;
++    default: return nullptr;
++  }
++  return base::WrapRefCounted(new NativeDownloadRequestContext(
++      origin, std::move(target), std::move(initiator), std::move(page)));
++}
++NativeDownloadRequestContext::NativeDownloadRequestContext(
++    Origin origin, Frame target, Frame initiator, Frame page)
++    : origin_(origin), target_(std::move(target)), initiator_(std::move(initiator)),
++      page_(std::move(page)), request_id_(base::UnguessableToken::Create()) {}
++NativeDownloadRequestContext::~NativeDownloadRequestContext() = default;
++bool NativeDownloadRequestContext::SamePageDocument(
++    const NativeDownloadRequestContext& other) const {
++  return page_.process_id == other.page_.process_id &&
++         page_.routing_id == other.page_.routing_id &&
++         page_.document_token == other.page_.document_token;
++}
++}  // namespace download
+--- /dev/null
++++ b/components/download/public/common/native_download_request_context.h
+@@ -0,0 +1,41 @@
++#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_REQUEST_CONTEXT_H_
++#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_REQUEST_CONTEXT_H_
++
++#include <string>
++#include "base/memory/ref_counted.h"
++#include "base/unguessable_token.h"
++#include "components/download/public/common/download_export.h"
++
++namespace download {
++// Captured by browser code at request creation. No RFH or WebContents pointer
++// crosses to IO, and no response-time frame lookup can rewrite this record.
++class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadRequestContext
++    : public base::RefCountedThreadSafe<NativeDownloadRequestContext> {
++ public:
++  enum class Origin { kBrowserNavigation, kRendererNavigation, kExplicitRequest };
++  struct Frame {
++    int process_id;
++    int routing_id;
++    std::string document_token;
++  };
++  static bool EnabledForProcess();
++  static scoped_refptr<NativeDownloadRequestContext> Create(
++      Origin origin, Frame target, Frame initiator, Frame page);
++  const Frame& target() const { return target_; }
++  const Frame& initiator() const { return initiator_; }
++  const Frame& page() const { return page_; }
++  Origin origin() const { return origin_; }
++  const base::UnguessableToken& request_id() const { return request_id_; }
++  bool SamePageDocument(const NativeDownloadRequestContext& other) const;
++ private:
++  friend class base::RefCountedThreadSafe<NativeDownloadRequestContext>;
++  NativeDownloadRequestContext(Origin origin, Frame target, Frame initiator, Frame page);
++  ~NativeDownloadRequestContext();
++  const Origin origin_;
++  const Frame target_;
++  const Frame initiator_;
++  const Frame page_;
++  const base::UnguessableToken request_id_;
++};
++}  // namespace download
++#endif
+--- a/content/browser/download/download_manager_impl.cc
++++ b/content/browser/download/download_manager_impl.cc
+@@ -1191,6 +1191,28 @@
+   in_progress_manager_->ReportBytesWasted(download);
+ }
+ 
++scoped_refptr<download::NativeDownloadRequestContext>
++DownloadManagerImpl::CaptureNativeRequestContext(
++    RenderFrameHostImpl* target,
++    RenderFrameHostImpl* initiator,
++    download::NativeDownloadRequestContext::Origin origin) {
++  DCHECK_CURRENTLY_ON(BrowserThread::UI);
++  using Context = download::NativeDownloadRequestContext;
++  if (!Context::EnabledForProcess() || !target || !initiator ||
++      !target->IsActive() || !initiator->IsActive() ||
++      target->IsNestedWithinFencedFrame() || initiator->IsNestedWithinFencedFrame())
++    return nullptr;
++  auto* contents = WebContents::FromRenderFrameHost(target);
++  if (!contents || contents != WebContents::FromRenderFrameHost(initiator)) return nullptr;
++  auto* page = static_cast<RenderFrameHostImpl*>(contents->GetPrimaryMainFrame());
++  if (!page || !page->IsActive()) return nullptr;
++  auto frame = [](RenderFrameHostImpl* host) {
++    return Context::Frame{host->GetProcess()->GetDeprecatedID(), host->GetRoutingID(),
++                          host->GetDocumentToken().ToString()};
++  };
++  return Context::Create(origin, frame(target), frame(initiator), frame(page));
++}
++
+ void DownloadManagerImpl::InterceptNavigation(
+     std::unique_ptr<network::ResourceRequest> resource_request,
+     std::vector<GURL> url_chain,
+@@ -1199,7 +1221,8 @@
+     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+     net::CertStatus cert_status,
+     FrameTreeNodeId frame_tree_node_id,
+-    bool from_download_cross_origin_redirect) {
++    bool from_download_cross_origin_redirect,
++    scoped_refptr<download::NativeDownloadRequestContext> native_context) {
+   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+   if (!delegate_) {
+     DropDownload();
+@@ -1223,7 +1246,7 @@
+           weak_factory_.GetWeakPtr(), frame_tree_node_id,
+           std::move(resource_request), std::move(url_chain), cert_status,
+           std::move(response_head), std::move(response_body),
+-          std::move(url_loader_client_endpoints));
++          std::move(url_loader_client_endpoints), std::move(native_context));
+ 
+   delegate_->CheckDownloadAllowed(
+       std::move(web_contents_getter), url, method, std::move(request_initiator),
+@@ -1596,6 +1619,7 @@
+     network::mojom::URLResponseHeadPtr response_head,
+     mojo::ScopedDataPipeConsumerHandle response_body,
+     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
++    scoped_refptr<download::NativeDownloadRequestContext> native_context,
+     bool is_download_allowed) {
+   if (!is_download_allowed) {
+     DropDownload();
+@@ -1650,7 +1674,7 @@
+       std::move(response_head), std::move(response_body),
+       std::move(url_loader_client_endpoints),
+       CreatePendingSharedURLLoaderFactory(storage_partition, render_frame_host),
+-      is_transient);
++      is_transient, std::move(native_context));
+ }
+ 
+ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
+@@ -1890,6 +1914,11 @@
+ 
+   auto* rfh = RenderFrameHost::FromID(params->render_process_host_id(),
+                                       params->render_frame_host_routing_id());
++  // Capture once before async allow checks; never accept an incoming snapshot
++  // as provenance for this new attempt, or reconstruct one at response time.
++  params->remote_paint_request_context = CaptureNativeRequestContext(
++      static_cast<RenderFrameHostImpl*>(rfh), static_cast<RenderFrameHostImpl*>(rfh),
++      download::NativeDownloadRequestContext::Origin::kExplicitRequest);
+ 
+   StoragePartitionConfig storage_partition_config;
+   if (rfh && serialized_embedder_download_data.empty()) {
+--- a/content/browser/download/download_manager_impl.h
++++ b/content/browser/download/download_manager_impl.h
+@@ -25,6 +25,7 @@
+ #include "build/build_config.h"
+ #include "components/download/public/common/download_item_impl_delegate.h"
+ #include "components/download/public/common/download_job.h"
++#include "components/download/public/common/native_download_request_context.h"
+ #include "components/download/public/common/download_url_parameters.h"
+ #include "components/download/public/common/in_progress_download_manager.h"
+ #include "components/download/public/common/url_download_handler.h"
+@@ -80,6 +81,11 @@
+   ~DownloadManagerImpl() override;
+ 
+   // Implementation functions (not part of the DownloadManager interface).
++
++  static scoped_refptr<download::NativeDownloadRequestContext> CaptureNativeRequestContext(
++      RenderFrameHostImpl* target,
++      RenderFrameHostImpl* initiator,
++      download::NativeDownloadRequestContext::Origin origin);
+ 
+   // Creates a download item for the SavePackage system.
+   // Must be called on the UI thread.  Note that the DownloadManager
+@@ -186,7 +192,8 @@
+       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+       net::CertStatus cert_status,
+       FrameTreeNodeId frame_tree_node_id,
+-      bool from_download_cross_origin_redirect);
++      bool from_download_cross_origin_redirect,
++      scoped_refptr<download::NativeDownloadRequestContext> native_context = nullptr);
+ 
+   // DownloadItemImplDelegate overrides.
+   download::QuarantineConnectionCallback GetQuarantineConnectionCallback()
+@@ -298,6 +305,7 @@
+       network::mojom::URLResponseHeadPtr response_head,
+       mojo::ScopedDataPipeConsumerHandle response_body,
+       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
++      scoped_refptr<download::NativeDownloadRequestContext> native_context,
+       bool is_download_allowed);
+   void BeginResourceDownloadOnChecksComplete(
+       std::unique_ptr<download::DownloadUrlParameters> params,
+--- a/content/browser/renderer_host/navigation_request.cc
++++ b/content/browser/renderer_host/navigation_request.cc
+@@ -1723,6 +1723,14 @@
+           frame_tree_node->current_frame_host()->GetGlobalId()),
+       initiator_frame_token_(begin_params_->initiator_frame_token),
+       initiator_process_id_(initiator_process_id),
++      remote_paint_download_context_(DownloadManagerImpl::CaptureNativeRequestContext(
++          frame_tree_node->current_frame_host(),
++          initiator_frame_token_
++              ? RenderFrameHostImpl::FromFrameToken(initiator_process_id_, *initiator_frame_token_)
++              : (browser_initiated ? frame_tree_node->current_frame_host() : nullptr),
++          initiator_frame_token_
++              ? download::NativeDownloadRequestContext::Origin::kRendererNavigation
++              : download::NativeDownloadRequestContext::Origin::kBrowserNavigation)),
+       was_opener_suppressed_(was_opener_suppressed),
+       is_credentialless_(
+           IsDocumentToCommitAnonymous(frame_tree_node,
+@@ -6637,7 +6645,7 @@
+           std::move(response_body_), std::move(url_loader_client_endpoints_),
+           ssl_info_.has_value() ? ssl_info_->cert_status : 0,
+           frame_tree_node_->frame_tree_node_id(),
+-          from_download_cross_origin_redirect_);
++          from_download_cross_origin_redirect_, remote_paint_download_context_);
+       CHECK(this_ptr);
+ 
+       auto completion_status =
+--- a/content/browser/renderer_host/navigation_request.h
++++ b/content/browser/renderer_host/navigation_request.h
+@@ -28,6 +28,7 @@
+ #include "base/timer/timer.h"
+ #include "base/unguessable_token.h"
+ #include "build/build_config.h"
++#include "components/download/public/common/native_download_request_context.h"
+ #include "content/browser/embedder_isolation_info.h"
+ #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+ #include "content/browser/loader/keep_alive_url_loader_service.h"
+@@ -3263,6 +3264,9 @@
+   // NavigationRequest was created.
+   std::optional<blink::DocumentToken> initiator_document_token_;
+ 
++  // Fixed at this NavigationRequest's creation, before response/allow checks.
++  const scoped_refptr<download::NativeDownloadRequestContext> remote_paint_download_context_;
++
+   // Whether a navigation in a new window had the opener suppressed. False if
+   // the navigation is not in a new window. Can only be true for renderer
+   // initiated navigations which use `CreateBrowserInitiated()`.
