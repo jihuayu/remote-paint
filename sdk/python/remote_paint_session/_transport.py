@@ -60,8 +60,10 @@ class BackendTransport:
                  cancelled_type: type[SessionClientCancelledError] = SessionClientCancelledError,
                  max_concurrent_end_requests: int = 0, agent_errors: bool = False, max_screenshot_bytes: int = 1048576,
                  binary_expected: Callable[[Any],bool] | None = None, read_binary: Callable[[httpx.Response,Any,int],Awaitable[ApiResult[Any]]] | None = None, max_download_bytes: int = 1048576,
-                 download_expected: Callable[[Any],bool] | None = None, read_download: Callable[[httpx.Response,Any,int],Awaitable[ApiResult[Any]]] | None = None) -> None:
+                 download_expected: Callable[[Any],bool] | None = None, read_download: Callable[[httpx.Response,Any,int],Awaitable[ApiResult[Any]]] | None = None,
+                 error_details: Callable[[dict[str,Any],Any,int],Any] | None = None) -> None:
         self._error, self._cancelled, self._validate, self._agent_errors = error_type, cancelled_type, validate, agent_errors
+        self._error_details = error_details
         if type(base_url) is not str or len(base_url) > 8192:
             self.invalid()
         try:
@@ -151,7 +153,8 @@ class BackendTransport:
                 return await self._attempt(method, path, body, key, expect, ending)
             except SessionClientError as error:
                 if uncertain and error.outcome != 'unknown':
-                    error = self._error(error.code, status=error.status, request_id=error.request_id, outcome='unknown', retryable=error.retryable)
+                    details = getattr(error,'details',None)
+                    error = self._error(error.code, status=error.status, request_id=error.request_id, outcome='unknown', retryable=error.retryable,**({'details':details} if details is not None else {}))
                 uncertain = uncertain or error.outcome == 'unknown'
                 if not error.retryable or attempt == count:
                     raise error from None
@@ -232,9 +235,13 @@ class BackendTransport:
                 self.fail('CLIENT_INVALID_RESPONSE', status=status)
             if status >= 400:
                 error = value.get('error'); has_outcome = self._agent_errors and type(error) is dict and 'outcome' in error
-                if set(value) != {'error','requestId'} or type(error) is not dict or set(error) != ({'code','message','outcome'} if has_outcome else {'code','message'}) or type(error['code']) is not str or re.fullmatch(r'[A-Z][A-Z0-9_]{0,63}',error['code']) is None or error['code'].startswith('CLIENT_') or type(error['message']) is not str or not 1 <= len(error['message']) <= 512 or has_outcome and error['outcome'] not in ('not-dispatched','unknown'):
+                has_details = self._agent_errors and type(error) is dict and 'details' in error
+                if set(value) != {'error','requestId'} or type(error) is not dict or set(error) != ({'code','message'}|({'outcome'} if has_outcome else set())|({'details'} if has_details else set())) or type(error['code']) is not str or re.fullmatch(r'[A-Z][A-Z0-9_]{0,63}',error['code']) is None or error['code'].startswith('CLIENT_') or type(error['message']) is not str or not 1 <= len(error['message']) <= 512 or has_outcome and error['outcome'] not in ('not-dispatched','unknown'):
                     self.fail('CLIENT_INVALID_RESPONSE', status=status, request_id=request_id)
-                self.fail(error['code'], status=status, request_id=request_id, retryable=retryable, outcome=error['outcome'] if has_outcome else 'rejected' if status < 500 and status != 408 else 'unknown')
+                details = self._error_details(error,expect,status) if has_details and self._error_details is not None else None
+                if has_details and details is None:
+                    self.fail('CLIENT_INVALID_RESPONSE', status=status, request_id=request_id)
+                self.fail(error['code'], status=status, request_id=request_id, retryable=retryable, outcome=error['outcome'] if has_outcome else 'rejected' if status < 500 and status != 408 else 'unknown',**({'details':details} if details is not None else {}))
             if status not in (200,202) or set(value) != {'data','requestId'}:
                 self.fail('CLIENT_INVALID_RESPONSE', status=status)
             return ApiResult(self._validate(status,value['data'],expect,response.headers), RequestId(request_id))

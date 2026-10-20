@@ -1,0 +1,120 @@
+{
+  "at": "2026-10-20T14:31:19.623353+00:00",
+  "task": "K8c2a Python finite event pages and original-Run cancellation",
+  "gitBase": "31827c57900caa6d20d913a29d0ada0bae8d51ff",
+  "candidateNotQualified": false,
+  "newPythonContracts": 20,
+  "actualOwnedHttpSqliteContracts": 4,
+  "providerIsFixture": true,
+  "existingPythonRegressions": 118,
+  "new20Passed": true,
+  "preFreezePackageSourceMypyFiles": 7,
+  "preFreezePublicMypyFiles": 1,
+  "freshWholeJsBoth": true,
+  "freshInstalledPackagesBoth": true,
+  "nodeSdkBytesShouldRemainUnchanged": true,
+  "expectedInstalledNodeTests": 202,
+  "expectedInstalledPythonTests": 138,
+  "pythonSseImplemented": false,
+  "signedWebhookQualified": false,
+  "originalNativeRuntimeQualified": false,
+  "firstFailedContractsLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-events-finite-first-contracts-v1.log",
+  "firstFailedSourceSnapshot": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-events-finite-first-failure-source-v1/manifest.json",
+  "second20ContractsLog": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-events-finite-second-contracts-v1.log",
+  "K8Complete": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 18,
+    "pending": 13
+  },
+  "eightHourPassed": false,
+  "wholeGoalQualified": false,
+  "commitPushAuthorizedByPriorHuman": true,
+  "fullJs": {
+    "mac": {
+      "tests": 1584,
+      "pass": 1569,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "todo": 0,
+      "actualExitCode": 0,
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-events-finite-sdk-validation-v1/mac-full-js.log",
+      "logSha256": "af650b259884658001bb44e61bf09db5c3967087ff02b9c8002ecfe729e19fba",
+      "receiptSha256": "c95d4ae238f4b4a8acde34e63e7819abf9b07481304c4e71efa27ec444c30ce8",
+      "all1584PriorNamesRetained": true
+    },
+    "linux": {
+      "tests": 1584,
+      "pass": 1578,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "todo": 0,
+      "actualExitCode": 0,
+      "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-events-finite-sdk-validation-v1/linux-full-js.log",
+      "logSha256": "2563b6cd24433855838581935a8d45156068e3085010ec25f90d384121f4bd74",
+      "receiptSha256": "8e6aafca339c59c53877e94ec0ccb65c91136c626194f3ca63e3499b55ffb9b6",
+      "all1584PriorNamesRetained": true
+    }
+  },
+  "installedPackages": {
+    "mac": {
+      "nodeTests": 202,
+      "pythonTests": 138,
+      "all20NewPythonCasesActualNoSkip": true,
+      "all118PriorPythonCasesRetained": true,
+      "typescriptActual0": true,
+      "pythonInstalledPublic3AndSource7MypyActual0": true,
+      "resultSha256": "eb2b29a8fc3fc3dd05e827a33a8e8bb4b22f501e4d9fb71ef38aad76591cd107",
+      "runnerReceiptSha256": "8b20c9a12f8e3b4aa31a61fbac1f80e61b4d1a766ded6ae70c2de29d8fd782e9",
+      "pythonSseImplemented": false
+    },
+    "linux": {
+      "nodeTests": 202,
+      "pythonTests": 138,
+      "all20NewPythonCasesActualNoSkip": true,
+      "all118PriorPythonCasesRetained": true,
+      "typescriptActual0": true,
+      "pythonInstalledPublic3AndSource7MypyActual0": false,
+      "resultSha256": "9b282f845b438de1d6572161d17fd7d6d60ee18e6ed8fa1f5ce85e38d74b391f",
+      "runnerReceiptSha256": "a149db29ed0254f44e99aba38aad26f5b41267667d4fb48c7eaeee7bd0daa401",
+      "pythonSseImplemented": false
+    }
+  },
+  "qualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-events-finite-sdk-validation-v1/qualification.json",
+  "qualificationSha256": "0d5fb648610ca6f7369c2db8cd31595f5ca341a66c1d68456fbd05287b0dbf7a",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/python-agent-events-finite-sdk-candidate-v1/frozen-version.json",
+  "executedManifestSha256": "b4bbbcd10d4cbbd2031bfb983321ae4908ba9ca8b48c2122d23a0965d84bc6a7",
+  "pythonFiniteEventSdkQualified": true,
+  "browserObservation": {
+    "at": "2026-10-20T14:31:19.596390+00:00",
+    "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-full-browser-build-v3/manifest.json",
+    "manifestSha256": "69b43089b7f19c6e5a92aace861a7baca27a366e156eec37aa54888904669e1f",
+    "containerId": "f7aaf6285b8d0298bbc674baf2e4d93bca23f600edd8b2c1ce11bae4ae0fd2d2",
+    "state": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 2967239,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-20T12:47:32.756177921Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "lastActualProgress": [
+      374,
+      17924
+    ],
+    "freeGiB": 99.97949981689453,
+    "chromium108InputsUnchanged": true,
+    "canonical19ReadOnlyHashesMatch": true,
+    "samplerIdentityAndHashMatchWithoutExecution": true,
+    "jobs": 1,
+    "minimumFreeBytes": 34359738368,
+    "fullBrowserRuntimeQualified": false
+  }
+}

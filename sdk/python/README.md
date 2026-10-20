@@ -178,3 +178,36 @@ receiver or total physical memory bounds.
 Timeout/Task cancellation only stops the waiter. Real Task/body/aclose work remains counted;
 end owns its separate pool. Existing single-flight aclose waits up to1s and reports
 CLIENT_CLOSE_PENDING while noncooperative work continues, rather than pretending it retired.
+
+
+## Finite Run event pages and explicit cancellation
+
+`await client.runs.event_page(run_id, after=event_cursor, retries=0)` reads at most four
+public state events. `after` is optional and uses the distinct `AgentEventCursor` NewType.
+`AgentEventPage.events` is an immutable tuple of `AgentRunEvent` or `AgentInvocationEvent`;
+all nested models are frozen dataclasses. Sequence establishes causal order even if wall
+time moves backward. Events contain public state, without input parameters or private
+Source/fence identifiers. An input-injected receipt does not establish business success.
+
+`AgentClientError.details` is either None or a validated frozen `AgentEventGap` for an
+`AGENT_EVENT_GAP` response. The gap records missing retained history and exact Run cursors.
+No implicit skip, history fabrication or cursor repair occurs. Explicit finite retries
+preserve these details and an earlier unknown attempt outcome. Unknown error detail
+shapes, wrong Run/cursor, extra fields and false gap assertions are rejected.
+
+`await client.runs.cancel(run_id, retries=0)` requests the original idempotent end and
+returns `AgentCancellation`. It shares the existing independent end admission and HTTPX
+connection pool with `runs.end`. `await client.runs.cancellation(run_id, after=anchor)`
+reads at most four original invocation effects per page. Anchors are a separate
+`AgentCancellationCursor` NewType, bound to one Run event generation. On
+`AGENT_CANCELLATION_CHANGED`, explicitly restart pagination; the client does not combine
+reports from different generations. `complete_run` applies only to a first page with no
+more pages. A closed Run still reports settling while original work remains pending.
+Unknown, injected and not-dispatched effects stay separate. Rollback and business-success
+flags remain false regardless of HTTP200 or closed state.
+
+These methods validate and capture identifiers/cursors/retry counts before returning a
+coroutine. Cancel the calling asyncio Task to stop waiting. Actual unfinished send/read/
+close work remains counted under the existing transport rules, including after a local
+deadline. This checkpoint covers finite JSON methods; the bounded Python SSE iterator,
+signed Webhooks and original Native end-to-end event/cancel acceptance remain pending.

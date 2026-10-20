@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Generic, Literal, NewType, NoReturn, NotRequired, TypeVar, TypedDict, cast
+from typing import TYPE_CHECKING, Any, Coroutine, Generic, Literal, NewType, NoReturn, NotRequired, TypeVar, TypedDict, cast
 import httpx
 from ._client import SessionId, _date as _session_date, _integer
 from ._transport import ApiResult, BackendTransport, Outcome, RetryCount, SessionClientError, SessionClientCancelledError, TransportStatus
@@ -11,6 +11,7 @@ from ._transport import ApiResult, BackendTransport, Outcome, RetryCount, Sessio
 if TYPE_CHECKING:
     from ._observation import ObservationExpected, AccessibilityExpected, ScreenshotExpected
     from ._download import DownloadExpected
+    from ._events import EventExpected, AgentEventGap, AgentEventPage, AgentEventCursor, AgentCancellationCursor, AgentCancellation
 
 AgentRunId = NewType('AgentRunId', str)
 AgentInvocationId = NewType('AgentInvocationId', str)
@@ -21,8 +22,9 @@ DispatchPhase = Literal['not-requested','requested','confirmed']
 Button = Literal['left','middle','right']
 
 class AgentClientError(SessionClientError):
-    def __init__(self, code: str, **options: Any) -> None:
+    def __init__(self, code: str, *, details: AgentEventGap | None = None, **options: Any) -> None:
         super().__init__(code, **options)
+        self.details = details
         self.args = ('Invalid Agent client request' if code == 'CLIENT_INVALID_REQUEST' else 'Agent API request failed',)
 class AgentClientCancelledError(SessionClientCancelledError):
     def __init__(self, outcome: Outcome) -> None:
@@ -231,9 +233,12 @@ class _Expected:
     fence: AgentFence | None = None
     inputs: int | None = None
 
-def _validate(status: int, v: Any, e: _Expected | ObservationExpected | AccessibilityExpected | ScreenshotExpected | DownloadExpected, headers: httpx.Headers) -> Any:
+def _validate(status: int, v: Any, e: _Expected | ObservationExpected | AccessibilityExpected | ScreenshotExpected | DownloadExpected | EventExpected, headers: httpx.Headers) -> Any:
     from ._observation import ObservationExpected, AccessibilityExpected, ScreenshotExpected, validate_observation, validate_accessibility, validate_screenshot
     from ._download import DownloadExpected,validate_download
+    from ._events import EventExpected,validate_event_reply
+    if isinstance(e,EventExpected):
+        return validate_event_reply(status,v,e,headers)
     if isinstance(e,DownloadExpected):
         return validate_download(status,v,e,headers)
     if isinstance(e,ScreenshotExpected):
@@ -373,6 +378,15 @@ class _Runs:
         if not _id(agent_run_id,'arun_'):
             _invalid()
         return cast(ApiResult[AgentRun],await self._transport.request('POST','/v1/agent-runs/'+agent_run_id+'/end',None,None,_Expected('end',id=agent_run_id),retries,ending=True))
+    def event_page(self, agent_run_id: AgentRunId, *, after: AgentEventCursor | None = None, retries: RetryCount | None = None) -> Coroutine[Any,Any,ApiResult[AgentEventPage]]:
+        from ._events import AgentEventPage,prepare_event_request
+        return cast(Coroutine[Any,Any,ApiResult[AgentEventPage]],prepare_event_request(self._transport,'event-page',agent_run_id,after,retries))
+    def cancellation(self, agent_run_id: AgentRunId, *, after: AgentCancellationCursor | None = None, retries: RetryCount | None = None) -> Coroutine[Any,Any,ApiResult[AgentCancellation]]:
+        from ._events import AgentCancellation,prepare_event_request
+        return cast(Coroutine[Any,Any,ApiResult[AgentCancellation]],prepare_event_request(self._transport,'cancellation',agent_run_id,after,retries))
+    def cancel(self, agent_run_id: AgentRunId, *, retries: RetryCount | None = None) -> Coroutine[Any,Any,ApiResult[AgentCancellation]]:
+        from ._events import AgentCancellation,prepare_event_request
+        return cast(Coroutine[Any,Any,ApiResult[AgentCancellation]],prepare_event_request(self._transport,'cancel',agent_run_id,None,retries))
 class _Invocations:
     def __init__(self, transport: BackendTransport) -> None:
         self._transport = transport
@@ -394,7 +408,8 @@ class AgentClient:
             _invalid()
         from ._download import is_download_file,read_download_binary
         from ._observation import is_screenshot_download, read_screenshot_binary
-        self._transport = BackendTransport(base_url=base_url,api_key=api_key,timeout_seconds=timeout_seconds,retries=retries,max_response_bytes=max_response_bytes,max_concurrent_requests=max_concurrent_requests,max_concurrent_end_requests=max_concurrent_end_requests,transport=transport,validate=_validate,error_type=AgentClientError,cancelled_type=AgentClientCancelledError,agent_errors=True,max_screenshot_bytes=max_screenshot_bytes,binary_expected=is_screenshot_download,read_binary=read_screenshot_binary,max_download_bytes=max_download_bytes,download_expected=is_download_file,read_download=read_download_binary)
+        from ._events import capture_event_error_details
+        self._transport = BackendTransport(base_url=base_url,api_key=api_key,timeout_seconds=timeout_seconds,retries=retries,max_response_bytes=max_response_bytes,max_concurrent_requests=max_concurrent_requests,max_concurrent_end_requests=max_concurrent_end_requests,transport=transport,validate=_validate,error_type=AgentClientError,cancelled_type=AgentClientCancelledError,agent_errors=True,max_screenshot_bytes=max_screenshot_bytes,binary_expected=is_screenshot_download,read_binary=read_screenshot_binary,max_download_bytes=max_download_bytes,download_expected=is_download_file,read_download=read_download_binary,error_details=capture_event_error_details)
         from ._observation import _Observations
         self.runs,self.invocations,self.observations = _Runs(self._transport),_Invocations(self._transport),_Observations(self._transport)
     async def __aenter__(self) -> AgentClient:

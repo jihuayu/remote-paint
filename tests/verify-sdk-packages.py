@@ -34,12 +34,12 @@ def inspect_archives(project: Path, node: Path, wheel: Path) -> dict:
         assert package['name']=='@remote-paint/session-client' and package['private'] is True
         assert package['version']=='0.0.0-dev.0' and package.get('dependencies',{})=={}
     prefix='remote_paint_session-0.0.0.dev0.dist-info/'
-    wheel_names={'remote_paint_session/__init__.py','remote_paint_session/_client.py','remote_paint_session/_transport.py','remote_paint_session/_agent.py','remote_paint_session/_observation.py','remote_paint_session/_download.py','remote_paint_session/py.typed',
+    wheel_names={'remote_paint_session/__init__.py','remote_paint_session/_client.py','remote_paint_session/_transport.py','remote_paint_session/_agent.py','remote_paint_session/_observation.py','remote_paint_session/_download.py','remote_paint_session/_events.py','remote_paint_session/py.typed',
                  *(prefix+n for n in ['METADATA','WHEEL','top_level.txt','RECORD'])}
     with zipfile.ZipFile(wheel) as archive:
         assert set(archive.namelist())==wheel_names and len(archive.namelist())==len(wheel_names)
         assert all((x.external_attr>>16)&0o170000!=0o120000 for x in archive.infolist())
-        for name in ['__init__.py','_client.py','_transport.py','_agent.py','_observation.py','_download.py','py.typed']:
+        for name in ['__init__.py','_client.py','_transport.py','_agent.py','_observation.py','_download.py','_events.py','py.typed']:
             assert hashlib.sha256(archive.read('remote_paint_session/'+name)).hexdigest()==sha(project/'sdk/python/remote_paint_session'/name)
         metadata=email.message_from_bytes(archive.read(prefix+'METADATA'))
         assert metadata['Name']=='remote-paint-session' and metadata['Version']=='0.0.0.dev0'
@@ -95,7 +95,7 @@ def main() -> None:
                'tests/owned-test-child.mjs','tests/fixtures/session-store-child.mjs','tests/fixtures/session-store-records.mjs',
                'tests/fixtures/session-registry-child.mjs','tests/fixtures/session-python-http.mjs',
                'tests/python/test_agent_client.py','tests/fixtures/agent-python-http.mjs','tests/types/agent_client.py','tests/python/test_session_client.py','tests/types/session-client.mts','tests/types/session_client.py']
-        files.extend(['tests/node-agent-events-client.test.mjs','tests/types/agent-events-client.mts'])
+        files.extend(['tests/node-agent-events-client.test.mjs','tests/types/agent-events-client.mts','tests/python/test_agent_events_client.py','tests/fixtures/agent-events-python-http.mjs','tests/types/agent_events_client.py'])
         # The real control-service fixtures acquire dependencies as features
         # grow. Copy their explicit relative import closure with hashes while
         # deliberately withholding sdk/: consumers must use installed exports.
@@ -218,17 +218,17 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
         installer=env.copy();installer['PYTHONPATH']=str(args.pip_tooling)
         run('python-install',[sys.executable,'-m','pip','install','--no-index','--no-compile','--find-links',str(args.wheelhouse),'--target',str(purelib),str(args.python_wheel)],env=installer)
         run('python-origin',[str(python),'-c',"import remote_paint_session,importlib.metadata,json,sys;from pathlib import Path;p=Path(remote_paint_session.__file__).resolve();assert p.is_relative_to(Path(sys.prefix).resolve());assert p.with_name('py.typed').is_file();print(json.dumps({'module':str(p),'prefix':sys.prefix,'version':importlib.metadata.version('remote-paint-session'),'httpx':importlib.metadata.version('httpx')}))"],cwd=consumer,env=env)
-        for name in ['__init__.py','_client.py','_transport.py','_agent.py','_observation.py','_download.py','py.typed']:assert sha(purelib/'remote_paint_session'/name)==sha(args.project/'sdk/python/remote_paint_session'/name)
+        for name in ['__init__.py','_client.py','_transport.py','_agent.py','_observation.py','_download.py','_events.py','py.typed']:assert sha(purelib/'remote_paint_session'/name)==sha(args.project/'sdk/python/remote_paint_session'/name)
         raw=run('python-unit',[str(python),'-m','unittest','discover','-s',str(consumer/'tests/python'),'-p','test_*client.py','-v'],cwd=consumer,env=env)
-        assert re.search(r'Ran 118 tests in [0-9.]+s\s+OK\s*$',raw)
+        assert re.search(r'Ran 138 tests in [0-9.]+s\s+OK\s*$',raw)
         if args.mypy_tooling:
             typed=env.copy();typed['PYTHONPATH']=str(args.mypy_tooling)
-            raw=run('python-types',[str(python),'-m','mypy','--strict','--python-version','3.11','--no-incremental','--cache-dir=/dev/null','--python-executable',str(python),str(consumer/'tests/types/session_client.py'),str(consumer/'tests/types/agent_client.py')],cwd=consumer,env=typed)
-            assert 'Success: no issues found in 2 source files' in raw
+            raw=run('python-types',[str(python),'-m','mypy','--strict','--python-version','3.11','--no-incremental','--cache-dir=/dev/null','--python-executable',str(python),str(consumer/'tests/types/session_client.py'),str(consumer/'tests/types/agent_client.py'),str(consumer/'tests/types/agent_events_client.py')],cwd=consumer,env=typed)
+            assert 'Success: no issues found in 3 source files' in raw
             source_types=run('python-source-types',[str(python),'-m','mypy','--strict','--python-version','3.11','--no-incremental','--cache-dir=/dev/null','--python-executable',str(python),'-p','remote_paint_session'],cwd=consumer,env=typed)
-            assert 'Success: no issues found in 6 source files' in source_types
+            assert 'Success: no issues found in 7 source files' in source_types
         runtime=run('runtime',[sys.executable,'-c',"import sys,platform,json,subprocess;print(json.dumps({'python':platform.python_version(),'platform':sys.platform,'arch':platform.machine(),'node':subprocess.check_output([sys.argv[1],'--version'],text=True).strip(),'npm':subprocess.check_output([sys.argv[2],'--version'],text=True).strip()}))",args.node,args.npm],env=env)
-        result={'status':'passed','nodeTests':202,'nodeSkips':0,'pythonTests':118,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
+        result={'status':'passed','nodeTests':202,'nodeSkips':0,'pythonTests':138,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
                 'archives':archives,'runtime':json.loads(runtime),'stages':stages,'sourceFallbackUnavailable':True,'publicPublishing':False}
         (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps({k:result[k]for k in ['status','nodeTests','pythonTests','typescriptActual0','pythonInstalledTypeCheckActual0']}))

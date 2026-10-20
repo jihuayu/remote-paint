@@ -73,3 +73,14 @@ __all__ += ['AgentScreenshotId','AgentScreenshotLimits','AgentScreenshotInput','
 
 from ._download import (AgentDownloadId,AgentDownloadLimits,AgentDownloadArmInput,AgentDownloadTicketInput,AgentDownloadChunkInput,AgentDownloadFileInput,AgentDownloadTicket,AgentDownloadArmed,AgentDownloadPending,AgentDownloadReady,AgentDownloadInfo,AgentDownloadChunk,AgentDownloadReleased,AgentDownloadFile)
 __all__ += ['AgentDownloadId', 'AgentDownloadLimits', 'AgentDownloadArmInput', 'AgentDownloadTicketInput', 'AgentDownloadChunkInput', 'AgentDownloadFileInput', 'AgentDownloadTicket', 'AgentDownloadArmed', 'AgentDownloadPending', 'AgentDownloadReady', 'AgentDownloadInfo', 'AgentDownloadChunk', 'AgentDownloadReleased', 'AgentDownloadFile']
+
+from ._events import (AgentEventId, AgentEventCursor, AgentCancellationCursor, AgentHistoryOrigin,
+    AgentCloseEvidence, AgentInvocationEffect, AgentCancellationStatus, AgentRunProjection,
+    AgentRunEventData, AgentInvocationProjection, AgentEventInvocation, AgentCancellationInvocation,
+    AgentRunEvent, AgentInvocationEvent, AgentEvent, AgentEventPage, AgentEventGap,
+    AgentCancellationWork, AgentCancellationPage, AgentCancellation)
+__all__ += ['AgentEventId','AgentEventCursor','AgentCancellationCursor','AgentHistoryOrigin',
+    'AgentCloseEvidence','AgentInvocationEffect','AgentCancellationStatus','AgentRunProjection',
+    'AgentRunEventData','AgentInvocationProjection','AgentEventInvocation','AgentCancellationInvocation',
+    'AgentRunEvent','AgentInvocationEvent','AgentEvent','AgentEventPage','AgentEventGap',
+    'AgentCancellationWork','AgentCancellationPage','AgentCancellation']

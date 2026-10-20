@@ -1,5 +1,7 @@
 # Remote Paint 优化实施进度
 
+2026-10-20 K8c2a增加[Python有限事件页与取消报告](python-agent-events-finite-sdk.md)：冻结模型与不同NewType游标、严格缺口details、固定generation分页与真实late-work/unknown效果；复用独立实际end池，Task取消/超时不提前退原任务额度。20新增含四项真实HTTP/SQLite夹具和原118项回归、严格mypy预检通过，最终双平台完整1584项0失败/取消（macOS1569通过/15跳过，Linux1578通过/6跳过），隔离包各202项Node/138项Python和严格TypeScript通过，20新项与原118均实际运行，macOS安装后mypy通过。Python SSE下一独立小任务继续，K8部分、41项10/18/13及原八小时失败保持。
+
 2026-10-20 K8c1增加[Node事件与取消SDK](node-agent-events-sdk.md)：按需SSE、有限重连、精确游标/缺口，事件容量与普通/end独立，真实未结束的fetch/read/cancel不退额度；固定版本取消分页及unknown效果保持。27新增与原客户端57项初步回归和严格类型检查通过；最终同一候选双平台完整1584项0失败/取消（macOS1569通过/15跳过，Linux1578通过/6跳过），27新项均运行；隔离包各202项Node、118项既有Python回归及严格TypeScript通过。Linux首次既有下载准备超时与原条件复跑成功均保留，见独立范围。Python事件/Webhook/真实Native继续待验收，K8部分、41项10/18/13与原八小时失败保持。
 
 2026-10-20 K8b2增加[显式取消与原效果报告](agent-cancellation.md)：POST cancel沿用独立end，GET报告每页4个原调用/固定Run事件版本，改变则409重读；区分未派发、已注入、unknown及真实待定工作，已closed仍有实际任务时报告settling，不声称回滚或业务成功。22项新合同/扩展157项和两个真实自有SIGKILL通过，最终双平台完整1557项原时限零失败（macOS1542通过/15跳过、Linux1551通过/6跳过），22新项和每端两个真实SIGKILL均实际运行；独立范围见文档。完整浏览器v3复用缓存以单任务/单核实际运行，32GiB门槛不变，尚未完成；K8仍部分，流SDK/Webhook/Native及41项10/18/13和原8小时失败保持。
