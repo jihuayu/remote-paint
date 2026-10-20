@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | Source新增PNG截图与Run所有的单文件/opaque ID/3072字节私有块及release，原Page/Native document/权限/版本关联、共享实际DOM/AX槽与独立end，原8KiB帧保持。25新合同、132文件1290项双平台零失败；55输入离线132Node/73Python/类型通过。真实Native960x640/26685字节PNG重拼hash/像素、预算失败保留/替换/释放/导航/人控/unknown可读不清隔离、4Run与namespace退役。公共截图/下载/SDK、raw分配前/物理、完整定位/业务条件仍待做，见[Source截图范围](agent-screenshot-core.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | 公共截图metadata/chunk/release及PNG下载已接agents:observe，严格逻辑Run/Registry/原Source/document/file关联；整次下载实际槽、3072字节顺序写/回调与HTTP finish-close、独立end、最终哈希校验保留。29新合同、133文件1319项双平台零失败；57输入离线132Node/73Python/类型与SDK包字节保持。真实HTTP→Native PNG长度/hash/像素/context/下载、旧ID/导航/人控/unknown仍隔离、4Run与namespace退役。截图SDK/实际页面下载/完整定位/业务条件、raw分配前/物理仍待做，见[公共截图范围](public-agent-screenshot.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -2020,3 +2020,8 @@ Python新增受管七工具、冻结模型、判别类型、不可变prepare与u
 ### Source 截图文件与私有分块
 
 新增受管截图、单Run单文件、原document/版本/权限绑定、3072字节分块与release；固定PNG视口，Source/public API范围分开记录。25新合同、双平台132文件1290项零失败、55输入离线132Node/73Python/类型通过。真实Native26685字节PNG重拼hash/960x640像素、失败保留/旧ID/导航/人控/unknown隔离及4Run/namespace退役通过。K6部分、41项10/17/14；下一步公共截图/下载与SDK，所有其余目标保留，见[证据范围](agent-screenshot-core.md)。
+
+
+### 公共截图及 PNG 下载
+
+新增agents:observe的截图metadata/chunk/release/download端点；严格原context/file元数据，整次下载实际执行槽和有界写回调，最终哈希通过才写最后块，HTTP到finish/close保留容量。29新合同、133文件1319项双平台零失败，57输入离线132Node/73Python/类型及包字节保持。实际公开HTTP→Native PNG/块/二进制下载、权限/旧ID/导航/人控/unknown不恢复及退役通过。K6部分、41项10/17/14，下一步Node/Python截图SDK，所有其余目标继续，见[证据](public-agent-screenshot.md)。

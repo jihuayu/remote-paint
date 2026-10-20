@@ -1,3 +1,4 @@
+import {createScreenshotHttpSink} from './agent-screenshot-http.mjs';
 import {createServer} from 'node:http';
 import {createHash,randomUUID} from 'node:crypto';
 import {SessionRegistry,SessionApiError} from './session-registry.mjs';
@@ -51,7 +52,7 @@ function header(req,name){
 }
 function confirmed(registry){const state=registry.persistence();if(state.mode!=='durable'||state.confirmation!=='confirmed')fail('REGISTRY_STORAGE_UNAVAILABLE');}
 function send(res,requestId,status,value,headers={}){
- if(res.destroyed||res.writableEnded)return;
+ if(res.destroyed||res.writableEnded)return;if(res.headersSent){res.destroy();return;}
  const body=JSON.stringify({...value,requestId});
  res.writeHead(status,{'content-type':'application/json; charset=utf-8','content-length':Buffer.byteLength(body),'cache-control':'no-store',
   'x-content-type-options':'nosniff','x-request-id':requestId,'connection':'close',...headers});res.end(body);
@@ -97,7 +98,7 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
  if(!integer(maxBodyBytes,128,1048576)||!integer(maxAgentBodyBytes,128,32768)||!integer(maxConcurrentRequests,1,10000)||!integer(maxAgentEndRequests,1,256)||!integer(requestTimeoutMs,50,60000))throw new TypeError('Invalid HTTP request bounds');
  confirmed(registry);let active=0,activeEnds=0,authenticating=0,authenticatingEnds=0;
  const handle=async(req,res)=>{
-  const requestId='req_'+randomUUID();let held=false,controller,timer,onAbort,onClose,selected;
+  const requestId='req_'+randomUUID();let held=false,controller,timer,onAbort,onClose,selected,screenshotSink;
   try{
    if(req.rawHeaders.length>128)fail('INVALID_REQUEST');
    if(header(req,'origin')!==undefined)fail('MANAGEMENT_ORIGIN_FORBIDDEN');
@@ -130,7 +131,8 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
     const needsKey=['agent-create','agent-invocations'].includes(selected.kind),idempotencyKey=needsKey?header(req,'idempotency-key'):undefined;
     if(needsKey&&(typeof idempotencyKey!=='string'||!/^[\x21-\x7e]{1,128}$/.test(idempotencyKey)))fail('INVALID_IDEMPOTENCY_KEY');
     const input=needsBody?await body(req,bodyLimit,signal):undefined;aborted(signal);confirmed(registry);
-    const response=await handleAgentHttp({selected,principal,input,idempotencyKey,access:agentAccess,registry,wait,signal});
+    if(selected.kind==='agent-screenshot-downloads'){if(header(req,'range')!==undefined||header(req,'if-range')!==undefined)fail('INVALID_REQUEST');screenshotSink=createScreenshotHttpSink(res,requestId,signal);}
+    const response=await handleAgentHttp({selected,principal,input,idempotencyKey,access:agentAccess,registry,wait,signal,screenshotSink:screenshotSink?{start:screenshotSink.start,write:screenshotSink.write,finish:screenshotSink.finish}:undefined});if(response.binary)return;
     send(res,requestId,response.status,{data:response.data},response.location?{location:response.location}:{});return;
    }
    let result;
@@ -157,6 +159,7 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
    if(agentError)send(res,requestId,agentError.status,{error:{code:agentError.code,message:agentError.message,outcome:agentError.outcome}});
    else{const code=error instanceof SessionApiError&&Object.hasOwn(ERRORS,error.code)?error.code:'INTERNAL_ERROR',entry=ERRORS[code];send(res,requestId,entry[0],{error:{code,message:entry[1]}});}
   }finally{
+   if(screenshotSink)await screenshotSink.cleanup();
    if(timer)clearTimeout(timer);if(onAbort){req.off('aborted',onAbort);req.off('error',onAbort);res.off('close',onClose);}
    if(held==='end')activeEnds--;else if(held)active--;
   }

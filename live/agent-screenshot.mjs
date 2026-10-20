@@ -33,7 +33,7 @@ export function decodeAgentScreenshot(reply,{width,height,maxBytes}){
  const v=data(reply,['data']);if(!integer(width,1,2048)||!integer(height,1,2048)||width*height>AGENT_SCREENSHOT_LIMITS.pixels||!integer(maxBytes,1,AGENT_SCREENSHOT_LIMITS.maxBytes))fail('AGENT_OBSERVATION_LIMIT');
  if(typeof v.data!=='string'||v.data.length>4*Math.ceil(maxBytes/3))fail('AGENT_OBSERVATION_LIMIT');if(!base64(v.data)||Buffer.byteLength(v.data,'base64')>maxBytes)fail('AGENT_OBSERVATION_LIMIT');const bytes=Buffer.from(v.data,'base64');
  if(bytes.length<57||!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))fail();let at=8,count=0,seenHeader=false,seenData=false,ended=false;
- while(at<bytes.length){if(++count>2048||at+12>bytes.length)fail();const length=bytes.readUInt32BE(at),end=at+12+length;if(end>bytes.length)fail();const kind=bytes.toString('ascii',at+4,at+8);if(!/^[A-Za-z]{4}$/.test(kind)||crc(bytes,at+4,end-4)!==bytes.readUInt32BE(end-4))fail();
+ while(at<bytes.length){if(++count>2048||at+12>bytes.length)fail();const length=bytes.readUInt32BE(at),end=at+12+length;if(end>bytes.length)fail();const kind=bytes.toString('latin1',at+4,at+8);if(!/^[A-Za-z]{4}$/.test(kind)||crc(bytes,at+4,end-4)!==bytes.readUInt32BE(end-4))fail();
   if(!seenHeader){if(kind!=='IHDR'||length!==13||bytes.readUInt32BE(at+8)!==width||bytes.readUInt32BE(at+12)!==height||![0,2,3,4,6].includes(bytes[at+17])||![1,2,4,8,16].includes(bytes[at+16])||bytes[at+18]!==0||bytes[at+19]!==0||bytes[at+20]!==0)fail();seenHeader=true;}
   else if(kind==='IHDR')fail();if(kind==='IDAT')seenData=true;if(kind==='IEND'){if(length!==0||!seenData||end!==bytes.length)fail();ended=true;}at=end;
  }if(!ended)fail();return bytes;

@@ -1,4 +1,5 @@
 import test from 'node:test';
+import CRC from 'pngjs/lib/crc.js';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {PNG} from 'pngjs';
@@ -59,3 +60,5 @@ test('screenshot result validators enforce exact identity budget hash metadata a
 test('screenshot owner has one bounded record and close drops its file and forbids foreign documents',async t=>{
  const h=screenshotFixture(t),r=await h.capture(),owner=createAgentScreenshotOwner();owner.retain(h.png,r);assert.deepEqual(owner.status(),{files:1,bytes:h.png.length});assert.throws(()=>owner.read(captureManagedAgentScreenshotRead(r.screenshotId,0),{...h.context,document:{...h.context.document,pageEpoch:2}}),error('STALE_AGENT_SCREENSHOT'));owner.close();assert.deepEqual(owner.status(),{files:0,bytes:0});assert.throws(()=>owner.read(captureManagedAgentScreenshotRead(r.screenshotId,0),h.context),error('STALE_AGENT_SCREENSHOT'));
 });
+
+test('PNG chunk names retain high bits and cannot masquerade as ASCII IHDR with a valid CRC',()=>{const bytes=screenshotPng();bytes[12]|=128;bytes.writeUInt32BE(CRC.crc32(bytes.subarray(12,29))>>>0,29);assert.throws(()=>decodeAgentScreenshot({data:bytes.toString('base64')},{width:640,height:480,maxBytes:1048576}));});
