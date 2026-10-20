@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-19T02:36:40.764294+00:00",
+  "task": "K2a2b3c1",
+  "scope": "Local host CSS display sizing only;explicit required remoteviewport and performance stages remain pending.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-display-resize-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-display-resize-checkpoint-v1.json",
+  "contract": {
+    "display": "Requested hostCSSfinite1..16384px,or100%container;frozen explicit scope/mode,width,height;no measuredcanvas/pixel claim.",
+    "lifetime": "No ticket/socket/Sourceviewport/epoch/lease mutation;retained across reload/role;boundedsubscriptions/idempotentevents;destroyguard.",
+    "remoteViewportComplete": false
+  },
+  "tests": {
+    "displayCases": 4,
+    "actualExitCode": 0,
+    "strictTypesActualExitCode": 0,
+    "real": "Savedmain/Worker+ViewerInput/MessageChannel/HTTP/WS/SQLite/NodeSource/ControlLease.",
+    "fixtures": "DOM/CSS/shadow/CanvasKit/presenter/realm,Sessionprovider/CDPresults."
+  },
+  "remaining": [
+    "Required authorized remote resizeViewport with existingSourcebarrier/Node+Native gateway and cancel/outcome semantics.",
+    "Sanitized performance/firstframe/fixederror API.",
+    "Actualbrowser/CSP/layout/inputmapping/repeatmount/physicalresource and Nativeendpoint/allAgentpermissions/fences.",
+    "Original8hterminal physicalgates,wholecandidatefullregression and all41/N1audit."
+  ],
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "wholeFullJsQualified": false,
+  "nativeProductionProviderComplete": false,
+  "allAgentCdpFenced": false,
+  "eightHourPassed": false,
+  "noCommitPush": true
+}

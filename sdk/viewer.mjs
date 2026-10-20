@@ -6,7 +6,7 @@ export {ViewerChannelError} from './viewer-channel.mjs';
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const fail=code=>{throw new ViewerChannelError(code);};
 function options(value){
- const names=['viewerOrigin','gatewayOrigin','sessionId','role','version','getTicket','requestTimeoutMs','loadTimeoutMs','connectTimeoutMs','disconnectTimeoutMs','destroyTimeoutMs','title','onState','onError','onControl'];
+ const names=['viewerOrigin','gatewayOrigin','sessionId','role','version','getTicket','requestTimeoutMs','loadTimeoutMs','connectTimeoutMs','disconnectTimeoutMs','destroyTimeoutMs','title','onState','onError','onControl','onResize'];
  if(!value||typeof value!=='object'||Reflect.ownKeys(value).some(k=>!names.includes(k)||!Object.hasOwn(Object.getOwnPropertyDescriptor(value,k),'value')))fail('VIEWER_INVALID_CONFIG');return Object.fromEntries(Reflect.ownKeys(value).map(k=>[k,value[k]]));
 }
 function deferred(){let resolve,reject;const record={done:false,promise:new Promise((yes,no)=>{resolve=yes;reject=no;})};void record.promise.catch(()=>{});record.resolve=value=>{if(!record.done){record.done=true;resolve(value);}};record.reject=error=>{if(!record.done){record.done=true;reject(error);}};return record;}
@@ -17,6 +17,7 @@ function roleSignal(value={}){if(!value||typeof value!=='object'||Array.isArray(
 // Owns one iframe browsing context. Rendering, resources and input remain in
 // the existing child Viewer. The application callback owner outlives reloads.
 class Viewer {
+ #displaySize=Object.freeze({scope:'display',mode:'container',width:null,height:null});
  #roleChange=null;#roleAbort=null;
  #control=emptyViewerControl();
  #config;#tickets;#document;#owner;#host;#root;#iframe=null;#frame=null;#frameDead=false;#generation=0;#ready=deferred();#loadTimer;#frameListeners;#pagehide;#observer;#wasConnected=false;#events={state:new Set(),error:new Set()};#desired=false;#paused=false;#failure=null;#operation=null;#connecting=null;#disconnecting=null;#destroying=null;#destroyed=false;#state;
@@ -25,11 +26,12 @@ class Viewer {
   if(!container||typeof container.appendChild!=='function'||!document||typeof document.createElement!=='function'||!owner||typeof owner.addEventListener!=='function'||typeof owner.removeEventListener!=='function'||!integer(config.loadTimeoutMs??20000,50,60000)||!integer(config.connectTimeoutMs??45000,50,120000)||!integer(config.disconnectTimeoutMs??1000,50,10000)||!integer(config.destroyTimeoutMs??250,0,1000)||config.title!==undefined&&(typeof config.title!=='string'||config.title.length<1||config.title.length>256)||config.onState!==undefined&&typeof config.onState!=='function'||config.onError!==undefined&&typeof config.onError!=='function')fail('VIEWER_INVALID_CONFIG');
   const viewer=viewerOrigin(config.viewerOrigin);
   if(config.onControl!==undefined&&typeof config.onControl!=='function')fail('VIEWER_INVALID_CONFIG');
+  if(config.onResize!==undefined&&typeof config.onResize!=='function')fail('VIEWER_INVALID_CONFIG');
   this.#tickets=new ViewerTicketSource({gatewayOrigin:config.gatewayOrigin,audience:viewer,sessionId:config.sessionId,role:config.role??'readonly',getTicket:config.getTicket,...(config.version===undefined?{}:{version:config.version}),...(config.requestTimeoutMs===undefined?{}:{requestTimeoutMs:config.requestTimeoutMs})});
   this.#config={viewerOrigin:viewer,loadTimeoutMs:config.loadTimeoutMs??20000,connectTimeoutMs:config.connectTimeoutMs??45000,disconnectTimeoutMs:config.disconnectTimeoutMs??1000,destroyTimeoutMs:config.destroyTimeoutMs??250,title:config.title??'远程网页'};this.#document=document;this.#owner=owner;
   const host=document.createElement('div');if(typeof host.attachShadow!=='function')fail('VIEWER_INVALID_CONFIG');this.#host=host;this.#root=host.attachShadow({mode:'closed'});
   Object.assign(host.style,{display:'block',position:'relative',width:'100%',height:'100%',minWidth:'0',minHeight:'0',overflow:'hidden'});host.setAttribute('data-remote-paint-viewer','');
-  this.#events.control=new Set();if(config.onControl)this.#events.control.add(config.onControl);if(config.onState)this.#events.state.add(config.onState);if(config.onError)this.#events.error.add(config.onError);
+  this.#events.control=new Set();this.#events.resize=new Set();if(config.onResize)this.#events.resize.add(config.onResize);if(config.onControl)this.#events.control.add(config.onControl);if(config.onState)this.#events.state.add(config.onState);if(config.onError)this.#events.error.add(config.onError);
   this.#pagehide=event=>{if(event.persisted)void this.disconnect();else void this.destroy();};owner.addEventListener('pagehide',this.#pagehide);
   this.#state=this.#snapshot('loading');
   try{
@@ -41,10 +43,22 @@ class Viewer {
  get ready(){return this.#ready.promise;}
  get state(){return this.#state;}
  get control(){return this.#control;}
+ get displaySize(){return this.#displaySize;}
+ resize(value){
+  if(this.#destroyed)fail('VIEWER_CLOSED');let next;
+  if(value===undefined)next=Object.freeze({scope:'display',mode:'container',width:null,height:null});
+  else{
+   if(!value||typeof value!=='object'||Array.isArray(value)||Object.getPrototypeOf(value)!==null&&Object.getPrototypeOf(Object.getPrototypeOf(value))!==null||Reflect.ownKeys(value).length!==2||!['width','height'].every(k=>Object.hasOwn(value,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(value,k),'value'))||!['width','height'].every(k=>Number.isFinite(value[k])&&value[k]>=1&&value[k]<=16384))fail('VIEWER_INVALID_CONFIG');
+   next=Object.freeze({scope:'display',mode:'fixed',width:value.width,height:value.height});
+  }
+  if(JSON.stringify(next)===JSON.stringify(this.#displaySize))return this.#displaySize;
+  Object.assign(this.#host.style,{width:next.mode==='fixed'?next.width+'px':'100%',height:next.mode==='fixed'?next.height+'px':'100%'});this.#displaySize=next;
+  for(const listener of [...this.#events.resize])try{listener(next);}catch{}return next;
+ }
  #publishControl(value){if(JSON.stringify(value)===JSON.stringify(this.#control))return;this.#control=value;for(const listener of [...this.#events.control])try{listener(value);}catch{}}
  #snapshot(state,code){const settings=this.#tickets.settings;return Object.freeze({state,sessionId:settings.sessionId,role:settings.role,version:settings.version??null,generation:this.#generation,...(code?{code}:{})});}
  #publish(state,code){const value=this.#snapshot(state,code);if(JSON.stringify(value)===JSON.stringify(this.#state))return;this.#state=value;for(const listener of [...this.#events.state])try{listener(value);}catch{}}
- on(name,listener){if(this.#destroyed)fail('VIEWER_CLOSED');if(!Object.hasOwn(this.#events,name)||typeof listener!=='function')fail('VIEWER_INVALID_CONFIG');const group=this.#events[name];if(group.size>=64)fail('CHANNEL_BUSY');group.add(listener);if(name==='state'||name==='control')try{listener(name==='state'?this.#state:this.#control);}catch{}return ()=>group.delete(listener);}
+ on(name,listener){if(this.#destroyed)fail('VIEWER_CLOSED');if(!Object.hasOwn(this.#events,name)||typeof listener!=='function')fail('VIEWER_INVALID_CONFIG');const group=this.#events[name];if(group.size>=64)fail('CHANNEL_BUSY');group.add(listener);if(name==='state'||name==='control'||name==='resize')try{listener(name==='state'?this.#state:name==='control'?this.#control:this.#displaySize);}catch{}return ()=>group.delete(listener);}
  #removeFrame(){
   const old=this.#frame;this.#frame=null;old?.close();this.#publishControl(emptyViewerControl());
   if(this.#iframe){for(const [name,handler]of Object.entries(this.#frameListeners??{}))this.#iframe.removeEventListener(name,handler);this.#iframe.remove();this.#iframe=null;}

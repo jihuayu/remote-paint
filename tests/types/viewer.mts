@@ -25,3 +25,9 @@ const changedRole=await viewer.setRole("controller",{signal:new AbortController(
 await viewer.setRole("agent");
 // @ts-expect-error readonly switch is boolean
 await viewer.setReadonly("true");
+
+const display=viewer.resize({width:640,height:360});const scope:"display"=display.scope;void scope;viewer.on("resize",size=>{const mode:"fixed"|"container"=size.mode;void mode;});viewer.resize();
+// @ts-expect-error display sizing never accepts source viewport or arbitrary fields
+viewer.resize({width:640,height:360,deviceScaleFactor:2});
+// @ts-expect-error display snapshots are immutable
+display.width=800;

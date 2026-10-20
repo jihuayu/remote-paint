@@ -1,0 +1,26 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {setTimeout as delay} from 'node:timers/promises';
+import {createViewer} from '../sdk/viewer.mjs';
+import {sessionStoreSupported} from '../service/session-store.mjs';
+import {fixture,audience} from './fixtures/viewer-access-harness.mjs';
+import {wasmSha256} from './fixtures/viewer-runtime-harness.mjs';
+import {dom} from './fixtures/viewer-dom-harness.mjs';
+async function until(check){for(let i=0;i<500;i++){if(check())return;await delay(5);}assert.fail('Display condition deadline');}
+
+for(const workerMode of [false,true])test(`local display resize preserves actual ${workerMode?'Worker':'main'} socket, Source viewport and human lease`,{skip:!sessionStoreSupported},async t=>{
+ const h=await fixture(t,{wasmSha256,viewerBuild:'b'.repeat(64)}),d=dom(h,{workerMode,realInput:true}),events=[];let tickets=0,remoteResizes=0;h.source.resize=()=>{remoteResizes++;throw new Error('Display resize cannot mutate Source');};
+ const viewer=createViewer(d.container,{viewerOrigin:audience,gatewayOrigin:h.base,sessionId:h.sessionId,role:'controller',getTicket:()=>{tickets++;return h.issue('controller');},onResize:size=>events.push(size)});t.after(()=>viewer.destroy());await viewer.connect();await until(()=>d.runtimes[0].window.remotePaintResult?.frameId===1&&viewer.control.mode==='agent');const held=await viewer.takeControl(),r=d.runtimes[0],input=r.stats.input,frame=input.frame,generation=viewer.state.generation,socket=r.stats.sockets[0],viewport={...h.source.viewport},calls=h.calls.length;
+ const current=[];viewer.on('resize',size=>current.push(size));const fixed=viewer.resize({width:640,height:360});assert.ok(Object.isFrozen(fixed));assert.equal(fixed.scope,'display');assert.equal(viewer.resize({width:640,height:360}),fixed);viewer.resize({width:320.5,height:240.25});const restored=viewer.resize();assert.equal(restored.mode,'container');assert.equal(restored.width,null);assert.equal(restored.height,null);assert.equal(events.length,3);assert.equal(current.length,4);
+ await delay(15);assert.equal(tickets,1);assert.equal(remoteResizes,0);assert.equal(r.stats.sockets.length,1);assert.equal(socket.readyState,1);assert.equal(viewer.state.generation,generation);assert.equal(input.active,true);assert.equal(input.frame,frame);assert.deepEqual(h.source.viewport,viewport);assert.equal(h.source.viewportVersion,1);assert.equal(h.source.pageEpoch,1);assert.equal(h.calls.length,calls);assert.equal(viewer.control.lease,held.lease);assert.equal(viewer.control.fencingToken,held.fencingToken);assert.equal(viewer.element.style.width,'100%');assert.equal(viewer.element.style.height,'100%');assert.ok(events.every(size=>Object.keys(size).length===4));await viewer.destroy();await until(()=>h.transport.peers.size===0&&h.source.control.mode==='agent');assert.equal(d.owner.listenerCount(),0);
+});
+
+test('display sizing works before authorization and survives reload and role changes',{skip:!sessionStoreSupported},async t=>{
+ const h=await fixture(t,{wasmSha256,viewerBuild:'b'.repeat(64)}),d=dom(h);let calls=0;const viewer=createViewer(d.container,{viewerOrigin:audience,gatewayOrigin:h.base,sessionId:h.sessionId,getTicket:request=>{calls++;return h.issue(request.role);}});t.after(()=>viewer.destroy());const fixed=viewer.resize({width:480,height:320});await viewer.ready;assert.equal(calls,0);await viewer.connect();const generation=viewer.state.generation;d.reload(d.frame());await until(()=>viewer.state.generation>generation&&viewer.state.state==='connected');assert.equal(viewer.displaySize,fixed);assert.equal(viewer.element.style.width,'480px');assert.equal(viewer.element.style.height,'320px');await viewer.setRole('controller');assert.equal(viewer.displaySize,fixed);await viewer.disconnect();assert.equal(viewer.resize({width:300,height:200}).mode,'fixed');assert.equal(viewer.state.state,'paused');
+});
+
+test('invalid display sizes have no effects and closed viewers cannot change sizing',async()=>{
+ const d=dom({base:'https://gateway.example'},{autoLoad:false}),viewer=createViewer(d.container,{viewerOrigin:audience,gatewayOrigin:'https://gateway.example',sessionId:'ses_fixture',getTicket(){assert.fail('No ticket');},onResize(){throw new Error('Application handler');}}),original=viewer.displaySize;let getter=false;
+ for(const value of [null,{},[],{width:0,height:1},{width:1,height:Infinity},{width:NaN,height:1},{width:16385,height:1},{width:'200',height:100},{width:200,height:100,viewportVersion:1},Object.create({width:200,height:100}),Object.defineProperty({height:100},'width',{get(){getter=true;return 200;}})])assert.throws(()=>viewer.resize(value),e=>e.code==='VIEWER_INVALID_CONFIG');assert.equal(getter,false);assert.equal(viewer.displaySize,original);
+ const off=[];for(let i=0;i<63;i++)off.push(viewer.on('resize',()=>{}));assert.throws(()=>viewer.on('resize',()=>{}),e=>e.code==='CHANNEL_BUSY');off.pop()();viewer.resize({width:200,height:100});const last=viewer.displaySize;const ready=assert.rejects(viewer.ready,e=>e.code==='VIEWER_CLOSED');await viewer.destroy();await ready;assert.throws(()=>viewer.resize({width:300,height:100}),e=>e.code==='VIEWER_CLOSED');assert.equal(viewer.displaySize,last);assert.equal(d.frame(),undefined);assert.equal(d.owner.listenerCount(),0);
+});

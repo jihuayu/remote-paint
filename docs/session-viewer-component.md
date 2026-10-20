@@ -23,7 +23,7 @@ await viewer.destroy();
 
 `viewerOrigin` 是精确规范化 Origin，使用其 `/` 根入口，拒绝路径、query、hash、用户名和密码。HTTPS 可用，HTTP 只允许 loopback 开发。`gatewayOrigin` 必须与公开资源服务的固定网关一致；服务端父 Origin allowlist 还必须包含实际宿主。短票据 audience 由 Viewer Origin 派生，管理 key 不进入浏览器配置。角色默认只读，Session 和版本在实例中固定；[角色切换](session-viewer-roles.md)显式重建连接并重新取得匹配票据。
 
-组件追加一个独立宿主，保留容器原有子节点。宿主使用 closed ShadowRoot，内部 iframe 占满容器，设置 `no-referrer` 和 `sandbox="allow-scripts allow-same-origin"`。本地尺寸来自容器布局，当前没有修改远端 Source viewport 的 API。iframe 资源、渲染器、FrameGate 和输入队列均沿用原 Viewer。真实浏览器 CSS、sandbox 和 CSP 行为仍待验收。
+组件追加一个独立宿主，保留容器原有子节点。宿主使用 closed ShadowRoot，内部 iframe 占满容器，设置 `no-referrer` 和 `sandbox="allow-scripts allow-same-origin"`。本地尺寸默认跟随容器，可用 [resize](session-viewer-display.md) 指定请求的 CSS 宽高；它不修改远端 Source viewport，带租约的远端 viewport 操作仍待后续完成。iframe 资源、渲染器、FrameGate 和输入队列均沿用原 Viewer。真实浏览器 CSS、sandbox 和 CSP 行为仍待验收。
 
 ## 连接与重载
 

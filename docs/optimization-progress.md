@@ -1723,3 +1723,12 @@ createViewer 的 setRole/setReadonly 先使旧代次失效并停止/移除旧 if
 16 条合同覆盖实际 Window/Worker/ViewerInput/Node Source/MessageChannel 的持有租约降级、旧票据拒绝、刷新历史、回调额度、版本/角色错误、并发与取消。保留初期夹具“已撤销 grant 再删返回404”的1条失败；另实际复现并修正立即销毁后新建 ready Promise 永不完成的竞态，失败/修正日志均留存。详情及双平台安装包结果见[角色检查点](evidence/viewer-role-transition.json)。
 
 新只读连接成功不代替 Source 在途工具/清理栅栏完成，相关 Agent 路径仍由原 ControlLease 暂停；全部 Agent/CDP 写路径、真实 browser/CSP/Native、resize/性能 API、原 8 小时和整份候选验收仍待完成。41 项仍 9/15/17，原783文件长测源未动，未额外启动 Native 浏览器，未暂存、提交或推送。
+
+
+### K2a2b3c1：明确本地显示 resize
+
+DOM resize(width/height) 设置自己的宿主 CSS 请求尺寸，resize() 恢复100%容器布局；冻结 displaySize 和 resize 事件明确 scope=display，不冒充已测量 canvas 或远端 viewport。验证、幂等通知、授权前/暂停/重载/换角色保留及销毁保护均接入。
+
+4 条合同用实际 Node Source/MessageChannel 与保存的 Window/Worker、真实 ViewerInput 验证本地变化不索票、不重连、不变更 Source viewport/epoch 或持有租约；DOM/CSS/CanvasKit/realm 仍为夹具，真实布局/像素与物理资源待验收。双平台范围与私有安装包结果见[显示检查点](evidence/viewer-display-resize.json)。
+
+带租约的远端 resizeViewport 是独立且必须完成的后续工作，不能用本地CSS替代；性能/首帧事件、Native端点、所有Agent/CDP栅栏、原8小时与整份候选仍待验收。41项仍9/15/17。未额外启动Native浏览器，原783长测源未动，未暂存提交推送。
