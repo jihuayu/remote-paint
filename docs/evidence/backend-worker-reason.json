@@ -1,0 +1,115 @@
+{
+  "at": "2026-10-19T13:03:22.892716+00:00",
+  "task": "backend-SDK-worker-unavailable-reason",
+  "status": "Node-Python-SDK-worker-reason-compatible",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/backend-worker-reason-after-v1/frozen-version.json",
+  "executedManifestSha256": "30ab9b64bce58fb2e9cfd36f4002f4bc34756b6b01963822e7493d6427637bc1",
+  "canonicalSourceFiles": 956,
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-renderer-health-qualified-v1/frozen-version.json",
+  "parentSha256": "abafdbcc1194c90e1990463bc924b703eaa8ecfcc84cb15c2b792e773a9e2040",
+  "causalBeforeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/backend-worker-reason-before-v2-v1/frozen-version.json",
+  "causalNodeActualBefore1After0": true,
+  "causalPythonActualBefore1After0": true,
+  "initialNodeMissingSqliteFixtureFailurePreservedSeparately": true,
+  "exactRuntimeAndTypeReasonAdded": "worker-unavailable",
+  "unknownReasonsStillRejected": true,
+  "actualRegistryHttpClosingRetainsQuotaAndClosedReleasesInBothSdkTests": true,
+  "freshFullJs": {
+    "mac": {
+      "tests": 953,
+      "pass": 938,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "193a7b625b3caaf2863f315c5a382ce4155450e2ecffcf7e6d134e9c58eda3c4"
+    },
+    "linux": {
+      "tests": 953,
+      "pass": 947,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "a334fea8ab85cabc5f19db2156abd4535f36da413a3263585d8bb463a84788d1"
+    }
+  },
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v17/manifest.json",
+  "fullJsManifestSha256": "a6fde898e54565a48edda4e470a2f723827864d04e9e08afea895989b33e6bc4",
+  "freshSdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "a93654f41a1ac70756220d24eb5e6d4ff5a447fa0a3050714ecafdb92ed1354c",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "d21a3f6d707ba6f778ad2c4c1a0372e01f710d3a6d7ab123790487b26513a669"
+  },
+  "freshInstalledNodeTests": 78,
+  "freshInstalledPythonTests": 17,
+  "freshInstalledBothPlatforms": true,
+  "freshStrictTypeScriptBoth": true,
+  "freshMacMypy": true,
+  "sourceSdkFallbackUnavailableInBothInstalledConsumers": true,
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/backend-worker-reason-native-v1/manifest.json",
+  "nativeManifestSha256": "c06e7347dc0ea81d52f7dc5f8bf5cebbfa52b60a7d2b9799b26ccb665c875d82",
+  "canonicalNativeWorkerUsed": true,
+  "NodeAdapterUsed": false,
+  "sourceCdpTestApiUsed": false,
+  "nativeActualRootExitCode": 0,
+  "nativeFault": "owned actual browser SIGKILL after Ready and public Welcome/FrameCommit",
+  "actualInstalledNodeClosing": {
+    "sessionId": "ses_c4476dfe-0d43-42e9-82c8-505ae6347aca",
+    "region": "native-provider-health",
+    "state": "closing",
+    "createdAt": "2026-10-19T13:00:20.298Z",
+    "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+    "ttlSeconds": 120,
+    "readyAt": "2026-10-19T13:00:22.479Z",
+    "expiresAt": "2026-10-19T13:02:22.479Z",
+    "closeReason": "worker-unavailable",
+    "holdsQuota": true
+  },
+  "actualInstalledNodeClosed": {
+    "sessionId": "ses_c4476dfe-0d43-42e9-82c8-505ae6347aca",
+    "region": "native-provider-health",
+    "state": "closed",
+    "createdAt": "2026-10-19T13:00:20.298Z",
+    "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+    "ttlSeconds": 120,
+    "readyAt": "2026-10-19T13:00:22.479Z",
+    "expiresAt": "2026-10-19T13:02:22.479Z",
+    "closeReason": "worker-unavailable",
+    "holdsQuota": false
+  },
+  "nativeNamespaceRetiredAndFullCidAbsent": true,
+  "knownNativeHostPidsAbsent": [
+    6964,
+    6969
+  ],
+  "terminalLinuxTestContainers": [
+    {
+      "containerId": "38c8883a2d6197424e131b909501c52de20e949fef6ef88bd0f9e746bcf98042",
+      "state": "exited",
+      "actualExitCode": 0,
+      "pid": 0,
+      "oomKilled": false
+    },
+    {
+      "containerId": "ef9ae0ee123a06220d2cdadc6c2b0ffde570597bea6b244049be886e9240367d",
+      "state": "exited",
+      "actualExitCode": 0,
+      "pid": 0,
+      "oomKilled": false
+    }
+  ],
+  "browserViewerRuntimeUnchanged": true,
+  "sdkSessionEndAutomaticRetryPolicyQualified": false,
+  "unknownDispatchRecoveryStillIncomplete": true,
+  "productionNativeFullyQualified": false,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

@@ -180,7 +180,7 @@ class Contracts(unittest.IsolatedAsyncioTestCase):
 
     async def test_session_availability_and_requested_id_are_checked(self):
         current=dict(sessionId='ses_fixture',region='test',state='ready',createdAt=AT,version='v1',ttlSeconds=60,readyAt=AT,expiresAt=AT,closeReason=None,holdsQuota=True)
-        for patch in [dict(sessionId='ses_other'),dict(state='unknown'),dict(version=None),dict(readyAt=None),dict(expiresAt=None),dict(holdsQuota=False),dict(state='expired'),dict(ttlSeconds=True),dict(private='x')]:
+        for patch in [dict(sessionId='ses_other'),dict(state='unknown'),dict(version=None),dict(readyAt=None),dict(expiresAt=None),dict(holdsQuota=False),dict(state='expired'),dict(ttlSeconds=True),dict(closeReason='private'),dict(private='x')]:
             client=await self.client(lambda req,p=patch:response(current|p,status=200))
             with self.assertRaises(SessionClientError):await client.sessions.get(SessionId('ses_fixture'))
         client=await self.client(lambda req:response(current|dict(state='recovery-required',version=None,readyAt=None,expiresAt=None),status=200))
@@ -231,6 +231,23 @@ class ActualNodeHttp(unittest.IsolatedAsyncioTestCase):
         return 'http://127.0.0.1:'+str(ready['port'])
     async def stats(self):
         self.child.stdin.write(b'stats\n');await self.child.stdin.drain();return json.loads(await asyncio.wait_for(self.child.stdout.readline(),3))
+    async def test_worker_unavailable_is_readable_during_close_and_after_retirement(self):
+        base=await self.start('worker-unavailable')
+        async with SessionClient(base_url=base,api_key=KEY) as client:
+            created=(await client.sessions.create(CreateSessionInput(ttl_seconds=60),idempotency_key='worker-fault')).data
+            self.assertEqual((await client.sessions.get(created.session_id)).data.state,'ready')
+            self.child.stdin.write(b'unavailable\n');await self.child.stdin.drain();self.assertEqual(json.loads(await self.child.stdout.readline())['event'],'unavailable')
+            closing=(await client.sessions.get(created.session_id)).data
+            self.assertEqual(closing.state,'closing');self.assertEqual(closing.close_reason,'worker-unavailable');self.assertTrue(closing.holds_quota)
+            self.assertEqual((await self.stats())['reservedSessions'],1)
+            self.child.stdin.write(b'retire-worker\n');await self.child.stdin.drain();self.assertEqual(json.loads(await self.child.stdout.readline())['event'],'retiring-worker')
+            for _ in range(100):
+                closed=(await client.sessions.get(created.session_id)).data
+                if closed.state=='closed':break
+                await asyncio.sleep(.01)
+            self.assertEqual(closed.state,'closed');self.assertEqual(closed.close_reason,'worker-unavailable');self.assertFalse(closed.holds_quota)
+            self.assertEqual((await client.operations.get(created.operation_id)).data.status,'succeeded')
+        self.assertEqual((await self.stats())['reservedSessions'],0)
     async def test_lost_response_retry_one_allocation_tenant_fencing_query_and_release(self):
         base=await self.start('drop-first')
         async with SessionClient(base_url=base,api_key=KEY,retries=1) as client:

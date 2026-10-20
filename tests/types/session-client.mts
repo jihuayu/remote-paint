@@ -1,4 +1,5 @@
-import {SessionClient,SessionClientError,type SessionId,type OperationId,type Operation} from '../../sdk/backend.mjs';
+import {SessionClient,SessionClientError,type SessionId,type OperationId,type Operation,type CloseReason} from '../../sdk/backend.mjs';
+const workerReason:CloseReason='worker-unavailable';void workerReason;
 const client=new SessionClient({baseUrl:'https://api.example.test',apiKey:'provided-by-backend-secret-manager',retries:1});
 const prepared=client.sessions.prepareCreate({region:'test',ttlSeconds:60},{idempotencyKey:'persist-this-key'});
 const created=await prepared.send({signal:new AbortController().signal});

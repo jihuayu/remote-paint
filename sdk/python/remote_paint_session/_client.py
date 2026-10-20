@@ -19,7 +19,7 @@ Outcome = Literal["not-dispatched", "unknown", "rejected"]
 OperationKind = Literal["create-session", "release-session"]
 OperationStatus = Literal["pending", "succeeded", "failed"]
 SessionState = Literal["creating", "ready", "closing", "closed", "expired", "failed", "cleanup-failed", "recovery-required"]
-CloseReason = Literal["released", "ttl-expired", "registry-shutdown", "registry-recovery", "registry-storage-fault"]
+CloseReason = Literal["released", "ttl-expired", "registry-shutdown", "registry-recovery", "registry-storage-fault", "worker-unavailable"]
 T = TypeVar("T")
 
 
@@ -143,7 +143,7 @@ def _session(value: Any) -> Session:
             and _date(value["createdAt"]) and (value["version"] is None or _text(value["version"], 256))
             and _integer(value["ttlSeconds"], 1, 86400)
             and all(value[name] is None or _date(value[name]) for name in ("readyAt", "expiresAt"))
-            and (value["closeReason"] is None or value["closeReason"] in ("released", "ttl-expired", "registry-shutdown", "registry-recovery", "registry-storage-fault"))
+            and (value["closeReason"] is None or value["closeReason"] in ("released", "ttl-expired", "registry-shutdown", "registry-recovery", "registry-storage-fault", "worker-unavailable"))
             and type(value["holdsQuota"]) is bool):
         _fail("CLIENT_INVALID_RESPONSE")
     if value["state"] == "ready" and not all(value[name] for name in ("version", "readyAt", "expiresAt", "holdsQuota")):

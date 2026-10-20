@@ -1910,3 +1910,8 @@ Native资源绑定四个终止事件并在Ready前重查，worker先建立停止
 ### 实际renderer崩溃撤回Native Session授权
 
 canonical Native先Ready及公共Welcome/FrameCommit，在完整自有CID中按受限内核线程与父链/boot/ns/exe/startTicks确认唯一renderer后SIGKILL。worker-origin CHANNEL_RESOURCE_UNAVAILABLE撤回provider/Registry Ready及端点，随后有效namespace退役，根实际0。两次主线程名误判均未发信号，失败与快照保留；3容器/6宿主PID均核对退出。见[renderer故障范围](native-renderer-health.md)。原生产/SDK/108单测输入未改，继承952旧收据；未知启动隔离、SDK终止、Agent/N1/设备/原8小时继续，41项9/15/17不变。
+
+
+### 后端SDK接受真实worker失效关闭原因
+
+修复Node/Python SDK和TS/Python Literal漏掉worker-unavailable导致合法Session HTTP200被误拒的问题。真实Registry HTTP的closing持配额/closed释放因果测试两种SDK均before1/after0，未知值继续拒绝。新双平台完整953项通过，新tgz/wheel全新离线安装各78Node/17Python、严格TSC两边及Mac Mypy通过；新安装Node SDK在真实canonical Native浏览器故障后读到closing/closed正确原因，退役和精确CID/2宿主PID清理通过。见[范围](backend-worker-reason.md)。Viewer终止重试策略仍待验收；未知启动隔离、Agent/N1/设备/原8小时继续，41项9/15/17不变。

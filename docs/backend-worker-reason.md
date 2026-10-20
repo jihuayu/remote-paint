@@ -1,0 +1,11 @@
+# 后端 SDK 识别 worker-unavailable 关闭原因
+
+生产Registry在worker失效后返回closeReason=worker-unavailable；Node与Python SDK原先没有列出该原因，会把合法的HTTP200 Session响应拒为CLIENT_INVALID_RESPONSE。此次在两个运行时校验器、TypeScript CloseReason和Python Literal中加入这个精确值，继续拒绝未知原因，不扩大服务权限或重试行为。
+
+使用生产Registry的unavailable订阅、真实HTTP以及原SQLite确认重现：Node与Python各1项同样测试在修复前实际1、修复后实际0。关闭阻塞时读取closing/worker-unavailable/holdsQuota=true，退役确认后读取closed/同一原因/holdsQuota=false；历史创建操作仍成功、Session不可再Ready。Node第一轮测试缺少服务要求的SQLite确认，属于fixture设置失败，单独保留；修正后才计入SDK的因果失败。Python也继续覆盖未知原因拒绝。
+
+重新执行108文件完整JS953项：Mac938通过15跳过，Linux947通过6跳过，两者实际0、失败/取消0。重新构建16成员私有tgz和Python wheel，双平台都在全新离线隔离consumer中安装；各78项Node、17项Python通过，严格TypeScript均实际0，Mac Mypy严格检查也通过。consumer没有源码SDK回退，安装模块、类型和archive字节一一核对；不是继承旧952/77/16收据。
+
+真实canonical Native worker/浏览器/provider/Registry及新安装Node SDK另做端到端验收：先Ready、私有端点、公共只读Welcome和Native FrameCommit；精确自有浏览器SIGKILL后，worker资源不可用使Ready与端点撤回。新安装SDK实际读到closing且配额仍保留，再读到closed且配额释放，两次都正确保留worker-unavailable。根测试实际0；独立重开运行记录retired、有效namespace退役，完整CID再次查询不存在，根Node与attach代理两个PID均ESRCH。此项实际Native故障HTTP查询使用Node SDK；Python的关闭阶段证明来自上面的真实Registry HTTP合同，不混称Python也跑了Native进程故障。
+
+本项保持浏览器Viewer运行时代码，自动会话终止/重连策略继续单独验收。原未知启动隔离恢复未收敛，全部Agent/CDP栅栏、N1/物理时延、更多设备及原8小时增长仍待完成。41项9/15/17、原8小时失败和192MiB门槛不变，未强制浏览器GC、自动重跑8小时、公开发布SDK或暂存提交推送。完整候选最终958文件；见[范围收据](evidence/backend-worker-reason.json)。

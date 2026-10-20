@@ -1,6 +1,6 @@
 const operationStatuses=new Set(['pending','succeeded','failed']);
 const states=new Set(['creating','ready','closing','closed','expired','failed','cleanup-failed','recovery-required']);
-const reasons=new Set(['released','ttl-expired','registry-shutdown','registry-recovery','registry-storage-fault']);
+const reasons=new Set(['released','ttl-expired','registry-shutdown','registry-recovery','registry-storage-fault','worker-unavailable']);
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const string=(v,max)=>typeof v==='string'&&v.length>0&&v.length<=max;
 const id=(v,prefix)=>typeof v==='string'&&v.startsWith(prefix)&&/^[A-Za-z0-9_-]{1,128}$/.test(v);

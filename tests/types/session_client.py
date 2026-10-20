@@ -1,4 +1,4 @@
-from remote_paint_session import (SessionClient, CreateSessionInput, SessionId, OperationId, SessionClientError)
+from remote_paint_session import (SessionClient, CreateSessionInput, SessionId, OperationId, SessionClientError, Session)
 
 async def use(client: SessionClient) -> None:
     prepared = client.sessions.prepare_create(CreateSessionInput(ttl_seconds=60), idempotency_key='saved-job-key')
@@ -6,6 +6,10 @@ async def use(client: SessionClient) -> None:
     session_id: SessionId = created.data.session_id
     operation_id: OperationId = created.data.operation_id
     current = await client.sessions.get(session_id)
+    worker_closed = Session(session_id=session_id, region='test', state='closed', created_at=current.data.created_at,
+                            version=current.data.version, ttl_seconds=60, ready_at=current.data.ready_at,
+                            expires_at=current.data.expires_at, close_reason='worker-unavailable', holds_quota=False)
+    _ = worker_closed
     status = await client.operations.get(operation_id)
     if status.data.error is not None:
         message: str = status.data.error.message

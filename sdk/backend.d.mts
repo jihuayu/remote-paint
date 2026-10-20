@@ -3,7 +3,7 @@ export type OperationId = `op_${string}`;
 export type RequestId = `req_${string}`;
 export type RequestOutcome = 'not-dispatched' | 'unknown' | 'rejected';
 export type SessionState = 'creating' | 'ready' | 'closing' | 'closed' | 'expired' | 'failed' | 'cleanup-failed' | 'recovery-required';
-export type CloseReason = 'released' | 'ttl-expired' | 'registry-shutdown' | 'registry-recovery' | 'registry-storage-fault';
+export type CloseReason = 'released' | 'ttl-expired' | 'registry-shutdown' | 'registry-recovery' | 'registry-storage-fault' | 'worker-unavailable';
 export interface ApiResult<T> { readonly data: T; readonly requestId: RequestId; }
 export interface OperationError { readonly code: string; readonly message: string; }
 interface OperationBase {

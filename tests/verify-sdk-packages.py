@@ -170,7 +170,7 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
 """)
         names=['session-client.test.mjs','session-http.test.mjs','session-registry.test.mjs','session-registry-lifecycle.test.mjs','session-registry-durable.test.mjs','session-store.test.mjs','package-exports.test.mjs']
         raw=run('node-unit',[args.node,'--test','--test-concurrency=4',*[str(consumer/'tests'/n)for n in names]],cwd=consumer,env=env)
-        for label,value in [('tests',77),('pass',77),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
+        for label,value in [('tests',78),('pass',78),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
         run('typescript',[args.node,str(args.tsc),'--noEmit','--strict','--exactOptionalPropertyTypes','--module','NodeNext','--moduleResolution','NodeNext','--target','ES2022','--lib','ES2022,DOM',str(consumer/'tests/types/session-client.mts'),str(consumer/'tests/types/viewer-connection.mts'),str(consumer/'tests/types/viewer-frame.mts'),str(consumer/'tests/types/viewer.mts')],cwd=consumer,env=env)
         python=out/'venv/bin/python';venv.EnvBuilder(with_pip=False,symlinks=True).create(out/'venv')
         purelib=Path(subprocess.check_output([str(python),'-c',"import sysconfig;print(sysconfig.get_path('purelib'))"],env=env,text=True).strip())
@@ -180,13 +180,13 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
         run('python-origin',[str(python),'-c',"import remote_paint_session,importlib.metadata,json,sys;from pathlib import Path;p=Path(remote_paint_session.__file__).resolve();assert p.is_relative_to(Path(sys.prefix).resolve());assert p.with_name('py.typed').is_file();print(json.dumps({'module':str(p),'prefix':sys.prefix,'version':importlib.metadata.version('remote-paint-session'),'httpx':importlib.metadata.version('httpx')}))"],cwd=consumer,env=env)
         assert sha(purelib/'remote_paint_session/_client.py')==sha(args.project/'sdk/python/remote_paint_session/_client.py')
         raw=run('python-unit',[str(python),'-m','unittest','discover','-s',str(consumer/'tests/python'),'-p','test_session_client.py','-v'],cwd=consumer,env=env)
-        assert re.search(r'Ran 16 tests in [0-9.]+s\s+OK\s*$',raw)
+        assert re.search(r'Ran 17 tests in [0-9.]+s\s+OK\s*$',raw)
         if args.mypy_tooling:
             typed=env.copy();typed['PYTHONPATH']=str(args.mypy_tooling)
             raw=run('python-types',[str(python),'-m','mypy','--strict','--python-version','3.11','--no-incremental','--cache-dir=/dev/null','--python-executable',str(python),str(consumer/'tests/types/session_client.py')],cwd=consumer,env=typed)
             assert 'Success: no issues found in 1 source file' in raw
         runtime=run('runtime',[sys.executable,'-c',"import sys,platform,json,subprocess;print(json.dumps({'python':platform.python_version(),'platform':sys.platform,'arch':platform.machine(),'node':subprocess.check_output([sys.argv[1],'--version'],text=True).strip(),'npm':subprocess.check_output([sys.argv[2],'--version'],text=True).strip()}))",args.node,args.npm],env=env)
-        result={'status':'passed','nodeTests':77,'nodeSkips':0,'pythonTests':16,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
+        result={'status':'passed','nodeTests':78,'nodeSkips':0,'pythonTests':17,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
                 'archives':archives,'runtime':json.loads(runtime),'stages':stages,'sourceFallbackUnavailable':True,'publicPublishing':False}
         (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps({k:result[k]for k in ['status','nodeTests','pythonTests','typescriptActual0','pythonInstalledTypeCheckActual0']}))

@@ -130,3 +130,8 @@ canonical Native实际Ready后完成自有attach代理SIGKILL和完整容器外�
 ## 实际renderer崩溃
 
 完整自有CID中对实际renderer SIGKILL后，canonical Native资源不可用消息使provider/Registry撤回Ready与私有端点，随后有效namespace退役。角色探针两次未发信号的失败保留；不用Source CDP测试API。见[范围](native-renderer-health.md)。不宣称完整生产验收。
+
+
+## 后端SDK的worker失效兼容
+
+Node/Python SDK现接受worker-unavailable关闭原因，包括配额尚保留的closing和退役后的closed。真实Native故障用新安装Node SDK再次核对，双平台新包合同与类型检查通过。见[范围](backend-worker-reason.md)。Viewer终止重试策略另行验收。

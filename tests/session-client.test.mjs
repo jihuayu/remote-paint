@@ -92,3 +92,13 @@ test('Session responses enforce the requested identity and availability metadata
  }
  const client=new SessionClient(config(()=>reply({...current,state:'recovery-required',readyAt:null,expiresAt:null,version:null},200)));assert.equal((await client.sessions.get('ses_fixture')).data.state,'recovery-required');
 });
+
+test('backend client reads worker-unavailable through actual Registry HTTP while closing and after retirement',{skip:!sessionStoreSupported},async t=>{
+ const closeGate=deferred(),directory=await mkdtemp(join(tmpdir(),'remote-paint-worker-sdk-'));let unavailable,registry,server,store;
+ t.after(async()=>{closeGate.resolve({status:'closed'});if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}try{await registry?.shutdown();}finally{store?.close();await rm(directory,{recursive:true,force:true});}});
+ const provider={create:async()=>({version:'fixture-v1'}),close:()=>closeGate.promise,subscribeUnavailable:fn=>{unavailable=fn;return()=>{unavailable=null;};}};
+ store=new SqliteSessionStore({path:join(directory,'ledger.sqlite')});registry=new SessionRegistry({providers:new Map([['test',provider]]),defaultRegion:'test',store});server=createSessionControlServer({registry,authenticate:createApiKeyAuthenticator([{apiKey,tenantId:'a',scopes:['sessions:create','sessions:read']}])});await new Promise(r=>server.listen(0,'127.0.0.1',r));const client=new SessionClient({baseUrl:'http://127.0.0.1:'+server.address().port,apiKey}),created=(await client.sessions.create({ttlSeconds:60},{idempotencyKey:'worker-fault'})).data;
+ for(let i=0;i<100&&registry.getOperation('a',created.operationId).status==='pending';i++)await new Promise(setImmediate);assert.equal((await client.sessions.get(created.sessionId)).data.state,'ready');unavailable({sessionId:created.sessionId,tenantId:'a',region:'test'});
+ const closing=(await client.sessions.get(created.sessionId)).data;assert.equal(closing.state,'closing');assert.equal(closing.closeReason,'worker-unavailable');assert.equal(closing.holdsQuota,true);assert.ok(Object.isFrozen(closing));closeGate.resolve({status:'closed'});
+ for(let i=0;i<100&&registry.getSession('a',created.sessionId).state!=='closed';i++)await new Promise(setImmediate);const closed=(await client.sessions.get(created.sessionId)).data;assert.equal(closed.state,'closed');assert.equal(closed.closeReason,'worker-unavailable');assert.equal(closed.holdsQuota,false);assert.equal((await client.operations.get(created.operationId)).data.status,'succeeded');assert.throws(()=>registry.requireReady('a',created.sessionId),{code:'SESSION_NOT_READY'});
+});
