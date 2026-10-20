@@ -1,0 +1,255 @@
+{
+  "at": "2026-10-19T21:21:55.735004+00:00",
+  "task": "Public original Page download HTTP executor and binary delivery",
+  "status": "public-page-download-qualified-within-scope",
+  "scope": "Public agents:observe POST download arms/info/chunks/release/files and durable read-side executor with exact logical Run/Session/version/original Source document/ticket identity. Strict6144Source/8192public JSON,3072 raw chunks,canonical base64,empty file; binary application/octet-stream safe UUID attachment,full correlated headers and exact hash/length/time,incremental SHA before finalwrite and real sequential sink backpressure/finish/close. Actual work held while HTTP observers timeout/disconnect,priority end independent,known unknown writer history unchanged. Real publicHTTP canonicalDockerProvider Worker Native downloads/human/unknown/native-blocked deadlines/disconnect/retirement. New actual page download SDK and physical pre-spool/Playwright metadata bounds pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-download-rpc-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "790c92f4ad7661af46a0630af41d8e23a3673b1ccbfd2f7783e06630c04566e5",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/public-agent-download-candidate-v1/frozen-version.json",
+  "executedManifestSha256": "7b5fca4572c0dae089c19fa9bd649c968c69e808cccdb82cc74f71ffcb94a29f",
+  "newContracts": 26,
+  "newTestNames": [
+    "page downloads expose exactly five POST observe routes without input or end authority",
+    "arm info chunk and release retain frozen original logical and Source identity without SQLite or input writes",
+    "HTTP chunks reconstruct binary and EOF with stable file metadata then explicit release invalidates only that ticket",
+    "observe permission is independent for every download operation and foreign tenant cannot select the Run",
+    "method Origin encoding body and exact context gates reject before issuing Source downloads",
+    "Source read failures are redacted and classified without quarantining or rewriting the writer",
+    "malformed version binding document metadata and extra result fields cannot become public records",
+    "arm HTTP observer deadline leaves actual Source admission until settlement and separate end prevents late adoption",
+    "direct arm cancellation observes only its waiter and real Source still owns ordinary admission",
+    "known unknown input remains quarantined and history unchanged after arm file delivery and release",
+    "unknown begin and a cold executor cannot adopt a prior download ticket or Worker",
+    "binary output has exact generic media length digest safe attachment full context and request metadata",
+    "binary delivery accepts empty and one-byte files without PNG assumptions and validates ownership before headers",
+    "binary request requires exact original context file hash size and completion time and rejects ranges",
+    "binary executor holds one ordinary slot across real sink work with independent end capacity",
+    "binary cancellation during noncooperative Source work never forwards cancellation or returns late file bytes",
+    "binary cancellation during noncooperative sink work retains admission until actual write settlement",
+    "first final chunk digest corruption fails before headers or any trusted sink write",
+    "later final-chunk corruption withholds final bytes and leaves an incomplete HTTP body",
+    "bad chunk offset noncanonical data wrong version and private fields cannot become binary success",
+    "private timeout propagates once without retry or writer state changes",
+    "binary HTTP408 before headers retains actual Source task while independent end completes",
+    "binary HTTP disconnect cannot free actual Source or let late data adopt a closed Run",
+    "actual TCP backpressure stops Source chunk requests before EOF holds HTTP capacity and permits independent end",
+    "deadline after headers truncates binary response and HTTP capacity retires only on actual close",
+    "end Session release and cold shutdown cannot continue downloads against a new Source owner"
+  ],
+  "scopedFirstPassActual0": true,
+  "scopedLogSha256": "8a682987c6c3300bb40db98dec5917ae10136bfeee2ae1acd685df0df32f0104",
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v57/manifest.json",
+  "fullJsManifestSha256": "8aba3cadba42d40d3367e3d68f836d7042fa45f1152af4272e45acb302a0e24d",
+  "fullJs": {
+    "mac": {
+      "tests": 1398,
+      "passed": 1383,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "bbc91a355fd5a5ccd512fb3801cd1efab6d10be843ab6fd442b3f0ed9c57b720"
+    },
+    "linux": {
+      "tests": 1398,
+      "passed": 1392,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "a1b1ae9299637a9e6b2e9343ab68e9fc4177d7ed7aea34486369328afb82a9ea"
+    }
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/public-agent-download-native-v1/manifest.json",
+  "nativeManifestSha256": "77d77edd660aeca550ce4c9610de079658db145cf1de4e5fda7971e8bc53df6c",
+  "nativeActualExitCode": 0,
+  "nativeLogSha256": "347865a8e44893ccfd4c615dd716c23eae58180e8833b72ca2a8ba098b060249",
+  "nativeFirstPass": true,
+  "nativeObservations": {
+    "network": {
+      "publicHttpExecutorPrivateWorkerNative": true,
+      "originalCookiePreserved": true,
+      "oneRequestNoRefetch": true,
+      "byteLength": 8999,
+      "sha256": "2fb4ebc93e3c8ef0d2a86c97203a9cd33ee2cbf4e5e8e6ac69e8c9ceb50ebdfc",
+      "chunksAndBinaryMatch": true,
+      "correlatedHeaders": true,
+      "writerFenceUnchanged": true,
+      "releaseInvalidates": true
+    },
+    "blob": {
+      "byteLength": 5001,
+      "sha256": "1e4adf95716dd1a137204d50d66166329e034b081146ac37b9a43605acb6e494"
+    },
+    "empty": {
+      "publicBinaryZeroByte": true,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bounds": {
+      "overCap413": true,
+      "foreignTenant404": true,
+      "scopesIndependent403": true,
+      "deniedBeforeSource": true
+    },
+    "navigation": {
+      "oldDocumentRejected": true,
+      "oldRunFileRejected": true,
+      "newEpoch": 2
+    },
+    "activeDownloadEnd": {
+      "actualSlowRequestClosed": true,
+      "durableRunClosed": true
+    },
+    "human": {
+      "publicDownloadDuringHumanGrant": true,
+      "readReleaseEndPreservedHeldKeyAndGrant": true,
+      "byteLength": 8999
+    },
+    "unknown": {
+      "actualInputOnce": true,
+      "fileObservedAndDelivered": true,
+      "unknownHistoryUnchanged": true,
+      "writerRemainedQuarantined": true,
+      "sameKeyNotReplayed": true,
+      "freshInputDenied": true,
+      "explicitEndClosed": true
+    },
+    "timeout": {
+      "actualNativeMetadataBlocked": true,
+      "fixtureBusyMs": 1000,
+      "httpObserverOnly": true,
+      "backendActualSlotRetained": true,
+      "independentEnd202": true,
+      "lateResultCouldNotAdoptClosedRun": true
+    },
+    "disconnect": {
+      "actualNativeMetadataBlocked": true,
+      "fixtureBusyMs": 1000,
+      "httpObserverOnly": true,
+      "backendActualSlotRetained": true,
+      "independentEnd202": true,
+      "lateResultCouldNotAdoptClosedRun": true
+    },
+    "retired": {
+      "managementSessionClosed": true,
+      "holdsQuota": false
+    }
+  },
+  "nativeJournal": {
+    "closedRuns": 6,
+    "injected": 8,
+    "unknown": 1,
+    "rejected": 0
+  },
+  "nativeRetirementKind": "container-removed",
+  "nativeRetirementEvidenceSha256": "f34e159705285c1c54c1ea671521e27852f0edb1b3015abb7f324925cbef8219",
+  "sdk": {
+    "mac": {
+      "nodeTests": 152,
+      "pythonTests": 95,
+      "typescriptActual0": true,
+      "mypyMacInstalledAndSource": true,
+      "inputs": 66,
+      "actualExitCode": 0,
+      "resultSha256": "48ba0c2c0acb471bd745292309dc3801ec211408330ad90db0f049c07ecad34b",
+      "sourceMapSha256": "b952237e067cba7eabdb708cc0033895e2622a471b575bfa87dd98da2c162c0d",
+      "runnerLogSha256": "21be0f222756bff39c12baf3d11c3c1b852d53a31578bd4c5744ba4248ef8844"
+    },
+    "linux": {
+      "nodeTests": 152,
+      "pythonTests": 95,
+      "typescriptActual0": true,
+      "mypyMacInstalledAndSource": false,
+      "inputs": 66,
+      "actualExitCode": 0,
+      "resultSha256": "b859b0e791a1eadb9124fbb3bbb679b7f07e8adbc205ac213d73aea009f5e17b",
+      "sourceMapSha256": "b952237e067cba7eabdb708cc0033895e2622a471b575bfa87dd98da2c162c0d",
+      "runnerLogSha256": "89af3de36c3775f34f845bb009a96dd3f81fe3d36ea9a4ba275c83578c943fe3"
+    }
+  },
+  "archives": {
+    "node": {
+      "sha256": "63265ccf9b62bf17d3cb24a4cc29281fb45c02257539a025b413ea42718ecaca",
+      "members": [
+        "package/README.md",
+        "package/agent-observation.mjs",
+        "package/agent.d.mts",
+        "package/agent.mjs",
+        "package/backend-transport.mjs",
+        "package/backend.d.mts",
+        "package/backend.mjs",
+        "package/package.json",
+        "package/viewer-channel.d.mts",
+        "package/viewer-channel.mjs",
+        "package/viewer-connection.d.mts",
+        "package/viewer-connection.mjs",
+        "package/viewer-control.d.mts",
+        "package/viewer-control.mjs",
+        "package/viewer-frame.d.mts",
+        "package/viewer-frame.mjs",
+        "package/viewer-telemetry.d.mts",
+        "package/viewer-telemetry.mjs",
+        "package/viewer.d.mts",
+        "package/viewer.mjs"
+      ],
+      "version": "0.0.0-dev.0"
+    },
+    "python": {
+      "sha256": "e3e5b67ca262060af07df3337463dca826c240a8b013ad9b329c47646c20564b",
+      "members": [
+        "remote_paint_session-0.0.0.dev0.dist-info/METADATA",
+        "remote_paint_session-0.0.0.dev0.dist-info/RECORD",
+        "remote_paint_session-0.0.0.dev0.dist-info/WHEEL",
+        "remote_paint_session-0.0.0.dev0.dist-info/top_level.txt",
+        "remote_paint_session/__init__.py",
+        "remote_paint_session/_agent.py",
+        "remote_paint_session/_client.py",
+        "remote_paint_session/_observation.py",
+        "remote_paint_session/_transport.py",
+        "remote_paint_session/py.typed"
+      ],
+      "version": "0.0.0.dev0"
+    }
+  },
+  "sdkSourcePathsUnchanged": 28,
+  "sdkDependenciesUnchanged": true,
+  "sdkImportMappingRepaired": {
+    "added": [
+      "service/agent-download-access.mjs",
+      "service/agent-download-http.mjs",
+      "live/agent-download.mjs"
+    ],
+    "mappedInputs": 66,
+    "freshBothPlatforms": true,
+    "nodeTestsEach": 152,
+    "pythonTestsEach": 95,
+    "typescriptBothActual0": true,
+    "macMypyPublicAndSourceActual0": true,
+    "newPageDownloadSdkStillPending": true
+  },
+  "privateLimits": {
+    "sourceResultJsonBytes": 6144,
+    "publicResultJsonBytes": 8192,
+    "rawChunkBytes": 3072,
+    "base64Chars": 4096,
+    "channelBytes": 8192,
+    "workerPendingOutputBytes": 32768
+  },
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/public-agent-download-cleanup-v1.json",
+  "cleanupAuditSha256": "7c9903731c9b4241f6b90f4d86f298fd37af174c2ccc3418ef8ac2b78edb2c23",
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "nextRequired": "Continue actual page download Node SDK with strict synchronous context/input capture,frozen models and canonical JSON/binary/header/context/file hash/length/time checks,empty files,independent cap/actual body/cancel/end accounting,one HTTP attempt; own installed Native proof/ZIP,then Python separately. Resolve browser pre-spool disk budget/cancellation partial spool retirement and Playwright retained Download metadata physical bound; do not call completed-file caps pre-write. Continue K6 full locators/frame/write-by-handle,K10upload/Profile,K7/K8/K4,unknownEngineStart,remaining41/N1/device/original failed8h;no automatic8h restart/policy change.",
+  "pageDownloadSourceCoreQualified": true,
+  "pageDownloadPrivateRpcQualified": true,
+  "pageDownloadPublicQualified": true,
+  "pageDownloadSdkQualified": false,
+  "nodePageDownloadSdkQualified": false,
+  "pythonPageDownloadSdkQualified": false,
+  "browserDownloadSpoolPrewriteHardCapQualified": false,
+  "playwrightDownloadMetadataPhysicalBoundQualified": false,
+  "K6Complete": false,
+  "productionNativeFullyQualified": false,
+  "eightHourPassed": false,
+  "noCommitPush": true,
+  "noSubagents": true
+}

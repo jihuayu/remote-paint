@@ -1,3 +1,4 @@
+import {capturePublicDownloadArmed,capturePublicDownloadInfo,capturePublicDownloadChunk,capturePublicDownloadReleased} from './agent-download-access.mjs';
 import {capturePublicScreenshot,capturePublicScreenshotChunk,capturePublicScreenshotReleased} from './agent-screenshot-access.mjs';
 import {DurableAgentExecutor,AgentExecutionError} from './agent-executor.mjs';
 import {AgentRpcError,captureAgentContext} from './agent-rpc.mjs';
@@ -6,6 +7,7 @@ import {InputError} from '../live/input.mjs';
 
 export const AGENT_HTTP_SCOPES=Object.freeze(['agents:read','agents:write','agents:end','agents:observe']);
 const errors={
+ STALE_AGENT_DOWNLOAD:[409,'Agent download handle is stale'],AGENT_DOWNLOAD_BUSY:[409,'Agent download is in flight'],AGENT_DOWNLOAD_LIMIT:[413,'Agent download exceeds the allowed limit'],AGENT_DOWNLOAD_FAILED:[502,'Agent download could not be confirmed'],AGENT_DOWNLOAD_TIMEOUT:[504,'Agent download window expired'],AGENT_DOWNLOAD_CANCELLED:[409,'Agent download was cancelled'],
  STALE_AGENT_SCREENSHOT:[409,'Agent screenshot handle is stale'],INVALID_AGENT_OBSERVATION:[400,'Invalid Agent observation'],STALE_AGENT_ELEMENT:[409,'Agent element handle is stale'],STALE_AGENT_PAGE:[409,'Agent document context is stale'],
  AGENT_OBSERVATION_UNAVAILABLE:[409,'Agent observation is unavailable'],AGENT_OBSERVATION_BUSY:[409,'Agent observation is in flight'],AGENT_OBSERVATION_LIMIT:[413,'Agent observation exceeds the allowed limit'],AGENT_OBSERVATION_FAILED:[502,'Agent observation could not be confirmed'],
  AGENT_NOT_CONFIGURED:[503,'Agent access is unavailable'],AGENT_INVALID_REQUEST:[400,'Invalid Agent request'],AGENT_INVALID_CONTEXT:[400,'Invalid Agent context'],
@@ -24,18 +26,18 @@ export function agentHttpError(error){
  const code=Object.hasOwn(errors,error.code)?error.code:'AGENT_INPUT_FAILED',[status,message]=errors[code];return {code,status,message,outcome:error.outcome==='unknown'?'unknown':'not-dispatched'};
 }
 const uuid='[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
-const runPath=new RegExp('^/v1/agent-runs/(arun_'+uuid+')(?:/(context|invocations|end|observation-context|observations|accessibility-observations|screenshot-observations|screenshot-chunks|screenshot-releases|screenshot-downloads))?$');
+const runPath=new RegExp('^/v1/agent-runs/(arun_'+uuid+')(?:/(context|invocations|end|observation-context|observations|accessibility-observations|screenshot-observations|screenshot-chunks|screenshot-releases|screenshot-downloads|download-arms|download-observations|download-chunks|download-releases|download-files))?$');
 const invocationPath=new RegExp('^/v1/agent-invocations/(ainv_'+uuid+')$');
 const createPath=new RegExp('^/v1/sessions/(ses_'+uuid+')/agent-runs$');
 export function agentHttpRoute(path){
  let match;if((match=createPath.exec(path)))return {agent:true,method:'POST',scope:'agents:write',kind:'agent-create',id:match[1],needsBody:true};
  if((match=invocationPath.exec(path)))return {agent:true,method:'GET',scope:'agents:read',kind:'agent-invocation',id:match[1]};
- if((match=runPath.exec(path))){const suffix=match[2],observation=['observations','observation-context','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads'].includes(suffix);return {agent:true,method:['invocations','end','observations','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads'].includes(suffix)?'POST':'GET',scope:observation?'agents:observe':suffix==='invocations'?'agents:write':suffix==='end'?'agents:end':'agents:read',kind:'agent-'+(suffix??'run'),id:match[1],needsBody:['invocations','observations','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads'].includes(suffix)};}
+ if((match=runPath.exec(path))){const suffix=match[2],observation=['observations','observation-context','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix);return {agent:true,method:['invocations','end','observations','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix)?'POST':'GET',scope:observation?'agents:observe':suffix==='invocations'?'agents:write':suffix==='end'?'agents:end':'agents:read',kind:'agent-'+(suffix??'run'),id:match[1],needsBody:['invocations','observations','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix)};}
  return null;
 }
 export function createAgentHttpAccess(executor,registry){
  if(executor===null)return null;if(!(executor instanceof DurableAgentExecutor)||!executor.usesRegistry(registry))throw TypeError('Agent executor must use the exact HTTP Registry');
- return Object.freeze(Object.fromEntries(['create','getRun','getInvocation','context','observationContext','observe','observeAccessibility','screenshot','readScreenshot','releaseScreenshot','downloadScreenshot','perform','end'].map(name=>[name,executor[name].bind(executor)])));
+ return Object.freeze(Object.fromEntries(['create','getRun','getInvocation','context','observationContext','observe','observeAccessibility','screenshot','readScreenshot','releaseScreenshot','downloadScreenshot','armDownload','downloadInfo','readDownload','releaseDownload','downloadFile','perform','end'].map(name=>[name,executor[name].bind(executor)])));
 }
 function data(value,allowed,required=allowed){
  if(!value||![Object.prototype,null].includes(Object.getPrototypeOf(value)))throw new AgentExecutionError('AGENT_INVALID_REQUEST');
@@ -44,7 +46,7 @@ function data(value,allowed,required=allowed){
 function rpcOptions(input){if(!Object.hasOwn(input,'rpcTimeoutMs'))return undefined;const n=input.rpcTimeoutMs;if(!Number.isInteger(n)||n<50||n>120000)throw new AgentExecutionError('AGENT_INVALID_REQUEST');return {timeoutMs:n};}
 function run(row){const {agentRunId,sessionId,region,version,state,holdsWriter,beginDispatch,endDispatch,createdAt,updatedAt,error}=row;return {agentRunId,sessionId,region,version,state,holdsWriter,beginDispatch,endDispatch,createdAt,updatedAt,error:error&&{code:error.code,outcome:error.outcome}};}
 function invocation(row){const {invocationId,agentRunId,sessionId,tool,fence,state,dispatchStarted,receipt,error,createdAt,updatedAt}=row;return {invocationId,agentRunId,sessionId,tool,fence:{controlSessionId:fence.controlSessionId,controlVersion:fence.controlVersion,pageEpoch:fence.pageEpoch,viewportVersion:fence.viewportVersion},state,dispatchStarted,receipt:receipt&&{stage:receipt.stage,inputs:receipt.inputs},error:error&&{code:error.code,outcome:error.outcome},createdAt,updatedAt};}
-export async function handleAgentHttp({selected,principal,input,idempotencyKey,access,registry,wait,signal,screenshotSink}){
+export async function handleAgentHttp({selected,principal,input,idempotencyKey,access,registry,wait,signal,screenshotSink,downloadSink}){
  if(!access)throw new AgentHttpError('AGENT_NOT_CONFIGURED');const tenantId=principal.tenantId,reference={tenantId,agentRunId:selected.id};let result,status=200,location;
  if(selected.kind==='agent-create'){
   const body=data(input,['region','version','rpcTimeoutMs'],['region','version']),options=rpcOptions(body);registry.getSession(tenantId,selected.id);
@@ -61,6 +63,10 @@ export async function handleAgentHttp({selected,principal,input,idempotencyKey,a
   const kind=selected.kind,capturing=kind==='agent-screenshot-observations',reading=kind==='agent-screenshot-chunks',allowed=capturing?['context','limits','rpcTimeoutMs']:reading?['context','screenshotId','offset','maxBytes','rpcTimeoutMs']:['context','screenshotId','rpcTimeoutMs'],body=data(input,allowed,allowed.filter(k=>!['limits','maxBytes','rpcTimeoutMs'].includes(k))),{rpcTimeoutMs,...request}=body,call=capturing?access.screenshot:reading?access.readScreenshot:access.releaseScreenshot,validate=capturing?capturePublicScreenshot:reading?capturePublicScreenshotChunk:capturePublicScreenshotReleased;result=validate(await wait(call({...reference,...request},rpcOptions(body)),signal),{tenantId,agentRunId:selected.id});
  }else if(selected.kind==='agent-screenshot-downloads'){
   const body=data(input,['context','screenshotId','sha256','byteLength','observedAt','rpcTimeoutMs'],['context','screenshotId','sha256','byteLength','observedAt']),{rpcTimeoutMs,...request}=body;await wait(access.downloadScreenshot({...reference,...request},screenshotSink,{...rpcOptions(body),signal}),signal);return {binary:true};
+ }else if(['agent-download-arms','agent-download-observations','agent-download-chunks','agent-download-releases'].includes(selected.kind)){
+  const kind=selected.kind,arming=kind==='agent-download-arms',reading=kind==='agent-download-chunks',allowed=arming?['context','limits','rpcTimeoutMs']:reading?['context','downloadId','offset','maxBytes','rpcTimeoutMs']:['context','downloadId','rpcTimeoutMs'],body=data(input,allowed,allowed.filter(k=>!['limits','maxBytes','rpcTimeoutMs'].includes(k))),{rpcTimeoutMs,...request}=body,call=arming?access.armDownload:reading?access.readDownload:kind==='agent-download-observations'?access.downloadInfo:access.releaseDownload,validate=arming?capturePublicDownloadArmed:reading?capturePublicDownloadChunk:kind==='agent-download-observations'?capturePublicDownloadInfo:capturePublicDownloadReleased;result=validate(await wait(call({...reference,...request},rpcOptions(body)),signal),{tenantId,agentRunId:selected.id});
+ }else if(selected.kind==='agent-download-files'){
+  const body=data(input,['context','downloadId','sha256','byteLength','completedAt','rpcTimeoutMs'],['context','downloadId','sha256','byteLength','completedAt']),{rpcTimeoutMs,...request}=body;await wait(access.downloadFile({...reference,...request},downloadSink,{...rpcOptions(body),signal}),signal);return {binary:true};
  }else if(selected.kind==='agent-run')result=run(access.getRun(reference));
  else if(selected.kind==='agent-invocation')result=invocation(access.getInvocation({tenantId,invocationId:selected.id}));
  else if(selected.kind==='agent-context'){

@@ -1,3 +1,4 @@
+import {createAgentDownloadHttpSink} from './agent-download-http.mjs';
 import {createScreenshotHttpSink} from './agent-screenshot-http.mjs';
 import {createServer} from 'node:http';
 import {createHash,randomUUID} from 'node:crypto';
@@ -98,7 +99,7 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
  if(!integer(maxBodyBytes,128,1048576)||!integer(maxAgentBodyBytes,128,32768)||!integer(maxConcurrentRequests,1,10000)||!integer(maxAgentEndRequests,1,256)||!integer(requestTimeoutMs,50,60000))throw new TypeError('Invalid HTTP request bounds');
  confirmed(registry);let active=0,activeEnds=0,authenticating=0,authenticatingEnds=0;
  const handle=async(req,res)=>{
-  const requestId='req_'+randomUUID();let held=false,controller,timer,onAbort,onClose,selected,screenshotSink;
+  const requestId='req_'+randomUUID();let held=false,controller,timer,onAbort,onClose,selected,screenshotSink,downloadSink;
   try{
    if(req.rawHeaders.length>128)fail('INVALID_REQUEST');
    if(header(req,'origin')!==undefined)fail('MANAGEMENT_ORIGIN_FORBIDDEN');
@@ -132,7 +133,8 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
     if(needsKey&&(typeof idempotencyKey!=='string'||!/^[\x21-\x7e]{1,128}$/.test(idempotencyKey)))fail('INVALID_IDEMPOTENCY_KEY');
     const input=needsBody?await body(req,bodyLimit,signal):undefined;aborted(signal);confirmed(registry);
     if(selected.kind==='agent-screenshot-downloads'){if(header(req,'range')!==undefined||header(req,'if-range')!==undefined)fail('INVALID_REQUEST');screenshotSink=createScreenshotHttpSink(res,requestId,signal);}
-    const response=await handleAgentHttp({selected,principal,input,idempotencyKey,access:agentAccess,registry,wait,signal,screenshotSink:screenshotSink?{start:screenshotSink.start,write:screenshotSink.write,finish:screenshotSink.finish}:undefined});if(response.binary)return;
+    if(selected.kind==='agent-download-files'){if(header(req,'range')!==undefined||header(req,'if-range')!==undefined)fail('INVALID_REQUEST');downloadSink=createAgentDownloadHttpSink(res,requestId,signal);}
+    const response=await handleAgentHttp({selected,principal,input,idempotencyKey,access:agentAccess,registry,wait,signal,screenshotSink:screenshotSink?{start:screenshotSink.start,write:screenshotSink.write,finish:screenshotSink.finish}:undefined,downloadSink:downloadSink?{start:downloadSink.start,write:downloadSink.write,finish:downloadSink.finish}:undefined});if(response.binary)return;
     send(res,requestId,response.status,{data:response.data},response.location?{location:response.location}:{});return;
    }
    let result;
@@ -160,6 +162,7 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
    else{const code=error instanceof SessionApiError&&Object.hasOwn(ERRORS,error.code)?error.code:'INTERNAL_ERROR',entry=ERRORS[code];send(res,requestId,entry[0],{error:{code,message:entry[1]}});}
   }finally{
    if(screenshotSink)await screenshotSink.cleanup();
+   if(downloadSink)await downloadSink.cleanup();
    if(timer)clearTimeout(timer);if(onAbort){req.off('aborted',onAbort);req.off('error',onAbort);res.off('close',onClose);}
    if(held==='end')activeEnds--;else if(held)active--;
   }
