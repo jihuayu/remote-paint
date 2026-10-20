@@ -7,14 +7,26 @@ import {ClientMemory,memoryPolicy} from '/protocol/client-memory.mjs';
 import {parseMetadataJson} from '/protocol/metadata-json.mjs';
 import {ControlLink} from '/control-channel.mjs';
 import {ViewerLifecycle} from '/lifecycle.mjs';
+import {ViewerConnection,ViewerTicketSource,ViewerConnectionError} from '/connection.mjs';
 const VIEWER_BUILD='__REMOTE_PAINT_VIEWER_BUILD__',EXPECTED_WASM_SHA='__REMOTE_PAINT_WASM_SHA__';
 const $=id=>document.getElementById(id),status=text=>$('status').textContent=text;
 const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
 const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$('control'),label:$('controlState'),feedbackLabel:$('feedbackState'),overlay:$('optimisticOverlay'),pointerOverlay:$('pointerOverlay'),send:message=>{if(controlLink.send(message))return;if(streamWorker)streamWorker.postMessage({type:'send',message});else if(socket?.readyState===1)socket.send(JSON.stringify(message));}});
+let ticketSource=null,publicSettings=null,publicConnection=null;const workerTickets=new Map();
 let streamWorker,renderer,presenter,socket,cleanupSession,cancelInitialization,heartbeat,lastPong,forceMainThread=false,generation=0,retryTimer,stopped=false,retryDelay=250;
 const controlLink=new ControlLink({onMessage:message=>{if(message.type==='CaptureError')status(message.message);else input.message(message);},onError:fail,onClose:peerId=>{input.reset();if(stopped)return;if(streamWorker)streamWorker.postMessage({type:'control-lost',peerId});else socket?.close(1012,'Control connection closed');}});
 function fail(error){$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';}
+function connectionState(state){window.remotePaintConnection=state;window.dispatchEvent(new CustomEvent('remote-paint-connection',{detail:state}));}
+function abortWorkerTickets(){for(const request of workerTickets.values())request.controller.abort();workerTickets.clear();}
 function workerMessage({data}){
+ if(data.type==='connection-cancel'){const request=workerTickets.get(data.requestId);if(request?.worker===streamWorker){request.controller.abort();workerTickets.delete(data.requestId);}return;}
+ if(data.type==='connection-request'){
+  const worker=streamWorker,id=data.requestId;
+  if(!Number.isSafeInteger(id)||id<1||!['connect','reconnect','refresh'].includes(data.reason)||!ticketSource||!publicSettings||workerTickets.size){worker?.postMessage({type:'connection-ticket',requestId:id,error:'VIEWER_TICKET_BUSY'});return;}
+  const request={worker,controller:new AbortController()};workerTickets.set(id,request);
+  void ticketSource.getTicket({signal:request.controller.signal,reason:data.reason}).then(grant=>{if(!request.controller.signal.aborted&&worker===streamWorker)worker.postMessage({type:'connection-ticket',requestId:id,grant});},error=>{if(!request.controller.signal.aborted&&worker===streamWorker)worker.postMessage({type:'connection-ticket',requestId:id,error:new ViewerConnectionError(error.code).code});}).finally(()=>{if(workerTickets.get(id)===request)workerTickets.delete(id);});return;
+ }
+ if(data.type==='connection-state'){connectionState(data.state);return;}
  if(data.type==='pong'){lastPong=Date.now();return;}
  if(data.type==='ready')window.remotePaintStartup=data.startup;
  else if(data.type==='welcome'){input.welcome(data.message);controlLink.open(data.streamUrl,data.message);$('build').textContent=`${data.message.producer.chromium} · Skia ${data.message.producer.skiaRevision.slice(0,12)} · CanvasKit ${data.message.renderer.canvaskit}`;}
@@ -63,11 +75,21 @@ const draw=(frame,resources)=>presenter.draw(frame,resources);
 async function connect(){
  if(stopped)return;clearTimeout(retryTimer);cleanupSession?.();const current=++generation;controlLink.reset();socket?.close();input.reset();presenter?.clear();
  document.body.dataset.ready='false';$('error').hidden=true;status('连接绘制通道');
+ if(publicSettings){
+  publicConnection?.destroy();publicConnection=null;
+  if(streamWorker){streamWorker.postMessage({type:'connect',connection:publicSettings});return;}
+  publicConnection=new ViewerConnection({...publicSettings,getTicket:request=>ticketSource.getTicket(request),onSocket:(ws,grant,auth)=>attachStream(ws,++generation,auth),onState:connectionState,onError:error=>fail(error)});
+  await publicConnection.start();return;
+ }
  if(streamWorker){streamWorker.postMessage({type:'connect',key:new URLSearchParams(location.hash.slice(1)).get('key')});return;}
  const key=new URLSearchParams(location.hash.slice(1)).get('key');if(!key)throw new Error('请使用服务端输出的完整 Viewer 链接');
  const config=await fetch('/session-config').then(response=>response.json());if(current!==generation||stopped||!lifecycle.runnable)return;
  const streamHost=config.nativePort?`${location.hostname}:${config.nativePort}`:location.host;
- const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${streamHost}/stream?key=${encodeURIComponent(key)}`);socket=ws;ws.binaryType='arraybuffer';
+ const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${streamHost}/stream?key=${encodeURIComponent(key)}`);attachStream(ws,current);
+}
+function attachStream(ws,current,authorization=null){
+ cleanupSession?.();controlLink.reset();socket?.close();input.reset();presenter?.clear();socket=ws;ws.binaryType='arraybuffer';document.body.dataset.ready='false';$('error').hidden=true;
+
  const memory=presenter.memory,gate=new LiveFrameGate({memory}),assets=new AssetCache({memory});let rejection,closed=false,welcome=false,receivedBytes=0,resourcesReceived=0,full=0,delta=0,recovering=false;
  const cleanup=()=>{if(closed)return;closed=true;gate.clear();assets.dispose();if(current===generation){presenter.clear();window.remotePaintMemory=memory.snapshot();}};cleanupSession=cleanup;
  const send=message=>{if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(message));};
@@ -99,7 +121,7 @@ async function connect(){
     if(size>LIVE_LIMITS.sceneBytes)throw new Error('Metadata budget exceeded');const message=parsed;
     if(message.type==='Welcome'){
      if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean'||typeof message.resourceMemory!=='boolean')throw new Error('Incompatible live handshake');
-     welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';input.welcome(message);controlLink.open(ws.url,message);retryDelay=250;$('build').textContent=`${message.producer.chromium} · Skia ${message.producer.skiaRevision.slice(0,12)} · CanvasKit ${renderer.canvaskit}`;return;
+     authorization?.acceptWelcome(message);welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';input.welcome(message);controlLink.open(ws.url,message);retryDelay=250;$('build').textContent=`${message.producer.chromium} · Skia ${message.producer.skiaRevision.slice(0,12)} · CanvasKit ${renderer.canvaskit}`;return;
     }
     if(!welcome)throw new Error('Message before handshake');
     if(input.message(message))return;
@@ -133,12 +155,14 @@ async function connect(){
  };
  ws.onclose=event=>{
   cleanup();if(current!==generation||stopped)return;controlLink.reset();input.reset();document.body.dataset.ready='false';
+  if(authorization)return;
   if(event.code===1008||event.code===4008){fail(new Error(rejection||event.reason||'连接与当前 Viewer 版本不兼容'));status('连接被拒绝，请检查错误后重新连接');return;}
   status('连接中断，正在重新同步');retryTimer=setTimeout(()=>connect().catch(fail),retryDelay);retryDelay=Math.min(2000,retryDelay*2);
  };
  ws.onerror=()=>{if(current===generation)status('连接暂时不可用，等待重连');};
 }
 function teardownViewer(){
+ publicConnection?.destroy();publicConnection=null;abortWorkerTickets();
  clearInterval(heartbeat);heartbeat=null;clearTimeout(retryTimer);cancelInitialization?.();cancelInitialization=null;
  cleanupSession?.();cleanupSession=null;generation++;controlLink.reset();input.reset();input.frame=null;socket?.close();socket=null;
  streamWorker?.terminate();streamWorker=null;presenter?.dispose();presenter=null;renderer=null;
@@ -159,8 +183,18 @@ const lifecycle=new ViewerLifecycle({hidden:document.hidden,start:async version=
 $('reconnect').onclick=()=>lifecycle.restart('manual');
 document.addEventListener('visibilitychange',()=>lifecycle.visibility(document.hidden));
 document.addEventListener('freeze',()=>lifecycle.freeze());
-document.addEventListener('resume',()=>{lifecycle.hidden=document.hidden;lifecycle.resume();});
-window.addEventListener('pagehide',event=>{if(event.persisted)lifecycle.freeze();else{stopped=true;lifecycle.close();}});
-window.addEventListener('pageshow',()=>{lifecycle.hidden=document.hidden;lifecycle.resume();});
+document.addEventListener('resume',()=>{if(stopped)return;lifecycle.hidden=document.hidden;lifecycle.resume();});
+window.addEventListener('pagehide',event=>{if(event.persisted)lifecycle.freeze();else{stopped=true;lifecycle.close();ticketSource?.destroy();}});
+window.addEventListener('pageshow',()=>{if(stopped)return;lifecycle.hidden=document.hidden;lifecycle.resume();});
 window.addEventListener('online',()=>{if(lifecycle.runnable)lifecycle.restart('online');});
+window.remotePaintViewer=Object.freeze({
+ connect(options){
+  if(ticketSource?.busy)throw new ViewerConnectionError('VIEWER_TICKET_BUSY');
+  if(!options||typeof options!=='object'||Array.isArray(options)||Object.getPrototypeOf(options)!==null&&Object.getPrototypeOf(Object.getPrototypeOf(options))!==null||Reflect.ownKeys(options).some(k=>!Object.hasOwn(Object.getOwnPropertyDescriptor(options,k),'value')))throw new ViewerConnectionError('VIEWER_INVALID_CONFIG');
+  const next=new ViewerTicketSource({...options,audience:location.origin});
+  ticketSource?.destroy();ticketSource=next;publicSettings=next.settings;stopped=false;lifecycle.frozen=false;lifecycle.restart('public-ticket');
+ },
+ disconnect(){const state=window.remotePaintConnection??{...publicSettings};stopped=true;ticketSource?.destroy();lifecycle.freeze();connectionState({...state,state:'paused'});},
+ get state(){return window.remotePaintConnection??{state:'paused'};}
+});
 if(document.hidden)lifecycle.suspend('hidden');else void lifecycle.run();

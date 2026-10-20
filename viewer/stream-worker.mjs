@@ -1,23 +1,43 @@
 import CanvasKitInit from '/canvaskit-worker.mjs';
 import {RendererRuntime} from '/renderer-runtime.mjs';
+import {ViewerConnection,ViewerConnectionError} from '/connection.mjs';
 import {ClientMemory,memoryPolicy} from '/protocol/client-memory.mjs';
 import {parseMetadataJson} from '/protocol/metadata-json.mjs';
 import {isHash} from '/protocol/wire.mjs';
 import {decodeAsset,AssetCache} from '/protocol/asset-wire.mjs';
 import {LIVE_VERSION,LIVE_LIMITS,LiveFrameGate,RecoveryRequired} from '/protocol/live-wire.mjs';
 const VIEWER_BUILD='__REMOTE_PAINT_VIEWER_BUILD__',EXPECTED_WASM_SHA='__REMOTE_PAINT_WASM_SHA__';
+let publicConnection=null,nextTicketRequest=0;const ticketRequests=new Map();
 let renderer,presenter,canvas,socket,cleanupSession,generation=0,retryTimer,retryDelay=250,stopped=false,peerId;
 const ui=(type,data={})=>postMessage({type,...data});
 const status=text=>ui('status',{text});
 const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
 const send=message=>{if(socket?.readyState===1)socket.send(JSON.stringify(message));};
 const draw=(frame,resources)=>presenter.draw(frame,resources);
-async function connect(key){
+function requestTicket({reason,signal}){
+ return new Promise((resolve,reject)=>{
+  if(signal.aborted){reject(new ViewerConnectionError('VIEWER_ABORTED'));return;}
+  const requestId=++nextTicketRequest;
+  const cleanup=()=>{signal.removeEventListener('abort',abort);ticketRequests.delete(requestId);};
+  const abort=()=>{cleanup();ui('connection-cancel',{requestId});reject(new ViewerConnectionError('VIEWER_ABORTED'));};
+  ticketRequests.set(requestId,{resolve:value=>{cleanup();resolve(value);},reject:error=>{cleanup();reject(error);}});signal.addEventListener('abort',abort,{once:true});ui('connection-request',{requestId,reason});
+ });
+}
+async function connect(key,connection){
  clearTimeout(retryTimer);cleanupSession?.();const current=++generation;socket?.close();presenter.clear();ui('reset');status('连接绘制通道');
+ publicConnection?.destroy();publicConnection=null;
+ if(connection){
+  publicConnection=new ViewerConnection({...connection,getTicket:requestTicket,onSocket:(ws,grant,auth)=>attachStream(ws,++generation,key,auth),onState:state=>ui('connection-state',{state}),onError:error=>ui('error',{message:error.message,code:error.code})});
+  await publicConnection.start();return;
+ }
  if(!key)throw new Error('请使用服务端输出的完整 Viewer 链接');
  const config=await fetch('/session-config').then(response=>response.json());if(current!==generation)return;
  const host=config.nativePort?`${location.hostname}:${config.nativePort}`:location.host;
- const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${host}/stream?key=${encodeURIComponent(key)}`);socket=ws;ws.binaryType='arraybuffer';
+ const ws=new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${host}/stream?key=${encodeURIComponent(key)}`);attachStream(ws,current,key);
+}
+function attachStream(ws,current,key,authorization=null){
+ cleanupSession?.();socket?.close();presenter.clear();ui('reset');socket=ws;ws.binaryType='arraybuffer';
+
  const memory=presenter.memory,gate=new LiveFrameGate({memory}),assets=new AssetCache({memory});let rejection,closed=false,welcome=false,receivedBytes=0,resourcesReceived=0,full=0,delta=0,recovering=false,queue=Promise.resolve(),queuedBytes=0;
  const cleanup=()=>{if(closed)return;closed=true;gate.clear();assets.dispose();if(current===generation){presenter.clear();ui('memory',{memory:memory.snapshot()});}};cleanupSession=cleanup;
  const recover=()=>{gate.recover();assets.clear();presenter.retain(new Set(gate.resources.keys()));if(!recovering){recovering=true;status('重新同步完整场景');send({type:'RequestKeyframe'});}};
@@ -45,7 +65,7 @@ async function connect(key){
    if(event.data instanceof ArrayBuffer){if(!welcome)throw new Error('Resource before handshake');const {kind,id,payload}=await verified;if(closed||current!==generation)return;if(kind==='chunk')assets.put(id,payload);else{gate.put(id,payload);resourcesReceived++;}return;}
    if(size>LIVE_LIMITS.sceneBytes)throw new Error('Metadata budget exceeded');const message=parsed;
    if(message.type==='Welcome'){
-    if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean'||typeof message.resourceMemory!=='boolean')throw new Error('Incompatible live handshake');welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';peerId=message.peerId;retryDelay=250;ui('welcome',{message,streamUrl:ws.url});return;
+    if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean'||typeof message.resourceMemory!=='boolean')throw new Error('Incompatible live handshake');authorization?.acceptWelcome(message);welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';peerId=message.peerId;retryDelay=250;ui('welcome',{message,streamUrl:ws.url});return;
    }
    if(!welcome)throw new Error('Message before handshake');
    if(['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState'].includes(message.type)){ui('control',{message});return;}
@@ -67,7 +87,7 @@ async function connect(key){
    else throw new Error('Unknown message');
   }catch(error){if(!closed&&current===generation){rejection=error.message;ui('error',{message:rejection});ws.close(4008,'Viewer rejected frame');}}finally{queuedBytes-=size;releaseQueue();}});
  };
- ws.onclose=event=>{cleanup();if(current!==generation||stopped)return;ui('reset');if(event.code===1008||event.code===4008){ui('error',{message:rejection||event.reason||'连接与当前 Viewer 版本不兼容'});status('连接被拒绝，请检查错误后重新连接');return;}status('连接中断，正在重新同步');retryTimer=setTimeout(()=>connect(key).catch(error=>ui('error',{message:error.message})),retryDelay);retryDelay=Math.min(2000,retryDelay*2);};
+ ws.onclose=event=>{cleanup();if(current!==generation||stopped)return;ui('reset');if(authorization)return;if(event.code===1008||event.code===4008){ui('error',{message:rejection||event.reason||'连接与当前 Viewer 版本不兼容'});status('连接被拒绝，请检查错误后重新连接');return;}status('连接中断，正在重新同步');retryTimer=setTimeout(()=>connect(key).catch(error=>ui('error',{message:error.message})),retryDelay);retryDelay=Math.min(2000,retryDelay*2);};
  ws.onerror=()=>{if(current===generation)status('连接暂时不可用，等待重连');};
 }
 self.onmessage=async event=>{try{
@@ -80,8 +100,10 @@ self.onmessage=async event=>{try{
   const memory=new ClientMemory(memoryPolicy({profile:message.memoryProfile}));
   const wasm=await fetch('/vendor/canvaskit.wasm',{cache:'force-cache'}).then(response=>response.arrayBuffer()),fetched=performance.now(),releaseWasm=memory.buffer('wasmDownload',wasm);
   try{renderer={canvaskit:'0.42.0',wasmSha256:await digest(wasm)};if(renderer.wasmSha256!==EXPECTED_WASM_SHA)throw new Error('Viewer Wasm integrity mismatch');const verified=performance.now();const ck=await CanvasKitInit({wasmBinary:wasm,locateFile:file=>new URL(`/vendor/${file}`,location.href).href});const initialized=performance.now();presenter=new RendererRuntime(ck,canvas,{gpu:message.gpu??'auto',memory,factory:CanvasKitInit,wasmBinary:wasm,locateFile:file=>new URL(`/vendor/${file}`,location.href).href});ui('ready',{renderer,startup:{wasmFetchMs:fetched-initializationStarted,wasmVerifyMs:verified-fetched,wasmInitMs:initialized-verified,wasmBytes:wasm.byteLength,presentation:presenter.presentation.mode,worker:true}});}finally{releaseWasm();}
- }else if(message.type==='connect')await connect(message.key);
+ }else if(message.type==='connection-ticket'){
+  const request=ticketRequests.get(message.requestId);if(request){if(message.error)request.reject(new ViewerConnectionError(message.error));else request.resolve(message.grant);}
+ }else if(message.type==='connect')await connect(message.key,message.connection);
  else if(message.type==='control-lost'&&message.peerId===peerId)socket?.close(1012,'Control connection closed');
  else if(message.type==='send')send(message.message);
- else if(message.type==='stop'){stopped=true;clearTimeout(retryTimer);cleanupSession?.();generation++;socket?.close();presenter?.dispose();close();}
+ else if(message.type==='stop'){publicConnection?.destroy();publicConnection=null;stopped=true;clearTimeout(retryTimer);cleanupSession?.();generation++;socket?.close();presenter?.dispose();close();}
  }catch(error){ui('error',{message:error.message});}};

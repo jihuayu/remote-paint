@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-18T22:40:56.815809+00:00",
+  "task": "K2a1",
+  "scope": "Actual existing main/Worker Viewer entry points share browser-safe public-ticket connection lifetime;Native/real-browser rendering and iframe embedding remain unqualified.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-ticket-runtime-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-ticket-runtime-checkpoint-v1.json",
+  "contract": {
+    "client": "Fixed gateway Origin,Session,role,audience;short grant path/format/expiry checks and first-version pin. No backend key option or backend import.",
+    "cancellation": "One callback admission;timed-out non-cooperative callback retains slot. Stop/destroy cancels waits and fences late sockets. Window callback survives worker/lifecycle restarts through a bounded cancellable bridge.",
+    "lifetime": "Pre-expiry refresh uses previousGrantId,defaultlead5s or remaininghalf forshortgrant. Max3consecutive retries configurable0..5;250..2000ms delays;default10s Welcome deadline.",
+    "binding": "Public Welcome explicitly binds viewerSessionId/viewerVersion/viewerGrantId/viewerRole,with readonly input/feedback false and control null;Source control Session tags preserved.",
+    "revocation": "1008/4008/normal1000 terminal. Proxy keeps safe upstreamcloseclassification but hides reasons. Explicit Windowdisconnect prevents resume/pageshow/online reconnect.",
+    "existing": "Legacy local private-key transport unchanged;original FrameGate/render/input modules reused. No extra renderer or Native browser introduced."
+  },
+  "tests": {
+    "newConnectionCases": 12,
+    "savedMainWorkerCases": 4,
+    "network": "ActualHTTP/WebSocket/SQLite/NodeSource/ControlLease;Session allocation and CDP are fixtures.",
+    "savedScripts": "Execute saved main/Worker sources after normal import/asset placeholder adaptation;actual network,authority and FrameGate. DOM/CanvasKit/presenter/Worker realm scheduler are explicit fixtures.",
+    "qualification": "Saved-entry script tests provepublicwiring/cancellation/fixturedisposal,not actualGPU/CanvasKit/browser resource retirement.",
+    "sdk": "Newisolated installedbrowserentry+strictdeclarations;SDKpackageverifier also recopiesexplicit currentcontrolfixture importclosure and hashedwsfixturedependency,never packageusersourcefallback."
+  },
+  "regressionHistory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-ticket-runtime-initial-regression-notes.json",
+  "remaining": [
+    "iframehost/child handshake and message/source/origin allowlist,publicViewerassets/CSP;completeembeddableJScomponent.",
+    "Publicreadonly/takeover/resize/lease/errors/performance API and realhost repeatedmount/unmount proof.",
+    "Nativeworker privateendpoint ownershipbridge,independentAgent/CDP authorization/managedwritefences.",
+    "Original8hterminal audit,realNative/renderedbrowser and wholecandidatefullregression;all41/N1finalaudit."
+  ],
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "K2": "Moved pendingto partial forimplementedpublicViewerconnection;remainingrequirementsnotcomplete.",
+  "wholeFullJsQualified": false,
+  "nativeProductionProviderComplete": false,
+  "eightHourPassed": false,
+  "noCommitPush": true
+}

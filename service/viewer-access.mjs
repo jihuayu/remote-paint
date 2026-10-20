@@ -98,7 +98,7 @@ export class ViewerAccess {
     url.protocol=url.protocol==='https:'?'wss:':'ws:';url.pathname='/stream';url.searchParams.set('key',key);
     upstream=new WebSocket(url,{origin:privateOrigin,perMessageDeflate:false,maxPayload:LIVE_LIMITS.resourceBytes+LIVE_LIMITS.sceneBytes,handshakeTimeout:this.#deadline});
     upstream.on('error',()=>{if(downstream)close(1011,'Viewer transport unavailable');});
-    upstream.on('close',()=>close(1011,'Viewer transport ended'));
+    upstream.on('close',code=>close([1000,1001,1008,1012,1013].includes(code)?code:1011,'Viewer transport ended'));
     await new Promise((resolve,reject)=>{upstream.once('open',resolve);upstream.once('error',reject);upstream.once('unexpected-response',(_req,res)=>{res.resume();reject(new Error('Private transport rejected'));});});
    })();
    try{await Promise.race([work,deadline]);}catch{reject(503);close(1011,'Viewer transport unavailable');return;}
@@ -129,7 +129,7 @@ export class ViewerAccess {
        if(bytes.length>LIVE_LIMITS.sceneBytes)throw new Error('Metadata limit');const message=JSON.parse(bytes.toString());
        if(message.type==='Welcome'){
         // Inline upstream control avoids exposing private pairing credentials.
-        packet=JSON.stringify({type:'Welcome',protocol:message.protocol,renderer:message.renderer,producer:message.producer,mode:message.mode,peerId:message.peerId,sessionId:message.sessionId,frameWindow:message.frameWindow,ackStage:message.ackStage,resourceMemory:message.resourceMemory,input:row.role==='controller'&&message.input===true,inputFeedback:row.role==='controller'&&message.inputFeedback===true,control:null,viewerRole:row.role});
+        packet=JSON.stringify({type:'Welcome',protocol:message.protocol,renderer:message.renderer,producer:message.producer,mode:message.mode,peerId:message.peerId,sessionId:message.sessionId,frameWindow:message.frameWindow,ackStage:message.ackStage,resourceMemory:message.resourceMemory,input:row.role==='controller'&&message.input===true,inputFeedback:row.role==='controller'&&message.inputFeedback===true,control:null,viewerRole:row.role,viewerSessionId:row.sessionId,viewerVersion:row.version,viewerGrantId:row.id});
        }else if(row.role==='readonly'&&['ControlGranted','ControlState','ControlDenied','InputAck','FeedbackState'].includes(message.type))return;
       }
       if(!bounded(ws,Buffer.byteLength(packet)))throw new Error('Queue limit');ws.send(packet,{binary});

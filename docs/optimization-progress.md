@@ -37,7 +37,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | C12 | 浏览器兼容与区域回退 | 部分实现 | WebGL 黑框及文字占位通过真实 Linux/CanvasKit Worker 像素验证；矩阵、裁剪、透明度单测通过。其他纹理、浏览器和复杂合成仍待验收。 |
 | C13 | 控制消息与重放队列调度 | 部分实现 | 默认 Worker 的控制连接改在主线程，绕过慢 SHA 和 Worker 的同步忙碌：注入 1.2 秒 Worker 阻塞时输入确认约 8 ms、撤销约 19 ms。主线程兼容路径仍可能被同步重放阻塞；数据解码切片和过期 viewport 取消待补。 |
 | K1 | 稳定 Session API | 部分实现 | SQLite注册表与HTTP创建/查询/释放已接通，可信Bearer租户与独立scope，幂等/TTL/配额/重启隔离及请求限制。Node ESM客户端带TypeScript声明、固定原请求/键的手动或显式重试、响应校验与取消/未知结果分类；实际丢失HTTP响应后重试仅分配一次。Mac/Linux各72项通过及严格类型检查退出0。连接票据与实际Native provider仍待接入，未发布完整公共SDK。见[客户端证据](evidence/session-client.json)及[接口说明](session-control-api.md)。 |
-| K2 | 可嵌入 Viewer | 待实现 | 按原清单验收，记录实际证据 |
+| K2 | 可嵌入 Viewer | 部分实现 | 原生JS公共票据连接已接入现有主线程/Worker，含刷新、重连、取消和断开栅栏；真实Node数据链路及保存入口脚本接线通过。iframe/CSP/宿主组件、完整resize/接管/事件API和真实渲染多次挂载卸载仍待验收。 |
 | K3 | 安全授权 | 部分实现 | 后端HTTP已使用可信Bearer租户认证与创建/读取/释放独立scope，管理客户端禁重定向和浏览器运行。现有控制子连接使用绑定原Viewer/Session的10秒一次性票据，错误Origin/跨Viewer/重放/过期拒绝；现有可选公共网关已用短Viewer ticket绑定租户/Session/区域/Ready代次/角色/期限/audience，并在真实Node Source消息路径执行只读限制、撤销和刷新；本地key留在私有Source。实际Native worker端点桥接、嵌入刷新和Agent/CDP独立授权仍待实现，不能据此声明K3完成。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 待实现 | 按原清单验收，记录实际证据 |
@@ -1667,3 +1667,12 @@ Worker 通道新增明确 closeOnly 模式，必须启用有效内核见证且�
 13条真实HTTP/WebSocket/SQLite/Node Source网络测试覆盖实际帧/输入、权限、撤销/刷新、过期、迟到解析器、连接/缓冲上限和关闭。初版新夹具的旧事件匹配及断连等待错误已保留失败日志并修正；冻结候选双平台结果由[访问检查点](evidence/viewer-access.json)独立核验。超时后不响应取消的解析器继续占用有界额度，迟到结果不能创建私有连接。
 
 该阶段不等于Native worker端点桥接或渲染通过；可嵌入Viewer、刷新重连、Agent/CDP独立授权和完整K5路径仍待完成。原始8小时测试和783文件冻结Source保持隔离。当前整份候选全量回归待其退出，41项计数仍9/14/18；未暂存、提交或推送。
+
+
+### K2a1：现有 Viewer 的公共票据连接与生命周期
+
+主线程和Worker共享独立browser-safe SDK入口，固定网关/Session/角色/audience并核对公开Welcome代次；刷新保留原Session期限，撤销/协议拒绝终止自动授权。迟到且不响应取消的回调继续占用唯一额度，不能在disconnect后创建socket；Window断开后resume/pageshow/online不自动恢复。后端仍不向浏览器交付Source key，原本地演示路径保留。
+
+12条新增连接合同测试使用实际HTTP/WebSocket/SQLite/Node Source；4条保存入口脚本测试证明主线程/Worker实际取得帧、刷新和释放夹具呈现器，DOM/CanvasKit/Worker调度为明确夹具，不能替代真实浏览器资源验收。初期跨realm对象与Socket Origin夹具失败日志均保留。私有SDK归档/安装消费者及严格类型检查一并复核，结果见[运行时检查点](evidence/viewer-ticket-runtime.json)。
+
+K2由待实现改为部分实现，41项计数为9完成/15部分/17待实现；iframe/CSP/宿主API、真实Native桥接、Agent/CDP栅栏及原8小时/整份全量回归仍未完成。未额外启动浏览器，未暂存、提交或推送。

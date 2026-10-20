@@ -30,7 +30,7 @@
 
 ## 服务端协议边界
 
-只读连接仅能发送首次 `Hello`、`FrameAck` 和 `RequestKeyframe`；伪造输入、控制租约、Agent/CDP、二进制或重复握手会关闭连接。其 Welcome 显式设置 `input:false`、`inputFeedback:false`、`control:null`。控制状态和编辑器反馈不会转发给只读连接。
+只读连接仅能发送首次 `Hello`、`FrameAck` 和 `RequestKeyframe`；伪造输入、控制租约、Agent/CDP、二进制或重复握手会关闭连接。其 Welcome 显式设置 `input:false`、`inputFeedback:false`、`control:null`，并携带 `viewerSessionId`、`viewerVersion`、`viewerGrantId` 和 `viewerRole` 供客户端核对。原 `sessionId` 继续用于 Source 控制租约标签。控制状态和编辑器反馈不会转发给只读连接。
 
 controller 连接另可发送 `AcquireControl`、`RenewControl`、`ReleaseControl`、`Input`。这些请求继续通过 Source 的原有 Session/page/viewport/lease/sequence 检查和输入队列栅栏。网关移除上游握手中的 `control-channel-v1`，使用现有单连接控制回退，因此浏览器不会取得私有 Source 密钥或 Native 配对票据。此阶段未提供 Agent/CDP 权限，也未完成外部 Agent 绕过路径的全面验收。
 
@@ -39,3 +39,6 @@ controller 连接另可发送 `AcquireControl`、`RenewControl`、`ReleaseContro
 默认最多 1024 个保留 grant、16 个活动/待建连接；每次连接期限 5 秒；已超时但未结束的解析器继续占用最多 16 个解析额度，额度耗尽时拒绝新的连接。客户端消息最多 32KiB，每连接每秒最多 512 条；单连接发送缓冲默认 32MiB，实例发送缓冲总和受两倍该值约束。超限关闭连接，不启动传输重试。进程重启、访问实例关闭会撤销全部内存票据；HTTP 工厂不持久化票据，也不恢复旧显示连接。
 
 证据见[访问检查点](evidence/viewer-access.json)。当前验收范围为真实 Node Source 协议及后端权限边界，整份候选全量测试和真实 Native 渲染测试仍等待原始 8 小时测试退出。
+
+
+公共握手保留上游 1000/1001/1008/1012/1013 关闭码的分类，理由使用固定文本；协议/版本拒绝不会变成可自动重试的临时故障。Viewer 的公共票据运行时与刷新/断开接口见[运行时说明](session-viewer-runtime.md)，实际 iframe 嵌入和 Native 端点桥接仍待完成。

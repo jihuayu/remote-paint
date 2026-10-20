@@ -8,6 +8,7 @@ export async function prepareViewerAssets(){
   ['/input.mjs',['viewer/input.mjs','text/javascript']],
   ['/control-channel.mjs',['viewer/control-channel.mjs','text/javascript']],
   ['/lifecycle.mjs',['viewer/lifecycle.mjs','text/javascript']],
+  ['/connection.mjs',['sdk/viewer-connection.mjs','text/javascript']],
   ['/frame-presenter.mjs',['viewer/frame-presenter.mjs','text/javascript']],
   ['/renderer-runtime.mjs',['viewer/renderer-runtime.mjs','text/javascript']],
   ['/damage.mjs',['viewer/damage.mjs','text/javascript']],
