@@ -1,0 +1,19 @@
+# WebContents 下载传输所有权接线：编译验证
+
+第27顺序补丁把NativeDownloadTransferRegistry挂到真实WebContentsUserData唯一实例。外层owner在tab寿命内只观察一个实际DownloadManager，内部最多保留一份当前文档核心；真实文档更换时原核心发起关闭和独立lease退休。它由受信任Page描述符完成现有token/活动主frame/原文档验证后才初始化，Native双开关缺失或认证失败时不会创建owner。描述符仍为transfersReady=false，没有开放arm/info/read/release命令。
+
+OnDownloadCreated读取实际item保留的NativeDownloadLease，由既有核心核对原Page见证、arm后准入和终生单认领。不枚举历史，不按当前frame修复unknown或改归另一文档。DownloadItem增加默认返回null的虚函数，DownloadItemImpl覆盖原有访问器；观察者不强制转换任意item，自定义、历史或mock对象可安全表示未准入。没有lease的对象不会被认领。
+
+RegistryForDocument只接受该WebContents真实、活动、非fenced的当前主frame指针，并通过已有浏览器CaptureNativeRequestContext取得不可变值。旧记录失效可能交付内部释放回调，所以先移动旧核心、清除旧owner，回到查找时用weak指针检查owner仍存在，并再次检查/捕获实际frame。Page描述符也在初始化后再检查handler weak指针、活动frame和实际document token。新下载观察回调不调用这些当前frame捕获去替换原请求见证。
+
+失效挂到PrimaryPageChanged、主frame渲染进程退出、WebContents销毁和manager停止。PrimaryPageChanged覆盖真正主Page切换、同RFH跨文档提交、BFCache恢复/预渲染激活和崩溃重建。导航开始可能只发起下载而不提交，不能在开始时废止它自己的arm；同文档导航也不换原Page记录。manager停止/页面关闭/析构均移除观察者，实际lease独立保留至文件/URL/item/map结算，不能凭owner删除归还预约。这些生命周期连接目前只有真实代码编译证据，尚无真实WebContents/RFH运行测试。
+
+新增2项运行合同通过base DownloadItem虚调用：实际item取得同一lease和原context，真实删除后lease已finished且不再持有item；自定义MockDownloadItem默认返回null且无需downcast。Linux ARM64最终无过滤387项（2新访问器、109既有Native、276上游及竞态）全部RUN/COMPLETED、零失败/禁用，与编译列表逐项一致，父版本差分新增恰2项且无移除。既有4份真实子进程报告各1项通过，本步骤没有新增子进程情形。Mac/Linux专项各13项通过，未重跑完整1435项或SDK。
+
+实际新增owner、PageHandler、DownloadManagerImpl及NavigationRequest四个TU以真实GN/Ninja编译命令产生ARM64对象，content/browser:browser依赖检查通过。没有整浏览器链接/运行、Native Mac、真实RFH/导航/cookies/历史重入或下载事件时序验收。生成脚本首轮只在work草稿因漏建目录失败，未写仓库补丁或修改实际Chromium；修正版本生成的第27补丁随后应用，已应用收据未覆盖。
+
+27补丁完整回放与62实际修改路径、35个Native组件逐一一致。自有容器实际终态/PID0/无OOM后删除，专用输出及Go缓存保留，原浏览器包19文件和观察器hash/身份保持。未访问禁止旧输出或演示，未提交、推送或使用子代理。
+
+下一步添加受信任版本化Page arm/info/read/release，并在文档失效、owner销毁和客户端断连时明确拒绝/结算有界的等待命令，避免丢失回调成为Playwright未结算请求。当前尚无这些公开传输命令，其退出回复策略未验收。随后处理原Playwright会话下载事件/元数据、Source私有目录与unarmed策略，最后显式启用并运行完整浏览器。Source预算第二开关仍关闭；早期IO、远端网络服务物理退休、未知启动和原8小时增长失败仍待。K6部分、41项10完成/17部分/14待办不变。
+
+见[结构化证据](evidence/native-download-transfer-owner.json)、[单ticket核心](native-download-transfer-registry.md)、[读取会话](native-download-read-session.md)与[进度](optimization-progress.md)。

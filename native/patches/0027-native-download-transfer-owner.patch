@@ -1,0 +1,234 @@
+--- a/components/download/public/common/download_item.cc
++++ b/components/download/public/common/download_item.cc
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
+ 
+ #include "components/download/public/common/download_item.h"
++#include "components/download/public/common/native_download_budget.h"
+ 
+ #include "services/network/public/cpp/shared_url_loader_factory.h"
+ 
+@@ -13,6 +14,10 @@
+ 
+ DownloadItem::Observer::~Observer() {
+   CHECK(!IsInObserverList());
++}
++
++scoped_refptr<NativeDownloadLease> DownloadItem::GetRemotePaintAdmission() const {
++  return nullptr;
+ }
+ 
+ void DownloadItem::SetStateForTesting(DownloadState state) {
+--- a/components/download/public/common/download_item.h
++++ b/components/download/public/common/download_item.h
+@@ -56,11 +56,16 @@
+ namespace download {
+ class DownloadFile;
+ class DownloadItemRenameHandler;
++class NativeDownloadLease;
+ 
+ // One DownloadItem per download. This is the model class that stores all the
+ // state for a download.
+ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
+  public:
++  // Staged Native managed-download ownership. Unknown/custom/history items
++  // default to no admission; observers must not downcast arbitrary items.
++  virtual scoped_refptr<NativeDownloadLease> GetRemotePaintAdmission() const;
++
+   // A Java counterpart will be generated for this enum.
+   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.download
+   enum DownloadState {
+--- a/components/download/public/common/download_item_impl.h
++++ b/components/download/public/common/download_item_impl.h
+@@ -325,7 +325,7 @@
+   // Native-only retained file-task handle; it survives item removal. Its
+   // snapshot is not a receipt for network jobs, item maps or retained paths.
+   scoped_refptr<DownloadFileCleanupState> GetRemotePaintFileCleanupState() const;
+-  scoped_refptr<NativeDownloadLease> GetRemotePaintAdmission() const;
++  scoped_refptr<NativeDownloadLease> GetRemotePaintAdmission() const override;
+   DownloadItemRenameHandler* GetRenameHandler() override;
+ #if BUILDFLAG(IS_ANDROID)
+   bool IsFromExternalApp() override;
+--- a/content/browser/BUILD.gn
++++ b/content/browser/BUILD.gn
+@@ -938,6 +938,8 @@
+     "download/data_url_blob_reader.h",
+     "download/download_item_utils.cc",
+     "download/download_manager_impl.cc",
++    "download/native_download_transfer_owner.cc",
++    "download/native_download_transfer_owner.h",
+     "download/download_manager_impl.h",
+     "download/download_request_utils.cc",
+     "download/drag_download_file.cc",
+--- a/content/browser/devtools/protocol/page_handler.cc
++++ b/content/browser/devtools/protocol/page_handler.cc
+@@ -37,6 +37,7 @@
+ #include "content/browser/devtools/devtools_agent_host_impl.h"
+ #include "content/browser/devtools/devtools_session.h"
+ #include "content/browser/devtools/protocol/browser_handler.h"
++#include "content/browser/download/native_download_transfer_owner.h"
+ #include "content/browser/devtools/protocol/devtools_mhtml_helper.h"
+ #include "content/browser/devtools/protocol/emulation_handler.h"
+ #include "content/browser/devtools/protocol/handler_helpers.h"
+@@ -544,6 +545,13 @@
+   const auto descriptor = remote_paint_download_bridge_.Describe(
+       token, document_token, actual_document, is_trusted_, active_top_frame);
+   if (!descriptor)
++    return Response::ServerError("Remote Paint download bridge unavailable");
++  auto self = weak_factory_.GetWeakPtr();
++  auto* contents = WebContents::FromRenderFrameHost(host_);
++  if (!contents || !NativeDownloadTransferOwner::GetOrCreateForWebContents(contents)
++                        ->RegistryForDocument(host_) || !self ||
++      !AssureTopLevelActiveFrame().IsSuccess() ||
++      host_->GetDocumentToken().ToString() != actual_document)
+     return Response::ServerError("Remote Paint download bridge unavailable");
+   *descriptor_version = descriptor->descriptor_version;
+   *transfers_ready = descriptor->transfers_ready;
+--- /dev/null
++++ b/content/browser/download/native_download_transfer_owner.cc
+@@ -0,0 +1,95 @@
++#include "content/browser/download/native_download_transfer_owner.h"
++
++#include <utility>
++#include "components/download/public/common/download_item.h"
++#include "components/download/public/common/native_download_budget.h"
++#include "components/download/public/common/native_download_request_context.h"
++#include "components/download/public/common/native_download_transfer_registry.h"
++#include "content/browser/download/download_manager_impl.h"
++#include "content/browser/renderer_host/render_frame_host_impl.h"
++#include "content/public/browser/browser_context.h"
++#include "content/public/browser/browser_thread.h"
++#include "content/public/browser/web_contents.h"
++
++namespace content {
++WEB_CONTENTS_USER_DATA_KEY_IMPL(NativeDownloadTransferOwner);
++NativeDownloadTransferOwner::NativeDownloadTransferOwner(WebContents* contents)
++    : WebContentsObserver(contents), WebContentsUserData(*contents),
++      enabled_(download::NativeDownloadRequestContext::EnabledForProcess()) {
++  DCHECK_CURRENTLY_ON(BrowserThread::UI);
++  if (enabled_) {
++    manager_ = contents->GetBrowserContext()->GetDownloadManager();
++    if (manager_) manager_->AddObserver(this);
++  }
++}
++NativeDownloadTransferOwner::~NativeDownloadTransferOwner() {
++  weak_.InvalidateWeakPtrs();
++  UnobserveManager();
++  // Destruction drops pending client callbacks; the core destructor still
++  // closes its actual reader and starts the independently retained lease gate.
++  registry_.reset(); original_page_.reset();
++}
++download::NativeDownloadTransferRegistry* NativeDownloadTransferOwner::RegistryForDocument(
++    RenderFrameHost* current) {
++  DCHECK_CURRENTLY_ON(BrowserThread::UI);
++  if (!enabled_ || closed_ || !manager_ || !web_contents() || !current ||
++      current != web_contents()->GetPrimaryMainFrame() || !current->IsActive() ||
++      current->IsNestedWithinFencedFrame()) return nullptr;
++  auto* actual = static_cast<RenderFrameHostImpl*>(current);
++  auto captured = DownloadManagerImpl::CaptureNativeRequestContext(
++      actual, actual, download::NativeDownloadRequestContext::Origin::kExplicitRequest);
++  if (!captured) return nullptr;
++  if (original_page_ && !original_page_->SamePageDocument(*captured)) {
++    auto self = weak_.GetWeakPtr();
++    RetireDocument();
++    if (!self || closed_ || !manager_ || !web_contents() ||
++        current != web_contents()->GetPrimaryMainFrame() || !current->IsActive() ||
++        current->IsNestedWithinFencedFrame()) return nullptr;
++    actual = static_cast<RenderFrameHostImpl*>(current);
++    captured = DownloadManagerImpl::CaptureNativeRequestContext(
++        actual, actual, download::NativeDownloadRequestContext::Origin::kExplicitRequest);
++    if (!captured) return nullptr;
++  }
++  if (!registry_) {
++    original_page_ = std::move(captured);
++    registry_ = std::make_unique<download::NativeDownloadTransferRegistry>(original_page_);
++  }
++  return registry_.get();
++}
++void NativeDownloadTransferOwner::OnDownloadCreated(DownloadManager* manager, download::DownloadItem* item) {
++  DCHECK_CURRENTLY_ON(BrowserThread::UI);
++  if (closed_ || manager != manager_ || !registry_ || !item) return;
++  // Read the admission retained by the actual item. The core matches its
++  // original immutable Page and arm-time/lifetime claim; no current frame can
++  // repair missing provenance or adopt a historical/other-Page item here.
++  auto lease = item->GetRemotePaintAdmission();
++  if (lease) registry_->Offer(std::move(lease));
++}
++void NativeDownloadTransferOwner::UnobserveManager() {
++  if (manager_) manager_->RemoveObserver(this);
++  manager_ = nullptr;
++}
++void NativeDownloadTransferOwner::ManagerGoingDown(DownloadManager* manager) {
++  DCHECK_CURRENTLY_ON(BrowserThread::UI);
++  if (manager != manager_) return;
++  UnobserveManager(); RetireDocument();
++}
++void NativeDownloadTransferOwner::RetireDocument() {
++  // Move first: a release callback delivered by Invalidate may re-enter browser
++  // teardown. Never touch this owner after running that callback.
++  auto previous = std::move(registry_);
++  original_page_.reset();
++  if (previous) previous->Invalidate();
++}
++void NativeDownloadTransferOwner::PrimaryPageChanged(Page&) {
++  // A download navigation can start without committing. Only the actual primary
++  // Page change retires its original document; same-document changes keep it.
++  RetireDocument();
++}
++void NativeDownloadTransferOwner::PrimaryMainFrameRenderProcessGone(base::TerminationStatus) {
++  RetireDocument();
++}
++void NativeDownloadTransferOwner::WebContentsDestroyed() {
++  closed_ = true; UnobserveManager(); RetireDocument();
++}
++}  // namespace content
+--- /dev/null
++++ b/content/browser/download/native_download_transfer_owner.h
+@@ -0,0 +1,47 @@
++#ifndef CONTENT_BROWSER_DOWNLOAD_NATIVE_DOWNLOAD_TRANSFER_OWNER_H_
++#define CONTENT_BROWSER_DOWNLOAD_NATIVE_DOWNLOAD_TRANSFER_OWNER_H_
++
++#include <memory>
++#include "base/memory/raw_ptr.h"
++#include "base/memory/ref_counted.h"
++#include "base/memory/weak_ptr.h"
++#include "content/common/content_export.h"
++#include "content/public/browser/download_manager.h"
++#include "content/public/browser/web_contents_observer.h"
++#include "content/public/browser/web_contents_user_data.h"
++
++namespace download {
++class NativeDownloadRequestContext;
++class NativeDownloadTransferRegistry;
++}
++namespace content {
++// One tab-lifetime manager observer, with at most one document-lifetime core.
++// Authentication stays in the trusted Page handler. No history enumeration or
++// response-time frame lookup is used when offering a new actual admission.
++class CONTENT_EXPORT NativeDownloadTransferOwner
++    : public WebContentsObserver,
++      public WebContentsUserData<NativeDownloadTransferOwner>,
++      public DownloadManager::Observer {
++ public:
++  ~NativeDownloadTransferOwner() override;
++  download::NativeDownloadTransferRegistry* RegistryForDocument(RenderFrameHost* current);
++  void OnDownloadCreated(DownloadManager* manager, download::DownloadItem* item) override;
++  void ManagerGoingDown(DownloadManager* manager) override;
++  void PrimaryPageChanged(Page& page) override;
++  void PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) override;
++  void WebContentsDestroyed() override;
++ private:
++  friend class WebContentsUserData<NativeDownloadTransferOwner>;
++  explicit NativeDownloadTransferOwner(WebContents* contents);
++  void RetireDocument();
++  void UnobserveManager();
++  const bool enabled_;
++  bool closed_ = false;
++  raw_ptr<DownloadManager> manager_ = nullptr;
++  scoped_refptr<download::NativeDownloadRequestContext> original_page_;
++  std::unique_ptr<download::NativeDownloadTransferRegistry> registry_;
++  base::WeakPtrFactory<NativeDownloadTransferOwner> weak_{this};
++  WEB_CONTENTS_USER_DATA_KEY_DECL();
++};
++}  // namespace content
++#endif

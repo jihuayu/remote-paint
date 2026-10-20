@@ -23,6 +23,7 @@
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_file.h"
 #include "components/download/public/common/download_item_impl.h"
+#include "components/download/public/common/mock_download_item.h"
 #include "components/download/public/common/download_item_impl_delegate.h"
 #include "components/download/public/common/download_target_info.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -826,6 +827,20 @@ TEST_F(RemotePaintDownloadTransferTest, FailedPhysicalCleanupNeverReportsRelease
   EXPECT_TRUE(registry.Release(ticket, done.GetCallback())); model.Drain(); ASSERT_TRUE(done.IsReady()); EXPECT_FALSE(done.Take());
   EXPECT_EQ(0, OwnedReferences(id)); EXPECT_TRUE(lease->failed()); EXPECT_FALSE(lease->finished()); EXPECT_EQ(1u, Budget::ReservedItems());
   EXPECT_TRUE(registry.Info(ticket)); EXPECT_FALSE(registry.Arm(7, base::Seconds(10)));
+}
+
+class RemotePaintDownloadOwnerAccessTest : public RemotePaintDownloadReadTest {};
+TEST_F(RemotePaintDownloadOwnerAccessTest, ActualItemVirtualAccessRetainsOriginalLeaseAndContext) {
+  Model model(tasks_); auto context = RequestContext(); model.Start(true, 7, true, context); model.Drain();
+  download::DownloadItem* item = model.delegate.items.begin()->second.get();
+  auto lease = item->GetRemotePaintAdmission(); ASSERT_TRUE(lease); EXPECT_EQ(LeaseFor(model), lease);
+  EXPECT_EQ(context, lease->request_context()); EXPECT_EQ(item, lease->transfer_item());
+  model.RetireAll(); EXPECT_TRUE(lease->finished()); EXPECT_EQ(nullptr, lease->transfer_item()); EXPECT_EQ(0u, Budget::ReservedItems());
+  EXPECT_EQ(context, lease->request_context());
+}
+TEST_F(RemotePaintDownloadOwnerAccessTest, CustomItemDefaultsToNoAdmissionWithoutDowncast) {
+  download::MockDownloadItem custom; download::DownloadItem* item = &custom;
+  EXPECT_FALSE(item->GetRemotePaintAdmission()); EXPECT_EQ(0u, Budget::ReservedItems());
 }
 
 TEST_F(RemotePaintDownloadBudgetTest, FailedCleanupHoldsQuotaUntilActualProcessExit) {
