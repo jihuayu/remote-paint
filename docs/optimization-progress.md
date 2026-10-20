@@ -1865,3 +1865,12 @@ provider持有当前Native派生密钥，关闭/不可用/存储故障/shutdown�
 canonical Native worker、合格broker和真实浏览器通过生产provider/attach/内核见证/持久journal及公开ticket，收到Native Welcome与FrameCommit，尚不是SDK像素验收。确切拥有的浏览器PID经boot/namespace/父子/startTicks/exe再次验证后SIGKILL，2秒后provider/Registry仍Ready且解析器仍返回端点；验收实际1。外层清理closed、证据retired、精确CID消失和两个宿主PID回收均确认，错误为空。见[Native健康失败证据](native-provider-health-failure.md)。
 
 下一步资源健康事件经私有Unavailable立即传播，先撤销能力再慢清理，随后同一真实故障和完整Native生命周期/像素验收。生产代码和旧测试/SDK字节不变，精确继承既有938项等收据，不把失败变成成功。41项9/15/17及原8小时失败保持，未自动重跑或提交推送。
+
+
+### Native浏览器/broker死亡的及时撤销
+
+Native资源绑定四个终止事件并在Ready前重查，worker先建立停止栅栏和固定Unavailable私有通知，再abort/慢清理；channel经既有provider/Registry路径立即撤销Ready和派生密钥。14新合同、相关103项及952项双平台完整回归通过。注册期重入close遗留4监听器的补充反例已修复；原失败和夹具修正过程完整保留。
+
+两组真正canonical Native在公开ticket收到Welcome/FrameCommit后，实际拥有浏览器/broker SIGKILL均在原2秒回执后观察窗口撤销Ready和端点，根均0；namespace退役/精确CID消失/4宿主PID回收确认。没有Node shim、公开SDK像素或全生命周期完成声明。见[Native健康范围](native-health-notification.md)。
+
+接下来真实Page崩溃、Native生命周期/恢复及公开SDK像素；41项9/15/17和原8小时失败保持，未自动重跑或提交推送。

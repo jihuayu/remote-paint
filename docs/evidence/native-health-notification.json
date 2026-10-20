@@ -1,0 +1,253 @@
+{
+  "at": "2026-10-19T11:57:01.767430+00:00",
+  "task": "Native-health-propagation",
+  "status": "Native-browser-broker-health-revocation-qualified",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-health-v1/frozen-version.json",
+  "executedManifestSha256": "9544e55f362540dd5a760982f2ea62afc2aba120d64f38efb784a82892b5fcf1",
+  "sourceFilesExecuted": 933,
+  "fullJs": {
+    "mac": {
+      "tests": 952,
+      "pass": 937,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "83b57a3b59ab593a95b35af508ae654594addc42af3b8d374fb2ec3d7ce010dd"
+    },
+    "linux": {
+      "tests": 952,
+      "pass": 946,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "5312e57a2a74fd2426b43cc2f5be96995dd66d0aa733d1a36a19f7a155ed31c5"
+    }
+  },
+  "testFiles": 108,
+  "newContracts": 14,
+  "relatedContracts": 103,
+  "beforeFixCausalContracts": {
+    "tests": 13,
+    "pass": 1,
+    "fail": 12,
+    "actualExitCode": 1
+  },
+  "initialBeforeFixtureOrderingDefectRetained": true,
+  "registrationCloseBeforeFix": {
+    "tests": 1,
+    "pass": 0,
+    "fail": 1,
+    "actualExitCode": 1
+  },
+  "registrationCloseLateListenerCountBeforeFix": 4,
+  "nativeHealthEvents": [
+    "Browser disconnected",
+    "Broker failure",
+    "Page crash",
+    "Page close"
+  ],
+  "nativeHealthSubscriberCapacity": 1,
+  "nativeEventListenerCapacity": 4,
+  "latchedOnceNoRawEventPayload": true,
+  "healthBindingBeforeReadyAndFinalSnapshot": true,
+  "listenerRegistrationReentrantCloseOwnedUntilInitializeSettles": true,
+  "intentionalCloseDetachesBeforeNativeShutdown": true,
+  "recoverableCapturePressureDoesNotRevoke": true,
+  "workerOptionalSynchronousHealthSubscriptionAfterAuthenticationBeforeInitialize": true,
+  "workerStopFenceBeforeNotificationAndAbort": true,
+  "privateUnavailableFields": [
+    "protocol",
+    "sessionId",
+    "type",
+    "code"
+  ],
+  "privateUnavailableCode": "WORKER_RESOURCE_UNAVAILABLE",
+  "privateTerminalReason": "resource-unavailable",
+  "parentChannelFaultCode": "CHANNEL_RESOURCE_UNAVAILABLE",
+  "privateUnavailableBeforeSlowCleanup": true,
+  "genericWorkerWithoutHookUnchanged": true,
+  "publicReadyAndSessionSchemaUnchanged": true,
+  "actualNodeChildHealthNotificationAndReentryVerified": true,
+  "actualNativeFaults": {
+    "browser": {
+      "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-health-actual-browser-v1/manifest.json",
+      "manifestSha256": "7ef32c7442d24610a9a61d31d93bace1c20ad4553c7592f8050a134a72dd41e7",
+      "actualRootExitCode": 0,
+      "containerId": "a698438efe87ebcef6177339bc399a11fdb7ff6838f3352f3d0a1dbeca6a2ed8",
+      "healthObservation": {
+        "budgetMs": 2000,
+        "elapsedMs": 20.98716599999989,
+        "providerAvailable": false,
+        "registryStillReady": false,
+        "privateEndpointReturnedAfterLoss": false,
+        "privateControlChannel": {
+          "phase": "closing",
+          "closeOnly": false,
+          "startSent": true,
+          "available": false,
+          "workerClose": "unconfirmed",
+          "transportExited": false,
+          "closeTimedOut": false,
+          "runtimeWitness": "confirmed",
+          "failure": "CHANNEL_RESOURCE_UNAVAILABLE"
+        },
+        "physicalNativeTermination": {
+          "scope": "exact owned Native process identity revalidated before signal",
+          "bootId": "b4055da7-94b0-4014-a2a3-0fe10d3f843d",
+          "root": {
+            "pid": 7,
+            "ppid": 1,
+            "startTicks": "30929059",
+            "namespace": "pid:[4026535170]",
+            "exe": "/usr/local/bin/node"
+          },
+          "target": {
+            "pid": 22,
+            "ppid": 7,
+            "startTicks": "30929109",
+            "namespace": "pid:[4026535170]",
+            "exe": "/browser/headless_shell"
+          },
+          "signal": "SIGKILL",
+          "signalDelivered": true
+        }
+      },
+      "nativeTransport": {
+        "actualCanonicalNativeReady": true,
+        "actualNativeGatewayPrivateKeyAgreement": true,
+        "actualPublicReadonlyWelcome": true,
+        "actualNativeFrameCommit": true,
+        "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+        "streamOrigin": "http://192.168.215.8:4176",
+        "commitFields": [
+          "frameId",
+          "pageEpoch",
+          "type"
+        ],
+        "renderedPixelsQualified": false
+      },
+      "retirementKind": "container-removed",
+      "cleanupErrors": []
+    },
+    "broker": {
+      "manifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-health-actual-broker-v1/manifest.json",
+      "manifestSha256": "4200ada32ad1df4e562141b6a4636e5f209b827c845006a5228f853b70d364b8",
+      "actualRootExitCode": 0,
+      "containerId": "3c0b9c77289353acc103ae17aa1365eb08108be8dd09c0ca91762ee6667d8980",
+      "healthObservation": {
+        "budgetMs": 2000,
+        "elapsedMs": 0.2209170000000995,
+        "providerAvailable": false,
+        "registryStillReady": false,
+        "privateEndpointReturnedAfterLoss": false,
+        "privateControlChannel": {
+          "phase": "closing",
+          "closeOnly": false,
+          "startSent": true,
+          "available": false,
+          "workerClose": "unconfirmed",
+          "transportExited": false,
+          "closeTimedOut": false,
+          "runtimeWitness": "confirmed",
+          "failure": "CHANNEL_RESOURCE_UNAVAILABLE"
+        },
+        "physicalNativeTermination": {
+          "scope": "exact owned Native process identity revalidated before signal",
+          "bootId": "b4055da7-94b0-4014-a2a3-0fe10d3f843d",
+          "root": {
+            "pid": 7,
+            "ppid": 1,
+            "startTicks": "30929061",
+            "namespace": "pid:[4026535275]",
+            "exe": "/usr/local/bin/node"
+          },
+          "target": {
+            "pid": 19,
+            "ppid": 7,
+            "startTicks": "30929105",
+            "namespace": "pid:[4026535275]",
+            "exe": "/project/native/bin/aarch64-unknown-linux-gnu/remote-paint-broker"
+          },
+          "signal": "SIGKILL",
+          "signalDelivered": true
+        }
+      },
+      "nativeTransport": {
+        "actualCanonicalNativeReady": true,
+        "actualNativeGatewayPrivateKeyAgreement": true,
+        "actualPublicReadonlyWelcome": true,
+        "actualNativeFrameCommit": true,
+        "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+        "streamOrigin": "http://192.168.215.9:4176",
+        "commitFields": [
+          "frameId",
+          "pageEpoch",
+          "type"
+        ],
+        "renderedPixelsQualified": false
+      },
+      "retirementKind": "container-removed",
+      "cleanupErrors": []
+    }
+  },
+  "actualCanonicalWorkerNoNodeAdapter": true,
+  "actualOwnedBrowserLossWithinOriginalObservationGate": true,
+  "actualOwnedBrokerLossWithinSameObservationGate": true,
+  "observationBudgetMsAfterActorReceipt": 2000,
+  "clockScope": "Host observation after exact owned signal actor acknowledgement; not physical kill-to-revoke or business latency measurement",
+  "priorActualFailureRootExitCode": 1,
+  "priorActualFailureStillReadyAndEndpointReturned": true,
+  "originalActualFailureArchive": {
+    "at": "2026-10-19T11:37:28.960206+00:00",
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/outputs/remote-paint-native-provider-health-failure-20261019-v1.zip",
+    "sha256": "0c9f077e6a68142f98aea722b4fce9db7c9c614e4e92b661e7f172e1ab1c725a",
+    "bytes": 477835,
+    "files": 36,
+    "sourceFiles": 932,
+    "patchPaths": [
+      "docs/evidence/native-provider-health-failure.json",
+      "docs/native-provider-health-failure.md",
+      "docs/optimization-progress.md",
+      "tests/fixtures/owned-native-process-actor.mjs",
+      "tests/verify-native-provider-health.mjs"
+    ],
+    "patchRoundtripVerified": true,
+    "actualCanonicalNativeReadyWelcomeFrameCommit": true,
+    "actualBrowserLossHealthRevocationFailed": true,
+    "actualRootExitCode": 1,
+    "terminalAndCleaned": true,
+    "productionNativeProviderQualified": false,
+    "eightHourPassed": false,
+    "noCommitPush": true
+  },
+  "allExactNativeContainerIdsAbsent": true,
+  "allKnownHostPidsAbsent": [
+    26181,
+    26196,
+    26180,
+    26197
+  ],
+  "allNamespaceRetirementsConfirmed": true,
+  "nativePageRendererCrashActualQualified": false,
+  "nativeTtlCancelRecoveryMatrixQualified": false,
+  "renderedPublicSdkPixelsQualified": false,
+  "productionNativeProviderFullyQualified": false,
+  "sdkBytesAndAllRecordedInstalledInputsUnchanged": true,
+  "inheritedSdkArchives": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "eba83b1de6afd850d86bbf719673fcf04d6d55fdbe09672874dc8b8cba6a1bda",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "cabbac864439e1e8d66bf644f9b20326e9b3544c20d01746963cae4fb21fd6da"
+  },
+  "sdkInstalled77Node16PythonTscBothMacMypyInherited": true,
+  "allAgentCdpFenced": false,
+  "originalGrowthFixed": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noForcedBrowserGc": true,
+  "noCommitPush": true
+}

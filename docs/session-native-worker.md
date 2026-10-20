@@ -95,3 +95,8 @@ Source 长测的 PSS 失败现在会在原三项断言之前保存完整有界�
 ## Native私有流密钥启动（Node合同范围）
 
 worker现从认证后的owner Start与固定Session/租户/区域派生独立流密钥，经资源工厂传给固定4175/4176 Native transport；实际启动必须确认同一密钥，Ready仍只返回版本，不通过stdout分发密钥。普通worker没有默认派生能力。Node协议/真实子进程/HTTP+WS通过，Native适配器端口使用stub，实际生产Native worker与拥有端点解析仍待后续。见[私有启动检查点](native-private-bootstrap.md)。
+
+
+## Native健康订阅
+
+Native资源要求实际Browser/Page/Broker的on/off接口，在Ready之前绑定并复核Browser连接、Page关闭/崩溃及Broker终止状态；单一订阅在终止时锁存失效，不把capture压力当作死亡。私有worker在慢清理前通知父端，关闭仍持有晚到初始化资源，注册期关闭的监听器也在initialize终结后解绑。真实浏览器/broker死亡已撤销Ready和端点；Page实际崩溃、完整生产生命周期和公开SDK像素仍待验收。见[健康范围](native-health-notification.md)。

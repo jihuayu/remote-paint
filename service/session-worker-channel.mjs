@@ -5,7 +5,7 @@ const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const plain=v=>v!==null&&typeof v==='object'&&Object.getPrototypeOf(v)===Object.prototype;
 const exact=(v,keys)=>plain(v)&&Reflect.ownKeys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(v,k),'value'));
 const session=v=>typeof v==='string'&&/^ses_[A-Za-z0-9_-]{1,124}$/.test(v);
-const reasons=new Set(['owner-disconnected','worker-terminated','owner-lease-expired','released','protocol-rejected','startup-failed','startup-expired','start-expired','runtime-stop']);
+const reasons=new Set(['owner-disconnected','worker-terminated','owner-lease-expired','released','protocol-rejected','startup-failed','startup-expired','start-expired','runtime-stop','resource-unavailable']);
 function deferred(){let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});void promise.catch(sink);return {promise,resolve,reject};}
 export class SessionWorkerChannelError extends Error {
  constructor(code,startSent=false){super('Session worker channel is unavailable');this.name='SessionWorkerChannelError';this.code=code;this.startSent=startSent;}
@@ -128,6 +128,7 @@ export class SessionWorkerChannel {
    this.#everReady=true;if(this.#closing)return;
    clearTimeout(this.#readyTimer);this.#phase='ready';this.#ready.resolve(Object.freeze({version:message.version}));return;
   }
+  if(message.type==='Unavailable'&&exact(message,['type','protocol','sessionId','code'])&&message.code==='WORKER_RESOURCE_UNAVAILABLE'&&this.#hello&&this.#startSent){if(!this.#closing)this.#fault('CHANNEL_RESOURCE_UNAVAILABLE');return;}
   if(['Closed','CleanupIncomplete'].includes(message.type)&&exact(message,['type','protocol','sessionId','reason','code'])&&this.#workerAck===null&&reasons.has(message.reason)&&(message.code===null||typeof message.code==='string'&&/^WORKER_[A-Z0-9_]{1,64}$/.test(message.code))){
    this.#workerAck=Object.freeze({type:message.type,reason:message.reason,code:message.code});
    if(!this.#closing)this.#fault(message.type==='CleanupIncomplete'?'CHANNEL_WORKER_CLEANUP_INCOMPLETE':'CHANNEL_WORKER_STOPPED');

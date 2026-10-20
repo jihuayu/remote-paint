@@ -1,0 +1,15 @@
+# Native 健康撤销通知
+
+修复已真实复现的缺口：浏览器死亡后，owner heartbeat仍能让私有worker、provider和Registry保持Ready，解析器继续返回端点。NativeSessionResource现在只允许一个受信任健康订阅，绑定四个事件：Browser disconnected、Broker failure、Page crash/close。注册后重新核对连接/关闭/崩溃状态才发布Ready；终止只锁存一次，不转发事件参数。可恢复captureError和资源压力不触发撤销。关闭先立标记、清除自身能力与订阅，再等待初始化真正结束，移除监听器后关闭Native资源，保留晚到资源的清理所有权。
+
+通用worker在认证Start和同步资源工厂完成后、initialize前接入可选同步subscribeUnavailable；返回值必须为同步unsubscribe函数。健康失效先建立同一个stop promise/fence，再发固定私有报文 `{protocol:'session-worker-v1',sessionId,type:'Unavailable',code:'WORKER_RESOURCE_UNAVAILABLE'}`，随后abort并等待清理；取消重入不能再次初始化或发晚到Ready，停止只unsubscribe一次。没有健康接口的普通资源保持原行为。报文不含密钥、URL、PID、原始错误或请求，公共Ready和Session/SDK合同未变。
+
+私有channel只在Hello/Start之后接受这一个精确通知，立即以CHANNEL_RESOURCE_UNAVAILABLE失效，从既有provider通知路径同步撤销派生密钥和Registry Ready。慢清理的Closed/CleanupIncomplete允许resource-unavailable原因，仍独立等待实际transport退出和外层完整namespace退役；收到Unavailable本身不能释放配额或当作已经清理。
+
+新增14合同，相关103项通过。修正夹具顺序后的初版13项为1通过12失败；更早一版跨层夹具先启动worker后接通道，丢失Hello，源码/日志和原因分别保留。实现后32项阶段通过，再补注册监听器时同步重入close的合同，先复现4个遗留监听器；修复为持有注册直到initialize终结后统一解绑，避免误报closed。真实Node子进程验证通知先于Closed、重入看到已有停止栅栏、unsubscribe一次且退出1，私有原因未回传。108文件952项完整回归Mac937通过15平台跳过、Linux946通过6平台跳过，实际均0，无失败取消。
+
+同一canonical Native worker、相同合格broker/真实浏览器指纹在两个新拥有命名空间执行，没有Node shim，也未修改生产目录binary。两个会话均先用实际派生密钥通过Native gateway和公开readonly ticket，收到Welcome及Native FrameCommit；随后分别对经过bootID/namespace/父子/startTicks/exe核对的浏览器和broker进程SIGKILL。沿用原2秒回执后观察窗口：两例provider、Registry Ready和私有端点都已撤销，channel均为CHANNEL_RESOURCE_UNAVAILABLE，根验收实际均0。观察读数约20.99ms/0.22ms从信号actor回执后开始，不是物理死亡到撤销或业务时延测量。原失败中2秒后仍Ready且返回端点的根退出1日志与ZIP保持。
+
+两组Registry/provider shutdown均closed；独立打开journal均retired，container-removed证据存在，精确CID再次查询均消失，4个已知宿主Node/attach PID均ESRCH，清理错误为空。SDK、类型、验证器及所有已记录安装合同输入字节未变，继承双平台77 Node/16 Python、严格TSC及Mac Mypy精确收据，不冒充新包安装。Native实际过程使用已安装后端SDK。
+
+当前证据证明浏览器和broker死亡撤销。Page/renderer crash只验证事件合同，真实崩溃、生产Native TTL/取消/恢复矩阵、公开SDK绘制像素、全部Agent/CDP栅栏、N1轻微丢包/物理时延和原8小时增长仍待完成。FrameCommit不是像素完成。41项9/15/17、原8小时失败与192MiB门槛保持，未自动重跑8小时、强制浏览器GC、改公共演示/采样器或暂存提交推送。见[范围收据](evidence/native-health-notification.json)。

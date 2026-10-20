@@ -24,13 +24,15 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
  identity=structuredClone(identity);
  const expected=Buffer.from(identity.ownerKeyHash,'hex'),controller=new AbortController(),frameBuffer=Buffer.alloc(maxFrameBytes);
  let bytes=0,resource=null,started=false,starting=Promise.resolve(),startSettled=true,initializing=false,invalidOwner=false,stopping=false,finished=false,closeTask=null,
-  failure=null,reason=null,leaseTimer=null,initializeTimer=null,startTimer,outputAvailable=true,resolveDone;
+  failure=null,reason=null,leaseTimer=null,initializeTimer=null,startTimer,outputAvailable=true,resolveDone,resourceUnsubscribe=null;
  const done=new Promise(resolve=>{resolveDone=resolve;});
  const emit=value=>{
   if(!outputAvailable||output.destroyed)return;
   try{output.write(JSON.stringify({protocol:'session-worker-v1',sessionId:identity.sessionId,...value})+'\n',error=>{if(error)lost();});}catch{lost();}
  };
+ const detachResource=()=>{const unsubscribe=resourceUnsubscribe;resourceUnsubscribe=null;try{unsubscribe?.();}catch{failure??='WORKER_HEALTH_UNSUBSCRIBE_FAILED';}};
  const cleanup=()=>{
+  detachResource();
   clearTimeout(startTimer);clearTimeout(leaseTimer);clearTimeout(initializeTimer);
   input.off('data',data);input.off('end',lost);input.off('error',lost);output.off('error',lost);
   // Each worker owns these streams until its process exits. Final writes can
@@ -49,6 +51,8 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
   // Publish the close fence before abort listeners or resource callbacks run.
   let resolveClose;closeTask=new Promise(resolve=>{resolveClose=resolve;});
   const timeout=setTimeout(()=>{failure??='WORKER_CLOSE_TIMEOUT';finish('cleanup-incomplete',1);resolveClose();},closeTimeoutMs);
+  detachResource();
+  if(code==='WORKER_RESOURCE_UNAVAILABLE')emit({type:'Unavailable',code:'WORKER_RESOURCE_UNAVAILABLE'});
   controller.abort(why);
   void Promise.resolve().then(async()=>{
    let closed=false;
@@ -82,6 +86,13 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
     resource=createResource({sessionId:identity.sessionId,tenantId:identity.tenantId,request:structuredClone(value.request),signal:controller.signal,...(deriveResourceSecret?{resourceSecret:secret}:{})});
     if(resource&&typeof resource.then==='function'){void Promise.resolve(resource).catch(()=>{});throw new TypeError('Asynchronous resource factory is unsupported');}
     if(!resource||typeof resource.initialize!=='function'||typeof resource.close!=='function')throw new TypeError('Expected a synchronous resource owner');
+    if(resource.subscribeUnavailable!==undefined){
+     if(typeof resource.subscribeUnavailable!=='function')throw new TypeError('Invalid resource health subscription');
+     const unsubscribe=resource.subscribeUnavailable(()=>{void stop('resource-unavailable','WORKER_RESOURCE_UNAVAILABLE');});
+     if(unsubscribe&&typeof unsubscribe.then==='function'){void Promise.resolve(unsubscribe).catch(()=>{});throw new TypeError('Asynchronous health subscription is unsupported');}
+     if(typeof unsubscribe!=='function')throw new TypeError('Expected synchronous health unsubscribe');resourceUnsubscribe=unsubscribe;
+     if(stopping){detachResource();return;}
+    }
    }catch{invalidOwner=true;void stop('startup-failed','WORKER_RESOURCE_FACTORY_FAILED');return;}
    startSettled=false;
    starting=Promise.resolve().then(async()=>{

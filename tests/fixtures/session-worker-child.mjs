@@ -5,7 +5,7 @@ import {runSessionWorker} from '../../service/session-worker.mjs';
 import {witness} from './runtime-witness-records.mjs';
 import {deriveNativeTransportKey} from '../../service/native-transport-key.mjs';
 const mode=process.argv[2]??'normal',key='a'.repeat(64),delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-let closes=0,initializes=0,reentries=0,reentryHadFence=false,leaf=null,worker,secretDerivations=0,secretMatched=false;
+let closes=0,initializes=0,reentries=0,reentryHadFence=false,leaf=null,worker,secretDerivations=0,secretMatched=false,healthSubscriptions=0,healthUnsubscribes=0;
 const runtimeWitness=mode==='witness-invalid'?()=>({...witness(),security:{...witness().security,noNewPrivs:0}}):mode==='witness-throw'?()=>{throw Error('private-proof-secret');}:mode==='witness-async'?()=>Promise.reject(Error('private-proof-secret')):null;
 const result=runSessionWorker({runtimeWitness,identity:{sessionId:'ses_fixture',tenantId:'a',region:'test',ownerKeyHash:createHash('sha256').update(key).digest('hex')},
  deriveResourceSecret:mode==='private-bootstrap'?value=>{secretDerivations++;return deriveNativeTransportKey(value);}:null,
@@ -15,7 +15,7 @@ const result=runSessionWorker({runtimeWitness,identity:{sessionId:'ses_fixture',
   if(mode==='factory-fail')throw new Error('private-start-secret');
   if(mode==='async-factory')return Promise.reject(new Error('private-async-secret'));
   let starting,initialized=false,closePromise;
-  if(mode==='abort-reentrant')context.signal.addEventListener('abort',()=>{reentries++;const fence=worker.stop();reentryHadFence=typeof fence?.then==='function';},{once:true});
+  if(['abort-reentrant','resource-unavailable'].includes(mode))context.signal.addEventListener('abort',()=>{reentries++;const fence=worker.stop();reentryHadFence=typeof fence?.then==='function';},{once:true});
   const initialize=()=>starting??=(async()=>{
    initializes++;
    if(mode==='startup-fail')throw new Error('private-initialize-secret');
@@ -26,8 +26,9 @@ const result=runSessionWorker({runtimeWitness,identity:{sessionId:'ses_fixture',
    }
    initialized=true;return {version:'fixture-worker-v1'};
   })();
-  return {initialize,close:()=>closePromise??=(async()=>{
+  const resource={initialize,close:()=>closePromise??=(async()=>{
    closes++;
+   if(mode==='resource-unavailable')await delay(80);
    if(mode==='close-timeout')await new Promise(()=>{});
    if(mode==='early-close')return {status:'closed'};
    try{await starting;}catch{}
@@ -35,9 +36,11 @@ const result=runSessionWorker({runtimeWitness,identity:{sessionId:'ses_fixture',
    if(mode==='close-fail')throw new Error('private-close-secret');
    return {status:mode==='unconfirmed'?'unconfirmed':'closed'};
   })()};
+  if(mode==='resource-unavailable')resource.subscribeUnavailable=notify=>{healthSubscriptions++;const timer=setTimeout(()=>notify(Error('private-health-error')),30);return()=>{healthUnsubscribes++;clearTimeout(timer);};};
+  return resource;
  }});
 worker=result;
 const outcome=await result.done;
 // Non-secret fixture counts/owned PID are test-only stderr, never production Ready.
-process.stderr.write(JSON.stringify({closes,initializes,reentries,reentryHadFence,leafPid:leaf?.pid??null,leafReaped:leaf?leaf.exitCode!==null||leaf.signalCode!==null:true,outcome,...(mode==='private-bootstrap'?{secretDerivations,secretMatched}:{})})+'\n');
+process.stderr.write(JSON.stringify({closes,initializes,reentries,reentryHadFence,leafPid:leaf?.pid??null,leafReaped:leaf?leaf.exitCode!==null||leaf.signalCode!==null:true,outcome,...(mode==='private-bootstrap'?{secretDerivations,secretMatched}:{}),...(mode==='resource-unavailable'?{healthSubscriptions,healthUnsubscribes}:{})})+'\n');
 await new Promise(resolve=>process.stdout.write('',resolve));process.exit(outcome.exitCode);

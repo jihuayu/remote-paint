@@ -13,3 +13,8 @@ owner key与URL只写私有控制帧，状态与错误均不回显；请求/输�
 意外退出/协议失败会在建立关闭等待点和撤销可用状态后通知onUnavailable一次，允许回调重入close。回调异常不恢复可用性，也不把其原错误暴露给外部。首次合同发现两个问题，已保留失败并修复：直接退出路径先清除了回调而漏报健康丢失；关闭后重复start复用了历史Ready。当前通道未直接连接Registry的Native provider，Session TTL/健康持久化传播、实际容器归属、真实Native角色/票据继续待验收。
 
 合同含真实Node worker的认证、心跳、启动途中/Ready后取消、异常退出与逻辑清理结果；流模型覆盖同批Ready/Closed、背压、限长/畸形、期限及迟到真实退出。Native入口仍未执行，不能将这些合同当作真实Browser、Viewer或整组进程验收。关于close与exit事件的区别见[Node子进程文档](https://nodejs.org/download/release/latest-v22.x/docs/api/child_process.html#event-close)。
+
+
+## Native资源失效的提前通知
+
+Hello和Start之后新增精确四字段私有Unavailable报文：protocol、sessionId、type、code，其中type为Unavailable、code固定WORKER_RESOURCE_UNAVAILABLE。channel立刻产生CHANNEL_RESOURCE_UNAVAILABLE并关闭，父端同步撤销Ready/密钥；随后Closed/CleanupIncomplete允许resource-unavailable原因。通知不含原始故障参数，不能当作transport退出或完整namespace退役。公共Ready仍只返回版本。见[健康通知及真实故障对照](native-health-notification.md)。
