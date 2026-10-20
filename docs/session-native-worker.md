@@ -1,6 +1,6 @@
 # Session Native worker 边界（开发中）
 
-`service/session-worker.mjs` 实现一进程、一Session的私有控制通道，`native-session-resource.mjs` 持有异步Native启动结果并清理，`native-session-worker.mjs` 是待接入受管Linux容器的入口。当前尚未接通SessionRegistry的实际Native provider和容器归属账本，真实Chromium/Browser进程集合及Viewer票据验收继续待做。
+`service/session-worker.mjs` 实现一进程、一Session的私有控制通道，`native-session-resource.mjs` 持有异步Native启动结果并清理，`native-session-worker.mjs` 是待接入受管Linux容器的入口。同库运行时身份/分配意图账本已通过独立合同，但尚未接通SessionRegistry的实际Native provider与容器驱动，真实Chromium/Browser进程集合及Viewer票据验收继续待做。
 
 ## 启动与通道
 
@@ -18,8 +18,20 @@ owner EOF、控制流错误、进程disconnect、SIGTERM/SIGINT与owner租约到
 
 每个worker进程退出前，stdio保留不捕获Session对象的错误接收器，防止最终Closed通知遇EPIPE后变成未处理异常。资源关闭与最后一条通知送达分别判断。外层运行时负责完整namespace退役，入口在关闭结束后有限刷新并退出；整个进程不用于复用下一个Session。
 
+## 持久运行时意图
+
+`SqliteSessionStore` 现使用同一私有SQLite文件保存运行时记录，schema为v2。打开合法v1账本时先验证全部Session、操作、幂等绑定与引用，再事务迁移，保留原Session修订号；空、外来或损坏账本不会被重建。运行时有独立修订号，避免破坏Registry对逐次写入确认的要求，排他锁、0600文件、外键及FULL同步保持。
+
+内部接口为 `claimRuntimeProvider`、`loadRuntime`、`commitRuntime`、`releaseRuntimeProvider`。每区域先固定deployment和daemon身份，以私有Symbol令牌排他持有；已有活动Session却没有原运行时绑定时拒绝直接接管。每Session只保留一个运行时身份，记录owner key哈希、配置哈希、固定镜像ID及不可改绑的容器名/ID，不保存初始URL或原始key。
+
+普通阶段为 `intent → requested → created → ready → closing → retired`。派发意图只能确认一次，必须早于真实创建；重获所有权后的原记录只能向关闭/退役推进，不能重新派发或发布Ready。关闭开始后拒绝晚到的派发与Ready，允许把恢复查明的原容器ID绑定到关闭中的记录。已派发却没有已知ID的分配，不能仅凭暂时查无对象或“没有效果”的猜测写成退役。Native Session的Ready和配额归还受对应账本状态约束。
+
+退役字段只保存受信任内部provider提供的证据种类与hash，账本本身不执行或验证Docker/内核回收。后续driver必须真正取得并验证相应证据后才能写retired；测试中的容器ID、hash与外部文件效果均是明确夹具。45项初版合同通过后补充了实际Ready进程SIGKILL及Registry恢复，最终同737文件快照在Mac/Linux各46项定向合同全部通过；完整回归各419项无失败，Mac410通过/9平台跳过，Linux415通过/4平台跳过。错误SQL字段查询和夹具API名称问题的初版失败均保留。见[账本检查点](evidence/session-runtime-intent-store.json)。
+
+当前独立8小时仍运行先前冻结的720文件副本，不包含这个新增服务层；它的结果不能代替Native provider、TTL/健康传播、整组namespace回收或Viewer角色/票据验收。
+
 ## 当前证据与剩余条件
 
 轻量合同运行真实Node worker与叶子子进程，验证认证前无分配、重复启动、同批Start/Close、父端EOF与租约失效、心跳、晚启动收尾、提前关闭假回执、abort同步重入、失败脱敏、UTF-8分片/限长和期限。stdout在释放中关闭的失败已保留：此前移除了错误处理器，资源虽关闭仍因EPIPE退出1；修复后正常完成关闭。测试夹具自身在setup失败时回收worker，叶子同时在继承stdin失联后结束，避免重复历史上的测试进程泄漏。
 
-下一步需要持久的运行时资源身份/排他归属、真实容器或等效内核集合的创建与退役证明、Registry取消/TTL/恢复/健康变化接入，以及Native Gateway真实read/control显示角色和单次票据。Native集成及浏览器负载在当前独立8小时长测结束后执行。没有把本轮进程夹具或Native入口语法检查当作这些验收。
+下一步需要把已验证的持久运行时意图接到真实分配，补真实容器或等效内核集合的创建与退役证明、Registry取消/TTL/恢复/健康变化接入，以及Native Gateway真实read/control显示角色和单次票据。Native集成及浏览器负载在当前独立8小时长测结束后执行。没有把本轮进程夹具或Native入口语法检查当作这些验收。

@@ -1,0 +1,36 @@
+// Actual Engine configuration acceptance only. This fixture never starts the
+// created container and cannot prove Native readiness or PID retirement.
+import assert from 'node:assert/strict';
+import {request} from 'node:http';
+import {randomUUID,createHash} from 'node:crypto';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {resolve,join} from 'node:path';
+import {DockerMetadataClient} from '../service/docker-metadata-client.mjs';
+import {planDockerRuntime,verifyDockerRuntime,verifyDockerRuntimeOwnership} from '../service/docker-runtime-spec.mjs';
+import {SqliteSessionStore} from '../service/session-store.mjs';
+import {records} from './fixtures/session-store-records.mjs';
+const socketPath=process.env.REMOTE_PAINT_DOCKER_SOCKET,daemonId=process.env.REMOTE_PAINT_DOCKER_DAEMON,imageId=process.env.REMOTE_PAINT_DOCKER_IMAGE,output=resolve(process.env.REMOTE_PAINT_DOCKER_SPEC_OUTPUT);assert.ok(socketPath&&daemonId&&imageId);await mkdir(output,{mode:0o700});
+const hash=b=>createHash('sha256').update(b).digest('hex'),save=async(name,data)=>writeFile(join(output,name),JSON.stringify(data,null,2)+'\n',{flag:'wx',mode:0o600});
+const client=new DockerMetadataClient({socketPath,daemonId}),store=new SqliteSessionStore({path:join(output,'journal.sqlite')}),owner=Symbol('metadata-fixture'),at=new Date().toISOString(),suffix=randomUUID(),deploymentId='metadata-'+suffix,region='metadata-fixture';let row,plan,containerId=null,requested=false,inspection,verified,error,cleanup={status:'unconfirmed'};
+// Deliberately limited fixture transport: one create and exact-ID deletion.
+// An ambiguous create retains its requested journal row; no create retry.
+async function mutate(method,path,body){
+ const bytes=body?Buffer.from(JSON.stringify(body)):null;return new Promise((resolve,reject)=>{let response,parts=[],size=0;const req=request({socketPath,method,path:'/v1.45'+path,agent:false,headers:bytes?{'content-type':'application/json','content-length':bytes.length}:{}},res=>{response=res;res.on('data',b=>{size+=b.length;if(size>65536)req.destroy(new Error('Fixture mutation response limit'));else parts.push(b);});res.on('end',()=>{clearTimeout(timer);const text=Buffer.concat(parts).toString('utf8');try{resolve({status:res.statusCode,value:text?JSON.parse(text):null});}catch{reject(new Error('Fixture mutation reply invalid'));}});res.on('error',()=>reject(new Error('Fixture mutation response failed')));});const timer=setTimeout(()=>req.destroy(new Error('Fixture mutation exceeded5s')),5000);req.on('error',()=>{clearTimeout(timer);response?.destroy();reject(new Error('Fixture mutation unavailable;effect unknown'));});req.end(bytes);});
+}
+try{
+ await client.daemon();const image=await client.inspectImage(imageId);await mkdir(join(output,'project'));await mkdir(join(output,'browser'));await writeFile(join(output,'project/worker.mjs'),'// Metadata-only fixture; never started.\nsetInterval(()=>{},1000);\n');
+ plan=planDockerRuntime({sessionId:'ses_'+suffix,tenantId:'metadata-fixture',region,ownerKeyHash:hash(suffix)},{deploymentId,daemonId,imageId,projectPath:join(output,'project'),browserPath:join(output,'browser'),projectManifestSha256:hash(await readFile(join(output,'project/worker.mjs'))),browserManifestSha256:hash('metadata-only-no-browser'),workerEntry:'worker.mjs',imageEnvironment:image.document.Config.Env??[]});await save('plan.json',plan);store.claimRuntimeProvider(owner,{region,deploymentId,daemonId,createdAt:at});const batch=records(suffix,'metadata-fixture');batch.sessions[0].region=region;batch.bindings[0].defaults.region=region;store.commit(batch);
+ row={sessionId:plan.sessionId,tenant:'metadata-fixture',region,deploymentId,daemonId,ownerKeyHash:plan.ownerKeyHash,specDigest:plan.specDigest,imageId,containerName:plan.containerName,containerId:null,state:'intent',requestStarted:false,version:null,closeReason:null,retirement:null,createdAt:at,updatedAt:at};store.commitRuntime(row,{owner});row={...row,state:'requested',requestStarted:true};store.commitRuntime(row,{owner});requested=true;
+ const created=await mutate('POST','/containers/create?name='+encodeURIComponent(plan.containerName),plan.create);assert.equal(created.status,201);assert.match(created.value.Id,/^[a-f0-9]{64}$/);containerId=created.value.Id;row={...row,state:'created',containerId};store.commitRuntime(row,{owner});inspection=await client.inspectContainer(containerId);await save('inspection.json',inspection);verified=verifyDockerRuntime(plan,inspection,{containerId});assert.equal(verified.state,'created');assert.equal(verified.pid,0);assert.equal(verified.running,false);
+}catch(e){error={name:e.name,code:e.code??null,message:e.message};}
+finally{
+ try{
+  if(plan&&requested){
+   const current=await client.inspectContainer(containerId??plan.containerName);
+   if(current.found){const identity=verifyDockerRuntimeOwnership(plan,current,{containerId});containerId=identity.containerId;assert.equal(current.document.State.Status,'created');assert.equal(current.document.State.Pid,0);row={...row,state:'closing',closeReason:'released',containerId};store.commitRuntime(row,{owner});const removed=await mutate('DELETE','/containers/'+containerId+'?force=true');assert.equal(removed.status,204);const absent=await client.inspectContainer(containerId);assert.equal(absent.found,false);const evidence={at:new Date().toISOString(),identity,removedStatus:removed.status,absent,neverStarted:true};await save('removal.json',evidence);row={...row,state:'retired',retirement:{kind:'container-removed',evidenceSha256:hash(Buffer.from(JSON.stringify(evidence)))}};store.commitRuntime(row,{owner});const state=store.load(),session=state.sessions[0],op=structuredClone(state.operations[0]);op.operation.status='failed';op.operation.error={code:'METADATA_FIXTURE_COMPLETE',message:'Metadata-only fixture did not start a worker'};store.commit({sessions:[{...session,state:'failed',reserved:false,closeReason:'released'}],operations:[op]});assert.equal(store.load().sessions[0].reserved,false);cleanup={status:'closed',containerId,neverStarted:true,runtimeRecordedRetired:true,sessionQuotaReleased:true};
+   }else cleanup={status:'unconfirmed',reason:'Requestedunknownallocationcannotretirefrom404',containerId};
+  }else cleanup={status:'closed',neverRequested:true};
+ }catch(e){cleanup={status:'unconfirmed',name:e.name,code:e.code??null,message:e.message,containerId};}
+ try{store.releaseRuntimeProvider(owner);}catch{}store.close();await client.close();
+}
+const report={at:new Date().toISOString(),status:!error&&cleanup.status==='closed'?'passed':'failed',scope:'Actual pinnedlocalDockerEngineAPI/createplan/strictidentity+namespace/security/resource/mountmetadataacceptanceandexactCIDcleanup. Containerneverstarted;NO Nodeworker/Chromium/NativeSource/PIDnamespace-retirement/TTL/SDK/8h/all41 proof.',daemonId,imageId,containerId,verified,cleanup,error};await save('report.json',report);console.log(JSON.stringify({status:report.status,containerId,cleanup,error}));assert.equal(report.status,'passed');

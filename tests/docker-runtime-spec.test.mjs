@@ -1,0 +1,28 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {planDockerRuntime,verifyDockerRuntime,verifyDockerRuntimeOwnership,DockerRuntimeSpecError} from '../service/docker-runtime-spec.mjs';
+const identity={sessionId:'ses_fixture',tenantId:'tenant-fixture',region:'test',ownerKeyHash:'a'.repeat(64)},config={deploymentId:'deployment-fixture',daemonId:'daemon-fixture',imageId:'sha256:'+'b'.repeat(64),projectPath:'/fixture/project',browserPath:'/fixture/browser',projectManifestSha256:'c'.repeat(64),browserManifestSha256:'d'.repeat(64),imageEnvironment:['PATH=/usr/local/bin']};
+function fixture(){const plan=planDockerRuntime(identity,config),c=structuredClone(plan.create),inspection={found:true,daemon:{id:config.daemonId},document:{Id:'e'.repeat(64),Name:'/'+plan.containerName,Image:plan.imageId,Config:{...c,Env:c.Env},HostConfig:c.HostConfig,Mounts:c.HostConfig.Mounts.map(m=>({Type:'bind',Source:m.Source,Destination:m.Target,RW:false,Propagation:'rprivate'})),State:{Status:'created',Running:false,Pid:0},NetworkSettings:{Ports:{}}}};return {plan,inspection};}
+const rejected=e=>e instanceof DockerRuntimeSpecError;
+test('runtime plan fixes private namespaces,read-only sources,finitecaps and hash identity without a pageURL/ownersecret',()=>{
+ const {plan,inspection}=fixture();assert.equal(plan.specDigest.length,64);assert.equal(verifyDockerRuntime(plan,inspection).containerId,'e'.repeat(64));assert.ok(!JSON.stringify(plan).includes('ownerKey='));assert.deepEqual(plan.create.HostConfig.CapDrop,['ALL']);assert.equal(plan.create.HostConfig.PidMode,'');assert.equal(plan.create.HostConfig.ReadonlyRootfs,true);assert.deepEqual(plan.create.HostConfig.PortBindings,{});assert.deepEqual(plan.create.Healthcheck,{Test:['NONE']});
+});
+test('wrongengine,ID,name,image,managedlabels,entrypoint and runtime environment never authorize ownership',()=>{
+ const edits=[v=>v.daemon.id='other',v=>v.document.Name='/other',v=>v.document.Image='sha256:'+'f'.repeat(64),v=>v.document.Config.Labels['org.remote-paint.runtime.owner-hash']='f'.repeat(64),v=>v.document.Config.Labels['org.remote-paint.runtime.extra']='unapproved',v=>v.document.Config.Env.push('LD_PRELOAD=/tmp/foreign.so'),v=>v.document.Config.Env.push('UNAPPROVED=1'),v=>v.document.Config.Env.push('NODE_OPTIONS=--inspect'),v=>v.document.Config.Env.push('REMOTE_PAINT_UNEXPECTED=1'),v=>v.document.Config.Entrypoint=['sh'],v=>v.document.Config.Cmd=['other.mjs']];for(const edit of edits){const {plan,inspection}=fixture();edit(inspection);assert.throws(()=>verifyDockerRuntime(plan,inspection),rejected);}const {plan,inspection}=fixture();assert.throws(()=>verifyDockerRuntime(plan,inspection,{containerId:'f'.repeat(64)}),rejected);
+});
+test('hostPID,sharednamespaces,capabilities,privilegeddevices,writablemounts,restartandresource drift all reject',()=>{
+ const edits=[h=>h.PidMode='host',h=>h.Init=false,h=>h.CgroupnsMode='host',h=>h.Privileged=true,h=>h.ReadonlyRootfs=false,h=>h.CapAdd=['SYS_ADMIN'],h=>h.CapDrop=[],h=>h.SecurityOpt=[],h=>h.Devices=[{}],h=>h.DeviceRequests=[{}],h=>h.Binds=['/:/host'],h=>h.Mounts[0].ReadOnly=false,h=>h.RestartPolicy={Name:'always',MaximumRetryCount:0},h=>h.PidsLimit=0,h=>h.Memory=0,h=>h.NanoCpus=0,h=>h.AutoRemove=true,h=>h.PortBindings={'1/tcp':[{HostIp:'0.0.0.0',HostPort:'80'}]},h=>h.Runtime='other'];for(const edit of edits){const {plan,inspection}=fixture();edit(inspection.document.HostConfig);assert.throws(()=>verifyDockerRuntime(plan,inspection),rejected);}
+});
+test('top-level mount provenance and runningPID consistency are independently checked',()=>{
+ for(const edit of [d=>d.Mounts[0].RW=true,d=>d.Mounts[0].Source='/host',d=>d.Mounts.push({...d.Mounts[0],Destination:'/host'}),d=>d.State.Running=true,d=>d.State.Pid=12,d=>d.NetworkSettings.Ports={'80/tcp':[{HostIp:'0.0.0.0',HostPort:'80'}]}]){const {plan,inspection}=fixture();edit(inspection.document);assert.throws(()=>verifyDockerRuntime(plan,inspection),rejected);}
+});
+test('a mutated plan cannot weaken its own validation or change its fixed source fingerprints',()=>{
+ for(const edit of [p=>p.create.HostConfig.Privileged=true,p=>p.specDigest='f'.repeat(64),p=>p.create.Env.push('REMOTE_PAINT_URL=secret'),p=>p.containerName='other',p=>p.projectManifestSha256='f'.repeat(64)]){const {plan,inspection}=fixture();edit(plan);assert.throws(()=>verifyDockerRuntime(plan,inspection),rejected);}
+});
+test('source order is canonical and unsafe paths,unpinnedimages,emptyidentity and traversing worker entries reject',()=>{
+ const a=planDockerRuntime(identity,config),b=planDockerRuntime({...identity},{...config});assert.deepEqual(a,b);const {plan,inspection}=fixture();inspection.document.HostConfig.Mounts=inspection.document.HostConfig.Mounts.map(m=>Object.fromEntries(Object.entries(m).reverse()));assert.equal(verifyDockerRuntime(plan,inspection).containerId,'e'.repeat(64));for(const patch of [{imageId:'latest'},{workerEntry:'../escape.mjs'},{workerEntry:'/absolute.mjs'},{workerEntry:'bad\n.mjs'},{projectPath:'relative'},{browserPath:config.projectPath},{daemonId:''},{imageEnvironment:['PATH=x','PATH=y']},{imageEnvironment:['LD_PRELOAD=x']}])assert.throws(()=>planDockerRuntime(identity,{...config,...patch}),TypeError);
+});
+
+test('ownership can authorize removal of an owned unsafe object but does not attest its isolation',()=>{
+ const {plan,inspection}=fixture();inspection.document.HostConfig.PidMode='host';assert.equal(verifyDockerRuntimeOwnership(plan,inspection).containerId,'e'.repeat(64));assert.throws(()=>verifyDockerRuntime(plan,inspection),rejected);inspection.document.Config.Labels['org.remote-paint.runtime.owner-hash']='f'.repeat(64);assert.throws(()=>verifyDockerRuntimeOwnership(plan,inspection),rejected);
+});

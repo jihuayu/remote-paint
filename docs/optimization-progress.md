@@ -1509,3 +1509,12 @@ Mac与实际Linux ARM64各157项Rust通过，固定4线程，保留原200ms关�
 Linux全量JS回归先因夹具缺少可写产物挂载失败，修正后又复现4369字节mountinfo被内核分成4053和316字节返回。原通用读取器把合法续读误报超限；专用挂载表读取器现在在一个已打开描述符上读到EOF，仍限64KiB并受原5秒期限控制，cgroup采样还比较前后完整挂载表。smaps_rollup及其他进程记录保持单次读取规则。20项相关合同在Mac为11通过/9平台跳过、Linux全部通过；新增UTF8夹具初版提前给EOF的失败也保留。随后同一717文件版本的400项完整JS在Mac为391通过/9平台跳过、Linux为396通过/4平台跳过，实际均退出0，见[读取修复](evidence/linux-mountinfo-short-read.json)与[全量回归](evidence/gateway-fragment-full400.json)。
 
 本轮不改变41项状态：9项在列明范围完成、14项部分实现、18项待实现。实际Native provider的持久资源身份、完整namespace回收、Registry TTL/健康传播、真实只读/控制Viewer票据及SDK公共发布仍待接通；worker逻辑关闭或CLI退出0不能作为整组Native进程已回收的证明。
+
+
+## K1 共享SQLite运行时意图
+
+新增同库schema v2运行时身份/派发记录，合法v1数据先完整验证再事务迁移，原Session修订号保留，运行时使用独立修订号。固定区域deployment/daemon、私有排他owner、一个Session一个不可改绑容器身份；恢复后原记录只能关闭，不重发create或Ready。已派发但ID不明不能凭查无对象写成已退役，Session的就绪和配额归还要与运行时记录一致。退役记录本身只保存受信任内部证据hash，真实Docker/内核事实仍须后续driver验证。
+
+最终737文件快照在Mac与Linux各46项定向合同通过、无跳过；完整419项均无失败，分别410/415通过及9/4平台跳过。实际Node进程SIGKILL覆盖intent、requested、created、Ready与未提交事务，Ready后的Registry恢复不重复创建；测试资源是明确的外部文件和模拟容器身份。初版错误地查询不存在的Session.region列、其后夹具误用Registry.get的失败均保留并修正。见[运行时意图证据](evidence/session-runtime-intent-store.json)及[worker说明](session-native-worker.md)。
+
+运行时driver/完整namespace退役、实际Native provider及Registry TTL/取消/健康传播、真实read/control显示票据与完整SDK仍未接通。当前720文件独立8小时副本保持原样，不含本服务层修改；没有把数据库或文件夹具当作真实Native关闭证明。41项保持9项列明范围完成、14项部分实现、18项待实现。
