@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-19T08:11:46.942291+00:00",
+  "task": "K2a2b3c2b1",
+  "status": "implementation-and-scoped-tests-passed-full-regression-required",
+  "newCases": 19,
+  "initialCases": 15,
+  "initialFailures": 15,
+  "scopedTests": 68,
+  "scopedPass": 68,
+  "actualExitCode": 0,
+  "beforeFixExit": 1,
+  "beforeFixLogSha256": "550ed3a0295cd744fb0cd06921d8e419a4c4399e1e09d4d14e8434c28d19b086",
+  "scopedLogSha256": "2428925c31fb3c3ceb1eda43973c2f65350d25ff8b9c9f12beefacdbe41c50f0",
+  "SourceHttpWebSocketSQLiteControlLeaseActual": true,
+  "pairedControlLinkVMActualCode": true,
+  "DOMCanvasKitWorkerRealmAndSourceResizeCdpFixtures": true,
+  "BrowserLaunched": false,
+  "SourceAppliedNotNewSubmittedPixels": true,
+  "publicSdkViewportExposed": false,
+  "timeoutCancelAndPublicBridgeStillRequired": true,
+  "nativeViewportControlQualified": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 15,
+    "pending": 17
+  },
+  "noCommitPush": true
+}

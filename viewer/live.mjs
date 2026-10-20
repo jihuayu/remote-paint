@@ -40,7 +40,14 @@ function workerMessage({data}){
  if(data.type==='pong'){lastPong=Date.now();return;}
  if(data.type==='ready')window.remotePaintStartup=data.startup;
  else if(data.type==='welcome'){input.welcome(data.message);controlLink.open(data.streamUrl,data.message);$('build').textContent=`${data.message.producer.chromium} · Skia ${data.message.producer.skiaRevision.slice(0,12)} · CanvasKit ${data.message.renderer.canvaskit}`;}
- else if(data.type==='control')input.message(data.message);
+ else if(data.type==='control'){
+  try{input.message(data.message);}catch(error){
+   // The Worker forwards finite control metadata to this UI-owned input
+   // state. Rejecting a correlated reply must also retire its old socket.
+   if(publicSettings)connectionState({...window.remotePaintConnection,state:'failed',code:'CHANNEL_PROTOCOL'});
+   else{stopped=true;lifecycle.freeze();fail(error);}
+  }
+ }
  else if(data.type==='reset'){controlLink.reset();input.reset();document.body.dataset.ready='false';}
  else if(data.type==='status')status(data.text);
  else if(data.type==='error')fail(new Error(data.message));
@@ -115,7 +122,7 @@ function attachStream(ws,current,authorization=null){
    else throw new Error('Unsupported socket payload');
    // Control metadata keeps socket order and bypasses expensive scene work,
    // but passes the same bounded parser and pre-allocation admission first.
-   if(welcome&&parsed&&['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState'].includes(parsed.type)){
+   if(welcome&&parsed&&['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState','ViewportResized','ViewportResizeDenied'].includes(parsed.type)){
     try{if(current===generation){receivedBytes+=size;input.message(parsed);}}finally{releaseQueue();}return;
    }
    if(queuedBytes+size>memory.policy.receive)throw Object.assign(new Error('Receive queue budget exceeded'),{closeCode:1013});

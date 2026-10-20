@@ -32,6 +32,12 @@ const changesEditor=event=>event.kind==='wheel'||event.kind==='mouse'&&event.typ
 const displayStamp=frame=>({pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,viewport:{cssWidth:frame.viewport.cssWidth,cssHeight:frame.viewport.cssHeight,deviceScaleFactor:frame.viewport.deviceScaleFactor},frameId:frame.frameId,baseFrameId:frame.baseFrameId,lastProcessedInputSeq:frame.lastProcessedInputSeq,
  native:frame.native?{producer:typeof frame.native.producer==='string'&&frame.native.producer.length<=128?frame.native.producer:undefined,namespace:Array.isArray(frame.native.namespace)&&frame.native.namespace.length===2&&frame.native.namespace.every(n=>Number.isSafeInteger(n)&&n>=0)?frame.native.namespace.slice():null,frameToken:Number.isSafeInteger(frame.native.frameToken)?frame.native.frameToken:undefined}:null});
 const pointerCursors=new Set(['default','pointer','text','vertical-text','crosshair','move','wait','progress','help','not-allowed','no-drop','grab','grabbing','copy','alias','cell','context-menu','all-scroll','col-resize','row-resize','n-resize','s-resize','e-resize','w-resize','ne-resize','nw-resize','se-resize','sw-resize','ew-resize','ns-resize','nesw-resize','nwse-resize','zoom-in','zoom-out']);
+const viewportCodes=new Set(['INVALID_VIEWPORT_REQUEST','UNSUPPORTED_VIEWPORT','VIEWPORT_BUSY','STALE_VIEWPORT_REQUEST','STALE_SESSION','PAGE_TRANSITION','STALE_EPOCH','STALE_VIEWPORT','STALE_LEASE','INPUT_QUEUE_FULL','SESSION_CLOSED','VIEWPORT_INPUT_RESET_FAILED','VIEWPORT_RESIZE_FAILED','VIEWPORT_SUPERSEDED']);
+const viewportInteger=(value,min=1)=>Number.isSafeInteger(value)&&value>=min;
+const viewportRecord=(value,fields)=>!!value&&typeof value==='object'&&!Array.isArray(value)&&(Object.getPrototypeOf(value)===null||Object.getPrototypeOf(Object.getPrototypeOf(value))===null)&&Reflect.ownKeys(value).length===fields.length&&fields.every(key=>Object.hasOwn(value,key)&&Object.hasOwn(Object.getOwnPropertyDescriptor(value,key),'value'));
+export class ViewportInputError extends Error {
+ constructor(code,outcome='not-applied'){super(code);this.name='ViewportInputError';this.code=code;this.outcome=outcome;}
+}
 export class ViewerInput {
  constructor({canvas,proxy,button,label,feedbackLabel,overlay,pointerOverlay,send,onControl,inputWindow=16,ackTimeout=5000}){
   this.inputWindow=Math.max(1,Math.min(32,inputWindow|0));this.ackTimeout=ackTimeout;
@@ -72,12 +78,50 @@ export class ViewerInput {
   this.reset();
  }
  notifyControl(reason){try{this.onControl?.(reason);}catch{}}
- requestControl(){if(!this.enabled||!this.frame||this.active)return false;this.button.disabled=true;this.send({type:'AcquireControl',...this.tags()});return true;}
- releaseControl(){if(!this.active)return false;this.send({type:'ReleaseControl',...this.tags()});this.reset();return true;}
+ viewportWaiting(){const barrier=this.viewportBarrier,frame=this.frame;return !!(this.viewportPending||this.viewportResume||this.viewportUncertain||barrier&&(!frame||frame.pageEpoch!==this.controlPageEpoch||frame.viewportVersion!==this.controlViewportVersion||frame.pageEpoch<barrier.pageEpoch||frame.pageEpoch===barrier.pageEpoch&&frame.viewportVersion<barrier.viewportVersion));}
+ requestControl(){if(!this.enabled||!this.frame||this.active||this.viewportWaiting())return false;this.button.disabled=true;this.send({type:'AcquireControl',...this.tags()});return true;}
+ releaseControl(){if(!this.active||this.viewportWaiting())return false;this.send({type:'ReleaseControl',...this.tags()});this.reset();return true;}
  tags(){return {sessionId:this.sessionId,pageEpoch:this.frame?.pageEpoch,viewportVersion:this.frame?.viewportVersion,lease:this.lease};}
- welcome(message){this.reset();this.frame=null;this.mode=undefined;this.controlHolder=null;this.controlExpiresAt=null;this.controlPageEpoch=null;this.controlViewportVersion=null;this.enabled=message.input;this.feedbackEnabled=message.inputFeedback===true;this.sessionId=message.sessionId;this.peerId=message.peerId;this.button.hidden=!this.enabled;this.notifyControl('welcome');}
- display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=displayStamp(frame);this.lastFrameInputSeq=Math.max(this.lastFrameInputSeq,frame.lastProcessedInputSeq??0);if(this.lastFrameInputSeq>this.editorConfirmedSeq&&(!this.optimisticState?.tentative||this.lastFrameInputSeq>this.editorPredictedSeq))this.invalidateEditor();else if(this.overlaySeq&&this.lastFrameInputSeq>=this.overlaySeq)this.clearOptimistic();if(this.feedbackSeq&&this.lastFrameInputSeq>=this.feedbackSeq)this.clearFeedbackLabel();this.flushFeedback();this.button.disabled=!this.enabled||(this.mode&&this.mode!=='agent'&&!this.active);this.notifyControl('frame');}
- reset(){clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.nextSeq=undefined;this.pending=new Map();this.queue=[];this.eventContexts=new WeakMap();this.editorContext=0;this.contextBarrierSeq=0;this.editorConfirmedSeq=0;this.pendingFeedback=null;this.feedbackEpoch=null;this.lastFeedbackRevision=0;this.composing=false;this.proxy.value='';this.proxy.blur();this.invalidateEditor();this.clearPointer();this.clearFeedbackLabel();this.lastFrameInputSeq=0;this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';this.notifyControl('reset');}
+ welcome(message){this.reset();this.frame=null;this.mode=undefined;this.controlHolder=null;this.controlExpiresAt=null;this.controlPageEpoch=null;this.controlViewportVersion=null;this.viewportEnabled=message.viewportControl===true;this.viewportRequestId=0;this.viewportRetiredLease=null;this.viewportRetiredFence=0;this.viewportBarrier=null;this.viewportUncertain=false;this.enabled=message.input;this.feedbackEnabled=message.inputFeedback===true;this.sessionId=message.sessionId;this.peerId=message.peerId;this.button.hidden=!this.enabled;this.notifyControl('welcome');}
+ display(frame){if(this.active&&(frame.pageEpoch!==this.frame?.pageEpoch||frame.viewportVersion!==this.frame?.viewportVersion))this.reset();this.frame=displayStamp(frame);this.lastFrameInputSeq=Math.max(this.lastFrameInputSeq,frame.lastProcessedInputSeq??0);if(this.lastFrameInputSeq>this.editorConfirmedSeq&&(!this.optimisticState?.tentative||this.lastFrameInputSeq>this.editorPredictedSeq))this.invalidateEditor();else if(this.overlaySeq&&this.lastFrameInputSeq>=this.overlaySeq)this.clearOptimistic();if(this.feedbackSeq&&this.lastFrameInputSeq>=this.feedbackSeq)this.clearFeedbackLabel();this.flushFeedback();this.button.disabled=!this.enabled||this.viewportWaiting()||(this.mode&&this.mode!=='agent'&&!this.active);this.notifyControl('frame');}
+ reset({preserveViewport=false}={}){if(!preserveViewport&&this.viewportPending)this.finishViewport(new ViewportInputError('VIEWPORT_CONNECTION_LOST','unknown'));if(this.viewportResume){this.retireViewportLease(this.viewportResume);this.viewportResume=null;}clearTimeout(this.ackTimer);clearInterval(this.renewTimer);this.active=false;this.lease=null;this.nextSeq=undefined;this.pending=new Map();this.queue=[];this.eventContexts=new WeakMap();this.editorContext=0;this.contextBarrierSeq=0;this.editorConfirmedSeq=0;this.pendingFeedback=null;this.feedbackEpoch=null;this.lastFeedbackRevision=0;this.composing=false;this.proxy.value='';this.proxy.blur();this.invalidateEditor();this.clearPointer();this.clearFeedbackLabel();this.lastFrameInputSeq=0;this.button.textContent='接管操作';this.button.disabled=true;this.label.textContent='只读';this.notifyControl('reset');}
+ retireViewportLease(record){this.viewportRetiredLease=record.tags.lease;this.viewportRetiredFence=Math.max(this.viewportRetiredFence??0,record.feedbackEpoch??0);}
+ finishViewport(error,result){const record=this.viewportPending;if(!record)return;this.viewportPending=null;if(error){this.retireViewportLease(record);if(error.outcome==='unknown')this.viewportUncertain=true;record.reject(error);}else record.resolve(result);}
+ async resizeViewport(size){
+  if(!viewportRecord(size,['width','height'])||![size.width,size.height].every(value=>Number.isInteger(value)&&value>=1&&value<=4096))throw new ViewportInputError('INVALID_VIEWPORT_REQUEST');
+  if(!this.viewportEnabled)throw new ViewportInputError('UNSUPPORTED_VIEWPORT');
+  if(this.viewportPending||this.viewportResume)throw new ViewportInputError('VIEWPORT_BUSY');
+  if(!this.enabled||!this.active||!this.frame||this.viewportWaiting()||this.mode!=='human'||this.controlHolder!==this.peerId||!viewportInteger(this.viewportRequestId+1))throw new ViewportInputError('VIEWPORT_CONTROL_UNAVAILABLE');
+  return new Promise((resolve,reject)=>{
+   const record={requestId:++this.viewportRequestId,width:size.width,height:size.height,baseWidth:this.frame.viewport.cssWidth,baseHeight:this.frame.viewport.cssHeight,tags:this.tags(),nextSeq:this.nextSeq,feedbackEpoch:this.feedbackEpoch,resolve,reject};this.viewportPending=record;
+   // Source's queued strict cleanup releases held input even for a size noop.
+   // Do not send ReleaseControl before it has validated this operation.
+   this.reset({preserveViewport:true});this.notifyControl('viewport-pending');
+   try{this.send({type:'ResizeViewport',requestId:record.requestId,width:record.width,height:record.height,...record.tags});}catch{this.finishViewport(new ViewportInputError('VIEWPORT_CONNECTION_LOST','unknown'));}
+  });
+ }
+ viewportMessage(message){
+  const record=this.viewportPending;if(!record)return true;
+  // A completed request can arrive after a reset; it cannot settle a newer
+  // one. A future/invalid ID or malformed matching reply ends the channel.
+  if(viewportInteger(message.requestId,0)&&message.requestId<record.requestId)return true;
+  const protocol=()=>{const error=new ViewportInputError('VIEWPORT_PROTOCOL','unknown');this.finishViewport(error);throw error;};
+  if(message.requestId!==record.requestId)return protocol();
+  if(message.type==='ViewportResizeDenied'){
+   if(!viewportRecord(message,['type','requestId','code','outcome'])||!viewportCodes.has(message.code)||!['not-applied','unknown'].includes(message.outcome))return protocol();
+   this.finishViewport(new ViewportInputError(message.code,message.outcome));if(message.outcome==='not-applied')try{this.send({type:'ReleaseControl',...record.tags});}catch{}
+   this.notifyControl('viewport-denied');return true;
+  }
+  if(!viewportRecord(message,['type','requestId','changed','pageEpoch','viewportVersion','viewport']))return protocol();
+  const viewport=message.viewport;
+  if(typeof message.changed!=='boolean'||message.changed!==(record.width!==record.baseWidth||record.height!==record.baseHeight)||!viewportInteger(message.pageEpoch)||!viewportInteger(message.viewportVersion)||!viewportRecord(viewport,['cssWidth','cssHeight','deviceScaleFactor'])||viewport.cssWidth!==record.width||viewport.cssHeight!==record.height||viewport.deviceScaleFactor!==1||message.changed&&(message.pageEpoch<record.tags.pageEpoch||message.viewportVersion<=record.tags.viewportVersion)||!message.changed&&(message.pageEpoch!==record.tags.pageEpoch||message.viewportVersion!==record.tags.viewportVersion))return protocol();
+  const result=Object.freeze({type:message.type,requestId:record.requestId,changed:message.changed,pageEpoch:message.pageEpoch,viewportVersion:message.viewportVersion,viewport:Object.freeze({cssWidth:viewport.cssWidth,cssHeight:viewport.cssHeight,deviceScaleFactor:1})});
+  if(message.changed){this.retireViewportLease(record);this.viewportBarrier={pageEpoch:message.pageEpoch,viewportVersion:message.viewportVersion};}
+  else{this.viewportResume=record;this.lease=record.tags.lease;this.nextSeq=record.nextSeq;}
+  this.finishViewport(null,result);
+  if(!message.changed)try{this.send({type:'RenewControl',...record.tags});}catch{this.reset();}
+  this.notifyControl('viewport-resized');return true;
+ }
  clearFeedbackLabel(){this.feedbackSeq=0;if(this.feedbackLabel)this.feedbackLabel.textContent='';window.remotePaintInputStage=null;}
  showFeedbackLabel(seq,stage,preview=false){if(seq<=this.lastFrameInputSeq||seq<(this.feedbackSeq??0))return;this.feedbackSeq=seq;if(this.feedbackLabel)this.feedbackLabel.textContent=stage==='pending'?(preview?'本地预览 · 输入待确认':'输入待确认'):'输入已注入 · 等待画面';window.remotePaintInputStage={seq,stage};}
  clearOptimistic(){this.overlaySeq=0;if(this.overlay)this.overlay.replaceChildren();window.remotePaintOptimistic=null;}
@@ -141,12 +185,15 @@ export class ViewerInput {
   this.showFeedbackLabel(seq,source==='local'?'pending':'input-injected',source==='local');
  }
  message(message){
+  if(message.type==='ViewportResized'||message.type==='ViewportResizeDenied')return this.viewportMessage(message);
   if(message.type==='ControlState'){
-   this.mode=message.mode;this.controlHolder=message.holder;this.controlExpiresAt=message.expiresAt;this.controlPageEpoch=message.pageEpoch;this.controlViewportVersion=message.viewportVersion;if(message.mode!=='human'||message.holder!==this.peerId){this.reset();this.button.disabled=!this.enabled||!this.frame||message.mode!=='agent';}
+   this.mode=message.mode;this.controlHolder=message.holder;this.controlExpiresAt=message.expiresAt;this.controlPageEpoch=message.pageEpoch;this.controlViewportVersion=message.viewportVersion;if(message.mode!=='human'||message.holder!==this.peerId){this.reset({preserveViewport:true});this.button.disabled=!this.enabled||!this.frame||message.mode!=='agent'||this.viewportWaiting();}
    if(message.mode==='human'&&message.holder===this.peerId&&!this.active)this.button.disabled=true;
    this.label.textContent=message.mode==='handoff'?'正在交接':message.mode==='agent'?'Agent 控制':message.holder===this.peerId?(this.active?'你正在操作':'正在接管'):'其他 Viewer 控制';this.notifyControl('state');return true;
   }
   if(message.type==='ControlGranted'){
+   if(this.viewportPending||message.lease===this.viewportRetiredLease||viewportInteger(message.feedbackEpoch)&&message.feedbackEpoch<=(this.viewportRetiredFence??0))return true;
+   if(this.viewportResume){const resume=this.viewportResume;if(message.lease!==resume.tags.lease||message.pageEpoch!==resume.tags.pageEpoch||message.viewportVersion!==resume.tags.viewportVersion)return true;this.nextSeq=Math.max(this.nextSeq??0,resume.nextSeq);this.viewportResume=null;}
    if(message.pageEpoch!==this.frame?.pageEpoch||message.viewportVersion!==this.frame?.viewportVersion){this.send({...message,type:'ReleaseControl'});return true;}
    this.mode='human';this.controlHolder=this.peerId;this.controlExpiresAt=message.expiresAt;this.controlPageEpoch=message.pageEpoch;this.controlViewportVersion=message.viewportVersion;this.active=true;this.lease=message.lease;this.feedbackEpoch=message.feedbackEpoch;this.nextSeq=Math.max(this.nextSeq??0,message.nextSeq);this.button.disabled=false;this.button.textContent='交还 Agent';this.label.textContent='你正在操作';
    clearInterval(this.renewTimer);this.renewTimer=setInterval(()=>this.send({type:'RenewControl',...this.tags()}),10000);this.notifyControl('granted');return true;

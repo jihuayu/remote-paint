@@ -51,7 +51,7 @@ function attachStream(ws,current,key,authorization=null){
    else throw new Error('Unsupported socket payload');
    // Control metadata keeps socket order and bypasses expensive scene work,
    // but passes the same bounded parser and pre-allocation admission first.
-   if(welcome&&parsed&&['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState'].includes(parsed.type)){
+   if(welcome&&parsed&&['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState','ViewportResized','ViewportResizeDenied'].includes(parsed.type)){
     try{if(current===generation){receivedBytes+=size;ui('control',{message:parsed});}}finally{releaseQueue();}return;
    }
    if(queuedBytes+size>memory.policy.receive)throw Object.assign(new Error('Receive queue budget exceeded'),{closeCode:4013});
@@ -68,7 +68,7 @@ function attachStream(ws,current,key,authorization=null){
     if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean'||typeof message.resourceMemory!=='boolean')throw new Error('Incompatible live handshake');authorization?.acceptWelcome(message);welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';peerId=message.peerId;retryDelay=250;ui('welcome',{message,streamUrl:ws.url});return;
    }
    if(!welcome)throw new Error('Message before handshake');
-   if(['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState'].includes(message.type)){ui('control',{message});return;}
+   if(['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState','ViewportResized','ViewportResizeDenied'].includes(message.type)){ui('control',{message});return;}
    if(message.type==='ResourceManifest'){const payload=assets.assemble(message);if(payload)try{const release=memory.reserve('shaWork',payload.byteLength,'browser');try{if(await digest(payload)!==message.id)throw new Error('Assembled resource checksum mismatch');}finally{release();}if(closed||current!==generation)return;gate.put(message.id,payload);resourcesReceived++;}finally{assets.releaseAssembly(payload);}return;}
    if(message.type==='ChunkCacheReset'){assets.clear();return;}
    if(message.type==='SceneUpdate'){try{gate.stage(message.frame);}catch(error){if(error instanceof RecoveryRequired){recover();return;}throw error;}}

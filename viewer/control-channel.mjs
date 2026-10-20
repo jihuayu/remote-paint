@@ -17,7 +17,7 @@ export class ControlLink {
      if(message.type!=='ControlWelcome'||message.protocol!==4||message.peerId!==welcome.peerId||message.sessionId!==welcome.sessionId)throw new Error('Incompatible control binding');
      this.ready=true;for(const packet of this.pending)ws.send(packet);this.pending=[];return;
     }
-    if(!['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState','CaptureError'].includes(message.type))throw new Error('Unsupported control metadata');
+    if(!['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState','ViewportResized','ViewportResizeDenied','CaptureError'].includes(message.type))throw new Error('Unsupported control metadata');
     this.onMessage(message);
    }catch(error){this.onError(error);ws.close(4008,'Control message rejected');}
   };

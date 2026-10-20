@@ -1751,3 +1751,11 @@ DOM resize(width/height) 设置自己的宿主 CSS 请求尺寸，resize() 恢�
 9 条 Node 合同和独立 macOS Rust 的2条控制/9条包内存合同、2种真实TCP通道验证通过；Source.resize/CDP/capture结果为夹具，未启动浏览器。初次TCP夹具遗漏配对key的403保留，修正夹具后通过，未放宽生产认证。证据见[协议检查点](evidence/viewport-control-protocol.json)。
 
 SDK/Window/Worker、迟到续租与取消/未知结果、Linux Native捕获/像素/资源、公开控制优先级仍待后续；原8小时不能代替新候选验收。41项仍9/15/17。未提交/推送，未改原长测/采样器或演示实例。
+
+### K2a2b3c2b1：Viewer 输入与 viewport 回执
+
+ViewerInput 加入内部有限 resizeViewport 请求和能力检查，暂停旧输入与续租，等待 Source 的对应回执；尺寸改变后保留旧 lease/fence 屏障，直到新控制状态与 frame 代次一致才允许重新接管。尺寸 no-op 清理旧按下状态后续租，保持原输入序号下界。断线或异常回执按 unknown 保持暂停，主线程/Worker 异常路径回收旧公共连接。三条控制入口接入有限 viewport 回复快路径。
+
+新增19条合同，相关68项通过，包含保存的Window/Worker和实际Node HTTP/WebSocket/SQLite/ControlLease；独立ControlLink有界解析也通过。DOM/CanvasKit/调度与Source.resize/CDP为明确夹具，不宣称真实新画面或Native验收。详情见[Viewer输入协议](viewer-viewport-input.md)与[范围证据](evidence/viewer-viewport-input.json)。
+
+内部方法尚未接入公开SDK；ControlActions的超时/取消、父子桥/类型和实际Native viewport/像素/控制优先级仍是必须继续的步骤。41项仍9/15/17，原8小时失败与增长策略保持，未自动重跑、未改采样器/演示实例，未暂存提交推送。
