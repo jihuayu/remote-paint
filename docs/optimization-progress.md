@@ -1245,6 +1245,12 @@ owner.after的原metrics在finally关闭历史procFD之前采集，不能当探�
 
 新增测试专用输入观察器：仅成功WebSocket.send(Input)后记录实际seq/epoch/viewport/kind与单页performance时间，接收ACK时匹配自身seq；不保留lease token、URL或输入文本。最多64pending/128ACK环形记录/32错误及1个活动文本probe，dispatch起3s门槛，累计sent/acked/texts标量。迟到或无对应send的ACK不能被用作当前文本确认，观察器错误保持可见。
 
-独立真实Linux合约11.126秒通过：130次正常Viewer beforeinput文本请求，全部真实发送/注入ACK<3s并逐次等待实际最终input marker与Native lastProcessedInputSeq≥该seq；包含resize及跨站。总520次实际Input send/ACK、pending0/rejected0，超过128记录边界后仍只保留128，页面observer nonce保持，Source输入最终x40与末epoch累计长度一致；正常Source/Viewer/19等已知身份关闭，逐帧map/publish/awaitPromise0。单页像素检测时间在ACK后poll，包含检测/传输开销，不当作最早显示或物理scanout。
+独立真实Linux合约11.126秒通过：130次正常Viewer beforeinput文本请求，全部真实发送/注入ACK<3s并逐次等待实际最终input marker与Native lastProcessedInputSeq≥该seq；包含resize及跨站。总520次实际Input send/ACK、pending0/rejected0，超过128记录边界后仍只保留128，页面observer nonce保持，Source输入最终x40与末epoch累计长度一致；Source/Viewer正常关闭，实际固定的8个Source身份均退休，逐帧map/publish/awaitPromise0。单页像素检测时间在ACK后poll，包含检测/传输开销，不当作最早显示或物理scanout。
 
 此项只为组合长测提供边界稳定的输入证据，尚未验收Mac同算法/所有输入模式/8h，也不替代CPUWorker连续窗口中的输入前缀与epoch因果校验。
+
+## 复用验证画布后的同门槛复验仍失败
+
+原579文件/runtime/依赖/browser/workload/物理policy完全保留，仅换测试driver复用4×1探针的独立30分钟复验完成。31次采样中三个主页面/两个Worker/probe nonce均持续相同，每页创建数1；所有绝对内存上限保持，但主VM独占footprint前后中位数仍+313,852,336bytes（约299MiB）>事前192MiB，因此Viewer按原断言exit1。带附加Session状态+115,179,832bytes（约110MiB）通过，其余8域增长通过。Source与容器exit0，清理无错误。
+
+复用画布不足以解决门槛失败，不能声称找到唯一原因。原失败与复验均单独保存，未合并时长、未改预算或强制GC、未改生产代码。补充诊断看到部分末期样本仍带未GC的旧Wasm arena，属于混杂状态而非充分解释：原失败在无retired arena的主VM样本中也有约298MB中位数增长；复验的同类样本不足10个，不能选样改判。需要继续定位native footprint/分配器/arena归属，或以明确理论和独立验证完善物理观测方案，不能把现有失败重写成通过。8小时/N1完整合并仍未验收。

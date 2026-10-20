@@ -1,0 +1,180 @@
+{
+  "at": "2026-10-17T22:33:21.902741+00:00",
+  "status": "failed-primary-footprint-growth;secondary-state-passed;cleanup-normal",
+  "manifest": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-reuse-probe-v1/frozen-version.json",
+    "sha256": "0b8b6d8a20734a1c07fbc31f014d17f1dd36bd27b5da61b3e55fee836a6c75d6"
+  },
+  "scope": "Original failed579file runtime/dependency/browser/image/workload/policy retained;only testdriver reusable4x1pixelprobes+extra failure diagnosticchanged. Independentrepeat doesnot establish a sole causal effect. No productchange/forcedGC/budgetrelaxation.",
+  "samePolicySha256": "49254837e00ab4c39afd6b284fb66637988797ab6f781f45f69ccfc7b022bcbf",
+  "actualPrimaryExerciseSeconds": 1808.5393224159998,
+  "elapsedSeconds": 1817.3700771659999,
+  "primaryUpdates": 1220,
+  "samples": 31,
+  "resizes": 84,
+  "inputs": 66,
+  "navigations": 20,
+  "secondaryCompleted": 21,
+  "leaseExpired": 21,
+  "physicalGrowth": {
+    "states": {
+      "primary-only": {
+        "postWarmSamples": 14,
+        "earlyCycles": [
+          433,
+          462,
+          519,
+          548,
+          632
+        ],
+        "lateCycles": [
+          945,
+          1031,
+          1118,
+          1146,
+          1220
+        ],
+        "domains": {
+          "viewerFootprintBytes": {
+            "firstMedianBytes": 1717239960,
+            "lastMedianBytes": 2031092296,
+            "growthBytes": 313852336,
+            "allowedGrowthBytes": 201326592,
+            "passed": false
+          },
+          "viewerRssSumBytes": {
+            "firstMedianBytes": 3360686080,
+            "lastMedianBytes": 2706997248,
+            "growthBytes": -653688832,
+            "allowedGrowthBytes": 268435456,
+            "passed": true
+          },
+          "sourcePssBytes": {
+            "firstMedianBytes": 714412032,
+            "lastMedianBytes": 700172288,
+            "growthBytes": -14239744,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceAnonBytes": {
+            "firstMedianBytes": 477298688,
+            "lastMedianBytes": 490614784,
+            "growthBytes": 13316096,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceNodePssBytes": {
+            "firstMedianBytes": 186847232,
+            "lastMedianBytes": 197985280,
+            "growthBytes": 11138048,
+            "allowedGrowthBytes": 67108864,
+            "passed": true
+          }
+        }
+      },
+      "with-secondary": {
+        "postWarmSamples": 16,
+        "earlyCycles": [
+          405,
+          490,
+          576,
+          604,
+          660
+        ],
+        "lateCycles": [
+          1002,
+          1060,
+          1089,
+          1175,
+          1203
+        ],
+        "domains": {
+          "viewerFootprintBytes": {
+            "firstMedianBytes": 2256180272,
+            "lastMedianBytes": 2371360104,
+            "growthBytes": 115179832,
+            "allowedGrowthBytes": 201326592,
+            "passed": true
+          },
+          "viewerRssSumBytes": {
+            "firstMedianBytes": 4191223808,
+            "lastMedianBytes": 3484270592,
+            "growthBytes": -706953216,
+            "allowedGrowthBytes": 268435456,
+            "passed": true
+          },
+          "sourcePssBytes": {
+            "firstMedianBytes": 1116766208,
+            "lastMedianBytes": 1078611968,
+            "growthBytes": -38154240,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceAnonBytes": {
+            "firstMedianBytes": 862916608,
+            "lastMedianBytes": 775196672,
+            "growthBytes": -87719936,
+            "allowedGrowthBytes": 134217728,
+            "passed": true
+          },
+          "sourceNodePssBytes": {
+            "firstMedianBytes": 187983872,
+            "lastMedianBytes": 198054912,
+            "growthBytes": 10071040,
+            "allowedGrowthBytes": 67108864,
+            "passed": true
+          }
+        }
+      }
+    },
+    "passed": false
+  },
+  "allAbsoluteCapsPassed": true,
+  "scratchCanvasIdentityAndCountStable": true,
+  "pageAndWorkerIdentitiesStable": true,
+  "maxSampleGapSeconds": 62.14799999999991,
+  "sourceCreatedClosed": {
+    "created": 22,
+    "closed": 22,
+    "crosssite": 20,
+    "leaseExpired": 21
+  },
+  "cleanupErrors": [],
+  "nativeObserverCleanup": {
+    "pid": 61684,
+    "exited": true,
+    "exitCode": 0,
+    "signal": null
+  },
+  "conclusion": "Reusing the scratch canvas is insufficient to meet the frozen growth gate. Primary-only footprintmedian+313852336bytes exceeds192MiB;with-secondary+115179832passes. No sole cause proved;do not relabel as8hpass orsilently change policy.",
+  "artifacts": {
+    "samples.jsonl": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-reuse-probe-v1/results/samples.jsonl",
+      "sha256": "9d53ea3bc4f3594d288d5a22fd9332dd6a72c94b7fbc8c693f48a6d5a68af735"
+    },
+    "failure.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-reuse-probe-v1/results/failure.json",
+      "sha256": "43ef618815e513c91e1abf19cb1d3612369b1c1fe51857c544219aad332b7b60"
+    },
+    "physical-growth.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-reuse-probe-v1/results/physical-growth.json",
+      "sha256": "b28ed9bf0d062a204763e948362aad18af405c75049902bf68820bf3aaa3c543"
+    },
+    "cleanup.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-reuse-probe-v1/results/cleanup.json",
+      "sha256": "7f6cd697c5dd156cf3066a433a1e27fe95709fe12a1366c18c34d0027aacd44f"
+    },
+    "source-stopped.json": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-longload-reuse-probe-v1/results/source-stopped.json",
+      "sha256": "c4f14b2a3edbd45d191156cb9b83409d070875641b95a32ba57c7f5025d5bd2b"
+    }
+  },
+  "noCommitPush": true,
+  "noEightHourActive": true,
+  "eightHourPassed": false,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  }
+}
