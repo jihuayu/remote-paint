@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-17T21:05:21.595105+00:00",
+  "status": "passed-Linux-source-supervisor6contracts-with-primarypageandWorkeridentities;Maclongdriver-next",
+  "scope": "Actual Linux CPUWorker+CPUWorker+CPUmain primaryViewers retained throughout while real supplementalSession warms>64MiB,default30s abandonedcontrolgrant expires,crosssite andSessionclose. NotMacGPU/physicalIME/8h/growthplateau/N1longload.",
+  "contract": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/session-long-source-contract-v4/artifacts/session-long-contract/contract.json",
+    "sha256": "2dd921cc1ab34e19c7c69af6d11dea0a4f2433d1d300a6cf9db0b93944922bd6"
+  },
+  "log": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-source-contract-v4.log",
+    "sha256": "5bc5f92dd0456d54f443d3d6da28680cf1aa7dacfaaa2e1f0873d14e92e0bba1"
+  },
+  "checks": [
+    "actual ready primary3CPUViewers and unchanged default30s abandoned grant",
+    "secondary Session400actualpixels/>64MiB/nativecacheturnover whileprimaryViewerscontinuepaint",
+    "actual default timer expired without renewal/document/viewport invalidation",
+    "primary actualcrosssite token/epoch/renderer replacement reaches3unchanged clientVMs",
+    "secondary closes with exactOSidentities;stalecommandsfail;primary3Worker/main lifetimescontinue",
+    "primary/secondary/fixture/Broker/browser cleanup complete afterfilechannelstop"
+  ],
+  "primaryPageNonces": [
+    "de0aa9ab-3115-4ccb-bdcf-fcac300dc242",
+    "488173bd-a47f-46f6-9932-01af4460fd5b",
+    "95850376-4dc0-47a2-be20-b7e75bf2e357"
+  ],
+  "primaryWorkerTargets": {
+    "first": [
+      "6B3CAC96BD575ED2EB23CDD841AB6E6A",
+      "8AC1BD2FB49433D87B3DB759D22C0C63"
+    ],
+    "last": [
+      "6B3CAC96BD575ED2EB23CDD841AB6E6A",
+      "8AC1BD2FB49433D87B3DB759D22C0C63"
+    ]
+  },
+  "actualLeaseProbe": {
+    "startedAt": 1792270948149,
+    "expiresAt": 1792270978149,
+    "pageEpoch": 1,
+    "viewportVersion": 1,
+    "renewsAtStart": 0,
+    "completed": true,
+    "scope": "Explicit abandoned server API grant to an actually attached ready Viewer;no ControlGranted token delivery,not organic packet loss or physical input.",
+    "completedAt": 1792270978151
+  },
+  "sessionsCreated": 2,
+  "sessionsClosed": 2,
+  "secondaryImageBytes": 90014739,
+  "secondaryProcessIdentitiesRetired": 7,
+  "primaryProcessIdentitiesRetired": 8,
+  "primaryCrosssite": {
+    "beforeEpoch": 1,
+    "afterEpoch": 2,
+    "beforeProducer": "6251:2",
+    "afterProducer": "6487:1"
+  },
+  "failedSetupPreserved": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/session-long-source-contract-v1/artifacts/session-long-contract/failure.json",
+    "sha256": "a97e754cd3cb8d4df2b7c823ab4f181e1a0d79d1e997edac58a50ef555aaf239",
+    "reason": "Initialsecondarywasundefinedbutcreationrequirednull;failedbeforesecondarycreation;initializedexplicitly,subsequentactualfullcontractsrepassed. No deadlines/TTL/workingsetgatesrelaxed.",
+    "beforeCode": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-long-source-before-fix-v1"
+  },
+  "priorPassingContractWithoutWorkerWitness": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-source-b1-formal-runtime-v1/session-long-source-contract-v2/artifacts/session-long-contract/contract.json",
+  "scopeLimits": [
+    "LinuxCPUWorker+CPUWorker+CPUmainonly;notMacGPUor8h.",
+    "AbandonedserverAPIgranttoactuallyattachedreadyViewer;ControlGrantedtokenexplicitlynotdelivered,soclientcannotrenew;notnaturalnetworkloss,notphysicalinput. Actualdefault30stimerandcleanupwereunchanged.",
+    "SourceControllerfilechannelandSessionlifecyclefoundation;actualMacthree-modecontinuousVM/secondarychurn/growthpolicyandN1observerintegrationremain."
+  ],
+  "sourceFiles": {
+    "tests/serve-session-longload.mjs": "0885154cb1f24840a081135b9991a122dc161e387ae5923f10362421b4dd6b9e",
+    "tests/verify-session-longload-source.mjs": "264c83730da5acc021fdc499792f3ec1afccd2f52b77ac2df1df0e429605ebe7"
+  },
+  "parent": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-memory-many-checkpoint-v1.json",
+  "noCommitPush": true,
+  "all41": {
+    "completeInStatedScopes": 9,
+    "partial": 12,
+    "pending": 20
+  },
+  "noEightHourActive": true,
+  "eightHourPassed": false
+}

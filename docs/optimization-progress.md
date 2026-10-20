@@ -1136,3 +1136,12 @@ Source浏览器后代及Broker在启动、工作集加热和跨站后通过已�
 每次Source及Viewer上下文关闭后的控制Node PSS上限273.02MiB、观测后代组上限512.90MiB、cgroup anon上限358.34MiB均在运行前冻结，分别来自试跑最大值加64/128/128MiB余量；实际最大值为205.53/381.74/226.95MiB。末五轮与首五轮中位数相比，Node PSS下降2,375,680字节、组PSS下降2,289,664字节，anon增加8,380,416字节，均低于预先门槛。FD每轮固定26，进程数未超过冻结增长上限，cgroup未发生OOM kill，观测树之外仅有已知init PID1，没有新孤儿/不可见成员。没有强制GC或运行后放宽门槛；节点采集与cgroup仍使用原有5秒截止。
 
 每轮完整Source/Viewer上下文关闭后，观测组PSS下降至少789,907,456字节。该下降包含Viewer上下文，控制Node仍含PNG夹具与观察器；PSS和cgroup各自记录，不混为独占内存或会话密度承诺。TCP端口关闭探测不创建每Session的HTTP客户端池；夹具与Source引用释放、FD关闭、字节缓存和逻辑客户端预算均单独核对。此处证明所列20轮Linux CPU场景中的回收及冻结增长门槛，不表示永久平台、不替代主Viewer VM八小时，也不完成全部B10/C5/N1。41项仍9完成/12部分/20待做，无提交或推送。
+
+
+## 长存活主Viewer与附加Session控制端
+
+[六项实际控制端合同](evidence/session-longload-source-contract.json)验证独立文件通道的主/附加Source所有者。三个Linux实际CPU Viewer在整个合同期间保持页面nonce不变；两个Worker的CDP target ID在首尾完全一致。附加Session消费400次真实PNG更新、90,014,739字节工作集并发生原生缓存淘汰，同时主Viewer继续收到像素；主Source跨站更换document token、epoch及真实renderer，三个客户端没有重建。附加Session关闭后七个身份、主Source最终八个身份均通过绑定FD确认退出，旧附加Session命令被拒绝，最终创建数/关闭数均为2，Fixture及Source/Broker/浏览器关闭。
+
+控制端对已附着并ready的真实Viewer peer调用正常acquire API，但明确不投递ControlGranted token，模拟调用方放弃授予结果，使客户端无法续租。保持默认ttl=30000ms、不导航或resize打断该窗口，实际timer在30002ms完成expired清理并恢复Agent，期间续租数0。此为明确的放弃授予合同，不当作自然丢包或物理键盘测试。首轮在创建附加Session前因初始状态未规范而失败，日志及源码快照保留；修正后完整路径通过，并补强Worker身份见证和创建/关闭计数核对，没有缩短TTL或放宽工作集/截止门槛。
+
+此处只完成Linux CPU控制端基础。Mac GPU Worker/CPU Worker/CPU主线程长期存活、周期附加Session、设备物理增长门槛与N1长期窗口仍需接入和试跑；没有启动八小时，也没有八小时通过。此前20循环及三轮试跑按各自冻结版本保存，不累计为长时验收；41项保持9完成/12部分/20待做，没有提交或推送。
