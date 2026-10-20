@@ -1785,3 +1785,12 @@ Frame和DOM组件公开有限resizeViewport，要求已持有controller租约；
 保留首次Native运行在CPU主线程“帧号应不变”断言的真实失败；较早队列帧可完成，修正为关联图像编码像素，生产代码/策略未放宽。Source/SDK生产字节及859项双平台回归输入与前检查点相同，新增真实Native合同单独执行；不是重跑或替代原8小时。详情见[Native范围](viewer-viewport-native.md)及[收据](evidence/viewer-viewport-native.json)。
 
 CPU Worker、公开性能/首帧API、生产Native端点/所有Agent栅栏、长期资源与轻微丢包完整矩阵仍待继续，K2整体未完成。41项仍9/15/17，原8小时失败/192MiB门槛保持；未改演示/采样器，未暂存提交推送。
+
+
+### K2a2b3c2c-CPUWorker：补齐支持渲染模式
+
+实际CPU Worker另完成两次公开SDK/跨源iframe/Native挂载、视口与图像/Canvas2D/输入像素、精确WebGL黑框文字、SHA暂停时的控制优先级及回收。只给测试验证器增加有限模式选择，GPU关闭而transfer能力保留；生产SDK/捕获/渲染器及已安装包字节未改。Source/Viewer实际退出0，新增Linux七个固定进程身份及一组Mac采样PID退休，无清理错误。
+
+与前检查点合并，当前Mac Chrome/Linux Source矩阵的GPU Worker、CPU Worker、CPU主线程三条路径均有证据，累计八次成功挂载。CSP拒绝/已应用后超时unknown的真实证据继承相同运行时代码的v2，不伪称CPU补测重复了这些分支。见[Native矩阵](viewer-viewport-native.md)。
+
+下一步为有界且去敏的性能/首帧事件API及真实浏览器验证；完整更多设备/物理IME、生产Native端点、所有Agent栅栏、N1轻微丢包/长期资源仍待完成。41项仍9/15/17，原8小时失败与192MiB门槛保持，未自动重跑、未改演示/采样器、未暂存提交推送。

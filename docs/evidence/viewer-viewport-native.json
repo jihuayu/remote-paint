@@ -1,17 +1,18 @@
 {
-  "at": "2026-10-19T09:14:09.875336+00:00",
+  "at": "2026-10-19T09:24:42.607622+00:00",
   "task": "K2a2b3c2c",
-  "status": "actual-Native-public-viewport-GPUWorker-CPUmain-scoped-pass",
+  "status": "actual-Native-public-viewport-three-supported-modes-scoped-pass",
   "successfulRunManifestSha256": "9260b80e1ba1b93e081abb2ed6807ec15bc3d2fe3ffb98ed8949473d4b747ee5",
   "actualViewerExitCode": 0,
   "actualSourceExitCode": 0,
-  "successfulMounts": 6,
-  "ticketRequests": 6,
+  "successfulMounts": 8,
+  "ticketRequests": 8,
   "observedModes": [
     "gpu-worker",
+    "cpu-worker",
     "cpu-main"
   ],
-  "cpuWorkerPending": true,
+  "cpuWorkerPending": false,
   "sourceBrowser": "155.0.8059.79",
   "viewerBrowsers": [
     "155.0.8059.84",
@@ -99,6 +100,7 @@
   ],
   "macSampledOwnedPidCounts": [
     4,
+    4,
     4
   ],
   "linuxPinnedSourceProcessesRetired": 7,
@@ -114,7 +116,7 @@
   "productionCodeUnchangedFrom892SdkCheckpoint": true,
   "fullJsInheritedSame859TestsAndRuntimeBytes": true,
   "sdkViewportQualifiedWithinObservedModes": true,
-  "allModeNativeViewportQualified": false,
+  "allModeNativeViewportQualified": true,
   "performanceFirstFrameApiComplete": false,
   "productionNativeProviderQualified": false,
   "testOnlyProviderWithRealNativeOwner": true,
@@ -125,5 +127,91 @@
     "partial": 15,
     "pending": 17
   },
-  "noCommitPush": true
+  "noCommitPush": true,
+  "supportedRenderingModeMatrixQualified": true,
+  "fullDeviceBrowserMatrixQualified": false,
+  "linuxPinnedSourceProcessesRetiredByRun": [
+    7,
+    7
+  ],
+  "additionalCpuWorkerRun": {
+    "manifestSha256": "ca449022956cb8ddcd2d8ffdf1a459c8937e50fdb4ea2b01ed6b3f1259afeb49",
+    "actualSourceExitCode": 0,
+    "actualViewerExitCode": 0,
+    "successfulMounts": 2,
+    "selectedModes": [
+      "cpu-worker"
+    ],
+    "actualWorker": true,
+    "actualPresentationModes": [
+      "cpu-2d",
+      "cpu-2d"
+    ],
+    "labelChecks": [
+      {
+        "text": "WebGL 无法显示",
+        "observed": 556,
+        "wanted": 488,
+        "precision": 1,
+        "recall": 1,
+        "corner": [
+          0,
+          0,
+          0,
+          255
+        ]
+      },
+      {
+        "text": "WebGL 无法显示",
+        "observed": 556,
+        "wanted": 488,
+        "precision": 1,
+        "recall": 1,
+        "corner": [
+          0,
+          0,
+          0,
+          255
+        ]
+      }
+    ],
+    "priority": [
+      {
+        "actualNativeResource": true,
+        "asyncShaTestHold": true,
+        "replyBeforeRelease": true,
+        "frameIdBeforeHold": 8,
+        "frameIdWhileHeld": 10,
+        "oldImagePixelWhileHeld": [
+          0,
+          0,
+          199,
+          255
+        ],
+        "newImageCycleAfterRelease": 1,
+        "earlierQueuedFrameMayComplete": true,
+        "elapsedMs": 4.363624999999956,
+        "physicalLatencyClaim": false
+      },
+      {
+        "actualNativeResource": true,
+        "asyncShaTestHold": true,
+        "replyBeforeRelease": true,
+        "frameIdBeforeHold": 7,
+        "frameIdWhileHeld": 8,
+        "oldImagePixelWhileHeld": [
+          1,
+          0,
+          199,
+          255
+        ],
+        "newImageCycleAfterRelease": 2,
+        "earlierQueuedFrameMayComplete": true,
+        "elapsedMs": 4.036540999999488,
+        "physicalLatencyClaim": false
+      }
+    ],
+    "sourceCleanupErrors": [],
+    "viewerCleanupErrors": []
+  }
 }
