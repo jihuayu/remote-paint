@@ -214,3 +214,30 @@ capacity stays held until settlement even after caller abort/timeout, and end ha
 independent capacity. No Node screenshot method grants Python screenshot SDK,
 actual page download/upload/Profile, complete locators/frame access, raw CDP receiver
 preallocation or browser physical-memory qualification.
+
+
+### Original Page downloads (Node)
+
+`AgentClient.observations.armDownload(context, {limits?: {maxBytes?, timeoutMs?}, rpcTimeoutMs?})`
+arms the next actual download event from the owned Page. `downloadInfo(context, {downloadId})`
+returns a discriminated `download-pending` / `download-ready` result. Ready metadata includes
+safe display `fileName`, generic binary type, exact size/hash and completion time.
+`downloadChunk(context, {downloadId, offset, maxBytes?})` returns up to3072 raw bytes as
+canonical base64; `releaseDownload(context, {downloadId})` retires the one Run-owned ticket.
+Release is required before arming another ticket. The window does not promise input causality.
+
+`downloadFile(context, {downloadId, sha256, byteLength, completedAt, rpcTimeoutMs?})`
+returns a frozen `download-delivered` record with new, mutable caller-owned `Uint8Array bytes`.
+It validates status200, original context and file identity, safe UUID attachment, exact binary
+media/length/digest/time and no-store/nosniff headers, then reads into one exact bounded buffer
+and verifies full length and incremental SHA256 before returning. Empty files are valid.
+There is no partial result or transport-buffer alias. Very fragmented streams periodically yield.
+
+`maxDownloadBytes` defaults to1MiB and allows1..4MiB independently of `maxResponseBytes` and
+`maxScreenshotBytes`. A too-large file reference is rejected synchronously before HTTP. Each
+method captures all context/inputs before returning its promise and sends exactly one HTTP
+attempt, regardless of configured mutation retries. Neither stale data nor unknown results cause
+automatic rearm, context refresh or replay. Fetch/body/cancellation work remains counted until
+actual settlement, and end uses its separate pool. A timeout or abort only ends the caller's wait.
+These are completed-file/client-buffer bounds, not Chromium pre-spool, raw-receiver or physical
+memory limits. Actual Page download Python SDK parity is still pending in this checkpoint.

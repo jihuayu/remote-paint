@@ -1,3 +1,4 @@
+import {captureDownloadRequest,validateDownloadReply,readDownloadBinary} from './agent-download.mjs';
 import {captureObservationReference,captureObservationContext,captureObservationRequest,captureObservationOptions,validateObservationReply,captureAccessibilityRequest,validateAccessibilityReply,captureScreenshotRequest,captureScreenshotFileRequest,validateScreenshotReply,readScreenshotBinary} from './agent-observation.mjs';
 import {SessionClientError,createBackendTransport,freezeBackendData} from './backend-transport.mjs';
 export class AgentClientError extends SessionClientError {constructor(code,options){super(code,options);this.name='AgentClientError';this.message=code==='CLIENT_INVALID_REQUEST'?'Invalid Agent client request':'Agent API request failed';}}
@@ -34,6 +35,7 @@ function invocation(v){
  return v.receipt===null&&error(v.error)&&(v.state==='unknown'?v.dispatchStarted&&v.error.outcome==='unknown':v.error.outcome==='not-dispatched');
 }
 function validate(status,value,expect,headers){
+ if(['agent-download-armed','agent-download-info','agent-download-chunk','agent-download-released'].includes(expect.kind))return validateDownloadReply(status,value,expect,headers);
  if(['agent-screenshot','agent-screenshot-chunk','agent-screenshot-released'].includes(expect.kind))return validateScreenshotReply(status,value,expect,headers);
  if(expect.kind==='agent-accessibility')return validateAccessibilityReply(status,value,expect,headers);
  if(['agent-observation-context','agent-observation'].includes(expect.kind))return validateObservationReply(status,value,expect,headers);
@@ -66,7 +68,7 @@ function action(value){
 export class AgentClient {
  #transport;
  constructor(config){
-  this.#transport=createBackendTransport(config,{validate,ErrorClass:AgentClientError,agentErrors:true,endKind:'agent-end',binaryKind:'agent-screenshot-download',readBinary:readScreenshotBinary});
+  this.#transport=createBackendTransport(config,{validate,ErrorClass:AgentClientError,agentErrors:true,endKind:'agent-end',binaryKind:'agent-screenshot-download',readBinary:readScreenshotBinary,downloadKind:'agent-download-file',readDownloadBinary});
   const call=(method,path,payload,key,expect,options)=>this.#transport.request(method,path,payload,key,expect,options);
   const prepared=(path,payload,key,expect)=>{let originalId=null,originalCreatedAt=null;return Object.freeze({send:async(options={})=>{const result=await call('POST',path,payload,key,expect,requestOptions(options)),id=result.data.agentRunId&&expect.kind==='agent-run-create'?result.data.agentRunId:result.data.invocationId;if(originalId!==null&&originalId!==id||originalCreatedAt!==null&&originalCreatedAt!==result.data.createdAt)throw new AgentClientError('CLIENT_INVALID_RESPONSE',{requestId:result.requestId});originalId=id;originalCreatedAt=result.data.createdAt;return result;}});};
   const prepareRun=(sessionId,input,options)=>{if(!id(sessionId,'ses_'))invalid();const v=data(input,['region','version','rpcTimeoutMs'],['region','version']),r=data(options,['idempotencyKey']);if(!string(v.region,64)||!string(v.version,256))invalid();timeout(v.rpcTimeoutMs);requestOptions(r,true);return prepared('/v1/sessions/'+sessionId+'/agent-runs',body(v),r.idempotencyKey,{kind:'agent-run-create',sessionId,region:v.region,version:v.version});};
@@ -79,7 +81,13 @@ export class AgentClient {
    end:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return call('POST','/v1/agent-runs/'+agentRunId+'/end',null,null,{kind:'agent-end',id:agentRunId},requestOptions(options));}
   })});
   const screenshotCall=(kind,suffix,supplied,input,options={})=>{const ctx=captureObservationContext(supplied,invalid),request=kind==='agent-screenshot'?captureScreenshotRequest(input,invalid):captureScreenshotFileRequest(input,kind==='agent-screenshot-chunk'?'chunk':kind==='agent-screenshot-download'?'download':'release',invalid,this.#transport.screenshotMaxBytes),opts=captureObservationOptions(options,invalid);return call('POST','/v1/agent-runs/'+ctx.agentRunId+'/screenshot-'+suffix,body({context:ctx,...request}),null,{kind,context:ctx,request},opts);};
+  const downloadCall=(kind,suffix,supplied,input,options={})=>{const ctx=captureObservationContext(supplied,invalid),request=captureDownloadRequest(input,kind==='agent-download-armed'?'armed':kind==='agent-download-chunk'?'chunk':kind==='agent-download-file'?'file':'ticket',invalid,this.#transport.downloadMaxBytes),opts=captureObservationOptions(options,invalid);return call('POST','/v1/agent-runs/'+ctx.agentRunId+'/download-'+suffix,body({context:ctx,...request}),null,{kind,context:ctx,request},opts);};
   Object.defineProperty(this,'observations',{enumerable:true,value:Object.freeze({
+   armDownload:(context,input={},options={})=>downloadCall('agent-download-armed','arms',context,input,options),
+   downloadInfo:(context,input,options={})=>downloadCall('agent-download-info','observations',context,input,options),
+   downloadChunk:(context,input,options={})=>downloadCall('agent-download-chunk','chunks',context,input,options),
+   releaseDownload:(context,input,options={})=>downloadCall('agent-download-released','releases',context,input,options),
+   downloadFile:(context,input,options={})=>downloadCall('agent-download-file','files',context,input,options),
    screenshot:(context,input={},options={})=>screenshotCall('agent-screenshot','observations',context,input,options),
    screenshotChunk:(context,input,options={})=>screenshotCall('agent-screenshot-chunk','chunks',context,input,options),
    releaseScreenshot:(context,input,options={})=>screenshotCall('agent-screenshot-released','releases',context,input,options),

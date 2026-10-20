@@ -75,7 +75,22 @@ export interface AgentScreenshotDownload extends AgentObservationContext {readon
 export interface AgentCreateOptions extends RequestOptions {readonly idempotencyKey:string;}
 export interface PreparedAgentRun {send(options?:RequestOptions):Promise<ApiResult<AgentRun>>;}
 export interface PreparedAgentInvocation {send(options?:RequestOptions):Promise<ApiResult<AgentInvocation>>;}
-export interface AgentClientConfig extends SessionClientConfig {readonly maxConcurrentEndRequests?:number;readonly maxScreenshotBytes?:number;}
+export type AgentDownloadId=`dl_${string}`;
+export interface AgentDownloadLimits {readonly maxBytes?:number;readonly timeoutMs?:number;}
+export interface AgentDownloadArmInput {readonly limits?:AgentDownloadLimits;readonly rpcTimeoutMs?:number;}
+export interface AgentDownloadTicketInput {readonly downloadId:AgentDownloadId;readonly rpcTimeoutMs?:number;}
+export interface AgentDownloadChunkInput extends AgentDownloadTicketInput {readonly offset:number;readonly maxBytes?:number;}
+export interface AgentDownloadFileInput extends AgentDownloadTicketInput {readonly sha256:string;readonly byteLength:number;readonly completedAt:string;}
+export interface AgentDownloadTicket extends AgentObservationContext {readonly downloadId:AgentDownloadId;readonly scope:'next-owned-page-download';readonly armedAt:string;readonly limits:Required<AgentDownloadLimits>;}
+export interface AgentDownloadArmed extends AgentDownloadTicket {readonly stage:'download-armed';}
+export interface AgentDownloadPending extends AgentDownloadTicket {readonly stage:'download-pending';}
+export interface AgentDownloadReady extends AgentDownloadTicket {readonly stage:'download-ready';readonly completedAt:string;readonly fileName:string;readonly mimeType:'application/octet-stream';readonly byteLength:number;readonly sha256:string;}
+export type AgentDownloadInfo=AgentDownloadPending|AgentDownloadReady;
+export interface AgentDownloadChunk extends AgentObservationContext {readonly stage:'download-chunk';readonly downloadId:AgentDownloadId;readonly sha256:string;readonly completedAt:string;readonly offset:number;readonly byteLength:number;readonly totalBytes:number;readonly data:string;readonly complete:boolean;}
+export interface AgentDownloadReleased extends AgentObservationContext {readonly stage:'download-released';readonly downloadId:AgentDownloadId;}
+/** Metadata is frozen; bytes are a new mutable caller-owned allocation. */
+export interface AgentDownloadFile extends AgentObservationContext {readonly stage:'download-delivered';readonly downloadId:AgentDownloadId;readonly mimeType:'application/octet-stream';readonly byteLength:number;readonly sha256:string;readonly completedAt:string;readonly bytes:Uint8Array;}
+export interface AgentClientConfig extends SessionClientConfig {readonly maxConcurrentEndRequests?:number;readonly maxScreenshotBytes?:number;readonly maxDownloadBytes?:number;}
 export class AgentClientError extends SessionClientError {}
 export class AgentClient {
  constructor(config:AgentClientConfig);
@@ -87,6 +102,11 @@ export class AgentClient {
   readonly end:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentRun>>;
  };
  readonly observations:{
+  readonly armDownload:(context:AgentObservationContext,input?:AgentDownloadArmInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentDownloadArmed>>;
+  readonly downloadInfo:(context:AgentObservationContext,input:AgentDownloadTicketInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentDownloadInfo>>;
+  readonly downloadChunk:(context:AgentObservationContext,input:AgentDownloadChunkInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentDownloadChunk>>;
+  readonly releaseDownload:(context:AgentObservationContext,input:AgentDownloadTicketInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentDownloadReleased>>;
+  readonly downloadFile:(context:AgentObservationContext,input:AgentDownloadFileInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentDownloadFile>>;
   readonly screenshot:(context:AgentObservationContext,input?:AgentScreenshotInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentScreenshotObservation>>;
   readonly screenshotChunk:(context:AgentObservationContext,input:AgentScreenshotChunkInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentScreenshotChunk>>;
   readonly releaseScreenshot:(context:AgentObservationContext,input:AgentScreenshotFileInput,options?:AgentObservationOptions)=>Promise<ApiResult<AgentScreenshotReleased>>;

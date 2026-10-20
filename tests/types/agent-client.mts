@@ -113,3 +113,30 @@ client.observations.downloadScreenshot(readContext,{screenshotId});
 file.sha256='changed';
 // @ts-expect-error input fence context cannot replace observation context
 client.observations.screenshot(ctx);
+
+// Actual Page download types are available from both backend and agent entrypoints.
+const downloading=new AgentClient({baseUrl:'https://api.example.test',apiKey:'backend-secret-from-environment',maxDownloadBytes:4194304});
+const readCtx:AgentObservationContext=(await downloading.observations.context(created.data)).data;
+const armed:import('../../sdk/backend.mjs').AgentDownloadArmed=(await downloading.observations.armDownload(readCtx,{limits:{maxBytes:1048576,timeoutMs:10000}})).data;
+const fileId:import('../../sdk/agent.mjs').AgentDownloadId=armed.downloadId;
+const info:import('../../sdk/backend.mjs').AgentDownloadInfo=(await downloading.observations.downloadInfo(readCtx,{downloadId:fileId})).data;
+if(info.stage==='download-ready'){
+ const file:import('../../sdk/agent.mjs').AgentDownloadFile=(await downloading.observations.downloadFile(readCtx,{downloadId:fileId,sha256:info.sha256,byteLength:info.byteLength,completedAt:info.completedAt})).data;
+ const byte: number|undefined=file.bytes[0];void byte;file.bytes[0]=1;
+ // @ts-expect-error file metadata is readonly; only the owned byte array is mutable
+ file.byteLength=4;
+}else{
+ // @ts-expect-error pending metadata does not expose completed file bytes
+ info.byteLength;
+}
+const filePart:import('../../sdk/backend.mjs').AgentDownloadChunk=(await downloading.observations.downloadChunk(readCtx,{downloadId:fileId,offset:0})).data;
+const fileReleased:import('../../sdk/backend.mjs').AgentDownloadReleased=(await downloading.observations.releaseDownload(readCtx,{downloadId:fileId})).data;
+void filePart;void fileReleased;
+// @ts-expect-error PNG screenshot IDs cannot select actual Page downloads
+await downloading.observations.downloadInfo(readCtx,{downloadId:'shot_opaque'});
+// @ts-expect-error downloads do not accept arbitrary URLs
+await downloading.observations.armDownload(readCtx,{url:'https://private'});
+// @ts-expect-error full hash size and completion time must accompany file bytes
+await downloading.observations.downloadFile(readCtx,{downloadId:fileId});
+// @ts-expect-error reads cannot enable retries or replace captured context
+await downloading.observations.downloadInfo(readCtx,{downloadId:fileId},{retries:1});
