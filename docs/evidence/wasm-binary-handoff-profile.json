@@ -1,0 +1,458 @@
+{
+  "at": "2026-10-18T00:13:36.352305+00:00",
+  "status": "accepted-post-verified-byte-handoff-native-allocation-comparison",
+  "version": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/frozen-version.json",
+  "versionSha256": "8676a0ad86538b986c6446186c36fc0648896d9163df85d87295e0a092e2e74a",
+  "sourceFiles": 616,
+  "scope": "Actualsame600sparameters/3persistentMacViewers/2Workers/normalSourceandsecondary,5s+8MiBnativeprofiles,noGCcommand. Sourcecodeincludesfunctionalbytehandofffix. Allocationobservationsareweighted/random;notuniquephysicalmemory/performance/30mingrowth/8h/N1acceptance.",
+  "workload": {
+    "requestedSeconds": 600,
+    "elapsedSeconds": 615.598438959,
+    "cycles": 661,
+    "resizes": 52,
+    "inputs": 44,
+    "navigations": 6,
+    "secondaryCompleted": 7,
+    "leaseExpired": 7,
+    "sampleCount": 12
+  },
+  "comparison": [
+    {
+      "label": "gpu-worker",
+      "beforeFinalLargeSamples": 8,
+      "beforeArenaRecycles": 8,
+      "afterFinalLargeSamples": 0,
+      "afterMaxLargeSamples": 0,
+      "afterArenaRecycles": 8
+    },
+    {
+      "label": "cpu-worker",
+      "beforeFinalLargeSamples": 9,
+      "beforeArenaRecycles": 9,
+      "afterFinalLargeSamples": 0,
+      "afterMaxLargeSamples": 0,
+      "afterArenaRecycles": 9
+    },
+    {
+      "label": "cpu-main",
+      "beforeFinalLargeSamples": 9,
+      "beforeArenaRecycles": 9,
+      "afterFinalLargeSamples": 0,
+      "afterMaxLargeSamples": 0,
+      "afterArenaRecycles": 9
+    }
+  ],
+  "profiles": [
+    {
+      "label": "gpu-worker",
+      "ordinal": 1,
+      "cycle": 0,
+      "nativeSamples": 0,
+      "base64SizedSamples": 0,
+      "elapsedMs": 0.7707500000001346,
+      "bytes": 40
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 2,
+      "cycle": 404,
+      "nativeSamples": 136,
+      "base64SizedSamples": 0,
+      "elapsedMs": 6.778417000001355,
+      "bytes": 60177
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 3,
+      "cycle": 433,
+      "nativeSamples": 168,
+      "base64SizedSamples": 0,
+      "elapsedMs": 5.807209000005969,
+      "bytes": 71538
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 4,
+      "cycle": 461,
+      "nativeSamples": 177,
+      "base64SizedSamples": 0,
+      "elapsedMs": 5.704499999992549,
+      "bytes": 69942
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 5,
+      "cycle": 489,
+      "nativeSamples": 198,
+      "base64SizedSamples": 0,
+      "elapsedMs": 5.886457999993581,
+      "bytes": 77666
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 6,
+      "cycle": 517,
+      "nativeSamples": 233,
+      "base64SizedSamples": 0,
+      "elapsedMs": 6.753957999986596,
+      "bytes": 92929
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 7,
+      "cycle": 546,
+      "nativeSamples": 240,
+      "base64SizedSamples": 0,
+      "elapsedMs": 6.0599159999983385,
+      "bytes": 90227
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 8,
+      "cycle": 574,
+      "nativeSamples": 46,
+      "base64SizedSamples": 0,
+      "elapsedMs": 2.7486250000074506,
+      "bytes": 25655
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 9,
+      "cycle": 602,
+      "nativeSamples": 70,
+      "base64SizedSamples": 0,
+      "elapsedMs": 3.1882500000065193,
+      "bytes": 32285
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 10,
+      "cycle": 631,
+      "nativeSamples": 105,
+      "base64SizedSamples": 0,
+      "elapsedMs": 4.082417000085115,
+      "bytes": 43041
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 11,
+      "cycle": 659,
+      "nativeSamples": 146,
+      "base64SizedSamples": 0,
+      "elapsedMs": 5.212541999993846,
+      "bytes": 61892
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 12,
+      "cycle": 661,
+      "nativeSamples": 138,
+      "base64SizedSamples": 0,
+      "elapsedMs": 4.5750410000327975,
+      "bytes": 57174
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 1,
+      "cycle": 0,
+      "nativeSamples": 0,
+      "base64SizedSamples": 0,
+      "elapsedMs": 0.5675000000001091,
+      "bytes": 40
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 2,
+      "cycle": 404,
+      "nativeSamples": 130,
+      "base64SizedSamples": 0,
+      "elapsedMs": 4.834415999997873,
+      "bytes": 52927
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 3,
+      "cycle": 433,
+      "nativeSamples": 170,
+      "base64SizedSamples": 0,
+      "elapsedMs": 4.9380419999943115,
+      "bytes": 70831
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 4,
+      "cycle": 461,
+      "nativeSamples": 183,
+      "base64SizedSamples": 0,
+      "elapsedMs": 5.407458000001498,
+      "bytes": 75703
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 5,
+      "cycle": 489,
+      "nativeSamples": 195,
+      "base64SizedSamples": 0,
+      "elapsedMs": 5.34208299999591,
+      "bytes": 76497
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 6,
+      "cycle": 517,
+      "nativeSamples": 219,
+      "base64SizedSamples": 0,
+      "elapsedMs": 6.2028750000172295,
+      "bytes": 84141
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 7,
+      "cycle": 546,
+      "nativeSamples": 243,
+      "base64SizedSamples": 0,
+      "elapsedMs": 5.9854579999810085,
+      "bytes": 90308
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 8,
+      "cycle": 574,
+      "nativeSamples": 36,
+      "base64SizedSamples": 0,
+      "elapsedMs": 2.1694160000188276,
+      "bytes": 19978
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 9,
+      "cycle": 602,
+      "nativeSamples": 65,
+      "base64SizedSamples": 0,
+      "elapsedMs": 3.1043749999953434,
+      "bytes": 31604
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 10,
+      "cycle": 631,
+      "nativeSamples": 94,
+      "base64SizedSamples": 0,
+      "elapsedMs": 3.985958000062965,
+      "bytes": 41270
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 11,
+      "cycle": 659,
+      "nativeSamples": 115,
+      "base64SizedSamples": 0,
+      "elapsedMs": 3.60129199991934,
+      "bytes": 48368
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 12,
+      "cycle": 661,
+      "nativeSamples": 113,
+      "base64SizedSamples": 0,
+      "elapsedMs": 3.691541999927722,
+      "bytes": 46212
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 1,
+      "cycle": 0,
+      "nativeSamples": 0,
+      "base64SizedSamples": 0,
+      "elapsedMs": 0.6887080000001333,
+      "bytes": 40
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 2,
+      "cycle": 404,
+      "nativeSamples": 121,
+      "base64SizedSamples": 0,
+      "elapsedMs": 9.108333000003768,
+      "bytes": 52079
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 3,
+      "cycle": 433,
+      "nativeSamples": 149,
+      "base64SizedSamples": 0,
+      "elapsedMs": 4.816707999998471,
+      "bytes": 61345
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 4,
+      "cycle": 461,
+      "nativeSamples": 178,
+      "base64SizedSamples": 0,
+      "elapsedMs": 5.149833000003127,
+      "bytes": 76035
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 5,
+      "cycle": 489,
+      "nativeSamples": 212,
+      "base64SizedSamples": 0,
+      "elapsedMs": 6.619334000017261,
+      "bytes": 88770
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 6,
+      "cycle": 517,
+      "nativeSamples": 223,
+      "base64SizedSamples": 0,
+      "elapsedMs": 5.998874999990221,
+      "bytes": 88612
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 7,
+      "cycle": 546,
+      "nativeSamples": 250,
+      "base64SizedSamples": 0,
+      "elapsedMs": 6.323166000016499,
+      "bytes": 98819
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 8,
+      "cycle": 574,
+      "nativeSamples": 36,
+      "base64SizedSamples": 0,
+      "elapsedMs": 2.2737920000217855,
+      "bytes": 21888
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 9,
+      "cycle": 602,
+      "nativeSamples": 59,
+      "base64SizedSamples": 0,
+      "elapsedMs": 2.9575000000186265,
+      "bytes": 27833
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 10,
+      "cycle": 631,
+      "nativeSamples": 100,
+      "base64SizedSamples": 0,
+      "elapsedMs": 4.7370419999351725,
+      "bytes": 45771
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 11,
+      "cycle": 659,
+      "nativeSamples": 122,
+      "base64SizedSamples": 0,
+      "elapsedMs": 4.617042000056244,
+      "bytes": 55443
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 12,
+      "cycle": 661,
+      "nativeSamples": 115,
+      "base64SizedSamples": 0,
+      "elapsedMs": 4.270291999913752,
+      "bytes": 50025
+    }
+  ],
+  "profileCount": 36,
+  "allOwnedCohortFencesPassed": true,
+  "pageLifetimes": [
+    {
+      "label": "gpu-worker",
+      "nonce": "afdce695-7a18-4ed6-b2e0-e47e3d2cb194",
+      "pixelProbeNonce": "a189babc-a2d1-4272-8290-1134ec276b80",
+      "inputObserverNonce": "c5eaef29-1813-4cc2-9035-e5bfe4ba7018"
+    },
+    {
+      "label": "cpu-worker",
+      "nonce": "ba979c32-3321-4839-839a-c701a8a8b639",
+      "pixelProbeNonce": "3404a4f5-fc4a-4db8-9cde-0c030a677fdc",
+      "inputObserverNonce": "7e4a1a57-9071-412b-85af-57534e5dec2e"
+    },
+    {
+      "label": "cpu-main",
+      "nonce": "82ca9f7e-dcec-4e35-b0ef-0d73b6f50815",
+      "pixelProbeNonce": "03f5c2f1-8b2d-4e59-a222-8a0f0f6e39e1",
+      "inputObserverNonce": "4eb5d39e-c1e4-422c-8d75-02817400891a"
+    }
+  ],
+  "workerLifetimes": [
+    "736A8E218888BF729330A2DF22C06087",
+    "FB96D5C189BB27C0104D8743159619A7"
+  ],
+  "sourceClosed": {
+    "created": 8,
+    "closed": 8,
+    "crosssite": 6,
+    "leaseExpired": 7
+  },
+  "cleanupErrors": [],
+  "functionalAcceptance": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-acceptance-v1.json",
+  "physicalGrowthAccepted": false,
+  "originalPolicySha256": "49254837e00ab4c39afd6b284fb66637988797ab6f781f45f69ccfc7b022bcbf",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/frozen-version.json": "8676a0ad86538b986c6446186c36fc0648896d9163df85d87295e0a092e2e74a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/report.json": "878eec97549f1a1ee49b5f8ee7329530ea82f163af45d3c9d3d4efb3ad620d7a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/cleanup.json": "90d9db11c037249430541e0f65b1b58fdc74b8b947c8698a043048a2497f6bed",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/samples.jsonl": "d83054645b09ad5831aeb8babadf64eb02375077adcf6aab83749c55f0061de8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/identities.jsonl": "ac6f8c62d19d3d02ca87343c2a04f7ba007cb4641a8082de5cafc7ae02c1dc22",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-acceptance-v1.json": "0f01e94ef09db6c2cc627362da5c2ea7d6dfa2869f34d7195683dfb93250d1c5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-acceptance-v1.json": "505f9860389b6db6fde81af65b9ec7c6e628192c3f230a4f2cf09e0c287363f8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-receipts.jsonl": "dad24e3ed991b8c0368174bc13189c7f34e187fa4dd073ae043a9aa958a80b9e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-1.raw.json": "ab825d25721af0067fe29c9ed4f7a8dede092e6d1386279187d272b692517297",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-2.raw.json": "aa1565515fc5d42828f0a8dd564d5aa6df8d6eeae60f1cbbae6baaf42a9ec0c9",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-3.raw.json": "5cf1b1b585bffc8f331c1ef2d48b0b258c63fe6bbd292e99bfd294b8f40ea466",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-4.raw.json": "d1bf6b09bbc42909468ff08f10c78a5eb212d8079e1c7a68c3d59e57c333c96d",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-5.raw.json": "8fce04e54fa983c721efb6fcaad83e391b7a2688a002b9e79bd605347d8030bb",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-6.raw.json": "2fc26f5bf08fd6fec450bd6ea7e29848cfaf7674f4b79868965b5dcf8c86c055",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-7.raw.json": "52d40b66c0b98571e57769c2e6168b9b3d0e0aab60d92d741612d6dbf90d4f95",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-8.raw.json": "fcff04ce0eb14204f9808f83c9ab3d94f3e9e4c1e7d7933cb711b3344d32aa04",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-9.raw.json": "8f5532027a077ab70b7f49bf6040910fd777dad15a2679dfc8567b213372332e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-10.raw.json": "c6ff7707ff91ae24346e72c7bbdc67fd8bce026f47b9f15eae6ca333d97ad959",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-11.raw.json": "c0b764507420f6787e3d6e47d3c046e450c38dd89629c68b341b7e238f92273a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/gpu-worker-12.raw.json": "eaeb334dedadb75f1cac7e1f53931a208bbd3c2aeb3dddcdba014f8aef546157",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-receipts.jsonl": "cda2af47de7337862c5041cb8226ca35b9ef34948753a02ccd762d1f26be0764",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-1.raw.json": "ab825d25721af0067fe29c9ed4f7a8dede092e6d1386279187d272b692517297",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-2.raw.json": "6ad43170d26eab0c640eaaf5d166919b62fcdd39294b11a21804c6d6c43be32a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-3.raw.json": "3023a1438bca85ccf97e7784f473c653b3df884a7dd66e792abc0cb0ead9b660",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-4.raw.json": "c835cea468425b8a17dc28411b677264f55caf8a3af02dffe74e9bb0ace183f2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-5.raw.json": "e3bc86062033d5f0f1e18e4033df871a51474e8f233ef3445dcbe10a2c450b83",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-6.raw.json": "86690957c021ff1e0bb969f990a50426c82b33005752c9550883f3985e114cde",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-7.raw.json": "931968ac9483969263ed08695aa53d310ef06c7e63584932f141802e8ee55c5f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-8.raw.json": "116c92954913b176f40a43ece09c4a05da083492b438031bcfab581804330be9",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-9.raw.json": "6e2156cd04680d943bd04aff7268f9fe77394e0f1143490a827914251e909fbd",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-10.raw.json": "e97350d70e446b268cb18eef515f24a17fd8048686d8b4e561a5e41e6a88dc15",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-11.raw.json": "4c53e1f2ad0b75f1f87ba747e9a650029047b71d62c7cfead77574b3d0a3b84e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-worker-12.raw.json": "68baf04c96dcc30c41939c0ae367737d2492db24bfe7edc498f00a081dae5149",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-receipts.jsonl": "10b39dc47126682fbc0a61f30e2a2941fd942c527076280d04a10e74b919c006",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-1.raw.json": "ab825d25721af0067fe29c9ed4f7a8dede092e6d1386279187d272b692517297",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-2.raw.json": "859b6f500d7f661171e80cd4d0015e0b0cfbb4def9fa37bb82ad3f9ac4d287ad",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-3.raw.json": "d09e0971ebc5bc24bd2ccc5f298df5c4ab46e2abe5fab4faaf2247555f71969f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-4.raw.json": "ae8d757f6e4072e618741c887bc9313c8ff59b983f3654f12ff8b3e2547063a7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-5.raw.json": "a384b6455539158ccdb0a501971678cbc3f906b17d9323675d329945e584c660",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-6.raw.json": "2507ecae6d55a927a5a662e1a660b98886f6973858d5b48d0f64aa9fadaf80ab",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-7.raw.json": "d70bd91cddfcca662ac6d26c11d4b647dfad1c1aa20d3fa40a41341fa29ab443",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-8.raw.json": "7134f2972037ec676a9b9ba87b5679b7df378a0f364f5185e67585794af063cf",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-9.raw.json": "0bdcd924f66c9473581b56d5e2d6e4944823a3ded85b4cbdf1dd5f29bcdfb139",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-10.raw.json": "c856f5a20758c87f35b048007597b2c55c1626d16c69f220564d01b5c302fddb",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-11.raw.json": "0b4a63b3f86632deefd43670f6874ea2a861d127d2247cb49aefa81432a0bd90",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-profile-v1/results/native-sampling/cpu-main-12.raw.json": "a32cb9f9975fc5c603ab3c071786acce15ccfe34e23136a24731263fd1b7ba17"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "noEightHourActive": true
+}

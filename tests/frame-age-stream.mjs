@@ -21,7 +21,7 @@ export function streamingCoverage(raw,previous){
 
 export async function startFrameAgeStream(page,provenance,{nativeProbe,directory}){
  assert.equal(provenance.streaming,true);assert.equal(provenance.diagnosticFaults,false);assert.equal(typeof nativeProbe,'function');
- const proofs=new Map(),history=[];let active=true,busy=false,ordinal=0;
+ const proofs=new Map(),history=[];let active=true,busy=false,failed=false,ordinal=0;
  const totals={windows:0,successfulCommits:0,pixelSamples:0,normalFrameEvents:0,paired:0,missing:0,protocolEvents:0,socketStarts:0,socketCloses:0,minAgeMs:null,maxAgeMs:null,maxUncertaintyMs:null,maxPixelReadMs:null};
  function register(witness){
   const proof=witness.provenance?.linuxMonotonic;assert.equal(proof?.schema,'linux-native-monotonic-probe-v1');const producer=witness.provenance.producer;assert.equal(producer.split(':')[0],String(proof.rendererIdentity.pid));const key=witness.pageEpoch+':'+producer;
@@ -30,13 +30,17 @@ export async function startFrameAgeStream(page,provenance,{nativeProbe,directory
  async function calibrate(){const value=await calibrateFrameAge(null,page,{nativeProbe,sharedLinuxClock:true});for(const sample of value.native.samples)register(sample);history.push(value);if(history.length>6)history.shift();return value;}
  await calibrate();await page.waitForTimeout(100);const enabled=await page.evaluate(()=>window.__rpAge.request('enable'));let previous=enabled;
  const lifetime={initialAll:enabled.all,initialWindow:enabled.window,initialWorkerMs:enabled.now};
- return {totals,lifetime,async witness(){const value=await nativeProbe();register(value);return value;},async drain({stop=false}={}){
-  assert.ok(active&&!busy,'No overlapping stream drains or drain after stop');busy=true;
+ return {totals,lifetime,get active(){return active;},async witness(){const value=await nativeProbe();register(value);return value;},async drain({stop=false}={}){
+  assert.ok(active&&!busy&&(!failed||stop),'No overlapping stream drains, continued failed stream or drain after stop');busy=true;
   try{
-   const reply=await page.evaluate(operation=>window.__rpAge.request(operation),stop?'disable':'rotate'),raw=reply.completed;assert.ok(raw);const id=++ordinal;
+   const reply=await page.evaluate(operation=>window.__rpAge.request(operation),stop?'disable':'rotate');
+   // Once disable replied, cleanup must not send it again if persistence or
+   // post-window calibration fails. Retain the failure as an incomplete window.
+   if(stop){assert.equal(reply.operation,'disable');active=false;}
+   const raw=reply.completed;assert.ok(raw);const id=++ordinal;
    // Persist the exact completed raw window before calibrating or validating.
    await appendFile(join(directory,'stream-raw-windows.jsonl'),JSON.stringify({id,at:new Date().toISOString(),raw})+'\n');
-   const after=await calibrate(),coverage=streamingCoverage(raw,previous);if(stop){active=false;assert.equal(reply.operation,'disable');}else{assert.equal(reply.nextWindow,previous.window+1);previous={...reply,window:reply.nextWindow,observed:0};}
+   const after=await calibrate(),coverage=streamingCoverage(raw,previous);if(!stop){assert.equal(reply.nextWindow,previous.window+1);previous={...reply,window:reply.nextWindow,observed:0};}
    assert.equal(provenance.actualServed.length,1);assert.equal(provenance.actualServed[0].status,200);assert.equal(provenance.actualServed[0].sha256,provenance.served[0].instrumentedServedSha256);if(id===1)await writeFile(join(directory,'stream-observer-provenance.json'),JSON.stringify(provenance)+'\n',{flag:'wx'});
    let before=null,samples=[];
    if(raw.samples.length){
@@ -52,6 +56,6 @@ export async function startFrameAgeStream(page,provenance,{nativeProbe,directory
    assert.equal(totals.successfulCommits,reply.all-lifetime.initialAll);assert.equal(totals.paired,totals.successfulCommits);if(stop){lifetime.finalAll=reply.all;lifetime.finalWorkerMs=reply.now;lifetime.finalWindow=reply.window;lifetime.producerProofs=proofs.size;}
    await appendFile(join(directory,'stream-windows.jsonl'),JSON.stringify({at:new Date().toISOString(),...result})+'\n');
    return result;
-  }finally{busy=false;}
+  }catch(error){failed=true;throw error;}finally{busy=false;}
  }};
 }

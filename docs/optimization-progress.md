@@ -1302,3 +1302,19 @@ owner.after的原metrics在finally关闭历史procFD之前采集，不能当探�
 实际Node及Mac浏览器复现发现：固定CanvasKit0.42胶水忽略wasmBinary及instantiateWasm选项。传入无效四字节Wasm、会抛错的钩子仍初始化成功，真实浏览器经locateFile产生一次HTTP Wasm请求；原Viewer预取校验的字节未通过这些选项交给实例化路径。这是新确认的集成缺陷，尚未修复。下一步应在不修改依赖缓存的前提下使用实际受支持的字节交接或受SHA守卫的胶水适配，不能在被忽略的instantiateWasm上假定编译缓存生效。
 
 组合追踪最初超过既定7秒结束总预算的失败保留，后续分离原生采样；未提高原采样预算、强制GC、替换主VM或修改物理增长策略。离线反汇编曾忽略范围参数产生过大输出，命令已自然结束且无产品进程被终止，相关记录保留；本诊断不作性能验收。原两次30分钟增长失败、8小时及完整N1未通过状态不变。证据见`docs/evidence/session-native-sampling.json`与`docs/evidence/canvaskit-binary-handoff-bug.json`。
+
+## 固定CanvasKit胶水实际消费已校验Wasm字节
+
+修复原生采样后复现的交接缺陷：在Node生成资源包时校验固定0.42胶水SHA，只为该精确版本增加wasmBinary直接实例化入口；未知胶水构建拒绝启动，不盲目匹配未来压缩变量。提供字节无效时直接拒绝，不通过HTTP替换；不提供字节时保留原加载分支。主线程、Worker版本化资源与静态Viewer统一使用适配后的服务字节；原node_modules、Wasm二进制、Native Broker和Chromium均未修改。
+
+实际Mac/Linux的主线程与Worker都验证：无效字节拒绝且不回退请求；有效预取字节初始化与arena重建时HTTP Wasm请求为零；蓝色像素、旧generation/commit抑制、清理时scene元数据持有、初始化中dispose及最终owner归零检查通过。完整JS每平台262项，Linux258通过4跳过，Mac独立复测254通过8跳过。首次Mac仍有原2秒助手启动超时（PID63085已SIGKILL并回收），253通过/8跳过/1失败日志保留；未放宽门槛或声称此故障根因已修复。
+
+本项只验收字节交接功能。后续同负载原生分配比较、原192MiB增长策略的独立30分钟复测及8小时/N1组合仍须各自取得证据，不能由此推定通过。证据见`docs/evidence/wasm-binary-handoff.json`。
+
+## 已校验字节交接后的同负载原生分配比较
+
+使用相同600秒工作循环参数、相同原生采样上限，修复后总运行615.598秒，三个主页面和两个Worker持续保留；Source创建/关闭8/8、无清理错误。完整原始profile和前后OS进程身份集合均保留，未强制GC。
+
+逐Viewer记录修复前后约11MB（Wasm Base64长度加StringImpl头）大块采样数量及实际arena重建数：`[{"label": "gpu-worker", "beforeFinalLargeSamples": 8, "beforeArenaRecycles": 8, "afterFinalLargeSamples": 0, "afterMaxLargeSamples": 0, "afterArenaRecycles": 8}, {"label": "cpu-worker", "beforeFinalLargeSamples": 9, "beforeArenaRecycles": 9, "afterFinalLargeSamples": 0, "afterMaxLargeSamples": 0, "afterArenaRecycles": 9}, {"label": "cpu-main", "beforeFinalLargeSamples": 9, "beforeArenaRecycles": 9, "afterFinalLargeSamples": 0, "afterMaxLargeSamples": 0, "afterArenaRecycles": 9}]`。该比较是采样分配证据，不能直接换算为独占物理内存或替代物理增长门槛；统计、原始数据和实例重建均未省略。
+
+原两次30分钟增长失败继续保留；接下来独立使用同一492548策略和192MiB增长上限复测，停用原生分配/内存转储诊断，不合并此前运行时长。8小时和完整N1尚未通过。证据见`docs/evidence/wasm-binary-handoff-profile.json`。

@@ -14,3 +14,13 @@ test('continuous boundary proof rejects missing commits, replacement Workers, pr
  assert.equal(streamingCoverage(raw,previous).paired,1);
  for(const mutate of [r=>r.samples=[],r=>r.workerCount=2,r=>r.start.all=19,r=>r.end.productionFrames=27,r=>r.end.protocolOrdinal=3,r=>r.samples[0].commitOrdinal=22,r=>r.samples[0].productionFramePaired=false]){const r=structuredClone(raw);mutate(r);assert.throws(()=>streamingCoverage(r,previous));}
 });
+
+test('a confirmed disable remains stopped when subsequent clock calibration fails; raw window survives',async()=>{
+ const {mkdtemp,readFile,rm}=await import('node:fs/promises'),{tmpdir}=await import('node:os'),{join}=await import('node:path'),{startFrameAgeStream}=await import('./frame-age-stream.mjs');
+ const directory=await mkdtemp(join(tmpdir(),'remote-paint-stop-contract-'));let probes=0,disables=0;
+ // Contract transport: valid shared-domain startup probes, then an unavailable
+ // Source immediately after the actual disable reply. No browser claim here.
+ const nativeProbe=async()=>{if(++probes>12)throw new Error('Source clock unavailable after disable');return {reply:{clock:'chromium-time-ticks-v1',nowMicros:1000000,rendererProcessId:9},pageEpoch:1,viewportVersion:1,provenance:{producer:'9:2',linuxMonotonic:{schema:'linux-native-monotonic-probe-v1',domainId:'a'.repeat(64),rendererIdentity:{pid:9},interval:{nativeMicros:1000000,beforeNs:'1000000000',afterNs:'1000000000'}}}};};
+ const page={waitForTimeout:async()=>{},evaluate:async(_fn,op)=>{if(op==='clock')return {clock:'worker-performance-v1',now:100};if(op===undefined)return {window:1,all:0,protocolOrdinal:0,now:100};assert.equal(op,'disable');disables++;return {operation:'disable',completed:{unvalidated:true}};}};
+ try{const stream=await startFrameAgeStream(page,{streaming:true,diagnosticFaults:false},{nativeProbe,directory});await assert.rejects(stream.drain({stop:true}),/clock unavailable/);assert.equal(stream.active,false);await assert.rejects(stream.drain({stop:true}),/drain after stop/);assert.equal(disables,1);assert.equal(JSON.parse((await readFile(join(directory,'stream-raw-windows.jsonl'),'utf8')).trim()).raw.unvalidated,true);}finally{await rm(directory,{recursive:true,force:true});}
+});

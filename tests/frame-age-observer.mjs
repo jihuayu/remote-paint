@@ -6,6 +6,7 @@ import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {makeStaticAssets} from '../live/static-assets.mjs';
 import {prepareViewerAssets} from '../live/viewer-assets.mjs';
+import {adaptCanvasKitGlue} from '../live/canvaskit-glue.mjs';
 import {startLiveSource} from '../live/source.mjs';
 import {startLiveTransport} from '../live/transport.mjs';
 import {createControl} from '../live/input.mjs';
@@ -97,6 +98,7 @@ async function prepareFrameAgeAssets(points,diagnosticFaults,streaming){
   ['/vendor/canvaskit.wasm',['node_modules/canvaskit-wasm/bin/full/canvaskit.wasm','application/wasm']],
  ]);
  const inputs=new Map(await Promise.all([...files].map(async([path,[file,type]])=>[path,{type,bytes:await readFile(new URL(file,root))}])));
+ inputs.get('/vendor/canvaskit.js').bytes=adaptCanvasKitGlue(inputs.get('/vendor/canvaskit.js').bytes);
  inputs.set('/canvaskit-worker.mjs',{type:'text/javascript',bytes:Buffer.concat([inputs.get('/vendor/canvaskit.js').bytes,Buffer.from('\nexport default CanvasKitInit;')])});
  // The complete copied input map must reproduce the real production bundle
  // exactly. Changes to its file set or types fail instead of silently forking it.

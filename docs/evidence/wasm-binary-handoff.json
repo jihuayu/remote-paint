@@ -1,0 +1,105 @@
+{
+  "at": "2026-10-18T00:06:23.106682+00:00",
+  "status": "accepted-verified-Wasm-binary-handoff-functional-fix",
+  "version": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-v1/frozen-version.json",
+  "versionSha256": "6ef864bb1f237e289492fd04890c439a17af8c479d6ca9052f0f9f62b8b91b42",
+  "sourceFiles": 616,
+  "problem": "Pinned0.42upstreamglueignoredwasmBinary;eachruntimeinitialization/rebuildcouldrefetchWasm throughlocateFileaftertheViewerhadalreadyverifieddifferentpreloadedbytes.",
+  "change": "SHA-guardedNode assetadaptationaddsdirectWebAssembly.instantiate(providedBuffer,imports) beforeanyfetchfallback. MainandWorker versionedassetsuseadaptedglue;staticcapturedVieweralsousesit. Providedinvalidbytesreject;absentoptionretainstheoriginallegacyloadingpath. OriginaldependencybytesandNativebinariesunchanged.",
+  "productionFiles": [
+    "live/canvaskit-glue.mjs",
+    "live/viewer-assets.mjs",
+    "server.mjs"
+  ],
+  "upstreamGlueSha256": "894815b2d39b24de2eacdb01453778d83e0b6c418b034e3b728e80956ac2a9d5",
+  "actualRuntime": {
+    "mac": {
+      "main": {
+        "invalidProvidedBytesRejected": true,
+        "unexpectedWasmFetches": 0,
+        "pixel": [
+          0,
+          0,
+          255,
+          255
+        ],
+        "ownedEntriesAfterDispose": 0,
+        "staleGenerationSuppressed": true,
+        "staleCommitSuppressed": true,
+        "disposeDuringInitialization": true
+      },
+      "worker": {
+        "invalidProvidedBytesRejected": true,
+        "unexpectedWasmFetches": 0,
+        "pixel": [
+          0,
+          0,
+          255,
+          255
+        ],
+        "ownedEntriesAfterDispose": 0,
+        "staleGenerationSuppressed": true,
+        "staleCommitSuppressed": true,
+        "disposeDuringInitialization": true
+      }
+    },
+    "linux": {
+      "main": {
+        "invalidProvidedBytesRejected": true,
+        "unexpectedWasmFetches": 0,
+        "pixel": [
+          0,
+          0,
+          255,
+          255
+        ],
+        "ownedEntriesAfterDispose": 0,
+        "staleGenerationSuppressed": true,
+        "staleCommitSuppressed": true,
+        "disposeDuringInitialization": true
+      },
+      "worker": {
+        "invalidProvidedBytesRejected": true,
+        "unexpectedWasmFetches": 0,
+        "pixel": [
+          0,
+          0,
+          255,
+          255
+        ],
+        "ownedEntriesAfterDispose": 0,
+        "staleGenerationSuppressed": true,
+        "staleCommitSuppressed": true,
+        "disposeDuringInitialization": true
+      }
+    }
+  },
+  "fullJS": {
+    "testsEach": 262,
+    "macIndependentReplayPass": 254,
+    "macLinuxOnlySkip": 8,
+    "linuxPass": 258,
+    "linuxMacOnlySkip": 4,
+    "replayFail": 0,
+    "preservedInitialMac": "253pass/8skip/1fail;unmodifiedknownnativehelper2sreadytimeout,pid63085SIGKILL/actuallyreaped. Node-source/compiler/budgetunchanged;startupcauseunconfirmed,notfixedbythispatch."
+  },
+  "limitsUnchanged": true,
+  "noForcedGCInRuntimeValidation": true,
+  "noVendorCacheMutation": true,
+  "nativeBrokerAndChromiumUnchanged": true,
+  "scope": "Functionalverifiedbytehandoffandmain/Workerrecycle/lifecycleproof. Nativeprofilecomparisonandoriginalphysicalgrowthgateareseparate;not8h/fullN1/physicalgrowthremediationclaim.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-v1/frozen-version.json": "6ef864bb1f237e289492fd04890c439a17af8c479d6ca9052f0f9f62b8b91b42",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-v1/results/mac-runtime.log": "fa6554708b0a5731886bc8d9a6fdf60073c10fa0f2872231b05ecf3c00b6c2ee",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-v1/results/linux-runtime.log": "04f94815eed837f142cb74eb4486b37f4cc4c77e34cee6b84e32a4b0a0eec6e0",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-v1/results/mac-js.log": "7dbb369fba73665ac5cfc2a505380822ea21cb0af741e2b96a9808e8712c9e54",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-v1/results/mac-js-replay.log": "e66b200283431b348e4454adb64573d4cd9454837ad395fbd6a10502cfa89866",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-v1/results/linux-js.log": "708bbe646ea0b7803a0f2a36999e2de14a9e425aeac046b987cf741a8958500f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-mac-js-initial-failure-v1.json": "cac20df5bdae5fc0b7a8f46b65e95a9306ff2bce7e31ba0540b2aa4ee5c4ff18",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-v1/results/mac-runtime/artifacts/memory/runtime.json": "5c41e0b213b2c32fadec650566237edf70054b095c992f1f69c5217a0c6fa568",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/wasm-binary-handoff-v1/results/linux-runtime/artifacts/memory/runtime.json": "00db8e72089d3ece05a896109cfa48bb5e986e9740aa68ba4d8dd50d6d1285b8"
+  },
+  "noCommitPush": true,
+  "eightHourPassed": false,
+  "noEightHourActive": true
+}
