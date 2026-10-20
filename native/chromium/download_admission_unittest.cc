@@ -32,6 +32,7 @@
 #include "components/download/public/common/in_progress_download_manager.h"
 #include "components/download/public/common/input_stream.h"
 #include "components/download/public/common/native_download_budget.h"
+#include "components/download/public/common/native_download_arm_window.h"
 #include "components/download/public/common/native_download_request_context.h"
 #include "components/download/public/common/native_download_read_session.h"
 #include "components/download/public/common/native_download_transfer_registry.h"
@@ -68,6 +69,9 @@ class NativeDownloadReadSessionTestPeer {
 
 namespace {
 using Budget = download::NativeDownloadBudget;
+using ArmWindow = download::NativeDownloadArmWindow;
+using Context = download::NativeDownloadRequestContext;
+scoped_refptr<Context> RequestContext();
 using Lease = download::NativeDownloadLease;
 using Item = download::DownloadItemImpl;
 using Manager = download::InProgressDownloadManager;
@@ -119,6 +123,9 @@ class Items : public Manager::Delegate, public download::DownloadItemImplDelegat
   std::map<uint32_t, std::unique_ptr<Item>> items;
   std::vector<Pending> pending;
   std::vector<scoped_refptr<Lease>> metadata_acks;
+  std::vector<std::unique_ptr<download::DownloadUrlParameters>> resumes;
+  void ResumeInterruptedDownload(std::unique_ptr<download::DownloadUrlParameters> params,
+      const std::string&) override { resumes.push_back(std::move(params)); }
   int allocations = 0;
   bool hold_creation = false;
   bool hold_metadata = false;
@@ -174,16 +181,36 @@ class Model {
         secure, base::BindRepeating([](int, const GURL&) { return true; }), base::NullCallback());
   }
   ~Model() {
+    CloseFixtureWindows();
     delegate.RejectPending(); hold_requests = false; CompleteRequests();
     manager.reset(); Drain();
     // On any unexpected failure the global reservation deliberately stays held.
     for (auto& [id, item] : delegate.items) item->Cancel(true);
     delegate.items.clear(); Drain();
   }
-  scoped_refptr<Reads> Start(bool finish = false, size_t bytes = 7,
-                             bool tracked = true,
-                             scoped_refptr<download::NativeDownloadRequestContext> context = nullptr,
-                             bool resume = false) {
+  // Simulate browser REQUEST CREATION from immutable Page/frame seeds before
+  // creating a URL handler or delivering a response. Explicitly old/unknown
+  // snapshots must use StartCaptured and are never repaired by this helper.
+  scoped_refptr<Reads> Start(bool finish = false, size_t bytes = 7, bool tracked = true,
+      scoped_refptr<Context> seed = nullptr, bool resume = false) {
+    if (!seed) seed = RequestContext();
+    scoped_refptr<Context> captured;
+    if (seed) {
+      if (ArmWindow::Capture(seed->page()).is_empty()) {
+        auto window = ArmWindow::Open(*seed, Budget::kFileBytes, base::Seconds(30));
+        if (window) fixture_windows_.push_back(window->id);
+      }
+      captured = Context::Create(seed->origin(), seed->target(), seed->initiator(), seed->page());
+    }
+    return StartCaptured(finish, bytes, tracked, std::move(captured), resume);
+  }
+  void CloseFixtureWindows() {
+    for (const auto& id : fixture_windows_) ArmWindow::Close(id);
+    fixture_windows_.clear();
+  }
+  scoped_refptr<Reads> StartCaptured(bool finish = false, size_t bytes = 7,
+      bool tracked = true, scoped_refptr<Context> context = nullptr, bool resume = false) {
+    last_context = context;
     auto owner = Handler::UniqueUrlDownloadHandlerPtr(new Handler,
         base::OnTaskRunnerDeleter(download::GetIOTaskRunner()));
     auto request = owner->GetRemotePaintRequestCleanupState();
@@ -192,7 +219,7 @@ class Model {
     requests.emplace_back(id, request);
     auto info = std::make_unique<download::DownloadCreateInfo>();
     info->is_new_download = !resume; info->result = kNone;
-    if (resume) info->guid = delegate.items.begin()->second->GetGuid();
+    if (resume) info->guid = delegate.items.empty() ? "missing-original-guid" : delegate.items.begin()->second->GetGuid();
     info->remote_paint_request_context = std::move(context);
     info->url_chain.emplace_back("https://example.test/file");
     info->save_info = std::make_unique<download::DownloadSaveInfo>();
@@ -231,6 +258,7 @@ class Model {
     }
   }
   void RetireAll() {
+    CloseFixtureWindows();
     std::vector<scoped_refptr<Lease>> leases;
     for (auto& [id, item] : delegate.items) leases.push_back(item->GetRemotePaintAdmission());
     for (auto& lease : leases) lease->BeginRetire();
@@ -240,6 +268,8 @@ class Model {
   Items delegate;
   std::unique_ptr<Manager> manager;
   std::vector<std::pair<download::UrlDownloadHandlerID, scoped_refptr<Request>>> requests;
+  scoped_refptr<Context> last_context;
+  std::vector<base::UnguessableToken> fixture_windows_;
   bool hold_requests = false;
   download::DownloadInterruptReason last_started_reason = kNone;
  private:
@@ -261,6 +291,7 @@ class RemotePaintDownloadBudgetTest : public testing::Test {
 TEST_F(RemotePaintDownloadBudgetTest, FifthDownloadRejectedBeforeItemAndStreamRead) {
   Model model(tasks_);
   for (int i = 0; i < 4; ++i) model.Start();
+  model.CloseFixtureWindows();  // Close arms without crediting four actual leases.
   auto fifth = model.Start(); model.Drain();
   EXPECT_EQ(4, model.delegate.allocations); EXPECT_EQ(4u, model.delegate.items.size());
   EXPECT_EQ(0, fifth->count); EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, model.last_started_reason);
@@ -310,6 +341,7 @@ TEST_F(RemotePaintDownloadBudgetTest, ExpiredCreatorDoesNotInventAllocationSettl
 
 TEST_F(RemotePaintDownloadBudgetTest, CapacityIsSharedByTwoManagers) {
   Model a(tasks_), b(tasks_); a.Start(); a.Start(); b.Start(); b.Start();
+  a.CloseFixtureWindows(); b.CloseFixtureWindows();
   auto fifth = b.Start(); a.Drain(); b.Drain();
   EXPECT_EQ(2, a.delegate.allocations); EXPECT_EQ(2, b.delegate.allocations);
   EXPECT_EQ(0, fifth->count); EXPECT_EQ(4u, Budget::ReservedItems());
@@ -388,7 +420,6 @@ TEST_F(RemotePaintDownloadBudgetTest, FailedCrossFilesystemRenameLeavesNoPlaceho
 #endif
 
 scoped_refptr<download::NativeDownloadRequestContext> RequestContext() {
-  using Context = download::NativeDownloadRequestContext;
   Context::Frame frame{1, 1, base::UnguessableToken::Create().ToString()};
   return Context::Create(Context::Origin::kExplicitRequest, frame, frame, frame);
 }
@@ -396,20 +427,24 @@ TEST_F(RemotePaintDownloadBudgetTest, RetainedOriginalContextRejectsChangedDocum
   Model model(tasks_); auto original = RequestContext(); ASSERT_TRUE(original);
   model.Start(false, 7, true, original); model.Drain();
   auto lease = model.delegate.items.begin()->second->GetRemotePaintAdmission();
-  EXPECT_EQ(original, lease->request_context());
+  const auto captured = model.last_context;
+  EXPECT_NE(original, captured); EXPECT_TRUE(original->SamePageDocument(*captured));
+  EXPECT_EQ(captured, lease->request_context());
   auto changed = RequestContext(); ASSERT_TRUE(changed);
   auto reads = model.Start(false, 7, true, changed, true); model.Drain();
   EXPECT_EQ(0, reads->count); EXPECT_EQ(1, model.delegate.allocations);
   EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, model.last_started_reason);
-  EXPECT_EQ(original, lease->request_context()); EXPECT_EQ(0u, Budget::ReservedItems());
+  EXPECT_EQ(captured, lease->request_context()); EXPECT_EQ(0u, Budget::ReservedItems());
 }
 TEST_F(RemotePaintDownloadBudgetTest, UnknownOriginalCannotBecomeKnownThroughResume) {
-  Model model(tasks_); model.Start(); model.Drain();
-  auto lease = model.delegate.items.begin()->second->GetRemotePaintAdmission();
-  EXPECT_FALSE(lease->request_context());
+  Model model(tasks_); auto unknown = model.StartCaptured(); model.Drain();
+  EXPECT_EQ(0, unknown->count); EXPECT_TRUE(model.delegate.items.empty());
+  EXPECT_EQ(0, model.delegate.allocations); EXPECT_EQ(0u, Budget::ReservedItems());
   auto reads = model.Start(false, 7, true, RequestContext(), true); model.Drain();
-  EXPECT_EQ(0, reads->count); EXPECT_EQ(1, model.delegate.allocations);
-  EXPECT_FALSE(lease->request_context()); EXPECT_EQ(0u, Budget::ReservedItems());
+  EXPECT_EQ(0, reads->count); EXPECT_EQ(0, model.delegate.allocations);
+  EXPECT_TRUE(model.delegate.items.empty()); EXPECT_EQ(0u, Budget::ReservedItems());
+  model.CloseFixtureWindows(); model.Start(true); model.Drain();
+  EXPECT_EQ(1, model.delegate.allocations); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
 }
 
 using Reader = download::NativeDownloadReadSession;
@@ -690,28 +725,34 @@ TEST_F(RemotePaintDownloadTransferTest, OneTicketRetainedUntilExplicitRelease) {
 }
 TEST_F(RemotePaintDownloadTransferTest, UnknownAndOtherPageAdmissionsAreRejected) {
   Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry);
-  model.Start(); EXPECT_FALSE(registry.Offer(LeaseFor(model))); model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+  auto unknown = model.StartCaptured(); model.Drain();
+  EXPECT_EQ(0, unknown->count); EXPECT_TRUE(model.delegate.items.empty());
+  EXPECT_EQ(0, model.delegate.allocations); EXPECT_EQ(0u, Budget::ReservedItems());
   model.Start(false, 7, true, RequestContext()); EXPECT_FALSE(registry.Offer(LeaseFor(model)));
   EXPECT_EQ(TransferState::kArmed, Info(registry, ticket).state); model.RetireAll(); Release(model, registry, ticket);
 }
 TEST_F(RemotePaintDownloadTransferTest, AdmissionBeforeArmCannotBeReplayedIntoNewWindow) {
   Model model(tasks_); auto owner = RequestContext(); model.Start(true, 7, true, owner); model.Drain(); auto lease = LeaseFor(model);
+  model.CloseFixtureWindows();  // Preserve old live lease, open a new arm identity.
   tasks_.FastForwardBy(base::Milliseconds(1)); Registry registry(owner); const auto ticket = Arm(registry);
   EXPECT_FALSE(registry.Offer(lease)); EXPECT_FALSE(lease->retiring()); model.RetireAll(); Release(model, registry, ticket);
 }
 TEST_F(RemotePaintDownloadTransferTest, OriginalPageAcceptsSubframeTargetAndInitiator) {
-  using Context = download::NativeDownloadRequestContext;
   Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry);
   const Context::Frame subframe{9, 10, base::UnguessableToken::Create().ToString()};
   auto context = Context::Create(Context::Origin::kRendererNavigation, subframe, subframe, owner->page()); ASSERT_TRUE(context);
   Start(model, registry, context); EXPECT_EQ(TransferState::kReady, Info(registry, ticket).state);
-  EXPECT_EQ(context, LeaseFor(model)->request_context()); Release(model, registry, ticket);
+  EXPECT_EQ(model.last_context, LeaseFor(model)->request_context());
+  EXPECT_TRUE(context->SamePageDocument(*model.last_context)); Release(model, registry, ticket);
 }
 TEST_F(RemotePaintDownloadTransferTest, OneLifetimeClaimAcrossTwoRegistries) {
   Model model(tasks_); auto owner = RequestContext(); Registry first(owner), second(owner);
-  const auto a = Arm(first), b = Arm(second); model.Start(true, 7, true, owner); auto lease = LeaseFor(model);
+  const auto a = Arm(first); EXPECT_FALSE(second.Arm(7, base::Seconds(10)));
+  model.Start(true, 7, true, owner); auto lease = LeaseFor(model);
   EXPECT_TRUE(first.Offer(lease)); EXPECT_FALSE(first.Offer(lease)); EXPECT_FALSE(second.Offer(lease)); model.Drain();
-  Release(model, first, a); EXPECT_TRUE(lease->finished()); EXPECT_FALSE(second.Offer(lease)); Release(model, second, b);
+  Release(model, first, a); EXPECT_TRUE(lease->finished()); const auto b = Arm(second);
+  EXPECT_FALSE(second.Offer(lease)); model.Start(true, 7, true, owner);
+  EXPECT_TRUE(second.Offer(LeaseFor(model))); model.Drain(); Release(model, second, b);
 }
 TEST_F(RemotePaintDownloadTransferTest, PendingCreatorThenActualReadyHashAndChunks) {
   Model model(tasks_); auto owner = RequestContext(); Registry registry(owner); const auto ticket = Arm(registry);
@@ -835,11 +876,13 @@ TEST_F(RemotePaintDownloadTransferTest, FailedPhysicalCleanupNeverReportsRelease
 class RemotePaintDownloadOwnerAccessTest : public RemotePaintDownloadReadTest {};
 TEST_F(RemotePaintDownloadOwnerAccessTest, ActualItemVirtualAccessRetainsOriginalLeaseAndContext) {
   Model model(tasks_); auto context = RequestContext(); model.Start(true, 7, true, context); model.Drain();
+  const auto captured = model.last_context; EXPECT_NE(context, captured);
+  EXPECT_TRUE(context->SamePageDocument(*captured)); EXPECT_FALSE(captured->arm_id().is_empty());
   download::DownloadItem* item = model.delegate.items.begin()->second.get();
   auto lease = item->GetRemotePaintAdmission(); ASSERT_TRUE(lease); EXPECT_EQ(LeaseFor(model), lease);
-  EXPECT_EQ(context, lease->request_context()); EXPECT_EQ(item, lease->transfer_item());
+  EXPECT_EQ(captured, lease->request_context()); EXPECT_EQ(item, lease->transfer_item());
   model.RetireAll(); EXPECT_TRUE(lease->finished()); EXPECT_EQ(nullptr, lease->transfer_item()); EXPECT_EQ(0u, Budget::ReservedItems());
-  EXPECT_EQ(context, lease->request_context());
+  EXPECT_EQ(captured, lease->request_context());
 }
 TEST_F(RemotePaintDownloadOwnerAccessTest, CustomItemDefaultsToNoAdmissionWithoutDowncast) {
   download::MockDownloadItem custom; download::DownloadItem* item = &custom;
@@ -1117,6 +1160,236 @@ TEST_F(RemotePaintDownloadClientTest, SuggestedNamePreservesValidUnicodeNonchara
   ASSERT_TRUE(client.Offer(LeaseFor(model), name)); model.Drain();
   ASSERT_TRUE(client.Info(key, ticket)); EXPECT_EQ(name, client.Info(key, ticket)->suggested_name);
   Release(model, client, key, ticket);
+}
+
+
+class RemotePaintDownloadArmWindowTest : public RemotePaintDownloadReadTest {
+ protected:
+  ArmWindow::Window OpenWindow(scoped_refptr<Context> page,
+      base::TimeDelta timeout = base::Seconds(10)) {
+    auto window = ArmWindow::Open(*page, Budget::kFileBytes, timeout); EXPECT_TRUE(window);
+    if (window) { windows_.push_back(window->id); return *window; }
+    return {};
+  }
+  scoped_refptr<Context> Capture(scoped_refptr<Context> seed) {
+    return Context::Create(seed->origin(), seed->target(), seed->initiator(), seed->page());
+  }
+  void TearDown() override {
+    for (const auto& id : windows_) ArmWindow::Close(id);
+    EXPECT_EQ(0u, ArmWindow::ActiveWindowsForTesting());
+  }
+  void Interrupt(Model& model) {
+    auto* item = model.delegate.items.begin()->second.get(); item->Pause();
+    item->DestinationError(download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT, 0, std::nullopt);
+    model.Drain(); EXPECT_EQ(download::DownloadItem::INTERRUPTED, item->GetState());
+  }
+  void ReleaseUnused(Registry& registry, const std::string& ticket) {
+    base::test::TestFuture<bool> done; EXPECT_TRUE(registry.Release(ticket, done.GetCallback()));
+    EXPECT_TRUE(done.IsReady()); if (done.IsReady()) EXPECT_TRUE(done.Take());
+  }
+  std::vector<base::UnguessableToken> windows_;
+};
+TEST_F(RemotePaintDownloadArmWindowTest, SnapshotBeforeArmNeverUpgradesWhenWindowOpens) {
+  auto page = RequestContext(); auto old = Capture(page); EXPECT_TRUE(old->arm_id().is_empty());
+  const auto window = OpenWindow(page); EXPECT_FALSE(ArmWindow::Consume(*old));
+  EXPECT_TRUE(old->arm_id().is_empty()); auto fresh = Capture(page); EXPECT_EQ(window.id, fresh->arm_id());
+  auto consumed = ArmWindow::Consume(*fresh); ASSERT_TRUE(consumed); EXPECT_EQ(window.id, consumed->id);
+}
+TEST_F(RemotePaintDownloadArmWindowTest, CapacityDuplicatePageAndReuseDoNotReserveLeaseBytes) {
+  auto page = RequestContext(); const auto first = OpenWindow(page);
+  EXPECT_FALSE(ArmWindow::Open(*page, 7, base::Seconds(10)));
+  for (int i = 0; i < 3; ++i) OpenWindow(RequestContext());
+  EXPECT_EQ(4u, ArmWindow::ActiveWindowsForTesting()); EXPECT_EQ(0u, Budget::ReservedItems());
+  auto fifth = RequestContext(); EXPECT_FALSE(ArmWindow::Open(*fifth, 7, base::Seconds(10)));
+  ArmWindow::Close(first.id); const auto next = OpenWindow(fifth); EXPECT_NE(first.id, next.id);
+  EXPECT_EQ(4u, ArmWindow::ActiveWindowsForTesting()); EXPECT_EQ(0u, Budget::ReservedBytes());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, WindowBoundsAndBothFlagsRequired) {
+  auto page = RequestContext(); EXPECT_FALSE(ArmWindow::Open(*page, 0, base::Seconds(1)));
+  EXPECT_FALSE(ArmWindow::Open(*page, Budget::kFileBytes + 1, base::Seconds(1)));
+  EXPECT_FALSE(ArmWindow::Open(*page, 1, base::TimeDelta()));
+  EXPECT_FALSE(ArmWindow::Open(*page, 1, base::Seconds(31)));
+  command_.GetProcessCommandLine()->RemoveSwitch("remote-paint-download-budget-v1");
+  EXPECT_FALSE(ArmWindow::Open(*page, 1, base::Seconds(1)));
+  command_.GetProcessCommandLine()->AppendSwitch("remote-paint-download-budget-v1");
+  command_.GetProcessCommandLine()->RemoveSwitch("remote-paint-token");
+  EXPECT_FALSE(ArmWindow::Open(*page, 1, base::Seconds(1)));
+}
+TEST_F(RemotePaintDownloadArmWindowTest, OneConsumeAllowsRetryButNeverSecondNewDownload) {
+  auto page = RequestContext(); const auto window = OpenWindow(page); auto first = Capture(page), second = Capture(page);
+  EXPECT_NE(first->request_id(), second->request_id()); EXPECT_EQ(window.id, first->arm_id());
+  EXPECT_FALSE(ArmWindow::AllowsResume(*first)); EXPECT_TRUE(ArmWindow::Consume(*first));
+  EXPECT_FALSE(ArmWindow::Consume(*second)); EXPECT_TRUE(ArmWindow::AllowsResume(*first));
+  EXPECT_TRUE(ArmWindow::AllowsResume(*second));
+}
+TEST_F(RemotePaintDownloadArmWindowTest, CapturedOldWindowCannotBindReopenedSamePage) {
+  auto page = RequestContext(); const auto first = OpenWindow(page); auto old = Capture(page);
+  ArmWindow::Close(first.id); const auto next = OpenWindow(page); auto fresh = Capture(page);
+  EXPECT_NE(first.id, next.id); EXPECT_EQ(first.id, old->arm_id()); EXPECT_FALSE(ArmWindow::Consume(*old));
+  EXPECT_EQ(next.id, fresh->arm_id()); EXPECT_TRUE(ArmWindow::Consume(*fresh));
+}
+TEST_F(RemotePaintDownloadArmWindowTest, CaptureMatchesAllOriginalPageFrameFields) {
+  auto page = RequestContext(); OpenWindow(page);
+  for (int part = 0; part < 3; ++part) {
+    auto changed = page->page();
+    if (part == 0) ++changed.process_id;
+    if (part == 1) ++changed.routing_id;
+    if (part == 2) changed.document_token = base::UnguessableToken::Create().ToString();
+    auto request = Context::Create(Context::Origin::kExplicitRequest, page->target(), page->initiator(), changed);
+    ASSERT_TRUE(request); EXPECT_TRUE(request->arm_id().is_empty()); EXPECT_FALSE(ArmWindow::Consume(*request));
+  }
+}
+TEST_F(RemotePaintDownloadArmWindowTest, ClosingArmNeverRefundsLiveFileUrlItemReservation) {
+  Model model(tasks_); model.Start(); model.Drain(); auto request = model.last_context;
+  EXPECT_EQ(1u, Budget::ReservedItems()); EXPECT_TRUE(ArmWindow::AllowsResume(*request));
+  model.CloseFixtureWindows(); EXPECT_EQ(0u, ArmWindow::ActiveWindowsForTesting());
+  EXPECT_EQ(1u, Budget::ReservedItems()); EXPECT_FALSE(ArmWindow::AllowsResume(*request));
+  OpenWindow(RequestContext()); EXPECT_EQ(1u, Budget::ReservedItems());
+  model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, ExactDeadlineRejectsWithoutWaitingForUiTimer) {
+  auto page = RequestContext(); OpenWindow(page, base::Seconds(1)); auto captured = Capture(page);
+  tasks_.AdvanceClock(base::Milliseconds(999)); EXPECT_EQ(captured->arm_id(), ArmWindow::Capture(page->page()));
+  tasks_.AdvanceClock(base::Milliseconds(1)); EXPECT_FALSE(ArmWindow::Consume(*captured));
+  EXPECT_TRUE(ArmWindow::Capture(page->page()).is_empty()); EXPECT_EQ(0u, ArmWindow::ActiveWindowsForTesting());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, ConcurrentConsumeHasExactlyOneWinner) {
+  auto page = RequestContext(); OpenWindow(page); auto captured = Capture(page);
+  base::Thread first("arm-first"), second("arm-second"); ASSERT_TRUE(first.Start()); ASSERT_TRUE(second.Start());
+  auto one = base::MakeRefCounted<BarrierEvent>(), two = base::MakeRefCounted<BarrierEvent>(); std::atomic<int> won{0};
+  auto claim = [](scoped_refptr<Context> request, std::atomic<int>* won, scoped_refptr<BarrierEvent> done) {
+    if (ArmWindow::Consume(*request)) ++*won; done->data.Signal();
+  };
+  first.task_runner()->PostTask(FROM_HERE, base::BindOnce(claim, captured, &won, one));
+  second.task_runner()->PostTask(FROM_HERE, base::BindOnce(claim, captured, &won, two));
+  Wait(one->data); Wait(two->data); first.Stop(); second.Stop(); EXPECT_EQ(1, won.load());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, FullRealQuotaLeavesValidArmAvailableAfterActualRetirement) {
+  Model held(tasks_), candidate(tasks_); for (int i = 0; i < 4; ++i) held.Start(); held.Drain();
+  held.CloseFixtureWindows(); auto page = RequestContext(); OpenWindow(page); auto request = Capture(page);
+  auto rejected = candidate.StartCaptured(false, 7, true, request); candidate.Drain();
+  EXPECT_EQ(0, rejected->count); EXPECT_EQ(0, candidate.delegate.allocations); EXPECT_EQ(4u, Budget::ReservedItems());
+  EXPECT_FALSE(ArmWindow::AllowsResume(*request));
+  auto retired = held.delegate.items.begin()->second->GetRemotePaintAdmission(); retired->BeginRetire(); held.Drain();
+  ASSERT_EQ(3u, Budget::ReservedItems()); auto fresh = Capture(page); candidate.StartCaptured(true, 7, true, fresh); candidate.Drain();
+  EXPECT_EQ(1, candidate.delegate.allocations); EXPECT_EQ(4u, Budget::ReservedItems()); EXPECT_TRUE(ArmWindow::AllowsResume(*fresh));
+  held.RetireAll(); candidate.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, ActualAdmissionRejectsRequestCapturedBeforeArm) {
+  Model model(tasks_); auto page = RequestContext(); auto old = Capture(page); Registry registry(page);
+  auto ticket = registry.Arm(7, base::Seconds(10)); ASSERT_TRUE(ticket);
+  auto rejected = model.StartCaptured(true, 7, true, old); model.Drain();
+  EXPECT_EQ(0, rejected->count); EXPECT_EQ(0, model.delegate.allocations); EXPECT_EQ(0u, Budget::ReservedItems());
+  auto fresh = Capture(page); model.StartCaptured(true, 7, true, fresh); ASSERT_EQ(1u, model.delegate.items.size());
+  EXPECT_TRUE(registry.Offer(LeaseFor(model))); model.Drain(); base::test::TestFuture<bool> done;
+  EXPECT_TRUE(registry.Release(*ticket, done.GetCallback())); model.Drain(); EXPECT_TRUE(done.IsReady()); if (done.IsReady()) EXPECT_TRUE(done.Take()); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, ActualAdmissionRejectsClosedWindowBeforeItemAllocation) {
+  Model model(tasks_); auto page = RequestContext(); const auto first = OpenWindow(page); auto old = Capture(page);
+  ArmWindow::Close(first.id); OpenWindow(page); auto rejected = model.StartCaptured(true, 7, true, old); model.Drain();
+  EXPECT_EQ(0, rejected->count); EXPECT_EQ(0, model.delegate.allocations); EXPECT_EQ(0u, Budget::ReservedItems());
+  model.StartCaptured(true, 7, true, Capture(page)); model.Drain(); EXPECT_EQ(1, model.delegate.allocations);
+  model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, OneActualNewDownloadPerArmBeforeAnyTransferOffer) {
+  Model first(tasks_), second(tasks_); auto page = RequestContext(); const auto window = OpenWindow(page);
+  first.StartCaptured(false, 7, true, Capture(page)); first.Drain();
+  auto rejected = second.StartCaptured(false, 7, true, Capture(page)); second.Drain();
+  EXPECT_EQ(1, first.delegate.allocations); EXPECT_EQ(0, second.delegate.allocations); EXPECT_EQ(0, rejected->count);
+  EXPECT_EQ(1u, Budget::ReservedItems()); first.RetireAll(); ArmWindow::Close(window.id);
+  OpenWindow(page); second.StartCaptured(true, 7, true, Capture(page)); second.Drain();
+  EXPECT_EQ(1, second.delegate.allocations); second.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, KnownPageWithoutArmIsRejectedBeforeStreamRead) {
+  Model model(tasks_); auto known = RequestContext(); ASSERT_FALSE(known->request_id().is_empty());
+  ASSERT_TRUE(known->arm_id().is_empty()); auto rejected = model.StartCaptured(true, 7, true, known); model.Drain();
+  EXPECT_EQ(0, rejected->count); EXPECT_EQ(0, model.delegate.allocations); EXPECT_EQ(0u, Budget::ReservedItems());
+  EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, model.last_started_reason);
+}
+TEST_F(RemotePaintDownloadArmWindowTest, UnknownSnapshotIsNotRepairedFromAnArmedDocument) {
+  Model model(tasks_); auto page = RequestContext(); OpenWindow(page);
+  auto rejected = model.StartCaptured(true); model.Drain(); EXPECT_EQ(0, rejected->count);
+  EXPECT_EQ(0, model.delegate.allocations); EXPECT_EQ(0u, Budget::ReservedItems());
+  model.StartCaptured(true, 7, true, Capture(page)); model.Drain(); EXPECT_EQ(1, model.delegate.allocations);
+  model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, ActualItemResumeMintsFreshOriginalWindowWitness) {
+  Model model(tasks_); model.Start(); model.Drain(); const auto original = model.last_context;
+  auto lease = LeaseFor(model); Interrupt(model); auto* item = model.delegate.items.begin()->second.get();
+  item->Resume(true); model.Drain(); ASSERT_EQ(1u, model.delegate.resumes.size());
+  auto params = std::move(model.delegate.resumes.front()); model.delegate.resumes.clear();
+  ASSERT_TRUE(params->remote_paint_resume_request); ASSERT_TRUE(params->remote_paint_request_context);
+  EXPECT_TRUE(params->remote_paint_resume_request->Matches(item->GetGuid()));
+  EXPECT_FALSE(params->remote_paint_resume_request->Matches("wrong-guid"));
+  EXPECT_EQ(original->arm_id(), params->remote_paint_request_context->arm_id());
+  EXPECT_NE(original->request_id(), params->remote_paint_request_context->request_id());
+  EXPECT_TRUE(original->SamePageDocument(*params->remote_paint_request_context));
+  model.StartCaptured(true, 7, true, params->remote_paint_request_context, true); model.Drain();
+  ASSERT_EQ(1u, model.delegate.items.size()); EXPECT_EQ(lease, LeaseFor(model)); EXPECT_EQ(1, model.delegate.allocations);
+  EXPECT_EQ(download::DownloadItem::COMPLETE, model.delegate.items.begin()->second->GetState());
+  model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+  EXPECT_TRUE(lease->HasOneRef());
+  EXPECT_FALSE(params->remote_paint_resume_request->Matches(params->guid()));
+}
+TEST_F(RemotePaintDownloadArmWindowTest, ClosedOriginalWindowCannotMintResumeUnderNewArm) {
+  Model model(tasks_); model.Start(); model.Drain(); auto original = model.last_context; Interrupt(model);
+  model.CloseFixtureWindows(); const auto next = OpenWindow(original);
+  model.delegate.items.begin()->second->Resume(true); model.Drain();
+  EXPECT_TRUE(model.delegate.resumes.empty()); EXPECT_EQ(0u, Budget::ReservedItems());
+  EXPECT_EQ(next.id, ArmWindow::Capture(original->page()));
+  model.StartCaptured(true, 7, true, Capture(original)); model.Drain(); EXPECT_EQ(2, model.delegate.allocations);
+  model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, ResumeResponseFromNewWindowRetiresOldLeaseWithoutClaimingNew) {
+  Model model(tasks_); model.Start(); model.Drain(); auto original = model.last_context; auto lease = LeaseFor(model);
+  model.CloseFixtureWindows(); OpenWindow(original); auto fresh = Capture(original);
+  auto rejected = model.StartCaptured(false, 7, true, fresh, true); model.Drain();
+  EXPECT_EQ(0, rejected->count); EXPECT_EQ(1, model.delegate.allocations); EXPECT_EQ(original, lease->request_context());
+  EXPECT_EQ(0u, Budget::ReservedItems()); EXPECT_FALSE(ArmWindow::AllowsResume(*fresh));
+  model.StartCaptured(true, 7, true, Capture(original)); model.Drain(); EXPECT_EQ(2, model.delegate.allocations);
+  model.RetireAll(); EXPECT_EQ(0u, Budget::ReservedItems());
+}
+TEST_F(RemotePaintDownloadArmWindowTest, ActualLateResponseRejectedBeforeOverdueCoreTimerRuns) {
+  Model model(tasks_); auto page = RequestContext(); Registry registry(page); auto ticket = registry.Arm(7, base::Seconds(1)); ASSERT_TRUE(ticket);
+  auto captured = Capture(page); tasks_.AdvanceClock(base::Seconds(1));
+  auto rejected = model.StartCaptured(true, 7, true, captured); EXPECT_EQ(0, model.delegate.allocations);
+  model.Drain(); EXPECT_EQ(0, rejected->count); EXPECT_EQ(0u, Budget::ReservedItems()); ReleaseUnused(registry, *ticket);
+}
+TEST_F(RemotePaintDownloadArmWindowTest, TwelveSamePageWindowsRejectOldSnapshotsAndReuseRealQuota) {
+  Model model(tasks_); auto page = RequestContext(); Registry registry(page); scoped_refptr<Context> previous;
+  for (int i = 0; i < 12; ++i) {
+    auto ticket = registry.Arm(7, base::Seconds(10)); ASSERT_TRUE(ticket);
+    if (previous) { auto stale = model.StartCaptured(true, 7, true, previous); EXPECT_EQ(0, stale->count); }
+    auto current = Capture(page); if (previous) EXPECT_NE(previous->arm_id(), current->arm_id());
+    model.StartCaptured(true, 7, true, current); ASSERT_TRUE(registry.Offer(LeaseFor(model))); model.Drain();
+    base::test::TestFuture<bool> done; EXPECT_TRUE(registry.Release(*ticket, done.GetCallback())); model.Drain();
+    EXPECT_TRUE(done.IsReady()); if (done.IsReady()) EXPECT_TRUE(done.Take()); EXPECT_EQ(0u, Budget::ReservedItems()); EXPECT_EQ(0u, ArmWindow::ActiveWindowsForTesting());
+    EXPECT_TRUE(base::IsDirectoryEmpty(model.directory.GetPath())); previous = current;
+  }
+  EXPECT_EQ(12, model.delegate.allocations);
+}
+
+
+TEST_F(RemotePaintDownloadArmWindowTest, ActualRegistryKeepsOriginalArmThroughItemRetryAndReady) {
+  Model model(tasks_); auto page = RequestContext(); Registry registry(page);
+  auto ticket = registry.Arm(7, base::Seconds(10)); ASSERT_TRUE(ticket);
+  model.Start(false, 7, true, page); auto lease = LeaseFor(model);
+  ASSERT_TRUE(registry.Offer(lease)); model.Drain(); auto original = model.last_context;
+  Interrupt(model); auto pending = registry.Info(*ticket); ASSERT_TRUE(pending);
+  EXPECT_EQ(TransferState::kPending, pending->state); EXPECT_TRUE(ArmWindow::AllowsResume(*original));
+  model.delegate.items.begin()->second->Resume(true); model.Drain(); ASSERT_EQ(1u, model.delegate.resumes.size());
+  auto params = std::move(model.delegate.resumes.front()); model.delegate.resumes.clear();
+  ASSERT_TRUE(params->remote_paint_resume_request); EXPECT_TRUE(params->remote_paint_resume_request->Matches(params->guid()));
+  EXPECT_EQ(original->arm_id(), params->remote_paint_request_context->arm_id());
+  model.StartCaptured(true, 7, true, params->remote_paint_request_context, true); model.Drain();
+  auto ready = registry.Info(*ticket); ASSERT_TRUE(ready); EXPECT_EQ(TransferState::kReady, ready->state);
+  EXPECT_EQ(7u, ready->byte_length); EXPECT_EQ(1, model.delegate.allocations); EXPECT_EQ(lease, LeaseFor(model));
+  base::test::TestFuture<Reader::Chunk> read; EXPECT_TRUE(registry.Read(*ticket, 0, 7, read.GetCallback()));
+  tasks_.RunUntilIdle(); ASSERT_TRUE(read.IsReady()); EXPECT_EQ("xxxxxxx", read.Take().bytes);
+  base::test::TestFuture<bool> released; EXPECT_TRUE(registry.Release(*ticket, released.GetCallback())); model.Drain();
+  EXPECT_TRUE(released.IsReady()); if (released.IsReady()) EXPECT_TRUE(released.Take());
+  EXPECT_EQ(0u, Budget::ReservedItems()); EXPECT_EQ(0u, ArmWindow::ActiveWindowsForTesting());
+  EXPECT_TRUE(lease->HasOneRef()); EXPECT_FALSE(params->remote_paint_resume_request->Matches(params->guid()));
 }
 
 TEST_F(RemotePaintDownloadBudgetTest, FailedCleanupHoldsQuotaUntilActualProcessExit) {

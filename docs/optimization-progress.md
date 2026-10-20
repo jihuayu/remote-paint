@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | 原观察/SDK范围保留。可信Page四命令、handler键/退出、有界元数据已接；Native实际admission在旧Browser/Page事件源头隔离，新增instrumentation TU/GN编译通过。既有415项及4子进程、双平台专项各13通过，组件不覆盖新事件分支。请求创建时arm身份/unarmed拒绝、Source私有目录/桥接及真实PW/整浏览器仍待，transfersReady=false；见[范围](native-download-legacy-events.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | 原观察/SDK范围保留。Native请求创建时arm ID、4个可复用窗口及实际准入前unarmed/旧窗口拒绝已接；原item无RFH续传见证与弱lease引用，旧事件隔离保留。436项（21新+139既有Native+276上游）及4子进程、双平台专项各13、实际依赖五TU/GN通过。Source私有目录/桥接、真实RFH/PW/cookies/整浏览器仍待，transfersReady=false；见[范围](native-download-arm-window.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -2121,3 +2121,11 @@ Native item取消/Detach/部分和完成文件删除接入可跨item移除保留
 ### Native 旧下载事件隔离
 
 第31补丁按真实item admission在WillBeginDownload源头提前返回，先于frame查找、URL/文件名序列化、Browser/Page所有会话分发和观察槽；旧非Native路径保持。item构造时已Attach admission，Native owner观察通知晚于此事件，所以不能用transfer claim代替这一判断。新instrumentation TU实际ARM64编译及GN通过，其他调用方/Native源码哈希与父版相同；同一ELF既有415项与4子进程重新运行、双平台源码专项各13通过，组件不覆盖新事件分支、真实PW对象上限未验收。仍须请求创建时捕获arm身份并在准入前拒绝unarmed/其他Page/旧请求，随后Source私有目录/桥接和整浏览器。Source开关关闭、transfersReady=false，41项10/17/14不变。见[范围](native-download-legacy-events.md)。
+
+### Native 请求时arm身份与准入
+
+第32补丁以请求创建时不可变窗口ID阻断响应时收养旧请求，4活动窗口/原Page精确匹配/单新下载消费，实际准入早于delegate/item；全局4真实lease及4MiB文件上限保留，窗口关闭不返额度，未创建lease的本次预留才可回滚。原item生成无RFH续传见证，fresh nonce保留原arm/Page，manager验guid/窗口；见证弱持有lease，实际清理后参数仍保留时lease只剩测试单一引用。最终435无过滤、20父版差分新用例/无移除、4既有子进程、双平台源码专项各13及实际manager/nav/owner/Page/instrumentation五TU、GN通过。首轮别名编译失败与次轮两个旧夹具失败均保留，改动测试捕获位置/断言后第三候选全通过，已应用补丁未重写、门槛未放宽。组件模拟frame/网络不是真实RFH/cookies/PW验收；Source私有目录/桥接未接、开关关闭、transfersReady=false，41项10/17/14不变。见[范围](native-download-arm-window.md)。
+
+### Native 请求时arm身份与准入
+
+第32补丁以请求创建时不可变窗口ID阻断响应时收养旧请求，4活动窗口/原Page精确匹配/单新下载消费，实际准入早于delegate/item；全局4真实lease及4MiB文件上限保留，窗口关闭不返额度，未创建lease的本次预留才可回滚。原item生成无RFH续传见证，fresh nonce保留原arm/Page，manager验guid/窗口；见证弱持有lease，实际清理后参数仍保留时lease只剩测试单一引用。最终436无过滤、21父版差分新用例/无移除、4既有子进程、双平台源码专项各13及实际manager/nav/owner/Page/instrumentation五TU、GN通过。首轮别名编译失败与次轮两个旧夹具失败均保留，改动测试捕获位置/断言后第三候选435通过，再补同registry重试到ready/读取/释放，第四候选436全通过，已应用补丁未重写、门槛未放宽。组件模拟frame/网络不是真实RFH/cookies/PW验收；Source私有目录/桥接未接、开关关闭、transfersReady=false，41项10/17/14不变。见[范围](native-download-arm-window.md)。

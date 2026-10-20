@@ -1,0 +1,503 @@
+--- a/components/download/internal/common/download_item_impl.cc
++++ b/components/download/internal/common/download_item_impl.cc
+@@ -2628,6 +2628,13 @@
+   // If we're not interrupted, ignore the request; our caller is drunk.
+   if (state_ != INTERRUPTED_INTERNAL)
+     return;
++  scoped_refptr<NativeDownloadResumeRequest> native_resume;
++  if (remote_paint_admission_) {
++    native_resume = remote_paint_admission_->CaptureResumeRequest();
++    if (!native_resume) {
++      auto lease = remote_paint_admission_; lease->BeginRetire(); return;
++    }
++  }
+ 
+   // We are starting a new request. Shake off all pending operations.
+   CHECK(!download_file_);
+@@ -2684,6 +2691,10 @@
+   // associated renderer) goes away before a response is received.
+   std::unique_ptr<DownloadUrlParameters> download_params(
+       new DownloadUrlParameters(GetURL(), traffic_annotation));
++  if (native_resume) {
++    download_params->remote_paint_request_context = native_resume->context();
++    download_params->remote_paint_resume_request = std::move(native_resume);
++  }
+   // A resume of a network-fetched download must not be routed through the
+   // SW interceptor: the SW response is a single full body that would be
+   // appended at the resume offset (or restart from network mismatched).
+@@ -2780,9 +2791,11 @@
+   DownloadUkmHelper::RecordDownloadResumed(ukm_download_id_, GetResumeMode(),
+                                            time_since_start);
+ 
++  auto self = weak_ptr_factory_.GetWeakPtr();
+   delegate_->ResumeInterruptedDownload(
+       std::move(download_params),
+       request_info_.serialized_embedder_download_data);
++  if (!self) return;  // Native witness rejection can synchronously retire item.
+ 
+   if (job_)
+     job_->Resume(false);
+--- a/components/download/public/common/BUILD.gn
++++ b/components/download/public/common/BUILD.gn
+@@ -69,6 +69,8 @@
+     "native_download_transfer_registry.h",
+     "native_download_transfer_client.cc",
+     "native_download_transfer_client.h",
++    "native_download_arm_window.cc",
++    "native_download_arm_window.h",
+     "native_download_request_context.cc",
+     "native_download_request_context.h",
+     "native_download_budget.cc",
+--- a/components/download/public/common/download_url_parameters.cc
++++ b/components/download/public/common/download_url_parameters.cc
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
+ 
+ #include "components/download/public/common/download_url_parameters.h"
++#include "components/download/public/common/native_download_budget.h"
+ 
+ #include "services/network/public/cpp/shared_url_loader_factory.h"
+ 
+--- a/components/download/public/common/download_url_parameters.h
++++ b/components/download/public/common/download_url_parameters.h
+@@ -43,6 +43,7 @@
+ namespace download {
+ 
+ class DownloadItem;
++class NativeDownloadResumeRequest;
+ 
+ // Pass an instance of DownloadUrlParameters to DownloadManager::DownloadUrl()
+ // to download the content at |url|. All parameters with setters are optional.
+@@ -320,6 +321,7 @@
+ 
+   // Browser-owned start snapshot, overwritten at each explicit request entry.
+   scoped_refptr<NativeDownloadRequestContext> remote_paint_request_context;
++  scoped_refptr<NativeDownloadResumeRequest> remote_paint_resume_request;
+ 
+   OnStartedCallback& callback() { return callback_; }
+   bool content_initiated() const { return content_initiated_; }
+--- /dev/null
++++ b/components/download/public/common/native_download_arm_window.cc
+@@ -0,0 +1,80 @@
++#include "components/download/public/common/native_download_arm_window.h"
++
++#include <array>
++#include "base/no_destructor.h"
++#include "base/synchronization/lock.h"
++#include "components/download/public/common/native_download_budget.h"
++
++namespace download {
++namespace {
++using Frame = NativeDownloadRequestContext::Frame;
++using Window = NativeDownloadArmWindow::Window;
++struct Entry { Frame page; Window window; bool consumed = false; };
++struct State {
++  base::Lock lock;
++  std::array<std::optional<Entry>, NativeDownloadBudget::kMaxItems> entries;
++};
++State& Slots() { static base::NoDestructor<State> state; return *state; }
++bool Same(const Frame& a, const Frame& b) {
++  return a.process_id == b.process_id && a.routing_id == b.routing_id &&
++      a.document_token == b.document_token;
++}
++void Prune(State& state, base::TimeTicks now) {
++  for (auto& entry : state.entries)
++    if (entry && now >= entry->window.deadline) entry.reset();
++}
++bool Matches(const Entry& entry, const NativeDownloadRequestContext& request) {
++  return entry.window.id == request.arm_id() && Same(entry.page, request.page());
++}
++}  // namespace
++std::optional<Window> NativeDownloadArmWindow::Open(const NativeDownloadRequestContext& owner,
++    uint64_t maximum_bytes, base::TimeDelta timeout) {
++  if (!NativeDownloadRequestContext::EnabledForProcess() || !maximum_bytes ||
++      maximum_bytes > NativeDownloadBudget::kFileBytes || timeout <= base::TimeDelta() ||
++      timeout > base::Seconds(30)) return std::nullopt;
++  auto& state = Slots(); base::AutoLock guard(state.lock);
++  const auto now = base::TimeTicks::Now(); Prune(state, now);
++  for (const auto& entry : state.entries)
++    if (entry && Same(entry->page, owner.page())) return std::nullopt;
++  for (auto& entry : state.entries) {
++    if (!entry) {
++      Window window{base::UnguessableToken::Create(), now, now + timeout, maximum_bytes};
++      entry = Entry{owner.page(), window}; return window;
++    }
++  }
++  return std::nullopt;
++}
++base::UnguessableToken NativeDownloadArmWindow::Capture(const Frame& page) {
++  if (!NativeDownloadRequestContext::EnabledForProcess()) return {};
++  auto& state = Slots(); base::AutoLock guard(state.lock); Prune(state, base::TimeTicks::Now());
++  for (const auto& entry : state.entries)
++    if (entry && Same(entry->page, page)) return entry->window.id;
++  return {};
++}
++std::optional<Window> NativeDownloadArmWindow::Consume(const NativeDownloadRequestContext& request) {
++  if (request.arm_id().is_empty() || !NativeDownloadRequestContext::EnabledForProcess()) return std::nullopt;
++  auto& state = Slots(); base::AutoLock guard(state.lock); Prune(state, base::TimeTicks::Now());
++  for (auto& entry : state.entries) {
++    if (entry && !entry->consumed && Matches(*entry, request)) {
++      entry->consumed = true; return entry->window;
++    }
++  }
++  return std::nullopt;
++}
++bool NativeDownloadArmWindow::AllowsResume(const NativeDownloadRequestContext& request) {
++  if (request.arm_id().is_empty() || !NativeDownloadRequestContext::EnabledForProcess()) return false;
++  auto& state = Slots(); base::AutoLock guard(state.lock); Prune(state, base::TimeTicks::Now());
++  for (const auto& entry : state.entries)
++    if (entry && entry->consumed && Matches(*entry, request)) return true;
++  return false;
++}
++void NativeDownloadArmWindow::Close(const base::UnguessableToken& id) {
++  if (id.is_empty()) return;
++  auto& state = Slots(); base::AutoLock guard(state.lock);
++  for (auto& entry : state.entries) if (entry && entry->window.id == id) { entry.reset(); return; }
++}
++size_t NativeDownloadArmWindow::ActiveWindowsForTesting() {
++  auto& state = Slots(); base::AutoLock guard(state.lock); Prune(state, base::TimeTicks::Now());
++  size_t count = 0; for (const auto& entry : state.entries) if (entry) ++count; return count;
++}
++}  // namespace download
+--- /dev/null
++++ b/components/download/public/common/native_download_arm_window.h
+@@ -0,0 +1,32 @@
++#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_ARM_WINDOW_H_
++#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_NATIVE_DOWNLOAD_ARM_WINDOW_H_
++
++#include <cstddef>
++#include <cstdint>
++#include <optional>
++#include "base/time/time.h"
++#include "base/unguessable_token.h"
++#include "components/download/public/common/download_export.h"
++#include "components/download/public/common/native_download_request_context.h"
++
++namespace download {
++// A bounded, reusable browser-owned arm registry. Request contexts copy only an
++// opaque identity at request creation; they never retain or repair a window.
++class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadArmWindow {
++ public:
++  struct Window {
++    base::UnguessableToken id;
++    base::TimeTicks opened_at;
++    base::TimeTicks deadline;
++    uint64_t maximum_bytes;
++  };
++  static std::optional<Window> Open(const NativeDownloadRequestContext& owner,
++      uint64_t maximum_bytes, base::TimeDelta timeout);
++  static base::UnguessableToken Capture(const NativeDownloadRequestContext::Frame& page);
++  static std::optional<Window> Consume(const NativeDownloadRequestContext& request);
++  static bool AllowsResume(const NativeDownloadRequestContext& request);
++  static void Close(const base::UnguessableToken& id);
++  static size_t ActiveWindowsForTesting();
++};
++}  // namespace download
++#endif
+--- a/components/download/public/common/native_download_budget.cc
++++ b/components/download/public/common/native_download_budget.cc
+@@ -9,6 +9,7 @@
+ #include "base/notreached.h"
+ #include "components/download/public/common/download_create_info.h"
+ #include "components/download/public/common/native_download_request_context.h"
++#include "components/download/public/common/native_download_arm_window.h"
+ #include "components/download/public/common/download_file.h"
+ #include "components/download/public/common/download_item_impl.h"
+ #include "components/download/public/common/download_task_runner.h"
+@@ -53,7 +54,10 @@
+     for (auto& lease : slots_) {
+       if (lease && lease->guid() == info.guid && !lease->retiring() &&
+           !lease->failed()) {
+-        if (lease->AddAttempt(info, cancel)) return lease;
++        if (info.remote_paint_request_context &&
++            NativeDownloadArmWindow::AllowsResume(*info.remote_paint_request_context) &&
++            lease->request_context() && lease->request_context()->arm_id() == info.remote_paint_request_context->arm_id() &&
++            lease->AddAttempt(info, cancel)) return lease;
+         lease->BeginRetire();
+         return nullptr;
+       }
+@@ -61,7 +65,12 @@
+     return nullptr;
+   }
+   for (auto& slot : slots_) {
+-    if (!slot && Reserve()) {
++    if (!slot && info.remote_paint_request_context && Reserve()) {
++      // Roll back only this not-yet-attached reservation if the immutable
++      // request window is unavailable. Never consume an arm when quota is full.
++      if (!NativeDownloadArmWindow::Consume(*info.remote_paint_request_context)) {
++        CHECK_GT(g_reserved.fetch_sub(1), 0u); return nullptr;
++      }
+       slot = base::WrapRefCounted(new NativeDownloadLease(base::BindRepeating(
+           &NativeDownloadBudget::Released, weak_.GetWeakPtr())));
+       slot->keepalive_ = slot;
+@@ -86,6 +95,34 @@
+ void NativeDownloadBudget::Shutdown() {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   for (auto& slot : slots_) if (slot) slot->BeginRetire();
++}
++
++NativeDownloadResumeRequest::NativeDownloadResumeRequest(base::WeakPtr<NativeDownloadLease> lease,
++    scoped_refptr<NativeDownloadRequestContext> context)
++    : lease_(std::move(lease)), context_(std::move(context)) {}
++NativeDownloadResumeRequest::~NativeDownloadResumeRequest() = default;
++bool NativeDownloadResumeRequest::Matches(std::string_view guid) const {
++  return lease_ && context_ && lease_->request_context() && !lease_->failed() &&
++      !lease_->retiring() && !lease_->finished() && lease_->guid() == guid &&
++      lease_->request_context()->SamePageDocument(*context_) &&
++      lease_->request_context()->arm_id() == context_->arm_id() &&
++      lease_->request_context()->request_id() != context_->request_id() &&
++      NativeDownloadArmWindow::AllowsResume(*context_);
++}
++void NativeDownloadResumeRequest::Reject() {
++  auto lease = lease_; if (lease) lease->BeginRetire();
++}
++scoped_refptr<NativeDownloadResumeRequest> NativeDownloadLease::CaptureResumeRequest() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  if (failed_ || retiring_ || finished_ || pending_creators_ || guid_.empty() ||
++      !request_context_ || !NativeDownloadArmWindow::AllowsResume(*request_context_)) return nullptr;
++  const auto& original = *request_context_;
++  // A fresh actual request identity with the same original arm and witnesses;
++  // do not look up a current arm or current frame for this retry.
++  auto context = base::WrapRefCounted(new NativeDownloadRequestContext(
++      NativeDownloadRequestContext::Origin::kExplicitRequest, original.target(),
++      original.initiator(), original.page(), original.arm_id()));
++  return base::WrapRefCounted(new NativeDownloadResumeRequest(resume_weak_.GetWeakPtr(), std::move(context)));
+ }
+ 
+ NativeDownloadLease::NativeDownloadLease(
+@@ -229,6 +266,7 @@
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   if (finished_ || failed_) return;
+   retiring_ = true;
++  resume_weak_.InvalidateWeakPtrs();
+   Tick();
+ }
+ void NativeDownloadLease::Schedule() {
+@@ -280,6 +318,7 @@
+ void NativeDownloadLease::Finish() {
+   auto self = keepalive_;
+   finished_ = true;
++  resume_weak_.InvalidateWeakPtrs();
+   timer_.Stop();
+   CHECK_GT(g_reserved.fetch_sub(1), 0u);
+   done_.Run(this);
+--- a/components/download/public/common/native_download_budget.h
++++ b/components/download/public/common/native_download_budget.h
+@@ -5,6 +5,7 @@
+ 
+ #include <array>
+ #include <string>
++#include <string_view>
+ 
+ #include "base/files/file_path.h"
+ #include "base/functional/callback.h"
+@@ -24,6 +25,23 @@
+ class UrlDownloadHandlerCleanupState;
+ class NativeDownloadBudget;
+ class NativeDownloadRequestContext;
++class NativeDownloadLease;
++// Only the actual original item/lease can mint a no-renderer resume witness.
++class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadResumeRequest
++    : public base::RefCountedThreadSafe<NativeDownloadResumeRequest> {
++ public:
++  bool Matches(std::string_view guid) const;
++  const scoped_refptr<NativeDownloadRequestContext>& context() const { return context_; }
++  void Reject();
++ private:
++  friend class NativeDownloadLease;
++  friend class base::RefCountedThreadSafe<NativeDownloadResumeRequest>;
++  NativeDownloadResumeRequest(base::WeakPtr<NativeDownloadLease> lease,
++      scoped_refptr<NativeDownloadRequestContext> context);
++  ~NativeDownloadResumeRequest();
++  const base::WeakPtr<NativeDownloadLease> lease_;
++  const scoped_refptr<NativeDownloadRequestContext> context_;
++};
+ 
+ class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadLease
+     : public base::RefCountedThreadSafe<NativeDownloadLease>,
+@@ -48,6 +66,8 @@
+ 
+  private:
+   friend class NativeDownloadBudget;
++  friend class DownloadItemImpl;
++  scoped_refptr<NativeDownloadResumeRequest> CaptureResumeRequest();
+   friend class NativeDownloadReadSessionTestPeer;
+   std::unique_ptr<NativeDownloadReadSession> OpenReaderOn(
+       scoped_refptr<base::SequencedTaskRunner> runner,
+@@ -90,6 +110,7 @@
+   bool metadata_retired_ = false;
+   bool finished_ = false;
+   SEQUENCE_CHECKER(sequence_checker_);
++  base::WeakPtrFactory<NativeDownloadLease> resume_weak_{this};
+ };
+ 
+ class COMPONENTS_DOWNLOAD_EXPORT NativeDownloadBudget {
+--- a/components/download/public/common/native_download_request_context.cc
++++ b/components/download/public/common/native_download_request_context.cc
+@@ -1,6 +1,7 @@
+ #include "components/download/public/common/native_download_request_context.h"
+ #include <utility>
+ #include "base/command_line.h"
++#include "components/download/public/common/native_download_arm_window.h"
+ 
+ namespace download {
+ namespace {
+@@ -24,13 +25,14 @@
+     case Origin::kExplicitRequest: break;
+     default: return nullptr;
+   }
++  const auto arm = NativeDownloadArmWindow::Capture(page);
+   return base::WrapRefCounted(new NativeDownloadRequestContext(
+-      origin, std::move(target), std::move(initiator), std::move(page)));
++      origin, std::move(target), std::move(initiator), std::move(page), arm));
+ }
+ NativeDownloadRequestContext::NativeDownloadRequestContext(
+-    Origin origin, Frame target, Frame initiator, Frame page)
++    Origin origin, Frame target, Frame initiator, Frame page, base::UnguessableToken arm)
+     : origin_(origin), target_(std::move(target)), initiator_(std::move(initiator)),
+-      page_(std::move(page)), request_id_(base::UnguessableToken::Create()) {}
++      page_(std::move(page)), request_id_(base::UnguessableToken::Create()), arm_id_(arm) {}
+ NativeDownloadRequestContext::~NativeDownloadRequestContext() = default;
+ bool NativeDownloadRequestContext::SamePageDocument(
+     const NativeDownloadRequestContext& other) const {
+--- a/components/download/public/common/native_download_request_context.h
++++ b/components/download/public/common/native_download_request_context.h
+@@ -26,16 +26,19 @@
+   const Frame& page() const { return page_; }
+   Origin origin() const { return origin_; }
+   const base::UnguessableToken& request_id() const { return request_id_; }
++  const base::UnguessableToken& arm_id() const { return arm_id_; }
+   bool SamePageDocument(const NativeDownloadRequestContext& other) const;
+  private:
+   friend class base::RefCountedThreadSafe<NativeDownloadRequestContext>;
+-  NativeDownloadRequestContext(Origin origin, Frame target, Frame initiator, Frame page);
++  friend class NativeDownloadLease;
++  NativeDownloadRequestContext(Origin origin, Frame target, Frame initiator, Frame page, base::UnguessableToken arm);
+   ~NativeDownloadRequestContext();
+   const Origin origin_;
+   const Frame target_;
+   const Frame initiator_;
+   const Frame page_;
+   const base::UnguessableToken request_id_;
++  const base::UnguessableToken arm_id_;
+ };
+ }  // namespace download
+ #endif
+--- a/components/download/public/common/native_download_transfer_registry.cc
++++ b/components/download/public/common/native_download_transfer_registry.cc
+@@ -5,6 +5,7 @@
+ #include "base/functional/bind.h"
+ #include "base/uuid.h"
+ #include "components/download/public/common/native_download_budget.h"
++#include "components/download/public/common/native_download_arm_window.h"
+ #include "components/download/public/common/native_download_request_context.h"
+ 
+ namespace download {
+@@ -18,6 +19,7 @@
+ NativeDownloadTransferRegistry::~NativeDownloadTransferRegistry() {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   weak_.InvalidateWeakPtrs(); timer_.Stop();
++  NativeDownloadArmWindow::Close(arm_id_); arm_id_ = {};
+   if (item_) item_->RemoveObserver(this);
+   item_ = nullptr;
+   reader_.reset();
+@@ -28,9 +30,12 @@
+   if (!enabled_ || !owner_ || !ticket_.empty() || !maximum_bytes ||
+       maximum_bytes > NativeDownloadBudget::kFileBytes || timeout <= base::TimeDelta() || timeout > kMaximumTimeout)
+     return std::nullopt;
++  auto window = NativeDownloadArmWindow::Open(*owner_, maximum_bytes, timeout);
++  if (!window) return std::nullopt;
++  arm_id_ = window->id;
+   ticket_ = "dl_" + base::Uuid::GenerateRandomV4().AsLowercaseString();
+-  maximum_bytes_ = maximum_bytes; armed_at_ = base::TimeTicks::Now();
+-  deadline_ = armed_at_ + timeout; state_ = State::kArmed;
++  maximum_bytes_ = maximum_bytes; armed_at_ = window->opened_at;
++  deadline_ = window->deadline; state_ = State::kArmed;
+   Schedule(); return ticket_;
+ }
+ bool NativeDownloadTransferRegistry::Matches(std::string_view ticket) const {
+@@ -41,7 +46,7 @@
+   auto self = weak_.GetWeakPtr(); Expire();
+   if (!self) return false;
+   if (state_ != State::kArmed || !lease || lease->created_at() < armed_at_ ||
+-      !lease->request_context() || !owner_->SamePageDocument(*lease->request_context()) || !lease->ClaimTransfer())
++      !lease->request_context() || lease->request_context()->arm_id() != arm_id_ || !owner_->SamePageDocument(*lease->request_context()) || !lease->ClaimTransfer())
+     return false;
+   lease_ = std::move(lease); item_ = lease_->transfer_item();
+   item_->AddObserver(this); state_ = State::kPending;
+@@ -91,6 +96,7 @@
+   }
+ }
+ void NativeDownloadTransferRegistry::BeginRetire(Error error) {
++  NativeDownloadArmWindow::Close(arm_id_); arm_id_ = {};
+   if (error_ == Error::kNone) error_ = error;
+   state_ = State::kRetiring;
+   if (reader_) reader_->Close();
+@@ -122,7 +128,8 @@
+   }
+   if (lease_->retiring() || !item_) { BeginRetire(Error::kUnavailable); return; }
+   if (state_ == State::kPending && !reader_) {
+-    if (item_->GetState() == DownloadItem::CANCELLED || item_->GetState() == DownloadItem::INTERRUPTED) {
++    if (item_->GetState() == DownloadItem::CANCELLED ||
++        (item_->GetState() == DownloadItem::INTERRUPTED && !item_->CanResume())) {
+       BeginRetire(Error::kUnavailable); return;
+     }
+     if (item_->GetState() == DownloadItem::COMPLETE)
+@@ -179,6 +186,7 @@
+   if (done) std::move(done).Run(success);
+ }
+ void NativeDownloadTransferRegistry::Clear() {
++  NativeDownloadArmWindow::Close(arm_id_); arm_id_ = {};
+   timer_.Stop();
+   if (item_) item_->RemoveObserver(this);
+   item_ = nullptr; reader_.reset(); lease_.reset(); ticket_.clear();
+--- a/components/download/public/common/native_download_transfer_registry.h
++++ b/components/download/public/common/native_download_transfer_registry.h
+@@ -11,6 +11,7 @@
+ #include "base/memory/weak_ptr.h"
+ #include "base/sequence_checker.h"
+ #include "base/time/time.h"
++#include "base/unguessable_token.h"
+ #include "base/timer/timer.h"
+ #include "components/download/public/common/download_export.h"
+ #include "components/download/public/common/download_item.h"
+@@ -68,6 +69,7 @@
+   raw_ptr<DownloadItem> item_ = nullptr;
+   std::unique_ptr<NativeDownloadReadSession> reader_;
+   std::string ticket_;
++  base::UnguessableToken arm_id_;
+   State state_ = State::kIdle;
+   Error error_ = Error::kNone;
+   uint64_t maximum_bytes_ = 0;
+--- a/content/browser/download/download_manager_impl.cc
++++ b/content/browser/download/download_manager_impl.cc
+@@ -1914,11 +1914,24 @@
+ 
+   auto* rfh = RenderFrameHost::FromID(params->render_process_host_id(),
+                                       params->render_frame_host_routing_id());
+-  // Capture once before async allow checks; never accept an incoming snapshot
+-  // as provenance for this new attempt, or reconstruct one at response time.
+-  params->remote_paint_request_context = CaptureNativeRequestContext(
+-      static_cast<RenderFrameHostImpl*>(rfh), static_cast<RenderFrameHostImpl*>(rfh),
+-      download::NativeDownloadRequestContext::Origin::kExplicitRequest);
++  // Capture new requests before async checks. A no-renderer Native retry
++  // needs a witness minted by the actual original item/lease; arbitrary incoming
++  // snapshots never substitute for either browser-owned source of provenance.
++  if (params->remote_paint_resume_request ||
++      (!is_new_download && download::NativeDownloadRequestContext::EnabledForProcess())) {
++    auto witness = params->remote_paint_resume_request;
++    if (is_new_download || !witness || !witness->Matches(params->guid())) {
++      auto callback = std::move(params->callback());
++      if (witness) witness->Reject();
++      if (callback) std::move(callback).Run(nullptr, download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
++      return;  // Rejection callbacks may have destroyed this manager.
++    }
++    params->remote_paint_request_context = witness->context();
++  } else {
++    params->remote_paint_request_context = CaptureNativeRequestContext(
++        static_cast<RenderFrameHostImpl*>(rfh), static_cast<RenderFrameHostImpl*>(rfh),
++        download::NativeDownloadRequestContext::Origin::kExplicitRequest);
++  }
+ 
+   StoragePartitionConfig storage_partition_config;
+   if (rfh && serialized_embedder_download_data.empty()) {

@@ -21,6 +21,7 @@
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/native_download_request_context.h"
 #include "components/download/public/common/native_download_budget.h"
+#include "components/download/public/common/native_download_arm_window.h"
 #include "base/unguessable_token.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -367,7 +368,13 @@ TEST_F(RemotePaintRequestOwnerTest, ActualManagerNavigationDispatchPreservesCont
   auto secure = base::BindRepeating([](const GURL&) { return true; });
   auto manager = std::make_unique<download::InProgressDownloadManager>(&intercept, base::FilePath(), nullptr,
       secure, base::BindRepeating([](int, const GURL&) { return true; }), base::NullCallback());
-  auto context = ContextForTest(); ASSERT_TRUE(context);
+  auto seed = ContextForTest(); ASSERT_TRUE(seed);
+  auto window = download::NativeDownloadArmWindow::Open(*seed,
+      download::NativeDownloadBudget::kFileBytes, base::Seconds(30)); ASSERT_TRUE(window);
+  base::ScopedClosureRunner close_window(base::BindOnce(
+      [](base::UnguessableToken id) { download::NativeDownloadArmWindow::Close(id); }, window->id));
+  auto context = Context::Create(seed->origin(), seed->target(), seed->initiator(), seed->page()); ASSERT_TRUE(context);
+  EXPECT_EQ(window->id, context->arm_id());
   mojo::MessagePipe loader, factory; mojo::Remote<network::mojom::URLLoaderClient> client;
   auto endpoints = network::mojom::URLLoaderClientEndpoints::New();
   endpoints->url_loader = mojo::PendingRemote<network::mojom::URLLoader>(std::move(loader.handle0), 0);
