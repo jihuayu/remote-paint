@@ -1,0 +1,587 @@
+{
+  "at": "2026-10-17T23:54:34.590543+00:00",
+  "status": "accepted-native-allocation-attribution-and-verified-ignored-option-reproduction",
+  "version": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/frozen-version.json",
+  "versionSha256": "52705f7e00346d3b9d63a29084839c0e1b48c36ccacc37dc2de1b16b883423fd",
+  "sourceFiles": 612,
+  "scope": "Separateactual3persistentMacViewer nativeallocationprofiles with5s/8MiB/16384samples/256frames/512modules bounds. Exactpage-target/frame/nonce;OSownedcohortbefore-afterfences. Notexactpage-PIDbinding,physicalgrowth/N1/8hacceptance.",
+  "workload": {
+    "requestedSeconds": 600,
+    "elapsedSeconds": 614.209277625,
+    "cycles": 660,
+    "resizes": 52,
+    "inputs": 44,
+    "navigations": 6,
+    "secondaryCompleted": 7,
+    "leaseExpired": 7,
+    "sampleCount": 12
+  },
+  "timingScope": {
+    "totalDriverElapsedSeconds": 614.209277625,
+    "firstToLastSampleSpanSeconds": 611.8747010000001,
+    "scope": "Totaldriverincludesinitialsetup;workloop separatelyenforcesreal600s."
+  },
+  "profiles": [
+    {
+      "label": "gpu-worker",
+      "ordinal": 1,
+      "cycle": 0,
+      "samples": 0,
+      "bytes": 40,
+      "elapsedMs": 0.9209160000000338,
+      "estimatedAllocationBytes": 0,
+      "wasmBase64SizedSamples": 0
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 2,
+      "cycle": 405,
+      "samples": 160,
+      "bytes": 65555,
+      "elapsedMs": 5.6035830000037095,
+      "estimatedAllocationBytes": 103546880,
+      "wasmBase64SizedSamples": 5
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 3,
+      "cycle": 433,
+      "samples": 187,
+      "bytes": 74045,
+      "elapsedMs": 5.908957999999984,
+      "estimatedAllocationBytes": 111935488,
+      "wasmBase64SizedSamples": 5
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 4,
+      "cycle": 461,
+      "samples": 197,
+      "bytes": 75152,
+      "elapsedMs": 5.587459000002127,
+      "estimatedAllocationBytes": 125566976,
+      "wasmBase64SizedSamples": 6
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 5,
+      "cycle": 489,
+      "samples": 244,
+      "bytes": 95568,
+      "elapsedMs": 7.557749999978114,
+      "estimatedAllocationBytes": 141295616,
+      "wasmBase64SizedSamples": 6
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 6,
+      "cycle": 518,
+      "samples": 262,
+      "bytes": 99681,
+      "elapsedMs": 6.50104200001806,
+      "estimatedAllocationBytes": 143917056,
+      "wasmBase64SizedSamples": 6
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 7,
+      "cycle": 546,
+      "samples": 297,
+      "bytes": 114176,
+      "elapsedMs": 7.177666000032332,
+      "estimatedAllocationBytes": 168820736,
+      "wasmBase64SizedSamples": 7
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 8,
+      "cycle": 574,
+      "samples": 38,
+      "bytes": 19854,
+      "elapsedMs": 2.2192919999943115,
+      "estimatedAllocationBytes": 90701824,
+      "wasmBase64SizedSamples": 7
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 9,
+      "cycle": 602,
+      "samples": 78,
+      "bytes": 36970,
+      "elapsedMs": 3.455083000008017,
+      "estimatedAllocationBytes": 103546880,
+      "wasmBase64SizedSamples": 7
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 10,
+      "cycle": 631,
+      "samples": 112,
+      "bytes": 54225,
+      "elapsedMs": 4.577667000005022,
+      "estimatedAllocationBytes": 130285568,
+      "wasmBase64SizedSamples": 8
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 11,
+      "cycle": 659,
+      "samples": 145,
+      "bytes": 65597,
+      "elapsedMs": 5.3017499999841675,
+      "estimatedAllocationBytes": 139722752,
+      "wasmBase64SizedSamples": 8
+    },
+    {
+      "label": "gpu-worker",
+      "ordinal": 12,
+      "cycle": 660,
+      "samples": 125,
+      "bytes": 53194,
+      "elapsedMs": 4.140665999962948,
+      "estimatedAllocationBytes": 126091264,
+      "wasmBase64SizedSamples": 8
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 1,
+      "cycle": 0,
+      "samples": 0,
+      "bytes": 40,
+      "elapsedMs": 0.6919579999998859,
+      "estimatedAllocationBytes": 0,
+      "wasmBase64SizedSamples": 0
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 2,
+      "cycle": 405,
+      "samples": 163,
+      "bytes": 68090,
+      "elapsedMs": 12.745582999996259,
+      "estimatedAllocationBytes": 107741184,
+      "wasmBase64SizedSamples": 5
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 3,
+      "cycle": 433,
+      "samples": 182,
+      "bytes": 72249,
+      "elapsedMs": 5.18954200000735,
+      "estimatedAllocationBytes": 116129792,
+      "wasmBase64SizedSamples": 5
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 4,
+      "cycle": 461,
+      "samples": 220,
+      "bytes": 87404,
+      "elapsedMs": 6.286457999987761,
+      "estimatedAllocationBytes": 137363456,
+      "wasmBase64SizedSamples": 6
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 5,
+      "cycle": 489,
+      "samples": 240,
+      "bytes": 91981,
+      "elapsedMs": 6.982749999995576,
+      "estimatedAllocationBytes": 138412032,
+      "wasmBase64SizedSamples": 6
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 6,
+      "cycle": 518,
+      "samples": 262,
+      "bytes": 101823,
+      "elapsedMs": 7.251457999984268,
+      "estimatedAllocationBytes": 159645696,
+      "wasmBase64SizedSamples": 7
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 7,
+      "cycle": 546,
+      "samples": 290,
+      "bytes": 111538,
+      "elapsedMs": 6.357458999962546,
+      "estimatedAllocationBytes": 169869312,
+      "wasmBase64SizedSamples": 7
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 8,
+      "cycle": 574,
+      "samples": 44,
+      "bytes": 25003,
+      "elapsedMs": 2.3599580000154674,
+      "estimatedAllocationBytes": 99352576,
+      "wasmBase64SizedSamples": 7
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 9,
+      "cycle": 602,
+      "samples": 56,
+      "bytes": 25352,
+      "elapsedMs": 2.2345830000122078,
+      "estimatedAllocationBytes": 105381888,
+      "wasmBase64SizedSamples": 8
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 10,
+      "cycle": 631,
+      "samples": 85,
+      "bytes": 35301,
+      "elapsedMs": 4.31374999997206,
+      "estimatedAllocationBytes": 115867648,
+      "wasmBase64SizedSamples": 8
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 11,
+      "cycle": 659,
+      "samples": 130,
+      "bytes": 56840,
+      "elapsedMs": 3.992833000025712,
+      "estimatedAllocationBytes": 145752064,
+      "wasmBase64SizedSamples": 9
+    },
+    {
+      "label": "cpu-worker",
+      "ordinal": 12,
+      "cycle": 660,
+      "samples": 114,
+      "bytes": 47611,
+      "elapsedMs": 3.5773340000305325,
+      "estimatedAllocationBytes": 133431296,
+      "wasmBase64SizedSamples": 9
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 1,
+      "cycle": 0,
+      "samples": 0,
+      "bytes": 40,
+      "elapsedMs": 0.6704589999999371,
+      "estimatedAllocationBytes": 0,
+      "wasmBase64SizedSamples": 0
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 2,
+      "cycle": 405,
+      "samples": 126,
+      "bytes": 56326,
+      "elapsedMs": 98.15158399999927,
+      "estimatedAllocationBytes": 97779712,
+      "wasmBase64SizedSamples": 5
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 3,
+      "cycle": 433,
+      "samples": 139,
+      "bytes": 58596,
+      "elapsedMs": 3.7684169999993173,
+      "estimatedAllocationBytes": 97255424,
+      "wasmBase64SizedSamples": 5
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 4,
+      "cycle": 461,
+      "samples": 169,
+      "bytes": 71784,
+      "elapsedMs": 5.152124999993248,
+      "estimatedAllocationBytes": 120324096,
+      "wasmBase64SizedSamples": 6
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 5,
+      "cycle": 489,
+      "samples": 200,
+      "bytes": 86212,
+      "elapsedMs": 8.144499999994878,
+      "estimatedAllocationBytes": 138149888,
+      "wasmBase64SizedSamples": 6
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 6,
+      "cycle": 518,
+      "samples": 217,
+      "bytes": 91283,
+      "elapsedMs": 5.8406250000116415,
+      "estimatedAllocationBytes": 147062784,
+      "wasmBase64SizedSamples": 7
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 7,
+      "cycle": 546,
+      "samples": 237,
+      "bytes": 96357,
+      "elapsedMs": 5.702458999992814,
+      "estimatedAllocationBytes": 149946368,
+      "wasmBase64SizedSamples": 7
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 8,
+      "cycle": 574,
+      "samples": 50,
+      "bytes": 30457,
+      "elapsedMs": 3.2519159999792464,
+      "estimatedAllocationBytes": 99090432,
+      "wasmBase64SizedSamples": 7
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 9,
+      "cycle": 602,
+      "samples": 71,
+      "bytes": 37250,
+      "elapsedMs": 3.0438750000321306,
+      "estimatedAllocationBytes": 114556928,
+      "wasmBase64SizedSamples": 8
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 10,
+      "cycle": 631,
+      "samples": 94,
+      "bytes": 44103,
+      "elapsedMs": 3.431250000023283,
+      "estimatedAllocationBytes": 120061952,
+      "wasmBase64SizedSamples": 8
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 11,
+      "cycle": 659,
+      "samples": 129,
+      "bytes": 60345,
+      "elapsedMs": 5.049417000031099,
+      "estimatedAllocationBytes": 148111360,
+      "wasmBase64SizedSamples": 9
+    },
+    {
+      "label": "cpu-main",
+      "ordinal": 12,
+      "cycle": 660,
+      "samples": 113,
+      "bytes": 49060,
+      "elapsedMs": 3.827917000046,
+      "estimatedAllocationBytes": 133431296,
+      "wasmBase64SizedSamples": 9
+    }
+  ],
+  "profileCount": 36,
+  "arenaAndLargeStringCountCorrelation": [
+    {
+      "label": "gpu-worker",
+      "arenaRecycles": 8,
+      "observedBase64SizedSamples": 8,
+      "allocationSizeBytes": 10990560,
+      "observedCountsEqual": true,
+      "scope": "Observed correlation only;native samples are weighted/random,not an exact object census orcausalproof."
+    },
+    {
+      "label": "cpu-worker",
+      "arenaRecycles": 9,
+      "observedBase64SizedSamples": 9,
+      "allocationSizeBytes": 10990560,
+      "observedCountsEqual": true,
+      "scope": "Observed correlation only;native samples are weighted/random,not an exact object census orcausalproof."
+    },
+    {
+      "label": "cpu-main",
+      "arenaRecycles": 9,
+      "observedBase64SizedSamples": 9,
+      "allocationSizeBytes": 10990560,
+      "observedCountsEqual": true,
+      "scope": "Observed correlation only;native samples are weighted/random,not an exact object census orcausalproof."
+    }
+  ],
+  "nativeEvidence": {
+    "moduleUuid": "4C4C447255553144A10B3DA68B7B6E560",
+    "offlineLldbNoAttach": true,
+    "StringImplAllocationPC": "0x111b298",
+    "typeNameLiteral": "blink::StringImpl",
+    "instructionAddsHeaderBytes": 12,
+    "base64LengthCalculationCallerPC": "0x1ae7b5c",
+    "wasmBytes": 8242911,
+    "base64LengthPlusHeader": 10990560,
+    "fullNamedStackSymbols": "unavailable;officialdSYM4channelsand2breakpadURLprobes404;rawPC/moduleUUID/offsets preserved."
+  },
+  "fullJS": {
+    "testsEach": 260,
+    "macPass": 252,
+    "macLinuxOnlySkip": 8,
+    "linuxPass": 256,
+    "linuxMacOnlySkip": 4,
+    "fail": 0
+  },
+  "actualPinnedFactoryOptions": {
+    "node": {
+      "at": "2026-10-17T23:48:42.374Z",
+      "status": "reproduced-pinned-CanvasKit-ignores-wasmBinary-and-instantiateWasm",
+      "invalidWasmOptionBytes": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "ignoredHookInvoked": false,
+      "actualInitialized": true,
+      "actualHeapBytes": 134217728,
+      "heapRoundTrip": 197,
+      "locateFileCalls": [
+        "canvaskit.wasm"
+      ],
+      "wasmBytes": 8242911,
+      "wasmSha256": "aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "glueSha256": "894815b2d39b24de2eacdb01453778d83e0b6c418b034e3b728e80956ac2a9d5",
+      "scope": "Real pinned0.42Nodefactory usedlocateFile diskWasm despiteinvalidwasmBinaryandthrowinginstantiateWasm options. Sourcegluecontainsneitheroptionname. No forcedGC/no runtimepatch/no claimallphysicalgrowthsolved."
+    },
+    "browser": {
+      "at": "2026-10-17T23:50:55.775Z",
+      "status": "reproduced-browser-ignores-wasmBinary-and-instantiateWasm",
+      "actual": {
+        "hookInvoked": false,
+        "locations": 1,
+        "roundTrip": 197,
+        "heapBytes": 134217728
+      },
+      "requests": {
+        "js": 1,
+        "wasm": 1
+      },
+      "wasmBytes": 8242911,
+      "wasmSha256": "aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+      "glueSha256": "894815b2d39b24de2eacdb01453778d83e0b6c418b034e3b728e80956ac2a9d5",
+      "cleanupErrors": [],
+      "scope": "ActualownMacChrome,pinned0.42factory;invalidwasmBinaryandthrowinginstantiateWasmhookignored,realHTTPWasmloadedthroughlocateFile.No forcedGC/vendorpatch/physicalgrowth/N1/8hacceptance."
+    },
+    "interpretation": "Actualpinnedglue0.42ignoreswasmBinaryandinstantiateWasm,despitecurrentViewercallingthoseoptions. locateFile controlsrealbytes. Thisisaverifiedintegrationbug;no fixhasyetbeenimplemented."
+  },
+  "limitsUnchanged": true,
+  "noForcedGCCommand": true,
+  "pageLifetimes": [
+    {
+      "label": "gpu-worker",
+      "nonce": "7da8888c-87bb-48fd-b9bd-9061019b018f",
+      "pixelProbeNonce": "396ca597-35ef-4fee-9fd6-66532d0559e8",
+      "inputObserverNonce": "9fcf18f4-b1da-4520-975d-df3988158281"
+    },
+    {
+      "label": "cpu-worker",
+      "nonce": "d517a4d6-d2fd-4fb4-a405-e9743fe4bba5",
+      "pixelProbeNonce": "460a0415-6846-4b7b-bb56-a61f6692130b",
+      "inputObserverNonce": "d9f48e40-ea72-4aae-90bd-23cb50db41af"
+    },
+    {
+      "label": "cpu-main",
+      "nonce": "1c801353-e9a9-41ff-b685-934ccf5b2bcc",
+      "pixelProbeNonce": "357a20cc-042d-4ea0-8144-64562df4a84c",
+      "inputObserverNonce": "c86f2622-5569-4d17-8c0b-b216fdc01d88"
+    }
+  ],
+  "workerLifetimes": [
+    "0DBAC301701307ECFDCBE126EAE3756C",
+    "30EE3B48A97D2E5A1879E885A1FF14DF"
+  ],
+  "cleanupErrors": [],
+  "samplingCleanup": [
+    {
+      "label": "gpu-worker",
+      "status": "stopped"
+    },
+    {
+      "label": "cpu-worker",
+      "status": "stopped"
+    },
+    {
+      "label": "cpu-main",
+      "status": "stopped"
+    }
+  ],
+  "sourceClosed": {
+    "created": 8,
+    "closed": 8,
+    "crosssite": 6,
+    "leaseExpired": 7
+  },
+  "interference": "OfflineMachOdisassemblyignoredrangeflagsandproducedexcessiveoutput;originalhandleobservedterminal0,no productprocesskilled. Rawdiagnosticincludesobserver/offlineanalysisinterference;notperformanceorphysicalgrowthacceptance.",
+  "next": "Fixverifiedbytehandoff throughanAPIactuallyusedbypinnedglue. ConsideraSHA-guardedserved-glueadapterforwasmBinary withoutmutatingnode_modules/cache;do notimplementinstantiateWasm cachingontopofanignoredoption. ProveinvalidprovidedbytesrejectwithoutHTTPfallback,validverifiedbytesavoidrepeatWasmfetchonrealmain/Workerrecycles;thenprofileandrerunoriginalphysicalgrowthbounds.",
+  "artifacts": {
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/frozen-version.json": "52705f7e00346d3b9d63a29084839c0e1b48c36ccacc37dc2de1b16b883423fd",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/report.json": "366e6f06ea84ce9607206a43d60eb0d10c47845eccf744037c825a56f9289079",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/cleanup.json": "1c57c01ba8602b0c973bc52d14613071d962914bd7324544b5317e3eb952166f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/samples.jsonl": "08c3d1829e8156932c9b7eefb440aa900c3ad3126a6f353e16df235796230077",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/mac-js.log": "0c897566ce33f1d34669d033810051ec435247b01d6557c3a877ebd0b341331c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/linux-js.log": "247eacb6a03e02923ac0c3579b8d9048040df26fe430740156b662284ce79dea",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/identities.jsonl": "fba92dd54d0c8804a8adf9e7c4b0eac068f19019de8fbea4c5fb256a0492bf44",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-receipts.jsonl": "2ac7bdcb64983ab6efbde8b99e9b8d4119d705f56e977ddc85c191e8800bbdf4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-receipts.jsonl": "5cbac79b4d70e09e8db039d4edc34619c2470bdc07572c91d56901825c9f95f1",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-receipts.jsonl": "cde00ef47c60877a8b33d5dbb9e461a74811fb2c52d02845094485513b0c5f03",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-1.raw.json": "ab825d25721af0067fe29c9ed4f7a8dede092e6d1386279187d272b692517297",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-2.raw.json": "5354539718cd44eeef5d794f9de19ac60a1b86540ba5d7155fb233b94a109ee5",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-3.raw.json": "80024ba7b37698431fc96f2074e9c57027204786cf20ce0d210e5d90c11c5a8b",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-4.raw.json": "0a28f2a5bee15187767282a59613fd0c397a08620e940ade96f31e8ffd117f67",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-5.raw.json": "a5737f6b56542252325224dad404d700969ca32a0cd526938bee23b14269616a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-6.raw.json": "9de0a71bb713a38aea2b9522ccc4e660d173643921974c9eb1c89e4fc559f9bb",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-7.raw.json": "44cfff470d264a92251c85fd9a18448acedd334508a9dae62747d4cd251b8271",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-8.raw.json": "4ad5f367bef080fa278aaa086d6663a41cb64bf4cae6a3a9e63936b10d61c52c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-9.raw.json": "59c99d623cd9f96fbc83c097fa843feafbf747e85b747181d96bf51768421acf",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-10.raw.json": "697da93306dd811c8a9079ffbfd6c59c8a708e6ed972597393506539d577a353",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-11.raw.json": "79de87ffadcfd6585d66eadc438d21cd0330980765b7a6813064ffcf7ccc95d7",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/gpu-worker-12.raw.json": "92d5a68dad5932b853f8a14b90c6cd3443863b67b8565d448b8a261821640161",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-1.raw.json": "ab825d25721af0067fe29c9ed4f7a8dede092e6d1386279187d272b692517297",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-2.raw.json": "b66799094c10b66c2b5e132707a75e006e7228dd12a314d3f87204b9454754fb",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-3.raw.json": "07727dc64b977b7f9c107e8e727171537b345cd91ebefac57c1ea47caf59cf4c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-4.raw.json": "39aeedb65b9dd172d9aafb9dee24e2ae86b7d55bfa1509a32a4a03e9f80e4363",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-5.raw.json": "822f67db5c6c9936452b995069587731731180a2cc3380eb74929007da3135dc",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-6.raw.json": "ec663aa3a7b6dddf2b5311ac381b36c159f1f8eb1cb3fc66b38f1245686247d3",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-7.raw.json": "39488ee74500e1db7a9e689fcd4cb4a8ef5df47c84b9a41365fee03111f0784f",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-8.raw.json": "6cc698c2cc0614a53ab73545476d9da553354da536f16a87476c1d0cd201d1a4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-9.raw.json": "09cc6e4ac14b8ef72272bba00b455a5db321711ae91e43cce6516d994c11d4b0",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-10.raw.json": "e5817e9df5b5ed09f18450284c25a7d0792e73430077a5ffa9fe00fc288e4f8e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-11.raw.json": "880b237c902d077755130d3d348ba538ff388186cd0409aaef84f8919c0e3ade",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-worker-12.raw.json": "47b7b5b45e6407f6f72e73d9e607f4e3525b40c61ab79ee369e8f2aabd51d247",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-1.raw.json": "ab825d25721af0067fe29c9ed4f7a8dede092e6d1386279187d272b692517297",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-2.raw.json": "c29f310526e917cc557260025394cf8efb0cff56172c9518495c814012b7018e",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-3.raw.json": "980d500813c9c1404d122dc42f8eaaa69c5a6aaafc68c3ae060f42c72266858c",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-4.raw.json": "e2fa57cd4b54b170df65f4dcf62ebc75900a70228176eec922a93c96a2923425",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-5.raw.json": "3f721aea4348484eaf1ec32525453988444518ce2189c008f128dd417d606a33",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-6.raw.json": "812601b893517019c9f5dd2ebc63063335757181dcc462a3e09c8f8c9ede613d",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-7.raw.json": "450e936e8350c56150b2f6dc5c3fb211a9c2b99c17077b3ad727640e42e184dc",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-8.raw.json": "8924436441a3002bcdbc4beb368caf65821da02e7c7ec2bd976e411ed0da6bb2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-9.raw.json": "013dcea63e9e0dc216249476f269c3837720e7872f25f2d35cebbdc20b741c94",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-10.raw.json": "dbd5ea490e2888d91f0c6ed3c1f1f8c83f628e9745140554e5c049375a98cf10",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-11.raw.json": "696afe015a274bbb9d04b22e2e59723136a6065ac0a3512ac6ea3f6082d5f804",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-v2/results/native-sampling/cpu-main-12.raw.json": "4fe3af3966dd682a1c0f570dc50256db2815858c8e566c6a2d62aa8e4e9e3b31",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-native-sampling-failure-v1.json": "8a8624f91939b2fb9abc9b734b183ad9f07eaab20405a1f8a002f246214fb985",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/canvaskit-ignored-options-reproduction-v1.json": "db5bbc68b00e56e03402169a4592cf3f1831b72a1a9d8ec90e3df369cf7a44d9",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/canvaskit-ignored-options-browser-reproduction-v1.json": "083687bbc3198f9b2b81015983210421f86f58964f895554a3190836cfda64d2",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/canvaskit-ignored-options-browser-frozen-v1.json": "648cfea23a8e89c44121ef522f34706a3a99074c3ca3db66d82fd850595a9630",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/canvaskit-node-reproduction-observation-v1.json": "3e13f76387f690b2f7d7858450b2bfcf854a9e839f5ec5d6577c99f22dda8dd8",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/chrome155-symbol-availability-v1/breakpad-heads.json": "c7b1fbf5d642ee5b385488444b575e9e9d25ff216d0953bab5b8b704515a52e4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/chrome155-symbol-availability-v1/source.json": "5ec01621bdac08645743a7a010888b0967c4fd6e50c4cc909633f96a45ac5cf6",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/chrome155-symbol-availability-v1/disassembly-abort.json": "9ef83b7b934a9a57504c8b7cf27bbd0ddc4302c27131051be6d789d8d174f45a",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/chrome155-symbol-availability-v1/headers.json": "c3f7571f72f8bb5ab00f84438e5aa5b6a0d1aedd10d8017b18978ebadf4e3829",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/chrome155-symbol-availability-v1/lldb-callers.log": "e0e1b3a87e03b9c6cd7b3a82412c5b5bf27c0124f8b81b3735eace473d295bb4",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/chrome155-symbol-availability-v1/lldb-windows.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/chrome155-symbol-availability-v1/lldb-windows.log": "340cfa26f6edc8f0a28f84bfddaae0a6d16b47ff645b714e2be5e47363c58244"
+  },
+  "noCommitPush": true,
+  "noEightHourActive": true,
+  "eightHourPassed": false
+}

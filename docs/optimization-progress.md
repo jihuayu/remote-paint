@@ -1292,3 +1292,13 @@ owner.after的原metrics在finally关闭历史procFD之前采集，不能当探�
 609文件副本独立请求180秒、总运行187.035秒，三个主页面与两个Worker身份持续保留；28次主文字输入逐次记录真实WebSocket.send序号与3000ms内的accepted/input-injected ACK，并等待GPUWorker、CPUWorker、CPUmain全部显示同epoch/viewport、lastProcessedInputSeq至少该ACK序号及对应文字数像素（共84份逐Viewer证明）。secondary另有24次相同输入检查。
 
 每页观察器保持64 pending/128 ACK环/32错误上限与单个文本探测，记录落盘后释放；主观察器nonce在采样间不变。延迟仅用发送页自身performance原点计算dispatch→测试读像素，包含轮询/读回开销，不跨页面减时间，不声称物理呈现。Source/历史ownership FD/Viewer/helper正常清理，默认30秒放弃租约仍由真实到期检测验证。前轮首epoch验收、最初挂载路径错误与其修复记录均保留。每次跨站完成后、下一次放弃租约前立即从GPU输入，实际主输入ACK至少覆盖两个epoch，并在三个Viewer分别核验新epoch/viewport、水印序号及输入像素；两个编号集合原样记录。此轮无物理策略，也未组合连续frame-age/轻微丢包；原30分钟失败、8小时与N1未通过状态不变。证据见`docs/evidence/session-longload-input-crosssite.json`。
+
+## 原生分配栈与CanvasKit字节交接缺陷
+
+612文件副本完成真实600秒工作循环（总运行614.209秒）：660次更新、52次resize、44次主输入、6次跨站、7个secondary与7次默认租约到期。三个主页面、两个Worker保持身份；36份原生分配快照在每页5000ms/8MiB/16384样本/256帧/512模块约束内完成，首份为空、后续有真实样本，采样器各停止一次，Source创建/关闭8/8，清理无错误。完整JS每平台260项，Mac252通过8跳过，Linux256通过4跳过。
+
+按实际模块UUID和偏移保存栈；未伪造页面对应OS PID，只声明页面target/frame/nonce与前后相同自有进程集合。公开精确dSYM/Breakpad入口不可用，离线LLDB只读取安装二进制、不附加进程，确认采样调用分配blink::StringImpl并加12字节头，上一层计算Base64长度。单块10,990,560字节恰为8,242,911字节Wasm的Base64长度加头；其观测数量与arena重建数相关。该相关性和加权样本不是独占物理内存或唯一根因证明。
+
+实际Node及Mac浏览器复现发现：固定CanvasKit0.42胶水忽略wasmBinary及instantiateWasm选项。传入无效四字节Wasm、会抛错的钩子仍初始化成功，真实浏览器经locateFile产生一次HTTP Wasm请求；原Viewer预取校验的字节未通过这些选项交给实例化路径。这是新确认的集成缺陷，尚未修复。下一步应在不修改依赖缓存的前提下使用实际受支持的字节交接或受SHA守卫的胶水适配，不能在被忽略的instantiateWasm上假定编译缓存生效。
+
+组合追踪最初超过既定7秒结束总预算的失败保留，后续分离原生采样；未提高原采样预算、强制GC、替换主VM或修改物理增长策略。离线反汇编曾忽略范围参数产生过大输出，命令已自然结束且无产品进程被终止，相关记录保留；本诊断不作性能验收。原两次30分钟增长失败、8小时及完整N1未通过状态不变。证据见`docs/evidence/session-native-sampling.json`与`docs/evidence/canvaskit-binary-handoff-bug.json`。

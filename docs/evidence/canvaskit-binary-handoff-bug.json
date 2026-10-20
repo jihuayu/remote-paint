@@ -1,0 +1,77 @@
+{
+  "at": "2026-10-17T23:54:34.590543+00:00",
+  "status": "reproduced-pinned-CanvasKit-ignores-current-verified-binary-option",
+  "wasmSha256": "aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+  "glueSha256": "894815b2d39b24de2eacdb01453778d83e0b6c418b034e3b728e80956ac2a9d5",
+  "wasmBytes": 8242911,
+  "node": {
+    "at": "2026-10-17T23:48:42.374Z",
+    "status": "reproduced-pinned-CanvasKit-ignores-wasmBinary-and-instantiateWasm",
+    "invalidWasmOptionBytes": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "ignoredHookInvoked": false,
+    "actualInitialized": true,
+    "actualHeapBytes": 134217728,
+    "heapRoundTrip": 197,
+    "locateFileCalls": [
+      "canvaskit.wasm"
+    ],
+    "wasmBytes": 8242911,
+    "wasmSha256": "aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+    "glueSha256": "894815b2d39b24de2eacdb01453778d83e0b6c418b034e3b728e80956ac2a9d5",
+    "scope": "Real pinned0.42Nodefactory usedlocateFile diskWasm despiteinvalidwasmBinaryandthrowinginstantiateWasm options. Sourcegluecontainsneitheroptionname. No forcedGC/no runtimepatch/no claimallphysicalgrowthsolved."
+  },
+  "browser": {
+    "at": "2026-10-17T23:50:55.775Z",
+    "status": "reproduced-browser-ignores-wasmBinary-and-instantiateWasm",
+    "actual": {
+      "hookInvoked": false,
+      "locations": 1,
+      "roundTrip": 197,
+      "heapBytes": 134217728
+    },
+    "requests": {
+      "js": 1,
+      "wasm": 1
+    },
+    "wasmBytes": 8242911,
+    "wasmSha256": "aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+    "glueSha256": "894815b2d39b24de2eacdb01453778d83e0b6c418b034e3b728e80956ac2a9d5",
+    "cleanupErrors": [],
+    "scope": "ActualownMacChrome,pinned0.42factory;invalidwasmBinaryandthrowinginstantiateWasmhookignored,realHTTPWasmloadedthroughlocateFile.No forcedGC/vendorpatch/physicalgrowth/N1/8hacceptance."
+  },
+  "nativeSampleCorrelation": [
+    {
+      "label": "gpu-worker",
+      "arenaRecycles": 8,
+      "observedBase64SizedSamples": 8,
+      "allocationSizeBytes": 10990560,
+      "observedCountsEqual": true,
+      "scope": "Observed correlation only;native samples are weighted/random,not an exact object census orcausalproof."
+    },
+    {
+      "label": "cpu-worker",
+      "arenaRecycles": 9,
+      "observedBase64SizedSamples": 9,
+      "allocationSizeBytes": 10990560,
+      "observedCountsEqual": true,
+      "scope": "Observed correlation only;native samples are weighted/random,not an exact object census orcausalproof."
+    },
+    {
+      "label": "cpu-main",
+      "arenaRecycles": 9,
+      "observedBase64SizedSamples": 9,
+      "allocationSizeBytes": 10990560,
+      "observedCountsEqual": true,
+      "scope": "Observed correlation only;native samples are weighted/random,not an exact object census orcausalproof."
+    }
+  ],
+  "next": "Fixverifiedbytehandoff throughanAPIactuallyusedbypinnedglue. ConsideraSHA-guardedserved-glueadapterforwasmBinary withoutmutatingnode_modules/cache;do notimplementinstantiateWasm cachingontopofanignoredoption. ProveinvalidprovidedbytesrejectwithoutHTTPfallback,validverifiedbytesavoidrepeatWasmfetchonrealmain/Workerrecycles;thenprofileandrerunoriginalphysicalgrowthbounds.",
+  "productionFixImplemented": false,
+  "physicalGrowthPassed": false,
+  "eightHourPassed": false
+}
