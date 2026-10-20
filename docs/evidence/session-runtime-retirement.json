@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-18T19:31:28.308036+00:00",
+  "task": "B1c1b1",
+  "scope": "Private bounded immutable retirement evidence persistence and recovery for trusted controller facts;not an Engine observer or production retirement/admission decision.",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-retirement-checkpoint-v1.json",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-retirement-v2/frozen-version.json",
+  "limits": {
+    "recordBytes": 16384,
+    "fileMode": "0600 verified before publication and read",
+    "directoryMode": "0700 with pinned identity and parent-directory fsync",
+    "overwrite": false
+  },
+  "cases": [
+    "Acknowledged closing/undispatched intent",
+    "Created/unstarted object with controller-owned no-Start fence plus actual owned204/freshCID404",
+    "Started/unknown Start with effective persisted generation-bound namespace witness plus actual owned204/freshCID404"
+  ],
+  "durability": "Filefsync before no-overwrite hardlink,directoryfsync before ack;fresh read can adopt a committed file after writerdeath before journalretired and verify trusted expectedSHA whenpresent. No pendingfile or missing/invalid proof becomes success.",
+  "tests": "Final checkpoint records actual145 Node-only contracts per platform and actual three Node worker modes;whole-source full JS regression pending isolation from active8h.",
+  "priorCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/session-runtime-retirement-v1/superseded-v1.json",
+  "activeEightHourSourceFiles": 783,
+  "eightHourPassed": false,
+  "nativeProductionProviderComplete": false,
+  "next": "Production controller must establish/fence actual facts,use private records before journalretired/quota release,consume inventory/orphan gates andclose-onlyrecovery;then Registry integration.",
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "noCommitPush": true
+}
