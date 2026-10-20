@@ -79,3 +79,12 @@ test('actual Registry and SQLite retain exact Session acknowledgments while a fi
  }finally{await registry.shutdown();}
  assert.equal(store.loadRuntime({owner}).allocations[0].state,'retired');
 });
+
+test('actual writer killed after Ready is quarantined on Registry restart and closes its original runtime without create replay',enabled,async t=>{
+ const dir=await directory(t),path=join(dir,'state.sqlite'),marker=join(dir,'effect');let child;
+ await withOwnedTestChild(()=>child=fork(new URL('./fixtures/session-runtime-store-child.mjs',import.meta.url),[path,'ready',marker],{execArgv:[],stdio:['ignore','ignore','pipe','ipc']}),async owned=>{const [message]=await once(owned,'message',{signal:AbortSignal.timeout(5000)});assert.equal(message.event,'durable-ready');});assert.equal(child.signalCode,'SIGKILL');
+ const store=new SqliteSessionStore({path}),owner=Symbol('recovered');store.claimRuntimeProvider(owner,provider);const row=store.loadRuntime({owner}).allocations[0];assert.equal(row.state,'ready');assert.throws(()=>commit(store,owner,row),code('STATE_RUNTIME_RECOVERY_REQUIRED'));let creates=0,closes=0;
+ const managed={async create(){creates++;throw new Error('Recovery must not replay create');},async close(){closes++;commit(store,owner,closing(row));commit(store,owner,retired(row));return {status:'closed'};}};
+ const registry=new SessionRegistry({providers:new Map([['test',managed]]),defaultRegion:'test',store});try{assert.equal(registry.getSession('tenant-a','ses_a').state,'recovery-required');assert.equal(registry.stats().reservedSessions,1);assert.equal((await registry.recover()).status,'closed');assert.equal(registry.persistence().confirmation,'confirmed');assert.equal(registry.stats().reservedSessions,0);assert.equal(creates,0);assert.equal(closes,1);assert.equal(await readFile(marker,'utf8'),'one-fixture-effect\n');assert.equal(store.loadRuntime({owner}).allocations[0].state,'retired');}
+ finally{await registry.shutdown();store.releaseRuntimeProvider(owner);store.close();}
+});
