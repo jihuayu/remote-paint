@@ -1,0 +1,188 @@
+{
+  "at": "2026-10-19T21:06:36.577161+00:00",
+  "task": "Actual Page download private RPC and Native Worker capability",
+  "status": "page-download-private-rpc-qualified-within-scope",
+  "scope": "Source/private download result validators, arm-download/download-info/read-download/release-download RPC and independent agent-download-v1 capability with observe/rpc dependencies and8KiB receive gate. Original tenant/Session/Run/Page/Native document/ticket/version; strict6144-byte metadata/chunk/release,3072-byte canonical base64 chunks including empty EOF. Worker startup version checked before successful read emit; Channel and Provider independently correlate. Actual DockerProvider Worker Native page downloads, held human key/grant, actual blocked Native metadata timeout/abort and separate end; public download API/SDK and physical pre-spool/Playwright metadata bounds pending.",
+  "parentManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-download-core-qualified-v1/frozen-version.json",
+  "parentManifestSha256": "5ba9ba3da9c320d6ed3b416d47e5f1e1e53805e6e7b6f4559120c08838f7e396",
+  "executedManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-download-rpc-candidate-v1/frozen-version.json",
+  "executedManifestSha256": "a600925336a6be1097bf18e8c29425bb57a585f80c8180e93749b9941104a25f",
+  "newContracts": 14,
+  "newTestNames": [
+    "download private requests synchronously capture exact own context limits ticket and offset without paths URLs or getters",
+    "armed and ready download metadata are exact frozen original document data with canonical time filename and completed-file limits",
+    "download status and release cannot silently bind another file Run target document or version",
+    "download chunks enforce canonical bounded base64 exact request arithmetic complete and empty-file digest",
+    "private worker advertises the independent fifth capability and carries arm info chunks and release in exact order",
+    "download calls need the exact capability plus observe and8KiB receive capacity before dispatch",
+    "malformed duplicate over-count and dependency-free download advertisements never make the channel Ready",
+    "worker rejects authenticated raw download calls when its resource did not advertise the capability",
+    "timed-out arm retains its actual ordinary slot while separate end works and late metadata is consumed once",
+    "aborting a sent download read leaves actual admission until its correlated result without retry",
+    "Worker rejects wrong runtime version before emitting a successful read result and revokes resource readiness",
+    "Channel independently rejects malformed Download identity version and envelope from an untrusted peer",
+    "maximum3072-byte download chunk fits the unchanged private result and frame budgets without whole-file content",
+    "caller getters in download response metadata never execute during trust-boundary validation"
+  ],
+  "fullJsManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/current-candidate-full-js-v56/manifest.json",
+  "fullJsManifestSha256": "8de7df80bbcaa8c2f8f79375bc5881442183f148dd3d1b4b95e382bf5d40153f",
+  "fullJs": {
+    "mac": {
+      "tests": 1372,
+      "passed": 1357,
+      "skipped": 15,
+      "actualExitCode": 0,
+      "logSha256": "f68c5643acd8af8364087148ec83fe379e9ff9eef28f76dfb4c87cc71a2f4d6a"
+    },
+    "linux": {
+      "tests": 1372,
+      "passed": 1366,
+      "skipped": 6,
+      "actualExitCode": 0,
+      "logSha256": "c71051f111dfec434d82fcab682bbe6def5627e48df2d06a484dae28ab0cd1ed"
+    }
+  },
+  "nativeManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-download-rpc-native-v1/manifest.json",
+  "nativeManifestSha256": "1268079c8c2ed6dd1cbcf0f7f9f88722de568f23be9c795eb02d37eb9f06cfe9",
+  "nativeActualExitCode": 0,
+  "nativeLogSha256": "0107c5d4c615cafbad823fcd9a4ffd75e1b56b8eb2b50413948f0bb8225559a6",
+  "nativeObservations": {
+    "network": {
+      "actualPrivateProviderWorkerNative": true,
+      "originalCookiePreserved": true,
+      "oneRequestNoRefetch": true,
+      "byteLength": 8999,
+      "sha256": "2fb4ebc93e3c8ef0d2a86c97203a9cd33ee2cbf4e5e8e6ac69e8c9ceb50ebdfc",
+      "writerFenceUnchanged": true,
+      "explicitReleaseInvalidates": true,
+      "downloadId": "dl_ec50bb92-79dc-4ee2-b4a8-9de6dfdbd2f6"
+    },
+    "blob": {
+      "byteLength": 5001,
+      "sha256": "1e4adf95716dd1a137204d50d66166329e034b081146ac37b9a43605acb6e494"
+    },
+    "empty": {
+      "actualZeroByteFile": true,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bounds": {
+      "overCapRejected": true,
+      "explicitReleaseAfterFailure": true,
+      "foreignBindingDenied": {
+        "ok": false,
+        "code": "AGENT_INVALID_CONTEXT",
+        "outcome": "not-dispatched"
+      },
+      "foreignTenantSessionVersionDenied": true,
+      "resultJsonBytes": 6144,
+      "rawChunkBytes": 3072,
+      "preSpoolHardCapClaim": false
+    },
+    "navigation": {
+      "oldEpoch": 1,
+      "newEpoch": 2,
+      "oldDocumentRejected": true,
+      "oldRunFileRejected": true
+    },
+    "activeDownloadEnd": {
+      "actualSlowRequestClosed": true,
+      "runClockLifetimeEnded": true,
+      "newRunDistinct": true
+    },
+    "human": {
+      "actualPublicHumanClickDownload": true,
+      "byteLength": 8999,
+      "sha256": "2fb4ebc93e3c8ef0d2a86c97203a9cd33ee2cbf4e5e8e6ac69e8c9ceb50ebdfc",
+      "readReleaseEndPreservedHeldKeyAndOriginalGrant": true
+    },
+    "timeout": {
+      "actualNativeMainThreadMetadataBlocked": true,
+      "fixtureBusyMs": 1000,
+      "stopped": {
+        "ok": false,
+        "code": "AGENT_RPC_TIMEOUT",
+        "outcome": "unknown"
+      },
+      "occupied": {
+        "ok": false,
+        "code": "AGENT_RPC_BUSY",
+        "outcome": "not-dispatched"
+      },
+      "independentEndCompleted": true,
+      "noAutomaticArmReplay": true
+    },
+    "abort": {
+      "actualNativeMainThreadMetadataBlocked": true,
+      "fixtureBusyMs": 1000,
+      "stopped": {
+        "ok": false,
+        "code": "AGENT_RPC_CANCELLED",
+        "outcome": "unknown"
+      },
+      "occupied": {
+        "ok": false,
+        "code": "AGENT_RPC_BUSY",
+        "outcome": "not-dispatched"
+      },
+      "independentEndCompleted": true,
+      "noAutomaticArmReplay": true
+    },
+    "retired": {
+      "managementSessionClosed": true,
+      "holdsQuota": false,
+      "oldAgentRouteDenied": true
+    }
+  },
+  "nativeRetirementKind": "container-removed",
+  "nativeRetirementEvidenceSha256": "b1f9db76363969553767b6da5baa2e6c6be990de278179981addaec5949cba43",
+  "initialDiagnostic": {
+    "logSha256": "c14b0d8958e3626cf8b7e55a008002c2682c69af999be39edfbaf2b0861f4339",
+    "status": "pre-freeze-syntax-failure-fixed",
+    "reason": "Global replacement introduced a bare private field in channel cleanup; corrected before frozen candidate. Initial shell wrapper did not preserve child exit code; log is diagnostic only and is not a passing qualification. Explicit child-exit tracked scoped59, new14,full1372 and Native all passed afterwards."
+  },
+  "adjacentScopedRegression": {
+    "tests": 59,
+    "actualExitCode": 0,
+    "logSha256": "6542b8b9b117dd4eb1d34d3f6e650dfb5fac018218d0b09ca32dfbe8d6d52baa"
+  },
+  "newScoped": {
+    "tests": 14,
+    "actualExitCode": 0,
+    "logSha256": "4e59f436019708136106b3eb6604acb8b87c2e44b19c81233de74ed8a033e3b1"
+  },
+  "sdk": {
+    "sourcePathsUnchanged": 28,
+    "dependenciesUnchanged": true,
+    "installedNodePackageFilesVerified": 20,
+    "packageUsedForSessionLifecycleOnly": true,
+    "newDownloadSdkQualified": false,
+    "installedSdkSuitesNotRerunThisCheckpoint": true
+  },
+  "privateLimits": {
+    "resultJsonBytes": 6144,
+    "rawChunkBytes": 3072,
+    "base64Chars": 4096,
+    "channelBytes": 8192,
+    "workerPendingOutputBytes": 32768,
+    "capabilities": 5
+  },
+  "cleanupAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-download-rpc-cleanup-v1.json",
+  "cleanupAuditSha256": "fa1b0ee01f42ccdf1d5af207d2f4eff49663f13032bf5b8d1f7f37d84c1e9d97",
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "nextRequired": "Continue actual page download public executor/HTTP with independent observe authorization,original logicalRun/Session/worker/version/document/ticket identity and actual work/end accounting. Strict bounded metadata/chunk/release and binary delivery with consumer backpressure/hash/empty file,then Node/Python SDK separately and own ZIP each. Resolve browser pre-spool disk budget/cancellation partial spool retirement and Playwright retained Download metadata physical bound; do not call completed-file caps pre-write. Continue full locators/frame/write-by-handle,K10upload/Profile,K7/K8/K4,unknownEngineStart,remaining41/N1/device/original failed8h;no automatic8h restart/policy change.",
+  "pageDownloadSourceCoreQualified": true,
+  "pageDownloadPrivateRpcQualified": true,
+  "pageDownloadPublicQualified": false,
+  "pageDownloadSdkQualified": false,
+  "browserDownloadSpoolPrewriteHardCapQualified": false,
+  "playwrightDownloadMetadataPhysicalBoundQualified": false,
+  "K6Complete": false,
+  "productionNativeFullyQualified": false,
+  "eightHourPassed": false,
+  "noCommitPush": true,
+  "noSubagents": true
+}

@@ -51,7 +51,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | K3 | 安全授权 | 已完成（当前公共接口合同） | 管理key留在后端，短Viewer ticket绑定租户/Session/角色/期限/audience；真实Native只读帧/禁接管、跨租户、错误audience/篡改拒绝、刷新/撤销/到期关闭及旧ticket拒绝通过。Agent read/write/end与Session/Viewer scope独立，可信租户、严格context/fence与原始CDP拒绝；实际HTTP→Native权限矩阵和双平台1120项通过。仅覆盖原K3公共授权合同，未来工具/完整CDP属于K5/K10，见[逐项审计](evidence/public-agent-http.json)。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 部分实现 | Node/Python七工具SDK→独立授权HTTP→持久执行器→标准Native同一Page；旧fence、unknown、丢响应同ID/一次效果、无人观看80px、人控grant跨end保留及namespace退役通过。Python实际任务/连接池独立end，安装版97Node/37Python及类型通过。完整Playwright/其他工具、观察及全部故障仍待做，见[范围](python-agent-sdk.md)。 |
-| K6 | 结构化观察与结果 | 部分实现 | 原页面下载Source核心新增arm/info/chunk/release，原Run/Page/Native文档绑定，完成文件有界读取/摘要/删除及实际取消/end。19新合同，135文件1358项JS双平台零失败；真实Native网络cookie/Blob/空文件/超限/导航/end/人控下载与5进程退休通过，保留两次探针失败。Node/Python截图SDK资格保持，下载私有/公开/SDK、写盘前/Playwright元数据物理预算及完整定位仍待做，见[范围](agent-download-core.md)。 |
+| K6 | 结构化观察与结果 | 部分实现 | 原页面下载私有RPC/Native资源/第5能力及Source严格结果验证完成；原Run/文档/ticket/version、空文件/规范分块、实际槽与独立end。14新合同，136文件1372项JS双平台零失败；真实DockerProvider Worker Native下载/导航/人控held key/timeout/abort/end和namespace退休通过。公开下载HTTP/SDK、写盘前/Playwright元数据物理预算、完整定位仍待做，见[范围](agent-download-rpc.md)。 |
 | K7 | 动作和业务成功分离 | 部分实现 | Node/Python SDK区分intent/requested/injected/rejected/unknown，固定原语收据；原始请求/key/context/fence固定，未知不自动重放。实际Native丢响应、超时、end及之前关闭式恢复通过。业务后置条件观察与完整可恢复/不可恢复分类仍缺，见[Python SDK](python-agent-sdk.md)。 |
 | K8 | 取消与长任务事件 | 待实现 | 按原清单验收，记录实际证据 |
 | K9 | 开发者体验和发布 | 部分实现 | Node ESM/.d.mts与Python3.11+七工具SDK、冻结模型及运行时验证、开发包和用例已实现；双平台离线安装97Node/37Python/TSC与Mac公共类型/包源码Mypy通过，41当前输入核对且无SDK源码回退。两语言实际Native输入/unknown/退役有证据。完整观察/示例、版本/发布策略仍待做，见[检查点](python-agent-sdk.md)。 |
@@ -2040,3 +2040,8 @@ Python新增受管七工具、冻结模型、判别类型、不可变prepare与u
 ### 原页面下载 Source 核心
 
 原Page下一次浏览器下载的本地Run资源已实现，完成文件先检查描述符和大小后有界读取，实际取消/删除/end保持生命周期；网络与Blob真实Native证明、19新合同和1358项JS双平台零失败通过。之前失败探针及首轮严格方法表失败保留。此步不冒充写盘前硬上限或公开下载API/SDK，K6部分和41项10/17/14不变，见[范围与未完成门槛](agent-download-core.md)。
+
+
+### 原页面下载私有 RPC
+
+四个下载操作已连到Provider/Worker/Native，严格Source DTO、独立第5能力及逐层version/context/ticket验证；14新合同、136文件1372项JS双平台零失败。真实原Page网络/Blob/空文件/超限/导航/end、人控held key与原grant、实际Native阻塞期间timeout/abort的普通槽保留及独立end、namespace退休首轮通过。公开HTTP/SDK与写盘/元数据物理门槛继续，K6部分及41项10/17/14不变，见[范围](agent-download-rpc.md)。

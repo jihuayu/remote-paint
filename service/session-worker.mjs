@@ -26,7 +26,7 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
  const expected=Buffer.from(identity.ownerKeyHash,'hex'),controller=new AbortController(),frameBuffer=Buffer.alloc(maxFrameBytes);
  let bytes=0,resource=null,started=false,starting=Promise.resolve(),startSettled=true,initializing=false,invalidOwner=false,stopping=false,finished=false,closeTask=null,
   failure=null,reason=null,leaseTimer=null,initializeTimer=null,startTimer,outputAvailable=true,resolveDone,resourceUnsubscribe=null,
-  resourceReady=false,agentActive=null,agentEnding=null,lastAgentRequestId=0,pendingOutputBytes=0;
+  resourceReady=false,resourceVersion=null,agentActive=null,agentEnding=null,lastAgentRequestId=0,pendingOutputBytes=0;
  const done=new Promise(resolve=>{resolveDone=resolve;});
  const emit=value=>{
   if(!outputAvailable||output.destroyed)return;
@@ -104,7 +104,7 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
     initializing=true;
     const ready=await resource.initialize();startSettled=true;
     if(!ready||typeof ready.version!=='string'||!ready.version.length||ready.version.length>256)throw new TypeError('Invalid resource version');
-    if(!stopping){resourceReady=true;clearTimeout(initializeTimer);emit({type:'Ready',version:ready.version,...(typeof resource.agent==='function'?{capabilities:['agent-rpc-v1',...(resource.agentObservationVersion===1?['agent-observe-v1',...(resource.agentAccessibilityVersion===1?['agent-observe-ax-v1']:[]),...(resource.agentScreenshotVersion===1?['agent-screenshot-v1']:[])]:[])]}:{})});}
+    if(!stopping){resourceVersion=ready.version;resourceReady=true;clearTimeout(initializeTimer);emit({type:'Ready',version:ready.version,...(typeof resource.agent==='function'?{capabilities:['agent-rpc-v1',...(resource.agentObservationVersion===1?['agent-observe-v1',...(resource.agentAccessibilityVersion===1?['agent-observe-ax-v1']:[]),...(resource.agentScreenshotVersion===1?['agent-screenshot-v1']:[]),...(resource.agentDownloadVersion===1?['agent-download-v1']:[])]:[])]}:{})});}
    }).catch(()=>{if(!stopping)void stop('startup-failed','WORKER_START_FAILED');}).finally(()=>{startSettled=true;});
    initializeTimer=setTimeout(()=>{void stop('startup-expired','WORKER_START_TIMEOUT');},initializationTimeoutMs);
   }else if(value.type==='AgentCall'){
@@ -113,6 +113,7 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
    const replyError=error=>{if(!stopping){const safe=agentFailure(error);emit({type:'AgentResult',requestId:value.requestId,ok:false,error:{code:safe.code,outcome:safe.outcome}});}};
    try{captured=captureAgentRequest(value.request);}catch(error){replyError(agentFailure(error,'not-dispatched'));return;}
    if(!resourceReady||typeof resource?.agent!=='function'){replyError(new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched'));return;}
+   if(['arm-download','download-info','read-download','release-download'].includes(captured.op)&&(resource.agentDownloadVersion!==1||resource.agentObservationVersion!==1)){replyError(new AgentRpcError('AGENT_OBSERVATION_UNAVAILABLE','not-dispatched'));return;}
    const ending=captured.op==='end';if(ending?agentEnding:agentActive||agentEnding){replyError(new AgentRpcError('AGENT_RPC_BUSY','not-dispatched'));return;}
    let resolveWork,rejectWork;const slot={done:new Promise((resolve,reject)=>{resolveWork=resolve;rejectWork=reject;})};void slot.done.catch(()=>{});if(ending)agentEnding=slot;else agentActive=slot;
    // Install ownership before invoking the synchronous resource entry: it may
@@ -121,7 +122,7 @@ export function runSessionWorker({identity,createResource,deriveResourceSecret=n
    const retire=()=>{if(agentActive===slot)agentActive=null;if(agentEnding===slot)agentEnding=null;};
    void slot.done.then(result=>{
     if(stopping){retire();return;}
-    let capturedResult;try{capturedResult=captureAgentResult(result,agentReplyExpectation(captured),identity);}catch{replyError(new AgentRpcError('AGENT_INPUT_FAILED','unknown'));void stop('resource-unavailable','WORKER_AGENT_RESULT_INVALID');return;}
+    let capturedResult;try{capturedResult=captureAgentResult(result,agentReplyExpectation(captured),{...identity,version:resourceVersion});}catch{replyError(new AgentRpcError('AGENT_INPUT_FAILED','unknown'));void stop('resource-unavailable','WORKER_AGENT_RESULT_INVALID');return;}
     retire();emit({type:'AgentResult',requestId:value.requestId,ok:true,result:capturedResult});
    },error=>{retire();replyError(agentFailure(error));});
   }else if((value.type==='OwnerHeartbeat'||value.type==='Close')&&started&&exact(value,['type','sessionId','ownerKey'])){

@@ -51,6 +51,7 @@ export class NativeSessionResource {
  get agentObservationVersion(){return 1;}
  get agentAccessibilityVersion(){return 1;}
  get agentScreenshotVersion(){return 1;}
+ get agentDownloadVersion(){return 1;}
  agent(value){
   if(!this.#agentAvailable())throw new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched');
   const request=captureAgentRequest(value);
@@ -74,6 +75,10 @@ export class NativeSessionResource {
   if(request.op==='observe-screenshot')return run.screenshot(request.context,request.limits);
   if(request.op==='read-screenshot')return run.readScreenshot(request.screenshotId,request.offset,request.context,request.maxBytes);
   if(request.op==='release-screenshot')return run.releaseScreenshot(request.screenshotId,request.context);
+  if(request.op==='arm-download')return run.armDownload(request.context,request.limits);
+  if(request.op==='download-info')return run.downloadInfo(request.downloadId,request.context);
+  if(request.op==='read-download')return run.readDownload(request.downloadId,request.offset,request.context,request.maxBytes);
+  if(request.op==='release-download')return run.releaseDownload(request.downloadId,request.context);
   return run.perform(request.tool,request.params,request.context);
  }
  close(){
