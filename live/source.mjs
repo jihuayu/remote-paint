@@ -9,28 +9,31 @@ import {NativeBroker} from '../native/broker.mjs';
 import {ResourcePressure} from './resource-pressure.mjs';
 import {SourceDemand} from './source-demand.mjs';
 import {createNativeSource} from './native-source.mjs';
+import {createSourceDownloadSpool} from './source-download-spool.mjs';
 export async function startLiveSource({url,executablePath=process.env.REMOTE_PAINT_CHROMIUM,viewport={width:960,height:640},interval=1000/60,beginFrames=process.platform==='linux',captureOnInput=true,navigationTimeout=30000}={}){
  const startup=performance.now();
  if(!executablePath)throw new Error('Set REMOTE_PAINT_CHROMIUM to the custom compiled headless_shell (npm run native:chromium)');
- let browser,capture,frameDriver,broker,viz,source,targetCrashed=false;
+ let browser,capture,frameDriver,broker,viz,source,downloads,targetCrashed=false;
  const closeParts=async()=>{
   const errors=[];
   // A crashed renderer can leave target-session detach/queued input pending.
   // Closing its owning browser first resolves those calls; no target detach
   // remains necessary once that process has exited.
-  const parts=targetCrashed?[()=>browser?.close(),()=>capture?.close({detach:false}),()=>frameDriver?.close({detach:false})]:[()=>capture?.close(),()=>frameDriver?.close(),()=>browser?.close()];
-  for(const close of [...parts,()=>viz?.close(),()=>broker?.close()]){
+  const parts=targetCrashed?[()=>downloads?.closeBrowser(),()=>capture?.close({detach:false}),()=>frameDriver?.close({detach:false})]:[()=>capture?.close(),()=>frameDriver?.close(),()=>downloads?.closeBrowser()];
+  for(const close of [...parts,()=>viz?.close(),()=>broker?.close(),()=>downloads?.retire()]){
    try{await close();}catch(error){errors.push(error);}
   }
   if(errors.length)throw new AggregateError(errors,'Source close failed');
  };
- if(process.env.REMOTE_PAINT_DATA_PLANE!=='node')broker=new NativeBroker();
  try{
+  downloads=await createSourceDownloadSpool();
+  if(process.env.REMOTE_PAINT_DATA_PLANE!=='node')broker=new NativeBroker();
   viz=await startVizIPC({broker,nativeResources:!!broker});const token=nativeToken();
   // The token switch installs capture in the Broker's isolated world. Do not
   // enable legacy GPU benchmarking APIs (including disk export) in source JS.
-  browser=await chromium.launch({executablePath,headless:true,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint,...(broker?{REMOTE_PAINT_NATIVE_RESOURCES:'1',REMOTE_PAINT_TILED_CAPTURE:process.env.REMOTE_PAINT_TILED_CAPTURE??'1'}:{})},args:nativeLaunchArgs(token,{beginFrames})});
+  browser=await downloads.launch(downloadsPath=>chromium.launch({executablePath,headless:true,downloadsPath,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint,...(broker?{REMOTE_PAINT_NATIVE_RESOURCES:'1',REMOTE_PAINT_TILED_CAPTURE:process.env.REMOTE_PAINT_TILED_CAPTURE??'1'}:{})},args:nativeLaunchArgs(token,{beginFrames})}));
   const page=await browser.newPage({viewport,deviceScaleFactor:1});
+  downloads.bindPage(page);
   page.on('crash',()=>{targetCrashed=true;if(source)source.targetCrashed=true;});
   // Keep the page clock alive during bootstrap: Steel/acceptance setup may
   // still interact with the source before the first Viewer demand arrives.

@@ -7,6 +7,7 @@ import {isAbsolute} from 'node:path';
 import {randomUUID,createHash} from 'node:crypto';
 import {AgentInputError} from './input.mjs';
 import {captureAgentObservationContext} from './agent-observation.mjs';
+import {acquireSourceDownloadReader} from './source-download-spool.mjs';
 export const AGENT_DOWNLOAD_LIMITS=Object.freeze({defaultBytes:1048576,maxBytes:4194304,defaultTimeoutMs:10000,maxTimeoutMs:30000,chunkBytes:3072});
 const fail=(code='INVALID_AGENT_OBSERVATION')=>{throw new AgentInputError(code,'not-dispatched');};
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
@@ -44,8 +45,9 @@ export function createAgentDownloadOwner({page,binding,version}){
  }
  async function unlinkSpool(r){if(!r.path)return;try{await unlink(r.path);}catch(error){if(error.code!=='ENOENT')throw error;}r.path=null;}
  async function receive(r,download){
-  let file,candidate=null,cleanupFailed=false;
+  let file,reader,candidate=null,cleanupFailed=false,descriptorCloseFailed=false;
   try{
+   try{reader=acquireSourceDownloadReader(page);}catch(error){cancel(r,'AGENT_DOWNLOAD_FAILED');throw error;}
    // Only this Page's trusted Download event supplies a path. No caller path,
    // URL, selector, evaluation or second HTTP request can enter this reader.
    const path=await download.path();if(typeof path!=='string'||path.length>4096||!isAbsolute(path))fail('AGENT_DOWNLOAD_FAILED');r.path=path;r.pathResolved=true;r.check();if(r.error)fail(r.error);
@@ -56,7 +58,7 @@ export function createAgentDownloadOwner({page,binding,version}){
    r.sha256=hash.digest('hex');r.fileName=name(download.suggestedFilename());
   }catch(error){r.error??=errorCode(error);candidate=null;}
   finally{
-   try{await file?.close();}catch{cleanupFailed=true;}
+   try{await file?.close();}catch{cleanupFailed=true;descriptorCloseFailed=true;}
    try{await unlinkSpool(r);}catch{cleanupFailed=true;}
    // path() settles only when the real browser download finishes or fails.
    // A canceled path has no successful artifact path to unlink; Chromium owns
@@ -68,6 +70,7 @@ export function createAgentDownloadOwner({page,binding,version}){
    if(r.cancelFailed&&!r.pathResolved)cleanupFailed=true;
    if(cleanupFailed){r.cleanupFailed=true;r.error='AGENT_DOWNLOAD_FAILED';candidate=null;}
    forgetListeners(r);
+   if(descriptorCloseFailed)reader?.uncertain();else reader?.closed();
   }
   if(!r.error){try{r.check();}catch(error){r.error=errorCode(error);candidate=null;}}
   r.bytes=r.error?null:candidate;r.phase=r.error?'failed':'ready';r.completedAt=new Date().toISOString();
