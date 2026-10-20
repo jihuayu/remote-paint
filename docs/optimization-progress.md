@@ -38,7 +38,7 @@ WebGL 暂使用黑框和“WebGL 无法显示”占位，保留原区域的变�
 | C13 | 控制消息与重放队列调度 | 部分实现 | 默认 Worker 的控制连接改在主线程，绕过慢 SHA 和 Worker 的同步忙碌：注入 1.2 秒 Worker 阻塞时输入确认约 8 ms、撤销约 19 ms。主线程兼容路径仍可能被同步重放阻塞；数据解码切片和过期 viewport 取消待补。 |
 | K1 | 稳定 Session API | 部分实现 | SQLite注册表与HTTP创建/查询/释放已接通，可信Bearer租户与独立scope，幂等/TTL/配额/重启隔离及请求限制。Node ESM客户端带TypeScript声明、固定原请求/键的手动或显式重试、响应校验与取消/未知结果分类；实际丢失HTTP响应后重试仅分配一次。Mac/Linux各72项通过及严格类型检查退出0。连接票据与实际Native provider仍待接入，未发布完整公共SDK。见[客户端证据](evidence/session-client.json)及[接口说明](session-control-api.md)。 |
 | K2 | 可嵌入 Viewer | 待实现 | 按原清单验收，记录实际证据 |
-| K3 | 安全授权 | 部分实现 | 后端HTTP已使用可信Bearer租户认证与创建/读取/释放独立scope，管理客户端禁重定向和浏览器运行。现有控制子连接使用绑定原Viewer/Session的10秒一次性票据，错误Origin/跨Viewer/重放/过期拒绝；主Viewer本地key仍待替换为绑定租户、Session、角色、期限、audience且可撤销的Viewer ticket，不能据后端认证声明K3完成。 |
+| K3 | 安全授权 | 部分实现 | 后端HTTP已使用可信Bearer租户认证与创建/读取/释放独立scope，管理客户端禁重定向和浏览器运行。现有控制子连接使用绑定原Viewer/Session的10秒一次性票据，错误Origin/跨Viewer/重放/过期拒绝；现有可选公共网关已用短Viewer ticket绑定租户/Session/区域/Ready代次/角色/期限/audience，并在真实Node Source消息路径执行只读限制、撤销和刷新；本地key留在私有Source。实际Native worker端点桥接、嵌入刷新和Agent/CDP独立授权仍待实现，不能据此声明K3完成。 |
 | K4 | 版本和能力协商 | 部分实现 | frame-window-v1/control-channel-v1 能力协商；新客户端携带静态 build hash，错配关闭 1008 并显示刷新提示。未声明 build 的旧 harness 客户端仍走兼容路径；完整 SDK/Chromium/SKP 兼容表待补。 |
 | K5 | 输入与多角色控制 | 待实现 | 按原清单验收，记录实际证据 |
 | K6 | 结构化观察与结果 | 待实现 | 按原清单验收，记录实际证据 |
@@ -1658,3 +1658,12 @@ Worker 通道新增明确 closeOnly 模式，必须启用有效内核见证且�
 真实临时见证文件缺失使首次清理保持未确认；恢复原文件后，普通重复关闭不重试，显式并发重试与 Registry 释放共用一次历史404退役。另一个双限2次夹具证明即使修复文件也不能绕过上限，容器已不存在而配额继续保留。最终双平台和22条实际路径结果见[清理重试检查点](evidence/runtime-cleanup-retry.json)；五条预期隔离不能被当作完整 Native 恢复通过。
 
 再次按原清单核对：K1关注稳定Session/幂等/操作状态；K3是短Viewer票据及read/control/Agent授权，尚不能由容器证明替代。后续优先继续真实Native验收和Viewer权限/接入，不再无界增加内核前提。当前候选整份全量回归待原8小时隔离，41项仍9/14/18，未暂存、提交或推送。
+
+
+### K3a1：短 Viewer 票据与实际 Node Source 权限网关
+
+后端新增独立 viewers:read/viewers:control scope，签发、刷新、撤销绑定租户/Session/区域/Ready代次/角色/期限/audience 的短票据。公共 WebSocket 网关在每条消息前核对持久 Ready；只读连接只能显示、确认帧和请求重同步，伪造输入/控制/Agent/CDP 会关闭连接。controller 继续走原 ControlLease 输入栅栏。私有 Source key 和 Native 配对子票据不交给浏览器；上游使用既有单连接控制回退。
+
+13条真实HTTP/WebSocket/SQLite/Node Source网络测试覆盖实际帧/输入、权限、撤销/刷新、过期、迟到解析器、连接/缓冲上限和关闭。初版新夹具的旧事件匹配及断连等待错误已保留失败日志并修正；冻结候选双平台结果由[访问检查点](evidence/viewer-access.json)独立核验。超时后不响应取消的解析器继续占用有界额度，迟到结果不能创建私有连接。
+
+该阶段不等于Native worker端点桥接或渲染通过；可嵌入Viewer、刷新重连、Agent/CDP独立授权和完整K5路径仍待完成。原始8小时测试和783文件冻结Source保持隔离。当前整份候选全量回归待其退出，41项计数仍9/14/18；未暂存、提交或推送。

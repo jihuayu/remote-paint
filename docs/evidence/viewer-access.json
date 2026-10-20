@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-18T22:17:22.205271+00:00",
+  "task": "K3a1",
+  "scope": "Backend-key/short-Viewer-ticket separation enforced by actual public WebSocket proxy into private Node Source and ControlLease. No direct browser access to the Source key.",
+  "sourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-access-v1/frozen-version.json",
+  "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-access-checkpoint-v1.json",
+  "contract": {
+    "credential": "256-bit opaque vwt1. ticket; hashes retained only; backend scope viewers:read plus viewers:control for controller; request tenant fields cannot select identity.",
+    "binding": "tenant/Session/region/Ready version+readyAt,exact audience Origin,1..120s bounded by original Session expiry and monotonic deadline.",
+    "roles": "readonly allows Hello/FrameAck/RequestKeyframe only;controller adds actual AcquireControl/RenewControl/ReleaseControl/Input;Agent/CDP not routed. Existing Source lease/tag/sequence fences retained.",
+    "privateBridge": "Trusted resolver returns identity-bound origin/streamOrigin/key. Existing Native inline-control fallback is reused at protocol level;control-channel-v1 removed and Welcome rewritten to avoid private pairing secrets. Actual Native worker endpoint bridge is still pending.",
+    "revocation": "Explicit revoke/refresh synchronously fences current grant and aborts resolver;active sockets close. Every message checks current authority and durable Ready;idle watchdog250ms. Restart invalidates all in-memory grants.",
+    "bounds": "1024 grants,16 connections+16 retained unsettled resolvers by default;non-cooperative timed-out resolver still holds admission;connect5s;client32KiB/512messagespersecond;output32MiBperlink/64MiBinstance;close250ms."
+  },
+  "actualTests": {
+    "file": "tests/viewer-access.test.mjs",
+    "cases": 13,
+    "infrastructure": "Actual loopback HTTP and WebSocket servers,real SQLite,actual startLiveTransport Node Source and original ControlLease. Only CDP and Session allocation are explicit fixtures;no browser is launched.",
+    "paths": [
+      "backend/Viewer credential separation,tenant/read/control/Origin checks",
+      "readonly actual frame delivery/ACK/keyframe with forged control/Input/Agent/CDP rejection",
+      "controller original acquire/input-ack/renew/release dispatch and no private Source key in public messages",
+      "revoke/refresh active connections;original token rejected and private Source peer released",
+      "ticket expiry independent of Session;Session TTL caps grants and release fences per-message access",
+      "late non-cooperative resolver remains bounded and cannot allocate afterdeadline/revoke",
+      "wrong source binding and pergrant/global connection caps",
+      "binary/repeatedHello/oversized input rejected",
+      "authority close/replacement revokes tokens",
+      "actual Source oversized packet hits independent forwarding budget without retry"
+    ]
+  },
+  "preliminaryRegressions": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/viewer-access-initial-regression-notes.json",
+  "remaining": [
+    "Actual Native worker endpoint ownership/transport bridge and Native rendered integration after original8h isolation.",
+    "Embeddable JS Viewer,refresh/reconnect UX,iframe/CSP allowlist,mount/unmount/resize/public API and SDK packaging.",
+    "Independent Agent/CDP authorization and managed write fences across all adapters.",
+    "Whole-candidate full regression after original8hterminal;all41/N1 final requirement audit."
+  ],
+  "wholeFullJsQualified": false,
+  "nativeProductionProviderComplete": false,
+  "eightHourPassed": false,
+  "all41": {
+    "completeWithinScope": 9,
+    "partial": 14,
+    "pending": 18
+  },
+  "noCommitPush": true
+}

@@ -1,8 +1,9 @@
 import {createServer} from 'node:http';
 import {createHash,randomUUID} from 'node:crypto';
 import {SessionRegistry,SessionApiError} from './session-registry.mjs';
+import {ViewerAccess} from './viewer-access.mjs';
 
-const SCOPES=new Set(['sessions:create','sessions:read','sessions:release']);
+const SCOPES=new Set(['sessions:create','sessions:read','sessions:release','viewers:read','viewers:control']);
 const ERRORS={
  INVALID_REQUEST:[400,'Invalid request'],INVALID_URL:[400,'Invalid initial page URL'],INVALID_TENANT:[401,'Invalid authenticated tenant'],
  INVALID_TTL:[400,'TTL is outside the configured range'],UNSUPPORTED_REGION:[400,'Requested region is unavailable'],
@@ -11,6 +12,9 @@ const ERRORS={
  REGISTRY_CAPACITY:[503,'Operation retention capacity reached'],REGISTRY_CLOSED:[503,'Session service is unavailable'],
  REGISTRY_STORAGE_UNAVAILABLE:[503,'Session state confirmation is unavailable'],REGISTRY_WRITE_IN_PROGRESS:[503,'Session state is being committed'],
  SESSION_CLEANUP_LIMIT:[503,'Resource cleanup requires reconciliation'],
+ SESSION_NOT_READY:[409,'Session is not available'],SESSION_EXPIRED:[410,'Session has expired'],
+ INVALID_VIEWER_GRANT:[400,'Invalid Viewer grant'],VIEWER_GRANT_NOT_FOUND:[404,'Viewer grant not found'],
+ VIEWER_CAPACITY:[429,'Viewer grant capacity reached'],VIEWER_NOT_CONFIGURED:[503,'Viewer access is unavailable'],
  UNAUTHENTICATED:[401,'A valid backend API key is required'],FORBIDDEN:[403,'API key does not permit this operation'],
  AUTHENTICATION_UNAVAILABLE:[503,'Authentication is unavailable'],MANAGEMENT_ORIGIN_FORBIDDEN:[403,'Management API requires a backend caller'],
  REQUEST_TOO_LARGE:[413,'Request body exceeds the configured limit'],UNSUPPORTED_MEDIA_TYPE:[415,'Expected uncompressed application/json with UTF-8 encoding'],
@@ -74,6 +78,8 @@ function route(req){
  if(typeof path!=='string'||path.length>2048||/[?#%]/.test(path))fail('ROUTE_NOT_FOUND');
  let match;
  if(path==='/v1/sessions')return {method:'POST',scope:'sessions:create',kind:'create'};
+ if((match=/^\/v1\/sessions\/(ses_[A-Za-z0-9_-]{1,124})\/viewer-tickets$/.exec(path)))return {method:'POST',scope:'viewers:read',kind:'viewer-issue',id:match[1]};
+ if((match=/^\/v1\/sessions\/(ses_[A-Za-z0-9_-]{1,124})\/viewer-tickets\/(vgr_[a-f0-9-]{36})(\/refresh)?$/.exec(path)))return {method:match[3]?'POST':'DELETE',scope:'viewers:read',kind:match[3]?'viewer-refresh':'viewer-revoke',id:match[1],grantId:match[2]};
  if((match=/^\/v1\/sessions\/(ses_[A-Za-z0-9_-]{1,124})$/.exec(path)))return {method:req.method==='DELETE'?'DELETE':'GET',scope:req.method==='DELETE'?'sessions:release':'sessions:read',kind:req.method==='DELETE'?'release':'session',id:match[1],allow:'GET, DELETE'};
  if((match=/^\/v1\/operations\/(op_[A-Za-z0-9_-]{1,125})$/.exec(path)))return {method:'GET',scope:'sessions:read',kind:'operation',id:match[1]};
  fail('ROUTE_NOT_FOUND');
@@ -82,8 +88,9 @@ function route(req){
 // An unbound backend HTTP server. The caller owns TLS/proxy binding, ledger,
 // Registry recovery and shutdown. Disconnection never cancels accepted creation.
 // HTTP options follow Node22: https://r2.nodejs.org/docs/latest-jod/api/http.html
-export function createSessionControlServer({registry,authenticate,maxBodyBytes=16384,maxConcurrentRequests=64,requestTimeoutMs=10000}={}){
+export function createSessionControlServer({registry,authenticate,viewerAccess=null,maxBodyBytes=16384,maxConcurrentRequests=64,requestTimeoutMs=10000}={}){
  if(!(registry instanceof SessionRegistry)||typeof authenticate!=='function')throw new TypeError('Configure an explicit Registry and trusted authenticator');
+ if(viewerAccess!==null&&(!(viewerAccess instanceof ViewerAccess)||!viewerAccess.usesRegistry(registry)))throw new TypeError('Viewer access must use this Registry');
  if(!integer(maxBodyBytes,128,1048576)||!integer(maxConcurrentRequests,1,10000)||!integer(requestTimeoutMs,50,60000))throw new TypeError('Invalid HTTP request bounds');
  confirmed(registry);let active=0,authenticating=0;
  const handle=async(req,res)=>{
@@ -102,8 +109,9 @@ export function createSessionControlServer({registry,authenticate,maxBodyBytes=1
    const length=header(req,'content-length'),transfer=header(req,'transfer-encoding'),encoding=header(req,'content-encoding'),contentType=header(req,'content-type');
    if(length!==undefined&&(!/^(0|[1-9][0-9]*)$/.test(length)||!Number.isSafeInteger(Number(length))))fail('INVALID_REQUEST');
    if(length!==undefined&&Number(length)>maxBodyBytes)fail('REQUEST_TOO_LARGE');
-   if(selected.kind!=='create'&&(transfer!==undefined||Number(length??0)!==0))fail('INVALID_REQUEST');
-   if(selected.kind==='create'&&(encoding!==undefined||!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(contentType??'')))fail('UNSUPPORTED_MEDIA_TYPE');
+   const needsBody=['create','viewer-issue','viewer-refresh'].includes(selected.kind);
+   if(!needsBody&&(transfer!==undefined||Number(length??0)!==0))fail('INVALID_REQUEST');
+   if(needsBody&&(encoding!==undefined||!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(contentType??'')))fail('UNSUPPORTED_MEDIA_TYPE');
    const authorization=header(req,'authorization'),match=/^Bearer ([A-Za-z0-9_-]{32,256})$/i.exec(authorization??'');if(!match)fail('UNAUTHENTICATED');
    let authenticated;
    if(authenticating>=maxConcurrentRequests)fail('SERVICE_BUSY');
@@ -118,6 +126,14 @@ export function createSessionControlServer({registry,authenticate,maxBodyBytes=1
     const idempotencyKey=header(req,'idempotency-key');if(typeof idempotencyKey!=='string'||!/^[\x21-\x7e]{1,128}$/.test(idempotencyKey))fail('INVALID_IDEMPOTENCY_KEY');
     const input=await body(req,maxBodyBytes,signal);aborted(signal);confirmed(registry);
     result=registry.create(principal.tenantId,input,{idempotencyKey});
+   }else if(selected.kind.startsWith('viewer-')){
+    if(!viewerAccess)fail('VIEWER_NOT_CONFIGURED');
+    const input=needsBody?await body(req,maxBodyBytes,signal):{};aborted(signal);confirmed(registry);
+    if(!input||Object.getPrototypeOf(input)!==Object.prototype||Object.keys(input).some(k=>!(selected.kind==='viewer-issue'?['role','audience','ttlSeconds']:['ttlSeconds']).includes(k)))fail('INVALID_VIEWER_GRANT');
+    const args={tenantId:principal.tenantId,sessionId:selected.id,grantId:selected.grantId};
+    const role=selected.kind==='viewer-issue'?input.role:viewerAccess.get(args).role;
+    if(role==='controller'&&!principal.scopes.has('viewers:control'))fail('FORBIDDEN');
+    result=selected.kind==='viewer-issue'?viewerAccess.issue({tenantId:principal.tenantId,sessionId:selected.id,...input}):selected.kind==='viewer-refresh'?viewerAccess.refresh({...args,...input}):viewerAccess.revoke(args);
    }else{
     aborted(signal);
     result=selected.kind==='session'?registry.getSession(principal.tenantId,selected.id):selected.kind==='operation'?registry.getOperation(principal.tenantId,selected.id):registry.release(principal.tenantId,selected.id);
@@ -135,6 +151,7 @@ export function createSessionControlServer({registry,authenticate,maxBodyBytes=1
  const server=createServer({maxHeaderSize:16384,headersTimeout:requestTimeoutMs,requestTimeout:requestTimeoutMs,connectionsCheckingInterval:1000,keepAliveTimeout:1000},(req,res)=>{void handle(req,res);});
  server.maxHeadersCount=64;server.maxRequestsPerSocket=1;server.maxConnections=Math.min(20000,maxConcurrentRequests*2);
  server.on('checkContinue',(req,res)=>{void handle(req,res);});server.on('checkExpectation',(req,res)=>{void handle(req,res);});
- server.on('upgrade',(req,socket)=>socket.destroy());server.on('connect',(req,socket)=>socket.destroy());
+ server.on('upgrade',(req,socket,head)=>{if(viewerAccess)viewerAccess.handleUpgrade(req,socket,head);else socket.destroy();});server.on('connect',(req,socket)=>socket.destroy());
+ server.once('close',()=>viewerAccess?.close());
  return server;
 }
