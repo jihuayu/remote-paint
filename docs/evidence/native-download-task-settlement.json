@@ -1,0 +1,151 @@
+{
+  "at": "2026-10-20T02:32:55.043920+00:00",
+  "scope": "Native DownloadItem file-job result tracking through actual DownloadFile destruction and origin reply; retained state only",
+  "qualifiedWithinScope": true,
+  "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-download-task-settlement-candidate-v3/frozen-version.json",
+  "candidateManifestSha256": "bf70c327c478f56253cc085c3767f4df0e5c6caee8a52647281d4cf14f6f1406",
+  "candidateSourceFiles": 1147,
+  "patchesReplayed": 17,
+  "patchTargetsCompared": 26,
+  "nativeComponentCopies": 31,
+  "implementation": {
+    "nativeFlagSnapshotAtItemCreation": true,
+    "stateHandleRetainedAcrossItemRemoval": true,
+    "cancelAndDetachDestroyOwnedFileBeforeReply": true,
+    "failedOrUnsupportedDeleteLatchesFailure": true,
+    "directorySkipIsNotSuccess": true,
+    "completedFileCachedRemovalFlagBypassedForActualNativeDelete": true,
+    "postRejectionReportsFailure": true,
+    "droppedOriginReplyNeverInventsSuccess": true,
+    "ownedFileDeletionRemainsOnDownloadSequenceOnPostRejection": true,
+    "legacyNonNativeBranchPreserved": true
+  },
+  "actualRuntimeTests": {
+    "cpp": {
+      "at": "2026-10-20T02:30:37.599471+00:00",
+      "actualExitCode": 0,
+      "totalTests": 306,
+      "failures": 0,
+      "disabled": 0,
+      "newTests": 13,
+      "previousNativeTests": 17,
+      "upstreamBaseFileTests": 35,
+      "suites": {
+        "RemotePaintDownloadWriteTest": 10,
+        "RemotePaintDownloadDeletionTest": 7,
+        "RemotePaintDownloadTaskTest": 13,
+        "BaseFileTest": 35,
+        "DownloadFileTest": 16,
+        "DownloadFileTestWithObfuscation": 5,
+        "DownloadItemTest": 64,
+        "DownloadFile/DownloadFileTestWithRename": 6,
+        "Success/DownloadItemDestinationUpdateRaceTest": 105,
+        "Failure/DownloadItemDestinationUpdateRaceTest": 45
+      },
+      "gtestSha256": "09b6b3fed7877be07763b32c9f81f5a0091045f35521630b5dc49f4e21ac183a",
+      "gtestListSha256": "1bcf070f3e338d1dbda6ee56aff56afa8f9e31f7f0c991e729e12a7c045659e7",
+      "testManifestSha256": "8616f8168095a4ffc923810f557f03be99b64c7663270bb62a4883deb484e1de",
+      "runtimeBrowserQualified": false
+    },
+    "compiledCaseCoverageSha256": "043273fda6cfb076eb57190bfb52dc29dc908f5bdd3177bb60f58d02f711b282",
+    "binarySha256": "60d00869b80b9b7bbb4e0e2bee92cb394a72325e8344ea5bbc4fb32256afa527",
+    "testManifestSha256": "8616f8168095a4ffc923810f557f03be99b64c7663270bb62a4883deb484e1de",
+    "logSha256": "ff5816ad881fde71821c1cd37f5e48c22d587608e8cee76d87de8613e054e4b2",
+    "categories": {
+      "newTaskSettlement": 13,
+      "previousNativeWriteAndDelete": 17,
+      "upstreamBaseFileDownloadFileDownloadItem": 276
+    },
+    "scopedJsEach": 13,
+    "scopedJs": {
+      "mac": {
+        "actualExit": 0,
+        "logSha256": "7eba99d916591072f00f2a78bb0135269ad772fdde115ece6c593d480fb848ee",
+        "exitSha256": "08ad540d9937a0b65709b5b8ee40100871761cdc15e837b2151ede08fd9429e7"
+      },
+      "linux": {
+        "actualExit": 0,
+        "logSha256": "66cdb99e07faebf519336c82d949bccc0dfa00132f50b53aaf748005e4222a63",
+        "exitSha256": "fae9731da7521c9b7054478025c4f8d098e77cbdc1d1e5c4dc4cbdfc39836690"
+      }
+    }
+  },
+  "knownTestLimits": {
+    "ownedFilePostRejectionRuntimeTested": false,
+    "stoppedRunnerPathDeletionRejectionRuntimeTested": true,
+    "droppedOriginReplyRuntimeTested": false,
+    "androidRuntimeTested": false,
+    "macCppRuntimeTested": false,
+    "networkOrBrowserTested": false
+  },
+  "buildAttempts": [
+    {
+      "version": 1,
+      "manifestSha256": "876e5d8fd176156f0c24171084d0d63012362faa04b581aa45a353e5c4eb12cf",
+      "gnActualExit": 1,
+      "actualExit": 1,
+      "logSha256": "9c18abd61ab90225bdcb58f12575b5d27aed051a13d9e0cd36d9bd9bc7c9510b",
+      "retirementSha256": "383436471e276e7d62d3498d1d99590b56579905944a25d1429d6dcd922e32d9"
+    },
+    {
+      "version": 2,
+      "manifestSha256": "71046d75c0e099c5bad09ceb4489c69c0454e7b8bb8326393ef78703ed2c9296",
+      "gnActualExit": 0,
+      "actualExit": 0,
+      "logSha256": "714dd574d952ec7dada38f2662f81626986485055dfccca814bc4ebe01f927eb",
+      "retirementSha256": "4c394c5c979d1c11f2a21ccde4be3dcb1cb3364b9522514b32e4cf7863dcc3ca",
+      "ninjaActualExit": 0,
+      "cppActualExit": 1,
+      "cppLogSha256": "6f8433cb49c37a58037b66014c4f87b6c43a5da9b99cb6c6057b1eb4689f8c28"
+    },
+    {
+      "version": 3,
+      "manifestSha256": "20d87093193cc24dafdb45090fa4d2f4d1ad65c5d74b54a68b979063c36ae323",
+      "gnActualExit": 0,
+      "actualExit": 0,
+      "logSha256": "96b78f6ef0aadb73bfb08a34a7d636bbaa91e0c2c774b0e33601431d2c44c9d3",
+      "retirementSha256": "6ffc236b4f4fa9eb1d3990af8126deba4de59c554a7bc485a5fda81a5003af9a",
+      "ninjaActualExit": 0,
+      "cppActualExit": 0,
+      "cppLogSha256": "ff5816ad881fde71821c1cd37f5e48c22d587608e8cee76d87de8613e054e4b2"
+    }
+  ],
+  "repairs": [
+    {
+      "failure": "GN duplicate object filename for local and upstream download_file_unittest.cc",
+      "repair": "Independent source_set for upstream regressions; source coverage retained."
+    },
+    {
+      "failure": "ActualCppRunExit1 at test-only held destructor because base sync primitive wait was disallowed",
+      "repair": "ScopedAllowBaseSyncPrimitivesForTesting solely around fixture waits; production source, runtime limits and regression scope unchanged."
+    }
+  ],
+  "legacyDirectorySkipSource": {
+    "path": "components/download/internal/common/download_utils.cc",
+    "sha256": "821132d372e1b2c1e5d3cb530c90678862500be5ca858b5c3a7ec3cdb6889cb5",
+    "byteEqualToPinnedGitHead": true
+  },
+  "noWholeJsOrSdkRerun": true,
+  "canonicalBrowserUnchanged": true,
+  "canonicalBrowserRebuilt": false,
+  "allOwnedBuildTestAndJsContainersRemoved": true,
+  "ownedOutputAndGoCacheRetained": true,
+  "nativeItemAdmissionImplemented": false,
+  "totalSpoolReservationImplemented": false,
+  "networkJobRetirementQualified": false,
+  "nativeItemMapsPhysicalBoundQualified": false,
+  "browserDownloadSpoolPrewriteHardCapQualified": false,
+  "playwrightDownloadMetadataPhysicalBoundQualified": false,
+  "unarmedPolicyCoordinationComplete": false,
+  "K6Complete": false,
+  "productionNativeFullyQualified": false,
+  "eightHourPassed": false,
+  "wholeGoalQualified": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 17,
+    "pending": 14
+  },
+  "noCommitPush": true,
+  "noSubagents": true
+}

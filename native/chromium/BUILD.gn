@@ -49,14 +49,40 @@ test("download_file_tests") {
     "download_file_test_main.cc",
     "download_file_unittest.cc",
     "download_file_deletion_unittest.cc",
+    "download_task_settlement_unittest.cc",
     "//components/download/internal/common/base_file_unittest.cc",
+  ]
+  deps = [
+    ":download_regression_tests",
+    "//base",
+    "//base/test:test_support",
+    "//components/download/public/common:public",
+    "//components/download/public/common:test_support",
+    "//mojo/core/embedder",
+    "//testing/gmock",
+    "//crypto",
+    "//net",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+# Upstream and local download_file_unittest.cc must use separate object paths.
+source_set("download_regression_tests") {
+  testonly = true
+  sources = [
+    "//components/download/internal/common/download_file_unittest.cc",
+    "//components/download/internal/common/download_item_impl_unittest.cc",
   ]
   deps = [
     "//base",
     "//base/test:test_support",
     "//components/download/public/common:public",
+    "//components/download/public/common:test_support",
     "//crypto",
+    "//mojo/core/embedder",
     "//net",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]

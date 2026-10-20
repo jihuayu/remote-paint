@@ -1,0 +1,339 @@
+--- a/components/download/public/common/download_file.h
++++ b/components/download/public/common/download_file.h
+@@ -11,7 +11,10 @@
+ #include <string>
+ 
+ #include "base/files/file_path.h"
+-#include "base/functional/callback_forward.h"
++#include "base/functional/callback.h"
++#include "base/memory/ref_counted.h"
++#include "base/sequence_checker.h"
++#include "base/task/sequenced_task_runner.h"
+ #include "build/build_config.h"
+ #include "components/download/public/common/base_file.h"
+ #include "components/download/public/common/download_export.h"
+@@ -101,6 +104,10 @@
+   // Abort the download and automatically close the file.
+   virtual void Cancel() = 0;
+ 
++  // Synchronous current-owner close/path-deletion result. Unsupported
++  // implementations still Cancel(), but return false rather than invent proof.
++  [[nodiscard]] virtual bool CancelAndReportDeletion();
++
+   // Sets the potential file length. This is called when a half-open range
+   // request fails or completes successfully. If the range request fails, the
+   // file length should not be larger than the request's offset. If the range
+@@ -125,6 +132,40 @@
+   virtual bool IsMemoryFile();
+ };
+ 
++// Origin-sequence state for actual file jobs. Retain this before item removal.
++// Zero pending jobs is not proof of item/network/retained-path retirement.
++class COMPONENTS_DOWNLOAD_EXPORT DownloadFileCleanupState
++    : public base::RefCountedThreadSafe<DownloadFileCleanupState> {
++ public:
++  struct Snapshot {
++    uint64_t pending;
++    bool failed;
++  };
++  DownloadFileCleanupState();
++  Snapshot GetSnapshot() const;
++  void Cancel(scoped_refptr<base::SequencedTaskRunner> runner,
++              std::unique_ptr<DownloadFile> file);
++  // Detach preserves the path, but still waits for the file object's destruction.
++  void Detach(scoped_refptr<base::SequencedTaskRunner> runner,
++              std::unique_ptr<DownloadFile> file);
++  void DeletePath(scoped_refptr<base::SequencedTaskRunner> runner,
++                  const base::FilePath& path,
++                  base::OnceCallback<void(bool)> done = {});
++
++ private:
++  friend class base::RefCountedThreadSafe<DownloadFileCleanupState>;
++  ~DownloadFileCleanupState();
++  void PostOwned(scoped_refptr<base::SequencedTaskRunner> runner,
++                 std::unique_ptr<DownloadFile> file, bool destroy);
++  void Post(scoped_refptr<base::SequencedTaskRunner> runner,
++            base::OnceCallback<bool()> task,
++            base::OnceCallback<void(bool)> done = {});
++  void Complete(bool success);
++  uint64_t pending_ = 0;
++  bool failed_ = false;
++  SEQUENCE_CHECKER(sequence_checker_);
++};
++
+ }  // namespace download
+ 
+ #endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_FILE_H_
+--- a/components/download/public/common/download_file.cc
++++ b/components/download/public/common/download_file.cc
+@@ -4,9 +4,115 @@
+ 
+ #include "components/download/public/common/download_file.h"
+ 
++#include <limits>
++#include <utility>
++
++#include "base/check.h"
++#include "base/files/file_util.h"
++#include "base/functional/bind.h"
++#include "base/location.h"
++
+ namespace download {
+ 
+ DownloadFile::~DownloadFile() = default;
++
++bool DownloadFile::CancelAndReportDeletion() {
++  Cancel();
++  return false;
++}
++
++DownloadFileCleanupState::DownloadFileCleanupState() = default;
++DownloadFileCleanupState::~DownloadFileCleanupState() = default;
++
++DownloadFileCleanupState::Snapshot DownloadFileCleanupState::GetSnapshot() const {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  return {pending_, failed_};
++}
++
++void DownloadFileCleanupState::Complete(bool success) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  CHECK_GT(pending_, 0u);
++  --pending_;
++  failed_ |= !success;
++}
++
++void DownloadFileCleanupState::Post(
++    scoped_refptr<base::SequencedTaskRunner> runner,
++    base::OnceCallback<bool()> task,
++    base::OnceCallback<void(bool)> done) {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  CHECK(runner);
++  CHECK_LT(pending_, std::numeric_limits<uint64_t>::max());
++  ++pending_;
++  auto completion = base::MakeRefCounted<
++      base::RefCountedData<base::OnceCallback<void(bool)>>>(std::move(done));
++  const bool posted = runner->PostTaskAndReplyWithResult(
++      FROM_HERE, std::move(task),
++      base::BindOnce(
++          [](scoped_refptr<DownloadFileCleanupState> state,
++             scoped_refptr<base::RefCountedData<
++                 base::OnceCallback<void(bool)>>> completion, bool success) {
++            state->Complete(success);
++            if (completion->data)
++              std::move(completion->data).Run(success);
++          }, base::WrapRefCounted(this), completion));
++  if (!posted) {
++    Complete(false);
++    if (completion->data)
++      std::move(completion->data).Run(false);
++  }
++  // A dropped reply leaves pending nonzero. Never fabricate shutdown success.
++}
++
++void DownloadFileCleanupState::PostOwned(
++    scoped_refptr<base::SequencedTaskRunner> runner,
++    std::unique_ptr<DownloadFile> file, bool destroy) {
++  CHECK(file);
++  // Rejected posting must not destroy a sequence-bound file on the UI thread.
++  // OnTaskRunnerDeleter conservatively retains it if that sequence is shut down.
++  std::unique_ptr<DownloadFile, base::OnTaskRunnerDeleter> owned(
++      file.release(), base::OnTaskRunnerDeleter(runner));
++  Post(std::move(runner), base::BindOnce(
++      [](std::unique_ptr<DownloadFile, base::OnTaskRunnerDeleter> pending,
++         bool destroy) {
++        std::unique_ptr<DownloadFile> file(pending.release());
++        bool success = true;
++        if (destroy)
++          success = file->CancelAndReportDeletion();
++        else
++          file->Detach();
++        file.reset();  // Timers, streams and weak callbacks die before reply.
++        return success;
++      }, std::move(owned), destroy));
++}
++
++void DownloadFileCleanupState::Cancel(
++    scoped_refptr<base::SequencedTaskRunner> runner,
++    std::unique_ptr<DownloadFile> file) {
++  PostOwned(std::move(runner), std::move(file), true);
++}
++
++void DownloadFileCleanupState::Detach(
++    scoped_refptr<base::SequencedTaskRunner> runner,
++    std::unique_ptr<DownloadFile> file) {
++  PostOwned(std::move(runner), std::move(file), false);
++}
++
++void DownloadFileCleanupState::DeletePath(
++    scoped_refptr<base::SequencedTaskRunner> runner,
++    const base::FilePath& path, base::OnceCallback<void(bool)> done) {
++  Post(std::move(runner), base::BindOnce([](const base::FilePath& path) {
++#if BUILDFLAG(IS_ANDROID)
++    if (path.IsContentUri())
++      return false;  // No verified filesystem deletion for content URIs.
++#endif
++    // Legacy DeleteDownloadedFile reports directory skips as true. Native
++    // retirement must preserve and reject a directory instead of accepting it.
++    if (base::DirectoryExists(path))
++      return false;
++    return path.empty() || base::DeleteFile(path);
++  }, path), std::move(done));
++}
+ 
+ bool DownloadFile::IsMemoryFile() {
+   return false;
+--- a/components/download/public/common/download_file_impl.h
++++ b/components/download/public/common/download_file_impl.h
+@@ -80,6 +80,7 @@
+       RenameCompletionCallback callback) override;
+   void Detach() override;
+   void Cancel() override;
++  bool CancelAndReportDeletion() override;
+   void SetPotentialFileLength(int64_t length) override;
+   const base::FilePath& FullPath() const override;
+   bool InProgress() const override;
+--- a/components/download/internal/common/download_file_impl.cc
++++ b/components/download/internal/common/download_file_impl.cc
+@@ -565,6 +565,11 @@
+ 
+ void DownloadFileImpl::Cancel() {
+   file_.Cancel();
++}
++
++bool DownloadFileImpl::CancelAndReportDeletion() {
++  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
++  return file_.CancelAndReportDeletion();
+ }
+ 
+ void DownloadFileImpl::SetPotentialFileLength(int64_t length) {
+--- a/components/download/public/common/download_item_impl.h
++++ b/components/download/public/common/download_item_impl.h
+@@ -39,6 +39,7 @@
+ 
+ namespace download {
+ class DownloadFile;
++class DownloadFileCleanupState;
+ class DownloadItemImplDelegate;
+ 
+ // See download_item.h for usage.
+@@ -320,6 +321,9 @@
+   bool GetFileExternallyRemoved() const override;
+   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
+   DownloadFile* GetDownloadFile() override;
++  // Native-only retained file-task handle; it survives item removal. Its
++  // snapshot is not a receipt for network jobs, item maps or retained paths.
++  scoped_refptr<DownloadFileCleanupState> GetRemotePaintFileCleanupState() const;
+   DownloadItemRenameHandler* GetRenameHandler() override;
+ #if BUILDFLAG(IS_ANDROID)
+   bool IsFromExternalApp() override;
+@@ -857,6 +861,9 @@
+   // This pointer will be non-null only while the DownloadItem is in
+   // the IN_PROGRESS state.
+   std::unique_ptr<DownloadFile> download_file_;
++  static scoped_refptr<DownloadFileCleanupState> CreateRemotePaintCleanupState();
++  const scoped_refptr<DownloadFileCleanupState> remote_paint_file_cleanup_ =
++      CreateRemotePaintCleanupState();
+ 
+   // Information about |download_file_|.
+   DestinationInfo destination_info_;
+--- a/components/download/internal/common/download_item_impl.cc
++++ b/components/download/internal/common/download_item_impl.cc
+@@ -29,6 +29,7 @@
+ #include <vector>
+ 
+ #include "base/check_is_test.h"
++#include "base/command_line.h"
+ #include "base/files/file.h"
+ #include "base/files/file_util.h"
+ #include "base/format_macros.h"
+@@ -1077,6 +1078,13 @@
+                                   std::move(callback), false));
+     return;
+   }
++  if (remote_paint_file_cleanup_ && !GetFullPath().empty()) {
++    remote_paint_file_cleanup_->DeletePath(
++        GetDownloadTaskRunner(), GetFullPath(),
++        base::BindOnce(&DeleteDownloadedFileDone, weak_ptr_factory_.GetWeakPtr(),
++                       std::move(callback)));
++    return;
++  }
+   if (GetFullPath().empty() || file_externally_removed_) {
+     // Pass a null WeakPtr so it doesn't call OnDownloadedFileRemoved.
+     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+@@ -1089,6 +1097,19 @@
+       FROM_HERE, base::BindOnce(&DeleteDownloadedFile, GetFullPath()),
+       base::BindOnce(&DeleteDownloadedFileDone, weak_ptr_factory_.GetWeakPtr(),
+                      std::move(callback)));
++}
++
++scoped_refptr<DownloadFileCleanupState>
++DownloadItemImpl::CreateRemotePaintCleanupState() {
++  if (!base::CommandLine::ForCurrentProcess()->HasSwitch("remote-paint-token"))
++    return nullptr;
++  return base::MakeRefCounted<DownloadFileCleanupState>();
++}
++
++scoped_refptr<DownloadFileCleanupState>
++DownloadItemImpl::GetRemotePaintFileCleanupState() const {
++  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
++  return remote_paint_file_cleanup_;
+ }
+ 
+ DownloadFile* DownloadItemImpl::GetDownloadFile() {
+@@ -2355,10 +2376,15 @@
+ 
+   if (destroy_file) {
+     if (download_file_) {
+-      GetDownloadTaskRunner()->PostTask(
+-          FROM_HERE,
+-          // Will be deleted at end of task execution.
+-          base::BindOnce(&DownloadFileCancel, std::move(download_file_)));
++      if (remote_paint_file_cleanup_) {
++        remote_paint_file_cleanup_->Cancel(GetDownloadTaskRunner(),
++                                           std::move(download_file_));
++      } else {
++        GetDownloadTaskRunner()->PostTask(
++            FROM_HERE,
++            // Will be deleted at end of task execution.
++            base::BindOnce(&DownloadFileCancel, std::move(download_file_)));
++      }
+     } else {
+       DeleteDownloadFile();
+     }
+@@ -2367,10 +2393,15 @@
+     destination_info_.current_path.clear();
+     received_slices_.clear();
+   } else if (download_file_) {
+-    GetDownloadTaskRunner()->PostTask(
+-        FROM_HERE, base::BindOnce(base::IgnoreResult(&DownloadFileDetach),
+-                                  // Will be deleted at end of task execution.
+-                                  std::move(download_file_)));
++    if (remote_paint_file_cleanup_) {
++      remote_paint_file_cleanup_->Detach(GetDownloadTaskRunner(),
++                                         std::move(download_file_));
++    } else {
++      GetDownloadTaskRunner()->PostTask(
++          FROM_HERE, base::BindOnce(base::IgnoreResult(&DownloadFileDetach),
++                                    // Will be deleted at end of task execution.
++                                    std::move(download_file_)));
++    }
+   }
+   // Don't accept any more messages from the DownloadFile, and null
+   // out any previous "all data received".  This also breaks links to
+@@ -2381,9 +2412,13 @@
+ void DownloadItemImpl::DeleteDownloadFile() {
+   if (GetFullPath().empty())
+     return;
+-  GetDownloadTaskRunner()->PostTask(
+-      FROM_HERE,
+-      base::BindOnce(base::IgnoreResult(&DeleteDownloadedFile), GetFullPath()));
++  if (remote_paint_file_cleanup_) {
++    remote_paint_file_cleanup_->DeletePath(GetDownloadTaskRunner(), GetFullPath());
++  } else {
++    GetDownloadTaskRunner()->PostTask(
++        FROM_HERE,
++        base::BindOnce(base::IgnoreResult(&DeleteDownloadedFile), GetFullPath()));
++  }
+   destination_info_.current_path.clear();
+ }
+ 
