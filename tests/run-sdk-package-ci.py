@@ -96,11 +96,11 @@ def main() -> None:
         save('source-manifest.json',{'commit':commit,'sourceFiles':files})
         assert sys.platform in ['darwin','linux']
         test_files=sorted(p.relative_to(project).as_posix()for p in(project/'tests').glob('*.test.mjs'))
-        assert len(test_files)==150
+        assert len(test_files)==152
         raw=run('full-js',['node','--test','--test-reporter=tap','--test-concurrency=4',*test_files])
         counts={key:int(re.search(r'^# '+key+r' (\d+)$',raw,re.M)[1])for key in ['tests','pass','fail','cancelled','skipped','todo']}
-        passed,skipped=(1655,15)if sys.platform=='darwin'else(1664,6)
-        assert counts==dict(tests=1670,**{'pass':passed},fail=0,cancelled=0,skipped=skipped,todo=0)
+        passed,skipped=(1683,15)if sys.platform=='darwin'else(1692,6)
+        assert counts==dict(tests=1698,**{'pass':passed},fail=0,cancelled=0,skipped=skipped,todo=0)
         archives=out/'archives';archives.mkdir()
         packed=json.loads(run('node-pack',['npm','pack','./sdk','--ignore-scripts','--json','--pack-destination',str(archives)]))
         assert len(packed)==1
