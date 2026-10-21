@@ -1,0 +1,170 @@
+{
+  "at": "2026-10-21T00:45:04.687574+00:00",
+  "task": "K8c3b atomic bounded original-event webhook capture storage only",
+  "gitCommit": "6504d0e832cc719b4fd619d77eb41484bc229d5b",
+  "sourceFiles": 1250,
+  "sourceManifestSha256": "bbf48360c59c6167b63c7c315c08173737a46d0dc7709e82040846ae8f9b96aa",
+  "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-capture-candidate-v1/frozen-version.json",
+  "candidateManifestSha256": "24fe4ad204f4ccc5e646fe8cac9a9a1da58a3a899cd5d87b071c8fb04b453f02",
+  "allCandidateSourceHashesMatchBoth": true,
+  "fullJs": {
+    "mac": {
+      "tests": 1622,
+      "pass": 1607,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "todo": 0,
+      "all1604PriorNamesRetained": true,
+      "all18NewActualNoSkip": true,
+      "logSha256": "dc3d0a31380f05b667e4483d099e98e76d113c22a0c744cdbdb83220acebbdc7",
+      "receiptSha256": "27105b8334dd064792f7cbbc309b56ca1cc409359b4ac203032b4a4c07d381cc"
+    },
+    "linux": {
+      "tests": 1622,
+      "pass": 1616,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "todo": 0,
+      "all1604PriorNamesRetained": true,
+      "all18NewActualNoSkip": true,
+      "logSha256": "b1453da3d53afd93aa38169360210c53c3f63a1dbc2170a30c64183b1411833c",
+      "receiptSha256": "78e75cbcdaf8f0d017651946b01675d300a6578c51fe63cc6301fbf11c98efec"
+    }
+  },
+  "installedPackages": {
+    "mac": {
+      "nodeTests": 202,
+      "pythonTests": 194,
+      "strictTypescriptActual0": true,
+      "public5Source9MypyActual0": true,
+      "sourceFallbackUnavailable": true,
+      "archives": {
+        "remote-paint-session-client-0.0.0-dev.0.tgz": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+        "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "1a2c251f226d3efa415ebba928078d01bb20fd64bbe66419d5c698ed44a0e89a"
+      },
+      "resultSha256": "af488252a13c23fb90456f91ee75f48454f1d61b28c41d32e23b189348da8efb"
+    },
+    "linux": {
+      "nodeTests": 202,
+      "pythonTests": 194,
+      "strictTypescriptActual0": true,
+      "public5Source9MypyActual0": true,
+      "sourceFallbackUnavailable": true,
+      "archives": {
+        "remote-paint-session-client-0.0.0-dev.0.tgz": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+        "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "1a2c251f226d3efa415ebba928078d01bb20fd64bbe66419d5c698ed44a0e89a"
+      },
+      "resultSha256": "878790b6be43729299ee9837a504c1966c00a0820e68f76e3bdc6c4349d3285b"
+    }
+  },
+  "newCases": [
+    "webhook capture opt-in preserves legacy ledgers without creating notification state",
+    "subscription catch-up retains exact original event IDs bodies and independent pagination",
+    "notification registration and reads cannot advance Agent revision or produce Source completion",
+    "same endpoint subscription retries are idempotent while the starting cursor is immutable",
+    "subscription admission rejects ahead and pruned cursors without silently replacing lost history",
+    "full capture preserves its known prefix and records an expanding gap without blocking original actions",
+    "queued bodies survive pruning of the independent 64-event replay window unchanged",
+    "notification capacity is bounded per Run and globally without changing original Agent admission",
+    "capture calls require original opaque controller ownership and fixed tenant identity",
+    "bounded capture options reject accessors extra fields coercions and out-of-range cursors",
+    "closed original Run capture remains readable and cannot reopen its writer reservation",
+    "existing capture automatically resumes on reopen without needing the creation flag",
+    "notification insertion failure rolls back Agent state event cursor capture and both revisions together",
+    "unsupported capture format missing tables foreign tables and corrupt revision fail closed",
+    "persisted capture rejects altered event identity body hash holes and inconsistent overflow metadata",
+    "real writer SIGKILL before capture migration commit leaves original schema identity and revisions intact",
+    "real writer SIGKILL before subscription commit cannot publish a partial capture prefix",
+    "real writer SIGKILL before outcome commit retains original requested effect event and capture together"
+  ],
+  "all18NewActualBothNoSkips": true,
+  "all1604PriorNamesRetainedBoth": true,
+  "all194PythonNamesMatchBoth": true,
+  "captureStorageQualifiedBoth": true,
+  "actualSigkillMigrationSubscriptionOutcomeBoth": true,
+  "capacityFixtureFailurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-capture-fixture-failure-v1/failure.json",
+  "signatureCoreQualifiedPreviously": true,
+  "linuxRuntime": {
+    "python": "3.11.2",
+    "platform": "Linux",
+    "arch": "aarch64",
+    "node": "v22.23.3"
+  },
+  "githubRun": 39522907367,
+  "githubRunUrl": "https://github.com/jihuayu/remote-paint/actions/runs/39522907367",
+  "githubStatusSha256": "501a7b012634b9f4d7ed3019b31d7d04eedafbc9294e1973acddc481a350c9e5",
+  "sdkArchivesUnchanged": true,
+  "durableWebhookDeliveryOutboxQualified": false,
+  "actualHttpsDeliveryQualified": false,
+  "persistentReceiverDedupQualified": false,
+  "fullSignedWebhookQualified": false,
+  "originalNativeEventCancelQualified": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 18,
+    "pending": 13
+  },
+  "K8Complete": false,
+  "eightHourPassed": false,
+  "wholeGoalQualified": false,
+  "nativeSourceProtection": {
+    "at": "2026-10-21T00:45:04.686305+00:00",
+    "native108InputsUnchanged": true,
+    "canonical19FilesReadOnlyHashesMatch": true,
+    "protectedSamplerIdentityAndHashMatchWithoutExecutionOrCopy": true,
+    "pinSha256": "628f35364a453fc22b546e92dd095257df016663135342f8fb583ee1ca75f4b0",
+    "unrelatedPeerUnchangedAndExcluded": true,
+    "lastActualBrowserLogProgress": [
+      2093,
+      17924
+    ],
+    "lastBrowserLogAt": "2026-10-21T00:45:04.249175+00:00",
+    "exactOwnedLocalContainerObservation": {
+      "queryExitCode": 0,
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 2967239,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-10-20T12:47:32.756177921Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "stderr": ""
+    },
+    "humanAuthorizedOrbStackRestart": true,
+    "restartPerformed": false,
+    "recoveryObservation": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/orbstack-authorized-recovery-observation-v1.json",
+    "recoveryObservationSha256": "5b2edf0780d3c02f7a936d730b2381e3f7b8160a5ed6da161f992c2bcfdbb2f6",
+    "localRuntimeQualified": false,
+    "freeGiB": 77.4212646484375,
+    "minimumFreeGiB": 32
+  },
+  "nativeSourceProtectionSha256": "ee6775713c9808fa3b62b626bc79013cb396344888ec4c72a78600d0e41af625",
+  "nativeCpp470AndFiveTuInheritedNotRerun": true,
+  "documentationOnlyChangesAfterExecution": [
+    "docs/evidence/agent-webhook-capture.json",
+    "docs/agent-webhook-capture.md",
+    "docs/optimization-progress.md",
+    "docs/sdk-package-ci.md"
+  ],
+  "nextRequiredWork": [
+    "durable delivery attempt/ack fencing and explicit gap reconciliation",
+    "actual HTTPS delivery/retry with transport ownership and trusted endpoint configuration",
+    "persistent receiver deduplication and management/SDK integration",
+    "original Native end-to-end and fullK8/whole41/eight-hour acceptance"
+  ],
+  "candidateNotQualified": false,
+  "freshWholeJsBoth": true,
+  "freshInstalledPackagesBoth": true,
+  "qualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-capture-verification-v1/final-qualification.json",
+  "qualificationSha256": "2a78bd2cb5176f56a8f5633fca2b76fc1750e0aa3093ce8de3f0bf7d47ed24b3",
+  "executedCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-capture-candidate-v1/frozen-version.json",
+  "executedCandidateSha256": "24fe4ad204f4ccc5e646fe8cac9a9a1da58a3a899cd5d87b071c8fb04b453f02"
+}

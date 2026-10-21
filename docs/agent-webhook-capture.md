@@ -69,3 +69,13 @@ failure, and real writer SIGKILL before migration, registration and outcome
 commit. The first capacity fixture reused an existing Session idempotency
 binding and correctly failed with `STATE_CONFLICT`; that failed run is retained
 outside the repository. The corrected fixture uses independent tenants.
+
+Qualification of implementation `6504d0e`: the same 1250 source hashes passed
+macOS and Linux ARM64 full1622 (macOS1607 pass/15 existing skips; Linux1616
+pass/6 existing skips), with all18 new cases actually run and all1604 prior
+case names retained. Each platform passed installed202 Node/194 Python, strict
+TypeScript and installed5-public/9-source mypy; all194 Python names and both
+SDK archive hashes match. [CI39522907367](https://github.com/jihuayu/remote-paint/actions/runs/39522907367)
+binds the exact implementation commit. The first fixture failure is preserved.
+This qualifies capture storage only; delivery, acknowledgment and persistent
+receiver deduplication remain open. See [evidence](evidence/agent-webhook-capture.json).
