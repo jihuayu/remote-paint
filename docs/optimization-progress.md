@@ -1,5 +1,7 @@
 # Remote Paint 优化实施进度
 
+2026-10-21 K8c3a新增[Webhook原字节签名核心](agent-webhook-auth.md)：HMAC-SHA256绑定端点/原事件ID/key/time和原始正文，双key轮换、4096字节硬上限、严格窗口和脱敏拒绝；20新增含Python独立golden vector与实际loopback HTTP认证初步通过，错误clock Promise未处理拒绝已复现保留并修复。完整双平台1604与隔离202Node/194Python资格待执行；持久outbox、HTTPS投递/重试及接收方持久去重尚待，不能标为完整Webhook，K8部分及41项10/18/13、原八小时失败保持。
+
 2026-10-20 K8c2b2新增[Python实际SSE流SDK](python-agent-event-stream-sdk.md)：独立事件池、惰性异步迭代/上下文、绝对期限含暂停/重连、fresh鉴权与精确交付游标；原send/read/close未结算继续占额，stop唤醒退避，普通/end独立且reader close不结束Source。32新增含8实际HTTP/SQLite合同，失败证据保留；原1237输入与最终CI逐项哈希一致：双平台完整1584项0失败/取消（macOS1569通过/15跳过，Linux1578通过/6跳过），隔离包各202Node/194Python，32新项及原162均实际运行无跳过，严格TypeScript和安装后5公共/9源码mypy两端通过，两个归档哈希相同。Linux独立CI39496883279保留前三次失败及--init复验，不重启本机Docker。签名Webhook与原Native端到端仍待，K8部分、41项10/18/13及原八小时失败保持。
 
 2026-10-20 K8c2b1增加[Python SSE解析核心](python-agent-event-parser.md)：冻结消息、分片UTF8/LF/CRLF、原待交付对象确认后才前进游标，跨窗口字节/事件预算与明确缺口；一chunk/4096字节帧/一待交付，无队列，pull扫描8192字节后协作yield。24新增含真实HTTP/SQLite生产者六事件窗口通过，162项Python及严格类型预检通过；最终同一候选双平台完整1584项0失败/取消（macOS1569通过/15跳过，Linux1578通过/6跳过），隔离包各202项Node/162项Python和严格TypeScript通过，24新项及原138均运行无跳过，macOS安装后mypy通过。实际HTTPX池/计时器/重连/close生命周期仍是下一独立任务，K8部分、41项10/18/13及原八小时失败保持。

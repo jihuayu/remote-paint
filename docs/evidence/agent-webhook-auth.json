@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-20T23:42:18.510442+00:00",
+  "task": "K8c3a bounded raw-byte Webhook HMAC authentication contract",
+  "candidateNotQualified": true,
+  "expectedNewJsTests": 20,
+  "expectedFullJsEach": 1604,
+  "expectedMacPassSkip": [
+    1589,
+    15
+  ],
+  "expectedLinuxPassSkip": [
+    1598,
+    6
+  ],
+  "expectedInstalledNodeEach": 202,
+  "expectedInstalledPythonEach": 194,
+  "signatureCoreImplemented": true,
+  "signatureCoreQualified": false,
+  "fullSignedWebhookQualified": false,
+  "rawAuthenticationNotEventDtoValidation": true,
+  "noDurableDeduplicationOrOutboxYet": true,
+  "actualLoopbackHttpAuthenticationFixture": true,
+  "noActualExternalWebhookDelivery": true,
+  "maxBodyBytes": 4096,
+  "maxKeys": 2,
+  "secretBytesRange": [
+    32,
+    64
+  ],
+  "defaultAgeSeconds": 300,
+  "defaultFutureSkewSeconds": 30,
+  "goldenVectorSha256": "5644c81def5e022306d96a6eee216e071c5c7c81518c3d99e2d818d8d1e4dbab",
+  "clockFailureProbe": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-auth-clock-failure-v1.json",
+  "clockFailureSource": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-auth-clock-failure-source-v1/receipt.json",
+  "clockFailureFixed": true,
+  "sdkArchivesUnchanged": true,
+  "nextCheckpoints": [
+    "K8c3b",
+    "K8c3c",
+    "K8c3d"
+  ],
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 18,
+    "pending": 13
+  },
+  "eightHourPassed": false,
+  "K8Complete": false,
+  "wholeGoalQualified": false
+}
