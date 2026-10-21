@@ -1,4 +1,5 @@
 import {createHash,randomUUID} from 'node:crypto';
+import {types} from 'node:util';
 
 export const AGENT_WEBHOOK_FORMAT='remote-paint-agent-webhooks-v2';
 export const AGENT_WEBHOOK_LIMITS=Object.freeze({subscriptions:64,perRun:4,pending:64,bodyBytes:4096,page:4,attempts:8});
@@ -45,6 +46,16 @@ export function createAgentWebhookJournal(db,{fail,isStoreError,events}){
  function attempt(r){return {deliveryId:r.delivery_id,attemptId:r.attempt_id,eventId:r.event_id,sequence:r.sequence,bodySha256:r.body_sha256,attempts:r.attempts};}
  return {
   validate(){revision();const all=db.prepare('SELECT * FROM agent_webhooks ORDER BY subscription_id LIMIT 65').all();if(all.length>AGENT_WEBHOOK_LIMITS.subscriptions)corrupt();const counts=new Map();for(const s of all){const n=(counts.get(s.agent_run_id)??0)+1;counts.set(s.agent_run_id,n);if(n>AGENT_WEBHOOK_LIMITS.perRun)corrupt();validate(s);}if(db.prepare('SELECT 1 FROM agent_webhook_deliveries d LEFT JOIN agent_webhooks s USING(subscription_id) WHERE s.subscription_id IS NULL LIMIT 1').get())corrupt();},
+  head(){return {revision:revision()};},
+  list(tenant,options){
+   let keys;try{if(!options||types.isProxy(options))throw Error();keys=Reflect.ownKeys(options);if(!plain(options,keys)||!Object.hasOwn(options,'endpointId')||keys.some(k=>!['endpointId','after','limit'].includes(k)))throw Error();}catch{reject('INVALID','Invalid bounded endpoint subscription page');}
+   const endpointId=options.endpointId,after=Object.hasOwn(options,'after')?options.after:'',limit=Object.hasOwn(options,'limit')?options.limit:AGENT_WEBHOOK_LIMITS.page;
+   if(typeof tenant!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(tenant)||!id(endpointId,'awh')||typeof after!=='string'||after!==''&&!id(after,'awsub')||!integer(limit,1)||limit>AGENT_WEBHOOK_LIMITS.page)reject('INVALID','Invalid bounded endpoint subscription cursor');
+   if(after&&subscription(after,tenant).endpoint_id!==endpointId)reject('REFERENCE','Subscription cursor belongs to another endpoint');
+   const rows=db.prepare('SELECT * FROM agent_webhooks WHERE tenant=? AND endpoint_id=? AND subscription_id>? ORDER BY subscription_id LIMIT ?').all(tenant,endpointId,after,limit+1),selected=rows.slice(0,limit);
+   const subscriptions=selected.map(s=>{const head=validate(s)[0];return {...info(s),head:head?{eventId:head.event_id,sequence:head.sequence,attempts:head.attempts,lastOutcome:head.last_outcome}:null};});
+   return structuredClone({schema:'agent-webhook-subscriptions-v1',endpointId,revision:revision(),after,subscriptions,nextCursor:selected.at(-1)?.subscription_id??after,hasMore:rows.length>selected.length});
+  },
   assertRelease(){if(db.prepare("SELECT 1 FROM agent_webhook_deliveries WHERE last_outcome='requested' LIMIT 1").get())reject('IN_FLIGHT','Original webhook attempt has not settled');},
   recover(){if(!db.prepare("SELECT 1 FROM agent_webhook_deliveries WHERE last_outcome='requested' LIMIT 1").get())return;transaction(()=>{db.exec("UPDATE agent_webhook_deliveries SET last_outcome='unknown' WHERE last_outcome='requested'");bump();});},
   begin(subscriptionId,tenant){return transaction(()=>{const s=subscription(subscriptionId,tenant),r=validate(s)[0];if(!r)return {capture:info(s),attempt:null};if(r.last_outcome==='requested')reject('IN_FLIGHT','Original webhook attempt has not settled');if(r.attempts>=AGENT_WEBHOOK_LIMITS.attempts)reject('EXHAUSTED','Original webhook head exhausted its attempts');r.attempts++;r.attempt_id='awat_'+randomUUID();db.prepare("UPDATE agent_webhook_deliveries SET attempts=?,attempt_id=?,last_outcome='requested' WHERE delivery_id=?").run(r.attempts,r.attempt_id,r.delivery_id);bump();return {capture:info(s),attempt:{...attempt(r),body:r.body}};});},

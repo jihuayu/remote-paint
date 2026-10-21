@@ -99,8 +99,8 @@ def main() -> None:
         assert len(test_files)==153
         raw=run('full-js',['node','--test','--test-reporter=tap','--test-concurrency=4',*test_files])
         counts={key:int(re.search(r'^# '+key+r' (\d+)$',raw,re.M)[1])for key in ['tests','pass','fail','cancelled','skipped','todo']}
-        passed,skipped=(1710,15)if sys.platform=='darwin'else(1719,6)
-        assert counts==dict(tests=1725,**{'pass':passed},fail=0,cancelled=0,skipped=skipped,todo=0)
+        passed,skipped=(1718,15)if sys.platform=='darwin'else(1727,6)
+        assert counts==dict(tests=1733,**{'pass':passed},fail=0,cancelled=0,skipped=skipped,todo=0)
         archives=out/'archives';archives.mkdir()
         packed=json.loads(run('node-pack',['npm','pack','./sdk','--ignore-scripts','--json','--pack-destination',str(archives)]))
         assert len(packed)==1

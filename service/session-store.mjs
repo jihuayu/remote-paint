@@ -212,6 +212,8 @@ export class SqliteSessionStore {
  listAgentEvents(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.events(agentRunId,tenant,options,owner);}
  subscribeAgentWebhook(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.subscribeWebhook(agentRunId,tenant,options,owner);}
  readAgentWebhookCapture(subscriptionId,tenant,options,{owner}={}){this.#open();return this.#agents.webhookCapture(subscriptionId,tenant,options,owner);}
+ agentWebhookHead({owner}={}){this.#open();return this.#agents.webhookHead(owner);}
+ listAgentWebhookSubscriptions(tenant,options,{owner}={}){this.#open();return this.#agents.listWebhooks(tenant,options,owner);}
  beginAgentWebhookAttempt(subscriptionId,tenant,{owner}={}){this.#open();return this.#agents.beginWebhook(subscriptionId,tenant,owner);}
  settleAgentWebhookAttempt(subscriptionId,tenant,options,{owner}={}){this.#open();return this.#agents.settleWebhook(subscriptionId,tenant,options,owner);}
  agentCancellationSnapshot(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.cancellation(agentRunId,tenant,options,owner);}

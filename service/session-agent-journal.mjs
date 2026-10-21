@@ -82,6 +82,8 @@ export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,
   events(id,tenant,options,value){authorize(value);const row=readRun(id);if(!row||row.tenant!==tenant)reject('REFERENCE','Agent run is unavailable');if(!eventJournal)reject('INVALID','Agent event journal is unavailable');return eventJournal.read(row,options);},
   subscribeWebhook(id,tenant,options,value){authorize(value);const row=readRun(id);if(!row||row.tenant!==tenant)reject('REFERENCE','Agent run is unavailable');if(!webhooks)fail('STATE_WEBHOOK_DISABLED','Webhook capture is not enabled');return webhooks.subscribe(row,options);},
   webhookCapture(id,tenant,options,value){authorize(value);if(!webhooks)fail('STATE_WEBHOOK_DISABLED','Webhook capture is not enabled');return webhooks.read(id,tenant,options);},
+  webhookHead(value){authorize(value);if(!webhooks)fail('STATE_WEBHOOK_DISABLED','Webhook capture is not enabled');return webhooks.head();},
+  listWebhooks(tenant,options,value){authorize(value);if(!webhooks)fail('STATE_WEBHOOK_DISABLED','Webhook capture is not enabled');return webhooks.list(tenant,options);},
   beginWebhook(id,tenant,value){authorize(value);if(!webhooks)fail('STATE_WEBHOOK_DISABLED','Webhook capture is not enabled');return webhooks.begin(id,tenant);},
   settleWebhook(id,tenant,options,value){authorize(value);if(!webhooks)fail('STATE_WEBHOOK_DISABLED','Webhook capture is not enabled');return webhooks.settle(id,tenant,options);},
   cancellation(id,tenant,options={},value){

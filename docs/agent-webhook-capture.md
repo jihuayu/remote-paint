@@ -81,3 +81,9 @@ SDK archive hashes match. [CI39522907367](https://github.com/jihuayu/remote-pain
 binds the exact implementation commit. The first fixture failure is preserved.
 This qualifies capture storage only; delivery, acknowledgment and persistent
 receiver deduplication remain open. See [evidence](evidence/agent-webhook-capture.json).
+
+## Bounded endpoint discovery
+
+Private `listAgentWebhookSubscriptions(tenant,{endpointId,after,limit},{owner})` returns at most four lexically ordered subscription summaries, a revision and a keyset cursor. Summaries retain their original run/session/endpoint binding, accepted/queued/observed cursors, explicit gap and one metadata-only original head (`eventId`, sequence, consumed attempts and last outcome); no body, URL or key is returned. A nonempty cursor must belong to the same tenant and endpoint. Reads do not increment revisions, create subscriptions or advance acceptance. `agentWebhookHead({owner})` reads the persisted notification revision without enumerating histories. The dispatcher exposes the same trusted, already captured tenant/endpoint discovery as `list()`/`revision()`.
+
+Eight new cases cover bounded pagination, tenant/endpoint/cursor isolation, strict options without hooks, original controller and disabled extension, restart identity/revision, exact attempt/ACK counters, retained prefix/gap and dispatcher profile binding. Automatic scheduling and public HTTP/SDK integration remain separate required checkpoints.
