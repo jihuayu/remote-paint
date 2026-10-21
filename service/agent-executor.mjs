@@ -2,10 +2,12 @@ import {agentCancellationAfter,agentCancellationReport} from './agent-cancellati
 import {publicDownload,captureDownloadFile,checkDownloadFileChunk} from './agent-download-access.mjs';
 import {publicScreenshot,captureScreenshotDownload,checkScreenshotDownloadChunk} from './agent-screenshot-access.mjs';
 import {createHash,createHmac,randomUUID} from 'node:crypto';
+import {types} from 'node:util';
 import {SqliteSessionStore} from './session-store.mjs';
 import {agentNeverDispatchedDigest} from './session-agent-journal.mjs';
 import {AGENT_EVENT_LIMITS} from './agent-event-journal.mjs';
 import {createAgentWebhookDispatcher} from './agent-webhook-dispatcher.mjs';
+import {createAgentWebhookDriver} from './agent-webhook-driver.mjs';
 import {sourceObservationContext,publicObservationContext,publicObservation,publicAccessibility} from './agent-observation-access.mjs';
 import {captureAgentRequest,captureAgentResult,agentReplyExpectation,AgentRpcError,agentFailure} from './agent-rpc.mjs';
 
@@ -180,11 +182,13 @@ export class DurableAgentExecutor {
  }
  status(){return Object.freeze({state:this.#fault?'fault':!this.#claimed?'closed':this.#stopping?'stopping':'active',ordinary:this.#ordinary.size,ending:this.#ending.size,ownerHeld:this.#claimed});}
  usesRegistry(registry){return this.#registryIdentity===registry;}
- createWebhookDispatcher(config){
-  this.#admit();const v=data(config,['tenantId','endpointId','url','keys','activeKeyId','ca','maxConcurrent','timeoutMs','retryBaseMs','lookup','dnsServers'],['tenantId','endpointId','url','keys','activeKeyId']);if(!tenant(v.tenantId)||!id(v.endpointId,'awh'))fail('AGENT_INVALID_REQUEST');const key=v.tenantId+'\0'+v.endpointId,prior=this.#webhooks.get(key);
+ createWebhookDispatcher(config){return this.#webhook(config,false);}
+ registerWebhookEndpoint(config){return this.#webhook(config,true);}
+ #webhook(config,automatic){
+  this.#admit();if(types.isProxy(config))fail('AGENT_INVALID_REQUEST');const allowed=['tenantId','endpointId','url','keys','activeKeyId','ca','maxConcurrent','timeoutMs','retryBaseMs','lookup','dnsServers',...(automatic?['pollIntervalMs']:[])],v=data(config,allowed,['tenantId','endpointId','url','keys','activeKeyId']);if(!tenant(v.tenantId)||!id(v.endpointId,'awh'))fail('AGENT_INVALID_REQUEST');const key=v.tenantId+'\0'+v.endpointId,prior=this.#webhooks.get(key);
   if(prior){const status=prior.status();if(!status.closed||status.inFlight)fail('AGENT_EXECUTOR_BUSY');this.#webhooks.delete(key);}
   for(const [key,worker]of this.#webhooks)if(worker.status().closed&&worker.status().inFlight===0)this.#webhooks.delete(key);
-  if(this.#webhooks.size>=4)fail('AGENT_EXECUTOR_CAPACITY');const worker=createAgentWebhookDispatcher({...v,store:this.#store,owner:this.#owner});this.#webhooks.set(key,worker);return worker;
+  if(this.#webhooks.size>=4)fail('AGENT_EXECUTOR_CAPACITY');const worker=(automatic?createAgentWebhookDriver:createAgentWebhookDispatcher)({...v,store:this.#store,owner:this.#owner});this.#webhooks.set(key,worker);return worker;
  }
  shutdown({timeoutMs=5000}={}){
   if(!Number.isInteger(timeoutMs)||timeoutMs<1||timeoutMs>120000)throw TypeError('Configure a bounded shutdown observation');
