@@ -2169,3 +2169,11 @@ Native item取消/Detach/部分和完成文件删除接入可跨item移除保留
 私有接收端在独立 SQLite 文件验证原始字节签名、严格事件 envelope 和共用事件投影，事务提交后才返回原 event ID/body hash ACK；重复事件重启后保持同一 ACK，冲突内容、固定 run 身份变更及容量耗尽拒绝，不删除去重记录。真实 TLS 夹具覆盖提交后 ACK 丢失和 receiver 在 COMMIT 前后 SIGKILL；另用第三个进程复现并修复失败第二 opener 关闭原始文件句柄导致独占锁丢失的问题。初始19例通过不足以覆盖该漏洞，失败源码/日志保留；提取校验的首次 CI 因漏改测试文件数量断言在全量执行前失败，已按实际新增文件/用例更新，未改既有跳过或超时。
 
 最终1270文件执行快照，macOS专项131通过、无跳过；Linux CI39565375421全量1698项（1692通过/6既有跳过），原1670名字及6跳过保留，新增8共用校验+20 inbox用例双平台实际执行。Linux已安装Node202/Python194及严格类型检查通过，包字节保持。此次未额外启动/复制/重建macOS采样器，也不宣称新源码macOS全量1698或原固定观察器首次/冷启动通过。公开HTTPS适配器、管理接口、SDK和Source缺口对账仍待；ACK为持久接收，不是业务成功。原Native整浏览器和8小时未通过，41项当前10/18/13保持。见[接收端范围](agent-webhook-receiver.md)与[逐项证据](evidence/agent-webhook-inbox.json)。
+
+### Webhook HTTPS 接收适配器（K8c3f）
+
+生产组件拥有固定租户/端点的独立inbox与HTTPS监听；默认8/硬32连接，原TCP建立起绝对寿命默认30秒/硬60秒，最多16请求头字段/8192字节和4096字节正文。单连接单请求，拒绝重复头、chunked/编码/trailer、Expect、upgrade/CONNECT及第二流水线请求；完整认证与事务提交后才回复原ACK。关闭观察取消不提前释放TCP、已握手TLS、请求/响应及数据库；握手失败通知可从Node原close回调到达，不能再次等待已经错过的close，未握手路径以原TCP实际close及Node监听关闭回执作资源依据。
+
+新增27真实TCP/TLS/HTTP用例覆盖慢握手/头/正文、容量、取消关闭时数据库仍锁定、实际dispatcher/Source、生产receiver提交前后SIGKILL及重启去重。早期客户端connect先于服务端准入的夹具失败、错误晚挂TLS关闭等待导致两份90秒草稿超时、原型事件跟踪未观察实例事件的夹具失败均保留；最终不用destroyed/finish作资源关闭证据，未放宽寿命/容量/跳过。最终执行1274文件，macOS专项158通过无跳过；LinuxCI39569845757全量1725（1719通过/6既有跳过），原1698及6跳过保持，27新增双平台实际执行；Linux已安装Node202/Python194与类型检查通过，SDK包字节不变。未重新执行macOS全量或采样器，原固定观察器首次/冷启动不作资格声明。
+
+公开管理/API与Node/Python SDK、Source缺口对账和原Native端到端仍待，组件未部署外部端点。原8小时失败与41项10/18/13保持；见[接收端](agent-webhook-receiver.md)与[验收证据](evidence/agent-webhook-receiver.json)。

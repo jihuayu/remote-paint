@@ -1,0 +1,125 @@
+{
+  "at": "2026-10-21T08:34:38.390666+00:00",
+  "implementationCommit": "d45d16505dd7edd99806bcf6796e6c3f0543c710",
+  "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-receiver-candidate-v1/frozen-version.json",
+  "candidateManifestSha256": "fe5f89fe3ac2db521ea49dd2d8476e21dcd4d24d8ce28eb45347711b380ee6fb",
+  "sourceFiles": 1274,
+  "allLinuxSourceHashesMatchFrozen": true,
+  "linuxFullJs": {
+    "tests": 1725,
+    "pass": 1719,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 6,
+    "todo": 0
+  },
+  "macTargeted": {
+    "tests": 158,
+    "pass": 158,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "macFullJsNotRerun": true,
+  "newCases": [
+    "Expect continue and unsupported expectations never allocate or acknowledge a request body",
+    "HTTP upgrade and CONNECT cannot escape receiver-owned socket shutdown",
+    "HTTPS receiver returns bounded non-sensitive authentication and metadata errors without storing unauthenticated work",
+    "a failed listener bind leaves an observable owner that can close without resetting its inbox",
+    "a truncated actual signed body followed by peer close cannot enter the inbox or leak receiver ownership",
+    "absolute connection deadline retires a pre-TLS TCP stall with no request or persistent acceptance",
+    "absolute receiver deadline cannot be renewed by slowly dripping an incomplete signed body",
+    "absolute receiver deadline cannot be renewed by slowly dripping valid header bytes",
+    "actual HTTP header byte and count limits reject hidden fields before parsing an accepted body",
+    "actual dispatcher delivers its original Source capture through production receiver without releasing the Source writer",
+    "cancelled listen observation does not cancel original bind or duplicate its owned listener",
+    "close before listen and during a pending literal-address bind retires the exact owned database",
+    "completed HTTPS response retires owned transport records before exact inbox ownership can be reacquired",
+    "connection capacity includes pre-handshake TCP clients and becomes reusable only after their actual close",
+    "content type and declared body length bounds reject oversized allocation before inbox acceptance",
+    "duplicate signature content-type or custom headers are rejected instead of folded into authenticated input",
+    "malformed real TLS handshakes retire actual TCP records and leave the receiver closed after shutdown",
+    "missing Content-Length and chunked bodies never become ambiguous accepted envelopes",
+    "only exact configured HTTPS path and POST method can enter the durable inbox",
+    "owned production HTTPS receiver authenticates real bytes and acknowledges durable acceptance plus restart dedup",
+    "pipelined second signed event cannot reuse a connection or enter the inbox behind its original request",
+    "pre-handshake close notifications and actual TCP retirement do not strand the original receiver or database owner",
+    "production HTTPS receiver actual writer SIGKILL after-commit preserves exact restart identity and original event dedup",
+    "production HTTPS receiver actual writer SIGKILL before-commit preserves exact restart identity and original event dedup",
+    "production receiver maps durable conflict and capacity to finite failed responses while duplicates stay accepted",
+    "receiver close cancellation only cancels observation while original TCP TLS and database retirement continues",
+    "receiver configuration and observer options reject getters proxies and policy expansion without invoking caller hooks"
+  ],
+  "all27NewCasesActualBoth": true,
+  "prior1698NamesAndSixLinuxSkipsRetained": true,
+  "installedLinuxNode": 202,
+  "installedLinuxPython": 194,
+  "all194PythonCaseIdsUnchanged": true,
+  "strictTypescriptAndPublic5Source9MypyActual0Linux": true,
+  "sdkArchiveHashes": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "1a2c251f226d3efa415ebba928078d01bb20fd64bbe66419d5c698ed44a0e89a"
+  },
+  "sdkArchivesUnchanged": true,
+  "linuxRuntime": {
+    "python": "3.11.2",
+    "platform": "Linux",
+    "arch": "aarch64",
+    "node": "v22.23.3"
+  },
+  "ciRun": 39569845757,
+  "ciUrl": "https://github.com/jihuayu/remote-paint/actions/runs/39569845757",
+  "ciStatusSha256": "2ebfcf946da6ce65b12209ca2302435569db563c015ede614e6461f612d642a8",
+  "macTargetedLogSha256": "538dd57450c3b5842eb4bd7e500c10fd49943dcacfe89a7d4e6d3b0b18258b3b",
+  "linuxFullLogSha256": "eb73da9539b2c06786bd83074f9745f46036461e00c6c011bd7a584bddfcd0d7",
+  "receiverHttpsQualifiedBothWithinFixtures": true,
+  "qualificationScope": "Production HTTPS receiver implementation in controlled localhost TCP/TLS/HTTP/SQLite fixtures; absolute connection lifetime, fixed framing, original TCP and established TLS/request/response retirement, observer cancellation, real production writer SIGKILL before/after COMMIT and restart. No external deployment, public management/SDK or business execution.",
+  "draftEvidence": [
+    {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-receiver-pilot-v2",
+      "receiptSha256": "4bc1314e719c46e7c3c7958bf8f09c4c6f6513091c6e928e8eec12999043244a",
+      "actualExit": 1,
+      "timedOut": false
+    },
+    {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-receiver-pilot-v3",
+      "receiptSha256": "69b84ad5f04070bff9ca97f515e72b49c4e7094890d31151bd16395568bf4e1b",
+      "actualExit": 1,
+      "timedOut": true
+    },
+    {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-receiver-pilot-v4",
+      "receiptSha256": "36ae7a0acdf8b4020ca7ca6ae78c02731a5709a3534367815590e480f2cc72dc",
+      "actualExit": 1,
+      "timedOut": true
+    },
+    {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-receiver-pilot-v5",
+      "receiptSha256": "035220bb71adb6f90f6acb5f13a39f5ba774d1cf97e2be727a00626c61074640",
+      "actualExit": 1,
+      "timedOut": false
+    },
+    {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-receiver-pilot-v6",
+      "receiptSha256": "3310336e6b5a516f5766d217ca2da5784ec01233440c3e590d2a67217b21b136",
+      "actualExit": 0,
+      "timedOut": false
+    }
+  ],
+  "closeTraceEvidence": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-receiver-close-trace-v1",
+  "previousInboxQualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-inbox-verification-v1/qualification.json",
+  "noAdditionalMacSamplerStartOrCopy": true,
+  "originalFixedSamplerColdFirstStartupNotQualified": true,
+  "productionHttpsAdapterQualifiedWithinFixtures": true,
+  "publicManagementAndSdksQualified": false,
+  "sourceGapReconciliationQualified": false,
+  "originalNativeRuntimeQualified": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 18,
+    "pending": 13
+  },
+  "eightHourPassed": false,
+  "wholeGoalQualified": false
+}
