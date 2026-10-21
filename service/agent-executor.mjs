@@ -5,6 +5,7 @@ import {createHash,createHmac,randomUUID} from 'node:crypto';
 import {SqliteSessionStore} from './session-store.mjs';
 import {agentNeverDispatchedDigest} from './session-agent-journal.mjs';
 import {AGENT_EVENT_LIMITS} from './agent-event-journal.mjs';
+import {createAgentWebhookDispatcher} from './agent-webhook-dispatcher.mjs';
 import {sourceObservationContext,publicObservationContext,publicObservation,publicAccessibility} from './agent-observation-access.mjs';
 import {captureAgentRequest,captureAgentResult,agentReplyExpectation,AgentRpcError,agentFailure} from './agent-rpc.mjs';
 
@@ -34,7 +35,7 @@ function invocationView(row){const {invocationId,agentRunId,sessionId,tool,fence
 // Trusted backend service, not a public HTTP authorizer. Each acknowledged
 // intent is durable before work is scheduled. No action payload is persisted.
 export class DurableAgentExecutor {
- #store;#registry;#registryIdentity;#providers;#actionKey;#owner=Symbol('durable-Agent-executor');#claimed=false;#fault=false;#stopping=false;#ordinary=new Map();#ending=new Map();#recovered=new Set();#max;#timeout;#shutdown=null;
+ #store;#registry;#registryIdentity;#providers;#actionKey;#owner=Symbol('durable-Agent-executor');#claimed=false;#fault=false;#stopping=false;#ordinary=new Map();#ending=new Map();#recovered=new Set();#max;#timeout;#shutdown=null;#webhooks=new Map();
  constructor({store,registry,providers,actionKey,maxConcurrent=64,timeoutMs=5000}={}){
   if(!(store instanceof SqliteSessionStore)||!registry||typeof registry.requireReady!=='function'||!(providers instanceof Map)||!providers.size||providers.size>64||typeof actionKey!=='string'||!/^[a-f0-9]{64}$/.test(actionKey)||!Number.isInteger(maxConcurrent)||maxConcurrent<1||maxConcurrent>256||!Number.isInteger(timeoutMs)||timeoutMs<50||timeoutMs>120000)throw TypeError('Configure a private Session store, Registry, Agent providers and 32-byte action key');
   this.#providers=new Map();for(const [region,provider]of providers){if(!bounded(region,64)||!provider||typeof provider.agent!=='function')throw TypeError('Configure bounded Agent provider regions');this.#providers.set(region,provider.agent.bind(provider));}
@@ -179,11 +180,17 @@ export class DurableAgentExecutor {
  }
  status(){return Object.freeze({state:this.#fault?'fault':!this.#claimed?'closed':this.#stopping?'stopping':'active',ordinary:this.#ordinary.size,ending:this.#ending.size,ownerHeld:this.#claimed});}
  usesRegistry(registry){return this.#registryIdentity===registry;}
+ createWebhookDispatcher(config){
+  this.#admit();const v=data(config,['tenantId','endpointId','url','keys','activeKeyId','ca','maxConcurrent','timeoutMs','retryBaseMs','lookup','dnsServers'],['tenantId','endpointId','url','keys','activeKeyId']);if(!tenant(v.tenantId)||!id(v.endpointId,'awh'))fail('AGENT_INVALID_REQUEST');const key=v.tenantId+'\0'+v.endpointId,prior=this.#webhooks.get(key);
+  if(prior){const status=prior.status();if(!status.closed||status.inFlight)fail('AGENT_EXECUTOR_BUSY');this.#webhooks.delete(key);}
+  for(const [key,worker]of this.#webhooks)if(worker.status().closed&&worker.status().inFlight===0)this.#webhooks.delete(key);
+  if(this.#webhooks.size>=4)fail('AGENT_EXECUTOR_CAPACITY');const worker=createAgentWebhookDispatcher({...v,store:this.#store,owner:this.#owner});this.#webhooks.set(key,worker);return worker;
+ }
  shutdown({timeoutMs=5000}={}){
   if(!Number.isInteger(timeoutMs)||timeoutMs<1||timeoutMs>120000)throw TypeError('Configure a bounded shutdown observation');
-  if(!this.#shutdown){this.#stopping=true;this.#shutdown=Promise.resolve().then(async()=>{
+  if(!this.#shutdown){this.#stopping=true;const webhookClosing=[...this.#webhooks.values()].map(worker=>worker.close());for(const closing of webhookClosing)closing.catch(()=>{});this.#shutdown=Promise.resolve().then(async()=>{
    if(!this.#fault&&this.#claimed){for(const row of this.#records('runs',{reservedOnly:true})){if(!row.reserved)continue;while(this.#ending.size>=this.#max)await Promise.race([...this.#ending.values()].map(x=>x.promise));this.end({tenantId:row.tenant,agentRunId:row.agentRunId});const end=this.#ending.get(row.agentRunId);if(end)await end.promise;}}
-   while(this.#ordinary.size||this.#ending.size)await Promise.all([...this.#ordinary.values(),...this.#ending.values()].map(x=>x.promise));let remaining=[];if(!this.#fault&&this.#claimed)for(const row of this.#records('runs',{reservedOnly:true}))remaining.push(row.agentRunId);if(this.#claimed){this.#store.releaseAgentController(this.#owner);this.#claimed=false;}this.#actionKey.fill(0);return Object.freeze({status:this.#fault||remaining.length?'unconfirmed':'closed',remainingRuns:remaining});
+   while(this.#ordinary.size||this.#ending.size)await Promise.all([...this.#ordinary.values(),...this.#ending.values()].map(x=>x.promise));await Promise.all(webhookClosing);let remaining=[];if(!this.#fault&&this.#claimed)for(const row of this.#records('runs',{reservedOnly:true}))remaining.push(row.agentRunId);if(this.#claimed){this.#store.releaseAgentController(this.#owner);this.#claimed=false;}this.#actionKey.fill(0);return Object.freeze({status:this.#fault||remaining.length?'unconfirmed':'closed',remainingRuns:remaining});
   }).catch(()=>{this.#fault=true;return Object.freeze({status:'unconfirmed'});});}
   return new Promise(resolve=>{const timer=setTimeout(()=>resolve(Object.freeze({status:'unconfirmed',pending:true})),timeoutMs);this.#shutdown.then(value=>{clearTimeout(timer);resolve(value);});});
  }
