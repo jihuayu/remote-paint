@@ -1,5 +1,7 @@
 # Private durable webhook attempts and receipts
 
+The [actual bounded HTTPS dispatcher](agent-webhook-dispatcher.md) now uses these qualified storage methods, retains original DNS/request/response/socket ownership and sends Source end independently. Its local TLS/DNS fixture qualification is separate from this storage checkpoint; receiver durable deduplication and public APIs/SDKs remain pending.
+
 The v2 webhook ledger separates the immutable subscription `after` cursor from
 `acceptedThrough`. Original envelope/event IDs and raw body bytes remain
 unchanged. Acceptance removes only the original pending head and frees one
@@ -13,7 +15,7 @@ Only the current opaque Agent controller can use the private store methods:
 
 ```js
 const {attempt} = store.beginAgentWebhookAttempt(subscriptionId, tenant, {owner});
-// The future trusted transport worker must retain this original attempt and
+// The trusted transport worker must retain this original attempt and
 // call settlement only after the actual request/response resources settle.
 if (attempt) store.settleAgentWebhookAttempt(subscriptionId, tenant, {
   deliveryId: attempt.deliveryId,

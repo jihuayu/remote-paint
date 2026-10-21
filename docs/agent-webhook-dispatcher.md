@@ -110,6 +110,6 @@ deadlines, actual transaction failures before/after COMMIT, Source end and
 default private DNS queries/cancellation. The first Unicode fixture incorrectly
 used a default Run for its customized Session and correctly hit the existing
 reference guard; its failed run and source are preserved outside the repository.
-Cross-platform full-suite and isolated package/type qualification remain pending.
+The same1262 source hashes passed macOS and Linux ARM64 full1670: macOS1655 pass/15 existing skips, Linux1664 pass/6 existing skips, zero failures/cancellations. All25 new cases actually ran and all1645 prior case names were retained. Each platform passed installed202 Node/194 Python, strict TypeScript and installed5-public/9-source mypy; all194 Python case names and both SDK archive hashes match. [CI39556464074](https://github.com/jihuayu/remote-paint/actions/runs/39556464074) binds implementation cc690eb. The Unicode-fixture failure remains preserved. This qualifies private local TLS/DNS/SQLite/executor fixtures only; no persistent receiver deduplication, public management/SDK, controlled external receiver or original Native runtime acceptance is claimed. See [evidence](evidence/agent-webhook-dispatcher.json).
 Original Native runtime, public management/SDKs, receiver durable deduplication
 and the wholeK8/41/eight-hour gates are not completed by these tests.

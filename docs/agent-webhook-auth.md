@@ -1,5 +1,7 @@
 # Webhook 原始字节签名合同
 
+后续已完成[持久捕获](agent-webhook-capture.md)、[尝试/确认日志](agent-webhook-attempts.md)与[实际HTTPS调度器](agent-webhook-dispatcher.md)各自范围资格；调度器仅在本机TLS/DNS/SQLite/执行器夹具范围验收。以下保留K8c3a原签名核心记录，其中当时的待办不代表后续状态；当前仍待接收持久去重、公开管理/SDK、原Native与完整Webhook验收。
+
 K8c3a 先实现私有后端 `createAgentWebhookAuthenticator`。它是完整Webhook工作的第一个独立检查点；持久订阅/outbox、实际HTTPS投递/重试、接收方持久去重、管理API/SDK和原Native端到端仍待实现，不能仅凭签名核心宣称Webhook完成。
 
 配置固定端点`awh_UUID`、activeKeyId和最多两个 `{keyId, secret}`。secret必须是32..64字节的本地Uint8Array/Buffer，立即复制；配置/数组/请求拒绝accessor、Proxy、额外字段，原调用方后续改动不改变已经捕获的端点、key或正文。共享backing、错误类型、空正文和超过预算的正文拒绝。正文默认及硬上限4096字节，可配置1..4096；元数据严格ASCII且有界。

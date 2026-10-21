@@ -1,0 +1,190 @@
+{
+  "at": "2026-10-21T06:54:05.935602+00:00",
+  "task": "K8c3d actual bounded signed HTTPS retries and original DNS/request/response/socket ownership; executor Source end independent in real TLS/DNS fixtures",
+  "gitCommit": "cc690eb0421c371b689fc686d7239f48878b5649",
+  "sourceFiles": 1262,
+  "sourceManifestSha256": "262395d2488bce974d8f6cd3c5a871466c3ef52ce27ec7b382922d503ab4f64b",
+  "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-dispatcher-candidate-v1/frozen-version.json",
+  "candidateManifestSha256": "355ed36dc3847b8209c6e88cdcc6ace20704a71ba07c0c3da41a9eeddb1a8eec",
+  "allCandidateSourceHashesMatchBoth": true,
+  "fullJs": {
+    "mac": {
+      "tests": 1670,
+      "pass": 1655,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "todo": 0,
+      "all1645PriorNamesRetained": true,
+      "all25NewActualNoSkip": true,
+      "logSha256": "edfe97032aada82db1ffe42227a0572f978d6df0ee0a49942dd1584dbc73b9b3",
+      "receiptSha256": "e8d91b999e5d60c54d875f5d1f8b7adfe2a37d3d9b81261432977069fc05ee80"
+    },
+    "linux": {
+      "tests": 1670,
+      "pass": 1664,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "todo": 0,
+      "all1645PriorNamesRetained": true,
+      "all25NewActualNoSkip": true,
+      "logSha256": "ae0379c2b1eaea3d4f8fd5d97201d10b6c527afdeeeefc98ebd5c50c31176c8e",
+      "receiptSha256": "eae74860e8ac5d162476efa8e6fdedb04d2b0d185d8c86537bd1be7acdd429e2"
+    }
+  },
+  "installedPackages": {
+    "mac": {
+      "nodeTests": 202,
+      "pythonTests": 194,
+      "strictTypescriptActual0": true,
+      "public5Source9MypyActual0": true,
+      "sourceFallbackUnavailable": true,
+      "archives": {
+        "remote-paint-session-client-0.0.0-dev.0.tgz": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+        "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "1a2c251f226d3efa415ebba928078d01bb20fd64bbe66419d5c698ed44a0e89a"
+      },
+      "resultSha256": "48653b3818bcc44bda1358729bd3df7d89f88dd4e54c979617e74659cf9d201b"
+    },
+    "linux": {
+      "nodeTests": 202,
+      "pythonTests": 194,
+      "strictTypescriptActual0": true,
+      "public5Source9MypyActual0": true,
+      "sourceFallbackUnavailable": true,
+      "archives": {
+        "remote-paint-session-client-0.0.0-dev.0.tgz": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+        "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "1a2c251f226d3efa415ebba928078d01bb20fd64bbe66419d5c698ed44a0e89a"
+      },
+      "resultSha256": "308ffc78faeb1644a0875f2c4ec34875923edddcabc914483f434387ff9ae3f3"
+    }
+  },
+  "newCases": [
+    "actual TLS receiver authenticates exact original signed bytes and advances only that head after complete ACK",
+    "actual TLS signing preserves supported Unicode projection bytes and original event IDs",
+    "observer abort after actual request finish retains capacity and requested journal until the real response settles",
+    "original DNS callback remains owned after deadline socket destruction and close observation cancellation",
+    "a throwing lower-level resolver cannot declare its already started callback work settled",
+    "a mistaken returned rejected native lookup Promise is observed without retiring original callback ownership",
+    "finite real HTTPS retries preserve one original event body and delivery identity until its third accepted attempt",
+    "redirect responses never send the signed body to another actual HTTPS server and exhaust only the original head",
+    "wrong identity invalid UTF8 oversized or truncated complete-response claims never become receiver acceptance",
+    "actual response header byte count sentinel header count and duplicate fields are bounded before ACK acceptance",
+    "informational response floods close the original connection instead of keeping unbounded response state",
+    "TLS certificate trust stays enabled even when the surrounding process requests disabled default verification",
+    "TLS hostname identity is verified against the configured URL despite a trusted custom localhost resolver",
+    "absolute per-attempt deadline destroys stalled actual responses and settles all original TCP resources before capacity returns",
+    "failed ACK persistence after actual acceptance retains its exact settled attempt and close waits for explicit reconciliation",
+    "a commit-success then thrown ACK result reconciles through the bounded duplicate receipt without another HTTPS send",
+    "an uncertain committed begin cannot send blindly or refund an attempt and is reconciled as unknown before retry",
+    "executor Source end runs independently while its original webhook DNS work still holds the shared ledger owner",
+    "executor endpoint factories reject duplicates and bound owned workers while allowing a fully closed configuration to be replaced",
+    "private endpoint configuration rejects accessors proxies insecure URLs null limits and caller-controlled TLS bypass options",
+    "captured endpoint URL and key bytes cannot be changed through caller mutation or per-delivery redirect options",
+    "fixed endpoint and tenant binding reject another captured subscription before any actual attempt or HTTPS request",
+    "close during actual retry backoff cancels only that owned schedule and cannot dispatch a later attempt",
+    "default private asynchronous resolver joins real A and AAAA DNS callbacks before the authenticated localhost TLS request",
+    "actual private DNS queries do not block Source end and native resolver cancellation must retire before ledger ownership returns"
+  ],
+  "all25NewActualBothNoSkips": true,
+  "all1645PriorNamesRetainedBoth": true,
+  "all194PythonNamesMatchBoth": true,
+  "dispatcherQualifiedBoth": true,
+  "actualTransportSettlementQualified": true,
+  "qualificationScope": "Owned local TLS/DNS/socket/SQLite/Source-executor fixtures only; not uncontrolled external receiver or original Native runtime",
+  "actualHttpsRetryAndBindingBoth": true,
+  "defaultPrivateDnsQueriesAndCancelBoth": true,
+  "sourceEndIndependentOfOriginalWebhookResourcesBoth": true,
+  "observerAbortNeverRefundsActualWork": true,
+  "persistenceUnknownFencedUntilExactReconciliation": true,
+  "firstUnicodeFixtureFailurePreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-dispatcher-fixture-failure-v1/failure.json",
+  "targeted96Actual": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-dispatcher-targeted-v2/receipt.json",
+  "signatureCaptureAttemptsQualifiedPreviously": true,
+  "linuxRuntime": {
+    "python": "3.11.2",
+    "platform": "Linux",
+    "arch": "aarch64",
+    "node": "v22.23.3"
+  },
+  "githubRun": 39556464074,
+  "githubRunUrl": "https://github.com/jihuayu/remote-paint/actions/runs/39556464074",
+  "githubStatusSha256": "668ed76609f662e2b687dd7181d1b061fdd7e2e3e35f40f61ea7b986c9b7def7",
+  "sdkArchivesUnchanged": true,
+  "persistentReceiverDedupQualified": false,
+  "publicWebhookManagementAndSdkQualified": false,
+  "fullSignedWebhookQualified": false,
+  "originalNativeEventCancelQualified": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 18,
+    "pending": 13
+  },
+  "K8Complete": false,
+  "eightHourPassed": false,
+  "wholeGoalQualified": false,
+  "nativeSourceProtection": {
+    "at": "2026-10-21T06:54:05.465120+00:00",
+    "native108InputsUnchanged": true,
+    "canonical19FilesReadOnlyHashesMatch": true,
+    "protectedSamplerIdentityAndHashMatchWithoutExecutionOrCopy": true,
+    "pinSha256": "628f35364a453fc22b546e92dd095257df016663135342f8fb583ee1ca75f4b0",
+    "unrelatedPeerUnchangedAndExcluded": true,
+    "lastActualBrowserLogProgress": [
+      5618,
+      17924
+    ],
+    "lastBrowserLogAt": "2026-10-21T06:53:54.962410+00:00",
+    "exactOwnedLocalContainerObservation": {
+      "queryExitCode": 0,
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 2967239,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-10-20T12:47:32.756177921Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "stderr": ""
+    },
+    "humanAuthorizedOrbStackRestart": true,
+    "restartPerformed": false,
+    "recoveryObservation": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/orbstack-authorized-recovery-observation-v1.json",
+    "recoveryObservationSha256": "5b2edf0780d3c02f7a936d730b2381e3f7b8160a5ed6da161f992c2bcfdbb2f6",
+    "localRuntimeQualified": false,
+    "freeGiB": 67.35373306274414,
+    "minimumFreeGiB": 32,
+    "normalControlAttempt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/orbstack-normal-control-attempt-observation-v1.json",
+    "normalControlAttemptSha256": "fd05f0e9edac9d2ce638ae7b5e72296ea73f47c8eb3420eaf59ce19ebdfab019",
+    "normalControlCommandsAttempted": true,
+    "actualVmRestartObserved": false,
+    "forceStopPerformed": false
+  },
+  "nativeSourceProtectionSha256": "f8552391fa8baaad24cc38e7d4cb7198e502356049ee889335066e0f5b773a21",
+  "nativeCpp470AndFiveTuInheritedNotRerun": true,
+  "documentationOnlyChangesAfterExecution": [
+    "docs/evidence/agent-webhook-dispatcher.json",
+    "docs/agent-webhook-dispatcher.md",
+    "docs/agent-webhook-attempts.md",
+    "docs/agent-webhook-auth.md",
+    "docs/optimization-progress.md",
+    "docs/sdk-package-ci.md"
+  ],
+  "nextRequiredWork": [
+    "persistent authenticated receiver inbox/deduplication before peer ACK",
+    "public management/Node+Python SDK integration and explicit retained-gap reconciliation",
+    "controlled external deployment/receiver acceptance and original Native runtime",
+    "wholeK8/whole41/eight-hour acceptance"
+  ],
+  "candidateNotQualified": false,
+  "freshWholeJsBoth": true,
+  "freshInstalledPackagesBoth": true,
+  "qualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-dispatcher-verification-v1/final-qualification.json",
+  "qualificationSha256": "b511e3f4928d1fa3a63e88ab57383fedb66eb7f66e192034a634fad3c08e7f40",
+  "executedCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-dispatcher-candidate-v1/frozen-version.json",
+  "executedCandidateSha256": "355ed36dc3847b8209c6e88cdcc6ace20704a71ba07c0c3da41a9eeddb1a8eec"
+}

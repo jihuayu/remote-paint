@@ -1,6 +1,6 @@
 # SDK 安装包 CI
 
-`SDK package contracts` 在独立的 Linux ARM64 GitHub runner 上运行，不依赖本机 Docker、Chromium 构建目录或受保护采样器。使用 Node22.23.3/Bookworm 和 Python3.11，先准备固定版本工具及带 SHA256 的七个 SDK runtime wheels，再运行完整1645项 JS 和隔离安装包202项 Node/194项 Python、严格 TypeScript 与公共/包源码 mypy。
+`SDK package contracts` 在独立的 Linux ARM64 GitHub runner 上运行，不依赖本机 Docker、Chromium 构建目录或受保护采样器。使用 Node22.23.3/Bookworm 和 Python3.11，先准备固定版本工具及带 SHA256 的七个 SDK runtime wheels，再运行完整1670项 JS 和隔离安装包202项 Node/194项 Python、严格 TypeScript 与公共/包源码 mypy。
 
 实际安装阶段离线：npm不执行安装脚本，pip只读取验证过的wheelhouse。安装消费目录没有SDK源码，真实HTTP/SQLite夹具按相对import闭包显式复制并记录哈希；没有下载或启动浏览器。源码清单绑定实际checkout commit，执行前后哈希相同才允许成功；结果、阶段退出码、失败日志和归档成员校验均保存为Actions artifact。新入口先在声明的本机冻结快照验证，远端执行结果仍需单独核实。
 
@@ -23,3 +23,5 @@ Webhook原字节认证核心新增20项后，入口明确更新为147个根测�
 持久捕获队列新增18项后，入口为148个根测试文件/1622项（macOS1607通过15既有跳过、Linux1616通过6既有跳过）。[作业39522907367](https://github.com/jihuayu/remote-paint/actions/runs/39522907367)绑定6504d0e与同一1250源码，18新项和原1604名称保留；各202Node/194Python及类型检查通过，SDK归档哈希不变。此处仅完成原事件持久捕获，实际投递/确认/去重及原Native/八小时仍待。
 
 持久尝试与确认日志新增23项后，入口为149个根测试文件/1645项（macOS1630通过15既有跳过、Linux1639通过6既有跳过）。[作业39551778361](https://github.com/jihuayu/remote-paint/actions/runs/39551778361)绑定ce76596与同一1255源码，23新项和原1622名称保留；各202Node/194Python及类型检查通过，SDK归档哈希不变。主机早期超时不丢弃，恢复后同输入100项定向约3秒通过，最终完整约32秒通过；仅确认持久存储/栅栏，未确认实际HTTPS或接收去重/原Native/八小时。
+
+实际HTTPS调度器新增25项后，入口为150个根测试文件/1670项（macOS1655通过15既有跳过、Linux1664通过6既有跳过）。[作业39556464074](https://github.com/jihuayu/remote-paint/actions/runs/39556464074)绑定cc690eb与同一1262源码，25新项和原1645名称保留；各202Node/194Python与类型检查通过，SDK归档字节不变。包含真实TLS/UDP-DNS/原socket关闭/SQLite写入不明核对与执行器Source end，96项定向通过；首次Unicode夹具引用失败保留。仅为本机私有后端夹具范围，接收持久去重、公开API/SDK、外部接收方及原Native/八小时仍待。
