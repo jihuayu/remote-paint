@@ -1,21 +1,13 @@
 import {randomUUID} from 'node:crypto';
+import {AGENT_EVENT_MAX_BYTES,parseAgentEventBody} from './agent-event-schema.mjs';
 
 export const AGENT_EVENT_FORMAT='remote-paint-agent-events-v1';
-export const AGENT_EVENT_LIMITS=Object.freeze({retainedPerRun:64,eventBytes:3072,pageEvents:4,pageBytes:16384});
+export const AGENT_EVENT_LIMITS=Object.freeze({retainedPerRun:64,eventBytes:AGENT_EVENT_MAX_BYTES,pageEvents:4,pageBytes:16384});
 export const agentEventSchemaSql=`
  CREATE TABLE agent_event_heads(agent_run_id TEXT PRIMARY KEY,tenant TEXT NOT NULL,session_id TEXT NOT NULL,last_sequence INTEGER NOT NULL CHECK(last_sequence>=0 AND last_sequence<=9007199254740991),origin TEXT NOT NULL CHECK(origin IN ('created','migration-snapshot')),UNIQUE(agent_run_id,tenant,session_id),FOREIGN KEY(agent_run_id,tenant,session_id) REFERENCES agent_runs(agent_run_id,tenant,session_id)) STRICT;
  CREATE TABLE agent_events(agent_run_id TEXT NOT NULL,tenant TEXT NOT NULL,session_id TEXT NOT NULL,sequence INTEGER NOT NULL CHECK(sequence>=1 AND sequence<=9007199254740991),event_id TEXT NOT NULL UNIQUE,body TEXT NOT NULL CHECK(length(CAST(body AS BLOB))<=3072),PRIMARY KEY(agent_run_id,sequence),FOREIGN KEY(agent_run_id,tenant,session_id) REFERENCES agent_event_heads(agent_run_id,tenant,session_id)) STRICT;`;
 const integer=(v,min,max=Number.MAX_SAFE_INTEGER)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
-const uuid='[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
-const id=(v,prefix)=>typeof v==='string'&&new RegExp('^'+prefix+'_'+uuid+'$').test(v);
-const date=v=>typeof v==='string'&&v.length<=32&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString()===v;
 const plain=(v,keys)=>!!v&&[Object.prototype,null].includes(Object.getPrototypeOf(v))&&Reflect.ownKeys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(v,k),'value'));
-const error=v=>v===null||plain(v,['code','outcome'])&&typeof v.code==='string'&&/^[A-Z][A-Z0-9_]{0,63}$/.test(v.code)&&['not-dispatched','unknown'].includes(v.outcome);
-const dispatch=new Set(['not-requested','requested','confirmed']);
-const runStates=new Set(['intent','starting','active','closing','recovery-required','closed']);
-const invocationStates=new Set(['intent','requested','injected','rejected','unknown']);
-const tools=new Set(['click','move','drag','scroll','press','insertText','composition']);
-const closures=new Set(['never-dispatched','begin-rejected','worker-run-closed','session-terminal']);
 const runData=r=>({state:r.state,holdsWriter:r.reserved,beginDispatch:r.beginDispatch,endDispatch:r.endDispatch,error:r.error,closeEvidenceKind:r.closeEvidence?.kind??null,stateUpdatedAt:r.updatedAt});
 const invocationData=r=>({invocationId:r.invocationId,tool:r.tool,state:r.state,dispatchStarted:r.dispatchStarted,receipt:r.receipt&&{stage:r.receipt.stage,inputs:r.receipt.inputs},error:r.error,stateUpdatedAt:r.updatedAt});
 
@@ -28,15 +20,11 @@ export function createAgentEventJournal(db,{fail,onAppend=null}){
  function head(run){const h=db.prepare('SELECT * FROM agent_event_heads WHERE agent_run_id=?').get(run.agentRunId);if(!h||h.tenant!==run.tenant||h.session_id!==run.sessionId||!integer(h.last_sequence,1)||!['created','migration-snapshot'].includes(h.origin))corrupt();return h;}
  function decode(stored,run){
   try{
-   if(typeof stored.body!=='string'||Buffer.byteLength(stored.body)>AGENT_EVENT_LIMITS.eventBytes)corrupt();const e=JSON.parse(stored.body),d=e.data;
-   if(!plain(e,['schema','eventId','agentRunId','sessionId','region','version','sequence','observedAt','type','data'])||e.schema!=='agent-event-v1'||!id(e.eventId,'aevt')||e.eventId!==stored.event_id||e.agentRunId!==run.agentRunId||e.sessionId!==run.sessionId||e.region!==run.region||e.version!==run.version||stored.agent_run_id!==run.agentRunId||stored.tenant!==run.tenant||stored.session_id!==run.sessionId||!integer(e.sequence,1)||e.sequence!==stored.sequence||!date(e.observedAt))corrupt();
+   const e=parseAgentEventBody(stored.body),d=e.data;
+   if(e.eventId!==stored.event_id||e.agentRunId!==run.agentRunId||e.sessionId!==run.sessionId||e.region!==run.region||e.version!==run.version||stored.agent_run_id!==run.agentRunId||stored.tenant!==run.tenant||stored.session_id!==run.sessionId||e.sequence!==stored.sequence)corrupt();
    if(['run.updated','run.snapshot'].includes(e.type)){
-    if(!plain(d,['state','holdsWriter','beginDispatch','endDispatch','error','closeEvidenceKind','stateUpdatedAt'])||!runStates.has(d.state)||typeof d.holdsWriter!=='boolean'||(d.state==='closed')===d.holdsWriter||!dispatch.has(d.beginDispatch)||!dispatch.has(d.endDispatch)||!error(d.error)||!date(d.stateUpdatedAt)||(d.closeEvidenceKind===null?d.state==='closed':d.state!=='closed'||!closures.has(d.closeEvidenceKind)))corrupt();
-    if(d.state==='intent'&&(d.beginDispatch!=='not-requested'||d.endDispatch!=='not-requested'||d.error!==null)||d.state==='starting'&&(d.beginDispatch!=='requested'||d.endDispatch!=='not-requested'||d.error!==null)||d.state==='active'&&(d.beginDispatch!=='confirmed'||d.endDispatch!=='not-requested'||d.error!==null)||d.endDispatch!=='not-requested'&&d.beginDispatch!=='confirmed'||d.endDispatch==='requested'&&!['closing','recovery-required','closed'].includes(d.state)||d.endDispatch==='confirmed'&&(d.state!=='closed'||d.closeEvidenceKind!=='worker-run-closed')||d.state!=='closed'&&d.error!==null&&(!['closing','recovery-required'].includes(d.state)||d.error.outcome!=='unknown'))corrupt();
-    if(d.closeEvidenceKind==='never-dispatched'&&(d.beginDispatch!=='not-requested'||d.endDispatch!=='not-requested'||d.error!==null)||d.closeEvidenceKind==='begin-rejected'&&(d.beginDispatch!=='requested'||d.endDispatch!=='not-requested'||d.error?.outcome!=='not-dispatched')||d.closeEvidenceKind==='worker-run-closed'&&(d.beginDispatch!=='confirmed'||d.endDispatch!=='confirmed')||d.beginDispatch==='confirmed'&&run.beginDispatch!=='confirmed'||d.endDispatch==='confirmed'&&run.endDispatch!=='confirmed'||d.stateUpdatedAt<run.createdAt)corrupt();
+    if(d.beginDispatch==='confirmed'&&run.beginDispatch!=='confirmed'||d.endDispatch==='confirmed'&&run.endDispatch!=='confirmed'||d.stateUpdatedAt<run.createdAt)corrupt();
    }else if(['invocation.updated','invocation.snapshot'].includes(e.type)){
-    if(!plain(d,['invocationId','tool','state','dispatchStarted','receipt','error','stateUpdatedAt'])||!id(d.invocationId,'ainv')||!tools.has(d.tool)||!invocationStates.has(d.state)||typeof d.dispatchStarted!=='boolean'||!error(d.error)||!date(d.stateUpdatedAt)||d.receipt!==null&&(!plain(d.receipt,['stage','inputs'])||d.receipt.stage!=='input-injected'||!integer(d.receipt.inputs,1,32))||(d.state==='injected')!==(d.receipt!==null))corrupt();
-    if(d.state==='intent'&&(d.dispatchStarted||d.error!==null)||d.state==='requested'&&(!d.dispatchStarted||d.error!==null)||d.state==='injected'&&(!d.dispatchStarted||d.error!==null)||d.state==='rejected'&&d.error?.outcome!=='not-dispatched'||d.state==='unknown'&&(!d.dispatchStarted||d.error?.outcome!=='unknown'))corrupt();
     const owner=db.prepare('SELECT agent_run_id,tenant,session_id,body FROM agent_invocations WHERE invocation_id=?').get(d.invocationId);if(!owner||owner.agent_run_id!==run.agentRunId||owner.tenant!==run.tenant||owner.session_id!==run.sessionId)corrupt();const current=JSON.parse(owner.body);if(d.tool!==current.tool||d.stateUpdatedAt<current.createdAt||d.dispatchStarted&&!current.dispatchStarted||['injected','rejected','unknown'].includes(d.state)&&d.state!==current.state)corrupt();
    }else corrupt();
    return e;
