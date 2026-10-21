@@ -6,6 +6,7 @@ import {createSessionRuntimeJournal,runtimeSchemaSql} from './session-runtime-jo
 import {createSessionAgentJournal,agentSchemaSql} from './session-agent-journal.mjs';
 import {AGENT_EVENT_FORMAT,agentEventSchemaSql,createAgentEventJournal} from './agent-event-journal.mjs';
 import {AGENT_WEBHOOK_FORMAT,agentWebhookSchemaSql,createAgentWebhookJournal} from './agent-webhook-journal.mjs';
+import {createLegacyAgentWebhookJournal} from './agent-webhook-capture-v1.mjs';
 
 let DatabaseSync;
 try{({DatabaseSync}=createRequire(import.meta.url)('node:sqlite'));}catch{}
@@ -92,7 +93,7 @@ export class SqliteSessionStore {
    if(!empty&&!names.includes('metadata'))fail('STATE_SCHEMA','Session ledger metadata table is unavailable');
    const eventFormat=!empty?db.prepare("SELECT value FROM metadata WHERE name='agent_event_format'").get()?.value:undefined;
    const webhookFormat=!empty?db.prepare("SELECT value FROM metadata WHERE name='agent_webhook_format'").get()?.value:undefined;
-   if(webhookFormat!==undefined&&(version!==4||webhookFormat!==AGENT_WEBHOOK_FORMAT||eventFormat!==AGENT_EVENT_FORMAT))fail('STATE_SCHEMA','Unsupported Agent webhook capture extension');
+   if(webhookFormat!==undefined&&(version!==4||![AGENT_WEBHOOK_FORMAT,'remote-paint-agent-webhooks-v1'].includes(webhookFormat)||eventFormat!==AGENT_EVENT_FORMAT))fail('STATE_SCHEMA','Unsupported Agent webhook capture extension');
    if(eventFormat!==undefined&&(version!==4||eventFormat!==AGENT_EVENT_FORMAT))fail('STATE_SCHEMA','Unsupported Agent event journal extension');
    const expectedTables=version===4?[...(eventFormat?['agent_event_heads','agent_events']:[]),'agent_invocations','agent_runs',...(webhookFormat?['agent_webhook_deliveries','agent_webhooks']:[]),'bindings','metadata','operations','runtime_providers','runtimes','sessions']:['bindings','metadata','operations','runtime_providers','runtimes','sessions'];
    if(!empty&&(legacy?db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==legacyFormat:![2,3,4].includes(version)||JSON.stringify(names)!==JSON.stringify(expectedTables)||db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==({2:previousFormat,3:stableFormat,4:format})[version]))fail('STATE_SCHEMA','Unsupported Session ledger schema');
@@ -156,6 +157,20 @@ export class SqliteSessionStore {
     // Validate original history before opt-in migration. Existing extensions
     // remain active on reopen, even when the creation option is omitted.
     this.#agents.validate();
+    if(webhookFormat==='remote-paint-agent-webhooks-v1'){
+     createLegacyAgentWebhookJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,events}).validate();
+     db.exec(`BEGIN IMMEDIATE;
+      ALTER TABLE agent_webhooks ADD COLUMN accepted_through INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE agent_webhooks ADD COLUMN last_ack TEXT;
+      UPDATE agent_webhooks SET accepted_through=start_after;
+      ALTER TABLE agent_webhook_deliveries ADD COLUMN delivery_id TEXT;
+      ALTER TABLE agent_webhook_deliveries ADD COLUMN attempts INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE agent_webhook_deliveries ADD COLUMN attempt_id TEXT;
+      ALTER TABLE agent_webhook_deliveries ADD COLUMN last_outcome TEXT;`);
+     for(const r of db.prepare('SELECT subscription_id,sequence FROM agent_webhook_deliveries').all())db.prepare('UPDATE agent_webhook_deliveries SET delivery_id=? WHERE subscription_id=? AND sequence=?').run('awdl_'+randomUUID(),r.subscription_id,r.sequence);
+     db.exec('CREATE UNIQUE INDEX agent_webhook_delivery_identity ON agent_webhook_deliveries(delivery_id);CREATE UNIQUE INDEX agent_webhook_attempt_identity ON agent_webhook_deliveries(attempt_id);');
+     db.prepare("UPDATE metadata SET value=? WHERE name='agent_webhook_format'").run(AGENT_WEBHOOK_FORMAT);db.exec('COMMIT');
+    }
     if(webhookFormat===undefined){db.exec('BEGIN IMMEDIATE');db.exec(agentWebhookSchemaSql);db.prepare('INSERT INTO metadata VALUES(?,?)').run('agent_webhook_format',AGENT_WEBHOOK_FORMAT);db.prepare('INSERT INTO metadata VALUES(?,?)').run('agent_webhook_revision','0');db.exec('COMMIT');}
     webhooks=createAgentWebhookJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,events});webhooks.validate();
     this.#agents=createSessionAgentJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,validateSession:sessionRecord,maxAgentRuns,maxAgentInvocations,events,webhooks});
@@ -197,6 +212,8 @@ export class SqliteSessionStore {
  listAgentEvents(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.events(agentRunId,tenant,options,owner);}
  subscribeAgentWebhook(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.subscribeWebhook(agentRunId,tenant,options,owner);}
  readAgentWebhookCapture(subscriptionId,tenant,options,{owner}={}){this.#open();return this.#agents.webhookCapture(subscriptionId,tenant,options,owner);}
+ beginAgentWebhookAttempt(subscriptionId,tenant,{owner}={}){this.#open();return this.#agents.beginWebhook(subscriptionId,tenant,owner);}
+ settleAgentWebhookAttempt(subscriptionId,tenant,options,{owner}={}){this.#open();return this.#agents.settleWebhook(subscriptionId,tenant,options,owner);}
  agentCancellationSnapshot(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.cancellation(agentRunId,tenant,options,owner);}
  commitAgentRun(row,{owner}={}){this.#open();return this.#agents.commitRun(row,owner);}
  commitAgentInvocation(row,{owner}={}){this.#open();return this.#agents.commitInvocation(row,owner);}
