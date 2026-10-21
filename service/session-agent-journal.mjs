@@ -28,7 +28,7 @@ const terminalInvocation=new Set(['injected','rejected','unknown']);
 const terminalSession=new Set(['closed','expired']);
 const tools=new Set(['click','move','drag','scroll','press','insertText','composition']);
 const dispatch=new Set(['not-requested','requested','confirmed']);
-export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,maxAgentRuns,maxAgentInvocations,events:eventJournal=null}){
+export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,maxAgentRuns,maxAgentInvocations,events:eventJournal=null,webhooks=null}){
  let owner=null,recoveryRuns=new Set(),recoveryParents=new Set();
  const reject=(code,message)=>fail('STATE_AGENT_'+code,message);
  const encode=row=>{const body=JSON.stringify(row);if(Buffer.byteLength(body)>8192)reject('LIMIT','Agent metadata exceeds 8192 bytes');return body;};
@@ -69,7 +69,7 @@ export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,
  function readInvocation(id){const row=invocation(id);if(row)invocationReference(row);return row;}
  function uniqueRun(sql,...args){const values=db.prepare(sql).all(...args);if(values.length>1)fail('STATE_CORRUPT','Agent lookup has multiple identities');return values.length?readRun(values[0].agent_run_id):null;}
  function transaction(action){try{db.exec('BEGIN IMMEDIATE');const value=action();counts();const next=revision()+1;if(!Number.isSafeInteger(next))reject('LIMIT','Agent revision exhausted');db.prepare("UPDATE metadata SET value=? WHERE name='agent_revision'").run(String(next));db.exec('COMMIT');return structuredClone({revision:next,...value});}catch(error){try{db.exec('ROLLBACK');}catch{}if(isStoreError(error))throw error;fail('STATE_AGENT_WRITE','Agent metadata transaction failed',error);}}
- function validate(){counts();revision();for(const value of db.prepare('SELECT agent_run_id FROM agent_runs').iterate())runReference(run(value.agent_run_id));for(const value of db.prepare('SELECT invocation_id FROM agent_invocations').iterate())invocationReference(invocation(value.invocation_id));if(db.prepare('SELECT session_id FROM agent_runs WHERE reserved=1 GROUP BY session_id HAVING count(*)>1 LIMIT 1').get())fail('STATE_CORRUPT','Multiple Agent writers reserve the same Session');eventJournal?.validate();}
+ function validate(){counts();revision();for(const value of db.prepare('SELECT agent_run_id FROM agent_runs').iterate())runReference(run(value.agent_run_id));for(const value of db.prepare('SELECT invocation_id FROM agent_invocations').iterate())invocationReference(invocation(value.invocation_id));if(db.prepare('SELECT session_id FROM agent_runs WHERE reserved=1 GROUP BY session_id HAVING count(*)>1 LIMIT 1').get())fail('STATE_CORRUPT','Multiple Agent writers reserve the same Session');eventJournal?.validate();webhooks?.validate();}
  return {
   get claimed(){return owner!==null;},validate,
   claim(value,{compact=false}={}){if(typeof value!=='symbol')throw TypeError('Expected an opaque Agent controller owner');if(owner!==null&&owner!==value)reject('OWNER','Agent controller already has an owner');validate();if(owner===null){recoveryRuns.clear();recoveryParents.clear();for(const row of db.prepare('SELECT agent_run_id,reserved FROM agent_runs').iterate()){recoveryParents.add(row.agent_run_id);if(row.reserved)recoveryRuns.add(row.agent_run_id);}owner=value;}return compact?{revision:revision(),recoveryRequired:[...recoveryRuns].sort()}:this.snapshot(value);},
@@ -80,6 +80,8 @@ export function createSessionAgentJournal(db,{fail,isStoreError,validateSession,
   writer(sessionId,value){authorize(value);return uniqueRun('SELECT agent_run_id FROM agent_runs WHERE session_id=? AND reserved=1 LIMIT 2',sessionId);},
   getInvocation(id,value){authorize(value);return readInvocation(id);},
   events(id,tenant,options,value){authorize(value);const row=readRun(id);if(!row||row.tenant!==tenant)reject('REFERENCE','Agent run is unavailable');if(!eventJournal)reject('INVALID','Agent event journal is unavailable');return eventJournal.read(row,options);},
+  subscribeWebhook(id,tenant,options,value){authorize(value);const row=readRun(id);if(!row||row.tenant!==tenant)reject('REFERENCE','Agent run is unavailable');if(!webhooks)fail('STATE_WEBHOOK_DISABLED','Webhook capture is not enabled');return webhooks.subscribe(row,options);},
+  webhookCapture(id,tenant,options,value){authorize(value);if(!webhooks)fail('STATE_WEBHOOK_DISABLED','Webhook capture is not enabled');return webhooks.read(id,tenant,options);},
   cancellation(id,tenant,options={},value){
    authorize(value);if(!options||![Object.prototype,null].includes(Object.getPrototypeOf(options)))reject('INVALID','Invalid bounded cancellation page');const keys=Reflect.ownKeys(options);
    if(!plain(options,keys)||keys.some(k=>!['afterId','eventSequence'].includes(k))||keys.length!==0&&(!plain(options,['afterId','eventSequence'])||!prefixed(options.afterId,'ainv_')||!Number.isSafeInteger(options.eventSequence)||options.eventSequence<1))reject('INVALID','Invalid bounded cancellation page');

@@ -21,7 +21,7 @@ const invocationData=r=>({invocationId:r.invocationId,tool:r.tool,state:r.state,
 
 // Called only inside the existing Agent state transaction. Rows entering the
 // projection have already passed that journal's identity/evidence validation.
-export function createAgentEventJournal(db,{fail}){
+export function createAgentEventJournal(db,{fail,onAppend=null}){
  const corrupt=()=>fail('STATE_CORRUPT','Invalid stored Agent event history');
  function encode(value){const body=JSON.stringify(value);if(Buffer.byteLength(body)>AGENT_EVENT_LIMITS.eventBytes)fail('STATE_AGENT_LIMIT','Agent event metadata exceeds its byte limit');return body;}
  function parent(id){const row=db.prepare('SELECT agent_run_id,tenant,session_id,body FROM agent_runs WHERE agent_run_id=?').get(id);if(!row)corrupt();const value=JSON.parse(row.body);if(value.agentRunId!==row.agent_run_id||value.tenant!==row.tenant||value.sessionId!==row.session_id)corrupt();return value;}
@@ -52,11 +52,14 @@ export function createAgentEventJournal(db,{fail}){
   if(h.last_sequence)window(run);
   const next=h.last_sequence+1;if(!integer(next,1))fail('STATE_AGENT_LIMIT','Agent event cursor exhausted');
   const e={schema:'agent-event-v1',eventId:'aevt_'+randomUUID(),agentRunId:run.agentRunId,sessionId:run.sessionId,region:run.region,version:run.version,sequence:next,observedAt:new Date().toISOString(),type,data},body=encode(e);
+  onAppend?.(run,e);
   db.prepare('DELETE FROM agent_events WHERE agent_run_id=? AND sequence<=?').run(run.agentRunId,next-AGENT_EVENT_LIMITS.retainedPerRun);
   db.prepare('INSERT INTO agent_events VALUES(?,?,?,?,?,?)').run(run.agentRunId,run.tenant,run.sessionId,next,e.eventId,body);
   db.prepare('UPDATE agent_event_heads SET last_sequence=? WHERE agent_run_id=?').run(next,run.agentRunId);
  }
  return {
+  captureWindow(run){const {h,first,events}=window(run);return {oldestSequence:first,latestSequence:h.last_sequence,events:structuredClone(events)};},
+  validateCaptured(run,event){return decode({agent_run_id:run.agentRunId,tenant:run.tenant,session_id:run.sessionId,sequence:event?.sequence,event_id:event?.eventId,body:encode(event)},run);},
   seedSnapshots(){
    // A pre-extension ledger cannot supply a missing transition history. Seed
    // explicit observed snapshots, preserving original rows/revisions/identity.

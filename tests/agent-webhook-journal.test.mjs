@@ -1,0 +1,78 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtemp,rm,readFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {fork} from 'node:child_process';
+import {once} from 'node:events';
+import {createHash} from 'node:crypto';
+import {DatabaseSync} from 'node:sqlite';
+import {SqliteSessionStore,sessionStoreSupported} from '../service/session-store.mjs';
+import {AGENT_WEBHOOK_FORMAT} from '../service/agent-webhook-journal.mjs';
+import {readyRecords,runIntent,activate,invocationIntent,requested,injected,unknown,unstartedClosed,uuid} from './fixtures/session-agent-records.mjs';
+import {withOwnedTestChild} from './owned-test-child.mjs';
+const enabled={skip:!sessionStoreSupported},code=code=>({code}),endpoint=n=>'awh_'+uuid(n),digest=s=>createHash('sha256').update(s).digest('hex');
+function edit(path,fn){const db=new DatabaseSync(path);try{return fn(db);}finally{db.close();}}
+async function fixture(t,options={}){
+ const directory=await mkdtemp(join(tmpdir(),'remote-paint-webhook-capture-')),path=join(directory,'state.sqlite'),store=new SqliteSessionStore({path,enableAgentWebhooks:true,...options}),owner=Symbol(),batch=readyRecords();store.commit(batch);store.claimAgentController(owner);
+ const detach=()=>{try{store.releaseAgentController(owner);}catch{}store.close();};t.after(async()=>{detach();await rm(directory,{recursive:true,force:true});});
+ return {store,owner,path,directory,batch,detach,subscribe:(run=runIntent(),after=0,n=1)=>store.subscribeAgentWebhook(run.agentRunId,run.tenant,{endpointId:endpoint(n),after},{owner}),read:(s,options)=>store.readAgentWebhookCapture(s.subscriptionId,batch.sessions[0].tenant,options,{owner}),inv:r=>store.commitAgentInvocation(r,{owner})};
+}
+function all(f,s){const out=[];let after=s.after;for(;;){const page=f.read(s,{after});out.push(...page.deliveries);if(!page.hasMore)return out;after=page.nextCursor;}}
+function generate(f,run,n){const i=invocationIntent(run,n);for(const r of [i,requested(i),injected(i)])f.inv(r);}
+async function killed(f,mode){const marker=join(f.directory,mode);await withOwnedTestChild(()=>fork(new URL('./fixtures/agent-webhook-journal-child.mjs',import.meta.url),[f.path,mode,marker],{execArgv:[],stdio:['ignore','ignore','pipe','ipc']}),async child=>{const exit=await once(child,'close',{signal:AbortSignal.timeout(5000)});assert.deepEqual(exit,[null,'SIGKILL']);});assert.equal(await readFile(marker,'utf8'),mode+'\n');}
+
+test('webhook capture opt-in preserves legacy ledgers without creating notification state',enabled,async t=>{
+ const f=await fixture(t,{enableAgentWebhooks:false}),run=activate(f.store,f.owner);assert.throws(()=>f.subscribe(run),code('STATE_WEBHOOK_DISABLED'));f.detach();edit(f.path,db=>{assert.equal(db.prepare("SELECT count(*) AS n FROM sqlite_schema WHERE name LIKE 'agent_webhook%'").get().n,0);assert.equal(db.prepare("SELECT value FROM metadata WHERE name='agent_webhook_format'").get(),undefined);});
+});
+test('subscription catch-up retains exact original event IDs bodies and independent pagination',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),before=f.store.loadAgents({owner:f.owner}),s=f.subscribe(run);generate(f,run,1);const items=all(f,s);assert.deepEqual(items.map(d=>d.sequence),[1,2,3,4,5,6]);assert.equal(items.length,new Set(items.map(d=>d.eventId)).size);for(const d of items){const e=JSON.parse(d.body);assert.equal(e.schema,'agent-webhook-v1');assert.equal(e.endpointId,endpoint(1));assert.equal(e.subscriptionId,s.subscriptionId);assert.equal(e.event.eventId,d.eventId);assert.equal(d.bodySha256,digest(d.body));}assert.equal(f.read(s).deliveries.length,4);assert.equal(f.read(s,{after:4}).deliveries.length,2);assert.equal(before.revision,3);assert.equal(f.store.agentHead({owner:f.owner}).revision,6);
+});
+test('notification registration and reads cannot advance Agent revision or produce Source completion',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),before=f.store.loadAgents({owner:f.owner}),session=f.store.load(),s=f.subscribe(run,3);assert.equal(s.pending,0);assert.equal(f.read(s).deliveries.length,0);assert.deepEqual(f.store.loadAgents({owner:f.owner}),before);assert.deepEqual(f.store.load(),session);assert.equal(f.store.findAgentWriter(run.sessionId,{owner:f.owner}).reserved,true);
+});
+test('same endpoint subscription retries are idempotent while the starting cursor is immutable',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),s=f.subscribe(run,1),revision=f.read(s).revision;assert.deepEqual(f.subscribe(run,1),s);assert.equal(f.read(s).revision,revision);assert.throws(()=>f.subscribe(run,2),code('STATE_WEBHOOK_CONFLICT'));assert.equal(f.read(s).revision,revision);
+});
+test('subscription admission rejects ahead and pruned cursors without silently replacing lost history',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner);assert.throws(()=>f.subscribe(run,4),code('STATE_WEBHOOK_CURSOR'));for(let n=1;n<=22;n++)generate(f,run,n);assert.throws(()=>f.subscribe(run,0),code('STATE_WEBHOOK_CURSOR'));const s=f.subscribe(run,5);assert.equal(s.pending,64);assert.deepEqual(all(f,s).map(d=>d.sequence),Array.from({length:64},(_,i)=>i+6));
+});
+test('full capture preserves its known prefix and records an expanding gap without blocking original actions',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),s=f.subscribe(run);for(let n=1;n<=22;n++)generate(f,run,n);const page=f.read(s);assert.equal(page.pending,64);assert.equal(page.queuedThrough,64);assert.equal(page.observedLatest,69);assert.equal(page.reconciliationRequired,true);assert.equal(page.missingFrom,65);assert.equal(page.missingThrough,69);assert.equal(f.store.getAgentInvocation(invocationIntent(run,22).invocationId,{owner:f.owner}).state,'injected');const before=all(f,s);generate(f,run,23);assert.deepEqual(all(f,s),before);assert.equal(f.read(s).missingThrough,72);assert.equal(f.store.findAgentWriter(run.sessionId,{owner:f.owner}).reserved,true);
+});
+test('queued bodies survive pruning of the independent 64-event replay window unchanged',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),s=f.subscribe(run),first=f.read(s).deliveries[0];for(let n=1;n<=23;n++)generate(f,run,n);assert.equal(f.store.listAgentEvents(run.agentRunId,run.tenant,{}, {owner:f.owner}).gap,true);assert.deepEqual(f.read(s).deliveries[0],first);assert.equal(JSON.parse(first.body).event.sequence,1);
+});
+test('notification capacity is bounded per Run and globally without changing original Agent admission',enabled,async t=>{
+ const f=await fixture(t);let first;for(let n=1;n<=16;n++){const batch=n===1?f.batch:readyRecords('run-'+n,'tenant-run-'+n);if(n!==1)f.store.commit(batch);const run=runIntent(n,batch);f.store.commitAgentRun(run,{owner:f.owner});if(!first)first=run;for(let k=1;k<=4;k++)f.subscribe(run,1,k);assert.throws(()=>f.subscribe(run,1,5),code('STATE_WEBHOOK_LIMIT'));}const batch=readyRecords('overflow','tenant-overflow');f.store.commit(batch);const run=runIntent(17,batch);f.store.commitAgentRun(run,{owner:f.owner});assert.throws(()=>f.subscribe(run,1),code('STATE_WEBHOOK_LIMIT'));assert.equal(f.store.getAgentRun(run.agentRunId,{owner:f.owner}).state,'intent');assert.equal(f.store.getAgentRun(first.agentRunId,{owner:f.owner}).reserved,true);
+});
+test('capture calls require original opaque controller ownership and fixed tenant identity',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),s=f.subscribe(run);assert.throws(()=>f.store.subscribeAgentWebhook(run.agentRunId,run.tenant,{endpointId:endpoint(2),after:0}),code('STATE_AGENT_OWNER'));assert.throws(()=>f.store.readAgentWebhookCapture(s.subscriptionId,run.tenant,{}, {owner:Symbol()}),code('STATE_AGENT_OWNER'));assert.throws(()=>f.store.subscribeAgentWebhook(run.agentRunId,'other',{endpointId:endpoint(2),after:0},{owner:f.owner}),code('STATE_AGENT_REFERENCE'));assert.throws(()=>f.store.readAgentWebhookCapture(s.subscriptionId,'other',{}, {owner:f.owner}),code('STATE_WEBHOOK_REFERENCE'));
+});
+test('bounded capture options reject accessors extra fields coercions and out-of-range cursors',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),s=f.subscribe(run);let getters=0;const invalid=Object.defineProperty({endpointId:endpoint(2)},'after',{get(){getters++;return 0;},enumerable:true});for(const options of [invalid,{endpointId:endpoint(2),after:'0'},{endpointId:endpoint(2),after:-1},{endpointId:endpoint(2),after:0,url:'https://private.invalid'}])assert.throws(()=>f.store.subscribeAgentWebhook(run.agentRunId,run.tenant,options,{owner:f.owner}),code('STATE_WEBHOOK_INVALID'));for(const options of [{limit:0},{limit:5},{limit:null},{after:null},{after:4},{after:-1},{after:'0'}])assert.throws(()=>f.read(s,options),code('STATE_WEBHOOK_CURSOR'));assert.throws(()=>f.read(s,{url:'https://private.invalid'}),code('STATE_WEBHOOK_INVALID'));assert.equal(getters,0);
+});
+test('closed original Run capture remains readable and cannot reopen its writer reservation',enabled,async t=>{
+ const f=await fixture(t),run=runIntent();f.store.commitAgentRun(run,{owner:f.owner});const s=f.subscribe(run);f.store.commitAgentRun(unstartedClosed(run),{owner:f.owner});assert.equal(JSON.parse(all(f,s).at(-1).body).event.data.state,'closed');assert.equal(f.store.findAgentWriter(run.sessionId,{owner:f.owner}),null);assert.equal(f.read(s).pending,2);
+});
+test('existing capture automatically resumes on reopen without needing the creation flag',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),s=f.subscribe(run),i=invocationIntent(run);f.inv(i);f.inv(requested(i));const before=all(f,s),identity=f.store.identity();f.detach();const next=new SqliteSessionStore({path:f.path}),owner=Symbol();try{next.claimAgentController(owner);assert.deepEqual(next.identity(),identity);next.commitAgentInvocation(unknown(requested(i)),{owner});const page=next.readAgentWebhookCapture(s.subscriptionId,run.tenant,{after:3},{owner});assert.deepEqual(page.deliveries.slice(0,2),before.slice(3));assert.equal(JSON.parse(page.deliveries[2].body).event.data.state,'unknown');assert.equal(next.getAgentInvocation(i.invocationId,{owner}).receipt,null);}finally{next.releaseAgentController(owner);next.close();}
+});
+test('notification insertion failure rolls back Agent state event cursor capture and both revisions together',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),s=f.subscribe(run),i=invocationIntent(run);f.inv(i);const before=f.read(s),head=f.store.agentHead({owner:f.owner}),prepare=DatabaseSync.prototype.prepare;DatabaseSync.prototype.prepare=function(sql){if(sql.startsWith('INSERT INTO agent_webhook_deliveries'))return {run(){throw Error('controlled capture insert failure');}};return prepare.call(this,sql);};try{assert.throws(()=>f.inv(requested(i)),code('STATE_AGENT_WRITE'));}finally{DatabaseSync.prototype.prepare=prepare;}assert.deepEqual(f.read(s),before);assert.deepEqual(f.store.agentHead({owner:f.owner}),head);assert.equal(f.store.getAgentInvocation(i.invocationId,{owner:f.owner}).state,'intent');f.inv(requested(i));assert.equal(f.read(s,{after:4}).deliveries[0].sequence,5);
+});
+test('unsupported capture format missing tables foreign tables and corrupt revision fail closed',enabled,async t=>{
+ for(const mode of ['format','missing','foreign','revision','without-events']){const f=await fixture(t);f.detach();edit(f.path,db=>{if(mode==='format')db.exec("UPDATE metadata SET value='foreign' WHERE name='agent_webhook_format'");if(mode==='missing')db.exec('DROP TABLE agent_webhook_deliveries');if(mode==='foreign')db.exec('CREATE TABLE zz_foreign(body TEXT)');if(mode==='revision')db.exec("UPDATE metadata SET value='01' WHERE name='agent_webhook_revision'");if(mode==='without-events')db.exec("DROP TABLE agent_events;DROP TABLE agent_event_heads;DELETE FROM metadata WHERE name='agent_event_format'");});assert.throws(()=>new SqliteSessionStore({path:f.path}),code(mode==='revision'?'STATE_CORRUPT':'STATE_SCHEMA'));}
+});
+test('persisted capture rejects altered event identity body hash holes and inconsistent overflow metadata',enabled,async t=>{
+ for(const mode of ['hash','event','hole','gap','tenant','fields']){const f=await fixture(t),run=activate(f.store,f.owner);f.subscribe(run);f.detach();edit(f.path,db=>{if(mode==='hash')db.exec("UPDATE agent_webhook_deliveries SET body_sha256='bad' WHERE sequence=1");if(mode==='event')db.exec("UPDATE agent_webhook_deliveries SET event_id='aevt_"+uuid(999)+"' WHERE sequence=1");if(mode==='hole')db.exec('DELETE FROM agent_webhook_deliveries WHERE sequence=2');if(mode==='gap')db.exec('UPDATE agent_webhooks SET missing_from=4,observed_latest=4');if(mode==='tenant'){db.exec('PRAGMA foreign_keys=OFF');db.exec("UPDATE agent_webhook_deliveries SET tenant='other'");}if(mode==='fields'){const r=db.prepare('SELECT body FROM agent_webhook_deliveries WHERE sequence=1').get(),body=JSON.stringify({...JSON.parse(r.body),secret:'forbidden'});db.prepare('UPDATE agent_webhook_deliveries SET body=?,body_sha256=? WHERE sequence=1').run(body,digest(body));}});assert.throws(()=>new SqliteSessionStore({path:f.path}),code('STATE_CORRUPT'));}
+});
+test('real writer SIGKILL before capture migration commit leaves original schema identity and revisions intact',enabled,async t=>{
+ const f=await fixture(t,{enableAgentWebhooks:false});activate(f.store,f.owner);const identity=f.store.identity(),head=f.store.agentHead({owner:f.owner});f.detach();await killed(f,'migration');edit(f.path,db=>{assert.equal(db.prepare("SELECT count(*) AS n FROM sqlite_schema WHERE name LIKE 'agent_webhook%'").get().n,0);assert.equal(db.prepare("SELECT value FROM metadata WHERE name='agent_webhook_format'").get(),undefined);});const next=new SqliteSessionStore({path:f.path,enableAgentWebhooks:true}),owner=Symbol();try{next.claimAgentController(owner);assert.deepEqual(next.identity(),identity);assert.deepEqual(next.agentHead({owner}),head);}finally{next.releaseAgentController(owner);next.close();}
+});
+test('real writer SIGKILL before subscription commit cannot publish a partial capture prefix',enabled,async t=>{
+ const f=await fixture(t);activate(f.store,f.owner);f.detach();await killed(f,'subscribe');const next=new SqliteSessionStore({path:f.path}),owner=Symbol();try{next.claimAgentController(owner);const s=next.subscribeAgentWebhook(runIntent().agentRunId,runIntent().tenant,{endpointId:endpoint(1),after:0},{owner});assert.equal(s.pending,3);assert.equal(next.readAgentWebhookCapture(s.subscriptionId,runIntent().tenant,{}, {owner}).revision,1);}finally{next.releaseAgentController(owner);next.close();}
+});
+test('real writer SIGKILL before outcome commit retains original requested effect event and capture together',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),s=f.subscribe(run),i=invocationIntent(run);f.inv(i);f.inv(requested(i));const before=all(f,s),head=f.store.agentHead({owner:f.owner});f.detach();await killed(f,'outcome');const next=new SqliteSessionStore({path:f.path}),owner=Symbol();try{next.claimAgentController(owner);assert.equal(next.getAgentInvocation(i.invocationId,{owner}).state,'requested');assert.deepEqual(next.agentHead({owner}),head);assert.equal(next.readAgentWebhookCapture(s.subscriptionId,run.tenant,{}, {owner}).observedLatest,5);assert.deepEqual(next.readAgentWebhookCapture(s.subscriptionId,run.tenant,{after:3},{owner}).deliveries,before.slice(3));}finally{next.releaseAgentController(owner);next.close();}
+});

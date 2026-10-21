@@ -5,6 +5,7 @@ import {isAbsolute} from 'node:path';
 import {createSessionRuntimeJournal,runtimeSchemaSql} from './session-runtime-journal.mjs';
 import {createSessionAgentJournal,agentSchemaSql} from './session-agent-journal.mjs';
 import {AGENT_EVENT_FORMAT,agentEventSchemaSql,createAgentEventJournal} from './agent-event-journal.mjs';
+import {AGENT_WEBHOOK_FORMAT,agentWebhookSchemaSql,createAgentWebhookJournal} from './agent-webhook-journal.mjs';
 
 let DatabaseSync;
 try{({DatabaseSync}=createRequire(import.meta.url)('node:sqlite'));}catch{}
@@ -68,9 +69,10 @@ const legacyFormat='remote-paint-session-ledger-v1',previousFormat='remote-paint
 // https://nodejs.org/download/release/latest-v22.x/docs/api/sqlite.html
 export class SqliteSessionStore {
  #db;#maxSessions;#maxOperations;#maxBindings;#revision=0;#registryOwner=null;#runtime=null;#agents=null;#path;#fileIdentity;#instanceId=null;#identityFault=false;
- constructor({path,maxSessions=10000,maxOperations=maxSessions*18,maxBindings=maxSessions,maxAgentRuns=maxSessions,maxAgentInvocations=maxAgentRuns*16,maxDatabaseBytes=256*1024*1024}={}){
+ constructor({path,maxSessions=10000,maxOperations=maxSessions*18,maxBindings=maxSessions,maxAgentRuns=maxSessions,maxAgentInvocations=maxAgentRuns*16,maxDatabaseBytes=256*1024*1024,enableAgentWebhooks=false}={}){
   if(!sessionStoreSupported)fail('STATE_RUNTIME_UNSUPPORTED','Session persistence requires Node.js22.13 or newer with node:sqlite on Linux/macOS');
   if(typeof path!=='string'||!isAbsolute(path)||!integer(maxSessions,1,100000)||!integer(maxOperations,1,1800000)||!integer(maxBindings,1,100000)||!integer(maxAgentRuns,1,100000)||!integer(maxAgentInvocations,1,1600000)||!integer(maxDatabaseBytes,1024*1024,1024*1024*1024))throw new TypeError('Invalid Session store configuration');
+  if(typeof enableAgentWebhooks!=='boolean')throw new TypeError('Invalid webhook capture configuration');
   this.#maxSessions=maxSessions;this.#maxOperations=maxOperations;this.#maxBindings=maxBindings;this.#path=path;
   try{
    let created=false;
@@ -81,7 +83,7 @@ export class SqliteSessionStore {
    const file=lstatSync(path,{bigint:true});this.#fileIdentity=Object.freeze({device:String(file.dev),inode:String(file.ino)});this.#checkFileIdentity();
    const db=this.#db=new DatabaseSync(path);
    db.exec('PRAGMA busy_timeout=0; PRAGMA trusted_schema=OFF; PRAGMA foreign_keys=ON; PRAGMA locking_mode=EXCLUSIVE; BEGIN EXCLUSIVE');
-   const names=db.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name LIMIT 11").all().map(x=>x.name);
+   const names=db.prepare("SELECT name FROM sqlite_schema WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name LIMIT 13").all().map(x=>x.name);
    const empty=names.length===0;
    const version=db.prepare('PRAGMA user_version').get().user_version;
    if(empty&&!created)fail('STATE_SCHEMA','Existing ledger has no valid Session schema');
@@ -89,8 +91,10 @@ export class SqliteSessionStore {
    const legacy=!empty&&version===1&&JSON.stringify(names)===JSON.stringify(['bindings','metadata','operations','sessions']);
    if(!empty&&!names.includes('metadata'))fail('STATE_SCHEMA','Session ledger metadata table is unavailable');
    const eventFormat=!empty?db.prepare("SELECT value FROM metadata WHERE name='agent_event_format'").get()?.value:undefined;
+   const webhookFormat=!empty?db.prepare("SELECT value FROM metadata WHERE name='agent_webhook_format'").get()?.value:undefined;
+   if(webhookFormat!==undefined&&(version!==4||webhookFormat!==AGENT_WEBHOOK_FORMAT||eventFormat!==AGENT_EVENT_FORMAT))fail('STATE_SCHEMA','Unsupported Agent webhook capture extension');
    if(eventFormat!==undefined&&(version!==4||eventFormat!==AGENT_EVENT_FORMAT))fail('STATE_SCHEMA','Unsupported Agent event journal extension');
-   const expectedTables=version===4?[...(eventFormat?['agent_event_heads','agent_events']:[]),'agent_invocations','agent_runs','bindings','metadata','operations','runtime_providers','runtimes','sessions']:['bindings','metadata','operations','runtime_providers','runtimes','sessions'];
+   const expectedTables=version===4?[...(eventFormat?['agent_event_heads','agent_events']:[]),'agent_invocations','agent_runs',...(webhookFormat?['agent_webhook_deliveries','agent_webhooks']:[]),'bindings','metadata','operations','runtime_providers','runtimes','sessions']:['bindings','metadata','operations','runtime_providers','runtimes','sessions'];
    if(!empty&&(legacy?db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==legacyFormat:![2,3,4].includes(version)||JSON.stringify(names)!==JSON.stringify(expectedTables)||db.prepare("SELECT value FROM metadata WHERE name='format'").get()?.value!==({2:previousFormat,3:stableFormat,4:format})[version]))fail('STATE_SCHEMA','Unsupported Session ledger schema');
    const priorInstance=!empty&&!legacy?db.prepare("SELECT value FROM metadata WHERE name='instance_id'").get():null;
    if(priorInstance&&!instance(priorInstance.value))fail('STATE_IDENTITY','Invalid stored Session ledger instance');
@@ -139,7 +143,8 @@ export class SqliteSessionStore {
     db.prepare('INSERT INTO metadata VALUES(?,?)').run('agent_revision','0');db.prepare("UPDATE metadata SET value=? WHERE name='format'").run(format);db.exec('PRAGMA user_version=4;COMMIT');
    }
    this.#agents=createSessionAgentJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,validateSession:sessionRecord,maxAgentRuns,maxAgentInvocations});
-   const events=createAgentEventJournal(db,{fail});
+   let webhooks=null;
+   const events=createAgentEventJournal(db,{fail,onAppend:(run,event)=>webhooks?.append(run,event)});
    if(eventFormat===undefined){
     // Validate the original rows before atomically extending the v4 ledger.
     // Existing rows become explicit snapshots, never invented past events.
@@ -147,6 +152,14 @@ export class SqliteSessionStore {
     db.prepare('INSERT INTO metadata VALUES(?,?)').run('agent_event_format',AGENT_EVENT_FORMAT);db.exec('COMMIT');
    }
    this.#agents=createSessionAgentJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,validateSession:sessionRecord,maxAgentRuns,maxAgentInvocations,events});
+   if(webhookFormat!==undefined||enableAgentWebhooks){
+    // Validate original history before opt-in migration. Existing extensions
+    // remain active on reopen, even when the creation option is omitted.
+    this.#agents.validate();
+    if(webhookFormat===undefined){db.exec('BEGIN IMMEDIATE');db.exec(agentWebhookSchemaSql);db.prepare('INSERT INTO metadata VALUES(?,?)').run('agent_webhook_format',AGENT_WEBHOOK_FORMAT);db.prepare('INSERT INTO metadata VALUES(?,?)').run('agent_webhook_revision','0');db.exec('COMMIT');}
+    webhooks=createAgentWebhookJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,events});webhooks.validate();
+    this.#agents=createSessionAgentJournal(db,{fail,isStoreError:error=>error instanceof SessionStoreError,validateSession:sessionRecord,maxAgentRuns,maxAgentInvocations,events,webhooks});
+   }
    this.#instanceId=db.prepare("SELECT value FROM metadata WHERE name='instance_id'").get()?.value;
    if(!instance(this.#instanceId))fail('STATE_IDENTITY','Session ledger instance is unavailable');this.#checkFileIdentity();
   }catch(error){
@@ -182,6 +195,8 @@ export class SqliteSessionStore {
  findAgentInvocation(agentRunId,tenant,keyHash,{owner}={}){this.#open();return this.#agents.findInvocation(agentRunId,tenant,keyHash,owner);}
  listAgentRecords(kind,options,{owner}={}){this.#open();return this.#agents.list(kind,options,owner);}
  listAgentEvents(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.events(agentRunId,tenant,options,owner);}
+ subscribeAgentWebhook(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.subscribeWebhook(agentRunId,tenant,options,owner);}
+ readAgentWebhookCapture(subscriptionId,tenant,options,{owner}={}){this.#open();return this.#agents.webhookCapture(subscriptionId,tenant,options,owner);}
  agentCancellationSnapshot(agentRunId,tenant,options,{owner}={}){this.#open();return this.#agents.cancellation(agentRunId,tenant,options,owner);}
  commitAgentRun(row,{owner}={}){this.#open();return this.#agents.commitRun(row,owner);}
  commitAgentInvocation(row,{owner}={}){this.#open();return this.#agents.commitInvocation(row,owner);}
