@@ -1,0 +1,183 @@
+{
+  "at": "2026-10-21T05:54:17.431574+00:00",
+  "task": "K8c3c versioned durable attempts and original-head ACK fences only",
+  "gitCommit": "ce7659693d6a2ee913544a314bed3ff60b611990",
+  "sourceFiles": 1255,
+  "sourceManifestSha256": "d011619079666d19a82a89e18e02b067f116938e6d909a72f0283c7016660b9a",
+  "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-attempts-candidate-v1/frozen-version.json",
+  "candidateManifestSha256": "833e08cfb394decfa8aaf4af45581759cad8c488149a818a0e7d6d6564924fab",
+  "allCandidateSourceHashesMatchBoth": true,
+  "fullJs": {
+    "mac": {
+      "tests": 1645,
+      "pass": 1630,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "todo": 0,
+      "all1622PriorNamesRetained": true,
+      "all23NewActualNoSkip": true,
+      "logSha256": "8731b4dff8e68d756baaa53b7c597033cee50d6287df5fe08b8cb615943af716",
+      "receiptSha256": "e22a9ad571ef7b367958330f78912c365f02f56ec463a0b782f6928947fd44c6"
+    },
+    "linux": {
+      "tests": 1645,
+      "pass": 1639,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "todo": 0,
+      "all1622PriorNamesRetained": true,
+      "all23NewActualNoSkip": true,
+      "logSha256": "25d29038c3fb3a0577ac0c066742b3cdf0b5c92bb315933ac7c17ddb5e516d7f",
+      "receiptSha256": "49ed602fa7c61c7b95f7906c886e8d4263e0093a1756dfc3a6b1c1381b4ae2a9"
+    }
+  },
+  "installedPackages": {
+    "mac": {
+      "nodeTests": 202,
+      "pythonTests": 194,
+      "strictTypescriptActual0": true,
+      "public5Source9MypyActual0": true,
+      "sourceFallbackUnavailable": true,
+      "archives": {
+        "remote-paint-session-client-0.0.0-dev.0.tgz": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+        "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "1a2c251f226d3efa415ebba928078d01bb20fd64bbe66419d5c698ed44a0e89a"
+      },
+      "resultSha256": "ff5d41b796582f7836a909bdf4262f5148ceb629df98cce566930896ec56c842"
+    },
+    "linux": {
+      "nodeTests": 202,
+      "pythonTests": 194,
+      "strictTypescriptActual0": true,
+      "public5Source9MypyActual0": true,
+      "sourceFallbackUnavailable": true,
+      "archives": {
+        "remote-paint-session-client-0.0.0-dev.0.tgz": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+        "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "1a2c251f226d3efa415ebba928078d01bb20fd64bbe66419d5c698ed44a0e89a"
+      },
+      "resultSha256": "643c540f3641daecb112f65a95c5b1f68de6b9b3bf01948298577d0ee43de479"
+    }
+  },
+  "newCases": [
+    "webhook acknowledgment advances only the original current head and preserves its immutable start cursor",
+    "a capture body cannot be acknowledged before its durable attempt or without original transport settlement",
+    "retry retains original event ID delivery ID and exact raw body while replacing its one-use attempt ID",
+    "a settled unknown outcome cannot be rewritten into acceptance by a late receipt from that same attempt",
+    "duplicate latest acknowledgment is an idempotent no-op even while a later head is actually requested",
+    "old acknowledgments outside the single bounded receipt cannot advance or overwrite future delivery heads",
+    "duplicate negative transport outcomes are idempotent but a different settled outcome is rejected",
+    "eight actual requested attempts exhaust the original head without deleting it or skipping to a later event",
+    "requested transport bookkeeping prevents a second attempt controller release or ledger close",
+    "attempt and receipt admission require the current opaque controller and original tenant subscription",
+    "transport outcomes cannot change original Agent Session writer or original event history",
+    "acknowledged capacity is reusable beyond the replay window without rewriting initial subscription identity",
+    "draining an overflowed known prefix cannot clear a gap or automatically resume past missing original history",
+    "receipt input validates exact identity hash fields outcomes and data descriptors without invoking getters",
+    "receipt transaction failure rolls back body deletion accepted cursor receipt and notification revision together",
+    "v1 migration preserves original raw bodies IDs revisions immutable cursor and ledger identity",
+    "invalid legacy capture is rejected before v2 columns or metadata can be committed",
+    "v2 corruption of accepted cursors attempt counts head ordering receipt metadata or body ownership fails closed",
+    "real SIGKILL before v1 migration commit retains the old extension for an intact retry",
+    "real SIGKILL before begin commit cannot consume an attempt or publish a requested transport",
+    "real SIGKILL after begin commit recovers requested as unknown without refunding its attempt count or changing Source state",
+    "real SIGKILL before ACK commit retains the original body and recovery cannot invent acceptance",
+    "real SIGKILL after ACK commit retains only the original accepted head and its bounded duplicate receipt"
+  ],
+  "all23NewActualBothNoSkips": true,
+  "all1622PriorNamesRetainedBoth": true,
+  "all194PythonNamesMatchBoth": true,
+  "attemptsCoreQualifiedBoth": true,
+  "realSigkillMigrationBeginAckBeforeAfterBoth": true,
+  "sameInputTargeted100AfterTimeoutPreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-attempts-targeted-v2/receipt.json",
+  "originalTimeoutPreserved": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-attempts-targeted-v1/receipt.json",
+  "serialProbeTimeoutsPreserved": true,
+  "signatureCoreAndCaptureStorageQualifiedPreviously": true,
+  "linuxRuntime": {
+    "python": "3.11.2",
+    "platform": "Linux",
+    "arch": "aarch64",
+    "node": "v22.23.3"
+  },
+  "githubRun": 39551778361,
+  "githubRunUrl": "https://github.com/jihuayu/remote-paint/actions/runs/39551778361",
+  "githubStatusSha256": "21258a8cede1bf56fdcee3df3112b8aa818c96fc386faa8adf49f8527ad80247",
+  "sdkArchivesUnchanged": true,
+  "actualTransportSettlementQualified": false,
+  "actualHttpsDeliveryQualified": false,
+  "persistentReceiverDedupQualified": false,
+  "fullSignedWebhookQualified": false,
+  "originalNativeEventCancelQualified": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 18,
+    "pending": 13
+  },
+  "K8Complete": false,
+  "eightHourPassed": false,
+  "wholeGoalQualified": false,
+  "nativeSourceProtection": {
+    "at": "2026-10-21T05:54:17.427376+00:00",
+    "native108InputsUnchanged": true,
+    "canonical19FilesReadOnlyHashesMatch": true,
+    "protectedSamplerIdentityAndHashMatchWithoutExecutionOrCopy": true,
+    "pinSha256": "628f35364a453fc22b546e92dd095257df016663135342f8fb583ee1ca75f4b0",
+    "unrelatedPeerUnchangedAndExcluded": true,
+    "lastActualBrowserLogProgress": [
+      5185,
+      17924
+    ],
+    "lastBrowserLogAt": "2026-10-21T05:54:02.492093+00:00",
+    "exactOwnedLocalContainerObservation": {
+      "queryExitCode": 0,
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 2967239,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-10-20T12:47:32.756177921Z",
+        "FinishedAt": "0001-01-01T00:00:00Z"
+      },
+      "stderr": ""
+    },
+    "humanAuthorizedOrbStackRestart": true,
+    "restartPerformed": false,
+    "recoveryObservation": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/orbstack-authorized-recovery-observation-v1.json",
+    "recoveryObservationSha256": "5b2edf0780d3c02f7a936d730b2381e3f7b8160a5ed6da161f992c2bcfdbb2f6",
+    "localRuntimeQualified": false,
+    "freeGiB": 79.58819961547852,
+    "minimumFreeGiB": 32,
+    "normalControlAttempt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/orbstack-normal-control-attempt-observation-v1.json",
+    "normalControlAttemptSha256": "fd05f0e9edac9d2ce638ae7b5e72296ea73f47c8eb3420eaf59ce19ebdfab019",
+    "normalControlCommandsAttempted": true,
+    "actualVmRestartObserved": false,
+    "forceStopPerformed": false
+  },
+  "nativeSourceProtectionSha256": "db80a1e66395d25cf187f070d6908d9c1f2e3fef0f9a25429599aba47e6c18e2",
+  "nativeCpp470AndFiveTuInheritedNotRerun": true,
+  "documentationOnlyChangesAfterExecution": [
+    "docs/evidence/agent-webhook-attempts.json",
+    "docs/agent-webhook-attempts.md",
+    "docs/agent-webhook-capture.md",
+    "docs/optimization-progress.md",
+    "docs/sdk-package-ci.md"
+  ],
+  "nextRequiredWork": [
+    "actual bounded HTTPS transport worker and trusted tenant-bound endpoint configuration",
+    "original transport settlement and finite retry/backoff scheduler",
+    "explicit gap reconciliation and durable receiver deduplication",
+    "public management/Node+Python SDK integration and original Native/fullK8/whole41/eight-hour acceptance"
+  ],
+  "candidateNotQualified": false,
+  "freshWholeJsBoth": true,
+  "freshInstalledPackagesBoth": true,
+  "qualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-attempts-verification-v1/final-qualification.json",
+  "qualificationSha256": "eb2cd3614efb32e31fc776426c38a5b428ba08149358011b21be456f78a4e1d6",
+  "executedCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-attempts-candidate-v1/frozen-version.json",
+  "executedCandidateSha256": "833e08cfb394decfa8aaf4af45581759cad8c488149a818a0e7d6d6564924fab"
+}

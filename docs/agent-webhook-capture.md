@@ -1,5 +1,7 @@
 # Private durable Agent webhook capture
 
+This document records the qualified v1 capture-only checkpoint. Current ledgers use the [v2 durable attempt/ACK extension](agent-webhook-attempts.md), which validates v1 before migration and adds a separate accepted cursor. The original v1 evidence and qualification below remain historical. Actual HTTPS transport and receiver deduplication remain pending.
+
 The opt-in `SqliteSessionStore({path, enableAgentWebhooks:true})` extension
 captures notification bodies in the original exclusive SQLite ledger. This
 checkpoint implements storage only. HTTP dispatch, retry/attempt fencing,

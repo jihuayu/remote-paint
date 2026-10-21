@@ -65,6 +65,4 @@ There is no force-ack, gap skip or retry-budget reset in this checkpoint.
 The attempts tests exercise current-head/attempt/hash fencing, duplicate ACKs,
 finite retries, capacity reuse beyond replay retention, unchanged Source/Agent
 state, legacy migration/corruption and real writer SIGKILL before migration,
-begin and ACK commits and after begin/ACK commits. Cross-platform qualification
-is pending until the exact final source snapshot completes the full suite and
-isolated package/type checks.
+begin and ACK commits and after begin/ACK commits. The same1255 source hashes completed macOS and Linux ARM64 full1645: macOS1630 pass/15 existing skips; Linux1639 pass/6 existing skips, zero failures/cancellations. All23 new cases actually ran and all1622 prior case names were retained. Each platform passed installed202 Node/194 Python, strict TypeScript and installed5-public/9-source mypy; all194 Python case names and both SDK archive hashes match. [CI39551778361](https://github.com/jihuayu/remote-paint/actions/runs/39551778361) binds implementation ce76596. Earlier host execution timeouts and the same-input100-pass retry are preserved; no timeout or acceptance threshold was relaxed. This qualifies storage bookkeeping only; actual transport, receiver durability and fullWebhook remain pending.
