@@ -1,0 +1,108 @@
+{
+  "at": "2026-10-21T14:16:36.934807+00:00",
+  "implementationCommit": "bd42cd343b0a7c7a906390108c3ac59d90c61079",
+  "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-driver-candidate-v1/frozen-version.json",
+  "candidateManifestSha256": "a0ef588da822902574ce36bdbefa2a3da639a7aff20fd4fe4e2f2e9b910e157e",
+  "sourceFiles": 1278,
+  "allLinuxSourceHashesMatchFrozen": true,
+  "linuxFullJs": {
+    "tests": 1751,
+    "pass": 1745,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 6,
+    "todo": 0
+  },
+  "macTargeted": {
+    "tests": 214,
+    "pass": 214,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "macFullJsNotRerun": true,
+  "newCases": [
+    "a discovered already requested head is not assumed stopped or re-dispatched by a second private scheduler",
+    "aborting automatic close observation retains original DNS and requested journal ownership until its actual callback",
+    "an initial discovery read failure stops automatic admission and cannot silently clear a storage fault",
+    "an unknown ACK commit fences new automatic work and retains capacity through close until exact reconciliation",
+    "automatic delivery drains the retained prefix but preserves the exact original history gap",
+    "automatic endpoint DNS shutdown remains independent from original Source end and cannot be replaced while unconfirmed",
+    "automatic endpoint drains original Source events into the production durable receiver without manual per-event calls",
+    "automatic endpoint observes later original event revisions and delivers each newly appended event",
+    "automatic owner validates bounds and observation options without caller getters or per-call delivery controls",
+    "automatic retries exhaust only the original head at eight persisted attempts and never issue a ninth request",
+    "automatic scheduler resumes pre-existing persisted subscriptions without another subscribe call",
+    "closing during automatic retry backoff stops further sends without refunding already consumed attempts",
+    "endpoint subscription discovery returns at most four ordered metadata records without delivery bodies or state writes",
+    "events appended to an already visited subscription during another subscription delivery are not lost at the sweep boundary",
+    "receiver commit with a lost ACK survives controller restart and original subscription discovery deduplicates the same event",
+    "round-robin discovery gives every stored subscription one original head before revisiting a busy producer",
+    "same subscription remains idempotent while automatic background work runs and cannot select another URL or endpoint",
+    "subscription discovery pins tenant endpoint and original cursor ownership instead of borrowing foreign cursors",
+    "subscription discovery rejects malformed bounds getters proxies and extra routing fields without executing caller code",
+    "subscription discovery reports the retained prefix and explicit gap without skipping missing Source history",
+    "subscription metadata head reflects exact durable attempt consumption and ACK advancement without claiming delivery",
+    "subscription metadata restart preserves original IDs cursors and revision without recreating captured work",
+    "subscription revision and discovery require the original controller and explicit webhook extension",
+    "trusted dispatcher discovery captures its endpoint and revision without accepting per-read URLs or keys",
+    "trusted executor registers automatic endpoint ownership and shuts its idle polling loop before releasing the controller",
+    "trusted registration rejects duplicate profiles and keeps the four endpoint budget until prior owners fully close"
+  ],
+  "all26NewCasesActualBoth": true,
+  "prior1725NamesAndSixLinuxSkipsRetained": true,
+  "installedLinuxNode": 202,
+  "installedLinuxPython": 194,
+  "all194PythonCaseIdsUnchanged": true,
+  "strictTypescriptAndPublic5Source9MypyActual0Linux": true,
+  "sdkArchiveHashes": {
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "1a2c251f226d3efa415ebba928078d01bb20fd64bbe66419d5c698ed44a0e89a"
+  },
+  "sdkArchivesUnchanged": true,
+  "linuxRuntime": {
+    "python": "3.11.2",
+    "platform": "Linux",
+    "arch": "aarch64",
+    "node": "v22.23.3"
+  },
+  "ciRun": 39573287711,
+  "ciUrl": "https://github.com/jihuayu/remote-paint/actions/runs/39573287711",
+  "ciStatusSha256": "b5d247a9195d7d8d70a9ebfca4428d57a2eb7ccae42a27183795a27f66f0d6b0",
+  "macTargetedLogSha256": "7206f6fe77dcce7b031df708c067a73c63c2fab1537f3ebe79880a9111cd2bd0",
+  "linuxFullLogSha256": "37c40a88dace1ab817fe0d689c657663cebc7fd6d4614ae2b443ff06fbab8b32",
+  "automaticDriverQualifiedBothWithinFixtures": true,
+  "qualificationScope": "Trusted automatic endpoint registration and owned fair delivery loop in original TLS/DNS/SQLite/Source-executor fixtures; persisted discovery, later revisions including mid-pass append, eight attempts, explicit gap, real receiver lost ACK/controller reopen, original DNS and uncertain commit capacity, and independent Source shutdown. Public API/SDK, Source gap reconciliation and original Native runtime remain pending.",
+  "draftEvidence": [
+    {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-driver-fixture-failure-v1",
+      "receiptSha256": "be9a0ca653a55b3d5e2e57b6741bc43cc85cc0a952f225743b949183371a6b3f",
+      "actualTests": 17,
+      "actualPass": 13,
+      "actualFail": 4
+    },
+    {
+      "directory": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-driver-fixture-failure-v2",
+      "receiptSha256": "33e2d244c7ef3643921d8fb3190bc77e6892ac707102cfcae1d0a28f4167e8fd",
+      "actualTests": 17,
+      "actualPass": 16,
+      "actualFail": 1
+    }
+  ],
+  "discoveryQualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-discovery-qualification-v1.json",
+  "previousReceiverQualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-receiver-verification-v1/qualification.json",
+  "noAdditionalMacSamplerStartOrCopy": true,
+  "originalFixedSamplerColdFirstStartupNotQualified": true,
+  "productionHttpsAdapterQualifiedPreviously": true,
+  "publicManagementAndSdksQualified": false,
+  "sourceGapReconciliationQualified": false,
+  "originalNativeRuntimeQualified": false,
+  "all41": {
+    "completeWithinScope": 10,
+    "partial": 18,
+    "pending": 13
+  },
+  "eightHourPassed": false,
+  "wholeGoalQualified": false
+}

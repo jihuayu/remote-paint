@@ -2177,3 +2177,11 @@ Native item取消/Detach/部分和完成文件删除接入可跨item移除保留
 新增27真实TCP/TLS/HTTP用例覆盖慢握手/头/正文、容量、取消关闭时数据库仍锁定、实际dispatcher/Source、生产receiver提交前后SIGKILL及重启去重。早期客户端connect先于服务端准入的夹具失败、错误晚挂TLS关闭等待导致两份90秒草稿超时、原型事件跟踪未观察实例事件的夹具失败均保留；最终不用destroyed/finish作资源关闭证据，未放宽寿命/容量/跳过。最终执行1274文件，macOS专项158通过无跳过；LinuxCI39569845757全量1725（1719通过/6既有跳过），原1698及6跳过保持，27新增双平台实际执行；Linux已安装Node202/Python194与类型检查通过，SDK包字节不变。未重新执行macOS全量或采样器，原固定观察器首次/冷启动不作资格声明。
 
 公开管理/API与Node/Python SDK、Source缺口对账和原Native端到端仍待，组件未部署外部端点。原8小时失败与41项10/18/13保持；见[接收端](agent-webhook-receiver.md)与[验收证据](evidence/agent-webhook-receiver.json)。
+
+### Webhook 订阅发现与自动投递（K8c3g）
+
+先独立提交受原控制器约束的租户/端点订阅发现，每页最多4条无正文/密钥元数据，原游标须同租户/端点；读取不推进确认、不创建订阅，修订读取避免空闲重复加载历史。随后在executor四端点预算内注册自动driver，与手动worker共享重复/退休约束；按稳定游标每订阅一原队首轮转，每次扫描最多64订阅、每driver一个timer，记录一轮起始revision，扫描期间已访问订阅新增事件不会遗漏。持续发现原已存订阅，不要求调用方逐事件deliver。原dispatcher保留真实DNS/HTTP/响应/socket和八次尝试，不跳过缺口/耗尽/请求未结算，不重做Source动作或把ACK称为业务成功。
+
+关闭观察取消不提前释放driver、未知提交占位或控制器；原Source结束请求不等待Webhook慢DNS，实际全部工作结算后才释放owner。真实TLS/SQLite用例覆盖后续事件、公平性、8次耗尽、64条前缀/缺口、接收提交后ACK丢失及控制器重开去重、未知提交精确对账、读故障及关闭时替换拒绝；另验证扫描中向已访问订阅追加事件。初始13/17及16/17失败由夹具的第二写者、错误租户及重复模拟幂等键导致，源码/日志保留，生产约束不改。
+
+发现提交6f815e4已以1275执行文件/macOS专项166和LinuxCI39571744383全1733通过；最终自动投递提交bd42cd3以1278文件/macOS专项214和LinuxCI39573287711全1751（1745通过/6既有跳过）通过，原1725名字及6跳过保持，新增8发现+18driver双平台实际运行。Linux已安装Node202/Python194与严格类型检查通过，SDK包字节不变。未重新运行macOS全量/采样器，原固定观察器首次/冷启动不作资格声明。公开HTTP管理/API、Node/Python SDK、Source缺口对账与原Native验收仍待；原8小时失败及41项10/18/13保持。见[自动投递范围](agent-webhook-driver.md)与[资格证据](evidence/agent-webhook-driver.json)。
