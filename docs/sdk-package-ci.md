@@ -1,6 +1,6 @@
 # SDK 安装包 CI
 
-`SDK package contracts` 在独立的 Linux ARM64 GitHub runner 上运行，不依赖本机 Docker、Chromium 构建目录或受保护采样器。使用 Node22.23.3/Bookworm 和 Python3.11，先准备固定版本工具及带 SHA256 的七个 SDK runtime wheels，再运行完整1584项 JS 和隔离安装包202项 Node/194项 Python、严格 TypeScript 与公共/包源码 mypy。
+`SDK package contracts` 在独立的 Linux ARM64 GitHub runner 上运行，不依赖本机 Docker、Chromium 构建目录或受保护采样器。使用 Node22.23.3/Bookworm 和 Python3.11，先准备固定版本工具及带 SHA256 的七个 SDK runtime wheels，再运行完整1604项 JS 和隔离安装包202项 Node/194项 Python、严格 TypeScript 与公共/包源码 mypy。
 
 实际安装阶段离线：npm不执行安装脚本，pip只读取验证过的wheelhouse。安装消费目录没有SDK源码，真实HTTP/SQLite夹具按相对import闭包显式复制并记录哈希；没有下载或启动浏览器。源码清单绑定实际checkout commit，执行前后哈希相同才允许成功；结果、阶段退出码、失败日志和归档成员校验均保存为Actions artifact。新入口先在声明的本机冻结快照验证，远端执行结果仍需单独核实。
 
@@ -17,3 +17,5 @@
 本入口用于补齐SDK与完整JS的Linux证据；它不替代原Native事件/取消端到端、浏览器完整构建、原8小时失败或全部41项验收。
 
 最终作业[39496883279](https://github.com/jihuayu/remote-paint/actions/runs/39496883279)绑定56abfb3的1242源码，实际docker-init为PID1：Linux完整1584项1578通过/6跳过，202项Node/194项Python隔离包与严格TypeScript、安装后5公共/9源码mypy全部通过；原测试名称和194个Python用例逐项核对，两个SDK归档与macOS哈希一致。原3秒叶进程消失合同通过，前三次失败均保留。此前缺失的详细日志不补造，第三次完整失败及第四次全部日志均已下载校验。浏览器构建、原Native事件/取消、Webhook和八小时验收继续待做。
+
+Webhook原字节认证核心新增20项后，入口明确更新为147个根测试文件/1604项（macOS1589通过15跳过、Linux1598通过6跳过），202Node/194Python与类型门槛保持。[作业39519469785](https://github.com/jihuayu/remote-paint/actions/runs/39519469785)的1246源码与macOS候选逐项相同，20新项及原1584名称保留，两个SDK归档未变化；此处仍不是完整Webhook投递/持久去重或原Native验收。

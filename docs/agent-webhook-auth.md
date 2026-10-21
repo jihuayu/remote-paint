@@ -27,4 +27,4 @@ remote-paint-webhook-v1\n
 
 20项新增合同覆盖独立Python HMAC/UTF8 golden vector、端点/原ID/key/time/raw bytes绑定、轮换、时间边界、跨MAX_SAFE_INTEGER、ByteLength shadow accessor、SAB/Proxy/配置拒绝、close和实际loopback HTTP原字节/重复header。HTTP夹具仅测试认证，重复请求照常返回原ID，未冒充持久去重或生产HTTPS投递。
 
-初步20项通过。审查额外复现错误clock wrapper返回rejected Promise会产生未处理拒绝，旧源码与实际探针保留，修复后回归20项通过。最终同一输入完整双平台1604项、202Node/194Python隔离安装及类型资格仍待执行。SDK字节保持父资格版本；41项保持10/18/13、K8仍部分、原八小时失败保持，不自动重跑。
+初步20项通过。审查额外复现错误clock wrapper返回rejected Promise会产生未处理拒绝，旧源码与实际探针保留，修复后回归20项通过。最终同一1246源码候选已核对：macOS完整1604项1589通过/15平台跳过，Linux完整1604项1598通过/6平台跳过，零失败/取消，20新项均实际运行且原1584名称保留；两端隔离202Node/194Python、严格TypeScript与安装后5公共/9源码mypy通过，原194个Python名称一致，两个SDK归档与父版本逐字节哈希相同。Linux作业39519469785绑定0e3983b，原字节认证范围资格已通过。SDK字节保持父资格版本；41项保持10/18/13、K8仍部分、原八小时失败保持，不自动重跑。

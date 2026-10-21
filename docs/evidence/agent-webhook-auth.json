@@ -1,7 +1,7 @@
 {
-  "at": "2026-10-20T23:42:18.510442+00:00",
+  "at": "2026-10-21T00:13:25.605022+00:00",
   "task": "K8c3a bounded raw-byte Webhook HMAC authentication contract",
-  "candidateNotQualified": true,
+  "candidateNotQualified": false,
   "expectedNewJsTests": 20,
   "expectedFullJsEach": 1604,
   "expectedMacPassSkip": [
@@ -15,7 +15,7 @@
   "expectedInstalledNodeEach": 202,
   "expectedInstalledPythonEach": 194,
   "signatureCoreImplemented": true,
-  "signatureCoreQualified": false,
+  "signatureCoreQualified": true,
   "fullSignedWebhookQualified": false,
   "rawAuthenticationNotEventDtoValidation": true,
   "noDurableDeduplicationOrOutboxYet": true,
@@ -46,5 +46,85 @@
   },
   "eightHourPassed": false,
   "K8Complete": false,
-  "wholeGoalQualified": false
+  "wholeGoalQualified": false,
+  "freshWholeJsBoth": true,
+  "freshInstalledPackagesBoth": true,
+  "fullJs": {
+    "mac": {
+      "tests": 1604,
+      "pass": 1589,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 15,
+      "todo": 0,
+      "all1584PriorNamesRetained": true,
+      "all20NewActualNoSkip": true,
+      "logSha256": "f46769f1b7e1f904f56cf938b89cf14cd14d53a5c3e79ce5819382f38e38f0e5",
+      "receiptSha256": "974b9fc5996f867822b30be16f04c8e46edb84571980b5098372ea6886d5a0ed"
+    },
+    "linux": {
+      "tests": 1604,
+      "pass": 1598,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6,
+      "todo": 0,
+      "all1584PriorNamesRetained": true,
+      "all20NewActualNoSkip": true,
+      "logSha256": "62634b85e91156c6a008e7e0b31017cba9e32b454db75ec8b0521caf37f9210d",
+      "receiptSha256": "6faf7a2c5c19c56c2d9399b7dbd4f0eebc95723d3c07d54399d638647b9b925a"
+    }
+  },
+  "installedPackages": {
+    "mac": {
+      "nodeTests": 202,
+      "pythonTests": 194,
+      "strictTypescriptActual0": true,
+      "public5Source9MypyActual0": true,
+      "sourceFallbackUnavailable": true,
+      "archives": {
+        "remote-paint-session-client-0.0.0-dev.0.tgz": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+        "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "1a2c251f226d3efa415ebba928078d01bb20fd64bbe66419d5c698ed44a0e89a"
+      },
+      "resultSha256": "43a1e68decee8db47b6031255f901bef9a1e0f85f77ae401b53fb21857af6479"
+    },
+    "linux": {
+      "nodeTests": 202,
+      "pythonTests": 194,
+      "strictTypescriptActual0": true,
+      "public5Source9MypyActual0": true,
+      "sourceFallbackUnavailable": true,
+      "archives": {
+        "remote-paint-session-client-0.0.0-dev.0.tgz": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+        "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "1a2c251f226d3efa415ebba928078d01bb20fd64bbe66419d5c698ed44a0e89a"
+      },
+      "resultSha256": "ad50292e3de8eea0fdd070495d5165f52698db0938b7e1a91ed5d3d4eaa85bb2"
+    }
+  },
+  "qualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-auth-verification-v1/final-qualification.json",
+  "qualificationSha256": "fde6cb02c803ee6a4c552948a29590f5b77d2f3406e5b6b8fd209a094cbadf78",
+  "executedCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-auth-candidate-v1/frozen-version.json",
+  "executedCandidateSha256": "a299ab81c55b4b2b408023e51223f3eb2e8776be025d921f358c377a2e9ac868",
+  "linuxCiSourceManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-auth-github-v1/source-manifest.json",
+  "linuxCiSourceManifestSha256": "e42f157978cfb658d09c25b536a54b81f9137c4790198b720c651ef6bdb21dd4",
+  "githubRun": 39519469785,
+  "githubUrl": "https://github.com/jihuayu/remote-paint/actions/runs/39519469785",
+  "nativeSourceProtection": {
+    "at": "2026-10-21T00:13:25.568155+00:00",
+    "native108InputsUnchanged": true,
+    "canonical19FilesReadOnlyHashesMatch": true,
+    "protectedSamplerIdentityAndHashMatchWithoutExecutionOrCopy": true,
+    "pinSha256": "628f35364a453fc22b546e92dd095257df016663135342f8fb583ee1ca75f4b0",
+    "unrelatedPeerUnchangedAndExcluded": true,
+    "lastActualBrowserLogProgress": [
+      1752,
+      17924
+    ],
+    "lastBrowserLogAt": "2026-10-21T00:13:20.280961+00:00",
+    "hostOwnedProcesses": "  PID  PPID  ELAPSED STAT\n 9564 73470 11:25:54 Ss  \n 9580  9564 11:25:53 S   \n",
+    "localContainerState": "unknown: last Docker queries timed out; no restart performed",
+    "localRuntimeQualified": false,
+    "freeGiB": 80.86844635009766,
+    "minimumFreeGiB": 32
+  }
 }
