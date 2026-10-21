@@ -2163,3 +2163,9 @@ Native item取消/Detach/部分和完成文件删除接入可跨item移除保留
 ### Native 请求时arm身份与准入
 
 第32补丁以请求创建时不可变窗口ID阻断响应时收养旧请求，4活动窗口/原Page精确匹配/单新下载消费，实际准入早于delegate/item；全局4真实lease及4MiB文件上限保留，窗口关闭不返额度，未创建lease的本次预留才可回滚。原item生成无RFH续传见证，fresh nonce保留原arm/Page，manager验guid/窗口；见证弱持有lease，实际清理后参数仍保留时lease只剩测试单一引用。最终436无过滤、21父版差分新用例/无移除、4既有子进程、双平台源码专项各13及实际manager/nav/owner/Page/instrumentation五TU、GN通过。首轮别名编译失败与次轮两个旧夹具失败均保留，改动测试捕获位置/断言后第三候选435通过，再补同registry重试到ready/读取/释放，第四候选436全通过，已应用补丁未重写、门槛未放宽。组件模拟frame/网络不是真实RFH/cookies/PW验收；Source私有目录/桥接未接、开关关闭、transfersReady=false，41项10/17/14不变。见[范围](native-download-arm-window.md)。
+
+### Webhook 接收端持久化 inbox 与去重（K8c3e）
+
+私有接收端在独立 SQLite 文件验证原始字节签名、严格事件 envelope 和共用事件投影，事务提交后才返回原 event ID/body hash ACK；重复事件重启后保持同一 ACK，冲突内容、固定 run 身份变更及容量耗尽拒绝，不删除去重记录。真实 TLS 夹具覆盖提交后 ACK 丢失和 receiver 在 COMMIT 前后 SIGKILL；另用第三个进程复现并修复失败第二 opener 关闭原始文件句柄导致独占锁丢失的问题。初始19例通过不足以覆盖该漏洞，失败源码/日志保留；提取校验的首次 CI 因漏改测试文件数量断言在全量执行前失败，已按实际新增文件/用例更新，未改既有跳过或超时。
+
+最终1270文件执行快照，macOS专项131通过、无跳过；Linux CI39565375421全量1698项（1692通过/6既有跳过），原1670名字及6跳过保留，新增8共用校验+20 inbox用例双平台实际执行。Linux已安装Node202/Python194及严格类型检查通过，包字节保持。此次未额外启动/复制/重建macOS采样器，也不宣称新源码macOS全量1698或原固定观察器首次/冷启动通过。公开HTTPS适配器、管理接口、SDK和Source缺口对账仍待；ACK为持久接收，不是业务成功。原Native整浏览器和8小时未通过，41项当前10/18/13保持。见[接收端范围](agent-webhook-receiver.md)与[逐项证据](evidence/agent-webhook-inbox.json)。
