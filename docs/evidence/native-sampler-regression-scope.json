@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-21T07:20:37.488673+00:00",
+  "scope": "Clarify fixed original observer versus pre-existing regression copy; no new executable startup or rebuild was performed by this audit",
+  "originalFixedFile": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-helper-startup-v1/project/native/bin/process-memory-sampler-arm64-darwin",
+    "realpath": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/native-helper-startup-v1/project/native/bin/process-memory-sampler-arm64-darwin",
+    "device": 16777231,
+    "inode": 142233060,
+    "size": 33976,
+    "sha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3"
+  },
+  "preexistingRegressionCopy": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-cancellation-qualified-v1/project/native/bin/process-memory-sampler-arm64-darwin",
+    "realpath": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-cancellation-qualified-v1/project/native/bin/process-memory-sampler-arm64-darwin",
+    "device": 16777231,
+    "inode": 145878628,
+    "size": 33976,
+    "sha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3"
+  },
+  "sameBytesDifferentFileIdentity": true,
+  "macSuiteActuallyExecutedRegressionCopy": true,
+  "samplerCasesActuallyPassed": [
+    "actual Darwin pinned observer uses a fresh process for each lifetime with positive real libproc rows",
+    "native sampler reads actual RSS/virtual/physical footprint repeatedly through one owned persistent helper",
+    "actual touched 64MiB child allocation increases native RSS and physical footprint without inventing release semantics",
+    "terminated target is a failed fresh batch and never becomes a zero or a cached positive row",
+    "expected start identity and bounded single pending request prevent stale PID attribution and unbounded queues"
+  ],
+  "expectedCopyStartsFromTestCallGraph": 6,
+  "sourceFilesReadOnly": {
+    "tests/process-native-memory.test.mjs": "02b674ca3664951101302dbcf17c7811d75704d666d87255ea97ffa8c3cb3d5f",
+    "tests/process-native-memory.mjs": "bac7db7094c9930781fedaa101d3bc4ef7092768eee20e1c10682c0bf3211edd",
+    "tests/native-memory-observer-pin.test.mjs": "7078cae56df37fa1c9da4a69bdf3f34afb031d75e30edf0a2d570b0ede9bc756",
+    "tests/native-memory-observer-pin.mjs": "6b0cc5cbe83fe214390a612f856981a123681209852a6c72c44bc97d70611907"
+  },
+  "macActualLogSha256": "edfe97032aada82db1ffe42227a0572f978d6df0ee0a49942dd1584dbc73b9b3",
+  "candidateManifestSha256": "355ed36dc3847b8209c6e88cdcc6ace20704a71ba07c0c3da41a9eeddb1a8eec",
+  "nativeBinDirectoryLinkedForLocalTestsNotCopiedInThisCheckpoint": true,
+  "generatedExecutablesNotInReviewBundle": true,
+  "originalFileIdentityAndBytesRemainMatchedToPin": true,
+  "readOnlyIdentityHashCheckDoesNotProveAllPossibleExecutions": true,
+  "fixedOriginalColdOrFirstStartupQualifiedByTheseRegressions": false,
+  "binaryCopyMustNotSubstituteForOriginalPinInMeasurements": true,
+  "isolated64MiBUnitChildHasExplicitGcSupport": true,
+  "isolatedUnitGcNotAnEightHourViewerTreatment": true,
+  "eightHourV5FailureUnchanged": true,
+  "full1670RawResultsRetained": true,
+  "https25CaseQualificationNotRetracted": true,
+  "noNewTestsExecutedForDocumentationClarification": true,
+  "wholeGoalQualified": false
+}

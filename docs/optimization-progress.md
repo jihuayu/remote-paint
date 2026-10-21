@@ -1,5 +1,7 @@
 # Remote Paint 优化实施进度
 
+2026-10-21补充[观测器回归文件来源](evidence/native-sampler-regression-scope.json)：macOS完整套件实际运行了预存同哈希、不同inode的采样器副本（5项/调用图6次启动），固定原文件inode142233060与副本145878628区分；原文件只读身份/哈希相符不能被表述为所有副本均未执行。目录链接未在本检查点复制或打包该二进制；回归数据不用于固定观测器首次/冷启动或新8h验收，独立64MiB单测子进程的GC支持也不用于Viewer长跑。1670实际结果与原8h失败保留，未重建、清缓存或补造首次启动证据。
+
 2026-10-21 K8c3d新增[实际HTTPS调度器](agent-webhook-dispatcher.md)：固定受信租户/端点/URL与复制key，原正文签名、完整event/hash ACK、拒绝重定向/TLS绕过，有界响应与八次退避重试；原DNS/request/response/socket全部实际结算后才记账和退容量，观察者abort不退实际工作。默认专属异步resolver不占Source系统lookup池；executor独立推进Source end，返还owner须等原工作，写入不明只允许精确尝试核对。同一1262源码双平台完整1670项0失败/取消（macOS1655通过/15既有跳过，Linux1664通过/6既有跳过），25新项含真实TLS/UDP-DNS/SQLite边界与Source end实际运行，原1645名称保留；隔离各202Node/194Python及严格TypeScript、安装后5公共/9源码mypy通过，SDK包字节未变。首次Unicode夹具引用失败保留；此为本机夹具范围，接收持久去重、公开管理/SDK、外部受控接收方及原Native仍待，K8部分、41项10/18/13及原八小时失败保持。
 
 2026-10-21 K8c3c新增[Webhook持久尝试与确认栅栏](agent-webhook-attempts.md)：验证v1后原子迁移v2，独立accepted游标、稳定原正文/event/delivery ID、单次attempt ID/hash队头确认、最新重复ACK幂等；八次后保留队头，unknown不退次数，活跃requested阻止owner释放，新独占owner仅恢复为unknown，Source/Agent状态不变，缺口不自动跳过。同一1255源码双平台完整1645项0失败/取消（macOS1630通过/15既有跳过，Linux1639通过/6既有跳过），23新项含五个真实SIGKILL边界实际执行，原1622名称保留；隔离各202Node/194Python及严格TypeScript、安装后5公共/9源码mypy通过，SDK归档未变。早前主机执行超时与相同输入100项通过均保留；transportSettled仍只是可信worker声明，实际HTTPS结算、接收持久去重与公开管理/SDK仍待，K8部分及41项10/18/13、原八小时失败保持。

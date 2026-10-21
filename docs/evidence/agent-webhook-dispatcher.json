@@ -126,7 +126,6 @@
     "at": "2026-10-21T06:54:05.465120+00:00",
     "native108InputsUnchanged": true,
     "canonical19FilesReadOnlyHashesMatch": true,
-    "protectedSamplerIdentityAndHashMatchWithoutExecutionOrCopy": true,
     "pinSha256": "628f35364a453fc22b546e92dd095257df016663135342f8fb583ee1ca75f4b0",
     "unrelatedPeerUnchangedAndExcluded": true,
     "lastActualBrowserLogProgress": [
@@ -162,7 +161,10 @@
     "normalControlAttemptSha256": "fd05f0e9edac9d2ce638ae7b5e72296ea73f47c8eb3420eaf59ce19ebdfab019",
     "normalControlCommandsAttempted": true,
     "actualVmRestartObserved": false,
-    "forceStopPerformed": false
+    "forceStopPerformed": false,
+    "originalFixedSamplerIdentityAndHashReadOnlyMatched": true,
+    "preexistingRegressionSamplerCopyExecuted": true,
+    "originalFixedSamplerColdFirstStartupNotInQualificationScope": true
   },
   "nativeSourceProtectionSha256": "f8552391fa8baaad24cc38e7d4cb7198e502356049ee889335066e0f5b773a21",
   "nativeCpp470AndFiveTuInheritedNotRerun": true,
@@ -186,5 +188,11 @@
   "qualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-dispatcher-verification-v1/final-qualification.json",
   "qualificationSha256": "b511e3f4928d1fa3a63e88ab57383fedb66eb7f66e192034a634fad3c08e7f40",
   "executedCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-dispatcher-candidate-v1/frozen-version.json",
-  "executedCandidateSha256": "355ed36dc3847b8209c6e88cdcc6ace20704a71ba07c0c3da41a9eeddb1a8eec"
+  "executedCandidateSha256": "355ed36dc3847b8209c6e88cdcc6ace20704a71ba07c0c3da41a9eeddb1a8eec",
+  "fixedObserverExecutionScopeAudit": {
+    "path": "docs/evidence/native-sampler-regression-scope.json",
+    "sha256": "71f715721e264129b52c2a64af45d955d32a578525a9a9d2185da2bfc2237847",
+    "macSuiteExecutedPreexistingSameHashDifferentInodeCopy": true,
+    "originalFixedObserverFirstOrColdStartupNotQualifiedByThisRun": true
+  }
 }

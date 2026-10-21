@@ -113,3 +113,14 @@ reference guard; its failed run and source are preserved outside the repository.
 The same1262 source hashes passed macOS and Linux ARM64 full1670: macOS1655 pass/15 existing skips, Linux1664 pass/6 existing skips, zero failures/cancellations. All25 new cases actually ran and all1645 prior case names were retained. Each platform passed installed202 Node/194 Python, strict TypeScript and installed5-public/9-source mypy; all194 Python case names and both SDK archive hashes match. [CI39556464074](https://github.com/jihuayu/remote-paint/actions/runs/39556464074) binds implementation cc690eb. The Unicode-fixture failure remains preserved. This qualifies private local TLS/DNS/SQLite/executor fixtures only; no persistent receiver deduplication, public management/SDK, controlled external receiver or original Native runtime acceptance is claimed. See [evidence](evidence/agent-webhook-dispatcher.json).
 Original Native runtime, public management/SDKs, receiver durable deduplication
 and the wholeK8/41/eight-hour gates are not completed by these tests.
+
+The macOS full-suite regression also ran five existing Darwin sampler tests
+using a pre-existing same-hash executable at a different inode from the fixed
+original observer. The local native/bin directory was linked; those binaries
+were not copied into this checkpoint or bundled. This is not evidence of the
+fixed observer's first/cold startup or a new eight-hour measurement. One isolated
+64MiB unit child explicitly supports GC; its release checks are not a treatment
+applied to the Viewer long run. Read-only original-file identity/hash checks
+alone cannot prove the absence of every possible execution. See the exact
+[execution-scope audit](evidence/native-sampler-regression-scope.json); raw1670
+results and the original failed eight-hour data remain preserved.
