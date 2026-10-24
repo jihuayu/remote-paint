@@ -20,10 +20,10 @@ ninja -C "$output_dir" -j"${BUILD_JOBS:-4}" generate_headless_shell_license_file
 # These are cross-built on x64; the matching-architecture smoke job executes them.
 mkdir -p /chromium/node-runtime
 cd /chromium/node-runtime
-curl --fail --location --retry 3 https://nodejs.org/dist/latest-v22.x/SHASUMS256.txt -o SHASUMS256.txt
-archive=$(awk -v arch="$node_arch" '$2 ~ ("^node-v22[.][0-9.]+-linux-" arch "[.]tar[.]xz$") { print $2 }' SHASUMS256.txt)
-test -n "$archive"
-curl --fail --location --retry 3 "https://nodejs.org/dist/latest-v22.x/$archive" -o "$archive"
+node_version=22.23.3
+archive="node-v${node_version}-linux-${node_arch}.tar.xz"
+curl --fail --location --retry 3 "https://nodejs.org/dist/v${node_version}/SHASUMS256.txt" -o SHASUMS256.txt
+curl --fail --location --retry 3 "https://nodejs.org/dist/v${node_version}/$archive" -o "$archive"
 awk -v file="$archive" '$2==file' SHASUMS256.txt | sha256sum --check
 tar -xJf "$archive"
 node_dir="/chromium/node-runtime/${archive%.tar.xz}"

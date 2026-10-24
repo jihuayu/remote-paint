@@ -32,11 +32,6 @@ gclient runhooks
 output_dir=$(node /project/native/chromium-output.mjs /chromium/src "$CHROMIUM_OUTPUT")
 rm -f "$output_dir/remote-paint-patches.json"
 node /project/native/prepare.mjs /chromium/src "linux-$TARGET_CPU" --output "$CHROMIUM_OUTPUT"
-# Restored Ninja objects must see unchanged source headers as unchanged even
-# after a fresh shallow sync. Generated output keeps its original timestamps.
-find src -type d \( -name .git -o -path src/out \) -prune -o \
-  -type f -exec touch -d @1600000000 {} +
-# Native/patch inputs may have changed since a fallback output cache. Refresh
-# their timestamps after normalization so Ninja cannot reuse stale objects.
-python3 /project/docker/ci-source-times.py /chromium/src /project
+# Do not backdate a fresh tree here. All hooks and tool updates must finish
+# before build-linux.sh rehydrates byte-checked source times from its receipt.
 df -h /chromium

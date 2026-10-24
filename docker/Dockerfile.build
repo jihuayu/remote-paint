@@ -1,5 +1,5 @@
 # Build host is x86_64 (OrbStack/Rosetta on Apple Silicon); target is native ARM64.
-FROM --platform=linux/amd64 node:22-bookworm
+FROM --platform=linux/amd64 node:22.23.3-bookworm@sha256:0e5f906573693feaa1e21057ebdcfdb5bd5021f050b2dc7c9deceb629c7da2a8
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential python3 git curl ca-certificates pkg-config ninja-build xz-utils unzip file \
     libglib2.0-dev libnss3-dev libdbus-1-dev libatk1.0-dev libatk-bridge2.0-dev \

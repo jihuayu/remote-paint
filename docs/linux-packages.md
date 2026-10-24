@@ -51,6 +51,21 @@ available if a later smoke test fails; check the complete run result.
 
 The workflow explicitly passes CHROMIUM_OUTPUT=out/RemotePaintLinux to checkout, compilation and packaging so its existing architecture-specific cache is reused intentionally. Local builds should choose their own out/name. prepare.mjs, Linux receipt generation and package-linux.mjs require --output; new format-2 receipts bind that selection, and packaging rejects an unbound legacy receipt. Historical format-1 runtime receipt validation remains available. This plumbing does not qualify the current uncommitted source set as a release or replace any retained local browser.
 
+Pull requests touching this packaging workflow, Docker recipes or Native build
+inputs also run the two package builds. Draft PRs can therefore qualify their
+own code without merging or creating a Release. Each successful build adds its
+actual artifact download link to the run summary. A successful architecture's
+smoke job runs independently even if the other build fails; an uploaded archive
+does not by itself mean that architecture's runtime checks passed.
+
+The smoke jobs execute the archive's own ELF64 Node, patched browser,
+serializer tests and Rust Broker on the matching CPU. They check `start.sh`
+with a real source page, loopback HTTP, packaged Viewer/Wasm assets and graceful
+shutdown, then run native capture and dynamic Viewer/input/recovery acceptance.
+No Playwright browser download or replacement system Chromium is used. The
+Node runtime and build/runtime container share pinned Node 22.23.3; downloaded
+runtime archives are verified against the official version's SHA256 list.
+
 Both compilation and the final no-pending-work receipt use checksum-pinned
 Ninja 1.13.2. Debian 12's system Ninja 1.11.1 repeatedly schedules unchanged
 generators behind GN phony input groups and cannot reliably finish that check.
@@ -62,12 +77,41 @@ Start **Linux packages → Run workflow**, or push a `v*` tag. Artifacts are kep
 for 30 days. A fresh patched Chromium build can exceed a hosted runner's
 six-hour job limit. Compilation stops at 245 minutes to allow saving the
 architecture-specific Ninja output through `actions/cache`, even on failure.
-Rerun the workflow to continue from that cache; incomplete builds never produce
-a release package. The next run shallow-syncs the same pinned sources and
-normalizes unchanged upstream timestamps before reusing the incremental graph.
-Fallback caches also work across native code changes: project-owned and patched
-inputs receive fresh timestamps so Ninja rebuilds them and their dependents.
-The v2 cache namespace uses Ninja 1.13.2; older system-Ninja logs are not mixed
-into it. Output caches are separated by architecture and build/toolchain profile.
+Rerun the workflow to continue from a matching, validated cache; incomplete
+builds never produce a release package. The v3 CI path no longer assigns a
+constant old timestamp to a fresh source tree or touches every Native header
+on each run. After checkout, hooks, pinned tool updates and preparation, it
+hashes the source files, link values and permission modes, excluding all output
+directories, Git internals and Python bytecode caches. Before GN or Ninja, a
+fresh output records those input timestamps in
+`remote-paint-source-inputs-v1.json.gz`. Compilation may then time out while the
+receipt and completed objects remain available together.
+
+On the next fresh checkout, **every** recorded input and the build recipe must
+match before the script restores any timestamp. The recipe binds the target,
+selected args, build/prepare scripts, Native inputs, patches, Docker recipes,
+installed host package versions, actual host tool binaries and depot_tools
+revision. Changed, missing, malformed or recipe-mismatched metadata is rejected
+before timestamp mutation; existing output without a receipt is never adopted.
+There is no fallback across Native/toolchain profiles. Downloaded compilers and
+sysroots within the source tree are covered by the same byte comparison.
+Local builds keep their existing behavior: this path requires the CI-only
+`REMOTE_PAINT_CI_SOURCE_TIMES=1` flag.
+
+The v3 namespace starts cold and leaves v2 caches untouched. Its first hosted
+compile may still require several runs. For an explicitly rejected receipt or a
+changed host package profile, select **fresh_cache** in Run workflow to skip
+restoring output and seed a new cache; this does not delete prior cache entries.
+Full-tree hashing cost and exact reproducibility on real hosted Chromium
+checkouts remain unqualified until this change runs there. Fresh-source
+fingerprints alone are not proof that a Chromium object was reused.
+
+The workflow also runs real C++/Ninja fixtures and retains a dry-run diagnostic
+before compilation: up to 128 KiB of `ninja -n -d explain`, with a 90-second
+observation limit and explicit truncation/timeout status. A diagnostic timeout
+is not a compile result. Build/source/job budgets stay 245/65/360 minutes.
+Actual hosted reuse must be established from a completed resumed run and its
+object/command evidence, not cache restore success alone.
+
 Caches are subject to GitHub quota/eviction and are separate from this Mac's
 persistent build volume, which the workflow does not access or modify.
