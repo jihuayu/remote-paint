@@ -39,6 +39,12 @@ class CipdLayout(unittest.TestCase):
         alias = self.f.source / 'alias.h'
         alias.unlink()
         alias.symlink_to(layout.PREFIX + 'value.h')
+        toggler = self.f.source / 'third_party/depot_tools/update_depot_tools_toggle.py'
+        toggler.write_text('# fixed generator fixture\n')
+        self.marker = self.f.source / layout.MARKER
+        self.old_marker = f'Disabled by {toggler} at 2026-10-24 06:12:56.096442\n'.encode()
+        self.marker.write_bytes(self.old_marker)
+        os.utime(self.marker, ns=(1792822376096459448,) * 2)
         self.f.sync()
         self.receipt = self.f.output / fixtures.times.RECEIPT
         self.original = self.receipt.read_bytes()
@@ -65,7 +71,8 @@ class CipdLayout(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Source bytes/path/mode changed'):
             self.f.sync()
         result = layout.restore(self.f.source, self.f.output)
-        self.assertEqual(result, {'mode': 'validated-layout', 'slotsReordered': 2, 'linksRewritten': 2})
+        self.assertEqual(result, {'mode': 'validated-layout', 'slotsReordered': 2, 'linksRewritten': 2,
+                                  'sentinelRestored': False})
         self.assertEqual(self.receipt.read_bytes(), self.original)
         self.assertEqual(self.f.sync()['mode'], 'restored')
         self.assertIn('no work to do', self.f.ninja('app'))
@@ -84,6 +91,32 @@ class CipdLayout(unittest.TestCase):
         value.chmod(0o755)
         with self.assertRaisesRegex(ValueError, 'CIPD bytes/modes/projected links differ'):
             layout.restore(self.f.source, self.f.output)
+
+    def test_generated_marker_is_recovered_only_by_exact_attested_hash(self):
+        self.f.graph()
+        self.f.ninja('app')
+        stamp = (self.f.output / 'main.o').stat().st_mtime_ns
+        self.marker.write_text(self.old_marker.decode().replace('06:12:56.096442', '11:40:00.123456'))
+        result = layout.restore(self.f.source, self.f.output)
+        self.assertTrue(result['sentinelRestored'])
+        self.assertEqual(self.marker.read_bytes(), self.old_marker)
+        self.assertEqual(self.receipt.read_bytes(), self.original)
+        self.assertEqual(self.f.sync()['mode'], 'restored')
+        self.assertIn('no work to do', self.f.ninja('app'))
+        self.assertEqual((self.f.output / 'main.o').stat().st_mtime_ns, stamp)
+        self.marker.write_text(self.old_marker.decode().replace('06:12:56.096442', '11:41:00.123456'))
+        self.assertTrue(layout.restore(self.f.source, self.f.output)['sentinelRestored'])
+
+    def test_unknown_marker_and_changed_generator_are_not_overwritten(self):
+        self.marker.write_text('unexpected data\n')
+        with self.assertRaisesRegex(ValueError, 'Unexpected disable-marker contents'):
+            layout.restore(self.f.source, self.f.output)
+        self.assertEqual(self.marker.read_text(), 'unexpected data\n')
+        self.marker.write_text(self.old_marker.decode().replace('06:12:56.096442', '11:40:00.123456'))
+        (self.f.source / 'third_party/depot_tools/update_depot_tools_toggle.py').write_text('# changed generator\n')
+        with self.assertRaisesRegex(ValueError, 'Pinned disable-marker generator changed'):
+            layout.restore(self.f.source, self.f.output)
+        self.assertEqual(self.receipt.read_bytes(), self.original)
 
     def test_changed_package_identity_and_store_links_are_rejected(self):
         self.reorder()

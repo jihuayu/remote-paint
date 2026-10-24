@@ -6,11 +6,13 @@ old receipt before moving anything, and build-linux.sh checks the whole tree
 again before timestamp restoration. The old receipt/output are never edited.
 """
 import hashlib
+import datetime
 import importlib.util
 import json
 import os
 import pathlib
 import re
+import stat
 import sys
 import tempfile
 
@@ -20,6 +22,80 @@ times = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(times)
 PREFIX = 'third_party/depot_tools/.cipd_bin/'
 SLOTS = PREFIX + '.cipd/pkgs/'
+MARKER = 'third_party/depot_tools/.disable_auto_update'
+MARKER_COPY = 'remote-paint-depot-tools-disabled-v1.txt'
+
+
+def restore_marker(source, output, inputs):
+    """Restore the exact attested generated comment, never ignore its hash.
+
+    The pinned toggler writes a wall-clock timestamp in this presence marker.
+    A legacy receipt has only its SHA and filesystem time. Recover that public
+    timestamp comment within a bounded one-second window and accept it only on
+    an exact SHA match. Future caches retain the verified bytes directly.
+    """
+    record = inputs.get(MARKER)
+    if record is None:
+        return False
+    path = source / MARKER
+    if record[0] != 'file' or not stat.S_ISREG(path.lstat().st_mode):
+        raise ValueError('Expected a regular depot_tools disable marker')
+    if stat.S_IMODE(path.lstat().st_mode) != record[2]:
+        raise ValueError('Disable marker mode changed')
+    if path.stat().st_size > 512:
+        raise ValueError('Unexpected disable-marker size')
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() == record[1]:
+        return False
+    toggler = source / 'third_party/depot_tools/update_depot_tools_toggle.py'
+    toggler_record = inputs.get(toggler.relative_to(source).as_posix())
+    if (toggler.is_symlink() or not toggler_record or toggler_record[0] != 'file'
+            or times.digest_file(toggler) != toggler_record[1]):
+        raise ValueError('Pinned disable-marker generator changed')
+    prefix = ('Disabled by ' + str(toggler) + ' at ').encode()
+    if len(raw) > 512 or not raw.startswith(prefix) or not raw.endswith(b'\n'):
+        raise ValueError('Unexpected disable-marker contents')
+    try:
+        datetime.datetime.fromisoformat(raw[len(prefix):-1].decode('ascii'))
+    except (ValueError, UnicodeError):
+        raise ValueError('Unexpected disable-marker timestamp') from None
+    copy = output / MARKER_COPY
+    if copy.exists() or copy.is_symlink():
+        if not stat.S_ISREG(copy.lstat().st_mode) or copy.stat().st_size > 512:
+            raise ValueError('Invalid saved disable-marker bytes')
+        payload = copy.read_bytes()
+        if hashlib.sha256(payload).hexdigest() != record[1]:
+            raise ValueError('Saved disable-marker hash mismatch')
+    else:
+        center = record[3] // 1000
+        payload = None
+        for distance in range(1_000_001):
+            for offset in ((0,) if distance == 0 else (-distance, distance)):
+                seconds, micros = divmod(center + offset, 1_000_000)
+                stamp = datetime.datetime.fromtimestamp(seconds, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+                if micros:
+                    stamp += f'.{micros:06d}'
+                candidate = prefix + stamp.encode() + b'\n'
+                if hashlib.sha256(candidate).hexdigest() == record[1]:
+                    payload = candidate
+                    break
+            if payload is not None:
+                break
+        if payload is None:
+            raise ValueError('Cannot recover exact attested disable-marker bytes; refusing reuse')
+        times.atomic_file(copy, payload)
+    fd, temporary = tempfile.mkstemp(prefix='.disable-marker-', dir=path.parent)
+    try:
+        with os.fdopen(fd, 'wb') as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+            os.fchmod(stream.fileno(), record[2])
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+    return True
 
 
 def identities(inputs):
@@ -59,7 +135,8 @@ def restore(source, output):
     receipt = output / times.RECEIPT
     if not receipt.exists() and not receipt.is_symlink():
         return {'mode': 'fresh', 'slotsReordered': 0, 'linksRewritten': 0}
-    old = {k: v for k, v in times.load_receipt(receipt)['inputs'].items() if k.startswith(PREFIX)}
+    inputs = times.load_receipt(receipt)['inputs']
+    old = {k: v for k, v in inputs.items() if k.startswith(PREFIX)}
     if not old:
         return {'mode': 'no-cipd-inputs', 'slotsReordered': 0, 'linksRewritten': 0}
     root = source
@@ -116,7 +193,9 @@ def restore(source, output):
             if os.path.lexists(temporary):
                 os.unlink(temporary)
     # No timestamps are changed here; the original strict checker owns that.
-    return {'mode': 'validated-layout', 'slotsReordered': moved, 'linksRewritten': len(links)}
+    marker = restore_marker(source, output, inputs)
+    return {'mode': 'validated-layout', 'slotsReordered': moved, 'linksRewritten': len(links),
+            'sentinelRestored': marker}
 
 
 if __name__ == '__main__':

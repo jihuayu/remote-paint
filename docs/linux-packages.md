@@ -143,6 +143,13 @@ recipe checks still run afterwards. Different payloads or package identities
 remain failures. This avoids invalidating compiled objects for an installer's
 internal slot ordering without accepting changed tools.
 
+The pinned depot_tools toggler also writes its current wall-clock time into
+`.disable_auto_update`. The restore helper verifies the generator and format,
+reconstructs a legacy marker within one second of its attested filesystem time,
+and accepts only bytes with the exact original SHA256. Verified bytes are kept
+in the selected output for future restoration. Unknown content, changed modes
+or generators, and unrecoverable hashes are rejected; no marker hash is ignored.
+
 ### ccache trial
 
 The pinned Chromium revision supports GN's `cc_wrapper = "ccache"` in
