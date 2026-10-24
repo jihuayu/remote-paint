@@ -20,8 +20,10 @@ import tempfile
 import time
 
 RECEIPT = 'remote-paint-source-inputs-v1.json.gz'
-MAX_RECEIPT_BYTES = 192 * 1024 * 1024
-MAX_INPUTS = 1_000_000
+# A real DEPS-complete hosted Chromium checkout exceeds one million files.
+# Keep explicit admission limits, sized for that tree and its toolchains.
+MAX_RECEIPT_BYTES = 768 * 1024 * 1024
+MAX_INPUTS = 3_000_000
 NINJA_VERSION = '1.13.2'
 
 
@@ -100,7 +102,9 @@ def source_inputs(source):
                 raise ValueError('CI input changed during hashing: ' + key)
             entries[key] = [kind, digest, stat.S_IMODE(before.st_mode), before.st_mtime_ns]
             if len(entries) > MAX_INPUTS:
-                raise ValueError('Too many CI source inputs')
+                raise ValueError(f'Too many CI source inputs: more than {MAX_INPUTS}')
+            if len(entries) % 250_000 == 0:
+                print(f'CI source inputs hashed: {len(entries)}', flush=True)
     return entries
 
 

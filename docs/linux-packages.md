@@ -106,6 +106,13 @@ Full-tree hashing cost and exact reproducibility on real hosted Chromium
 checkouts remain unqualified until this change runs there. Fresh-source
 fingerprints alone are not proof that a Chromium object was reused.
 
+The first hosted v3 run exceeded the original one-million-entry manifest
+limit before Ninja started. The manifest now admits up to three million
+entries and 768 MiB of decoded JSON, with progress every 250,000 hashed inputs.
+It still hashes and compares every input; capacity errors leave an existing
+receipt unchanged. These are CI metadata bounds, separate from Viewer budgets,
+runtime limits and the unchanged compilation timeout.
+
 The workflow also runs real C++/Ninja fixtures and retains a dry-run diagnostic
 before compilation: up to 128 KiB of `ninja -n -d explain`, with a 90-second
 observation limit and explicit truncation/timeout status. A diagnostic timeout

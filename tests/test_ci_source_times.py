@@ -109,6 +109,21 @@ class CacheInputs(unittest.TestCase):
         self.assertEqual({name: (self.output / name).stat().st_mtime_ns for name in stamp}, stamp)
         self.assertEqual((self.output / 'compiled').read_text().splitlines(), ['main.o'])
 
+    def test_manifest_capacity_limits_reject_without_replacing_existing_receipt(self):
+        self.sync()
+        receipt = self.output / times.RECEIPT
+        original = receipt.read_bytes()
+        with mock.patch.object(times, 'MAX_INPUTS', 1):
+            with self.assertRaisesRegex(ValueError, 'Invalid source timestamp inputs'):
+                self.sync()
+            with self.assertRaisesRegex(ValueError, 'Too many CI source inputs'):
+                times.source_inputs(self.source)
+        self.assertEqual(receipt.read_bytes(), original)
+        with mock.patch.object(times, 'MAX_RECEIPT_BYTES', 16):
+            with self.assertRaisesRegex(ValueError, 'Source timestamp receipt too large'):
+                self.sync()
+        self.assertEqual(receipt.read_bytes(), original)
+
     def test_interrupted_build_receipt_resumes_only_unfinished_original_target(self):
         self.sync()
         original = (self.output / times.RECEIPT).read_bytes()
