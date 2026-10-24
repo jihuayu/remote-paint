@@ -167,3 +167,15 @@ fixtures establish mechanism correctness and compatibility, not a Chromium
 speedup. Full Chromium `cc_wrapper` adoption needs a separate fresh output/cache
 profile after the present incremental build has delivered its package; it is
 not enabled on the retained output in this workflow.
+
+After a server archive is uploaded, a second experiment can enable the actual
+GN wrapper in a new `out/RemotePaintCcacheTrial` and build `remote_paint_tools`.
+It then removes only that trial's objects/executable and measures a warm replay,
+recording real Chromium command hit/miss deltas, times, object checksums and ELF
+CPU. Production Ninja logs, args, receipts and browser binaries are hashed
+before/after to verify isolation. `ccache-chromium-tools-linux-*` contains the
+measurements. This runs for at most 35 minutes, only when at least 45 minutes of
+safe job budget remain; otherwise it records an explicit skip. Its failure or
+timeout is reported separately and does not invalidate an already-uploaded
+server package. A successful small target replay still does not establish a
+full-browser cold-build speedup.

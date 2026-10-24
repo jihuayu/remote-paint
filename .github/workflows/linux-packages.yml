@@ -118,12 +118,6 @@ jobs:
             -v "$PWD/build/ccache:/ccache" -v "$PWD/ccache-artifacts:/proof" \
             remote-paint-ccache python3 /project/ci/ccache-probe.py
           sudo chown -R "$(id -u):$(id -g)" build/ccache ccache-artifacts
-      - name: Preserve measured compiler cache
-        if: always() && steps.ccache-probe.outcome == 'success'
-        uses: actions/cache/save@v4
-        with:
-          path: build/ccache
-          key: ccache-probe-${{ matrix.cpu }}-v1-${{ hashFiles('ci/Dockerfile.ccache', 'ci/ccache*', 'native/*.args.gn') }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Upload actual ccache measurements
         if: always()
         uses: actions/upload-artifact@v4
@@ -188,6 +182,43 @@ jobs:
           ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
         run: |
           printf '### Linux %s\n\n[Download server package and checksums](%s)\n\nIncludes custom Chromium, Rust Broker, Node.js and Viewer. Check the matching smoke job before deploying.\n' "$TARGET_CPU" "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
+      - name: Measure GN ccache on a separate real Chromium target when time permits
+        id: ccache-chromium
+        if: steps.package.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mkdir -p ccache-chromium-artifacts
+          budget=$(node ci/compile-budget.mjs)
+          if [ "$budget" -lt 2700 ]; then
+            printf '{"status":"skipped","reason":"less than 45 minutes of safe job budget remain"}\n' > ccache-chromium-artifacts/chromium-ccache.json
+            exit 0
+          fi
+          timeout --signal=TERM --kill-after=30s 2100s \
+            docker run --name remote-paint-ccache-trial --init --network none --shm-size=2g \
+            -e TARGET_CPU -e CHROMIUM_OUTPUT \
+            -v "$PWD:/project:ro" -v "$PWD/build/chromium:/chromium" \
+            -v "$PWD/build/ccache:/ccache" -v "$PWD/ccache-chromium-artifacts:/proof" \
+            remote-paint-ccache python3 /project/ci/ccache-chromium-trial.py
+      - name: Finalize the isolated compiler cache and trial diagnostics
+        if: always() && steps.ccache-probe.outcome == 'success'
+        run: |
+          docker stop --timeout 20 remote-paint-ccache-trial || true
+          sudo chown -R "$(id -u):$(id -g)" build/ccache ccache-artifacts ccache-chromium-artifacts 2>/dev/null || true
+      - name: Preserve measured compiler cache
+        if: always() && steps.ccache-probe.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: build/ccache
+          key: ccache-probe-${{ matrix.cpu }}-v1-${{ hashFiles('ci/Dockerfile.ccache', 'ci/ccache*', 'native/*.args.gn') }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Upload real Chromium ccache measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccache-chromium-tools-linux-${{ matrix.cpu }}
+          path: ccache-chromium-artifacts
+          if-no-files-found: warn
+          retention-days: 14
       - name: Upload compile diagnostics
         if: always()
         uses: actions/upload-artifact@v4
