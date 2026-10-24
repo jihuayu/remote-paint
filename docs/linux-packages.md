@@ -132,3 +132,38 @@ object/command evidence, not cache restore success alone.
 
 Caches are subject to GitHub quota/eviction and are separate from this Mac's
 persistent build volume, which the workflow does not access or modify.
+
+The first resumed hosted run rejected reordered internal CIPD package slots
+under `third_party/depot_tools/.cipd_bin`. Before the original checker runs,
+`ci/restore-cipd-layout.py` matches fixed package identities and verifies every
+projected payload byte, permission and symlink against the existing receipt.
+Only an identical projection can restore the old slot numbering and links.
+It never changes the receipt or backdates inputs; the original whole-tree and
+recipe checks still run afterwards. Different payloads or package identities
+remain failures. This avoids invalidating compiled objects for an installer's
+internal slot ordering without accepting changed tools.
+
+### ccache trial
+
+The pinned Chromium revision supports GN's `cc_wrapper = "ccache"` in
+[`build/toolchain/cc_wrapper.gni`](https://github.com/chromium/chromium/blob/a49e2e3d4addfd84e765b52afe230bedb81096db/build/toolchain/cc_wrapper.gni).
+Adding that prefix to retained Ninja commands would recompile existing objects,
+which were never inserted into a compiler cache. Keep the current continuation
+on its original commands. A cold ccache cannot speed those first compilations
+or the linker, and six hours is not yet a proven full-build completion time.
+
+An isolated CI trial uses the same pinned Clang to produce the requested CPU's
+ELF64 object. Debian's pinned ccache 4.7.5 lives in a separate container so the
+attested build image and recipe stay unchanged. Compiler caches are separate
+from Ninja output, keyed by architecture/configuration and actual compiler
+content, capped at 1 GB per architecture, and saved for subsequent trials.
+Fixed container paths and `compiler_check = content` are used; `sloppiness`
+remains empty. No header or timestamp correctness checks are disabled.
+
+`ccache-probe-linux-*` artifacts record first-use/restored and immediate-repeat
+hit/miss deltas, elapsed seconds, identical object checksums and CPU identity.
+A changed header must miss and produce a different object. These small C++
+fixtures establish mechanism correctness and compatibility, not a Chromium
+speedup. Full Chromium `cc_wrapper` adoption needs a separate fresh output/cache
+profile after the present incremental build has delivered its package; it is
+not enabled on the retained output in this workflow.

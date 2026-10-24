@@ -30,6 +30,10 @@ on:
       - 'tests/verify-container-cdp.mjs'
       - 'ci/compile-budget.mjs'
       - 'tests/compile-budget.test.mjs'
+      - 'ci/restore-cipd-layout.py'
+      - 'tests/test_ci_cipd_layout.py'
+      - 'ci/Dockerfile.ccache'
+      - 'ci/ccache*'
 
 permissions:
   contents: read
@@ -87,13 +91,47 @@ jobs:
         run: |
           node --test tests/compile-budget.test.mjs
           docker run --rm --init --network none --cpus 1 --memory 1g --pids-limit 128 \
-            -v "$PWD:/project:ro" remote-paint-ci python3 /project/tests/test_ci_source_times.py
+            -v "$PWD:/project:ro" remote-paint-ci sh -c \
+            'python3 /project/tests/test_ci_source_times.py && python3 /project/tests/test_ci_cipd_layout.py'
       - name: Sync pinned Chromium source and dependencies
         timeout-minutes: 65
         run: |
           docker run --rm --init -e TARGET_CPU -e CHROMIUM_OUTPUT \
             -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" \
             remote-paint-ci bash /project/docker/ci-checkout.sh
+      - name: Restore isolated compiler cache without changing retained Ninja commands
+        id: ccache
+        uses: actions/cache/restore@v4
+        with:
+          path: build/ccache
+          key: ccache-probe-${{ matrix.cpu }}-v1-${{ hashFiles('ci/Dockerfile.ccache', 'ci/ccache*', 'native/*.args.gn') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ccache-probe-${{ matrix.cpu }}-v1-${{ hashFiles('ci/Dockerfile.ccache', 'ci/ccache*', 'native/*.args.gn') }}-
+      - name: Measure ccache cold or restored and warm results with pinned Clang
+        id: ccache-probe
+        timeout-minutes: 5
+        run: |
+          mkdir -p build/ccache ccache-artifacts
+          docker build -t remote-paint-ccache -f ci/Dockerfile.ccache .
+          docker run --rm --init --network none --cpus 1 --memory 1g \
+            -e TARGET_CPU -e GITHUB_RUN_ID -e GITHUB_RUN_ATTEMPT \
+            -v "$PWD:/project:ro" -v "$PWD/build/chromium:/chromium:ro" \
+            -v "$PWD/build/ccache:/ccache" -v "$PWD/ccache-artifacts:/proof" \
+            remote-paint-ccache python3 /project/ci/ccache-probe.py
+          sudo chown -R "$(id -u):$(id -g)" build/ccache ccache-artifacts
+      - name: Preserve measured compiler cache
+        if: always() && steps.ccache-probe.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: build/ccache
+          key: ccache-probe-${{ matrix.cpu }}-v1-${{ hashFiles('ci/Dockerfile.ccache', 'ci/ccache*', 'native/*.args.gn') }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Upload actual ccache measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccache-probe-linux-${{ matrix.cpu }}
+          path: ccache-artifacts
+          if-no-files-found: warn
+          retention-days: 14
       - name: Compile patched Chromium
         id: chromium
         run: |
@@ -108,7 +146,9 @@ jobs:
             docker run --name remote-paint-compile --init \
             --shm-size=2g -e TARGET_CPU -e CHROMIUM_OUTPUT -e BUILD_JOBS=4 -e REMOTE_PAINT_CI_SOURCE_TIMES=1 \
             -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" \
-            remote-paint-ci sh /project/docker/build-linux.sh 2>&1 | tee chromium-build.log
+            remote-paint-ci sh -c \
+            'python3 /project/ci/restore-cipd-layout.py /chromium/src "/chromium/src/$CHROMIUM_OUTPUT" && sh /project/docker/build-linux.sh' \
+            2>&1 | tee chromium-build.log
       - name: Build Broker and create standalone package
         id: package
         if: success()
