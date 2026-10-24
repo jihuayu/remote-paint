@@ -19,6 +19,13 @@ or another browser. Image checksums and `docker-image.json` identify the
 actual image ID, CPU and source revision. Use only an artifact whose matching
 container/CDP smoke checks passed.
 
+`Download and run Docker Linux *` then downloads that uploaded artifact on a
+new matching-CPU runner, checks the archive checksum and loaded image ID, starts
+the downloaded server, and runs an Agent in a separate container against its
+existing Source over private CDP. `delivered-image-linux-*` holds the delivery
+receipt and runtime evidence. Missing images fail explicitly; a build-only run
+is not proof of delivery or Agent connectivity.
+
 Before upload, distribution staging removes TLS test keys/certificates and
 local account configuration paths, then regenerates the inner and outer
 checksums. Production payloads therefore omit those source-test fixtures;

@@ -360,3 +360,81 @@ jobs:
           path: smoke-artifacts
           if-no-files-found: warn
           retention-days: 14
+
+  delivery:
+    name: Download and run Docker Linux ${{ matrix.cpu }}
+    needs: smoke
+    if: ${{ always() && !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cpu: x86_64
+            runner: ubuntu-24.04
+          - cpu: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: remote-paint-image-linux-${{ matrix.cpu }}
+          path: docker-images
+      - name: Verify downloaded image checksum and load exact image identity
+        env:
+          TARGET_CPU: ${{ matrix.cpu }}
+        run: |
+          set -euo pipefail
+          mkdir -p delivery-proof
+          cd docker-images
+          sha256sum -c SHA256SUMS.sha256
+          gzip -dc "remote-paint-image-linux-$TARGET_CPU.tar.gz" | docker load
+          expected=$(python3 -c 'import json; print(json.load(open("docker-image.json"))["imageId"])')
+          test "$(docker image inspect "remote-paint:linux-$TARGET_CPU" --format '{{.Id}}')" = "$expected"
+          cpu=arm64
+          if [ "$TARGET_CPU" = x86_64 ]; then cpu=amd64; fi
+          test "$(docker image inspect "remote-paint:linux-$TARGET_CPU" --format '{{.Architecture}}')" = "$cpu"
+          cp docker-image.json SHA256SUMS.sha256 ../delivery-proof/
+      - name: Start downloaded server and connect a separate Agent container over private CDP
+        env:
+          TARGET_CPU: ${{ matrix.cpu }}
+        run: |
+          set -euo pipefail
+          container_id=
+          cleanup() {
+            if [ -n "$container_id" ]; then
+              docker logs "$container_id" 2>&1 | sed -E 's/--remote-paint-token=[^ ]*/--remote-paint-token=<redacted>/g' > delivery-proof/container-startup.log || true
+              docker inspect "$container_id" --format '{"status":"{{.State.Status}}","exitCode":{{.State.ExitCode}},"oomKilled":{{.State.OOMKilled}}}' > delivery-proof/container-state.json || true
+              docker rm -f "$container_id" >/dev/null 2>&1 || true
+            fi
+          }
+          trap cleanup EXIT
+          container_id=$(docker run -d --network host --init --read-only \
+            --tmpfs /tmp:size=1g,mode=1777 --shm-size=2g \
+            -e REMOTE_PAINT_PORT=14176 -e REMOTE_PAINT_WS_PORT=14177 \
+            -e REMOTE_PAINT_CDP_PORT=19222 "remote-paint:linux-$TARGET_CPU")
+          for attempt in $(seq 1 60); do
+            if docker exec "$container_id" test -s /tmp/remote-paint-ready.json && curl --fail --silent http://127.0.0.1:19222/json/version >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:19222/json/version > delivery-proof/cdp-version.json
+          for port in 14176 14177 19222; do
+            test "$(ss -H -ltn "sport = :$port" | awk '{print $4}')" = "127.0.0.1:$port"
+          done
+          target=$(docker exec "$container_id" /opt/remote-paint/node/bin/node -e \
+            'console.log(JSON.parse(require("node:fs").readFileSync("/tmp/remote-paint-ready.json","utf8")).sourceTargetId)')
+          docker run --rm --network host --read-only --tmpfs /tmp:size=128m,mode=1777 \
+            --workdir /tmp --entrypoint /opt/remote-paint/node/bin/node \
+            "remote-paint:linux-$TARGET_CPU" /opt/remote-paint/app/tests/verify-container-cdp.mjs \
+            http://127.0.0.1:19222 "$target" | tee delivery-proof/agent-cdp.log
+          docker exec "$container_id" /opt/remote-paint/node/bin/node /opt/remote-paint/app/service/container-health.mjs
+          docker stop --timeout 20 "$container_id"
+          test "$(docker inspect "$container_id" --format '{{.State.ExitCode}}')" = 0
+          printf '{"downloadedArtifact":true,"checksumPassed":true,"loadedIdentityPassed":true,"matchingCpu":true,"privateCdpAgentPassed":true,"gracefulStopPassed":true}\n' > delivery-proof/delivery.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: delivered-image-linux-${{ matrix.cpu }}
+          path: delivery-proof
+          if-no-files-found: warn
+          retention-days: 14
