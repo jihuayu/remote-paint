@@ -11,6 +11,8 @@ import pathlib
 import subprocess
 import time
 
+COUNTER_IDS = ('direct_cache_hit', 'preprocessed_cache_hit', 'cache_miss')
+
 
 def counters(text):
     result = {}
@@ -21,8 +23,16 @@ def counters(text):
 
 
 def delta(before, after):
-    return {key: after.get(key, 0) - before.get(key, 0)
-            for key in ('cache_hit_direct', 'cache_hit_preprocessed', 'cache_miss')}
+    # ccache 4.7.5 core/Statistics.cpp exposes these exact --print-stats IDs.
+    # An unknown schema must fail rather than turn genuine hits into zeros.
+    for snapshot in (before, after):
+        missing = set(COUNTER_IDS) - snapshot.keys()
+        if missing:
+            raise ValueError('Missing ccache statistics IDs: ' + ', '.join(sorted(missing)))
+    result = {key: after[key] - before[key] for key in COUNTER_IDS}
+    if any(value < 0 for value in result.values()):
+        raise ValueError('ccache statistics reset during a measurement')
+    return result
 
 
 def main():
@@ -52,6 +62,15 @@ def main():
     if not any(line.rstrip().endswith('sloppiness =') for line in config.splitlines()):
         raise ValueError('Probe requires empty sloppiness')
     measurements = []
+    proof = pathlib.Path('/proof')
+    proof.mkdir(exist_ok=True)
+    (proof / 'ccache-config.txt').write_text(config)
+    report = {'target': target, 'compilerSha256': compiler_sha,
+              'compilerVersion': run(str(compiler), '--version').splitlines()[0],
+              'ccacheVersion': run('ccache', '--version').splitlines()[0],
+              'measurements': measurements, 'scope': 'isolated C++ fixture; full Chromium wrapper unchanged',
+              'mainChromiumAccelerationProven': False, 'sloppiness': '', 'maxSize': '1G',
+              'status': 'running'}
 
     def compile_one(label):
         before = counters(run('ccache', '--print-stats'))
@@ -59,6 +78,9 @@ def main():
         subprocess.check_call(command, cwd=root, env=env)
         elapsed = time.monotonic() - started
         after = counters(run('ccache', '--print-stats'))
+        # Retain raw IDs even if schema or acceptance checks fail.
+        (proof / f'{label}-counters.json').write_text(json.dumps(
+            {'before': before, 'after': after}, indent=2) + '\n')
         raw = (root / 'probe.o').read_bytes()
         expected = 183 if target == 'arm64' else 62
         if raw[:6] != b'\x7fELF\x02\x01' or int.from_bytes(raw[18:20], 'little') != expected:
@@ -68,29 +90,27 @@ def main():
         measurements.append(measurement)
         return measurement
 
-    first = compile_one('restored-or-cold')
-    second = compile_one('warm-repeat')
-    if sum(second['delta'][k] for k in ('cache_hit_direct', 'cache_hit_preprocessed')) != 1:
-        raise ValueError('Repeated identical compilation did not hit ccache')
-    if first['objectSha256'] != second['objectSha256']:
-        raise ValueError('Cached output differs from the first compilation')
-    changed_value = 100 + int(os.environ['GITHUB_RUN_ID']) * 1000 + int(os.environ['GITHUB_RUN_ATTEMPT'])
-    header.write_text(f'#define VALUE {changed_value}LL\n')
-    time.sleep(1.1)
-    changed = compile_one('changed-header')
-    if changed['objectSha256'] == first['objectSha256'] or changed['delta']['cache_miss'] != 1:
-        raise ValueError('Changed header failed to invalidate the cache')
-    proof = pathlib.Path('/proof')
-    proof.mkdir(exist_ok=True)
-    report = {'verifiedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-              'target': target, 'compilerSha256': compiler_sha,
-              'compilerVersion': run(str(compiler), '--version').splitlines()[0],
-              'ccacheVersion': run('ccache', '--version').splitlines()[0],
-              'measurements': measurements, 'scope': 'isolated C++ fixture; full Chromium wrapper unchanged',
-              'mainChromiumAccelerationProven': False, 'sloppiness': '', 'maxSize': '1G'}
-    (proof / 'ccache-probe.json').write_text(json.dumps(report, indent=2) + '\n')
-    (proof / 'ccache-stats.txt').write_text(run('ccache', '--show-stats'))
-    (proof / 'ccache-config.txt').write_text(config)
+    try:
+        first = compile_one('restored-or-cold')
+        second = compile_one('warm-repeat')
+        if sum(second['delta'][k] for k in ('direct_cache_hit', 'preprocessed_cache_hit')) != 1:
+            raise ValueError('Repeated identical compilation did not hit ccache')
+        if first['objectSha256'] != second['objectSha256']:
+            raise ValueError('Cached output differs from the first compilation')
+        changed_value = 100 + int(os.environ['GITHUB_RUN_ID']) * 1000 + int(os.environ['GITHUB_RUN_ATTEMPT'])
+        header.write_text(f'#define VALUE {changed_value}LL\n')
+        time.sleep(1.1)
+        changed = compile_one('changed-header')
+        if changed['objectSha256'] == first['objectSha256'] or changed['delta']['cache_miss'] != 1:
+            raise ValueError('Changed header failed to invalidate the cache')
+        report['status'] = 'passed'
+    except Exception as error:
+        report.update(status='failed', error=str(error))
+        raise
+    finally:
+        report['verifiedAt'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+        (proof / 'ccache-probe.json').write_text(json.dumps(report, indent=2) + '\n')
+        (proof / 'ccache-stats.txt').write_text(run('ccache', '--show-stats'))
     print(json.dumps(report), flush=True)
 
 

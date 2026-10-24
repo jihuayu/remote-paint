@@ -1,5 +1,5 @@
 // The build/test checkout may contain public TLS fixture keys; the delivered
-// server must not contain keys or local account configuration, even fixtures.
+// server must not contain keys, local configuration or recorded run data.
 import assert from 'node:assert/strict';
 import {readdir,readFile,writeFile,rm} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
@@ -8,7 +8,7 @@ import {pathToFileURL} from 'node:url';
 import {fileHash} from '../native/linux-receipt.mjs';
 
 export function excludedDistributionPath(path){
- return path.split('/').some(part=>/^\.env(?:\.|$)/.test(part)||['.aws','.ssh','.npmrc','.netrc','.pypirc','id_rsa','id_ed25519'].includes(part))||/\.(pem|key|p12|pfx)$/i.test(path);
+ return /^app\/(?:examples\/verified-capture(?:\/|$)|artifacts\/)/.test(path)||path.split('/').some(part=>/^\.env(?:\.|$)/.test(part)||['.aws','.ssh','.npmrc','.netrc','.pypirc','id_rsa','id_ed25519'].includes(part))||/\.(pem|key|p12|pfx)$/i.test(path);
 }
 async function sanitize(root,relative=''){
  let removed=0;
@@ -35,7 +35,7 @@ export async function prepareDistribution(directory){
  const name=roots[0].name,root=join(destination,name);
  const removed=await sanitize(root);
  const build=JSON.parse(await readFile(join(root,'BUILD.json'),'utf8'));
- build.distribution={policy:'no-key-or-local-config-files-v1',removedPaths:removed};
+ build.distribution={policy:'no-key-config-or-recorded-data-v2',removedPaths:removed};
  await writeFile(join(root,'BUILD.json'),JSON.stringify(build,null,2)+'\n');
  const files=(await listFiles(root)).sort();
  assert.ok(files.length>0);
@@ -44,6 +44,6 @@ export async function prepareDistribution(directory){
  const archive=join(destination,`${name}.tar.gz`);
  execFileSync('tar',['-czf',archive,'-C',destination,name],{stdio:'inherit'});
  await writeFile(`${archive}.sha256`,`${await fileHash(archive)}  ${name}.tar.gz\n`);
- console.log(JSON.stringify({distribution:name,removedKeyOrConfigPaths:removed}));
+ console.log(JSON.stringify({distribution:name,removedExcludedPaths:removed}));
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)await prepareDistribution(process.argv[2]);

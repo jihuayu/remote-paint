@@ -96,10 +96,12 @@ def main():
             raise ValueError('Unexpected serializer executable link')
         executable.unlink()
         second = compile_one('object-removal-warm-replay')
-        hits = second['delta']['cache_hit_direct'] + second['delta']['cache_hit_preprocessed']
+        hits = second['delta']['direct_cache_hit'] + second['delta']['preprocessed_cache_hit']
         if hits <= 0:
             raise ValueError('No ccache hits observed for real Chromium C++ commands')
         matched = sum((output / name).is_file() and sha(output / name) == digest for name, digest in old.items())
+        if matched != len(old):
+            raise ValueError('Replayed Chromium objects differ from the first compilation')
         raw = executable.read_bytes()[:20]
         expected = 183 if target == 'arm64' else 62
         if raw[:6] != b'\x7fELF\x02\x01' or int.from_bytes(raw[18:20], 'little') != expected:

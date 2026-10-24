@@ -26,8 +26,9 @@ existing Source over private CDP. `delivered-image-linux-*` holds the delivery
 receipt and runtime evidence. Missing images fail explicitly; a build-only run
 is not proof of delivery or Agent connectivity.
 
-Before upload, distribution staging removes TLS test keys/certificates and
-local account configuration paths, then regenerates the inner and outer
+Before upload, distribution staging removes TLS test keys/certificates,
+local account configuration paths, the tracked example capture, and generated
+application artifacts, then regenerates the inner and outer
 checksums. Production payloads therefore omit those source-test fixtures;
 run the complete development test suite from the source checkout instead.
 

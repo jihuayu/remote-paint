@@ -35,7 +35,9 @@ export async function startLiveSource({url,executablePath=process.env.REMOTE_PAI
   viz=await startVizIPC({broker,nativeResources:!!broker});const token=nativeToken();
   // The token switch installs capture in the Broker's isolated world. Do not
   // enable legacy GPU benchmarking APIs (including disk export) in source JS.
-  browser=await downloads.launch(downloadsPath=>chromium.launch({executablePath,headless:true,downloadsPath,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint,...(broker?{REMOTE_PAINT_NATIVE_RESOURCES:'1',REMOTE_PAINT_TILED_CAPTURE:process.env.REMOTE_PAINT_TILED_CAPTURE??'1'}:{})},args:[...nativeLaunchArgs(token,{beginFrames,nativeDownloadBudget}),...cdpArgs]}));
+  // The CLI/container owns SIGINT/SIGTERM and closes native CDP scopes before
+  // the browser. Playwright's default signal close races that ordered cleanup.
+  browser=await downloads.launch(downloadsPath=>chromium.launch({executablePath,headless:true,downloadsPath,handleSIGINT:false,handleSIGTERM:false,env:{...process.env,REMOTE_PAINT_SOCKET:viz.endpoint,...(broker?{REMOTE_PAINT_NATIVE_RESOURCES:'1',REMOTE_PAINT_TILED_CAPTURE:process.env.REMOTE_PAINT_TILED_CAPTURE??'1'}:{})},args:[...nativeLaunchArgs(token,{beginFrames,nativeDownloadBudget}),...cdpArgs]}));
   const page=await browser.newPage({viewport,deviceScaleFactor:1});
   downloads.bindPage(page);
   if(nativeDownloadBudget)nativeDownloads=createSourceNativeDownloadRoot(page);
