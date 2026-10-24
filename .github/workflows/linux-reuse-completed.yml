@@ -1,0 +1,68 @@
+name: Reuse completed Linux native output
+
+on:
+  workflow_call:
+    inputs:
+      build_cpu:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  native_receipt:
+    name: Require completed ${{ inputs.build_cpu }} cache
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      TARGET_CPU: ${{ inputs.build_cpu }}
+      CHROMIUM_OUTPUT: out/RemotePaintLinux
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Select the unchanged native cache profile
+        id: identity
+        env:
+          PROFILE: chromium-linux-${{ inputs.build_cpu }}-v3-${{ hashFiles('docker/**', 'native/*.mjs', 'native/*.args.gn', 'native/patches/**', 'native/chromium/**', 'native/broker/**') }}
+        run: printf 'prefix=%s-\n' "$PROFILE" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            build/chromium/src/${{ env.CHROMIUM_OUTPUT }}
+            build/chromium/broker-target
+          key: ${{ steps.identity.outputs.prefix }}receipt-check-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ${{ steps.identity.outputs.prefix }}
+      - name: Require actual completed binaries and matching receipt before scheduling a recheck
+        run: |
+          set -euo pipefail
+          receipt="build/chromium/src/$CHROMIUM_OUTPUT/remote-paint-build.json"
+          if [ ! -s "$receipt" ]; then
+            echo 'No completed native cache: refusing to start another Chromium build in this recheck' >&2
+            exit 1
+          fi
+          node --input-type=module <<'NODE'
+          import {readFile} from 'node:fs/promises';
+          import {join} from 'node:path';
+          import {verifyElf} from './native/package-linux.mjs';
+          import {fileHash,verifyLinuxReceipt} from './native/linux-receipt.mjs';
+          const cpu=process.env.TARGET_CPU;
+          const relative=process.env.CHROMIUM_OUTPUT;
+          const root=join('build/chromium/src',relative);
+          const receipt=JSON.parse(await readFile(join(root,'remote-paint-build.json'),'utf8'));
+          for(const file of ['headless_shell','serializer_tests'])await verifyElf(join(root,file),cpu);
+          const browserSha256=await fileHash(join(root,'headless_shell'));
+          await verifyLinuxReceipt(receipt,{cpu,buildProfile:`linux-${cpu}`,outputDirectory:relative,patches:receipt.patches,
+            argsSha256:await fileHash(join(root,'args.gn')),browserSha256,
+            serializerSha256:await fileHash(join(root,'serializer_tests'))});
+          console.log(JSON.stringify({target:cpu,completedNativeVerified:true,browserSha256}));
+          NODE
+
+  runtime:
+    name: Verify existing native ${{ inputs.build_cpu }}
+    needs: native_receipt
+    uses: ./.github/workflows/linux-package-architecture.yml
+    with:
+      build_cpu: ${{ inputs.build_cpu }}
+      fresh_cache: false
