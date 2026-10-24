@@ -1,0 +1,15 @@
+services:
+  remote-paint:
+    image: remote-paint:linux-arm64
+    init: true
+    network_mode: host
+    read_only: true
+    tmpfs:
+      - /tmp:size=1g,mode=1777
+    shm_size: 2gb
+    environment:
+      REMOTE_PAINT_PORT: '14176'
+      REMOTE_PAINT_WS_PORT: '14177'
+      REMOTE_PAINT_CDP_PORT: '19222'
+      REMOTE_PAINT_URL: about:blank
+    restart: unless-stopped

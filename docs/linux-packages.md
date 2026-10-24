@@ -1,5 +1,9 @@
 # Linux packages
 
+For the additional loadable Docker server image and private Agent CDP endpoint,
+see [Docker/private CDP delivery](docker-private-cdp.md). Image qualification
+and NAS deployment are separate from archive upload.
+
 Download `remote-paint-linux-arm64` or `remote-paint-linux-x86_64` from the
 **Artifacts** section of a successful **Linux packages** GitHub Actions run.
 x86 means 64-bit x86_64/amd64, not 32-bit i386. Unzip the Actions artifact,
@@ -75,8 +79,13 @@ the output graph, since even an incompatible dry run can discard its build log.
 
 Start **Linux packages → Run workflow**, or push a `v*` tag. Artifacts are kept
 for 30 days. A fresh patched Chromium build can exceed a hosted runner's
-six-hour job limit. Compilation stops at 245 minutes to allow saving the
-architecture-specific Ninja output through `actions/cache`, even on failure.
+six-hour job limit. There is no fixed 245-minute compilation step timeout.
+The workflow records the job start, then gives compilation the remaining time
+up to 335 minutes from that start. This soft stop reserves 25 minutes for the
+15-minute packaging step, cache preservation and diagnostic uploads before
+GitHub's 360-minute hard limit. Checkout and source-sync time count against the
+same budget. The `timeout` command stops compilation with a failing status;
+`always()` steps preserve architecture-specific Ninja output even on failure.
 Rerun the workflow to continue from a matching, validated cache; incomplete
 builds never produce a release package. The v3 CI path no longer assigns a
 constant old timestamp to a fresh source tree or touches every Native header
@@ -111,12 +120,13 @@ limit before Ninja started. The manifest now admits up to three million
 entries and 768 MiB of decoded JSON, with progress every 250,000 hashed inputs.
 It still hashes and compares every input; capacity errors leave an existing
 receipt unchanged. These are CI metadata bounds, separate from Viewer budgets,
-runtime limits and the unchanged compilation timeout.
+runtime limits and the hosted runner's execution limit.
 
 The workflow also runs real C++/Ninja fixtures and retains a dry-run diagnostic
 before compilation: up to 128 KiB of `ninja -n -d explain`, with a 90-second
 observation limit and explicit truncation/timeout status. A diagnostic timeout
-is not a compile result. Build/source/job budgets stay 245/65/360 minutes.
+is not a compile result. Source sync remains bounded at 65 minutes and the
+whole build job at 360 minutes; compilation uses the remaining budget above.
 Actual hosted reuse must be established from a completed resumed run and its
 object/command evidence, not cache restore success alone.
 

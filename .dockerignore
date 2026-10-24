@@ -1,0 +1,10 @@
+**
+!docker/
+!docker/Dockerfile*
+!deploy/
+!deploy/Dockerfile.server
+!packages/
+!packages/remote-paint-linux-*/
+!packages/remote-paint-linux-*/**
+packages/*.tar.gz
+packages/*.sha256

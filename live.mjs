@@ -6,7 +6,7 @@ import {startLiveSource} from './live/source.mjs';
 import {startLiveTransport} from './live/transport.mjs';
 import {prepareViewerAssets} from './live/viewer-assets.mjs';
 import {startDynamicFixture} from './tests/dynamic-fixture.mjs';
-export async function startLive({url,port=4175,host='127.0.0.1',executablePath,interval=1000/60,captureOnInput=true,transportKey,nativePort,nativeDownloadBudget=false}={}){
+export async function startLive({url,port=4175,host='127.0.0.1',executablePath,interval=1000/60,captureOnInput=true,transportKey,nativePort,nativeDownloadBudget=false,cdpPort=null}={}){
  if(typeof nativeDownloadBudget!=='boolean')throw new TypeError('nativeDownloadBudget must be a trusted boolean');
  const preparedAssets=prepareViewerAssets();preparedAssets.catch(()=>{});
  const fixture=url?null:await startDynamicFixture();let source,transport;
@@ -18,7 +18,7 @@ export async function startLive({url,port=4175,host='127.0.0.1',executablePath,i
   }
   if(errors.length)throw new AggregateError(errors,'Live close failed');
  })();
- try{source=await startLiveSource({url:url??fixture.url,executablePath,interval,captureOnInput,nativeDownloadBudget});source.control=await createControl(source);transport=await startLiveTransport(source,{port,host,preparedAssets,transportKey,nativePort});
+ try{source=await startLiveSource({url:url??fixture.url,executablePath,interval,captureOnInput,nativeDownloadBudget,cdpPort});source.control=await createControl(source);transport=await startLiveTransport(source,{port,host,preparedAssets,transportKey,nativePort});
   return {...transport,source,close};
  }catch(error){try{await close();}catch(cleanup){throw new AggregateError([error,cleanup],'Live startup and cleanup failed');}throw error;}
 }

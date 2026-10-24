@@ -18,6 +18,18 @@ on:
       - 'tests/test_ci_source_times.py'
       - 'tests/verify-packaged-launcher.mjs'
       - 'docs/linux-packages.md'
+      - 'deploy/**'
+      - '.dockerignore'
+      - 'live/private-cdp.mjs'
+      - 'live.mjs'
+      - 'live/source.mjs'
+      - 'service/container-*.mjs'
+      - 'docs/docker-private-cdp.md'
+      - 'tests/private-cdp.test.mjs'
+      - 'tests/distribution-policy.test.mjs'
+      - 'tests/verify-container-cdp.mjs'
+      - 'ci/compile-budget.mjs'
+      - 'tests/compile-budget.test.mjs'
 
 permissions:
   contents: read
@@ -39,6 +51,8 @@ jobs:
       TARGET_CPU: ${{ matrix.cpu }}
       CHROMIUM_OUTPUT: out/RemotePaintLinux
     steps:
+      - name: Record hosted job start for the six-hour deadline
+        run: printf 'REMOTE_PAINT_JOB_STARTED_AT=%s\n' "$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
@@ -71,6 +85,7 @@ jobs:
       - name: Verify byte-checked timestamp rehydration with real Ninja and C++
         timeout-minutes: 3
         run: |
+          node --test tests/compile-budget.test.mjs
           docker run --rm --init --network none --cpus 1 --memory 1g --pids-limit 128 \
             -v "$PWD:/project:ro" remote-paint-ci python3 /project/tests/test_ci_source_times.py
       - name: Sync pinned Chromium source and dependencies
@@ -81,10 +96,16 @@ jobs:
             remote-paint-ci bash /project/docker/ci-checkout.sh
       - name: Compile patched Chromium
         id: chromium
-        timeout-minutes: 245
         run: |
-          set -o pipefail
-          docker run --name remote-paint-compile --init \
+          set -euo pipefail
+          budget=$(node ci/compile-budget.mjs)
+          printf 'Compile budget: %s seconds; 25 minutes reserved before the hosted job hard limit\n' "$budget"
+          if [ "$budget" -le 0 ]; then
+            echo 'No safe compilation time remains; preserving incremental output' >&2
+            exit 124
+          fi
+          timeout --signal=TERM --kill-after=30s "${budget}s" \
+            docker run --name remote-paint-compile --init \
             --shm-size=2g -e TARGET_CPU -e CHROMIUM_OUTPUT -e BUILD_JOBS=4 -e REMOTE_PAINT_CI_SOURCE_TIMES=1 \
             -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" \
             remote-paint-ci sh /project/docker/build-linux.sh 2>&1 | tee chromium-build.log
@@ -95,7 +116,7 @@ jobs:
         run: |
           docker run --rm --init -e TARGET_CPU -e CHROMIUM_OUTPUT -e BUILD_JOBS=4 \
             -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" -v "$PWD/packages:/packages" \
-            remote-paint-ci bash /project/docker/ci-package.sh
+            remote-paint-ci bash -c 'bash /project/docker/ci-package.sh && node /project/deploy/sanitize-server-package.mjs /packages'
       - name: Save incremental output even after a compile timeout
         if: always() && (steps.cache.outcome == 'success' || inputs.fresh_cache == true)
         run: |
@@ -157,7 +178,7 @@ jobs:
           - cpu: arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -186,6 +207,81 @@ jobs:
             -e REMOTE_PAINT_BROKER=/package/app/native/bin/remote-paint-broker \
             remote-paint-runtime sh -c \
               'cd /package/browser && ./serializer_tests && cd /package/app && /package/node/bin/node tests/verify-packaged-launcher.mjs /package && /package/node/bin/node tests/verify-native.mjs && /package/node/bin/node tests/verify-live.mjs'
+      - name: Build runnable private CDP server image
+        env:
+          TARGET_CPU: ${{ matrix.cpu }}
+        run: |
+          package=$(find "$PWD/packages" -mindepth 1 -maxdepth 1 -type d -name 'remote-paint-linux-*')
+          relative=$(realpath --relative-to="$PWD" "$package")
+          docker build -t "remote-paint:linux-$TARGET_CPU" -f deploy/Dockerfile.server \
+            --build-arg "PACKAGE_DIR=$relative" --build-arg "SOURCE_REVISION=$GITHUB_SHA" .
+          expected=arm64
+          if [ "$TARGET_CPU" = x86_64 ]; then expected=amd64; fi
+          test "$(docker image inspect "remote-paint:linux-$TARGET_CPU" --format '{{.Architecture}}')" = "$expected"
+      - name: Verify Agent CDP against the image's existing Source
+        env:
+          TARGET_CPU: ${{ matrix.cpu }}
+        run: |
+          set -euo pipefail
+          container_id=
+          cleanup() {
+            if [ -n "$container_id" ]; then
+              docker logs "$container_id" 2>&1 | sed -E 's/--remote-paint-token=[^ ]*/--remote-paint-token=<redacted>/g' > smoke-artifacts/container-startup.log || true
+              docker inspect "$container_id" --format '{"status":"{{.State.Status}}","exitCode":{{.State.ExitCode}},"oomKilled":{{.State.OOMKilled}}}' > smoke-artifacts/container-state.json || true
+              docker rm -f "$container_id" >/dev/null 2>&1 || true
+            fi
+          }
+          trap cleanup EXIT
+          container_id=$(docker run -d --name remote-paint-cdp-smoke --network host --init --read-only \
+            --tmpfs /tmp:size=1g,mode=1777 --shm-size=2g \
+            -e REMOTE_PAINT_PORT=14176 -e REMOTE_PAINT_WS_PORT=14177 \
+            -e REMOTE_PAINT_CDP_PORT=19222 "remote-paint:linux-$TARGET_CPU")
+          for attempt in $(seq 1 60); do
+            if docker exec remote-paint-cdp-smoke test -s /tmp/remote-paint-ready.json && curl --fail --silent http://127.0.0.1:19222/json/version >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:19222/json/version >/dev/null
+          test "$(docker inspect remote-paint-cdp-smoke --format '{{.HostConfig.NetworkMode}}')" = host
+          : > smoke-artifacts/private-listeners.txt
+          for port in 14176 14177 19222; do
+            address=$(ss -H -ltn "sport = :$port" | awk '{print $4}')
+            printf '%s\n' "$address" >> smoke-artifacts/private-listeners.txt
+            test "$address" = "127.0.0.1:$port"
+          done
+          target=$(docker exec remote-paint-cdp-smoke /opt/remote-paint/node/bin/node -e \
+            'console.log(JSON.parse(require("node:fs").readFileSync("/tmp/remote-paint-ready.json","utf8")).sourceTargetId)')
+          package=$(find "$PWD/packages" -mindepth 1 -maxdepth 1 -type d -name 'remote-paint-linux-*')
+          "$package/node/bin/node" "$package/app/tests/verify-container-cdp.mjs" http://127.0.0.1:19222 "$target"
+          docker exec remote-paint-cdp-smoke /opt/remote-paint/node/bin/node /opt/remote-paint/app/service/container-health.mjs
+          docker stop --timeout 20 remote-paint-cdp-smoke
+          test "$(docker inspect remote-paint-cdp-smoke --format '{{.State.ExitCode}}')" = 0
+      - name: Save checked Docker image and checksum
+        env:
+          TARGET_CPU: ${{ matrix.cpu }}
+        run: |
+          set -euo pipefail
+          mkdir -p docker-images
+          docker save "remote-paint:linux-$TARGET_CPU" | gzip -1 > "docker-images/remote-paint-image-linux-$TARGET_CPU.tar.gz"
+          cd docker-images
+          sha256sum *.tar.gz > SHA256SUMS.sha256
+          docker image inspect "remote-paint:linux-$TARGET_CPU" \
+            --format '{"imageId":"{{.Id}}","architecture":"{{.Architecture}}","os":"{{.Os}}","revision":"{{index .Config.Labels "org.opencontainers.image.revision"}}"}' > docker-image.json
+          cp docker-image.json ../smoke-artifacts/docker-image.json
+          cp SHA256SUMS.sha256 ../smoke-artifacts/docker-image-SHA256SUMS.sha256
+      - name: Upload verified Docker image
+        id: image
+        uses: actions/upload-artifact@v4
+        with:
+          name: remote-paint-image-linux-${{ matrix.cpu }}
+          path: docker-images
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+      - name: Record Docker download
+        env:
+          IMAGE_URL: ${{ steps.image.outputs.artifact-url }}
+        run: |
+          printf '### Verified Docker server\n\n[Download Docker image and checksum](%s)\n\nActual matching-CPU image and private CDP/Source checks passed. NAS deployment is a separate step.\n' "$IMAGE_URL" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
