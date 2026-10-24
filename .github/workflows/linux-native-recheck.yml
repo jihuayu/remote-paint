@@ -1,0 +1,34 @@
+name: Recheck completed Linux native output
+
+on:
+  workflow_dispatch:
+    inputs:
+      cpu:
+        description: 'Recheck only a target with an existing completed native cache'
+        type: choice
+        options: [all, x64, arm64]
+        default: all
+  # Validate this opt-in workflow when it is introduced or edited. Ordinary
+  # application changes keep using the normal Linux packages workflow.
+  pull_request:
+    paths:
+      - '.github/workflows/linux-native-recheck.yml'
+      - '.github/workflows/linux-reuse-completed.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linux-completed-native-recheck-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  architecture:
+    name: Recheck ${{ matrix.cpu }}
+    strategy:
+      fail-fast: false
+      matrix:
+        cpu: ${{ fromJSON(inputs.cpu == 'x64' && '["x64"]' || inputs.cpu == 'arm64' && '["arm64"]' || '["x64","arm64"]') }}
+    uses: ./.github/workflows/linux-reuse-completed.yml
+    with:
+      build_cpu: ${{ matrix.cpu }}
