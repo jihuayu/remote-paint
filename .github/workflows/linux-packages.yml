@@ -2,8 +2,41 @@ name: Linux packages
 
 on:
   workflow_dispatch:
+    inputs:
+      fresh_cache:
+        description: 'Start fresh output without deleting any prior cache (required after rejected metadata)'
+        type: boolean
+        default: false
   push:
     tags: ['v*']
+  pull_request:
+    paths:
+      - '.github/workflows/linux-packages.yml'
+      - '.github/workflows/linux-package-architecture.yml'
+      - 'docker/**'
+      - 'native/**'
+      - 'tests/linux-package.test.mjs'
+      - 'tests/test_ci_source_times.py'
+      - 'tests/verify-packaged-launcher.mjs'
+      - 'docs/linux-packages.md'
+      - 'deploy/**'
+      - '.dockerignore'
+      - 'live/private-cdp.mjs'
+      - 'live.mjs'
+      - 'live/source.mjs'
+      - 'service/container-*.mjs'
+      - 'docs/docker-private-cdp.md'
+      - 'tests/private-cdp.test.mjs'
+      - 'tests/distribution-policy.test.mjs'
+      - 'tests/verify-container-cdp.mjs'
+      - 'ci/compile-budget.mjs'
+      - 'tests/compile-budget.test.mjs'
+      - 'ci/restore-cipd-layout.py'
+      - 'tests/test_ci_cipd_layout.py'
+      - 'ci/Dockerfile.ccache'
+      - 'ci/ccache*'
+      - 'tests/test_ci_ccache_stats.py'
+      - 'tests/test_ci_ccache_prepare.py'
 
 permissions:
   contents: read
@@ -13,141 +46,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build Linux ${{ matrix.cpu }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 360
+  architecture:
+    name: Linux ${{ matrix.cpu }}
     strategy:
       fail-fast: false
       matrix:
         cpu: [arm64, x64]
-    env:
-      TARGET_CPU: ${{ matrix.cpu }}
-      CHROMIUM_OUTPUT: out/RemotePaintLinux
-    steps:
-      - uses: actions/checkout@v4
-      - name: Make room on the disposable runner
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-          docker image prune --all --force
-          mkdir -p build/chromium packages
-          df -h .
-      - name: Restore incremental Chromium and Rust output
-        id: cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            build/chromium/src/${{ env.CHROMIUM_OUTPUT }}
-            build/chromium/broker-target
-          key: chromium-linux-${{ matrix.cpu }}-v2-${{ hashFiles('docker/Dockerfile.build', 'native/*.args.gn', 'native/patches/**') }}-${{ hashFiles('native/chromium/**', 'native/broker/**') }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            chromium-linux-${{ matrix.cpu }}-v2-${{ hashFiles('docker/Dockerfile.build', 'native/*.args.gn', 'native/patches/**') }}-${{ hashFiles('native/chromium/**', 'native/broker/**') }}-
-            chromium-linux-${{ matrix.cpu }}-v2-${{ hashFiles('docker/Dockerfile.build', 'native/*.args.gn', 'native/patches/**') }}-
-      - name: Build pinned Linux toolchain image
-        run: |
-          docker build --platform linux/amd64 -t remote-paint-build:ci -f docker/Dockerfile.build .
-          docker build --platform linux/amd64 -t remote-paint-ci -f docker/Dockerfile.ci .
-      - name: Sync pinned Chromium source and dependencies
-        timeout-minutes: 65
-        run: |
-          docker run --rm --init -e TARGET_CPU -e CHROMIUM_OUTPUT \
-            -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" \
-            remote-paint-ci bash /project/docker/ci-checkout.sh
-      - name: Compile patched Chromium
-        id: chromium
-        timeout-minutes: 245
-        run: |
-          set -o pipefail
-          docker run --name remote-paint-compile --init \
-            --shm-size=2g -e TARGET_CPU -e CHROMIUM_OUTPUT -e BUILD_JOBS=4 \
-            -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" \
-            remote-paint-ci sh /project/docker/build-linux.sh 2>&1 | tee chromium-build.log
-      - name: Build Broker and create standalone package
-        id: package
-        if: success()
-        timeout-minutes: 15
-        run: |
-          docker run --rm --init -e TARGET_CPU -e CHROMIUM_OUTPUT -e BUILD_JOBS=4 \
-            -v "$PWD:/project" -v "$PWD/build/chromium:/chromium" -v "$PWD/packages:/packages" \
-            remote-paint-ci bash /project/docker/ci-package.sh
-      - name: Save incremental output even after a compile timeout
-        if: always() && steps.cache.outcome == 'success'
-        run: |
-          docker stop --time 20 remote-paint-compile || true
-          sudo chown -R "$(id -u):$(id -g)" build/chromium/src/out build/chromium/broker-target 2>/dev/null || true
-      - name: Preserve build cache
-        if: always() && steps.cache.outcome == 'success'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            build/chromium/src/${{ env.CHROMIUM_OUTPUT }}
-            build/chromium/broker-target
-          key: ${{ steps.cache.outputs.cache-primary-key }}
-      - name: Upload Linux package and checksum
-        if: always() && steps.package.outcome == 'success'
-        uses: actions/upload-artifact@v4
-        with:
-          name: remote-paint-linux-${{ matrix.cpu == 'x64' && 'x86_64' || 'arm64' }}
-          path: |
-            packages/*.tar.gz
-            packages/*.tar.gz.sha256
-          if-no-files-found: error
-          retention-days: 30
-          compression-level: 0
-      - name: Upload compile diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log-linux-${{ matrix.cpu }}
-          path: |
-            chromium-build.log
-            build/chromium/src/${{ env.CHROMIUM_OUTPUT }}/remote-paint-build.json
-          if-no-files-found: warn
-          retention-days: 14
-
-  smoke:
-    name: Run packaged Linux ${{ matrix.cpu }}
-    needs: build
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - cpu: x86_64
-            runner: ubuntu-24.04
-          - cpu: arm64
-            runner: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: remote-paint-linux-${{ matrix.cpu }}
-          path: packages
-      - name: Verify and extract archive
-        run: |
-          cd packages
-          sha256sum -c *.sha256
-          tar -xzf *.tar.gz
-          cd remote-paint-linux-*/
-          sha256sum -c SHA256SUMS
-      - name: Run serializer and native browser capture from extracted package
-        run: |
-          docker build -t remote-paint-runtime -f docker/Dockerfile.runtime .
-          package=$(find "$PWD/packages" -mindepth 1 -maxdepth 1 -type d -name 'remote-paint-linux-*')
-          mkdir -p smoke-artifacts
-          docker run --rm --init --shm-size=2g \
-            -v "$package:/package:ro" -v "$PWD/smoke-artifacts:/package/app/artifacts" \
-            -w /package/app \
-            -e REMOTE_PAINT_CHROMIUM=/package/browser/headless_shell \
-            -e CHROME_EXECUTABLE_PATH=/package/browser/headless_shell \
-            -e REMOTE_PAINT_BROKER=/package/app/native/bin/remote-paint-broker \
-            remote-paint-runtime sh -c \
-              'cd /package/browser && ./serializer_tests && cd /package/app && /package/node/bin/node tests/verify-native.mjs && /package/node/bin/node tests/verify-live.mjs'
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: smoke-linux-${{ matrix.cpu }}
-          path: smoke-artifacts
-          if-no-files-found: warn
-          retention-days: 14
+    uses: ./.github/workflows/linux-package-architecture.yml
+    with:
+      build_cpu: ${{ matrix.cpu }}
+      fresh_cache: ${{ inputs.fresh_cache || false }}

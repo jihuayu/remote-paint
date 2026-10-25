@@ -67,8 +67,16 @@ if ! printf '%s  %s\n' "$esbuild_sha" "$esbuild_dir/esbuild" | sha256sum --check
   chmod +x "$esbuild_dir/esbuild"
 fi
 node "$project/native/prepare.mjs" "$source" "linux-$target" --output "$CHROMIUM_OUTPUT"
+# Seed/validate all source bytes and host-tool identity before any compilation.
+# The receipt lives in the selected output and is saved on compile timeout too.
+if [ "${REMOTE_PAINT_CI_SOURCE_TIMES:-0}" = 1 ]; then
+  python3 "$project/docker/ci-source-times.py" "$source" "$project" "$CHROMIUM_OUTPUT" "$target"
+fi
 buildtools/linux64/gn gen "$output_dir" \
   --script-executable="$source/third_party/cpython3/linux-amd64/bin/python3"
+if [ "${REMOTE_PAINT_CI_SOURCE_TIMES:-0}" = 1 ]; then
+  python3 "$project/docker/ci-source-times.py" --diagnose "$output_dir"
+fi
 ninja -C "$output_dir" -j"${BUILD_JOBS:-4}" remote_paint_tools
 ninja -C "$output_dir" -j"${BUILD_JOBS:-4}" headless_shell
 node "$project/native/linux-receipt.mjs" "$source" --output "$CHROMIUM_OUTPUT"
