@@ -140,3 +140,6 @@ npm run verify          # 静态链路回归
 
 
 Rust stdin RPC还可配置 `REMOTE_PAINT_RPC_INPUT_BYTES`（默认512MiB，1MiB–2GiB）及 `REMOTE_PAINT_RPC_CONTROL_BYTES`（默认4MiB，256KiB–16MiB）。控制池内保留64KiB固定扫描余量；90MiB数据/256KiB控制包上限保持不变。额度包含实际raw Vec容量和保守serde解析余量；不包括Snapshot、输出复制或整个进程。完整坏JSON/不支持的孤立UTF16会按请求ID拒绝并保留后续包；中断字节帧无法重同步。预留控制额度不改变单stdin FIFO和串行处理语义。
+
+
+集群能力的本地开发设计、现有模块接线边界及验收入口见 [集群基础](docs/cluster-deployment.md)；生产远程传输和部署待办见 [集群 TODO](docs/cluster-todo.md)。
