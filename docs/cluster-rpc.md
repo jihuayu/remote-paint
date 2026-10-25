@@ -35,4 +35,4 @@ RPC 正文/响应默认各 2 MiB、8 个实际在途调用、64 个连接；请�
 
 另有真实单机三容器验收：两个独立 Worker 使用现有 NativeSessionResource、Chromium 和 Broker，通过本次 mTLS/provider 接入真实 Gateway/Registry/Agent/Viewer；包含原生帧、真实点击、公共截图分块校验、暂停/恢复与占额结算。详见 [独立容器回执](cluster-container-qualification.md)。
 
-没有把 Docker socket 挂到容器，也没有可用于本次容器的已批准远程 Engine TLS 配置，因此真实 Engine 上的 DockerSessionProvider 创建链路尚未重新执行；原实现与结构合同保留并通过。跨机器网络、真实凭据轮换/撤销、整个 Engine namespace 退役、生产部署和 HA 仍需独立环境与验证。
+后续宿主适配器直接使用现有 Unix socket，实际完成原 DockerSessionProvider 的两套 Chromium/Broker 创建、私有 Source/Agent、故障保留配额、显式重试与不可变退役证据重开，见 [真实 Engine 验收](cluster-engine-qualification.md)。未把 socket 挂入容器或新增 Engine 凭据。该宿主工厂链路与三容器 mTLS/公共 Gateway 验收分别通过，不能拼接宣称一次完整跨机端到端。跨机器网络、远程 Engine 身份、真实凭据轮换/撤销、完整故障矩阵、生产部署和 HA 仍需独立环境与验证。

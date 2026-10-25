@@ -31,4 +31,4 @@ Gateway 和两个 Worker 为三个任务自有容器。Worker PID namespace 不�
 
 ## 边界
 
-Worker 的真实 Native 资源关闭及已观测自有进程退役通过；它不是原 DockerSessionProvider 的完整 Engine namespace 证明。原 Docker provider 的真实类、原 SQLite 外键和回执验证以结构 Engine 夹具另测。跨机器、私有数据面网络、真实持久身份、证书轮换、生产部署、多控制器一致性与 HA 均未验收。8 小时内存项仍暂停。
+本页三容器测试中的 Worker 真实 Native 资源关闭及已观测自有进程退役通过；它不是原 DockerSessionProvider 的完整 Engine namespace 证明。原 Docker provider 后续另以宿主适配器在真实 Engine 完成创建/本地账本/namespace/故障退役链路，见 [Engine 验收](cluster-engine-qualification.md)，两轮覆盖不能冒充一次远程 Engine 整链路。跨机器、私有数据面网络、真实持久身份、证书轮换、生产部署、多控制器一致性与 HA 均未验收。8 小时内存项仍暂停。
