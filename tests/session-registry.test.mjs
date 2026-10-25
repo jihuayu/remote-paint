@@ -9,6 +9,12 @@ function setup(overrides={},limits={}){
  return {calls,provider,registry:new SessionRegistry({providers:new Map([['test-region',provider]]),defaultRegion:'test-region',...limits})};
 }
 const code=expected=>error=>error instanceof SessionApiError&&error.code===expected;
+test('trusted node projection reserves a canonical Session ID without changing public create input or permitting collisions',async()=>{
+ const sessionId='ses_00000000-0000-4000-8000-000000000001',{registry,calls}=setup({}, {sessionIdFactory:()=>sessionId});const first=registry.create('tenant-a',request,{idempotencyKey:'projection'});assert.equal(first.sessionId,sessionId);assert.throws(()=>registry.create('tenant-a',request,{idempotencyKey:'other'}),code('SESSION_ID_UNAVAILABLE'));assert.equal(calls.create.length,1);await registry.shutdown();
+});
+test('invalid or asynchronous trusted identities fail before resource effects and preserve a fixed public error',async()=>{
+ for(const sessionIdFactory of [()=> 'invalid',async()=>{throw Error('private projection detail');},()=>{throw Error('private projection detail');}]){const {registry,calls}=setup({}, {sessionIdFactory});assert.throws(()=>registry.create('tenant-a',request,{idempotencyKey:'projection'}),e=>code('SESSION_ID_UNAVAILABLE')(e)&&!e.message.includes('detail'));assert.equal(calls.create.length,0);await registry.shutdown();}
+});
 
 test('pending and completed create retries bind one operation and one provider invocation',async()=>{
  const pending=defer(),{registry,calls}=setup({create:args=>{calls.create.push(args);return pending.promise;}});

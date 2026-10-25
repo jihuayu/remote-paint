@@ -188,5 +188,16 @@ export class DockerSessionProvider {
    this.#retirement.read({plan:entry.plan,containerId:entry.row.containerId,expectedSha256:receipt.evidenceSha256});this.#write(entry,{state:'retired',retirement:{kind:receipt.kind,evidenceSha256:receipt.evidenceSha256}});this.#emit('retired',entry);await this.#refreshAdmission();return Object.freeze({status:'closed',retirementConfirmed:true});
   }catch(error){this.#phase=this.#phase==='stopping'?'stopping':'recovery-required';const failure=typeof error?.code==='string'&&/^[A-Z0-9_]{1,64}$/.test(error.code)?error.code:'PROVIDER_CLEANUP';this.#emit('cleanup-unconfirmed',entry,{failure});return Object.freeze({status:'unconfirmed'});}finally{if(entry.proxy)await entry.proxy.stop();}}).then(result=>{entry.closeSettled=result.status;return result;},()=>{entry.closeSettled='unconfirmed';if(!['stopping','closed'].includes(this.#phase))this.#phase='recovery-required';this.#emit('cleanup-unconfirmed',entry,{failure:'PROVIDER_PROXY_UNCONFIRMED'});return Object.freeze({status:'unconfirmed'});});this.#emit('closing',entry,{attempt:entry.closeAttempts});return entry.closePromise;
  }
+ matchesSessionStore(store){return store===this.#store&&this.#claimed&&!this.#fault;}
+ retirementEvidence({sessionId,tenantId,region}={}){
+  try{
+   if(!id(sessionId)||!tenant(tenantId)||region!==this.#config.region||!this.#claimed||this.#fault)throw fail('PROVIDER_RETIREMENT_UNAVAILABLE');
+   const entry=this.#entries.get(sessionId);if(!entry||entry.tenantId!==tenantId||entry.closeSettled!=='closed')throw fail('PROVIDER_RETIREMENT_UNAVAILABLE');
+   if(!entry.row)return Object.freeze({sha256:sha(JSON.stringify({schema:'owned-provider-not-dispatched-v1',sessionId,tenantId,region,deploymentId:this.#config.deploymentId,daemonId:this.#config.daemonId}))});
+   const row=this.#authorization(entry).allocation;if(row.state!=='retired'||!row.retirement)throw fail('PROVIDER_RETIREMENT_UNAVAILABLE');
+   const plan=entry.plan??planDockerRuntime({sessionId,tenantId,region,ownerKeyHash:row.ownerKeyHash},this.#config),saved=this.#retirement.read({plan,containerId:row.containerId,expectedSha256:row.retirement.evidenceSha256});
+   if(saved.receipt.evidenceSha256!==row.retirement.evidenceSha256)throw fail('PROVIDER_RETIREMENT_UNAVAILABLE');return Object.freeze({sha256:saved.receipt.evidenceSha256});
+  }catch{throw fail('PROVIDER_RETIREMENT_UNAVAILABLE');}
+ }
  shutdown(){if(this.#shutdownPromise)return this.#shutdownPromise;this.#phase='stopping';for(const entry of this.#entries.values()){entry.streamKey=null;entry.closing=true;entry.controller.abort();}this.#shutdownPromise=(async()=>{const rows=await Promise.all([...this.#entries.values()].map(x=>this.close({sessionId:x.sessionId,tenantId:x.tenantId,region:this.#config.region,reason:'registry-shutdown'})));if(this.#claimed){this.#store.releaseRuntimeProvider(this.#owner);this.#claimed=false;}this.#phase='closed';this.#listeners.clear();return Object.freeze({status:rows.every(x=>x.status==='closed')?'closed':'unconfirmed'});})();return this.#shutdownPromise;}
 }

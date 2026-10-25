@@ -4,10 +4,34 @@ import {readFile,writeFile,appendFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {sessionStoreSupported,SessionStoreError} from '../service/session-store.mjs';
 import {ViewerAccess} from '../service/viewer-access.mjs';
+import {createDockerClusterWorker} from '../service/cluster-docker-worker.mjs';
+import {randomUUID} from 'node:crypto';
 import {createServer} from 'node:http';
 import {WebSocket} from 'ws';
 import {fixture,wait,pending} from './fixtures/docker-provider-resolver.mjs';
 const enabled={skip:!sessionStoreSupported,timeout:10000},fixed=e=>e?.name==='DockerSessionProviderError'&&/^PROVIDER_SOURCE_/.test(e.code)&&e.message==='Owned Session runtime is unavailable';
+test('cluster retirement evidence is available only after original physical retirement and rejects foreign ownership',enabled,async t=>{
+ const h=await fixture(t),args=await h.ready();assert.throws(()=>h.provider.retirementEvidence(args),{code:'PROVIDER_RETIREMENT_UNAVAILABLE'});assert.equal((await h.provider.close({...args,reason:'released'})).status,'closed');
+ const proof=h.provider.retirementEvidence(args);assert.match(proof.sha256,/^[a-f0-9]{64}$/);assert.ok(Object.isFrozen(proof));assert.deepEqual(Object.keys(proof),['sha256']);
+ assert.throws(()=>h.provider.retirementEvidence({...args,tenantId:'foreign'}),{code:'PROVIDER_RETIREMENT_UNAVAILABLE'});assert.throws(()=>h.provider.retirementEvidence({...args,region:'other'}),{code:'PROVIDER_RETIREMENT_UNAVAILABLE'});
+});
+test('cluster retirement evidence re-reads the original immutable receipt instead of trusting cached closed state',enabled,async t=>{
+ const h=await fixture(t),args=await h.ready(),cid=[...h.docs.keys()][0];await h.provider.close({...args,reason:'released'});const file=join(h.directory,'retirement',args.sessionId+'-'+cid+'.retirement.json'),original=await readFile(file);await appendFile(file,'\n');
+ try{assert.throws(()=>h.provider.retirementEvidence(args),{code:'PROVIDER_RETIREMENT_UNAVAILABLE'});}finally{await writeFile(file,original);}assert.match(h.provider.retirementEvidence(args).sha256,/^[a-f0-9]{64}$/);
+});
+test('Docker Worker factory retains original provider type and single-flight cleanup',enabled,async t=>{
+ assert.throws(()=>createDockerClusterWorker({provider:{}}),TypeError);const h=await fixture(t,{ownRegistry:false}),worker=createDockerClusterWorker({provider:h.provider,store:h.store,nodeId:'worker',incarnation:'boot-1',region:'test',version:'native-abi-structural-fixture-v1'});await worker.initialize();const a=worker.close(),b=worker.close();assert.equal(a,b);assert.equal((await a).status,'closed');assert.throws(()=>createDockerClusterWorker({provider:h.provider,store:h.store}),TypeError);
+});
+test('Docker cluster factory durably projects the controller Session ID before the original runtime intent and verifies original retirement',enabled,async t=>{
+ const h=await fixture(t,{ownRegistry:false}),worker=createDockerClusterWorker({provider:h.provider,store:h.store,nodeId:'worker',incarnation:'boot-1',region:'test',version:'native-abi-structural-fixture-v1'});
+ let projectedSessionId;
+ try{await worker.initialize();const begin=await worker.handle('lease-begin',{});await worker.handle('lease-accept',{challenge:begin.challenge,lease:{nodeId:'worker',incarnation:'boot-1',generation:1},leaseMs:15000});
+  const placement={tenantId:'tenant-a',sessionId:'ses_'+randomUUID(),nodeId:'worker',generation:1,epoch:1},request={tenantId:placement.tenantId,sessionId:placement.sessionId,region:'test',version:'native-abi-structural-fixture-v1',url:'about:blank',ttlSeconds:60};
+  const ready=await worker.handle('create',{placement,request});projectedSessionId=placement.sessionId;assert.equal(ready.version,request.version);assert.equal(h.starts[0].sessionId,placement.sessionId);assert.equal(h.provider.sessionStatus(request).available,true);assert.equal(h.starts.length,1);
+  const closed=await worker.handle('close',{placement,reason:'released',retry:false});assert.equal(closed.status,'closed');assert.match(closed.evidence.sha256,/^[a-f0-9]{64}$/);assert.equal(h.provider.sessionStatus(request).retirementConfirmed,true);
+ }finally{await worker.close();}
+ const saved=h.store.load().sessions[0];assert.equal(saved.sessionId,projectedSessionId);assert.equal(saved.reserved,false);assert.equal(saved.state,'closed');
+});
 test('current owned Native Ready resolves seven private primitive fields and never publishes owner/stream key in status or ledger',enabled,async t=>{
  const h=await fixture(t),args=await h.ready(),target=await h.resolve(args);assert.deepEqual(target,{...args,origin:'http://127.0.0.1:4175',streamOrigin:'http://198.19.192.5:4176',key:h.starts[0].expectedKey});assert.ok(Object.isFrozen(target));assert.equal(Object.keys(target).length,7);assert.notEqual(target.key,h.starts[0].ownerKey);const publicBytes=JSON.stringify([h.events,h.provider.status(),h.provider.sessionStatus(args),(await readFile(join(h.directory,'state.sqlite'))).toString('latin1')]);for(const secret of [target.key,h.starts[0].ownerKey])assert.ok(!publicBytes.includes(secret));assert.deepEqual(h.calls.slice(-3).map(x=>x.kind),['container','network','container']);
 });
