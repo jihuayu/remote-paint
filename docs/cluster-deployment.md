@@ -12,7 +12,7 @@
 | `service/runtime-deployment-binding.mjs` | 固定部署和账本绑定 | 远程节点配置/身份连续性 |
 | `service/viewer-access.mjs` | Session/角色票据和经过认证的 Source 代理 | 接入验证后的 Worker resolver |
 
-原 owner 凭据、Agent fence、Engine 身份与物理退役合同继续有效，集群租约号不能替代这些能力。生产适配器和经过认证的远程传输尚未装配，当前 API 不能直接当作生产集群入口。
+原 owner 凭据、Agent fence、Engine 身份与物理退役合同继续有效，集群租约号不能替代这些能力。认证传输、原 provider/Registry 接线和单机独立容器验收已进一步完成，见 [RPC 装配与边界](cluster-rpc.md)；尚未部署生产集群。
 
 ## 已实现的控制基础
 
@@ -46,4 +46,4 @@ node --test tests/cluster-placement.test.mjs tests/cluster-worker-fence.test.mjs
 
 本次复用已交付 ARM64 镜像、Node 22.23.3，容器网络 none，无宿主端口，零 Docker/Chromium 编译。合同使用真实 SQLite、两个独立 Node IPC Worker 和真实租约定时器；其资源为明确的虚拟夹具。真实 Chromium 多 Worker 结果另行记录，不等同于跨机器集群或独立内核隔离。
 
-真实 Chromium/Broker 的最小双 Worker 路由与退役隔离已另行通过，精确证据和共享容器边界见 [Native 验收](cluster-native-qualification.md)。待办见 [cluster-todo.md](cluster-todo.md)。
+历史共享容器 Native 验收见 [首阶段记录](cluster-native-qualification.md)。后续独立容器、真实公共 Agent/Viewer、暂停恢复及截图回执见 [容器验收](cluster-container-qualification.md)。待办见 [cluster-todo.md](cluster-todo.md)。
