@@ -1,5 +1,61 @@
 # Remote Paint Session client — experimental
 
+## Fixed Webhook subscriptions
+
+The typed `runs.webhook_endpoints`, `runs.subscribe_webhook` and
+`runs.webhook_subscription` methods use the existing bounded ordinary HTTP pool,
+deadline, task cancellation and retry policy (0–3). Endpoint discovery/status need
+`agents:webhooks:read`; subscription needs `agents:webhooks:write`. The service operator
+provisions fixed automatic HTTPS endpoints and HMAC keys. Public input contains only a
+typed endpoint ID and an original `AgentEventCursor` for the same run.
+
+Install the local development wheel with `python -m pip install /absolute/path/to/archive.whl`.
+Save this as `subscribe.py`, set `REMOTE_PAINT_API`, `REMOTE_PAINT_API_KEY`,
+`REMOTE_PAINT_AGENT_RUN_ID` and `REMOTE_PAINT_WEBHOOK_AFTER`, then run `python subscribe.py`.
+Select an explicit retained `aec1` cursor from the public event page/stream (which also
+requires `agents:read`). Starting at latest subscribes only to future events. Retain the
+subscription ID and immutable start rather than choosing a new start on retries.
+
+<!-- webhook-sdk-example:start -->
+```python
+import asyncio
+import json
+import os
+from dataclasses import asdict
+from remote_paint_session import AgentClient, AgentRunId, AgentEventCursor, AgentWebhookSubscribeInput
+
+async def main() -> None:
+    async with AgentClient(base_url=os.environ['REMOTE_PAINT_API'],
+                           api_key=os.environ['REMOTE_PAINT_API_KEY']) as client:
+        run = AgentRunId(os.environ['REMOTE_PAINT_AGENT_RUN_ID'])
+        profiles = (await client.runs.webhook_endpoints(run)).data
+        endpoint = next((row for row in profiles.endpoints if row.available), None)
+        if endpoint is None:
+            raise RuntimeError('No available fixed Webhook endpoint')
+        subscription = (await client.runs.subscribe_webhook(run, AgentWebhookSubscribeInput(
+            endpoint.endpoint_id, AgentEventCursor(os.environ['REMOTE_PAINT_WEBHOOK_AFTER'])),
+            retries=1)).data
+        status = (await client.runs.webhook_subscription(run, subscription.subscription_id)).data
+        print(json.dumps(asdict(status)))
+
+asyncio.run(main())
+```
+<!-- webhook-sdk-example:end -->
+
+Models are frozen dataclasses with a tuple of endpoint profiles. The SDK rejects extra
+response fields, mismatched run/subscription identities, noncanonical cursors and invalid
+queue/head ranges. It validates and captures subscription input before creating a coroutine.
+Retries repeat identical bytes for the natural `(run, endpoint)` key without an additional
+Idempotency-Key. A different original start conflicts. Caller cancellation does not undo
+the committed subscription or stop the backend's automatic worker.
+
+Only `(after, accepted_through]` is receiver-accepted; the initial value equals `after`.
+Zero pending with `reconciliation_required` still has missing history. Eight consumed
+attempts remain exhausted. HMAC verification and durable event-ID deduplication belong
+to the receiver, documented in `docs/agent-webhook-receiver.md` and
+`docs/agent-webhook-inbox.md` in the source checkout. Acceptance is not business success;
+explicit Source gap reconciliation and full original Native qualification remain pending.
+
 Python 3.11+ asyncio backend client with immutable typed models and `py.typed`. This `0.0.0.dev0` package is an unpublished development artifact. It contains the management client, with HTTPX 0.28.1 as a dependency. A configured Session control service is required. The package also provides the managed Agent API described below. Complete Native lifecycle, long-task events and cross-version acceptance remain separate gates.
 
 Install the local wheel with pip, then:

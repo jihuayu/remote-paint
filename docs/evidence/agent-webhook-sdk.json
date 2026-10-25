@@ -1,0 +1,91 @@
+{
+  "at": "2026-10-22T03:19:45.854006+00:00",
+  "scope": "locally installed Node/Python Webhook SDK, strict types, exact README snippets; no full Native or whole-goal qualification",
+  "baseHead": "273f17406784237862b72853868eba11f9354198",
+  "executedCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-sdk-candidate-v3/frozen-version.json",
+  "executedCandidateSha256": "c433cbf649869dbbf3f60fd27e4e3efa266d7999ea973339be1a548876d95e15",
+  "macComponents": {
+    "packageQualification": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-sdk-candidate-v2/mac-validation/result.json",
+    "packageQualificationSha256": "2904bb61f367ebb6ce3caa786342dbb3d80135c93e2d4c50a64db38bb03c6e8c",
+    "node214FinalReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-sdk-candidate-v3/mac-node-final-exit.json",
+    "node214FinalReceiptSha256": "b749e7f1edadae97a934fe86f2c0938c97d566731773d4eff734cf0899ed66d2",
+    "candidate2To3OnlyDelta": [
+      "tests/node-agent-events-client.test.mjs"
+    ],
+    "sdkAndPythonBytesUnchanged": true
+  },
+  "linuxComponents": {
+    "diagnosticComponents": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-sdk-linux-diagnostics-v1/result.json",
+    "diagnosticComponentsSha256": "5cd109535e0ef98222e1f05d11618fd0f74f2b17a7267237167a19edd6394f54",
+    "fullPythonFailureReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-sdk-linux-validation-v5/results/installed/failed.json",
+    "fullPythonFailureReceiptSha256": "93007e1b1f4f4b5a54e4a0ffab6aaa6d86135513ea5745d2d87e50cfec5f5624",
+    "fullPythonSuiteQualified": false,
+    "scratchReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-sdk-linux-validation-v5/scratch-exit.json",
+    "scratchReceiptSha256": "3c78d33fc9485024c50ebb9bc5c337a89069997648252ed94ef546159cb730e3"
+  },
+  "eachPlatform": {
+    "installedNodeTests": 214,
+    "installedPythonTestsExecuted": 206,
+    "macInstalledPythonPassed": 206,
+    "linuxInstalledPythonPassed": 204,
+    "linuxInstalledPythonErrors": 2,
+    "nodeNewCases": 12,
+    "pythonNewCases": 12,
+    "typescriptExit0": true,
+    "mypyConsumerFiles": 5,
+    "mypyPackageFiles": 10,
+    "readmeSnippetsExecuted": 2,
+    "sameDurableSubscription": true,
+    "receiverOriginalEvents": 3,
+    "businessSuccessClaimed": false
+  },
+  "rootSuite": {
+    "expectedTests": 1794,
+    "expectedFiles": 156,
+    "executedThisCheckpoint": false,
+    "previousFullSuiteFailedCases": 3,
+    "previousFailedCasesReproducedOnCleanBase": true,
+    "fullRegressionQualified": false,
+    "oldRootFilesByteUnchanged": 154,
+    "oldRootFixtureOnlyChanged": [
+      "node-agent-events-client.test.mjs"
+    ],
+    "oldCaseNamesPreserved": true,
+    "oldPythonFilesByteUnchanged": 9
+  },
+  "failuresRetained": [
+    "Python missing local HTTPX dependency",
+    "Python runtime cast referenced TYPE_CHECKING-only model names: 12 errors",
+    "Mac setup omitted Playwright metadata",
+    "Mac and Linux local aggregate coordinator 120-second termination",
+    "Linux read-only default npm cache",
+    "Linux mapped consumer Python unit stage timed out at original 120 seconds",
+    "Linux tmpfs exposed delayed timeout rejection observer in an existing event-stream test",
+    "Final Linux full Python suite: download fixture startup timeout and observation HTTP response error (two pre-existing cases)"
+  ],
+  "bounds": {
+    "sourceDiskFloorGiB": 32,
+    "sdkPerStageSeconds": 120,
+    "localAggregateCoordinatorSeconds": 360,
+    "aggregateCoordinatorIsNotHostedCIQualification": true,
+    "streamFixtureAbsoluteMs": 100,
+    "linuxCpus": 4,
+    "linuxMemoryBytes": 2147483648,
+    "linuxTmpfsBytes": 536870912,
+    "internalNetwork": true,
+    "transportAndRetryBoundsUnchanged": true
+  },
+  "sourceProtection": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-sdk-protection-v1.json",
+  "sourceProtectionSha256": "aeab70e6aafb08f76ed7351497d731497c34bda9a06418c1fa0a9e130c304361",
+  "ledger": {
+    "completeWithinScopes": 10,
+    "partial": 18,
+    "pending": 13,
+    "total": 41
+  },
+  "originalEightHourPassed": false,
+  "N1AndFullNativeQualified": false,
+  "wholeGoalQualified": false,
+  "committed": false,
+  "pushed": false
+}

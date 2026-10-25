@@ -1,0 +1,213 @@
+{
+  "at": "2026-10-22T05:14:33.182745+00:00",
+  "executedCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-envelope-cache-candidate-v1/frozen-version.json",
+  "candidateSha256": "683b5f14794276d07c5b3bc74a248ed93dff42b0637c21285e5daf778a14b301",
+  "scope": "Bounded pure immutable envelope/hash reuse; fixed precompiled ID patterns; fresh validation unchanged",
+  "cache": {
+    "maxEntriesPerJournal": 64,
+    "maxCanonicalUtf8BytesPerEntry": 4096,
+    "maxCanonicalUtf8BytesTotal": 262144,
+    "notATotalJsHeapBudget": true,
+    "sourceObjectIdentityAndCurrentEndpointChecked": true,
+    "noDatabaseAuthorizationParentCursorOrAttemptProofCached": true,
+    "evictedSourcePrefixIndependentValidationPreserved": true
+  },
+  "macos": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-envelope-cache-macos-v1.log",
+    "sha256": "e7b87cfe1defc43de240f0273b84c4ddea4fbe073632a4c1c7c3fc617008d5e2",
+    "tests": 103,
+    "pass": 101,
+    "fail": 2,
+    "skipped": 0,
+    "failedNames": [
+      "automatic delivery drains the retained prefix but preserves the exact original history gap",
+      "capture saturation retains the exact original gap; public retries cannot reset it or replay Source effects"
+    ]
+  },
+  "linux": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-envelope-cache-linux-v1/files.log",
+    "sha256": "3cc36ca4bf0132854f078dfad62289ef35a8eb1ee53a61e073e266212478f7b3",
+    "tests": 128,
+    "pass": 126,
+    "fail": 2,
+    "skipped": 0,
+    "failedNames": [
+      "automatic delivery drains the retained prefix but preserves the exact original history gap",
+      "capture saturation retains the exact original gap; public retries cannot reset it or replay Source effects"
+    ]
+  },
+  "linuxSdkNode": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-envelope-sdk-linux-v1/node-unit.log",
+    "sha256": "1f64936f4202a426edaa82afe45ebd8aebe4033562aea0870e5033142665178d",
+    "tests": 214,
+    "pass": 214,
+    "fail": 0,
+    "skipped": 0,
+    "failedNames": []
+  },
+  "linuxSdkStages": {
+    "stages": [
+      {
+        "label": "node-unit",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 32.19809620198794
+      },
+      {
+        "label": "python-unit",
+        "exitCode": -9,
+        "timedOut": true,
+        "seconds": 120.01238232001197
+      },
+      {
+        "label": "readme-examples",
+        "exitCode": 1,
+        "timedOut": false,
+        "seconds": 24.539009405998513
+      }
+    ],
+    "consumerChangedFiles": [
+      "tests/python/test_download_client.py",
+      "service/agent-event-journal.mjs",
+      "service/agent-webhook-journal.mjs"
+    ],
+    "sameInstalledSdkBytes": true,
+    "consumerFixtureClosureMatchesCandidate": true,
+    "sourceFallbackUnavailable": true,
+    "sourceUnchanged": true,
+    "manifestSha256": "683b5f14794276d07c5b3bc74a248ed93dff42b0637c21285e5daf778a14b301",
+    "expectedNodeCases": 214,
+    "expectedPythonCases": 210,
+    "stageTimeoutSeconds": 120,
+    "typesRerun": false,
+    "fullRootQualified": false,
+    "wholeGoalQualified": false
+  },
+  "diagnosticFourErrorsAndReadme": {
+    "stages": [
+      {
+        "label": "python-observed-errors",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 11.46030494599836
+      },
+      {
+        "label": "readme-examples",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 10.075906635029241
+      }
+    ],
+    "consumerChangedFiles": [
+      "tests/python/test_download_client.py",
+      "service/agent-event-journal.mjs",
+      "service/agent-webhook-journal.mjs"
+    ],
+    "sameInstalledSdkBytes": true,
+    "consumerFixtureClosureMatchesCandidate": true,
+    "sourceFallbackUnavailable": true,
+    "sourceUnchanged": true,
+    "manifestSha256": "683b5f14794276d07c5b3bc74a248ed93dff42b0637c21285e5daf778a14b301",
+    "expectedNodeCases": 0,
+    "expectedPythonCases": 4,
+    "diagnosticOnly": true,
+    "stageTimeoutSeconds": 120,
+    "typesRerun": false,
+    "fullRootQualified": false,
+    "wholeGoalQualified": false
+  },
+  "readmeReceipt": {
+    "status": "passed",
+    "sameSubscription": true,
+    "durableInboxEvents": 3,
+    "sourceEffects": 0,
+    "docs": {
+      "javascript": {
+        "docSha256": "c954c07bd2f4d6a8fb7e5840077bbfdf2851fe5663c64e67098133e0d2d63372",
+        "snippetSha256": "d6427559befa02dc9c70d8097ace705a924f3446799fae6492b8d49b865f14cb"
+      },
+      "python": {
+        "docSha256": "541c40720b2fae16f24c01b8ad4d502059558d0ee4c97c146a2e9b3530c417bd",
+        "snippetSha256": "213f5c6e77ef04b29e80ee9c0c0a64f62014e9df01f406e55037bee4b65047f5"
+      }
+    }
+  },
+  "pythonFull210Qualified": false,
+  "pythonObservedErrorsReproducedInFourCaseDiagnostic": false,
+  "pythonPriorFailureCauseProven": false,
+  "readmeFirstTenSecondTimeoutPreserved": true,
+  "microbenchmark": {
+    "result": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-envelope-cache-cost-v1/result.json",
+    "sha256": "6c747916b5a58ef1783f4875051f59a35abdb87a795b591a8dbf27f1e1c8c3c3",
+    "order": "before,after,after,before,before,after",
+    "readsPerRun": 500,
+    "medianBeforeCpuMs": 1457.625,
+    "medianAfterCpuMs": 1215.652,
+    "cpuReductionPercent": 16.60049738444387,
+    "diagnosticOnly": true,
+    "notHttpsOrFrameLatencyQualification": true,
+    "noForcedGc": true
+  },
+  "unchangedLimits": {
+    "eventRetention": 64,
+    "attempts": 8,
+    "originalObservationMs": 3000,
+    "unitStageSeconds": 120,
+    "readmeSubprocessSeconds": 10,
+    "diskFloorGiB": 32
+  },
+  "c6Audit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/c6-persistent-cache-next-gates-v1.json",
+  "c6StillPending": true,
+  "protection": {
+    "at": "2026-10-22T05:12:43.722449+00:00",
+    "sourceInputs": 108,
+    "sourceMismatches": [],
+    "canonicalBrowserFiles": 19,
+    "canonicalMismatches": [],
+    "sampler": {
+      "device": 16777231,
+      "inode": 142233060,
+      "sha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+      "readOnlyHashNotExecutionHistory": true
+    },
+    "originalBuild": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 2967239,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-20T12:47:32.756177921Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "lastLine": "[7113/17924] CXX obj/third_party/blink/renderer/core/core/svg_layout_tree_as_text.o",
+    "freeGiB": 64.14358520507812,
+    "diskFloorGiB": 32,
+    "sourcePreparedOrMutated": false,
+    "originalBrowserOrMacSamplerExecutedByThisGoalTurn": false,
+    "forbiddenOutputInspected": false,
+    "protectedDemoInspected": false
+  },
+  "onlyOwnedUnusedNetworkRemoved": {
+    "at": "2026-10-22T05:12:44.228128+00:00",
+    "networkId": "456c44e7bbb0e40eca841b1ced9081820d7163f3d5ccadf81d80d7e8f67a5b52",
+    "onlyOwnedUnusedInternalNetwork": true,
+    "exitCode": 0
+  },
+  "expectedRootCases": 1797,
+  "root1797Qualified": false,
+  "ledger": {
+    "completeWithinScopes": 10,
+    "partial": 18,
+    "pending": 13,
+    "total": 41
+  },
+  "originalEightHourPassed": false,
+  "fullNativeQualified": false,
+  "mildLossQualified": false,
+  "wholeGoalQualified": false,
+  "noCommitPush": true
+}

@@ -22,7 +22,7 @@ def sha(path: Path) -> str:
 
 
 def inspect_archives(project: Path, node: Path, wheel: Path) -> dict:
-    node_names={'package/package.json','package/backend.mjs','package/backend.d.mts','package/backend-transport.mjs','package/agent.mjs','package/agent-observation.mjs','package/agent-download.mjs','package/agent-events.mjs','package/agent.d.mts','package/viewer-connection.mjs','package/viewer-connection.d.mts','package/viewer-frame.mjs','package/viewer-frame.d.mts','package/viewer-channel.mjs','package/viewer-channel.d.mts','package/viewer-control.mjs','package/viewer-control.d.mts','package/viewer-telemetry.mjs','package/viewer-telemetry.d.mts','package/viewer.mjs','package/viewer.d.mts','package/README.md'}
+    node_names={'package/package.json','package/backend.mjs','package/backend.d.mts','package/backend-transport.mjs','package/agent.mjs','package/agent-observation.mjs','package/agent-download.mjs','package/agent-events.mjs','package/agent-webhooks.mjs','package/agent.d.mts','package/viewer-connection.mjs','package/viewer-connection.d.mts','package/viewer-frame.mjs','package/viewer-frame.d.mts','package/viewer-channel.mjs','package/viewer-channel.d.mts','package/viewer-control.mjs','package/viewer-control.d.mts','package/viewer-telemetry.mjs','package/viewer-telemetry.d.mts','package/viewer.mjs','package/viewer.d.mts','package/README.md'}
     with tarfile.open(node,'r:gz') as archive:
         members=archive.getmembers()
         assert {x.name for x in members}==node_names and len(members)==len(node_names)
@@ -34,12 +34,12 @@ def inspect_archives(project: Path, node: Path, wheel: Path) -> dict:
         assert package['name']=='@remote-paint/session-client' and package['private'] is True
         assert package['version']=='0.0.0-dev.0' and package.get('dependencies',{})=={}
     prefix='remote_paint_session-0.0.0.dev0.dist-info/'
-    wheel_names={'remote_paint_session/__init__.py','remote_paint_session/_client.py','remote_paint_session/_transport.py','remote_paint_session/_agent.py','remote_paint_session/_observation.py','remote_paint_session/_download.py','remote_paint_session/_events.py','remote_paint_session/_event_stream_parser.py','remote_paint_session/_event_stream.py','remote_paint_session/py.typed',
+    wheel_names={'remote_paint_session/__init__.py','remote_paint_session/_client.py','remote_paint_session/_transport.py','remote_paint_session/_agent.py','remote_paint_session/_observation.py','remote_paint_session/_download.py','remote_paint_session/_events.py','remote_paint_session/_webhooks.py','remote_paint_session/_event_stream_parser.py','remote_paint_session/_event_stream.py','remote_paint_session/py.typed',
                  *(prefix+n for n in ['METADATA','WHEEL','top_level.txt','RECORD'])}
     with zipfile.ZipFile(wheel) as archive:
         assert set(archive.namelist())==wheel_names and len(archive.namelist())==len(wheel_names)
         assert all((x.external_attr>>16)&0o170000!=0o120000 for x in archive.infolist())
-        for name in ['__init__.py','_client.py','_transport.py','_agent.py','_observation.py','_download.py','_events.py','_event_stream_parser.py','_event_stream.py','py.typed']:
+        for name in ['__init__.py','_client.py','_transport.py','_agent.py','_observation.py','_download.py','_events.py','_webhooks.py','_event_stream_parser.py','_event_stream.py','py.typed']:
             assert hashlib.sha256(archive.read('remote_paint_session/'+name)).hexdigest()==sha(project/'sdk/python/remote_paint_session'/name)
         metadata=email.message_from_bytes(archive.read(prefix+'METADATA'))
         assert metadata['Name']=='remote-paint-session' and metadata['Version']=='0.0.0.dev0'
@@ -96,6 +96,9 @@ def main() -> None:
                'tests/fixtures/session-registry-child.mjs','tests/fixtures/session-python-http.mjs',
                'tests/python/test_agent_client.py','tests/fixtures/agent-python-http.mjs','tests/types/agent_client.py','tests/python/test_session_client.py','tests/types/session-client.mts','tests/types/session_client.py']
         files.extend(['tests/node-agent-events-client.test.mjs','tests/types/agent-events-client.mts','tests/python/test_agent_events_client.py','tests/fixtures/agent-events-python-http.mjs','tests/types/agent_events_client.py','tests/python/test_agent_event_parser_client.py','tests/fixtures/agent-event-frames-python.mjs','tests/types/agent_event_parser.py','tests/python/test_agent_event_stream_client.py','tests/fixtures/agent-event-stream-python-http.mjs','tests/types/agent_event_stream.py'])
+        files.append('tests/verify-webhook-sdk-examples.py')
+        files.append('tests/python/_fixture_process.py')
+        files.extend(['tests/node-agent-webhooks-client.test.mjs','tests/python/test_agent_webhooks_client.py','tests/fixtures/agent-webhooks-python-http.mjs','tests/fixtures/webhook-localhost-cert.pem','tests/fixtures/webhook-localhost-key.pem'])
         # The real control-service fixtures acquire dependencies as features
         # grow. Copy their explicit relative import closure with hashes while
         # deliberately withholding sdk/: consumers must use installed exports.
@@ -120,6 +123,8 @@ def main() -> None:
             text=source.read_text();before=sha(source)
             if name=='tests/session-client.test.mjs':
                 token="from '../sdk/backend.mjs'";assert text.count(token)==1;text=text.replace(token,"from '@remote-paint/session-client'")
+            elif name=='tests/node-agent-webhooks-client.test.mjs':
+                token="from '../sdk/agent.mjs'";assert text.count(token)==1;text=text.replace(token,"from '@remote-paint/session-client/agent'")
             elif name in ['tests/node-agent-events-client.test.mjs','tests/node-agent-download-client.test.mjs','tests/node-agent-client.test.mjs','tests/node-agent-observation-client.test.mjs','tests/node-agent-accessibility-client.test.mjs','tests/node-agent-screenshot-client.test.mjs']:
                 for source,installed in [("from '../sdk/agent.mjs'","from '@remote-paint/session-client/agent'"),("from '../sdk/backend.mjs'","from '@remote-paint/session-client'")]:
                     assert text.count(source)==1;text=text.replace(source,installed)
@@ -145,7 +150,7 @@ def main() -> None:
                    NPM_CONFIG_GLOBALCONFIG=str(out/'empty-global.npmrc'))
         run('npm-install',[args.npm,'install','--offline','--ignore-scripts','--no-audit','--no-fund','--package-lock=false',str(args.node_archive)],cwd=consumer,env=env)
         expected=consumer/'node_modules/@remote-paint/session-client'
-        for name in ['backend.mjs','backend.d.mts','backend-transport.mjs','agent.mjs','agent-observation.mjs','agent-download.mjs','agent-events.mjs','agent.d.mts','viewer-connection.mjs','viewer-connection.d.mts','viewer-frame.mjs','viewer-frame.d.mts','viewer-channel.mjs','viewer-channel.d.mts','viewer-control.mjs','viewer-control.d.mts','viewer-telemetry.mjs','viewer-telemetry.d.mts','viewer.mjs','viewer.d.mts','README.md','package.json']:assert sha(expected/name)==sha(args.project/'sdk'/name)
+        for name in ['backend.mjs','backend.d.mts','backend-transport.mjs','agent.mjs','agent-observation.mjs','agent-download.mjs','agent-events.mjs','agent-webhooks.mjs','agent.d.mts','viewer-connection.mjs','viewer-connection.d.mts','viewer-frame.mjs','viewer-frame.d.mts','viewer-channel.mjs','viewer-channel.d.mts','viewer-control.mjs','viewer-control.d.mts','viewer-telemetry.mjs','viewer-telemetry.d.mts','viewer.mjs','viewer.d.mts','README.md','package.json']:assert sha(expected/name)==sha(args.project/'sdk'/name)
         # ws is a private control-service fixture dependency, not an SDK
         # dependency. Copy its frozen bytes explicitly, with no source symlink.
         fixture_dependencies={}
@@ -208,9 +213,9 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
  assert.throws(()=>createRequire(import.meta.url)('@remote-paint/session-client'),e=>e.code==='ERR_PACKAGE_PATH_NOT_EXPORTED');
 });
 """)
-        names=['node-agent-events-client.test.mjs','node-agent-download-client.test.mjs','node-agent-screenshot-client.test.mjs','node-agent-accessibility-client.test.mjs','node-agent-observation-client.test.mjs','node-agent-client.test.mjs','session-client.test.mjs','session-http.test.mjs','session-registry.test.mjs','session-registry-lifecycle.test.mjs','session-registry-durable.test.mjs','session-store.test.mjs','package-exports.test.mjs']
+        names=['node-agent-webhooks-client.test.mjs','node-agent-events-client.test.mjs','node-agent-download-client.test.mjs','node-agent-screenshot-client.test.mjs','node-agent-accessibility-client.test.mjs','node-agent-observation-client.test.mjs','node-agent-client.test.mjs','session-client.test.mjs','session-http.test.mjs','session-registry.test.mjs','session-registry-lifecycle.test.mjs','session-registry-durable.test.mjs','session-store.test.mjs','package-exports.test.mjs']
         raw=run('node-unit',[args.node,'--test','--test-concurrency=4',*[str(consumer/'tests'/n)for n in names]],cwd=consumer,env=env)
-        for label,value in [('tests',202),('pass',202),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
+        for label,value in [('tests',214),('pass',214),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
         run('typescript',[args.node,str(args.tsc),'--noEmit','--strict','--exactOptionalPropertyTypes','--module','NodeNext','--moduleResolution','NodeNext','--target','ES2022','--lib','ES2022,DOM',str(consumer/'tests/types/agent-events-client.mts'),str(consumer/'tests/types/agent-client.mts'),str(consumer/'tests/types/session-client.mts'),str(consumer/'tests/types/viewer-connection.mts'),str(consumer/'tests/types/viewer-frame.mts'),str(consumer/'tests/types/viewer.mts')],cwd=consumer,env=env)
         python=out/'venv/bin/python';venv.EnvBuilder(with_pip=False,symlinks=True).create(out/'venv')
         purelib=Path(subprocess.check_output([str(python),'-c',"import sysconfig;print(sysconfig.get_path('purelib'))"],env=env,text=True).strip())
@@ -218,18 +223,20 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
         installer=env.copy();installer['PYTHONPATH']=str(args.pip_tooling)
         run('python-install',[sys.executable,'-m','pip','install','--no-index','--no-compile','--find-links',str(args.wheelhouse),'--target',str(purelib),str(args.python_wheel)],env=installer)
         run('python-origin',[str(python),'-c',"import remote_paint_session,importlib.metadata,json,sys;from pathlib import Path;p=Path(remote_paint_session.__file__).resolve();assert p.is_relative_to(Path(sys.prefix).resolve());assert p.with_name('py.typed').is_file();print(json.dumps({'module':str(p),'prefix':sys.prefix,'version':importlib.metadata.version('remote-paint-session'),'httpx':importlib.metadata.version('httpx')}))"],cwd=consumer,env=env)
-        for name in ['__init__.py','_client.py','_transport.py','_agent.py','_observation.py','_download.py','_events.py','_event_stream_parser.py','_event_stream.py','py.typed']:assert sha(purelib/'remote_paint_session'/name)==sha(args.project/'sdk/python/remote_paint_session'/name)
+        for name in ['__init__.py','_client.py','_transport.py','_agent.py','_observation.py','_download.py','_events.py','_webhooks.py','_event_stream_parser.py','_event_stream.py','py.typed']:assert sha(purelib/'remote_paint_session'/name)==sha(args.project/'sdk/python/remote_paint_session'/name)
         raw=run('python-unit',[str(python),'-m','unittest','discover','-s',str(consumer/'tests/python'),'-p','test_*client.py','-v'],cwd=consumer,env=env)
-        assert re.search(r'Ran 194 tests in [0-9.]+s\s+OK\s*$',raw)
+        assert re.search(r'Ran 210 tests in [0-9.]+s\s+OK\s*$',raw)
         if args.mypy_tooling:
             typed=env.copy();typed['PYTHONPATH']=str(args.mypy_tooling)
             raw=run('python-types',[str(python),'-m','mypy','--strict','--python-version','3.11','--no-incremental','--cache-dir=/dev/null','--python-executable',str(python),str(consumer/'tests/types/session_client.py'),str(consumer/'tests/types/agent_client.py'),str(consumer/'tests/types/agent_events_client.py'),str(consumer/'tests/types/agent_event_parser.py'),str(consumer/'tests/types/agent_event_stream.py')],cwd=consumer,env=typed)
             assert 'Success: no issues found in 5 source files' in raw
             source_types=run('python-source-types',[str(python),'-m','mypy','--strict','--python-version','3.11','--no-incremental','--cache-dir=/dev/null','--python-executable',str(python),'-p','remote_paint_session'],cwd=consumer,env=typed)
-            assert 'Success: no issues found in 9 source files' in source_types
+            assert 'Success: no issues found in 10 source files' in source_types
+        examples=json.loads(run('webhook-readme-examples',[sys.executable,str(consumer/'tests/verify-webhook-sdk-examples.py'),'--consumer',str(consumer),'--node-doc',str(args.project/'sdk/README.md'),'--python-doc',str(args.project/'sdk/python/README.md'),'--node',args.node,'--python',str(python)],cwd=consumer,env=env))
+        assert examples['status']=='passed' and examples['sameSubscription'] and examples['durableInboxEvents']==3
         runtime=run('runtime',[sys.executable,'-c',"import sys,platform,json,subprocess;print(json.dumps({'python':platform.python_version(),'platform':sys.platform,'arch':platform.machine(),'node':subprocess.check_output([sys.argv[1],'--version'],text=True).strip(),'npm':subprocess.check_output([sys.argv[2],'--version'],text=True).strip()}))",args.node,args.npm],env=env)
-        result={'status':'passed','nodeTests':202,'nodeSkips':0,'pythonTests':194,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
-                'archives':archives,'runtime':json.loads(runtime),'stages':stages,'sourceFallbackUnavailable':True,'publicPublishing':False}
+        result={'status':'passed','nodeTests':214,'nodeSkips':0,'pythonTests':210,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
+                'archives':archives,'webhookReadmeExamples':examples,'runtime':json.loads(runtime),'stages':stages,'sourceFallbackUnavailable':True,'publicPublishing':False}
         (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps({k:result[k]for k in ['status','nodeTests','pythonTests','typescriptActual0','pythonInstalledTypeCheckActual0']}))
     except BaseException as error:
