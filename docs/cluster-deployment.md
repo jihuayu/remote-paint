@@ -46,4 +46,4 @@ node --test tests/cluster-placement.test.mjs tests/cluster-worker-fence.test.mjs
 
 本次复用已交付 ARM64 镜像、Node 22.23.3，容器网络 none，无宿主端口，零 Docker/Chromium 编译。合同使用真实 SQLite、两个独立 Node IPC Worker 和真实租约定时器；其资源为明确的虚拟夹具。真实 Chromium 多 Worker 结果另行记录，不等同于跨机器集群或独立内核隔离。
 
-待办见 [cluster-todo.md](cluster-todo.md)。
+真实 Chromium/Broker 的最小双 Worker 路由与退役隔离已另行通过，精确证据和共享容器边界见 [Native 验收](cluster-native-qualification.md)。待办见 [cluster-todo.md](cluster-todo.md)。

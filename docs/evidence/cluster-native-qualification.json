@@ -1,0 +1,139 @@
+{
+  "status": "passed",
+  "baseFoundation": "6429951770a62acbeb4ce02c0f1c7e78a8f13f1f",
+  "at": "2026-10-25T14:16:28.934773+00:00",
+  "receipt": {
+    "at": "2026-10-25T14:16:28.934773+00:00",
+    "stage": "native-two-worker-qualified",
+    "exitCode": 0,
+    "seconds": 5.112,
+    "command": [
+      "/usr/local/bin/docker",
+      "--context",
+      "orbstack",
+      "exec",
+      "--workdir",
+      "/tmp/cluster",
+      "--env",
+      "REMOTE_PAINT_CHROMIUM=/opt/remote-paint/browser/headless_shell",
+      "--env",
+      "REMOTE_PAINT_BROKER=/opt/remote-paint/app/native/bin/remote-paint-broker",
+      "--env",
+      "REMOTE_PAINT_DATA_PLANE=native",
+      "--env",
+      "REMOTE_PAINT_TEST_BROWSER_VERSION=155.0.8059.79",
+      "remote-paint-cache-pressure-20261025",
+      "/usr/bin/timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "120s",
+      "/opt/remote-paint/node/bin/node",
+      "tests/verify-cluster-native.mjs",
+      "/results/cluster-native-qualified"
+    ]
+  },
+  "result": {
+    "status": "passed",
+    "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+    "firstWork": {
+      "nodeId": "node-a",
+      "marker": "cluster-worker-a",
+      "click": "clicked",
+      "pngSha256": "5aa1a11dff9ef1216153ca488afacdd9b61fb2b49efba679af71155811e27f65",
+      "pngBytes": 9347,
+      "frame": {
+        "frameId": 1,
+        "pageEpoch": 1,
+        "binaryPackets": 2
+      },
+      "native": true,
+      "chromium": "155.0.8059.79"
+    },
+    "secondWork": {
+      "nodeId": "node-b",
+      "marker": "cluster-worker-b",
+      "click": "clicked",
+      "pngSha256": "433a47153a173665435bc49214005a8955f57fcee827cb45bb300360481f7750",
+      "pngBytes": 9367,
+      "frame": {
+        "frameId": 1,
+        "pageEpoch": 1,
+        "binaryPackets": 2
+      },
+      "native": true,
+      "chromium": "155.0.8059.79"
+    },
+    "afterAExpiredB": {
+      "nodeId": "node-b",
+      "marker": "cluster-worker-b",
+      "click": "clicked",
+      "pngSha256": "433a47153a173665435bc49214005a8955f57fcee827cb45bb300360481f7750",
+      "pngBytes": 9367,
+      "frame": {
+        "frameId": 1,
+        "pageEpoch": 1,
+        "binaryPackets": 2
+      },
+      "native": true,
+      "chromium": "155.0.8059.79"
+    },
+    "expiredWorker": {
+      "status": "closed",
+      "logicalNativeResourceClosed": true,
+      "observedProcessesRetired": true,
+      "observedProcesses": 5,
+      "namespaceWideRetirementQualified": false
+    },
+    "expiredWorkerExit": {
+      "code": 0,
+      "signal": null
+    },
+    "oldRouteDenied": true,
+    "oldWorkerOperationDenied": true,
+    "capacityHeldUntilNativeAndWorkerExit": true,
+    "oldSessionNotReplayed": true,
+    "realNativeResources": true,
+    "actualChromiumWorkers": 2,
+    "actualRustBrokers": 2,
+    "actualNativeFrameCommits": true,
+    "existingNativeSessionResource": true,
+    "controller": "real private SQLite",
+    "transport": "owned Node IPC within one existing private Docker container",
+    "sharedKernel": true,
+    "perSessionContainerIsolationQualified": false,
+    "remoteAuthenticatedTransportQualified": false,
+    "productionClusterDeploymentQualified": false,
+    "dockerBuilds": 0,
+    "chromiumCompiles": 0,
+    "cleanup": [
+      {
+        "nodeId": "node-b",
+        "exit": {
+          "code": 0,
+          "signal": null
+        }
+      },
+      {
+        "nodeId": "node-a",
+        "exit": {
+          "code": 0,
+          "signal": null
+        }
+      }
+    ]
+  },
+  "resultSha256": "45624c4491278c7c75266cec3d1394ca38d9656c1b3af7045d90187094e76195",
+  "inputs": {
+    "tests/fixtures/cluster-native-worker.mjs": "f5df0677376d498cc2cc5e7bb9c705d2c92b176682ab3b61f6887a45c78548df",
+    "tests/verify-cluster-native.mjs": "695d565dd3efa15e32b8cd4f21ce48f3eec6c8d81e54ade7f8d639635d111122"
+  },
+  "reusedImage": "sha256:c75c58487264d5350a7b83eb6a5f11449dd0e1c49be81cedde3ace6c9ea7dd29",
+  "sourceBaseline": "2d886d33b541431982baeb3be3ebd6400d73758d",
+  "cachedDependencyArchiveSha256": "a802d6a1d37dc040e485b972360fa7a4660f31097d1764848c03ea60788bcaf2",
+  "network": "none",
+  "hostPorts": [],
+  "newDockerSocketMount": false,
+  "newCredentialsCreated": false,
+  "dockerBuilds": 0,
+  "chromiumCompiles": 0
+}
