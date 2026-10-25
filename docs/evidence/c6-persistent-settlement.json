@@ -1,0 +1,1341 @@
+{
+  "at": "2026-10-22T06:24:37.135911+00:00",
+  "candidateManifest": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/c6-persistent-settlement-candidate-v2/frozen-version.json",
+  "candidateManifestSha256": "563d267007c4b8661a97aad3da2aa8ce44e85d753c6ce5bf66a945fb43972ae2",
+  "sourceFiles": 1311,
+  "before": {
+    "status": "failed",
+    "open": {
+      "observersFailedWithoutOpeningBodies": true,
+      "openRequestsBeforeActualSettlement": 3,
+      "terminalEventsBeforeRelease": 0,
+      "originalRequestAdmissionRetained": false,
+      "originalRequestsEventuallySettled": true
+    },
+    "transaction": {
+      "actualConstraintErrorObserved": true,
+      "writeRejected": true,
+      "returnedBeforeActualAbort": true,
+      "releasedBeforeActualAbort": true,
+      "events": [
+        {
+          "event": "request-error",
+          "owners": 4
+        },
+        {
+          "event": "owner-release",
+          "aborted": false,
+          "owners": 0
+        },
+        {
+          "event": "actual-abort",
+          "owners": 0
+        }
+      ],
+      "waitedForActualAbort": false,
+      "originalBodyPreservedByRollback": true,
+      "allChargesReleasedAfterSettlement": true,
+      "physicalPurgePassed": true
+    },
+    "actualIndexedDb": true,
+    "actualPublicHttpSqliteWebSocketAuthority": true,
+    "virtualNodeSource": true,
+    "nativeOrOriginalBrowserOrSamplerStarted": false,
+    "wholeGoalQualified": false,
+    "pageErrors": [],
+    "browserVersion": "155.0.8059.85"
+  },
+  "after": {
+    "status": "passed",
+    "open": {
+      "observersFailedWithoutOpeningBodies": true,
+      "openRequestsBeforeActualSettlement": 1,
+      "terminalEventsBeforeRelease": 0,
+      "originalRequestAdmissionRetained": true,
+      "originalRequestsEventuallySettled": true
+    },
+    "transaction": {
+      "actualConstraintErrorObserved": true,
+      "writeRejected": true,
+      "returnedBeforeActualAbort": false,
+      "releasedBeforeActualAbort": false,
+      "events": [
+        {
+          "event": "request-error",
+          "owners": 4
+        },
+        {
+          "event": "actual-abort",
+          "owners": 4
+        },
+        {
+          "event": "owner-release",
+          "aborted": true,
+          "owners": 0
+        }
+      ],
+      "waitedForActualAbort": true,
+      "originalBodyPreservedByRollback": true,
+      "allChargesReleasedAfterSettlement": true,
+      "physicalPurgePassed": true
+    },
+    "delayedTerminalObservation": {
+      "observerReturnedFailure": true,
+      "observerMs": 101,
+      "actualAbortCaptured": true,
+      "terminalCallbackDeliveryHeld": true,
+      "purgeAdmissionRetained": true,
+      "duplicatePurgeNotAdmitted": true,
+      "cacheReadDeniedWhileCleanupUnconfirmed": true,
+      "lateTerminalCallbackReleasedAdmission": true,
+      "freshConfirmedPurgeRecovered": true,
+      "physicalFinalPurgePassed": true
+    },
+    "actualIndexedDb": true,
+    "actualPublicHttpSqliteWebSocketAuthority": true,
+    "virtualNodeSource": true,
+    "nativeOrOriginalBrowserOrSamplerStarted": false,
+    "wholeGoalQualified": false,
+    "pageErrors": [],
+    "browserVersion": "155.0.8059.85"
+  },
+  "macos": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/c6-settlement-macos-v1/files.log",
+    "sha256": "fd1aabe8a034f8f2811893fc93093a425ab91cafeeec6df82a5e56f13ab2db37",
+    "tests": 76,
+    "pass": 76,
+    "fail": 0,
+    "skipped": 0
+  },
+  "linuxNodeContracts": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/c6-settlement-linux-v1/files.log",
+    "sha256": "712342aff42cf31cefd3a451d91153d8055921ed7f4546e04a83c26db4720d77",
+    "tests": 76,
+    "pass": 76,
+    "fail": 0,
+    "skipped": 0
+  },
+  "macosStages": {
+    "stages": [
+      {
+        "stage": "storage",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 12.968686667270958
+      },
+      {
+        "stage": "renderers",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 15.139757708646357
+      },
+      {
+        "stage": "files",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 7.671115250326693
+      }
+    ],
+    "sourceUnchanged": true,
+    "manifestSha256": "563d267007c4b8661a97aad3da2aa8ce44e85d753c6ce5bf66a945fb43972ae2",
+    "wholeGoalQualified": false
+  },
+  "linuxStage": {
+    "exitCode": 0,
+    "timedOut": false,
+    "seconds": 9.86237287800759,
+    "sourceFiles": 1311,
+    "sourceUnchanged": true,
+    "manifestSha256": "563d267007c4b8661a97aad3da2aa8ce44e85d753c6ce5bf66a945fb43972ae2",
+    "actualBrowserOrIndexedDbOnLinux": false,
+    "expectedTests": 76,
+    "wholeGoalQualified": false
+  },
+  "realBrowserStorage": {
+    "checks": [
+      "no cache I/O before an actual grant/Welcome",
+      "unauthorized calls did not even open private IndexedDB",
+      "issued ticket alone cannot read persisted bytes",
+      "verified immutable resource physically committed",
+      "same live authority reads SHA-verified IndexedDB body",
+      "bad content hash and oversized resource rejected",
+      "pause immediately removes cache read authority",
+      "fresh real grant reconnect retains the same authorized cache realm",
+      "reconnect reuses an actual persisted resource",
+      "a new cache owner reopens the IndexedDB body without a JS body map",
+      "quota fixture resource 2 committed",
+      "quota fixture resource 3 committed",
+      "atomic global byte quota evicts the oldest entry and its body",
+      "evicted resource returns a recoverable miss",
+      "same-size persisted corruption fails SHA and deletes the entry",
+      "corrupt size metadata is rejected before allocating the body buffer",
+      "both corruption paths physically removed their bodies",
+      "immutable chunk uses a separate typed cache entry",
+      "private body remains physically persisted after losing the suspended cache owner",
+      "actual other-tenant Welcome cannot read the same hash and purges the old realm",
+      "other-tenant private body committed under its own authority",
+      "actual HTTP grant revocation awaits physical private-body purge",
+      "short-lived actual grant body committed",
+      "paused permission expiry physically purges the persisted realm",
+      "revocation fences an actual queued write; late completion cannot restore private bytes",
+      "all write/read/digest metadata and buffer reservations are released",
+      "explicit full private-cache purge committed"
+    ],
+    "cacheStats": {
+      "hits": 0,
+      "misses": 1,
+      "writes": 2,
+      "evictions": 0,
+      "corruptions": 0,
+      "errors": 1,
+      "timeouts": 0,
+      "busyDrops": 0,
+      "purges": 7,
+      "purgeFailures": 0,
+      "pendingBytes": 0,
+      "busy": false,
+      "openPending": false,
+      "pendingPurges": 0,
+      "available": true
+    },
+    "actualIndexedDb": true,
+    "actualPublicHttpSqliteAndWebSocketAuthority": true,
+    "source": "virtual Node Source fixture",
+    "nativeBrowserStarted": false,
+    "originalBrowserOrSamplerExecuted": false,
+    "productionViewerIntegrationQualified": false,
+    "reconnectFirstFrameOrBandwidthQualified": false,
+    "browserVersion": "155.0.8059.85",
+    "status": "passed"
+  },
+  "realBrowserSavedRenderers": {
+    "status": "passed",
+    "results": [
+      {
+        "mainThread": false,
+        "cold": {
+          "result": {
+            "protocol": 4,
+            "connectionGeneration": 4,
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "frameId": 1,
+            "native": {
+              "captureId": "contract-1",
+              "producer": "contract-fixture",
+              "namespace": [
+                1,
+                2
+              ],
+              "frameToken": 1,
+              "sourceFrame": 1
+            },
+            "lastProcessedInputSeq": 0,
+            "resourceBytes": 33594,
+            "resources": 1,
+            "resourcesReceived": 1,
+            "receivedBytes": 35442,
+            "fullFrames": 1,
+            "deltaFrames": 0,
+            "renderMs": 352.4000005722046,
+            "requiredResources": [
+              "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+            ],
+            "rendererStats": {
+              "pictureDecodes": 1,
+              "pictureRasters": 1,
+              "pictureRasterHits": 0,
+              "passRenders": 1,
+              "passHits": 0,
+              "isolatedDraws": 0,
+              "passSurfaceAllocations": 1,
+              "damagedPixels": 614400,
+              "partialPassRenders": 0,
+              "quadsDrawn": 2,
+              "quadsCulled": 0,
+              "pictureEvictions": 0,
+              "rasterEvictions": 0,
+              "arenaRecycles": 0
+            },
+            "presentation": {
+              "mode": "webgl2-bitmap",
+              "frames": 1,
+              "gpuFrames": 1,
+              "cpuFrames": 0,
+              "readbackBytes": 0,
+              "totalReadbackBytes": 0,
+              "fallbacks": 0,
+              "gpuCacheBytes": 134217728,
+              "device": {
+                "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+                "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+              },
+              "damage": [
+                0,
+                0,
+                960,
+                640
+              ],
+              "skipped": false,
+              "renderMs": 342.6000003814697,
+              "readbackMs": 0,
+              "bitmapMs": 1,
+              "submitMs": 8.699999809265137,
+              "totalMs": 351.5
+            },
+            "assetStats": {
+              "receivedChunks": 0,
+              "receivedBytes": 0,
+              "fontBytes": 0,
+              "imageBytes": 0,
+              "reusedBytes": 0,
+              "evictions": 0,
+              "missingManifests": 0,
+              "cacheBytes": 0
+            },
+            "persistentCache": {
+              "hits": 0,
+              "misses": 0,
+              "writes": 0,
+              "evictions": 0,
+              "corruptions": 0,
+              "errors": 0,
+              "timeouts": 0,
+              "busyDrops": 0,
+              "purges": 1,
+              "purgeFailures": 0,
+              "pendingBytes": 0,
+              "busy": false,
+              "openPending": false,
+              "pendingPurges": 0,
+              "available": true
+            },
+            "worker": true,
+            "memory": {
+              "profile": "standard",
+              "decodeAdmission": "explicit-legacy-source",
+              "limits": {
+                "profile": "standard",
+                "total": 1073741824,
+                "js": 268435456,
+                "wasm": 536870912,
+                "gpu": 268435456,
+                "render": 268435456,
+                "pictures": 67108864,
+                "rasters": 33554432,
+                "chunks": 134217728,
+                "raw": 134217728,
+                "receive": 67108864,
+                "decodeCache": 33554432,
+                "gpuCache": 134217728
+              },
+              "categories": {
+                "wasmBinary": 16485822,
+                "presentation": 4915200,
+                "receive": 5792,
+                "raw": 33638,
+                "sceneMetadata": 5148,
+                "passMetadata": 5068,
+                "passes": 4915200,
+                "pictures": 33594,
+                "rasters": 2457600,
+                "label": 86016,
+                "jsIndexEstimate": 9472
+              },
+              "domains": {
+                "js": 8302029,
+                "wasm": 119610,
+                "gpu": 7372800,
+                "browser": 4915200
+              },
+              "jsBufferBytes": 8276549,
+              "referencedJsBytes": 16519460,
+              "aggregateIndexEstimateBytes": 1600,
+              "jsIndexEstimateBytes": 9472,
+              "ledgerIndexEstimateBytes": 7680,
+              "ownerMetadataBytes": 1792,
+              "decodeHeadroomBytes": 0,
+              "renderBytes": 7458816,
+              "residentEstimate": 159082493,
+              "retiredWasmBytes": 0,
+              "retiredArenaCount": 0,
+              "owners": 11,
+              "buffers": 2,
+              "observed": {
+                "wasmHeapBytes": 134217728,
+                "decodeCacheBytes": 0,
+                "gpuCacheBytes": 11647536,
+                "gpuUsageSource": "canvaskit-0.42-binding"
+              },
+              "stats": {
+                "pressureEvents": 0,
+                "failures": 0,
+                "trims": 0,
+                "peakResidentEstimate": 161541757,
+                "peakJsBufferBytes": 8276549,
+                "peakJsIndexEstimateBytes": 11136,
+                "retiredArenas": 0,
+                "collectedArenas": 0
+              },
+              "accounting": "ArrayBuffers deduplicated/current byteLength reconciled on reports; fixed-backing admission uses conservative cached upper bounds, resizable backings refresh every check; peaks are admission estimates; category/resizable aggregate metadata estimated; retained scenes/pass copies and cache/ledger JS metadata estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; transient parser/VM/driver/process overhead not fully covered"
+            },
+            "viewerGeneration": 2
+          },
+          "startup": {
+            "wasmFetchMs": 93.59999942779541,
+            "wasmVerifyMs": 12,
+            "wasmInitMs": 56.19999980926514,
+            "wasmBytes": 8242911,
+            "presentation": "webgl2-bitmap",
+            "worker": true
+          }
+        },
+        "warm": {
+          "protocol": 4,
+          "connectionGeneration": 7,
+          "pageEpoch": 1,
+          "viewportVersion": 1,
+          "frameId": 1,
+          "native": {
+            "captureId": "contract-1",
+            "producer": "contract-fixture",
+            "namespace": [
+              1,
+              2
+            ],
+            "frameToken": 1,
+            "sourceFrame": 1
+          },
+          "lastProcessedInputSeq": 0,
+          "resourceBytes": 33594,
+          "resources": 1,
+          "resourcesReceived": 0,
+          "receivedBytes": 1804,
+          "fullFrames": 1,
+          "deltaFrames": 0,
+          "renderMs": 349.29999923706055,
+          "requiredResources": [
+            "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 1,
+            "pictureRasters": 1,
+            "pictureRasterHits": 0,
+            "passRenders": 1,
+            "passHits": 0,
+            "isolatedDraws": 0,
+            "passSurfaceAllocations": 1,
+            "damagedPixels": 614400,
+            "partialPassRenders": 0,
+            "quadsDrawn": 2,
+            "quadsCulled": 0,
+            "pictureEvictions": 0,
+            "rasterEvictions": 0,
+            "arenaRecycles": 0
+          },
+          "presentation": {
+            "mode": "webgl2-bitmap",
+            "frames": 1,
+            "gpuFrames": 1,
+            "cpuFrames": 0,
+            "readbackBytes": 0,
+            "totalReadbackBytes": 0,
+            "fallbacks": 0,
+            "gpuCacheBytes": 134217728,
+            "device": {
+              "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+              "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+            },
+            "damage": [
+              0,
+              0,
+              960,
+              640
+            ],
+            "skipped": false,
+            "renderMs": 340.4000005722046,
+            "readbackMs": 0,
+            "bitmapMs": 0.10000038146972656,
+            "submitMs": 6.899999618530273,
+            "totalMs": 347.30000019073486
+          },
+          "assetStats": {
+            "receivedChunks": 0,
+            "receivedBytes": 0,
+            "fontBytes": 0,
+            "imageBytes": 0,
+            "reusedBytes": 0,
+            "evictions": 0,
+            "missingManifests": 0,
+            "cacheBytes": 0
+          },
+          "persistentCache": {
+            "hits": 1,
+            "misses": 0,
+            "writes": 0,
+            "evictions": 0,
+            "corruptions": 0,
+            "errors": 0,
+            "timeouts": 0,
+            "busyDrops": 0,
+            "purges": 1,
+            "purgeFailures": 0,
+            "pendingBytes": 0,
+            "busy": false,
+            "openPending": false,
+            "pendingPurges": 0,
+            "available": true
+          },
+          "worker": true,
+          "memory": {
+            "profile": "standard",
+            "decodeAdmission": "explicit-legacy-source",
+            "limits": {
+              "profile": "standard",
+              "total": 1073741824,
+              "js": 268435456,
+              "wasm": 536870912,
+              "gpu": 268435456,
+              "render": 268435456,
+              "pictures": 67108864,
+              "rasters": 33554432,
+              "chunks": 134217728,
+              "raw": 134217728,
+              "receive": 67108864,
+              "decodeCache": 33554432,
+              "gpuCache": 134217728
+            },
+            "categories": {
+              "wasmBinary": 16485822,
+              "presentation": 4915200,
+              "receive": 5792,
+              "sceneMetadata": 5148,
+              "raw": 33594,
+              "passMetadata": 5068,
+              "passes": 4915200,
+              "pictures": 33594,
+              "rasters": 2457600,
+              "label": 86016,
+              "jsIndexEstimate": 9472
+            },
+            "domains": {
+              "js": 8301985,
+              "wasm": 119610,
+              "gpu": 7372800,
+              "browser": 4915200
+            },
+            "jsBufferBytes": 8276505,
+            "referencedJsBytes": 16519416,
+            "aggregateIndexEstimateBytes": 1600,
+            "jsIndexEstimateBytes": 9472,
+            "ledgerIndexEstimateBytes": 7680,
+            "ownerMetadataBytes": 1792,
+            "decodeHeadroomBytes": 0,
+            "renderBytes": 7458816,
+            "residentEstimate": 159082449,
+            "retiredWasmBytes": 0,
+            "retiredArenaCount": 0,
+            "owners": 11,
+            "buffers": 2,
+            "observed": {
+              "wasmHeapBytes": 134217728,
+              "decodeCacheBytes": 0,
+              "gpuCacheBytes": 11647536,
+              "gpuUsageSource": "canvaskit-0.42-binding"
+            },
+            "stats": {
+              "pressureEvents": 0,
+              "failures": 0,
+              "trims": 0,
+              "peakResidentEstimate": 161541713,
+              "peakJsBufferBytes": 8276505,
+              "peakJsIndexEstimateBytes": 11136,
+              "retiredArenas": 0,
+              "collectedArenas": 0
+            },
+            "accounting": "ArrayBuffers deduplicated/current byteLength reconciled on reports; fixed-backing admission uses conservative cached upper bounds, resizable backings refresh every check; peaks are admission estimates; category/resizable aggregate metadata estimated; retained scenes/pass copies and cache/ledger JS metadata estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; transient parser/VM/driver/process overhead not fully covered"
+          },
+          "viewerGeneration": 3
+        },
+        "recovered": {
+          "protocol": 4,
+          "connectionGeneration": 10,
+          "pageEpoch": 1,
+          "viewportVersion": 1,
+          "frameId": 2,
+          "native": {
+            "captureId": "contract-1",
+            "producer": "contract-fixture",
+            "namespace": [
+              1,
+              2
+            ],
+            "frameToken": 1,
+            "sourceFrame": 1
+          },
+          "lastProcessedInputSeq": 0,
+          "resourceBytes": 33594,
+          "resources": 1,
+          "resourcesReceived": 1,
+          "receivedBytes": 36458,
+          "fullFrames": 1,
+          "deltaFrames": 0,
+          "renderMs": 224.19999980926514,
+          "requiredResources": [
+            "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 1,
+            "pictureRasters": 1,
+            "pictureRasterHits": 0,
+            "passRenders": 1,
+            "passHits": 0,
+            "isolatedDraws": 0,
+            "passSurfaceAllocations": 1,
+            "damagedPixels": 614400,
+            "partialPassRenders": 0,
+            "quadsDrawn": 2,
+            "quadsCulled": 0,
+            "pictureEvictions": 0,
+            "rasterEvictions": 0,
+            "arenaRecycles": 0
+          },
+          "presentation": {
+            "mode": "webgl2-bitmap",
+            "frames": 1,
+            "gpuFrames": 1,
+            "cpuFrames": 0,
+            "readbackBytes": 0,
+            "totalReadbackBytes": 0,
+            "fallbacks": 0,
+            "gpuCacheBytes": 134217728,
+            "device": {
+              "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+              "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+            },
+            "damage": [
+              0,
+              0,
+              960,
+              640
+            ],
+            "skipped": false,
+            "renderMs": 218.69999980926514,
+            "readbackMs": 0,
+            "bitmapMs": 0,
+            "submitMs": 4.700000762939453,
+            "totalMs": 223.4000005722046
+          },
+          "assetStats": {
+            "receivedChunks": 0,
+            "receivedBytes": 0,
+            "fontBytes": 0,
+            "imageBytes": 0,
+            "reusedBytes": 0,
+            "evictions": 0,
+            "missingManifests": 0,
+            "cacheBytes": 0
+          },
+          "persistentCache": {
+            "hits": 0,
+            "misses": 1,
+            "writes": 0,
+            "evictions": 0,
+            "corruptions": 1,
+            "errors": 0,
+            "timeouts": 0,
+            "busyDrops": 0,
+            "purges": 1,
+            "purgeFailures": 0,
+            "pendingBytes": 0,
+            "busy": false,
+            "openPending": false,
+            "pendingPurges": 0,
+            "available": true
+          },
+          "worker": true,
+          "memory": {
+            "profile": "standard",
+            "decodeAdmission": "explicit-legacy-source",
+            "limits": {
+              "profile": "standard",
+              "total": 1073741824,
+              "js": 268435456,
+              "wasm": 536870912,
+              "gpu": 268435456,
+              "render": 268435456,
+              "pictures": 67108864,
+              "rasters": 33554432,
+              "chunks": 134217728,
+              "raw": 134217728,
+              "receive": 67108864,
+              "decodeCache": 33554432,
+              "gpuCache": 134217728
+            },
+            "categories": {
+              "wasmBinary": 16485822,
+              "presentation": 4915200,
+              "raw": 33638,
+              "sceneMetadata": 5148,
+              "receive": 5792,
+              "passMetadata": 5068,
+              "passes": 4915200,
+              "pictures": 33594,
+              "rasters": 2457600,
+              "label": 86016,
+              "jsIndexEstimate": 9472
+            },
+            "domains": {
+              "js": 8302029,
+              "wasm": 119610,
+              "gpu": 7372800,
+              "browser": 4915200
+            },
+            "jsBufferBytes": 8276549,
+            "referencedJsBytes": 16519460,
+            "aggregateIndexEstimateBytes": 1600,
+            "jsIndexEstimateBytes": 9472,
+            "ledgerIndexEstimateBytes": 7680,
+            "ownerMetadataBytes": 1792,
+            "decodeHeadroomBytes": 0,
+            "renderBytes": 7458816,
+            "residentEstimate": 159082493,
+            "retiredWasmBytes": 0,
+            "retiredArenaCount": 0,
+            "owners": 11,
+            "buffers": 2,
+            "observed": {
+              "wasmHeapBytes": 134217728,
+              "decodeCacheBytes": 0,
+              "gpuCacheBytes": 11647536,
+              "gpuUsageSource": "canvaskit-0.42-binding"
+            },
+            "stats": {
+              "pressureEvents": 0,
+              "failures": 0,
+              "trims": 0,
+              "peakResidentEstimate": 161541757,
+              "peakJsBufferBytes": 8276549,
+              "peakJsIndexEstimateBytes": 11136,
+              "retiredArenas": 0,
+              "collectedArenas": 0
+            },
+            "accounting": "ArrayBuffers deduplicated/current byteLength reconciled on reports; fixed-backing admission uses conservative cached upper bounds, resizable backings refresh every check; peaks are admission estimates; category/resizable aggregate metadata estimated; retained scenes/pass copies and cache/ledger JS metadata estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; transient parser/VM/driver/process overhead not fully covered"
+          },
+          "viewerGeneration": 4
+        },
+        "canvasPngSha256": "f1e6954fe91d991bee53550a00aba9ddbaeb8562f34570f0e094f3ab412af1a7",
+        "physicalCacheAfterAwaitedLogout": {
+          "meta": 0,
+          "bodies": 0
+        },
+        "realRenderer": true,
+        "webglPlaceholderIncluded": true
+      },
+      {
+        "mainThread": true,
+        "cold": {
+          "result": {
+            "protocol": 4,
+            "viewerGeneration": 2,
+            "connectionGeneration": 4,
+            "pageEpoch": 1,
+            "viewportVersion": 1,
+            "frameId": 1,
+            "native": {
+              "captureId": "contract-1",
+              "producer": "contract-fixture",
+              "namespace": [
+                1,
+                2
+              ],
+              "frameToken": 1,
+              "sourceFrame": 1
+            },
+            "lastProcessedInputSeq": 0,
+            "resourceBytes": 33594,
+            "resources": 1,
+            "resourcesReceived": 1,
+            "receivedBytes": 35442,
+            "fullFrames": 1,
+            "deltaFrames": 0,
+            "renderMs": 185.5999994277954,
+            "requiredResources": [
+              "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+            ],
+            "rendererStats": {
+              "pictureDecodes": 1,
+              "pictureRasters": 1,
+              "pictureRasterHits": 0,
+              "passRenders": 1,
+              "passHits": 0,
+              "isolatedDraws": 0,
+              "passSurfaceAllocations": 1,
+              "damagedPixels": 614400,
+              "partialPassRenders": 0,
+              "quadsDrawn": 2,
+              "quadsCulled": 0,
+              "pictureEvictions": 0,
+              "rasterEvictions": 0,
+              "arenaRecycles": 0
+            },
+            "presentation": {
+              "mode": "webgl2-bitmap",
+              "frames": 1,
+              "gpuFrames": 1,
+              "cpuFrames": 0,
+              "readbackBytes": 0,
+              "totalReadbackBytes": 0,
+              "fallbacks": 0,
+              "gpuCacheBytes": 134217728,
+              "device": {
+                "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+                "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+              },
+              "damage": [
+                0,
+                0,
+                960,
+                640
+              ],
+              "skipped": false,
+              "renderMs": 180.0999994277954,
+              "readbackMs": 0,
+              "bitmapMs": 0.10000038146972656,
+              "submitMs": 4.100000381469727,
+              "totalMs": 184.19999980926514
+            },
+            "persistentCache": {
+              "hits": 0,
+              "misses": 0,
+              "writes": 0,
+              "evictions": 0,
+              "corruptions": 0,
+              "errors": 0,
+              "timeouts": 0,
+              "busyDrops": 0,
+              "purges": 1,
+              "purgeFailures": 0,
+              "pendingBytes": 0,
+              "busy": false,
+              "openPending": false,
+              "pendingPurges": 0,
+              "available": true
+            },
+            "memory": {
+              "profile": "standard",
+              "decodeAdmission": "explicit-legacy-source",
+              "limits": {
+                "profile": "standard",
+                "total": 1073741824,
+                "js": 268435456,
+                "wasm": 536870912,
+                "gpu": 268435456,
+                "render": 268435456,
+                "pictures": 67108864,
+                "rasters": 33554432,
+                "chunks": 134217728,
+                "raw": 134217728,
+                "receive": 67108864,
+                "decodeCache": 33554432,
+                "gpuCache": 134217728
+              },
+              "categories": {
+                "wasmBinary": 16485822,
+                "presentation": 4915200,
+                "receive": 5792,
+                "raw": 33638,
+                "sceneMetadata": 5148,
+                "passMetadata": 5068,
+                "passes": 4915200,
+                "pictures": 33594,
+                "rasters": 2457600,
+                "label": 86016,
+                "jsIndexEstimate": 9472
+              },
+              "domains": {
+                "js": 8302029,
+                "wasm": 119610,
+                "gpu": 7372800,
+                "browser": 4915200
+              },
+              "jsBufferBytes": 8276549,
+              "referencedJsBytes": 16519460,
+              "aggregateIndexEstimateBytes": 1600,
+              "jsIndexEstimateBytes": 9472,
+              "ledgerIndexEstimateBytes": 7680,
+              "ownerMetadataBytes": 1792,
+              "decodeHeadroomBytes": 0,
+              "renderBytes": 7458816,
+              "residentEstimate": 159082493,
+              "retiredWasmBytes": 0,
+              "retiredArenaCount": 0,
+              "owners": 11,
+              "buffers": 2,
+              "observed": {
+                "wasmHeapBytes": 134217728,
+                "decodeCacheBytes": 0,
+                "gpuCacheBytes": 11647536,
+                "gpuUsageSource": "canvaskit-0.42-binding"
+              },
+              "stats": {
+                "pressureEvents": 0,
+                "failures": 0,
+                "trims": 0,
+                "peakResidentEstimate": 161541757,
+                "peakJsBufferBytes": 8276549,
+                "peakJsIndexEstimateBytes": 11136,
+                "retiredArenas": 0,
+                "collectedArenas": 0
+              },
+              "accounting": "ArrayBuffers deduplicated/current byteLength reconciled on reports; fixed-backing admission uses conservative cached upper bounds, resizable backings refresh every check; peaks are admission estimates; category/resizable aggregate metadata estimated; retained scenes/pass copies and cache/ledger JS metadata estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; transient parser/VM/driver/process overhead not fully covered"
+            }
+          },
+          "startup": {
+            "wasmFetchMs": 9.799999237060547,
+            "wasmVerifyMs": 8,
+            "wasmInitMs": 31.700000762939453,
+            "wasmBytes": 8242911,
+            "presentation": "webgl2-bitmap",
+            "worker": false
+          }
+        },
+        "warm": {
+          "protocol": 4,
+          "viewerGeneration": 3,
+          "connectionGeneration": 7,
+          "pageEpoch": 1,
+          "viewportVersion": 1,
+          "frameId": 1,
+          "native": {
+            "captureId": "contract-1",
+            "producer": "contract-fixture",
+            "namespace": [
+              1,
+              2
+            ],
+            "frameToken": 1,
+            "sourceFrame": 1
+          },
+          "lastProcessedInputSeq": 0,
+          "resourceBytes": 33594,
+          "resources": 1,
+          "resourcesReceived": 0,
+          "receivedBytes": 1804,
+          "fullFrames": 1,
+          "deltaFrames": 0,
+          "renderMs": 95.5,
+          "requiredResources": [
+            "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 1,
+            "pictureRasters": 1,
+            "pictureRasterHits": 0,
+            "passRenders": 1,
+            "passHits": 0,
+            "isolatedDraws": 0,
+            "passSurfaceAllocations": 1,
+            "damagedPixels": 614400,
+            "partialPassRenders": 0,
+            "quadsDrawn": 2,
+            "quadsCulled": 0,
+            "pictureEvictions": 0,
+            "rasterEvictions": 0,
+            "arenaRecycles": 0
+          },
+          "presentation": {
+            "mode": "webgl2-bitmap",
+            "frames": 1,
+            "gpuFrames": 1,
+            "cpuFrames": 0,
+            "readbackBytes": 0,
+            "totalReadbackBytes": 0,
+            "fallbacks": 0,
+            "gpuCacheBytes": 134217728,
+            "device": {
+              "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+              "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+            },
+            "damage": [
+              0,
+              0,
+              960,
+              640
+            ],
+            "skipped": false,
+            "renderMs": 86.79999923706055,
+            "readbackMs": 0,
+            "bitmapMs": 0,
+            "submitMs": 8.40000057220459,
+            "totalMs": 95.19999980926514
+          },
+          "persistentCache": {
+            "hits": 1,
+            "misses": 0,
+            "writes": 1,
+            "evictions": 0,
+            "corruptions": 0,
+            "errors": 0,
+            "timeouts": 0,
+            "busyDrops": 0,
+            "purges": 2,
+            "purgeFailures": 0,
+            "pendingBytes": 0,
+            "busy": false,
+            "openPending": false,
+            "pendingPurges": 0,
+            "available": true
+          },
+          "memory": {
+            "profile": "standard",
+            "decodeAdmission": "explicit-legacy-source",
+            "limits": {
+              "profile": "standard",
+              "total": 1073741824,
+              "js": 268435456,
+              "wasm": 536870912,
+              "gpu": 268435456,
+              "render": 268435456,
+              "pictures": 67108864,
+              "rasters": 33554432,
+              "chunks": 134217728,
+              "raw": 134217728,
+              "receive": 67108864,
+              "decodeCache": 33554432,
+              "gpuCache": 134217728
+            },
+            "categories": {
+              "wasmBinary": 16485822,
+              "presentation": 4915200,
+              "receive": 5792,
+              "sceneMetadata": 5148,
+              "raw": 33594,
+              "passMetadata": 5068,
+              "passes": 4915200,
+              "pictures": 33594,
+              "rasters": 2457600,
+              "label": 86016,
+              "jsIndexEstimate": 9472
+            },
+            "domains": {
+              "js": 8301985,
+              "wasm": 119610,
+              "gpu": 7372800,
+              "browser": 4915200
+            },
+            "jsBufferBytes": 8276505,
+            "referencedJsBytes": 16519416,
+            "aggregateIndexEstimateBytes": 1600,
+            "jsIndexEstimateBytes": 9472,
+            "ledgerIndexEstimateBytes": 7680,
+            "ownerMetadataBytes": 1792,
+            "decodeHeadroomBytes": 0,
+            "renderBytes": 7458816,
+            "residentEstimate": 159082449,
+            "retiredWasmBytes": 0,
+            "retiredArenaCount": 0,
+            "owners": 11,
+            "buffers": 2,
+            "observed": {
+              "wasmHeapBytes": 134217728,
+              "decodeCacheBytes": 0,
+              "gpuCacheBytes": 11647536,
+              "gpuUsageSource": "canvaskit-0.42-binding"
+            },
+            "stats": {
+              "pressureEvents": 0,
+              "failures": 0,
+              "trims": 0,
+              "peakResidentEstimate": 161541713,
+              "peakJsBufferBytes": 8276505,
+              "peakJsIndexEstimateBytes": 11136,
+              "retiredArenas": 0,
+              "collectedArenas": 0
+            },
+            "accounting": "ArrayBuffers deduplicated/current byteLength reconciled on reports; fixed-backing admission uses conservative cached upper bounds, resizable backings refresh every check; peaks are admission estimates; category/resizable aggregate metadata estimated; retained scenes/pass copies and cache/ledger JS metadata estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; transient parser/VM/driver/process overhead not fully covered"
+          }
+        },
+        "recovered": {
+          "protocol": 4,
+          "viewerGeneration": 4,
+          "connectionGeneration": 10,
+          "pageEpoch": 1,
+          "viewportVersion": 1,
+          "frameId": 2,
+          "native": {
+            "captureId": "contract-1",
+            "producer": "contract-fixture",
+            "namespace": [
+              1,
+              2
+            ],
+            "frameToken": 1,
+            "sourceFrame": 1
+          },
+          "lastProcessedInputSeq": 0,
+          "resourceBytes": 33594,
+          "resources": 1,
+          "resourcesReceived": 1,
+          "receivedBytes": 36458,
+          "fullFrames": 1,
+          "deltaFrames": 0,
+          "renderMs": 102.59999942779541,
+          "requiredResources": [
+            "cf5c0617a3b2487d5c452af3a4c64a317724752becde029866bc4b45108caa4d"
+          ],
+          "rendererStats": {
+            "pictureDecodes": 1,
+            "pictureRasters": 1,
+            "pictureRasterHits": 0,
+            "passRenders": 1,
+            "passHits": 0,
+            "isolatedDraws": 0,
+            "passSurfaceAllocations": 1,
+            "damagedPixels": 614400,
+            "partialPassRenders": 0,
+            "quadsDrawn": 2,
+            "quadsCulled": 0,
+            "pictureEvictions": 0,
+            "rasterEvictions": 0,
+            "arenaRecycles": 0
+          },
+          "presentation": {
+            "mode": "webgl2-bitmap",
+            "frames": 1,
+            "gpuFrames": 1,
+            "cpuFrames": 0,
+            "readbackBytes": 0,
+            "totalReadbackBytes": 0,
+            "fallbacks": 0,
+            "gpuCacheBytes": 134217728,
+            "device": {
+              "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+              "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)"
+            },
+            "damage": [
+              0,
+              0,
+              960,
+              640
+            ],
+            "skipped": false,
+            "renderMs": 96.89999961853027,
+            "readbackMs": 0,
+            "bitmapMs": 0,
+            "submitMs": 5.300000190734863,
+            "totalMs": 102.19999980926514
+          },
+          "persistentCache": {
+            "hits": 1,
+            "misses": 1,
+            "writes": 2,
+            "evictions": 0,
+            "corruptions": 1,
+            "errors": 0,
+            "timeouts": 0,
+            "busyDrops": 0,
+            "purges": 3,
+            "purgeFailures": 0,
+            "pendingBytes": 0,
+            "busy": false,
+            "openPending": false,
+            "pendingPurges": 0,
+            "available": true
+          },
+          "memory": {
+            "profile": "standard",
+            "decodeAdmission": "explicit-legacy-source",
+            "limits": {
+              "profile": "standard",
+              "total": 1073741824,
+              "js": 268435456,
+              "wasm": 536870912,
+              "gpu": 268435456,
+              "render": 268435456,
+              "pictures": 67108864,
+              "rasters": 33554432,
+              "chunks": 134217728,
+              "raw": 134217728,
+              "receive": 67108864,
+              "decodeCache": 33554432,
+              "gpuCache": 134217728
+            },
+            "categories": {
+              "wasmBinary": 16485822,
+              "presentation": 4915200,
+              "raw": 33638,
+              "sceneMetadata": 5148,
+              "receive": 5792,
+              "passMetadata": 5068,
+              "passes": 4915200,
+              "pictures": 33594,
+              "rasters": 2457600,
+              "label": 86016,
+              "jsIndexEstimate": 9472
+            },
+            "domains": {
+              "js": 8302029,
+              "wasm": 119610,
+              "gpu": 7372800,
+              "browser": 4915200
+            },
+            "jsBufferBytes": 8276549,
+            "referencedJsBytes": 16519460,
+            "aggregateIndexEstimateBytes": 1600,
+            "jsIndexEstimateBytes": 9472,
+            "ledgerIndexEstimateBytes": 7680,
+            "ownerMetadataBytes": 1792,
+            "decodeHeadroomBytes": 0,
+            "renderBytes": 7458816,
+            "residentEstimate": 159082493,
+            "retiredWasmBytes": 0,
+            "retiredArenaCount": 0,
+            "owners": 11,
+            "buffers": 2,
+            "observed": {
+              "wasmHeapBytes": 134217728,
+              "decodeCacheBytes": 0,
+              "gpuCacheBytes": 11647536,
+              "gpuUsageSource": "canvaskit-0.42-binding"
+            },
+            "stats": {
+              "pressureEvents": 0,
+              "failures": 0,
+              "trims": 0,
+              "peakResidentEstimate": 161541757,
+              "peakJsBufferBytes": 8276549,
+              "peakJsIndexEstimateBytes": 11136,
+              "retiredArenas": 0,
+              "collectedArenas": 0
+            },
+            "accounting": "ArrayBuffers deduplicated/current byteLength reconciled on reports; fixed-backing admission uses conservative cached upper bounds, resizable backings refresh every check; peaks are admission estimates; category/resizable aggregate metadata estimated; retained scenes/pass copies and cache/ledger JS metadata estimated; Wasm heap and Skia caches observed; objects/textures/browser surfaces estimated; transient parser/VM/driver/process overhead not fully covered"
+          }
+        },
+        "canvasPngSha256": "ab7e30b02d0dda87682ed3ae64386a7f422914a4e69aa7db721c4fee3d571905",
+        "physicalCacheAfterAwaitedLogout": {
+          "meta": 0,
+          "bodies": 0
+        },
+        "realRenderer": true,
+        "webglPlaceholderIncluded": true
+      }
+    ],
+    "relayReceipts": [
+      {
+        "omissionEnabled": false,
+        "omittedPackets": 0,
+        "omittedBytes": 0,
+        "keyframeRequests": 0
+      },
+      {
+        "omissionEnabled": true,
+        "omittedPackets": 1,
+        "omittedBytes": 33638,
+        "keyframeRequests": 0
+      },
+      {
+        "omissionEnabled": true,
+        "omittedPackets": 1,
+        "omittedBytes": 33638,
+        "keyframeRequests": 1
+      },
+      {
+        "omissionEnabled": false,
+        "omittedPackets": 0,
+        "omittedBytes": 0,
+        "keyframeRequests": 0
+      },
+      {
+        "omissionEnabled": true,
+        "omittedPackets": 1,
+        "omittedBytes": 33638,
+        "keyframeRequests": 0
+      },
+      {
+        "omissionEnabled": true,
+        "omittedPackets": 1,
+        "omittedBytes": 33638,
+        "keyframeRequests": 1
+      }
+    ],
+    "browserVersion": "155.0.8059.85",
+    "viewerBuild": "922361e56d77f8fe9199630c082b13a7f2ce9bd90f055f01fcddd6d3d9e08584",
+    "actualMainAndWorker": true,
+    "actualIndexedDb": true,
+    "actualCanvasKit": true,
+    "source": "existing SKP and virtual Node Source fixture",
+    "testRelayOmittedWarmResources": true,
+    "productionOfferMissNegotiationImplemented": false,
+    "reconnectFirstFrameOrBandwidthQualified": false,
+    "nativeSourceOrOriginalBrowserOrSamplerStarted": false,
+    "wholeGoalQualified": false
+  },
+  "originalTimeoutsPreserved": {
+    "viewerOperationMs": 300,
+    "openMs": 300,
+    "transactionMs": 300,
+    "unitStageMs": 120000,
+    "sourceAckMs": 5000
+  },
+  "purgeObserverNewBound": "2 * configured per-stage timeout; 600ms in Viewer, includes prior purge wait/open/transaction",
+  "openRequestCannotBeCanceledAndRetainsOwnAdmission": true,
+  "transactionChargesRetainedThroughActualCompleteOrAbort": true,
+  "timedOutPurgeRetainsActualAdmissionUntilTerminalCallback": true,
+  "maxPendingPurgeAdmissions": 8,
+  "lateTerminalDeliveryIsExplicitObservationGateNotEngineHangClaim": true,
+  "quotaAndFrameBarrierUnchanged": true,
+  "sdkBytesUnchangedAndInstalledSuitesNotRerun": true,
+  "productionOfferMissProtocolImplemented": false,
+  "nativeChunkProtocolRendererUpgradeOrAbruptUnloadQualified": false,
+  "reconnectPerformanceQualified": false,
+  "root1805Qualified": false,
+  "originalEightHourPassed": false,
+  "priorWebhookAndPythonFailuresResolved": false,
+  "ledger": {
+    "completeWithinScope": 10,
+    "partial": 19,
+    "pending": 12
+  },
+  "c6Complete": false,
+  "protection": {
+    "at": "2026-10-22T06:22:42.941263+00:00",
+    "sourceInputs": 108,
+    "canonicalBrowserFiles": 19,
+    "hashesMatched": true,
+    "fixedSampler": {
+      "device": 16777231,
+      "inode": 142233060,
+      "sha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+      "readOnlyHashNotExecutionHistory": true
+    },
+    "originalBuild": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 2967239,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-20T12:47:32.756177921Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "lastLine": "[7147/17924] CXX obj/third_party/blink/renderer/core/core/back_forward_cache_loader_helper_impl.o",
+    "freeGiB": 63.16450881958008,
+    "diskFloorGiB": 32,
+    "sourcePreparedOrMutated": false,
+    "originalCanonicalBrowserOrFixedSamplerExecutedThisTurn": false,
+    "ownedChromeAppWithSeparateProfilesUsed": true,
+    "forbiddenOutputOrProtectedDemoInspected": false
+  },
+  "ownedNetworkCleanup": {
+    "id": "9dcb2dc10653e68040ad538616610fe5026886148602409a7da8ded1d20175b9",
+    "verifiedUnused": true,
+    "exitCode": 0,
+    "otherNetworksImagesContainersVolumesOrBuildCachesRemoved": false
+  },
+  "noCommitPush": true,
+  "wholeGoalQualified": false
+}
