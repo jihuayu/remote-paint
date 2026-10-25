@@ -40,7 +40,6 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
       PIP_DISABLE_PIP_VERSION_CHECK: '1'
-      npm_config_cache: ${{ runner.temp }}/sdk-npm-cache
     steps:
       - uses: actions/checkout@v4
         with:
@@ -59,6 +58,8 @@ jobs:
             ${{ runner.temp }}/sdk-typescript
           key: sdk-contract-tools-v1-${{ runner.os }}-${{ runner.arch }}-node22.23.3-py311-ts5.9.3-${{ hashFiles('.github/workflows/sdk-packages.yml', 'package-lock.json', 'tests/sdk-ci-tooling.txt', 'tests/sdk-runtime-wheels.txt') }}
       - name: Prepare build tools and fixture dependencies
+        env:
+          npm_config_cache: ${{ runner.temp }}/sdk-npm-cache
         run: |
           apt-get update
           apt-get install -y --no-install-recommends python3 python3-venv
@@ -89,6 +90,8 @@ jobs:
             ${{ runner.temp }}/sdk-typescript
           key: ${{ steps.sdk-deps-cache.outputs.cache-primary-key }}
       - name: Verify complete JS suite and isolated installed SDKs
+        env:
+          npm_config_cache: ${{ runner.temp }}/sdk-npm-cache
         run: |
           python3 tests/run-sdk-package-ci.py \
             --work-dir "$RUNNER_TEMP/sdk-validation" \
