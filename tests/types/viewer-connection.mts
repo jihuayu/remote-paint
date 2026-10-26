@@ -21,3 +21,15 @@ const caught:unknown=new Error();if(caught instanceof ViewerConnectionError){con
 const changed=source.setRole("controller");const changedRole:"readonly"|"controller"=changed.role;void changedRole;
 // @ts-expect-error Agent scope is not a Viewer role
 source.setRole("agent");
+
+const cacheConnection=new ViewerConnection({...options,onSocket(){},onCacheState:event=>{
+ const state:'authorized'|'suspended'|'revoked'=event.state;void state;
+ if(event.permission){const namespace:`vrc1_${string}`=event.permission.namespace;const session:`ses_${string}`=event.permission.sessionId;const hash:string=event.permission.renderer.wasmSha256;void[namespace,session,hash];
+ // @ts-expect-error cache permission cannot be altered by consumers
+ event.permission.renderer.wasmSha256='changed';}
+}});
+const permission=cacheConnection.resourceCachePermission;void permission;
+// @ts-expect-error cache permission is controlled by the verified connection
+cacheConnection.resourceCachePermission=null;
+// @ts-expect-error cache state callback must be callable
+new ViewerConnection({...options,onSocket(){},onCacheState:true});

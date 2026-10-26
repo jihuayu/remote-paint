@@ -1,6 +1,8 @@
 import CanvasKitInit from '/canvaskit-worker.mjs';
 import {RendererRuntime} from '/renderer-runtime.mjs';
 import {ViewerConnection,ViewerConnectionError} from '/connection.mjs';
+import {PersistentResources,restoreFrameResources,restoreManifestResources,persistFrameResources,negotiateResourceCache} from '/persistent-resources.mjs';
+import {CACHE_CAPABILITY} from '/protocol/resource-cache.mjs';
 import {ClientMemory,memoryPolicy} from '/protocol/client-memory.mjs';
 import {parseMetadataJson} from '/protocol/metadata-json.mjs';
 import {isHash} from '/protocol/wire.mjs';
@@ -8,6 +10,7 @@ import {decodeAsset,AssetCache} from '/protocol/asset-wire.mjs';
 import {LIVE_VERSION,LIVE_LIMITS,LiveFrameGate,RecoveryRequired} from '/protocol/live-wire.mjs';
 const VIEWER_BUILD='__REMOTE_PAINT_VIEWER_BUILD__',EXPECTED_WASM_SHA='__REMOTE_PAINT_WASM_SHA__';
 let publicConnection=null,nextTicketRequest=0;const ticketRequests=new Map();
+const persistentResources=new PersistentResources({getPermission:()=>publicConnection?.resourceCachePermission??null,timeoutMs:300,onStats:stats=>ui('persistent-cache',{stats})});
 let renderer,presenter,canvas,socket,cleanupSession,generation=0,retryTimer,retryDelay=250,stopped=false,peerId;
 const ui=(type,data={})=>postMessage({type,...data});
 const status=text=>ui('status',{text});
@@ -27,7 +30,7 @@ async function connect(key,connection){
  clearTimeout(retryTimer);cleanupSession?.();const current=++generation;socket?.close();presenter.clear();ui('reset');status('连接绘制通道');
  publicConnection?.destroy();publicConnection=null;
  if(connection){
-  publicConnection=new ViewerConnection({...connection,getTicket:requestTicket,onSocket:(ws,grant,auth)=>attachStream(ws,++generation,key,auth),onState:state=>ui('connection-state',{state}),onError:error=>ui('error',{message:error.message,code:error.code})});
+  publicConnection=new ViewerConnection({...connection,getTicket:requestTicket,onCacheState:event=>{void persistentResources.state(event);ui('cache-state',{event});},onSocket:(ws,grant,auth)=>attachStream(ws,++generation,key,auth),onState:state=>ui('connection-state',{state}),onError:error=>ui('error',{message:error.message,code:error.code})});
   await publicConnection.start();return;
  }
  if(!key)throw new Error('请使用服务端输出的完整 Viewer 链接');
@@ -41,7 +44,7 @@ function attachStream(ws,current,key,authorization=null){
  const memory=presenter.memory,gate=new LiveFrameGate({memory}),assets=new AssetCache({memory});let rejection,closed=false,welcome=false,receivedBytes=0,resourcesReceived=0,full=0,delta=0,recovering=false,queue=Promise.resolve(),queuedBytes=0;
  const cleanup=()=>{if(closed)return;closed=true;gate.clear();assets.dispose();if(current===generation){presenter.clear();ui('memory',{memory:memory.snapshot()});}};cleanupSession=cleanup;
  const recover=()=>{gate.recover();assets.clear();presenter.retain(new Set(gate.resources.keys()));if(!recovering){recovering=true;status('重新同步完整场景');send({type:'RequestKeyframe'});}};
- ws.onopen=()=>send({type:'Hello',protocol:LIVE_VERSION,renderer,viewerBuild:VIEWER_BUILD,capabilities:['asset-chunks-v1','frame-window-v1','control-channel-v1','input-feedback-v1','resource-memory-v1'],frameWindow:6});
+ ws.onopen=()=>send({type:'Hello',protocol:LIVE_VERSION,renderer,viewerBuild:VIEWER_BUILD,capabilities:['asset-chunks-v1','frame-window-v1','control-channel-v1','input-feedback-v1','resource-memory-v1',...(authorization?[CACHE_CAPABILITY]:[])],frameWindow:6});
  ws.onmessage=event=>{
   if(closed)return;
   let size,parsed,releaseQueue;
@@ -65,21 +68,31 @@ function attachStream(ws,current,key,authorization=null){
    if(event.data instanceof ArrayBuffer){if(!welcome)throw new Error('Resource before handshake');const {kind,id,payload}=await verified;if(closed||current!==generation)return;if(kind==='chunk')assets.put(id,payload);else{gate.put(id,payload);resourcesReceived++;}return;}
    if(size>LIVE_LIMITS.sceneBytes)throw new Error('Metadata budget exceeded');const message=parsed;
    if(message.type==='Welcome'){
-    if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean'||typeof message.resourceMemory!=='boolean')throw new Error('Incompatible live handshake');authorization?.acceptWelcome(message);welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';peerId=message.peerId;retryDelay=250;ui('welcome',{message,streamUrl:ws.url,connectionGeneration:current});return;
+    if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean'||typeof message.resourceMemory!=='boolean')throw new Error('Incompatible live handshake');authorization?.acceptWelcome(message);if(authorization)await negotiateResourceCache(persistentResources,message,ws,{memory,current:()=>!closed&&current===generation,permission:()=>publicConnection?.resourceCachePermission});await persistentResources.purged;if(closed||current!==generation)return;welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';peerId=message.peerId;retryDelay=250;ui('welcome',{message,streamUrl:ws.url,connectionGeneration:current});return;
    }
    if(!welcome)throw new Error('Message before handshake');
    if(['ControlState','ControlGranted','ControlDenied','InputAck','FeedbackState','ViewportResized','ViewportResizeDenied'].includes(message.type)){ui('control',{message});return;}
-   if(message.type==='ResourceManifest'){const payload=assets.assemble(message);if(payload)try{const release=memory.reserve('shaWork',payload.byteLength,'browser');try{if(await digest(payload)!==message.id)throw new Error('Assembled resource checksum mismatch');}finally{release();}if(closed||current!==generation)return;gate.put(message.id,payload);resourcesReceived++;}finally{assets.releaseAssembly(payload);}return;}
+   if(message.type==='ResourceManifest'){
+    let payload=assets.assemble(message),cached=null;
+    try{
+     if(!payload){cached=await restoreManifestResources(persistentResources,assets,message,{memory,current:()=>!closed&&current===generation,permission:()=>publicConnection?.resourceCachePermission});payload=cached?.payload??assets.assemble(message);}
+     if(!payload||closed||current!==generation||cached&&(cached.permission!==publicConnection?.resourceCachePermission||!persistentResources.isAuthorized(cached.permission)))return;
+     if(payload.byteLength!==message.bytes)throw new Error('Cached resource manifest length mismatch');
+     if(!cached){const release=memory.reserve('shaWork',payload.byteLength,'browser');try{if(await digest(payload)!==message.id)throw new Error('Assembled resource checksum mismatch');}finally{release();}}
+     if(closed||current!==generation)return;gate.put(message.id,payload);resourcesReceived++;
+    }finally{if(payload)assets.releaseAssembly(payload);cached?.release();}return;
+   }
    if(message.type==='ChunkCacheReset'){assets.clear();return;}
-   if(message.type==='SceneUpdate'){try{gate.stage(message.frame);}catch(error){if(error instanceof RecoveryRequired){recover();return;}throw error;}}
+   if(message.type==='SceneUpdate'){try{gate.stage(message.frame);await restoreFrameResources(persistentResources,gate,{memory,current:()=>!closed&&current===generation,permission:()=>publicConnection?.resourceCachePermission});}catch(error){if(error instanceof RecoveryRequired){recover();return;}throw error;}}
    else if(message.type==='FrameCommit'){
     if(recovering&&!gate.pending)return;
     const started=performance.now(),frame=await gate.commitAsync(message.pageEpoch,message.frameId,draw);if(closed||current!==generation)return;if(!frame){recover();return;}
     // The sender may reuse an earlier resource in another inflight frame.
     // Only its explicit release (or recovery) retires the raw/decoded bytes.
     presenter.retain(new Set(gate.resources.keys()));if(frame.baseFrameId===null)full++;else delta++;recovering=false;
-    const renderMs=performance.now()-started,result={protocol:LIVE_VERSION,connectionGeneration:current,pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,frameId:frame.frameId,native:frame.native,lastProcessedInputSeq:frame.lastProcessedInputSeq,resourceBytes:gate.bytes,resources:gate.resources.size,resourcesReceived,receivedBytes,fullFrames:full,deltaFrames:delta,renderMs,requiredResources:frame.requiredResources,rendererStats:{...presenter.stats},presentation:{...presenter.presentation},assetStats:{...assets.stats,cacheBytes:assets.bytes},worker:true};
+    const renderMs=performance.now()-started,result={protocol:LIVE_VERSION,connectionGeneration:current,pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,frameId:frame.frameId,native:frame.native,lastProcessedInputSeq:frame.lastProcessedInputSeq,resourceBytes:gate.bytes,resources:gate.resources.size,resourcesReceived,receivedBytes,fullFrames:full,deltaFrames:delta,renderMs,requiredResources:frame.requiredResources,rendererStats:{...presenter.stats},presentation:{...presenter.presentation},assetStats:{...assets.stats,cacheBytes:assets.bytes},persistentCache:persistentResources.stats,worker:true};
     result.memory=memory.observe(presenter.ck,presenter.gr);ui('frame',{result,frame:{pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,viewport:frame.viewport,native:frame.native,lastProcessedInputSeq:frame.lastProcessedInputSeq,frameId:frame.frameId,baseFrameId:frame.baseFrameId}});send({type:'FrameAck',pageEpoch:frame.pageEpoch,frameId:frame.frameId,stage:'scene-submitted'});
+    persistFrameResources(persistentResources,gate,assets,frame,{memory,current:()=>!closed&&current===generation,permission:()=>publicConnection?.resourceCachePermission});
    }else if(message.type==='ResourceRelease'){
     if(!Array.isArray(message.ids)||message.ids.length>512||!message.ids.every(isHash))throw new Error('Invalid resource release');for(const id of message.ids)gate.release(id);presenter.retain(new Set(gate.resources.keys()));
     ui('cache',{resources:gate.resources.size,resourceBytes:gate.bytes,memory:memory.snapshot(),connectionGeneration:current});

@@ -30,6 +30,14 @@ function grant(value,settings,version){
  return Object.freeze(Object.fromEntries(keys.map(k=>[k,value[k]])));
 }
 
+function cachePermission(message,ticket){
+ if(!Object.hasOwn(message,'resourceCache'))return null;
+ const cache=message.resourceCache,renderer=message.renderer;
+ fields(cache,['schema','namespace'],'VIEWER_PROTOCOL_ERROR');fields(renderer,['canvaskit','wasmSha256'],'VIEWER_PROTOCOL_ERROR');
+ if(Object.keys(cache).length!==2||cache.schema!=='viewer-resource-cache-v1'||typeof cache.namespace!=='string'||!/^vrc1_[a-f0-9]{64}$/.test(cache.namespace)||Object.keys(renderer).length!==2||!text(renderer.canvaskit,64)||typeof renderer.wasmSha256!=='string'||!/^([a-f0-9]{64})$/.test(renderer.wasmSha256))fail('VIEWER_PROTOCOL_ERROR');
+ return Object.freeze({schema:'viewer-resource-cache-v1',namespace:cache.namespace,sessionId:ticket.sessionId,version:ticket.version,role:ticket.role,grantId:ticket.grantId,expiresAt:ticket.expiresAt,renderer:Object.freeze({canvaskit:renderer.canvaskit,wasmSha256:renderer.wasmSha256})});
+}
+
 // Browser-safe callback boundary. No management credentials, imports or fetch.
 // Cancellation ends this wait; a non-cooperative callback retains its slot.
 export class ViewerTicketSource {
@@ -59,20 +67,24 @@ export class ViewerTicketSource {
 // Socket lifetime shared by main-thread and Worker renderers. Frame parsing,
 // rendering, ACKs and input remain in the existing Viewer runtime.
 export class ViewerConnection {
- #source;#settings;#WebSocket;#onSocket;#onState;#onError;#socket=null;#grant=null;#abort=null;#epoch=0;#stopped=true;#closed=false;#timer;#handshake;#failures=0;#maxRetries;#refreshBefore;#connectTimeout;#welcome=false;#state='paused';
+ #source;#settings;#WebSocket;#onSocket;#onState;#onError;#socket=null;#grant=null;#abort=null;#epoch=0;#stopped=true;#closed=false;#timer;#handshake;#failures=0;#maxRetries;#refreshBefore;#connectTimeout;#welcome=false;#state='paused';#onCacheState;#cachePermission=null;#cachePrevious=null;#cacheExpiry;#cacheMode='revoked';
  constructor(options){
-  this.#settings=config(options,['WebSocket','onSocket','onState','onError','maxRetries','refreshBeforeMs','connectTimeoutMs']);
+  this.#settings=config(options,['WebSocket','onSocket','onState','onError','onCacheState','maxRetries','refreshBeforeMs','connectTimeoutMs']);
   const {getTicket}=options;this.#source=new ViewerTicketSource({...this.#settings,getTicket});this.#WebSocket=options.WebSocket??globalThis.WebSocket;this.#onSocket=options.onSocket;this.#onState=options.onState;this.#onError=options.onError;
+  this.#onCacheState=options.onCacheState;
   this.#maxRetries=options.maxRetries??3;this.#refreshBefore=options.refreshBeforeMs??5000;this.#connectTimeout=options.connectTimeoutMs??10000;
-  if(typeof this.#WebSocket!=='function'||typeof this.#onSocket!=='function'||this.#onState!==undefined&&typeof this.#onState!=='function'||this.#onError!==undefined&&typeof this.#onError!=='function'||!integer(this.#maxRetries,0,5)||!integer(this.#refreshBefore,50,30000)||!integer(this.#connectTimeout,50,20000))fail('VIEWER_INVALID_CONFIG');
+  if(typeof this.#WebSocket!=='function'||typeof this.#onSocket!=='function'||this.#onState!==undefined&&typeof this.#onState!=='function'||this.#onError!==undefined&&typeof this.#onError!=='function'||this.#onCacheState!==undefined&&typeof this.#onCacheState!=='function'||!integer(this.#maxRetries,0,5)||!integer(this.#refreshBefore,50,30000)||!integer(this.#connectTimeout,50,20000))fail('VIEWER_INVALID_CONFIG');
  }
  get state(){return Object.freeze({state:this.#state,sessionId:this.#settings.sessionId,role:this.#settings.role,attempt:this.#failures,version:this.#grant?.version??this.#settings.version??null});}
+ get resourceCachePermission(){return this.#cachePermission;}
+ #cacheState(state){const permission=this.#cachePermission??this.#cachePrevious;if(state==='authorized')this.#cachePrevious=permission;else this.#cachePermission=null;if(state==='revoked'){clearTimeout(this.#cacheExpiry);this.#cachePrevious=null;}if(this.#cacheMode===state)return;this.#cacheMode=state;try{this.#onCacheState?.(Object.freeze({state,permission}));}catch{}}
  #publish(state,code){this.#state=state;try{this.#onState?.(Object.freeze({...this.state,...(code?{code}:{})}));}catch{}}
- #clear(){clearTimeout(this.#timer);clearTimeout(this.#handshake);this.#abort?.abort();this.#abort=null;const socket=this.#socket;this.#socket=null;if(socket&&socket.readyState<2){try{socket.close(1000,'Viewer connection reset');}catch{}}}
+ #clear(purge=false){this.#cacheState(purge?'revoked':'suspended');clearTimeout(this.#timer);clearTimeout(this.#handshake);this.#abort?.abort();this.#abort=null;const socket=this.#socket;this.#socket=null;if(socket&&socket.readyState<2){try{socket.close(1000,'Viewer connection reset');}catch{}}}
  start(){if(this.#closed)fail('VIEWER_CLOSED');this.#stopped=false;this.#failures=0;return this.#open('connect');}
  async #open(reason){
-  if(this.#closed||this.#stopped)return;const epoch=++this.#epoch;this.#clear();this.#grant=null;this.#welcome=false;const controller=this.#abort=new AbortController();
+  if(this.#closed||this.#stopped)return;const epoch=++this.#epoch;this.#clear();if(epoch!==this.#epoch||this.#stopped||this.#closed)return;this.#grant=null;this.#welcome=false;const controller=this.#abort=new AbortController();
   this.#publish(reason==='refresh'?'refreshing':reason==='reconnect'?'reconnecting':'connecting');
+  if(epoch!==this.#epoch||this.#stopped||this.#closed)return;
   try{
    const ticket=await this.#source.getTicket({reason,signal:controller.signal});if(epoch!==this.#epoch||this.#stopped||this.#closed)return;
    const url=new URL(this.#settings.gatewayOrigin);url.protocol=url.protocol==='https:'?'wss:':'ws:';url.pathname='/v1/viewer/stream';url.searchParams.set('ticket',ticket.ticket);
@@ -91,15 +103,19 @@ export class ViewerConnection {
   const ticket=this.#grant;
   if(this.#welcome||!ticket||message.viewerSessionId!==ticket.sessionId||message.viewerVersion!==ticket.version||message.viewerGrantId!==ticket.grantId||message.viewerRole!==ticket.role||message.control!==null||ticket.role==='readonly'&&(message.input!==false||message.inputFeedback!==false))fail('VIEWER_PROTOCOL_ERROR');
   const remaining=Math.min(120000,Date.parse(ticket.expiresAt)-Date.now());if(remaining<=0)fail('VIEWER_INVALID_TICKET');
+  this.#cachePermission=cachePermission(message,ticket);clearTimeout(this.#cacheExpiry);
+  if(this.#cachePermission){const permission=this.#cachePermission;this.#cacheState('authorized');if(epoch!==this.#epoch||this.#stopped||this.#closed)fail('VIEWER_ABORTED');this.#cacheExpiry=setTimeout(()=>{if(this.#cachePrevious===permission)this.#cacheState('revoked');},remaining);this.#cacheExpiry.unref?.();}else this.#cacheState('revoked');
+  if(epoch!==this.#epoch||this.#stopped||this.#closed)fail('VIEWER_ABORTED');
   this.#welcome=true;this.#failures=0;clearTimeout(this.#handshake);this.#publish('connected');
+  if(epoch!==this.#epoch||this.#stopped||this.#closed)return;
   this.#timer=setTimeout(()=>{void this.#open('refresh');},Math.max(1,remaining-Math.min(this.#refreshBefore,remaining/2)));
  }
  #retry(error,epoch){
   if(epoch!==this.#epoch||this.#stopped||this.#closed)return;this.#failures++;
-  this.#epoch++;this.#clear();
+  const retryEpoch=++this.#epoch;this.#clear(!error.retryable);if(retryEpoch!==this.#epoch||this.#stopped||this.#closed)return;
   if(error.retryable&&this.#failures<=this.#maxRetries){this.#publish('reconnecting',error.code);this.#timer=setTimeout(()=>{void this.#open('reconnect');},Math.min(2000,250*2**(this.#failures-1)));return;}
   this.#stopped=true;this.#publish('failed',error.code);try{this.#onError?.(new ViewerConnectionError(error.code));}catch{}
  }
- stop(){if(this.#closed)return;this.#stopped=true;this.#epoch++;this.#clear();this.#publish('paused');}
- destroy(){if(this.#closed)return;this.stop();this.#closed=true;this.#source.destroy();this.#publish('closed');}
+ stop(){if(this.#closed)return;this.#stopped=true;this.#epoch++;this.#clear();if(!this.#closed)this.#publish('paused');}
+ destroy(){if(this.#closed)return;this.#closed=true;this.#stopped=true;this.#epoch++;this.#clear(true);this.#source.destroy();this.#publish('closed');}
 }

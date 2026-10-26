@@ -3,6 +3,8 @@ import {createHash,webcrypto} from 'node:crypto';
 import {runInNewContext} from 'node:vm';
 import {WebSocket} from 'ws';
 import {ViewerConnection,ViewerTicketSource,ViewerConnectionError} from '../../sdk/viewer-connection.mjs';
+import {PersistentResources,restoreFrameResources,restoreManifestResources,persistFrameResources,negotiateResourceCache} from '../../viewer/persistent-resources.mjs';
+import {CACHE_CAPABILITY} from '../../protocol/resource-cache.mjs';
 import {ViewerControlActions} from '../../sdk/viewer-control.mjs';
 import {ViewerTelemetry} from '../../sdk/viewer-telemetry.mjs';
 import {ViewerLifecycle} from '../../viewer/lifecycle.mjs';
@@ -33,7 +35,7 @@ function runtime(workerMode,{publicMode=false,viewerBuild='fixture',configFetch,
  // browser realm's Socket explicitly, including its automatic Origin header.
  class RuntimeConnection extends ViewerConnection {constructor(options){super({...options,WebSocket:Socket,onSocket:(...args)=>{try{return options.onSocket(...args);}catch(error){stats.socketSetupErrors.push(error.message);throw error;}}});}}
  const common={console,URL,URLSearchParams,TextEncoder,TextDecoder,ArrayBuffer,Uint8Array,AbortSignal,AbortController,performance,crypto:webcrypto,setTimeout,clearTimeout,setInterval,clearInterval,
-  location:new URL(audience+'/'+hash),WebSocket:Socket,ViewerConnection:RuntimeConnection,ViewerTicketSource,ViewerConnectionError,loadPublicViewerConfig,PublicViewerConfigError,attachViewerChild,ViewerControlActions,ViewerTelemetry,RendererRuntime:Renderer,ClientMemory:Memory,memoryPolicy:()=>({}),CanvasKitInit:async()=>{if(initError)throw new Error(initError);return{};},
+  location:new URL(audience+'/'+hash),WebSocket:Socket,ViewerConnection:RuntimeConnection,ViewerTicketSource,ViewerConnectionError,PersistentResources,restoreFrameResources,restoreManifestResources,persistFrameResources,negotiateResourceCache,CACHE_CAPABILITY,loadPublicViewerConfig,PublicViewerConfigError,attachViewerChild,ViewerControlActions,ViewerTelemetry,RendererRuntime:Renderer,ClientMemory:Memory,memoryPolicy:()=>({}),CanvasKitInit:async()=>{if(initError)throw new Error(initError);return{};},
   LIVE_VERSION,LIVE_LIMITS,LiveFrameGate,RecoveryRequired,AssetCache:Assets,isHash:v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v),decodeAsset:()=>{throw new Error('Unexpected binary fixture');},parseMetadataJson:text=>({value:JSON.parse(text),byteLength:Buffer.byteLength(text),release(){}}),
   fetch:async(url,options)=>{stats.fetches.push(String(url));if(String(url).endsWith('/viewer-config'))return configFetch(url,options);return {arrayBuffer:async()=>wasm.buffer.slice(wasm.byteOffset,wasm.byteOffset+wasm.byteLength),json:async()=>({nativePort:null})};}};
  class Worker {

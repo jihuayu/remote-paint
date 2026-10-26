@@ -96,12 +96,12 @@ def main() -> None:
         save('source-manifest.json',{'commit':commit,'sourceFiles':files})
         assert sys.platform in ['darwin','linux']
         test_files=sorted(p.relative_to(project).as_posix()for p in(project/'tests').glob('*.test.mjs'))
-        # Includes all three Linux packaging test files merged in PR #1.
-        assert len(test_files)==159
+        # Includes the two persistent-cache authority/proxy contract files.
+        assert len(test_files)==161
         raw=run('full-js',['node','--test','--test-reporter=tap','--test-concurrency=4',*test_files])
         counts={key:int(re.search(r'^# '+key+r' (\d+)$',raw,re.M)[1])for key in ['tests','pass','fail','cancelled','skipped','todo']}
-        passed,skipped=(1788,15)if sys.platform=='darwin'else(1797,6)
-        assert counts==dict(tests=1803,**{'pass':passed},fail=0,cancelled=0,skipped=skipped,todo=0)
+        passed,skipped=(1805,15)if sys.platform=='darwin'else(1814,6)
+        assert counts==dict(tests=1820,**{'pass':passed},fail=0,cancelled=0,skipped=skipped,todo=0)
         archives=out/'archives';archives.mkdir()
         packed=json.loads(run('node-pack',['npm','pack','./sdk','--ignore-scripts','--json','--pack-destination',str(archives)]))
         assert len(packed)==1

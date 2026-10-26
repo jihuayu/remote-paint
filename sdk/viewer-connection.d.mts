@@ -25,14 +25,22 @@ export interface ViewerConnectionState {
 export interface ViewerWelcome {
  readonly viewerSessionId:`ses_${string}`;readonly viewerVersion:string;readonly viewerGrantId:`vgr_${string}`;readonly viewerRole:ViewerRole;
  readonly input:boolean;readonly inputFeedback:boolean;readonly control:null;
+ readonly renderer?:{readonly canvaskit:string;readonly wasmSha256:string};
+ readonly resourceCache?:{readonly schema:'viewer-resource-cache-v1';readonly namespace:`vrc1_${string}`};
 }
+export interface ViewerResourceCachePermission {
+ readonly schema:'viewer-resource-cache-v1';readonly namespace:`vrc1_${string}`;readonly sessionId:`ses_${string}`;readonly version:string;readonly role:ViewerRole;readonly grantId:`vgr_${string}`;readonly expiresAt:string;
+ readonly renderer:{readonly canvaskit:string;readonly wasmSha256:string};
+}
+export interface ViewerResourceCacheState {readonly state:'authorized'|'suspended'|'revoked';readonly permission:ViewerResourceCachePermission|null;}
 export interface ViewerConnectionConfig extends ViewerTicketConfig {
  readonly WebSocket?:typeof globalThis.WebSocket;
  readonly onSocket:(socket:WebSocket,grant:ViewerGrant,control:{readonly acceptWelcome:(welcome:ViewerWelcome)=>void})=>void;
  readonly onState?:(state:ViewerConnectionState)=>void;readonly onError?:(error:ViewerConnectionError)=>void;
+ readonly onCacheState?:(state:ViewerResourceCacheState)=>void;
  readonly maxRetries?:0|1|2|3|4|5;readonly refreshBeforeMs?:number;readonly connectTimeoutMs?:number;
 }
 export class ViewerConnection {
- constructor(options:ViewerConnectionConfig);readonly state:ViewerConnectionState;
+ constructor(options:ViewerConnectionConfig);readonly state:ViewerConnectionState;readonly resourceCachePermission:ViewerResourceCachePermission|null;
  start():Promise<void>;stop():void;destroy():void;
 }

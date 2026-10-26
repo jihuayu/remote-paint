@@ -29,7 +29,7 @@ export function attachViewerChild({targetWindow=globalThis.window,ready,api}={})
      catch(error){throw new ViewerConnectionError(error.code);}
     }});return {accepted:true};
    }
-   if(method==='disconnect'){if(data!==null)fail('CHANNEL_PROTOCOL');api.disconnect();return {disconnected:true};}
+   if(method==='disconnect'){if(data!==null)fail('CHANNEL_PROTOCOL');await api.disconnect();return {disconnected:true};}
    if(method==='take-control'||method==='release-control'){if(!data||typeof data!=='object'||Object.keys(data).length!==1||!Number.isSafeInteger(data.timeoutMs)||data.timeoutMs<50||data.timeoutMs>10000)fail('CHANNEL_PROTOCOL');return await api[method==='take-control'?'takeControl':'releaseControl']({signal,timeoutMs:data.timeoutMs});}
    if(method==='resize-viewport'){
     if(!data||typeof data!=='object'||Array.isArray(data)||Object.keys(data).length!==3||!['width','height','timeoutMs'].every(k=>Object.hasOwn(data,k))||!Number.isSafeInteger(data.timeoutMs)||data.timeoutMs<50||data.timeoutMs>10000)throw new ViewerViewportError('CHANNEL_PROTOCOL','not-applied');
@@ -38,7 +38,7 @@ export function attachViewerChild({targetWindow=globalThis.window,ready,api}={})
    }
    if(method==='state'){if(data!==null)fail('CHANNEL_PROTOCOL');return state(api.state);}
    fail('CHANNEL_PROTOCOL');
-  },onClose:()=>{if(endpoint===current){endpoint=null;api.disconnect();}}});
+  },onClose:()=>{if(endpoint===current){endpoint=null;void Promise.resolve(api.disconnect()).catch(()=>{});}}});
   endpoint=current;current.notify('ready',{gatewayOrigin:config.gatewayOrigin,viewerBuild:config.viewerBuild});current.notify('state',state(api.state));if(api.control!==undefined)current.notify('control',api.control);
   for(const [name,key] of [['first-frame','firstFrameEnvelope'],['performance','performanceEnvelope']])if(api[key])current.notify(name,viewerTelemetryEnvelope(name,api[key]));
  };

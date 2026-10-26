@@ -1,0 +1,208 @@
+{
+  "at": "2026-10-22T05:37:40.706446+00:00",
+  "task": "C6 authority phase: proxy-derived opaque cache realm and fail-closed connection permission lifecycle",
+  "candidateManifestSha256": "2c97debbbb9e7dc921f3c6307f76f3c564c7cd6eaf902d99bc8d5a60bc00916e",
+  "implementationFiles": [
+    "service/viewer-access.mjs",
+    "sdk/viewer-connection.mjs",
+    "sdk/viewer-connection.d.mts",
+    "tests/viewer-cache-authority.test.mjs",
+    "tests/types/viewer-connection.mts"
+  ],
+  "macos": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/c6-cache-authority-macos-tests-v1.log",
+    "sha256": "db5147cde22d5008a92b9f87436f1be1dcc50174af20eadb303f9a8a3ef5e900",
+    "tests": 33,
+    "pass": 33,
+    "fail": 0,
+    "skipped": 0
+  },
+  "linux": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/c6-cache-authority-linux-v1/authority-source.log",
+    "sha256": "9a6cba5eda9d567ee594cb4ad05275625e7890bb2cd363550ca7269cbaac49c1",
+    "tests": 33,
+    "pass": 33,
+    "fail": 0,
+    "skipped": 0
+  },
+  "installedNode": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/c6-cache-authority-linux-v1/installed-node.log",
+    "sha256": "df2f27b9e69c9a060a8c0718140071d7fd613802d77a56f55b866f10e270e896",
+    "tests": 222,
+    "pass": 222,
+    "fail": 0,
+    "skipped": 0
+  },
+  "macosStages": {
+    "stages": [
+      {
+        "stage": "types",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 3.6364418752491474
+      },
+      {
+        "stage": "tests",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 7.218475458212197
+      }
+    ],
+    "sourceUnchanged": true,
+    "wholeGoalQualified": false
+  },
+  "linuxStages": {
+    "stages": [
+      {
+        "label": "authority-source",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 7.869901631958783
+      },
+      {
+        "label": "node-pack",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 2.3835739589994773
+      },
+      {
+        "label": "npm-install",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 0.9351671829936095
+      },
+      {
+        "label": "installed-node",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 9.46803170099156
+      },
+      {
+        "label": "installed-types",
+        "exitCode": 0,
+        "timedOut": false,
+        "seconds": 5.5542046839836985
+      }
+    ],
+    "sourceFilesUnchanged": true,
+    "manifestSha256": "2c97debbbb9e7dc921f3c6307f76f3c564c7cd6eaf902d99bc8d5a60bc00916e",
+    "freshNodeArchive": {
+      "sha256": "596b9e696d6ba52de051ccff0a0b1fba7c964d549d52ecdd58fc196a9d52fb4a",
+      "members": [
+        "package/README.md",
+        "package/agent-download.mjs",
+        "package/agent-events.mjs",
+        "package/agent-observation.mjs",
+        "package/agent-webhooks.mjs",
+        "package/agent.d.mts",
+        "package/agent.mjs",
+        "package/backend-transport.mjs",
+        "package/backend.d.mts",
+        "package/backend.mjs",
+        "package/package.json",
+        "package/viewer-channel.d.mts",
+        "package/viewer-channel.mjs",
+        "package/viewer-connection.d.mts",
+        "package/viewer-connection.mjs",
+        "package/viewer-control.d.mts",
+        "package/viewer-control.mjs",
+        "package/viewer-frame.d.mts",
+        "package/viewer-frame.mjs",
+        "package/viewer-telemetry.d.mts",
+        "package/viewer-telemetry.mjs",
+        "package/viewer.d.mts",
+        "package/viewer.mjs"
+      ],
+      "version": "0.0.0-dev.0"
+    },
+    "unchangedPythonWheelInspected": {
+      "sha256": "705974b52ed700562981e2019213a771416e66addd88a8ffc0c79be4e7b60e13",
+      "members": [
+        "remote_paint_session-0.0.0.dev0.dist-info/METADATA",
+        "remote_paint_session-0.0.0.dev0.dist-info/RECORD",
+        "remote_paint_session-0.0.0.dev0.dist-info/WHEEL",
+        "remote_paint_session-0.0.0.dev0.dist-info/top_level.txt",
+        "remote_paint_session/__init__.py",
+        "remote_paint_session/_agent.py",
+        "remote_paint_session/_client.py",
+        "remote_paint_session/_download.py",
+        "remote_paint_session/_event_stream.py",
+        "remote_paint_session/_event_stream_parser.py",
+        "remote_paint_session/_events.py",
+        "remote_paint_session/_observation.py",
+        "remote_paint_session/_transport.py",
+        "remote_paint_session/_webhooks.py",
+        "remote_paint_session/py.typed"
+      ],
+      "version": "0.0.0.dev0"
+    },
+    "installedSdkBytesMatchCandidate": true,
+    "sourceFallbackUnavailable": true,
+    "expectedSourceTests": 33,
+    "expectedInstalledTests": 222,
+    "pythonTestsRerun": false,
+    "actualIndexedDbImplemented": false,
+    "wholeGoalQualified": false
+  },
+  "protection": {
+    "at": "2026-10-22T05:36:15.554308+00:00",
+    "sourceInputs": 108,
+    "sourceMismatches": [],
+    "canonicalBrowserFiles": 19,
+    "canonicalMismatches": [],
+    "sampler": {
+      "device": 16777231,
+      "inode": 142233060,
+      "sha256": "16b7538abfefdbf008ac93e6222b7fd6433bde374eb957bb78a7d6546b2d70b3",
+      "readOnlyHashNotExecutionHistory": true
+    },
+    "originalBuild": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 2967239,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-20T12:47:32.756177921Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "freeGiB": 63.918399810791016,
+    "diskFloorGiB": 32,
+    "sourcePreparedOrMutated": false,
+    "originalBrowserOrMacSamplerExecutedByThisGoalTurn": false,
+    "forbiddenOutputInspected": false,
+    "protectedDemoInspected": false,
+    "lastBuildLogLineAtPublication": "[7122/17924] CXX obj/third_party/blink/renderer/core/core/layout_table_caption.o"
+  },
+  "networkCleanup": {
+    "ownedNetworkId": "1b661636e3b276413e7b7546a1c6d75a2178515f693a46b6de0c14b43dfa388d",
+    "verifiedUnused": true,
+    "exitCode": 0,
+    "otherNetworksImagesContainersOrCachesRemoved": false
+  },
+  "virtualNodeSourceNotNativeBrowserAcceptance": true,
+  "readyIncarnationTestUsesTrustedRegistryOverride": true,
+  "grantHttpDtoUnchanged": true,
+  "noNewPythonApiOrRuntimeQualification": true,
+  "actualIndexedDbImplemented": false,
+  "cacheIoWired": false,
+  "privateDataErasureQualified": false,
+  "reconnectFirstFrameOrBytesQualified": false,
+  "c6Complete": false,
+  "rootExpectedCases": 1805,
+  "root1805Qualified": false,
+  "previousTwoWebhookTimeoutsResolved": false,
+  "previousPython210TimeoutResolved": false,
+  "originalEightHourPassed": false,
+  "wholeGoalQualified": false,
+  "ledger": {
+    "completeWithinScopes": 10,
+    "partial": 18,
+    "pending": 13,
+    "total": 41
+  },
+  "noCommitPush": true
+}

@@ -64,8 +64,8 @@ self.onmessage=async event=>{try{`);
   body=replaceOnce(body,'if(!frame){recover();return;}',"if(!frame){recover('commit-resources-unavailable');return;}");
   body=replaceOnce(body,'if(recovering&&!gate.pending)return;',"if(recovering&&!gate.pending){__rpProtocol('commit-skipped',{cause:'awaiting-recovery-scene',connectionGeneration:current,frameId:message.frameId});return;}");
   if(diagnosticFaults){
-   body=replaceOnce(body,"if(message.type==='SceneUpdate'){try{gate.stage(message.frame);}","if(message.type==='SceneUpdate'){if(__rpAge.fault==='fault:delta-base'&&message.frame.baseFrameId!==null){__rpAge.fault=null;__rpProtocol('fault',{cause:'diagnostic-delta-base',connectionGeneration:current,frameId:message.frame.frameId,originalBaseFrameId:message.frame.baseFrameId,injectedBaseFrameId:message.frame.frameId+1,captureOrdinal:message.frame.native.captureOrdinal});message.frame={...message.frame,baseFrameId:message.frame.frameId+1};}try{gate.stage(message.frame);}");
-   body=replaceOnce(body,"if(message.type==='ResourceManifest'){const payload=assets.assemble(message);","if(message.type==='ResourceManifest'){if(__rpAge.fault==='fault:missing-resource'&&!gate.resources.has(message.id)){__rpAge.fault=null;__rpProtocol('fault',{cause:'diagnostic-missing-resource-manifest',connectionGeneration:current,resourceId:message.id});return;}const payload=assets.assemble(message);");
+   body=replaceOnce(body,"if(message.type==='SceneUpdate'){try{gate.stage(message.frame);","if(message.type==='SceneUpdate'){if(__rpAge.fault==='fault:delta-base'&&message.frame.baseFrameId!==null){__rpAge.fault=null;__rpProtocol('fault',{cause:'diagnostic-delta-base',connectionGeneration:current,frameId:message.frame.frameId,originalBaseFrameId:message.frame.baseFrameId,injectedBaseFrameId:message.frame.frameId+1,captureOrdinal:message.frame.native.captureOrdinal});message.frame={...message.frame,baseFrameId:message.frame.frameId+1};}try{gate.stage(message.frame);");
+   body=replaceOnce(body,"if(message.type==='ResourceManifest'){\n    let payload=assets.assemble(message),cached=null;","if(message.type==='ResourceManifest'){if(__rpAge.fault==='fault:missing-resource'&&!gate.resources.has(message.id)){__rpAge.fault=null;__rpProtocol('fault',{cause:'diagnostic-missing-resource-manifest',connectionGeneration:current,resourceId:message.id});return;}\n    let payload=assets.assemble(message),cached=null;");
   }
   const marker='    // The sender may reuse an earlier resource in another inflight frame.';
   body=replaceOnce(body,marker,`
@@ -88,12 +88,14 @@ export async function prepareFrameAgeAssets(points,diagnosticFaults,streaming){
   ['/', ['viewer/live.html','text/html; charset=utf-8']],['/live.mjs',['viewer/live.mjs','text/javascript']],
   ['/input.mjs',['viewer/input.mjs','text/javascript']],['/control-channel.mjs',['viewer/control-channel.mjs','text/javascript']],
   ['/connection.mjs',['sdk/viewer-connection.mjs','text/javascript']],['/public-config.mjs',['viewer/public-config.mjs','text/javascript']],
+  ['/persistent-resources.mjs',['viewer/persistent-resources.mjs','text/javascript']],
   ['/viewer-control.mjs',['sdk/viewer-control.mjs','text/javascript']],['/viewer-channel.mjs',['sdk/viewer-channel.mjs','text/javascript']],['/embed-bridge.mjs',['viewer/embed-bridge.mjs','text/javascript']],
   ['/viewer-telemetry.mjs',['sdk/viewer-telemetry.mjs','text/javascript']],
   ['/lifecycle.mjs',['viewer/lifecycle.mjs','text/javascript']],['/frame-presenter.mjs',['viewer/frame-presenter.mjs','text/javascript']],
   ['/renderer-runtime.mjs',['viewer/renderer-runtime.mjs','text/javascript']],['/damage.mjs',['viewer/damage.mjs','text/javascript']],
   ['/live.css',['viewer/live.css','text/css']],['/scene-renderer.mjs',['viewer/scene-renderer.mjs','text/javascript']],
   ['/protocol/asset-wire.mjs',['protocol/asset-wire.mjs','text/javascript']],['/protocol/client-memory.mjs',['protocol/client-memory.mjs','text/javascript']],
+  ['/protocol/resource-cache.mjs',['protocol/resource-cache.mjs','text/javascript']],
   ['/protocol/resource-memory.mjs',['protocol/resource-memory.mjs','text/javascript']],['/protocol/metadata-json.mjs',['protocol/metadata-json.mjs','text/javascript']],
   ['/protocol/live-wire.mjs',['protocol/live-wire.mjs','text/javascript']],['/protocol/wire.mjs',['protocol/wire.mjs','text/javascript']],
   ['/stream-worker.mjs',['viewer/stream-worker.mjs','text/javascript']],
