@@ -8,3 +8,4 @@ build/
 packages/
 smoke-artifacts/
 chromium-build.log
+.sdk-cache/
