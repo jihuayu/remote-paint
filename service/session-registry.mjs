@@ -36,10 +36,10 @@ export class SessionRegistry {
  #sessions=new Map();#operations=new Map();#keys=new Map();#reserved=new Map();#active=0;
  #owned=new Set();#clock;#defaultTtl;#maxTtl;#maxCloseAttempts;
  #timer=null;#scheduleQueued=false;#stopping=false;#shutdownPromise;
- #store;#storeOwner=Symbol('session-registry');#storageError=false;#writing=false;#initializing=true;#detached=false;#storeRevision=0;
+ #store;#storeOwner=Symbol('session-registry');#storageError=false;#writing=false;#initializing=true;#detached=false;#storeRevision=0;#sessionIdFactory;
  #tasks=new Set();#recovered=new Set();#recoveryPromise=null;#providerSubscriptions=[];
  constructor({providers,defaultRegion,tenantQuota=4,globalQuota=16,maxRecords=10000,
-  defaultTtlSeconds=900,maxTtlSeconds=86400,maxCloseAttempts=4,clock,store=null}={}){
+  defaultTtlSeconds=900,maxTtlSeconds=86400,maxCloseAttempts=4,clock,store=null,sessionIdFactory=()=> 'ses_'+randomUUID()}={}){
   if(!(providers instanceof Map)||!providers.size||!providers.has(defaultRegion))throw new TypeError('Configure explicit region providers and a default region');
   for(const [region,provider] of providers){
    if(typeof region!=='string'||!region.length||region.length>64||typeof provider?.create!=='function'||typeof provider?.close!=='function')throw new TypeError('Invalid region provider');
@@ -49,6 +49,7 @@ export class SessionRegistry {
   this.#clock=clock??{now:()=>performance.now(),wallNow:()=>Date.now(),setTimer:(fn,ms)=>setTimeout(fn,ms),clearTimer:handle=>clearTimeout(handle)};
   for(const key of ['now','wallNow','setTimer','clearTimer'])if(typeof this.#clock[key]!=='function')throw new TypeError('Invalid lifecycle clock');
   if(!Number.isFinite(this.#clock.now())||!Number.isFinite(this.#clock.wallNow()))throw new TypeError('Invalid lifecycle clock values');
+  if(typeof sessionIdFactory!=='function')throw new TypeError('Expected a trusted synchronous Session identity factory');this.#sessionIdFactory=sessionIdFactory;
   this.#providers=new Map(providers);this.#defaultRegion=defaultRegion;this.#tenantQuota=tenantQuota;this.#globalQuota=globalQuota;this.#maxRecords=maxRecords;
   this.#defaultTtl=defaultTtlSeconds;this.#maxTtl=maxTtlSeconds;this.#maxCloseAttempts=maxCloseAttempts;
   this.#store=store;
@@ -139,7 +140,10 @@ export class SessionRegistry {
   if(this.#stopping)refuse('REGISTRY_CLOSED','Registry is shutting down',503);
   if(this.#sessions.size>=this.#maxRecords)refuse('REGISTRY_CAPACITY','Operation retention capacity reached',503);
   if(this.#active>=this.#globalQuota||(this.#reserved.get(tenant)??0)>=this.#tenantQuota)refuse('SESSION_QUOTA','Concurrent Session quota reached',429);
-  const sessionId='ses_'+randomUUID(),operationId='op_'+randomUUID(),at=this.#stamp();
+  let sessionId;try{sessionId=this.#sessionIdFactory(Object.freeze({tenantId:tenant,request:Object.freeze(clone(request)),idempotencyKey}));}catch{refuse('SESSION_ID_UNAVAILABLE','Session identity could not be reserved',503);}
+  if(sessionId?.then)void Promise.resolve(sessionId).catch(()=>{});
+  if(typeof sessionId!=='string'||!/^ses_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(sessionId)||this.#sessions.has(sessionId))refuse('SESSION_ID_UNAVAILABLE','Session identity could not be reserved',503);
+  const operationId='op_'+randomUUID(),at=this.#stamp();
   let resolveStart;const startDone=new Promise(resolve=>{resolveStart=resolve;});
   const session={sessionId,tenant,region:request.region,state:'creating',createdAt:at,version:null,reserved:true,operationId,
    ttlSeconds:request.ttlSeconds,readyAt:null,expiresAt:null,deadline:null,closeReason:null,closeRequested:false,

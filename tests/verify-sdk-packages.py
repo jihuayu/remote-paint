@@ -215,7 +215,7 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
 """)
         names=['node-agent-webhooks-client.test.mjs','node-agent-events-client.test.mjs','node-agent-download-client.test.mjs','node-agent-screenshot-client.test.mjs','node-agent-accessibility-client.test.mjs','node-agent-observation-client.test.mjs','node-agent-client.test.mjs','session-client.test.mjs','session-http.test.mjs','session-registry.test.mjs','session-registry-lifecycle.test.mjs','session-registry-durable.test.mjs','session-store.test.mjs','package-exports.test.mjs']
         raw=run('node-unit',[args.node,'--test','--test-concurrency=4',*[str(consumer/'tests'/n)for n in names]],cwd=consumer,env=env)
-        for label,value in [('tests',214),('pass',214),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
+        for label,value in [('tests',216),('pass',216),('fail',0),('skipped',0)]:assert re.search(r'[ℹ#] '+label+' '+str(value)+r'\b',raw)
         run('typescript',[args.node,str(args.tsc),'--noEmit','--strict','--exactOptionalPropertyTypes','--module','NodeNext','--moduleResolution','NodeNext','--target','ES2022','--lib','ES2022,DOM',str(consumer/'tests/types/agent-events-client.mts'),str(consumer/'tests/types/agent-client.mts'),str(consumer/'tests/types/session-client.mts'),str(consumer/'tests/types/viewer-connection.mts'),str(consumer/'tests/types/viewer-frame.mts'),str(consumer/'tests/types/viewer.mts')],cwd=consumer,env=env)
         python=out/'venv/bin/python';venv.EnvBuilder(with_pip=False,symlinks=True).create(out/'venv')
         purelib=Path(subprocess.check_output([str(python),'-c',"import sysconfig;print(sysconfig.get_path('purelib'))"],env=env,text=True).strip())
@@ -235,7 +235,7 @@ test('unsupported internal and CommonJS exports are predictably refused',async()
         examples=json.loads(run('webhook-readme-examples',[sys.executable,str(consumer/'tests/verify-webhook-sdk-examples.py'),'--consumer',str(consumer),'--node-doc',str(args.project/'sdk/README.md'),'--python-doc',str(args.project/'sdk/python/README.md'),'--node',args.node,'--python',str(python)],cwd=consumer,env=env))
         assert examples['status']=='passed' and examples['sameSubscription'] and examples['durableInboxEvents']==3
         runtime=run('runtime',[sys.executable,'-c',"import sys,platform,json,subprocess;print(json.dumps({'python':platform.python_version(),'platform':sys.platform,'arch':platform.machine(),'node':subprocess.check_output([sys.argv[1],'--version'],text=True).strip(),'npm':subprocess.check_output([sys.argv[2],'--version'],text=True).strip()}))",args.node,args.npm],env=env)
-        result={'status':'passed','nodeTests':214,'nodeSkips':0,'pythonTests':210,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
+        result={'status':'passed','nodeTests':216,'nodeSkips':0,'pythonTests':210,'typescriptActual0':True,'pythonInstalledTypeCheckActual0':bool(args.mypy_tooling),
                 'archives':archives,'webhookReadmeExamples':examples,'runtime':json.loads(runtime),'stages':stages,'sourceFallbackUnavailable':True,'publicPublishing':False}
         (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps({k:result[k]for k in ['status','nodeTests','pythonTests','typescriptActual0','pythonInstalledTypeCheckActual0']}))

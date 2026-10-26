@@ -1,0 +1,75 @@
+{
+  "status": "passed",
+  "base": "2d886d33b541431982baeb3be3ebd6400d73758d",
+  "branch": "codex/cluster-foundation-20261025",
+  "at": "2026-10-25T14:08:45.007442+00:00",
+  "tests": 27,
+  "pass": 27,
+  "fail": 0,
+  "skipped": 0,
+  "receipt": {
+    "at": "2026-10-25T14:08:45.007442+00:00",
+    "stage": "cluster-native-version-qualified",
+    "exitCode": 0,
+    "seconds": 0.766,
+    "command": [
+      "/usr/local/bin/docker",
+      "--context",
+      "orbstack",
+      "exec",
+      "--workdir",
+      "/tmp/cluster",
+      "remote-paint-cache-pressure-20261025",
+      "/usr/bin/timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "45s",
+      "/opt/remote-paint/node/bin/node",
+      "--test",
+      "tests/cluster-placement.test.mjs",
+      "tests/cluster-worker-fence.test.mjs",
+      "tests/cluster-control-integration.test.mjs"
+    ]
+  },
+  "logSha256": "d2ec244fd0895b057203e85f782e7f4286935aa02b61756bdc9ccb30a3b62714",
+  "inputs": {
+    "service/cluster-placement.mjs": "57020ed188da118eec5a9080df3760b03ad50b0a3560305171f6c2021661b911",
+    "service/cluster-worker-fence.mjs": "9254de0028164e705bba260738ddc458ba416480b6417635d054bc28f4d475e3",
+    "tests/cluster-placement.test.mjs": "d4c8ead34c6980c07a5036ad52920bc550124de7b3990af5f49a362131ea9ce6",
+    "tests/cluster-worker-fence.test.mjs": "3f9b58d82b95b12291ffde74a1a48d5887ff23ff94e12b1ee4ee9d44813374e7",
+    "tests/cluster-control-integration.test.mjs": "a9268d9747ca9343210ec5834176a9e9b6143ec142b7a36ba52febd44d5164db",
+    "tests/fixtures/cluster-worker-child.mjs": "e99bd02e8b011fd514f172ce37c13f4b19bec6885571ff50b42194fe5d65de5a"
+  },
+  "runtime": {
+    "node": "22.23.3",
+    "arch": "arm64",
+    "image": "sha256:c75c58487264d5350a7b83eb6a5f11449dd0e1c49be81cedde3ace6c9ea7dd29",
+    "network": "none",
+    "hostPorts": []
+  },
+  "actual": [
+    "private SQLite files",
+    "exclusive controller",
+    "two independent Node IPC Workers",
+    "real expiry timer",
+    "owned child exit"
+  ],
+  "virtual": [
+    "Worker application resources",
+    "retirement verifier"
+  ],
+  "notQualified": [
+    "Native Chromium multi-Worker runtime",
+    "authenticated remote transport",
+    "existing provider integration",
+    "cross-machine cluster",
+    "production deployment",
+    "HA"
+  ],
+  "dockerBuilds": 0,
+  "chromiumCompiles": 0,
+  "retainedFailure": {
+    "file": "control-ipc-integration.log",
+    "reason": "test equated expired signal with completed asynchronous resource cleanup; changed to await independent cleanup receipt and coordinator deadline"
+  }
+}

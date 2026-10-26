@@ -1,0 +1,136 @@
+{
+  "schema": "cluster-engine-qualification-v1",
+  "productionSourceHead": "503e9dbb1230581856a7d33e56f94a2d29d1bf85",
+  "summary": {
+    "startedAt": "2026-10-25T15:55:28.256Z",
+    "completedAt": "2026-10-25T15:55:34.354Z",
+    "status": "passed",
+    "version": "chromium:155.0.8059.79;wasm:aca7fa6019f95d3de98d4a49ae60a3d66a09e9d5ca74091fbc369b9be959f959",
+    "hostNode": "v26.4.0",
+    "beforeFaultScreenshot": {
+      "bytes": 3143,
+      "sha256": "bdafd15b097d22a6c0283efe025096e0aff473611205589f334e04515ad5ca66",
+      "chunks": 2,
+      "checksumVerified": true,
+      "released": true
+    },
+    "afterFaultScreenshot": {
+      "bytes": 3143,
+      "sha256": "bdafd15b097d22a6c0283efe025096e0aff473611205589f334e04515ad5ca66",
+      "chunks": 2,
+      "checksumVerified": true,
+      "released": true
+    },
+    "realDockerEngine": true,
+    "originalDockerSessionProvider": true,
+    "originalSessionRegistryAndSqlite": true,
+    "clusterWorkerFactory": true,
+    "actualChromiumAndBroker": true,
+    "actualNativeAgentScreenshots": true,
+    "privateSourceResolved": true,
+    "crossTenantDenied": true,
+    "distinctRuntimeNamespaces": true,
+    "unconfirmedRetirementHeldQuota": true,
+    "survivingSessionOperatesDuringFault": true,
+    "explicitRetryReopenedImmutableEvidence": true,
+    "normalAndHistoricalAbsenceRetirement": true,
+    "oldSessionNotReplayed": true,
+    "quotaHeldFinal": 0,
+    "hostListeners": 0,
+    "dockerSocketMounted": false,
+    "dockerBuilds": 0,
+    "chromiumCompiles": 0,
+    "crossMachineQualified": false,
+    "productionHaQualified": false,
+    "mtlsTransportRepeated": false
+  },
+  "engine": {
+    "version": "29.8.2",
+    "platform": "linux",
+    "arch": "arm64",
+    "context": "existing local OrbStack",
+    "access": "existing Unix socket from host Node; no listener or socket mount"
+  },
+  "runtimeImageId": "sha256:ba52f926ae3c951e29dc1625d70537c18db389cf166f4465a1e5b836d802c133",
+  "deliveredBrowserImageId": "sha256:c75c58487264d5350a7b83eb6a5f11449dd0e1c49be81cedde3ace6c9ea7dd29",
+  "browserSha256": "c36a056a98625bb36030bc3ee33a859d13b1e52d7ff1f16443af00d49d969146",
+  "brokerSha256": "4ed13b4cfe989945aab0256eb40b00d026ed74783fd39519df8903d270a61d08",
+  "reuse": {
+    "dependencyArchiveSha256": "a802d6a1d37dc040e485b972360fa7a4660f31097d1764848c03ea60788bcaf2",
+    "sourceProjectFiles": 1585,
+    "browserRuntimeFiles": 20,
+    "generatedBuildOnlyDirectoriesExcluded": [
+      "gen",
+      "pyproto"
+    ],
+    "npmInstalls": 0,
+    "imageBuilds": 0,
+    "browserCompiles": 0,
+    "runtimeImageUnchanged": true
+  },
+  "sourceSha256": {
+    "tests/verify-cluster-docker-engine.mjs": "19b5c31a0c6ae00f6f517a7a81be753f556308fa20d1bc7ea5e3b43dc55de83a",
+    "tests/fixtures/docker-external-removal.mjs": "60fe53d35d1d24c0a22183c76ffc1695d3314e762a8ac1236b0106a846348292",
+    "service/cluster-docker-worker.mjs": "01de3b218f292fa29bdc199b0921a5fc208a50d887cdf8dbe4c1d52d17176b50",
+    "service/cluster-worker-service.mjs": "ab380e2062683b0bfdfbc2397cdf7204e30261b4940b17ca907cd70831acb230",
+    "service/docker-session-provider.mjs": "88364742bc9d816cffc1911abd07a8b1a180d84e373fdb2c67e7ef9a88621368",
+    "service/docker-runtime-spec.mjs": "4198849138a6f58e7879241a847c50463a92999e7a5d80355545aacb070e7a5d",
+    "service/docker-effect-session.mjs": "b49ffd64238f1b35683867ec14b5aafa3c64a99f3b24c81e6438d49c930e5007",
+    "service/docker-attach-client.mjs": "fc9866230aeacdafe48af43f07438c54902076612f17cfc3defe27b07e381c4e",
+    "service/docker-attach-proxy.mjs": "4767cd1914bc7350df47edb24cdb4bbd89dda8cef9aa738bc61b9b04bfecdad7",
+    "service/docker-metadata-client.mjs": "99695bc2d417dc4157e0b1e174f61e79d346cb900bfa3a5eee707ac8dd6dd832",
+    "service/session-registry.mjs": "91a89a71579bed32572d00f79a0910823f47c7d731403b7a862e819fd54f2626",
+    "service/session-store.mjs": "aa7e9a1a18b2cb4b1679e9173cdfb54a0bafd61db520df0ae3565093c42071f2",
+    "service/session-runtime-journal.mjs": "144d45795941eaf7152a430c172963f35e214ecc88e127e93bae7067c4759dbb",
+    "service/native-session-worker.mjs": "5d5ad0aed44779b050fb49ec14354ab64c707d13a28d41a6a97b7b8482303568",
+    "service/native-session-resource.mjs": "55ed0c00d1e88582686a8a179cdb709f00fbdc59555a95debe5b89198e7f1965",
+    "service/runtime-witness-store.mjs": "80b9e50864e49ed82aebd256b68eb7ce7efa1b5e28e5c954baa5e5dab0a5d157",
+    "service/runtime-retirement-store.mjs": "d6cea351445cb21955c26102ec938c80313a5976cfe4cc1eeaf5f3bdced6bb06",
+    "service/runtime-source-manifest.mjs": "978634f02be46251f4926db4e907ac19cb79631e1a7360a43f6cc54539c5db48",
+    "service/runtime-deployment-binding.mjs": "5d6f228ea4269b51c6a5ee5d383e696a729c699469e542ddb2cded30430abcd7",
+    "live.mjs": "149bc02ce20b4ca2cc4deb529f7aeb377da8fc0ec971afbcadd785b9f88695b6",
+    "package-lock.json": "8975bec0076ded5811c5d8dea6bea5ce02ef48ada697774e843b6a68a10cb0e2"
+  },
+  "retirementReceipts": [
+    {
+      "kind": "container-absent",
+      "schema": "session-runtime-retirement-v2",
+      "sha256": "536cd6d28b9e2cc27a108afad4e5732d207fc3e72b8b424505727e23f8fd74c7",
+      "namespaceEvidenceReopened": true
+    },
+    {
+      "kind": "container-removed",
+      "schema": "session-runtime-retirement-v1",
+      "sha256": "053ef29ad3600a5198a30da35cad3aa9f9e113fd31954cc282d503f46daebae7",
+      "namespaceEvidenceReopened": true
+    }
+  ],
+  "quotaDuringMissingWitness": {
+    "reserved": 2,
+    "cleanupFailedRetainsQuota": true
+  },
+  "cleanup": {
+    "at": "2026-10-25T15:55:34.348Z",
+    "workerFactoryClosed": true,
+    "allOwnedRuntimeContainersAbsent": true,
+    "activeAttachProxies": 0,
+    "activeEffectSessions": 0,
+    "extractionContainerRemoved": true,
+    "originalFiveRunningContainersPreserved": true
+  },
+  "rawLocalEvidenceSha256": {
+    "engine-qualified.log": "731229beb4393eea155c43b11de0b883640516093544fad4ceb6bb5b25715284",
+    "results-qualified/result.json": "2a27470f6a49295465e512cae3e61591cf9e4b4b04403cf148656863b4feb365",
+    "results-qualified/runtime-a.json": "256d11674055f128b25a291353f45623190a0e6ca27550dc3e704cb7621a6961",
+    "results-qualified/runtime-b.json": "7a442a2bc5692cc046bbdb858d6b899548f90bc941370a737b66fed9d1dd3b19",
+    "results-qualified/quota-held.json": "f66ff69cdec3f17291470a4f871339a02c62485caaa38e6577991bf05fdad316",
+    "results-qualified/session-ledger.json": "9f865b4d1a5fb8166e2494eef0779267266344bdd28d85295b4f260f46d02315",
+    "results-qualified/retirement-reopened.json": "e625158dff8db5f682826195109f48d9255b090683a2007e138b87326c729614",
+    "results-qualified/cleanup.json": "bafb41bfcbd05ca47d59cdfd9efca6fc179b9740f7f147c97799e15f10e6a64b"
+  },
+  "initialRun": {
+    "status": "failed",
+    "reason": "Test adapter read witness.namespace instead of witness.self.pidNamespace in final namespace comparison; business and cleanup steps had already settled. Fixed only the adapter and repeated the affected real-Engine scenario."
+  },
+  "scope": "Host calls actual cluster Worker factory and original provider on real local Engine. Separate prior test covers mTLS/public Gateway/Agent/Viewer. These are not a single cross-machine Gateway-to-Engine deployment proof. about:blank screenshots only in this phase; no repeated navigation/click/Viewer/HA/soak or full fault matrix."
+}
