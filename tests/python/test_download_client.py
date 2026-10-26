@@ -2,8 +2,10 @@ from __future__ import annotations
 import asyncio,base64,hashlib,json,os
 from dataclasses import FrozenInstanceError,replace
 from pathlib import Path
+from collections import deque
 import unittest
 import httpx
+from _fixture_process import close_node_fixture
 from remote_paint_session import (AgentClient,AgentClientError,AgentClientCancelledError,AgentRunId,SessionId,AgentObservationReference,
  AgentDownloadId,AgentDownloadLimits,AgentDownloadArmInput,AgentDownloadTicketInput,AgentDownloadChunkInput,AgentDownloadFileInput,
  AgentDownloadArmed,AgentDownloadPending,AgentDownloadReady,AgentDownloadChunk,AgentDownloadReleased,AgentDownloadFile)
@@ -152,16 +154,52 @@ class DownloadContracts(unittest.IsolatedAsyncioTestCase):
     for byte in self.data:yield bytes([byte])
   b=b'z'*1000;v=file_input(b);c=await self.client(lambda req:binary(b,request=v,stream=Fragmented(b)));self.assertEqual((await c.observations.download_file(ctx(),v)).data.content,b)
   v=file_input(b'');c=await self.client(lambda req:httpx.Response(200,headers=binary_headers(request=v),content=b''));self.assertEqual((await c.observations.download_file(ctx(),v)).data.content,b'')
+class FixtureProcessOwnership(unittest.IsolatedAsyncioTestCase):
+ async def child(self,ignore_close=False):
+  code="process.stdout.write('ready\\n');process.stdin.resume();"
+  code+="setInterval(()=>{},1000);" if ignore_close else "process.stdin.on('data',()=>process.exit(0));process.stdin.on('end',()=>process.exit(0));"
+  child=await asyncio.create_subprocess_exec(os.environ.get('NODE','node'),'-e',code,stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE)
+  async def cleanup():
+   if child.returncode is None:await close_node_fixture(child,[])
+  self.addAsyncCleanup(cleanup)
+  ready=await asyncio.wait_for(child.stdout.readline(),3);self.assertEqual(ready,b'ready\n')
+  return child,ready
+ async def test_invalid_startup_record_still_retires_the_actual_node_process(self):
+  child,ready=await self.child()
+  try:
+   with self.assertRaises(json.JSONDecodeError):json.loads(ready)
+  finally:await close_node_fixture(child,[])
+  self.assertEqual(child.returncode,0)
+ async def test_client_close_error_propagates_only_after_node_process_retires(self):
+  child,_=await self.child()
+  class BrokenClient:
+   async def aclose(self):raise RuntimeError('owned client close failure')
+  with self.assertRaisesRegex(RuntimeError,'owned client close failure'):await close_node_fixture(child,[BrokenClient()])
+  self.assertEqual(child.returncode,0)
+ async def test_graceful_deadline_remains_an_error_after_actual_forced_reap(self):
+  child,_=await self.child(ignore_close=True)
+  with self.assertRaises(TimeoutError):await close_node_fixture(child,[],graceful_timeout=.05)
+  self.assertIsNotNone(child.returncode);self.assertNotEqual(child.returncode,0)
+
 class DownloadHttpContracts(unittest.IsolatedAsyncioTestCase):
  async def asyncSetUp(self):
-  self.child=await asyncio.create_subprocess_exec(os.environ.get('NODE','node'),str(Path(__file__).parents[1]/'fixtures/download-python-http.mjs'),stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE);self.ready=json.loads(await asyncio.wait_for(self.child.stdout.readline(),3));self.clients=[]
- async def asyncTearDown(self):
-  for c in self.clients:await c.aclose()
-  if self.child.returncode is None:
-   self.child.stdin.write(b'close\n');await self.child.stdin.drain();self.child.stdin.close();await self.child.stdin.wait_closed();out,err=await asyncio.wait_for(self.child.communicate(),3);self.assertEqual(self.child.returncode,0,err.decode()[-2000:])
+  self.clients=[];self.response_metadata=deque(maxlen=8)
+  self.child=await asyncio.create_subprocess_exec(os.environ.get('NODE','node'),str(Path(__file__).parents[1]/'fixtures/download-python-http.mjs'),stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE);self.addAsyncCleanup(self.close)
+  self.ready=json.loads(await asyncio.wait_for(self.child.stdout.readline(),3))
+ async def close(self):
+  await close_node_fixture(self.child,self.clients)
  async def command(self,text):self.child.stdin.write((text+'\n').encode());await self.child.stdin.drain();return json.loads(await asyncio.wait_for(self.child.stdout.readline(),3))
  def client(self,role):
-  c=AgentClient(base_url=self.ready['base'],api_key=self.ready['keys'][role]);self.clients.append(c);return c
+  c=AgentClient(base_url=self.ready['base'],api_key=self.ready['keys'][role]);self.clients.append(c)
+  async def record(response):
+   row=dict(status=response.status_code,content_type=response.headers.get('content-type','')[:128],content_encoding=response.headers.get('content-encoding','')[:64],operation=response.request.url.path.rsplit('/',1)[-1][:64]);self.response_metadata.append(row)
+   if response.status_code>=400 and not row['content_type'].lower().startswith('application/json'):
+    print('Actual malformed HTTP response metadata: '+json.dumps(row,sort_keys=True))
+  # Test-only header observation: preserve the original pools, timeout,
+  # streaming reader and cancellation paths. Never retain auth/body values.
+  c._transport.http.event_hooks['response'].append(record)
+  c._transport._end_http.event_hooks['response'].append(record)
+  return c
  async def prepared(self,emit='emit'):
   r=self.ready['run'];reader=self.client('observe');c=(await reader.observations.context(AgentObservationReference(AgentRunId(r['agentRunId']),SessionId(r['sessionId']),r['version']))).data;a=(await reader.observations.arm_download(c)).data;await self.command(emit)
   for _ in range(100):
@@ -170,7 +208,10 @@ class DownloadHttpContracts(unittest.IsolatedAsyncioTestCase):
    await asyncio.sleep(.001)
   self.fail('file did not become ready')
  async def test_http_models_bytes_release_and_independent_observe_scope(self):
-  reader,c,info,value=await self.prepared();part=(await reader.observations.download_chunk(c,AgentDownloadChunkInput(info.download_id,0))).data;self.assertEqual(part.sha256,info.sha256);self.assertEqual((await reader.observations.download_file(c,value)).data.content,DATA);self.assertEqual((await reader.observations.release_download(c,AgentDownloadTicketInput(info.download_id))).data.stage,'download-released')
+  try:
+   reader,c,info,value=await self.prepared();part=(await reader.observations.download_chunk(c,AgentDownloadChunkInput(info.download_id,0))).data;self.assertEqual(part.sha256,info.sha256);self.assertEqual((await reader.observations.download_file(c,value)).data.content,DATA);self.assertEqual((await reader.observations.release_download(c,AgentDownloadTicketInput(info.download_id))).data.stage,'download-released')
+  except AgentClientError as error:
+   error.add_note(('Bounded actual HTTP response metadata: '+json.dumps(list(self.response_metadata),sort_keys=True))[:4096]);raise
   for role in ['read','write','end','session']:
    with self.assertRaises(AgentClientError)as e:await self.client(role).observations.arm_download(c)
    self.assertEqual(e.exception.code,'FORBIDDEN')

@@ -1,0 +1,113 @@
+{
+  "at": "2026-10-22T04:10:09.634282+00:00",
+  "baseHead": "273f17406784237862b72853868eba11f9354198",
+  "executedCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/sdk-fixture-pressure-candidate-v1/frozen-version.json",
+  "executedCandidateSha256": "e18b07a992d0a93456b3b916b790a09f2b27dba85d7f1f3af6b6ee4888e8536a",
+  "scope": "Owned fixture retirement, actual preheader timeout and bounded real TCP pressure; full goal remains incomplete",
+  "macInstalledSdk": {
+    "result": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/sdk-fixture-ownership-candidate-v2/mac-validation/result.json",
+    "sha256": "2d7278a430a5697366da1cd541c9679cbee4766651fcf589593d8b6778946ef6",
+    "nodePassed": 214,
+    "pythonPassed": 210,
+    "strictTypesAndReadmeExamplesPassed": true
+  },
+  "linuxInstalledSdk": {
+    "nodePassed": 214,
+    "pythonTests": 210,
+    "pythonPassed": 209,
+    "pythonErrors": 1,
+    "fullSuiteQualified": false,
+    "failureReceipt": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/sdk-fixture-ownership-linux-validation-v1/results/installed/failed.json",
+    "failedTest": "test_http_models_bytes_release_and_independent_observe_scope",
+    "failureCode": "CLIENT_HTTP_ERROR",
+    "failedResponseStatusNotCaptured": true
+  },
+  "pressureFiles": {
+    "mac": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/tcp-pressure-buffer-macos-files-v1.log",
+      "sha256": "30b6c3a534e5e6826f968fc7871693ae06f836d20c638f382895bad2ac3e66fa",
+      "passed": 54
+    },
+    "linux": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/sdk-fixture-pressure-linux-validation-v1/files.log",
+      "sha256": "b03815cf0eb0d402b30dc1d56857317b201b1a37047c0f280921ef199ffbe522",
+      "passed": 54
+    },
+    "sameOriginalCaseNames": true,
+    "originalBodyLimitBytes": 4194304,
+    "originalChunkBytes": 3072,
+    "originalHttpDeadlineMs": 2500,
+    "originalObservationDeadlineMs": 3000,
+    "kernelBuffersMeasured": true,
+    "senderRequestedBytes": 65536,
+    "receiverRequestedBytes": 16384,
+    "notAnOriginalNativeRuntimeQualification": true
+  },
+  "fullRoot": {
+    "exitCode": -9,
+    "timedOut": true,
+    "seconds": 120.2659428959596,
+    "sourceFilesUnchanged": true,
+    "manifestSha256": "e18b07a992d0a93456b3b916b790a09f2b27dba85d7f1f3af6b6ee4888e8536a",
+    "testFiles": 156,
+    "expectedTests": 1794,
+    "expectedLinuxSkips": 6,
+    "wholeGoalQualified": false,
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/sdk-fixture-pressure-linux-full-v1/full.log",
+    "logSha256": "a7811d15b65dacb664f45f6b72646a0ecccfae222f14dfa71db1637f7c83e188",
+    "completed": false,
+    "observedNamedFailures": [
+      "absolute per-attempt deadline destroys stalled actual responses and settles all original TCP resources before capacity returns",
+      "automatic delivery drains the retained prefix but preserves the exact original history gap",
+      "capture saturation retains the exact original gap; public retries cannot reset it or replay Source effects",
+      "finite stderr lifetime consumption stops the proxy and never forwards secret bytes",
+      "the original startup deadline includes info,inspection and a stalled upgrade without a reset"
+    ],
+    "originalDeadlineSeconds": 120,
+    "qualified": false
+  },
+  "casePreservation": {
+    "rootFiles": 156,
+    "rootExpectedTests": 1794,
+    "rootUnchangedFiles": 154,
+    "rootChangedFixtureFiles": [
+      "public-agent-download.test.mjs",
+      "public-agent-screenshot.test.mjs"
+    ],
+    "newPythonCases": [
+      "test_download_client.py:FixtureProcessOwnership.test_client_close_error_propagates_only_after_node_process_retires",
+      "test_download_client.py:FixtureProcessOwnership.test_graceful_deadline_remains_an_error_after_actual_forced_reap",
+      "test_download_client.py:FixtureProcessOwnership.test_invalid_startup_record_still_retires_the_actual_node_process",
+      "test_observation_client.py:ActualObservationHttp.test_actual_preheader_timeout_is_typed_as_unconfirmed_http_error_without_source_dispatch"
+    ],
+    "oldPythonCaseNamesPreserved": true,
+    "sdkSourceFilesByteUnchanged": 36
+  },
+  "knownMechanism": {
+    "controlledRawTcpPreheaderTimeoutStatus": 408,
+    "contentTypeAbsent": true,
+    "sdkCode": "CLIENT_HTTP_ERROR",
+    "outcome": "unknown",
+    "sourceCallsAndRunUnchanged": true,
+    "causeOfEarlierUncapturedFailuresProven": false
+  },
+  "failureHistoryRetained": [
+    "Python Linux full SDK 206 with two errors at prior checkpoint",
+    "Python Linux full SDK 210 with one error at this checkpoint",
+    "Initial socket-buffer/autotuning guard and 408 fixture failures",
+    "One confirmed stalled diagnostic group terminated; original build untouched",
+    "Full root run terminated at its original 120s guard with five observed failures"
+  ],
+  "sourceProtection": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/sdk-fixture-pressure-protection-v1.json",
+  "sourceProtectionSha256": "6efd3d232558837728d451840f0cc8f79355a40142befadbde85ceb560d85991",
+  "ledger": {
+    "completeWithinScopes": 10,
+    "partial": 18,
+    "pending": 13,
+    "total": 41
+  },
+  "wholeGoalQualified": false,
+  "originalEightHourPassed": false,
+  "mildLossAndFullNativeQualified": false,
+  "noCommitPush": true
+}

@@ -8,6 +8,8 @@ import {parseMetadataJson} from '/protocol/metadata-json.mjs';
 import {ControlLink} from '/control-channel.mjs';
 import {ViewerLifecycle} from '/lifecycle.mjs';
 import {ViewerConnection,ViewerTicketSource,ViewerConnectionError} from '/connection.mjs';
+import {PersistentResources,restoreFrameResources,restoreManifestResources,persistFrameResources,negotiateResourceCache} from '/persistent-resources.mjs';
+import {CACHE_CAPABILITY} from '/protocol/resource-cache.mjs';
 import {loadPublicViewerConfig,PublicViewerConfigError} from '/public-config.mjs';
 import {attachViewerChild} from '/embed-bridge.mjs';
 import {ViewerControlActions} from '/viewer-control.mjs';
@@ -22,6 +24,9 @@ let controlActions=null;
 const telemetry=new ViewerTelemetry({notify:(name,envelope)=>window.dispatchEvent(new CustomEvent('remote-paint-'+name,{detail:envelope}))});
 const input=new ViewerInput({canvas:$('viewport'),proxy:$('inputProxy'),button:$('control'),label:$('controlState'),feedbackLabel:$('feedbackState'),overlay:$('optimisticOverlay'),pointerOverlay:$('pointerOverlay'),onControl:reason=>controlActions?.update(reason),send:message=>{if(controlLink.send(message))return;if(streamWorker)streamWorker.postMessage({type:'send',message});else if(socket?.readyState===1)socket.send(JSON.stringify(message));}});
 let ticketSource=null,publicSettings=null,publicConnection=null;const workerTickets=new Map();
+let workerCachePermission=null,retiringCache=false;
+const persistentResources=new PersistentResources({getPermission:()=>publicConnection?.resourceCachePermission??workerCachePermission,timeoutMs:300,onStats:stats=>{window.remotePaintPersistentCache={...window.remotePaintPersistentCache,main:stats};}});
+const cacheState=event=>{void persistentResources.state(retiringCache&&event.state==='revoked'?{state:'suspended'}:event);};
 let streamWorker,renderer,presenter,socket,cleanupSession,cancelInitialization,heartbeat,lastPong,forceMainThread=false,generation=0,retryTimer,stopped=false,retryDelay=250;
 const controlLink=new ControlLink({onMessage:message=>{if(message.type==='CaptureError')status(message.message);else input.message(message);},onError:fail,onClose:peerId=>{input.reset();if(stopped)return;if(streamWorker)streamWorker.postMessage({type:'control-lost',peerId});else socket?.close(1012,'Control connection closed');}});
 function fail(error){telemetry.reset();$('error').hidden=false;$('error').textContent=error.message;status('绘制通道中断');document.body.dataset.ready='false';if(publicMode&&publicSettings&&!stopped)connectionState({...window.remotePaintConnection,state:'failed',code:error instanceof ViewerConnectionError?error.code:'VIEWER_PROTOCOL_ERROR'});}
@@ -32,6 +37,11 @@ function connectionState(state){
 }
 function abortWorkerTickets(){for(const request of workerTickets.values())request.controller.abort();workerTickets.clear();}
 function workerMessage({data}){
+ if(data.type==='persistent-cache'){window.remotePaintPersistentCache={...window.remotePaintPersistentCache,worker:data.stats};return;}
+ if(data.type==='cache-state'){
+  const event=data.event,p=event.permission,permission=p?Object.freeze({...p,renderer:Object.freeze({...p.renderer})}):null;
+  workerCachePermission=event.state==='authorized'?permission:null;cacheState({state:event.state,permission});return;
+ }
  if(data.type==='connection-cancel'){const request=workerTickets.get(data.requestId);if(request?.worker===streamWorker){request.controller.abort();workerTickets.delete(data.requestId);}return;}
  if(data.type==='connection-request'){
   const worker=streamWorker,id=data.requestId;
@@ -101,7 +111,7 @@ async function connect(){
   telemetry.connecting();
   publicConnection?.destroy();publicConnection=null;
   if(streamWorker){streamWorker.postMessage({type:'connect',connection:publicSettings});return;}
-  publicConnection=new ViewerConnection({...publicSettings,getTicket:request=>ticketSource.getTicket(request),onSocket:(ws,grant,auth)=>attachStream(ws,++generation,auth),onState:connectionState,onError:error=>fail(error)});
+  publicConnection=new ViewerConnection({...publicSettings,getTicket:request=>ticketSource.getTicket(request),onCacheState:cacheState,onSocket:(ws,grant,auth)=>attachStream(ws,++generation,auth),onState:connectionState,onError:error=>fail(error)});
   await publicConnection.start();return;
  }
  if(streamWorker){streamWorker.postMessage({type:'connect',key:new URLSearchParams(location.hash.slice(1)).get('key')});return;}
@@ -118,7 +128,7 @@ function attachStream(ws,current,authorization=null){
  const cleanup=()=>{if(closed)return;closed=true;gate.clear();assets.dispose();if(current===generation){presenter.clear();window.remotePaintMemory=memory.snapshot();}};cleanupSession=cleanup;
  const send=message=>{if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(message));};
  const recover=()=>{gate.recover();assets.clear();presenter.retain(new Set(gate.resources.keys()));if(!recovering){recovering=true;status('重新同步完整场景');send({type:'RequestKeyframe'});}};
- ws.onopen=()=>send({type:'Hello',protocol:LIVE_VERSION,renderer,viewerBuild:VIEWER_BUILD,capabilities:['asset-chunks-v1','frame-window-v1','control-channel-v1','input-feedback-v1','resource-memory-v1'],frameWindow:6});
+ ws.onopen=()=>send({type:'Hello',protocol:LIVE_VERSION,renderer,viewerBuild:VIEWER_BUILD,capabilities:['asset-chunks-v1','frame-window-v1','control-channel-v1','input-feedback-v1','resource-memory-v1',...(authorization?[CACHE_CAPABILITY]:[])],frameWindow:6});
  let queue=Promise.resolve(),queuedBytes=0;
  ws.onmessage=event=>{
   if(closed)return;
@@ -145,14 +155,23 @@ function attachStream(ws,current,authorization=null){
     if(size>LIVE_LIMITS.sceneBytes)throw new Error('Metadata budget exceeded');const message=parsed;
     if(message.type==='Welcome'){
      if(welcome||message.protocol!==LIVE_VERSION||message.renderer?.wasmSha256!==renderer.wasmSha256||message.renderer?.canvaskit!==renderer.canvaskit||message.mode!=='live-skia-viz'||typeof message.input!=='boolean'||typeof message.resourceMemory!=='boolean')throw new Error('Incompatible live handshake');
-     authorization?.acceptWelcome(message);if(publicMode)telemetry.bind({connectionGeneration:current,grantId:message.viewerGrantId});welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';input.welcome(message);controlLink.open(ws.url,message);retryDelay=250;$('build').textContent=`${message.producer.chromium} · Skia ${message.producer.skiaRevision.slice(0,12)} · CanvasKit ${renderer.canvaskit}`;return;
+     authorization?.acceptWelcome(message);if(authorization)await negotiateResourceCache(persistentResources,message,ws,{memory,current:()=>!closed&&current===generation,permission:()=>publicConnection?.resourceCachePermission});await persistentResources.purged;if(closed||current!==generation)return;if(publicMode)telemetry.bind({connectionGeneration:current,grantId:message.viewerGrantId});welcome=true;gate.requireResourceMemory=message.resourceMemory;memory.decodeAdmission=message.resourceMemory?'complete-resource-index-v1':'explicit-legacy-source';input.welcome(message);controlLink.open(ws.url,message);retryDelay=250;$('build').textContent=`${message.producer.chromium} · Skia ${message.producer.skiaRevision.slice(0,12)} · CanvasKit ${renderer.canvaskit}`;return;
     }
     if(!welcome)throw new Error('Message before handshake');
     if(input.message(message))return;
-    if(message.type==='ResourceManifest'){const payload=assets.assemble(message);if(payload)try{const release=memory.reserve('shaWork',payload.byteLength,'browser');try{if(await digest(payload)!==message.id)throw new Error('Assembled resource checksum mismatch');}finally{release();}if(closed||current!==generation)return;gate.put(message.id,payload);resourcesReceived++;}finally{assets.releaseAssembly(payload);}return;}
+    if(message.type==='ResourceManifest'){
+     let payload=assets.assemble(message),cached=null;
+     try{
+      if(!payload){cached=await restoreManifestResources(persistentResources,assets,message,{memory,current:()=>!closed&&current===generation,permission:()=>publicConnection?.resourceCachePermission});payload=cached?.payload??assets.assemble(message);}
+      if(!payload||closed||current!==generation||cached&&(cached.permission!==publicConnection?.resourceCachePermission||!persistentResources.isAuthorized(cached.permission)))return;
+      if(payload.byteLength!==message.bytes)throw new Error('Cached resource manifest length mismatch');
+      if(!cached){const release=memory.reserve('shaWork',payload.byteLength,'browser');try{if(await digest(payload)!==message.id)throw new Error('Assembled resource checksum mismatch');}finally{release();}}
+      if(closed||current!==generation)return;gate.put(message.id,payload);resourcesReceived++;
+     }finally{if(payload)assets.releaseAssembly(payload);cached?.release();}return;
+    }
     if(message.type==='ChunkCacheReset'){assets.clear();return;}
     if(message.type==='SceneUpdate'){
-     try{gate.stage(message.frame);}catch(error){if(error instanceof RecoveryRequired){recover();return;}throw error;}
+     try{gate.stage(message.frame);await restoreFrameResources(persistentResources,gate,{memory,current:()=>!closed&&current===generation,permission:()=>publicConnection?.resourceCachePermission});}catch(error){if(error instanceof RecoveryRequired){recover();return;}throw error;}
     }else if(message.type==='FrameCommit'){
      if(recovering&&!gate.pending)return;
      const started=performance.now();const frame=await gate.commitAsync(message.pageEpoch,message.frameId,draw);
@@ -166,8 +185,9 @@ function attachStream(ws,current,authorization=null){
      document.body.dataset.ready='true';status('实时绘制中');
      window.remotePaintResult={protocol:LIVE_VERSION,viewerGeneration:lifecycle.version,connectionGeneration:current,pageEpoch:frame.pageEpoch,viewportVersion:frame.viewportVersion,frameId:frame.frameId,
       native:frame.native,lastProcessedInputSeq:frame.lastProcessedInputSeq,resourceBytes:gate.bytes,resources:gate.resources.size,
-      resourcesReceived,receivedBytes,fullFrames:full,deltaFrames:delta,renderMs,requiredResources:frame.requiredResources,rendererStats:{...presenter.stats},presentation:{...presenter.presentation}};
+      resourcesReceived,receivedBytes,fullFrames:full,deltaFrames:delta,renderMs,requiredResources:frame.requiredResources,rendererStats:{...presenter.stats},presentation:{...presenter.presentation},persistentCache:persistentResources.stats};
      window.remotePaintMemory=window.remotePaintResult.memory=memory.observe(presenter.ck,presenter.gr);if(publicMode)telemetry.record({connectionGeneration:current,frame,result:window.remotePaintResult,worker:false});send({type:'FrameAck',pageEpoch:frame.pageEpoch,frameId:frame.frameId,stage:'scene-submitted'});
+     persistFrameResources(persistentResources,gate,assets,frame,{memory,current:()=>!closed&&current===generation,permission:()=>publicConnection?.resourceCachePermission});
     }else if(message.type==='ResourceRelease'){
      if(!Array.isArray(message.ids)||message.ids.length>512||!message.ids.every(isHash))throw new Error('Invalid resource release');for(const id of message.ids)gate.release(id);presenter.retain(new Set(gate.resources.keys()));
      window.remotePaintMemory=memory.snapshot();if(window.remotePaintResult){window.remotePaintResult.resources=gate.resources.size;window.remotePaintResult.resourceBytes=gate.bytes;window.remotePaintResult.memory=window.remotePaintMemory;}
@@ -189,7 +209,7 @@ function attachStream(ws,current,authorization=null){
 function teardownViewer(){
  telemetry.reset();
  controlActions?.reset();
- publicConnection?.destroy();publicConnection=null;abortWorkerTickets();
+ retiringCache=true;try{publicConnection?.destroy();}finally{retiringCache=false;}publicConnection=null;workerCachePermission=null;cacheState({state:'suspended'});abortWorkerTickets();
  clearInterval(heartbeat);heartbeat=null;clearTimeout(retryTimer);cancelInitialization?.();cancelInitialization=null;
  cleanupSession?.();cleanupSession=null;generation++;controlLink.reset();input.reset();input.frame=null;socket?.close();socket=null;
  streamWorker?.terminate();streamWorker=null;presenter?.dispose();presenter=null;renderer=null;
@@ -211,7 +231,7 @@ $('reconnect').onclick=()=>lifecycle.restart('manual');
 document.addEventListener('visibilitychange',()=>lifecycle.visibility(document.hidden));
 document.addEventListener('freeze',()=>lifecycle.freeze());
 document.addEventListener('resume',()=>{if(stopped)return;lifecycle.hidden=document.hidden;lifecycle.resume();});
-window.addEventListener('pagehide',event=>{if(event.persisted)lifecycle.freeze();else{stopped=true;configController.abort();lifecycle.close();ticketSource?.destroy();telemetry.close();}});
+window.addEventListener('pagehide',event=>{if(event.persisted)lifecycle.freeze();else{stopped=true;configController.abort();lifecycle.close();ticketSource?.destroy();telemetry.close();void persistentResources.purgePrivate();}});
 window.addEventListener('pageshow',()=>{if(stopped)return;lifecycle.hidden=document.hidden;lifecycle.resume();});
 window.addEventListener('online',()=>{if(lifecycle.runnable)lifecycle.restart('online');});
 controlActions=new ViewerControlActions({input,available:()=>!stopped&&publicSettings?.role==='controller'&&window.remotePaintConnection?.state==='connected',notify:state=>window.dispatchEvent(new CustomEvent('remote-paint-control',{detail:state})),interrupt:code=>connectionState({...window.remotePaintConnection,state:'failed',code})});
@@ -224,7 +244,7 @@ window.remotePaintViewer=Object.freeze({
   const next=new ViewerTicketSource({...options,audience:location.origin});
   ticketSource?.destroy();ticketSource=next;publicSettings=next.settings;stopped=false;lifecycle.frozen=false;lifecycle.restart('public-ticket');
  },
- disconnect(){const state=window.remotePaintConnection??{...publicSettings};stopped=true;ticketSource?.destroy();lifecycle.freeze();connectionState({...state,state:'paused'});},
+ async disconnect(){const state=window.remotePaintConnection??{...publicSettings};stopped=true;ticketSource?.destroy();lifecycle.freeze();connectionState({...state,state:'paused'});const purged=await persistentResources.purgePrivate();if(persistentResources.stats.available&&!purged)throw new ViewerConnectionError('VIEWER_PROTOCOL_ERROR');},
  takeControl:options=>controlActions.take(options),releaseControl:options=>controlActions.release(options),
  resizeViewport:(size,options)=>controlActions.resizeViewport(size,options),
  get control(){return controlActions.state;},

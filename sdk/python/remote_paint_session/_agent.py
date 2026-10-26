@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from ._observation import ObservationExpected, AccessibilityExpected, ScreenshotExpected
     from ._download import DownloadExpected
     from ._events import EventExpected, AgentEventGap, AgentEventPage, AgentEventCursor, AgentCancellationCursor, AgentCancellation
+    from ._webhooks import WebhookExpected, AgentWebhookEndpoints, AgentWebhookSubscriptionId, AgentWebhookSubscribeInput, AgentWebhookSubscription
     from ._event_stream import _AgentEventStreams,AgentEventStream,AgentEventTransportStatus
 
 AgentRunId = NewType('AgentRunId', str)
@@ -236,10 +237,13 @@ class _Expected:
     fence: AgentFence | None = None
     inputs: int | None = None
 
-def _validate(status: int, v: Any, e: _Expected | ObservationExpected | AccessibilityExpected | ScreenshotExpected | DownloadExpected | EventExpected, headers: httpx.Headers) -> Any:
+def _validate(status: int, v: Any, e: _Expected | ObservationExpected | AccessibilityExpected | ScreenshotExpected | DownloadExpected | EventExpected | WebhookExpected, headers: httpx.Headers) -> Any:
     from ._observation import ObservationExpected, AccessibilityExpected, ScreenshotExpected, validate_observation, validate_accessibility, validate_screenshot
     from ._download import DownloadExpected,validate_download
     from ._events import EventExpected,validate_event_reply
+    from ._webhooks import WebhookExpected,validate_webhook_reply
+    if isinstance(e,WebhookExpected):
+        return validate_webhook_reply(status,v,e,headers)
     if isinstance(e,EventExpected):
         return validate_event_reply(status,v,e,headers)
     if isinstance(e,DownloadExpected):
@@ -362,6 +366,15 @@ class _Runs:
         self._streams = streams
     def events(self,agent_run_id: AgentRunId,*,after: AgentEventCursor | None=None,reconnects: RetryCount=3) -> AgentEventStream:
         return self._streams.create(agent_run_id,after=after,reconnects=reconnects)
+    def webhook_endpoints(self,agent_run_id: AgentRunId,*,retries: RetryCount | None=None) -> Coroutine[Any,Any,ApiResult[AgentWebhookEndpoints]]:
+        from ._webhooks import AgentWebhookEndpoints,prepare_webhook_request
+        return cast(Coroutine[Any,Any,ApiResult[AgentWebhookEndpoints]],prepare_webhook_request(self._transport,'webhook-endpoints',agent_run_id,None,retries))
+    def subscribe_webhook(self,agent_run_id: AgentRunId,value: AgentWebhookSubscribeInput,*,retries: RetryCount | None=None) -> Coroutine[Any,Any,ApiResult[AgentWebhookSubscription]]:
+        from ._webhooks import AgentWebhookSubscription,prepare_webhook_request
+        return cast(Coroutine[Any,Any,ApiResult[AgentWebhookSubscription]],prepare_webhook_request(self._transport,'webhook-subscribe',agent_run_id,value,retries))
+    def webhook_subscription(self,agent_run_id: AgentRunId,subscription_id: AgentWebhookSubscriptionId,*,retries: RetryCount | None=None) -> Coroutine[Any,Any,ApiResult[AgentWebhookSubscription]]:
+        from ._webhooks import AgentWebhookSubscription,prepare_webhook_request
+        return cast(Coroutine[Any,Any,ApiResult[AgentWebhookSubscription]],prepare_webhook_request(self._transport,'webhook-subscription',agent_run_id,subscription_id,retries))
     def prepare_create(self, session_id: SessionId, value: CreateAgentRunInput, *, idempotency_key: str) -> PreparedAgentRun:
         if not _id(session_id,'ses_') or type(value) is not CreateAgentRunInput or not _text(value.region,64) or not _text(value.version,256):
             _invalid()

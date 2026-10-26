@@ -124,7 +124,7 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
    if(req.method!==selected.method){res.setHeader('allow',selected.allow??selected.method);fail('METHOD_NOT_ALLOWED');}
    const length=header(req,'content-length'),transfer=header(req,'transfer-encoding'),encoding=header(req,'content-encoding'),contentType=header(req,'content-type');
    if(length!==undefined&&(!/^(0|[1-9][0-9]*)$/.test(length)||!Number.isSafeInteger(Number(length))))fail('INVALID_REQUEST');
-   const bodyLimit=selected.agent?maxAgentBodyBytes:maxBodyBytes;
+   const bodyLimit=selected.kind.startsWith('agent-webhook-')?Math.min(1024,maxAgentBodyBytes):selected.agent?maxAgentBodyBytes:maxBodyBytes;
    if(length!==undefined&&Number(length)>bodyLimit)fail('REQUEST_TOO_LARGE');
    const needsBody=selected.agent?selected.needsBody:['create','viewer-issue','viewer-refresh'].includes(selected.kind);
    if(!needsBody&&(transfer!==undefined||Number(length??0)!==0))fail('INVALID_REQUEST');
@@ -142,7 +142,7 @@ export function createSessionControlServer({registry,authenticate,viewerAccess=n
     const needsKey=['agent-create','agent-invocations'].includes(selected.kind),idempotencyKey=needsKey?header(req,'idempotency-key'):undefined;
     if(needsKey&&(typeof idempotencyKey!=='string'||!/^[\x21-\x7e]{1,128}$/.test(idempotencyKey)))fail('INVALID_IDEMPOTENCY_KEY');
     const input=needsBody?await body(req,bodyLimit,signal):undefined;aborted(signal);confirmed(registry);
-    if(['agent-cancel','agent-cancellation'].includes(selected.kind)&&header(req,'last-event-id')!==undefined)fail('INVALID_REQUEST');
+    if((['agent-cancel','agent-cancellation'].includes(selected.kind)||selected.kind.startsWith('agent-webhook-'))&&header(req,'last-event-id')!==undefined)fail('INVALID_REQUEST');
     if(eventReader){
      if(!agentAccess)throw new AgentEventHttpError('AGENT_NOT_CONFIGURED');
      const last=header(req,'last-event-id');if(last!==undefined&&selected.eventCursor!==undefined)throw new AgentEventHttpError('AGENT_EVENT_CURSOR_INVALID');

@@ -9,7 +9,8 @@ export const agentWebhookSchemaSql=`
  CREATE UNIQUE INDEX agent_webhook_delivery_identity ON agent_webhook_deliveries(delivery_id);
  CREATE UNIQUE INDEX agent_webhook_attempt_identity ON agent_webhook_deliveries(attempt_id);`;
 const integer=(v,min=0)=>Number.isSafeInteger(v)&&v>=min;
-const id=(v,prefix)=>typeof v==='string'&&new RegExp('^'+prefix+'_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$').test(v);
+const ids=Object.freeze(Object.fromEntries(['awsub','awh','awdl','awat','aevt'].map(prefix=>[prefix,new RegExp('^'+prefix+'_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$')])));
+const id=(v,prefix)=>typeof v==='string'&&ids[prefix].test(v);
 const digest=body=>createHash('sha256').update(body).digest('hex');
 const plain=(v,keys)=>!!v&&[Object.prototype,null].includes(Object.getPrototypeOf(v))&&Reflect.ownKeys(v).length===keys.length&&keys.every(k=>Object.hasOwn(v,k)&&Object.hasOwn(Object.getOwnPropertyDescriptor(v,k),'value'));
 
@@ -25,18 +26,36 @@ export function createAgentWebhookJournal(db,{fail,isStoreError,events}){
  function parent(s){const r=db.prepare('SELECT body FROM agent_runs WHERE agent_run_id=? AND tenant=? AND session_id=?').get(s.agent_run_id,s.tenant,s.session_id);if(!r)corrupt();return JSON.parse(r.body);}
  function rows(s){return db.prepare('SELECT * FROM agent_webhook_deliveries WHERE subscription_id=? ORDER BY sequence LIMIT 65').all(s.subscription_id);}
  function body(s,e){const text=JSON.stringify({schema:'agent-webhook-v1',endpointId:s.endpoint_id,subscriptionId:s.subscription_id,event:e});if(Buffer.byteLength(text)>AGENT_WEBHOOK_LIMITS.bodyBytes)reject('LIMIT','Webhook body exceeds its byte limit');return text;}
+ // Only pure encoding/hash results for freshly validated, deeply frozen Source
+ // objects. At most 64 envelopes globally in this journal, never per subscriber.
+ // The object identity and routing fields must still match; no database row,
+ // authorization, parent, cursor or attempt validation is cached here.
+ const envelopes=new Map();
+ function retainedEnvelope(s,e){
+  const key=s.subscription_id+'\0'+e.eventId;let value=envelopes.get(key);
+  if(value?.event!==e||value.endpointId!==s.endpoint_id){const text=body(s,e);value={event:e,endpointId:s.endpoint_id,body:text,bodySha256:digest(text)};}
+  envelopes.delete(key);envelopes.set(key,value);if(envelopes.size>AGENT_WEBHOOK_LIMITS.pending)envelopes.delete(envelopes.keys().next().value);return value;
+ }
  function validate(s){
   if(!id(s.subscription_id,'awsub')||!id(s.endpoint_id,'awh')||!integer(s.start_after)||!integer(s.accepted_through,s.start_after)||!integer(s.queued_through,s.accepted_through)||!integer(s.observed_latest,s.queued_through)||s.queued_through-s.accepted_through>AGENT_WEBHOOK_LIMITS.pending||!(s.missing_from===null?s.observed_latest===s.queued_through:s.missing_from===s.queued_through+1&&s.observed_latest>=s.missing_from))corrupt();
   let ack=null;if(s.last_ack!==null){try{if(typeof s.last_ack!=='string'||Buffer.byteLength(s.last_ack)>512)corrupt();ack=JSON.parse(s.last_ack);}catch{corrupt();}if(!plain(ack,['deliveryId','attemptId','eventId','sequence','bodySha256','attempts'])||!id(ack.deliveryId,'awdl')||!id(ack.attemptId,'awat')||!id(ack.eventId,'aevt')||!integer(ack.sequence,1)||ack.sequence!==s.accepted_through||typeof ack.bodySha256!=='string'||!/^([a-f0-9]{64})$/.test(ack.bodySha256)||!integer(ack.attempts,1)||ack.attempts>AGENT_WEBHOOK_LIMITS.attempts||JSON.stringify(ack)!==s.last_ack)corrupt();}
   if((s.accepted_through===s.start_after)!==(ack===null))corrupt();
-  const run=parent(s),head=events.captureWindow(run);if(s.observed_latest!==head.latestSequence)corrupt();
-  const pending=rows(s);if(pending.length!==s.queued_through-s.accepted_through)corrupt();
+  const run=parent(s),head=events.captureValidatedWindow(run);if(s.observed_latest!==head.latestSequence)corrupt();
+  const retained=new Map(head.events.map(e=>[e.sequence,e])),pending=rows(s);if(pending.length!==s.queued_through-s.accepted_through)corrupt();
   for(const [i,r]of pending.entries()){
-   if(r.sequence!==s.accepted_through+i+1||r.agent_run_id!==s.agent_run_id||r.tenant!==s.tenant||r.session_id!==s.session_id||typeof r.body!=='string'||Buffer.byteLength(r.body)>AGENT_WEBHOOK_LIMITS.bodyBytes||r.body_sha256!==digest(r.body)||!id(r.delivery_id,'awdl')||!integer(r.attempts)||r.attempts>AGENT_WEBHOOK_LIMITS.attempts||i>0&&r.attempts!==0||!(r.attempts===0?r.attempt_id===null&&r.last_outcome===null:id(r.attempt_id,'awat')&&['requested','unknown','not-accepted'].includes(r.last_outcome))||ack&&(r.delivery_id===ack.deliveryId||r.attempt_id===ack.attemptId||r.event_id===ack.eventId))corrupt();
-   let value;try{value=JSON.parse(r.body);}catch{corrupt();}
-   if(!plain(value,['schema','endpointId','subscriptionId','event'])||value.schema!=='agent-webhook-v1'||value.endpointId!==s.endpoint_id||value.subscriptionId!==s.subscription_id||value.event?.eventId!==r.event_id||value.event?.sequence!==r.sequence||body(s,value.event)!==r.body)corrupt();
-   events.validateCaptured(run,value.event);
-   const retained=head.events.find(e=>e.sequence===r.sequence);if(retained&&JSON.stringify(retained)!==JSON.stringify(value.event))corrupt();
+   if(r.sequence!==s.accepted_through+i+1||r.agent_run_id!==s.agent_run_id||r.tenant!==s.tenant||r.session_id!==s.session_id||typeof r.body!=='string'||Buffer.byteLength(r.body)>AGENT_WEBHOOK_LIMITS.bodyBytes||!id(r.delivery_id,'awdl')||!integer(r.attempts)||r.attempts>AGENT_WEBHOOK_LIMITS.attempts||i>0&&r.attempts!==0||!(r.attempts===0?r.attempt_id===null&&r.last_outcome===null:id(r.attempt_id,'awat')&&['requested','unknown','not-accepted'].includes(r.last_outcome))||ack&&(r.delivery_id===ack.deliveryId||r.attempt_id===ack.attemptId||r.event_id===ack.eventId))corrupt();
+   // captureValidatedWindow freshly checked Source schema and parent ownership in
+   // this synchronous call. Comparing the entire canonical envelope also checks
+   // its fixed schema, endpoint, subscription and original event bytes without
+   // parsing a second copy. An evicted prefix still needs independent checks.
+   const original=retained.get(r.sequence);
+   if(original){const expected=retainedEnvelope(s,original);if(original.eventId!==r.event_id||expected.body!==r.body||expected.bodySha256!==r.body_sha256)corrupt();}
+   else{
+    if(r.body_sha256!==digest(r.body))corrupt();
+    let value;try{value=JSON.parse(r.body);}catch{corrupt();}
+    if(!plain(value,['schema','endpointId','subscriptionId','event'])||value.schema!=='agent-webhook-v1'||value.endpointId!==s.endpoint_id||value.subscriptionId!==s.subscription_id||value.event?.eventId!==r.event_id||value.event?.sequence!==r.sequence||body(s,value.event)!==r.body)corrupt();
+    events.validateCaptured(run,value.event);
+   }
   }
   return pending;
  }
@@ -75,7 +94,7 @@ export function createAgentWebhookJournal(db,{fail,isStoreError,events}){
    return transaction(()=>{
     const old=db.prepare('SELECT * FROM agent_webhooks WHERE agent_run_id=? AND endpoint_id=?').get(run.agentRunId,options.endpointId);
     if(old){validate(old);if(old.start_after!==options.after)reject('CONFLICT','Webhook subscription cursor is immutable');return info(old);}
-    const head=events.captureWindow(run);if(options.after>head.latestSequence||options.after<head.oldestSequence-1)reject('CURSOR','Webhook capture requires available contiguous original history');
+    const head=events.captureValidatedWindow(run);if(options.after>head.latestSequence||options.after<head.oldestSequence-1)reject('CURSOR','Webhook capture requires available contiguous original history');
     if(db.prepare('SELECT count(*) AS n FROM agent_webhooks').get().n>=AGENT_WEBHOOK_LIMITS.subscriptions||db.prepare('SELECT count(*) AS n FROM agent_webhooks WHERE agent_run_id=?').get(run.agentRunId).n>=AGENT_WEBHOOK_LIMITS.perRun)reject('LIMIT','Webhook subscription capacity exceeded');
     const s={subscription_id:'awsub_'+randomUUID(),agent_run_id:run.agentRunId,tenant:run.tenant,session_id:run.sessionId,endpoint_id:options.endpointId,start_after:options.after,queued_through:options.after,observed_latest:head.latestSequence,missing_from:null,accepted_through:options.after,last_ack:null};
     db.prepare('INSERT INTO agent_webhooks VALUES(?,?,?,?,?,?,?,?,?,?,?)').run(s.subscription_id,s.agent_run_id,s.tenant,s.session_id,s.endpoint_id,s.start_after,s.queued_through,s.observed_latest,s.missing_from,s.accepted_through,s.last_ack);

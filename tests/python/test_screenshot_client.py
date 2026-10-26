@@ -4,6 +4,7 @@ from dataclasses import FrozenInstanceError,replace
 from pathlib import Path
 import unittest
 import httpx
+from _fixture_process import close_node_fixture
 from remote_paint_session import (AgentClient,AgentClientError,AgentClientCancelledError,AgentRunId,SessionId,AgentObservationReference,
  AgentScreenshotId,AgentScreenshotInput,AgentScreenshotLimits,AgentScreenshotFileInput,AgentScreenshotChunkInput,
  AgentScreenshotDownloadInput,AgentScreenshotObservation,AgentScreenshotChunk,AgentScreenshotReleased,AgentScreenshotDownload)
@@ -172,11 +173,11 @@ class ScreenshotContracts(unittest.IsolatedAsyncioTestCase):
 
 class ScreenshotHttpContracts(unittest.IsolatedAsyncioTestCase):
  async def asyncSetUp(self):
-  self.child=await asyncio.create_subprocess_exec(os.environ.get('NODE','node'),str(Path(__file__).parents[1]/'fixtures/screenshot-python-http.mjs'),stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE);self.ready=json.loads(await asyncio.wait_for(self.child.stdout.readline(),3));self.clients=[]
- async def asyncTearDown(self):
-  for client in self.clients:await client.aclose()
-  if self.child.returncode is None:
-   self.child.stdin.write(b'close\n');await self.child.stdin.drain();self.child.stdin.close();await self.child.stdin.wait_closed();out,err=await asyncio.wait_for(self.child.communicate(),3);self.assertEqual(self.child.returncode,0,err.decode()[-2000:])
+  self.clients=[]
+  self.child=await asyncio.create_subprocess_exec(os.environ.get('NODE','node'),str(Path(__file__).parents[1]/'fixtures/screenshot-python-http.mjs'),stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE);self.addAsyncCleanup(self.close)
+  self.ready=json.loads(await asyncio.wait_for(self.child.stdout.readline(),3))
+ async def close(self):
+  await close_node_fixture(self.child,self.clients)
  async def command(self,text):self.child.stdin.write((text+'\n').encode());await self.child.stdin.drain();return json.loads(await asyncio.wait_for(self.child.stdout.readline(),3))
  def client(self,role):
   c=AgentClient(base_url=self.ready['base'],api_key=self.ready['keys'][role]);self.clients.append(c);return c

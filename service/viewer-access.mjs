@@ -1,7 +1,9 @@
-import {createHash,randomBytes,randomUUID} from 'node:crypto';
+import {createHash,createHmac,randomBytes,randomUUID} from 'node:crypto';
 import {WebSocket,WebSocketServer} from 'ws';
 import {SessionRegistry,SessionApiError} from './session-registry.mjs';
 import {LIVE_LIMITS} from '../protocol/live-wire.mjs';
+import {decodeAsset} from '../protocol/asset-wire.mjs';
+import {CACHE_CAPABILITY,CACHE_NEGOTIATION,cacheRenderer,cacheResourceKey,parseCacheOffer} from '../protocol/resource-cache.mjs';
 
 const integer=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const data=(v,k)=>v&&typeof v==='object'?Object.getOwnPropertyDescriptor(v,k)?.value:undefined;
@@ -23,7 +25,7 @@ function publicGrant(row){return Object.freeze({grantId:row.id,sessionId:row.ses
 // grants. The trusted resolver is backend-only and never returns data to HTTP.
 // Private Source ports/keys must remain unreachable to untrusted clients.
 export class ViewerAccess {
- #registry;#resolve;#grants=new Map();#tokens=new Map();#links=new Set();#resolving=0;#wss;#closed=false;#limit;#connections;#deadline;#buffer;
+ #registry;#resolve;#grants=new Map();#tokens=new Map();#links=new Set();#resolving=0;#wss;#closed=false;#limit;#connections;#deadline;#buffer;#cacheKey=randomBytes(32);
  constructor({registry,resolveSource,maxGrants=1024,maxConnections=16,connectTimeoutMs=5000,maxBufferedBytes=32*1024*1024}={}){
   if(!(registry instanceof SessionRegistry)||typeof resolveSource!=='function'||!integer(maxGrants,1,10000)||!integer(maxConnections,1,64)||!integer(connectTimeoutMs,50,10000)||!integer(maxBufferedBytes,1024,64*1024*1024))throw new TypeError('Configure bounded Viewer access and an explicit private Source resolver');
   this.#registry=registry;this.#resolve=resolveSource;this.#limit=maxGrants;this.#connections=maxConnections;this.#deadline=connectTimeoutMs;this.#buffer=maxBufferedBytes;
@@ -37,6 +39,7 @@ export class ViewerAccess {
   return session;
  }
  #alive(row){try{return !row.revoked&&this.#grants.get(row.id)===row&&Date.now()<row.expires&&performance.now()<row.deadline&&!!this.#ready(row);}catch{return false;}}
+ #cacheNamespace(row){return 'vrc1_'+createHmac('sha256',this.#cacheKey).update(JSON.stringify(['viewer-resource-cache-v1',row.tenantId,row.sessionId,row.version,row.readyAt,row.role,row.audience])).digest('hex');}
  #drop(row){row.revoked=true;this.#tokens.delete(row.tokenHash);this.#grants.delete(row.id);for(const link of [...row.links])link.close(1008,'Viewer access ended');}
  #prune(){for(const row of this.#grants.values())if(Date.now()>=row.expires||performance.now()>=row.deadline)this.#drop(row);}
  issue(value){
@@ -73,13 +76,14 @@ export class ViewerAccess {
    const row=this.#tokens.get(hash(match[1]));if(!row||origins[0]!==row.audience||!this.#alive(row))return reject(403);
    // One connection per grant. Each tab receives its own revocable grant.
    if(row.links.size||this.#links.size>=this.#connections||this.#resolving>=this.#connections)return reject(503);
-   const controller=new AbortController();let upstream,downstream,timer,watchdog,kill,disposed=false,hello=false;
+   const controller=new AbortController();let upstream,downstream,timer,watchdog,kill,cacheTimer,disposed=false,hello=false,wantsCache=false,cachePhase='none',offerSeen=false,sourceRenderer=null;
+   const held=[];let heldBytes=0,omissionBytes=0,omissions=new Set();
    const close=(code=1008,reason='Viewer access ended')=>{
-    if(disposed)return;disposed=true;clearTimeout(timer);clearInterval(watchdog);controller.abort();upstream?.terminate();
+    if(disposed)return;disposed=true;clearTimeout(timer);clearTimeout(cacheTimer);clearInterval(watchdog);held.length=0;heldBytes=0;omissions.clear();omissionBytes=0;controller.abort();upstream?.terminate();
     if(downstream&&downstream.readyState!==WebSocket.CLOSED){if(downstream.readyState===WebSocket.OPEN)downstream.close(code,reason);kill=setTimeout(()=>downstream.terminate(),250);kill.unref();}else if(!downstream&&!socket.writableEnded)socket.destroy();
     row.links.delete(link);this.#links.delete(link);
    };
-   link={close,get buffered(){return (upstream?.bufferedAmount??0)+(downstream?.bufferedAmount??0);}};
+   link={close,get buffered(){return (upstream?.bufferedAmount??0)+(downstream?.bufferedAmount??0)+heldBytes+omissionBytes;}};
    row.links.add(link);this.#links.add(link);socket.once('close',()=>close());socket.once('error',()=>close());
    const deadline=new Promise((_,reject)=>{controller.signal.addEventListener('abort',()=>reject(new Error('Connect ended')),{once:true});timer=setTimeout(()=>controller.abort(),this.#deadline);timer.unref();});
    const work=(async()=>{
@@ -103,9 +107,26 @@ export class ViewerAccess {
    })();
    try{await Promise.race([work,deadline]);}catch{reject(503);close(1011,'Viewer transport unavailable');return;}
    clearTimeout(timer);if(disposed||socket.destroyed||!this.#alive(row)){close();return;}
-   const bounded=(ws,bytes)=>ws.readyState===WebSocket.OPEN&&ws.bufferedAmount+bytes<=this.#buffer&&[...this.#links].reduce((n,l)=>n+l.buffered,0)+bytes<=this.#buffer*2;
+   const bounded=(ws,bytes)=>ws.readyState===WebSocket.OPEN&&ws.bufferedAmount+heldBytes+omissionBytes+bytes<=this.#buffer&&[...this.#links].reduce((n,l)=>n+l.buffered,0)+bytes<=this.#buffer*2;
    this.#wss.handleUpgrade(req,socket,head,ws=>{
     downstream=ws;ws.on('error',()=>close());ws.on('close',()=>{clearTimeout(kill);close();});
+    const forward=(packet,binary)=>{
+     if(!this.#alive(row)){close();return;}
+     if(binary&&omissions.size){const asset=decodeAsset(packet);if(omissions.has(cacheResourceKey(asset.kind,asset.id)))return;}
+     if(!bounded(ws,Buffer.byteLength(packet)))throw new Error('Queue limit');ws.send(packet,{binary});
+    };
+    const finishCache=(keys,phase,extra)=>{
+     clearTimeout(cacheTimer);cachePhase=phase;omissions=keys;omissionBytes=keys.size*512;
+     if(!bounded(ws,0))throw new Error('Queue limit');
+     while(held.length){const item=held.shift();heldBytes-=item.charge;forward(item.packet,item.binary);if(disposed)return;}
+     if(extra){forward(extra.packet,extra.binary);if(disposed)return;}
+     upstream.resume();
+    };
+    const holdCache=(packet,binary)=>{
+     const charge=packet.buffer.byteLength+256;
+     if(!bounded(ws,charge)||held.length>=512){finishCache(new Set(),'fallback',{packet,binary});return;}
+     held.push({packet,binary,charge});heldBytes+=charge;
+    };
     const connected=performance.now();let rateAt=connected,messages=0;
     watchdog=setInterval(()=>{if(!this.#alive(row)||!hello&&performance.now()-connected>=10000)close();},250);watchdog.unref();
     ws.on('message',(bytes,binary)=>{
@@ -116,8 +137,13 @@ export class ViewerAccess {
       if(!message||typeof message!=='object'||Array.isArray(message))throw new Error('Invalid message');
       if(!hello){
        if(message.type!=='Hello'||message.consumerKind!==undefined&&message.consumerKind!=='display'||message.capabilities!==undefined&&(!Array.isArray(message.capabilities)||message.capabilities.length>32||message.capabilities.some(v=>typeof v!=='string'||v.length>64)))throw new Error('Invalid handshake');
-       hello=true;message={type:'Hello',protocol:message.protocol,renderer:message.renderer,viewerBuild:message.viewerBuild,frameWindow:message.frameWindow,capabilities:(message.capabilities??[]).filter(v=>v!=='control-channel-v1'&&(row.role==='controller'||v!=='input-feedback-v1'))};
+       hello=true;wantsCache=message.capabilities?.includes(CACHE_CAPABILITY)===true;message={type:'Hello',protocol:message.protocol,renderer:message.renderer,viewerBuild:message.viewerBuild,frameWindow:message.frameWindow,capabilities:(message.capabilities??[]).filter(v=>v!==CACHE_CAPABILITY&&v!=='control-channel-v1'&&(row.role==='controller'||v!=='input-feedback-v1'))};
+      }else if(message.type==='ResourceCacheOffer'){
+       if(!wantsCache||!sourceRenderer||offerSeen||!['waiting','fallback'].includes(cachePhase))throw new Error('Unexpected cache offer');
+       const keys=parseCacheOffer(message,this.#cacheNamespace(row),sourceRenderer);offerSeen=true;
+       if(cachePhase==='waiting')finishCache(keys,'accepted');return;
       }else if(!['FrameAck','RequestKeyframe'].includes(message.type)&&!(row.role==='controller'&&controls.has(message.type)))throw new Error('Forbidden');
+      if(message.type==='RequestKeyframe'){omissions.clear();omissionBytes=0;if(cachePhase==='waiting')finishCache(new Set(),'fallback');}
       const packet=JSON.stringify(message);if(!bounded(upstream,Buffer.byteLength(packet)))throw new Error('Queue limit');upstream.send(packet);
      }catch{close(1008,'Viewer message forbidden');}
     });
@@ -128,15 +154,22 @@ export class ViewerAccess {
       if(!binary){
        if(bytes.length>LIVE_LIMITS.sceneBytes)throw new Error('Metadata limit');const message=JSON.parse(bytes.toString());
        if(message.type==='Welcome'){
+        if(wantsCache){if(cachePhase!=='none')throw new Error('Duplicate cache handshake');sourceRenderer=cacheRenderer(message.renderer);cachePhase='waiting';upstream.pause();cacheTimer=setTimeout(()=>{if(disposed)return;try{finishCache(new Set(),'fallback');}catch{close(1011,'Viewer transport unavailable');}},CACHE_NEGOTIATION.waitMs);cacheTimer.unref();}
         // Inline upstream control avoids exposing private pairing credentials.
-        packet=JSON.stringify({type:'Welcome',protocol:message.protocol,renderer:message.renderer,producer:message.producer,mode:message.mode,peerId:message.peerId,sessionId:message.sessionId,frameWindow:message.frameWindow,ackStage:message.ackStage,resourceMemory:message.resourceMemory,input:row.role==='controller'&&message.input===true,inputFeedback:row.role==='controller'&&message.inputFeedback===true,viewportControl:row.role==='controller'&&message.viewportControl===true,control:null,viewerRole:row.role,viewerSessionId:row.sessionId,viewerVersion:row.version,viewerGrantId:row.id});
+        packet=JSON.stringify({type:'Welcome',protocol:message.protocol,renderer:message.renderer,producer:message.producer,mode:message.mode,peerId:message.peerId,sessionId:message.sessionId,frameWindow:message.frameWindow,ackStage:message.ackStage,resourceMemory:message.resourceMemory,input:row.role==='controller'&&message.input===true,inputFeedback:row.role==='controller'&&message.inputFeedback===true,viewportControl:row.role==='controller'&&message.viewportControl===true,control:null,viewerRole:row.role,viewerSessionId:row.sessionId,viewerVersion:row.version,viewerGrantId:row.id,resourceCache:{schema:'viewer-resource-cache-v1',namespace:this.#cacheNamespace(row)},...(wantsCache?{cacheNegotiation:CACHE_NEGOTIATION}:{})});
        }else if(row.role==='readonly'&&['ControlGranted','ControlState','ControlDenied','InputAck','FeedbackState','ViewportResized','ViewportResizeDenied'].includes(message.type))return;
+       else if(cachePhase==='waiting'&&['ResourceManifest','ChunkCacheReset','SceneUpdate','FrameCommit','ResourceRelease'].includes(message.type)){
+        holdCache(bytes,false);return;
+       }
       }
-      if(!bounded(ws,Buffer.byteLength(packet)))throw new Error('Queue limit');ws.send(packet,{binary});
+      if(binary&&cachePhase==='waiting'){
+       holdCache(bytes,true);return;
+      }
+      forward(packet,binary);
      }catch{close(1011,'Viewer transport unavailable');}
     });
    });
   }catch{reject(503);link?.close(1011,'Viewer transport unavailable');}
  }
- close(){if(this.#closed)return;this.#closed=true;for(const row of [...this.#grants.values()])this.#drop(row);this.#wss.close();}
+ close(){if(this.#closed)return;this.#closed=true;for(const row of [...this.#grants.values()])this.#drop(row);this.#cacheKey.fill(0);this.#wss.close();}
 }

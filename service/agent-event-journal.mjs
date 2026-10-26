@@ -15,17 +15,27 @@ const invocationData=r=>({invocationId:r.invocationId,tool:r.tool,state:r.state,
 // projection have already passed that journal's identity/evidence validation.
 export function createAgentEventJournal(db,{fail,onAppend=null}){
  const corrupt=()=>fail('STATE_CORRUPT','Invalid stored Agent event history');
+ // Pure projection parsing only: exact original bytes, at most one 64-event
+ // window. Database affinity/current parent checks below are never cached
+ // across operations. Public callers receive clones; internal capture reads
+ // can share these recursively frozen values after fresh validation.
+ const parsedBodies=new Map();
+ function parsed(body){
+  let event=parsedBodies.get(body);if(event){parsedBodies.delete(body);parsedBodies.set(body,event);return event;}
+  event=parseAgentEventBody(body);const freeze=value=>{for(const v of Object.values(value))if(v&&typeof v==='object')freeze(v);return Object.freeze(value);};freeze(event);parsedBodies.set(body,event);if(parsedBodies.size>AGENT_EVENT_LIMITS.retainedPerRun)parsedBodies.delete(parsedBodies.keys().next().value);return event;
+ }
+
  function encode(value){const body=JSON.stringify(value);if(Buffer.byteLength(body)>AGENT_EVENT_LIMITS.eventBytes)fail('STATE_AGENT_LIMIT','Agent event metadata exceeds its byte limit');return body;}
  function parent(id){const row=db.prepare('SELECT agent_run_id,tenant,session_id,body FROM agent_runs WHERE agent_run_id=?').get(id);if(!row)corrupt();const value=JSON.parse(row.body);if(value.agentRunId!==row.agent_run_id||value.tenant!==row.tenant||value.sessionId!==row.session_id)corrupt();return value;}
  function head(run){const h=db.prepare('SELECT * FROM agent_event_heads WHERE agent_run_id=?').get(run.agentRunId);if(!h||h.tenant!==run.tenant||h.session_id!==run.sessionId||!integer(h.last_sequence,1)||!['created','migration-snapshot'].includes(h.origin))corrupt();return h;}
- function decode(stored,run){
+ function decode(stored,run,owners=null,projection=null){
   try{
-   const e=parseAgentEventBody(stored.body),d=e.data;
+   const e=projection??parseAgentEventBody(stored.body),d=e.data;
    if(e.eventId!==stored.event_id||e.agentRunId!==run.agentRunId||e.sessionId!==run.sessionId||e.region!==run.region||e.version!==run.version||stored.agent_run_id!==run.agentRunId||stored.tenant!==run.tenant||stored.session_id!==run.sessionId||e.sequence!==stored.sequence)corrupt();
    if(['run.updated','run.snapshot'].includes(e.type)){
     if(d.beginDispatch==='confirmed'&&run.beginDispatch!=='confirmed'||d.endDispatch==='confirmed'&&run.endDispatch!=='confirmed'||d.stateUpdatedAt<run.createdAt)corrupt();
    }else if(['invocation.updated','invocation.snapshot'].includes(e.type)){
-    const owner=db.prepare('SELECT agent_run_id,tenant,session_id,body FROM agent_invocations WHERE invocation_id=?').get(d.invocationId);if(!owner||owner.agent_run_id!==run.agentRunId||owner.tenant!==run.tenant||owner.session_id!==run.sessionId)corrupt();const current=JSON.parse(owner.body);if(d.tool!==current.tool||d.stateUpdatedAt<current.createdAt||d.dispatchStarted&&!current.dispatchStarted||['injected','rejected','unknown'].includes(d.state)&&d.state!==current.state)corrupt();
+    let pair=owners?.get(d.invocationId);if(!pair){if(owners)corrupt();const row=db.prepare('SELECT agent_run_id,tenant,session_id,body FROM agent_invocations WHERE invocation_id=?').get(d.invocationId);if(!row)corrupt();pair={row,current:JSON.parse(row.body)};}const {row:owner,current}=pair;if(owner.agent_run_id!==run.agentRunId||owner.tenant!==run.tenant||owner.session_id!==run.sessionId)corrupt();if(d.tool!==current.tool||d.stateUpdatedAt<current.createdAt||d.dispatchStarted&&!current.dispatchStarted||['injected','rejected','unknown'].includes(d.state)&&d.state!==current.state)corrupt();
    }else corrupt();
    return e;
   }catch{corrupt();}
@@ -33,8 +43,13 @@ export function createAgentEventJournal(db,{fail,onAppend=null}){
  function window(run){
   const h=head(run),rows=db.prepare('SELECT * FROM agent_events WHERE agent_run_id=? ORDER BY sequence LIMIT 65').all(run.agentRunId),first=Math.max(1,h.last_sequence-AGENT_EVENT_LIMITS.retainedPerRun+1);
   if(rows.length!==Math.min(h.last_sequence,AGENT_EVENT_LIMITS.retainedPerRun))corrupt();
-  const events=rows.map((row,i)=>{if(row.sequence!==first+i)corrupt();return decode(row,run);});return {h,first,events};
+  // Parse the bounded window first, then read its current invocation parents
+  // in one parameterized query. This map lives only for this synchronous read.
+  const projected=rows.map((row,i)=>{if(row.sequence!==first+i)corrupt();try{return parsed(row.body);}catch{corrupt();}}),ids=[...new Set(projected.filter(e=>e.type.startsWith('invocation.')).map(e=>e.data.invocationId))],owners=new Map();
+  if(ids.length)for(const row of db.prepare('SELECT invocation_id,agent_run_id,tenant,session_id,body FROM agent_invocations WHERE invocation_id IN ('+ids.map(()=>'?').join(',')+')').all(...ids)){let current;try{current=JSON.parse(row.body);}catch{corrupt();}if(owners.has(row.invocation_id))corrupt();owners.set(row.invocation_id,{row,current});}
+  const events=rows.map((row,i)=>decode(row,run,owners,projected[i]));return {h,first,events};
  }
+ function captureValidatedWindow(run){const {h,first,events}=window(run);return Object.freeze({oldestSequence:first,latestSequence:h.last_sequence,events:Object.freeze(events)});}
  function append(run,type,data){
   const h=db.prepare('SELECT * FROM agent_event_heads WHERE agent_run_id=?').get(run.agentRunId);if(!h||h.tenant!==run.tenant||h.session_id!==run.sessionId||!integer(h.last_sequence,0))corrupt();
   if(h.last_sequence)window(run);
@@ -46,7 +61,8 @@ export function createAgentEventJournal(db,{fail,onAppend=null}){
   db.prepare('UPDATE agent_event_heads SET last_sequence=? WHERE agent_run_id=?').run(next,run.agentRunId);
  }
  return {
-  captureWindow(run){const {h,first,events}=window(run);return {oldestSequence:first,latestSequence:h.last_sequence,events:structuredClone(events)};},
+  captureValidatedWindow,
+  captureWindow(run){return structuredClone(captureValidatedWindow(run));},
   validateCaptured(run,event){return decode({agent_run_id:run.agentRunId,tenant:run.tenant,session_id:run.sessionId,sequence:event?.sequence,event_id:event?.eventId,body:encode(event)},run);},
   seedSnapshots(){
    // A pre-extension ledger cannot supply a missing transition history. Seed

@@ -2,6 +2,15 @@ name: SDK package contracts
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'sdk/**'
+      - 'tests/**'
+      - 'service/**'
+      - 'live/**'
+      - 'protocol/**'
+      - 'package*.json'
+      - '.github/workflows/sdk-packages.yml'
   push:
     branches: [main]
     paths:
@@ -35,23 +44,60 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      # Cache dependencies only. Consumer archives and test results are always
+      # rebuilt/revalidated from this checkout. The fixed container, architecture
+      # and complete dependency/workflow inputs fence incompatible tool caches.
+      # Workspace-relative paths survive the runner/job-container path mapping;
+      # runner.temp expressions resolve differently from runtime RUNNER_TEMP.
+      - name: Restore verified SDK dependency tools
+        id: sdk-deps-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .sdk-cache/npm
+            .sdk-cache/tooling
+            .sdk-cache/wheelhouse
+            .sdk-cache/typescript
+          key: sdk-contract-tools-v2-${{ runner.os }}-${{ runner.arch }}-node22.23.3-py311-ts5.9.3-${{ hashFiles('.github/workflows/sdk-packages.yml', 'package-lock.json', 'tests/sdk-ci-tooling.txt', 'tests/sdk-runtime-wheels.txt') }}
       - name: Prepare build tools and fixture dependencies
         run: |
+          export npm_config_cache="$GITHUB_WORKSPACE/.sdk-cache/npm"
           apt-get update
           apt-get install -y --no-install-recommends python3 python3-venv
-          npm ci --ignore-scripts --no-audit --no-fund
-          python3 -m venv "$RUNNER_TEMP/sdk-bootstrap"
-          "$RUNNER_TEMP/sdk-bootstrap/bin/python" -m pip install --no-compile --target "$RUNNER_TEMP/sdk-tooling" -r tests/sdk-ci-tooling.txt
-          mkdir -p "$RUNNER_TEMP/sdk-wheelhouse"
-          "$RUNNER_TEMP/sdk-bootstrap/bin/python" -m pip download --only-binary=:all: --no-deps --require-hashes -r tests/sdk-runtime-wheels.txt --dest "$RUNNER_TEMP/sdk-wheelhouse"
-          npm install --prefix "$RUNNER_TEMP/sdk-typescript" --ignore-scripts --no-audit --no-fund --package-lock=false --save-exact typescript@5.9.3
+          npm ci --prefer-offline --ignore-scripts --no-audit --no-fund
+          if [ "${{ steps.sdk-deps-cache.outputs.cache-hit }}" != 'true' ]; then
+            python3 -m venv "$RUNNER_TEMP/sdk-bootstrap"
+            "$RUNNER_TEMP/sdk-bootstrap/bin/python" -m pip install --no-compile --target "$GITHUB_WORKSPACE/.sdk-cache/tooling" -r tests/sdk-ci-tooling.txt
+            mkdir -p "$GITHUB_WORKSPACE/.sdk-cache/wheelhouse"
+            "$RUNNER_TEMP/sdk-bootstrap/bin/python" -m pip download --only-binary=:all: --no-deps --require-hashes -r tests/sdk-runtime-wheels.txt --dest "$GITHUB_WORKSPACE/.sdk-cache/wheelhouse"
+            npm install --prefix "$GITHUB_WORKSPACE/.sdk-cache/typescript" --ignore-scripts --no-audit --no-fund --package-lock=false --save-exact typescript@5.9.3
+          fi
+          PYTHONPATH="$GITHUB_WORKSPACE/.sdk-cache/tooling" python3 - <<'PYTOOLS'
+          from importlib.metadata import version
+          from pathlib import Path
+          for line in Path('tests/sdk-ci-tooling.txt').read_text().splitlines():
+              name, expected = line.split('==')
+              assert version(name) == expected, (name, version(name), expected)
+          PYTOOLS
+          node "$GITHUB_WORKSPACE/.sdk-cache/typescript/node_modules/typescript/bin/tsc" --version
+      - name: Preserve verified dependency cache before executing tests
+        if: steps.sdk-deps-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .sdk-cache/npm
+            .sdk-cache/tooling
+            .sdk-cache/wheelhouse
+            .sdk-cache/typescript
+          key: ${{ steps.sdk-deps-cache.outputs.cache-primary-key }}
       - name: Verify complete JS suite and isolated installed SDKs
         run: |
+          export npm_config_cache="$GITHUB_WORKSPACE/.sdk-cache/npm"
           python3 tests/run-sdk-package-ci.py \
             --work-dir "$RUNNER_TEMP/sdk-validation" \
-            --tooling "$RUNNER_TEMP/sdk-tooling" \
-            --wheelhouse "$RUNNER_TEMP/sdk-wheelhouse" \
-            --typescript "$RUNNER_TEMP/sdk-typescript/node_modules/typescript/bin/tsc"
+            --tooling "$GITHUB_WORKSPACE/.sdk-cache/tooling" \
+            --wheelhouse "$GITHUB_WORKSPACE/.sdk-cache/wheelhouse" \
+            --typescript "$GITHUB_WORKSPACE/.sdk-cache/typescript/node_modules/typescript/bin/tsc"
       - name: Stage verification receipts from the actual container temp directory
         if: always()
         run: |

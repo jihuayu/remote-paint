@@ -90,4 +90,8 @@ from ._event_stream_parser import (AgentEventReady,AgentEventHeartbeat,AgentEven
 __all__ += ['AgentEventReady','AgentEventHeartbeat','AgentEventCheckpoint','AgentEventItem',
     'AgentReadyMessage','AgentHeartbeatMessage','AgentCheckpointMessage','AgentEventMessage']
 from ._event_stream import AgentEventStream,AgentEventTransportStatus
+from ._webhooks import (AgentWebhookEndpointId,AgentWebhookSubscriptionId,AgentWebhookOutcome,
+    AgentWebhookEndpoint,AgentWebhookEndpoints,AgentWebhookSubscribeInput,AgentWebhookHead,AgentWebhookSubscription)
+__all__ += ['AgentWebhookEndpointId','AgentWebhookSubscriptionId','AgentWebhookOutcome',
+    'AgentWebhookEndpoint','AgentWebhookEndpoints','AgentWebhookSubscribeInput','AgentWebhookHead','AgentWebhookSubscription']
 __all__ += ['AgentEventStream','AgentEventTransportStatus']

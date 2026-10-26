@@ -1,0 +1,285 @@
+{
+  "at": "2026-10-25T13:30:47.693824+00:00",
+  "status": "passed",
+  "base": "2d886d33b541431982baeb3be3ebd6400d73758d",
+  "branch": "codex/persistent-cache-20261025",
+  "source": "explicit virtual Node Source / existing SKP",
+  "actualBrowser": "155.0.8059.79",
+  "browserImage": "sha256:c75c58487264d5350a7b83eb6a5f11449dd0e1c49be81cedde3ace6c9ea7dd29",
+  "dockerBuilds": 0,
+  "chromiumCompiles": 0,
+  "hostPorts": [],
+  "network": "none",
+  "original25FileDigestsUnchanged": true,
+  "contracts": {
+    "files": 27,
+    "tests": 290,
+    "pass": 290,
+    "fail": 0,
+    "skipped": 0,
+    "receipt": {
+      "at": "2026-10-25T13:27:55.944284+00:00",
+      "stage": "cache-contracts-v2",
+      "exitCode": 0,
+      "seconds": 7.819,
+      "command": [
+        "/usr/local/bin/docker",
+        "--context",
+        "orbstack",
+        "exec",
+        "--workdir",
+        "/tmp/project",
+        "remote-paint-cache-pressure-20261025",
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "120s",
+        "/opt/remote-paint/node/bin/node",
+        "--test",
+        "tests/asset-wire.test.mjs",
+        "tests/client-memory.test.mjs",
+        "tests/frame-age-assets.test.mjs",
+        "tests/resource-memory.test.mjs",
+        "tests/scene-renderer.test.mjs",
+        "tests/static-assets.test.mjs",
+        "tests/viewer-access.test.mjs",
+        "tests/viewer-assets-http.test.mjs",
+        "tests/viewer-cache-authority.test.mjs",
+        "tests/viewer-cache-proxy.test.mjs",
+        "tests/viewer-channel.test.mjs",
+        "tests/viewer-connection.test.mjs",
+        "tests/viewer-control.test.mjs",
+        "tests/viewer-display.test.mjs",
+        "tests/viewer-frame.test.mjs",
+        "tests/viewer-input.test.mjs",
+        "tests/viewer-public-runtime.test.mjs",
+        "tests/viewer-role.test.mjs",
+        "tests/viewer-telemetry-dom.test.mjs",
+        "tests/viewer-telemetry-runtime.test.mjs",
+        "tests/viewer-telemetry-sdk.test.mjs",
+        "tests/viewer-telemetry.test.mjs",
+        "tests/viewer-viewport-actions.test.mjs",
+        "tests/viewer-viewport-channel.test.mjs",
+        "tests/viewer-viewport-input.test.mjs",
+        "tests/viewer-viewport.test.mjs",
+        "tests/viewer.test.mjs"
+      ]
+    }
+  },
+  "strictTypescript": {
+    "version": "5.9.3",
+    "test": "tests/types/viewer-connection.mts",
+    "strict": true,
+    "exitCode": 0
+  },
+  "stages": [
+    {
+      "stage": "capacity-before",
+      "status": "passed",
+      "exitCode": 0,
+      "at": "2026-10-25T13:06:44.422477+00:00",
+      "seconds": 20.253,
+      "resultSha256": "adba37aa8f34e2f4a5c5dbc5fae941775d6bfe1791f207f7b120a0d81561da30",
+      "checks": 1118,
+      "cases": [
+        {
+          "name": "remote-paint-full-default-pressure-v1",
+          "entries": 512,
+          "payloadBytes": 67108864,
+          "maxWriteMs": 50.90000000037253,
+          "p95WriteMs": 29,
+          "offerMs": 29.5,
+          "offeredEntries": 128,
+          "stats": {
+            "hits": 1,
+            "misses": 1,
+            "writes": 513,
+            "evictions": 1,
+            "corruptions": 0,
+            "errors": 0,
+            "timeouts": 0,
+            "busyDrops": 0,
+            "purges": 1,
+            "purgeFailures": 0,
+            "pendingBytes": 0,
+            "busy": false,
+            "openPending": false,
+            "pendingPurges": 0,
+            "offerSending": false,
+            "available": true
+          }
+        },
+        {
+          "name": "remote-paint-entry-pressure-v1",
+          "entries": 512,
+          "payloadBytes": 131072,
+          "maxWriteMs": 43.200000000186265,
+          "p95WriteMs": 28,
+          "offerMs": 30.199999999254942,
+          "offeredEntries": 128,
+          "stats": {
+            "hits": 1,
+            "misses": 1,
+            "writes": 513,
+            "evictions": 1,
+            "corruptions": 0,
+            "errors": 0,
+            "timeouts": 0,
+            "busyDrops": 0,
+            "purges": 1,
+            "purgeFailures": 0,
+            "pendingBytes": 0,
+            "busy": false,
+            "openPending": false,
+            "pendingPurges": 0,
+            "offerSending": false,
+            "available": true
+          }
+        },
+        {
+          "name": "remote-paint-byte-pressure-v1",
+          "entries": 64,
+          "payloadBytes": 67108864,
+          "maxWriteMs": 17.59999999962747,
+          "p95WriteMs": 14.900000000372529,
+          "offerMs": 5.7000000001862645,
+          "offeredEntries": 64,
+          "stats": {
+            "hits": 1,
+            "misses": 1,
+            "writes": 65,
+            "evictions": 1,
+            "corruptions": 0,
+            "errors": 0,
+            "timeouts": 0,
+            "busyDrops": 0,
+            "purges": 1,
+            "purgeFailures": 0,
+            "pendingBytes": 0,
+            "busy": false,
+            "openPending": false,
+            "pendingPurges": 0,
+            "offerSending": false,
+            "available": true
+          }
+        }
+      ]
+    },
+    {
+      "stage": "real-transport-reconnect",
+      "status": "passed",
+      "exitCode": 0,
+      "at": "2026-10-25T13:13:33.204691+00:00",
+      "seconds": 4.881,
+      "resultSha256": "cec21e8e2dd8829202f48c2563e164f3a9b87462e9d20730841a0d47e52c9a4a",
+      "paths": 2,
+      "bytesSavedEach": [
+        33638,
+        33638
+      ],
+      "realWsDropAutomaticReconnect": true,
+      "corruptionKeyframeRecovery": true,
+      "logoutPhysicalPurge": true
+    },
+    {
+      "stage": "viewer-build-session-transition-v2",
+      "status": "passed",
+      "exitCode": 0,
+      "at": "2026-10-25T13:24:52.731510+00:00",
+      "seconds": 7.967,
+      "resultSha256": "fa1707b25aa9dc2087b00f0af94ec2f45cf4d2ce582fae6fb6d9dd3acd34c384",
+      "paths": 2,
+      "stagesEach": 3,
+      "compatibleViewerBuildReusesCache": true,
+      "newRealSessionPurgesOldScope": true,
+      "ownedBrowserAbruptExitRestart": true,
+      "rendererWasmUnchanged": true
+    },
+    {
+      "stage": "persistent-resource-contracts",
+      "status": "passed",
+      "exitCode": 0,
+      "at": "2026-10-25T13:27:57.939471+00:00",
+      "seconds": 1.994,
+      "resultSha256": "387416d07fe65d2a501be31d223c3b8a4672b80f5d27c34d2bbebd6398e0f556",
+      "checks": 32
+    },
+    {
+      "stage": "persistent-settlement",
+      "status": "passed",
+      "exitCode": 0,
+      "at": "2026-10-25T13:27:58.816003+00:00",
+      "seconds": 0.876,
+      "resultSha256": "59f979db8febe681b44f371a5cc573e8e6e9a2b4ffa2723a5d34ac955b96959a",
+      "open": {
+        "observersFailedWithoutOpeningBodies": true,
+        "openRequestsBeforeActualSettlement": 1,
+        "terminalEventsBeforeRelease": 0,
+        "originalRequestAdmissionRetained": true,
+        "originalRequestsEventuallySettled": true
+      },
+      "transaction": {
+        "actualConstraintErrorObserved": true,
+        "writeRejected": true,
+        "returnedBeforeActualAbort": false,
+        "releasedBeforeActualAbort": false,
+        "events": [
+          {
+            "event": "request-error",
+            "owners": 4
+          },
+          {
+            "event": "actual-abort",
+            "owners": 4
+          },
+          {
+            "event": "owner-release",
+            "aborted": true,
+            "owners": 0
+          }
+        ],
+        "waitedForActualAbort": true,
+        "originalBodyPreservedByRollback": true,
+        "allChargesReleasedAfterSettlement": true,
+        "physicalPurgePassed": true
+      },
+      "delayedTerminalObservation": {
+        "observerReturnedFailure": true,
+        "observerMs": 104.30000000074506,
+        "actualAbortCaptured": true,
+        "terminalCallbackDeliveryHeld": true,
+        "purgeAdmissionRetained": true,
+        "duplicatePurgeNotAdmitted": true,
+        "cacheReadDeniedWhileCleanupUnconfirmed": true,
+        "lateTerminalCallbackReleasedAdmission": true,
+        "freshConfirmedPurgeRecovered": true,
+        "physicalFinalPurgePassed": true
+      }
+    }
+  ],
+  "notQualified": [
+    "Native chunk transport",
+    "cross-CanvasKit or Chromium release upgrades",
+    "production SLO/RSS",
+    "deferred 8h secondary Viewer memory",
+    "combined Webhook/cache full regression"
+  ],
+  "retainedFailures": [
+    {
+      "stage": "renderer-version-transition",
+      "reason": "unsupported cached CanvasKit glue variant rejected by unchanged pinned digest guard"
+    },
+    {
+      "stage": "viewer-build-session-transition",
+      "exitCode": 124,
+      "reason": "manual Page.crash driver dead end; replaced by exact owned child SIGKILL and real restart"
+    },
+    {
+      "stage": "cache-contracts",
+      "tests": 290,
+      "pass": 288,
+      "fail": 2,
+      "reason": "observer copied assets/insertion markers stale after cache integration, fixed and rerun"
+    }
+  ]
+}

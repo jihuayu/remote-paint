@@ -1,0 +1,106 @@
+{
+  "at": "2026-10-25T12:43:45.756130+00:00",
+  "baseMergeCommit": "2d886d33b541431982baeb3be3ebd6400d73758d",
+  "branch": "codex/webhook-regression-20261025",
+  "status": "linux-local-offline-qualified-not-published",
+  "preexistingFollowupFilesAdoptedUnchangedAtStart": 52,
+  "originalCheckoutFilesStillUnchanged": true,
+  "runtime": {
+    "python": "3.11.2",
+    "platform": "Linux",
+    "arch": "aarch64",
+    "node": "v22.23.3"
+  },
+  "limits": {
+    "containerCpus": 4,
+    "containerMemoryBytes": 2147483648,
+    "containerTmpfsBytes": 536870912,
+    "network": "none; no host ports",
+    "stageTimeoutSeconds": 120,
+    "rootTestConcurrency": 4
+  },
+  "root": {
+    "tests": 1803,
+    "pass": 1797,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 6,
+    "todo": 0
+  },
+  "installedNodeTests": 214,
+  "installedPythonTests": 210,
+  "typescriptActual0": true,
+  "installedMypyActual0": true,
+  "webhookReadmeExamples": {
+    "status": "passed",
+    "sameSubscription": true,
+    "durableInboxEvents": 3,
+    "sourceEffects": 0,
+    "docs": {
+      "javascript": {
+        "docSha256": "c954c07bd2f4d6a8fb7e5840077bbfdf2851fe5663c64e67098133e0d2d63372",
+        "snippetSha256": "d6427559befa02dc9c70d8097ace705a924f3446799fae6492b8d49b865f14cb"
+      },
+      "python": {
+        "docSha256": "541c40720b2fae16f24c01b8ad4d502059558d0ee4c97c146a2e9b3530c417bd",
+        "snippetSha256": "213f5c6e77ef04b29e80ee9c0c0a64f62014e9df01f406e55037bee4b65047f5"
+      }
+    }
+  },
+  "sourceManifestSha256": "1d9b80af0c9c44777f3ddb1a3fa081c111460ec30d4b9eea895169952cd4aead",
+  "pipelineReceiptSha256": "391a32ef28ff6e8f538868e6c62d0c902b0bace538949318e3ebf5e9167bff47",
+  "installedReceiptSha256": "6a49366609bfb925b2e7f5baa1efb148226e9f9e916baae8be79ee312c1fdd0d",
+  "archives": {
+    "remote_paint_session-0.0.0.dev0-py3-none-any.whl": "b3f9d5dae8a917ebbc3bf07f2a9f44963b807cb318a3ee54281fa612c59bb13a",
+    "remote-paint-session-client-0.0.0-dev.0.tgz": "0a530f30411950faf69512d5088bb110143cb462c04f8cf189ae385e57ee1f83"
+  },
+  "fixes": [
+    "Trusted test localhost DNS resolvers clear inherited ADDRCONFIG while preserving callback/all-address semantics, original TLS verification, retry bounds and observer deadlines",
+    "Strict SDK CI discovery gate accounts for three merged Linux packaging test files and nine cases:159 files/1803 cases; no skip/timeout relaxed"
+  ],
+  "earlierObservations": {
+    "webhookBefore": {
+      "tests": 96,
+      "pass": 94,
+      "fail": 2,
+      "causeProven": "only loopback interface plus ADDRCONFIG returns ENOTFOUND, so neither failed case established a TLS connection"
+    },
+    "webhookAfter": {
+      "tests": 96,
+      "pass": 96,
+      "fail": 0
+    },
+    "pythonSourceFull": {
+      "tests": 210,
+      "pass": 210,
+      "seconds": 17.918
+    },
+    "initialRootWithNoexecTmpfs": {
+      "tests": 1803,
+      "pass": 1769,
+      "fail": 11,
+      "cancelled": 17,
+      "skipped": 6,
+      "cause": "self-created Docker tmpfs was noexec; fixtures could not exec their own scripts; all logs retained"
+    },
+    "oldPythonDownloadResponseErrorRootCauseProven": false,
+    "oldMappedFilesystemTimeoutFixedOrReproduced": false
+  },
+  "remoteMainCi": {
+    "run": 40192236314,
+    "conclusion": "failure",
+    "cause": "old len(test_files)==154 assertion fails before executing tests",
+    "fixedLocallyOnly": true,
+    "rerunTriggered": false
+  },
+  "macFullRegressionRerun": false,
+  "originalNativeWebhookE2EQualified": false,
+  "sourceGapReconciliationCompleted": false,
+  "nativeDownloadBudgetEnabled": false,
+  "persistentCacheChangesIncluded": false,
+  "eightHourDeferred": true,
+  "wholeGoalQualified": false,
+  "publicPublishing": false,
+  "executedInputFiles": 1328,
+  "postExecutionChanges": "Only this qualification document and summary evidence were added after execution; implementation/test/SDK bytes remain identical to the frozen candidate."
+}
