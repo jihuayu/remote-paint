@@ -25,7 +25,9 @@ async function fixture(t,{peer=null,driverOptions={},start=true}={}){
  return {root,path,batch,run,peer,prod,get store(){return store;},get owner(){return owner;},get driver(){return driver;},create,options,subscribe:(after=0)=>driver.subscribe({agentRunId:run.agentRunId,after}),read:sub=>store.readAgentWebhookCapture(sub.subscriptionId,run.tenant,{}, {owner}),reopen(){store.releaseAgentController(owner);store.close();store=new SqliteSessionStore({path});owner=Symbol();store.claimAgentController(owner);return create();}};
 }
 function generate(f,n){const v=invocationIntent(f.run,n);for(const r of [v,requested(v),injected(v)])f.store.commitAgentInvocation(r,{owner:f.owner});}
-function gateLookup(){const ready=deferred();let callback,done=false;return {ready:ready.promise,lookup(host,opts,cb){lookup('localhost',{...opts,family:4},(...args)=>{callback=()=>cb(...args);ready.resolve();if(done)callback();});},release(){done=true;callback?.();}};}
+// This trusted test resolver always selects loopback. AI_ADDRCONFIG inherited
+// from Node would reject localhost in an isolated Linux namespace with only lo.
+function gateLookup(){const ready=deferred();let callback,done=false;return {ready:ready.promise,lookup(host,opts,cb){lookup('localhost',{...opts,family:4,hints:0},(...args)=>{callback=()=>cb(...args);ready.resolve();if(done)callback();});},release(){done=true;callback?.();}};}
 
 test('automatic endpoint drains original Source events into the production durable receiver without manual per-event calls',enabled,async t=>{
  const f=await fixture(t),sub=f.subscribe();await until(()=>f.read(sub).acceptedThrough===3);assert.deepEqual(f.prod.read().events.map(x=>x.envelope.event.sequence),[1,2,3]);assert.equal(f.driver.status().inFlight,0);assert.equal(f.store.findAgentWriter(f.run.sessionId,{owner:f.owner}).reserved,true);

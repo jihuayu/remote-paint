@@ -7,7 +7,7 @@ import {fork} from 'node:child_process';
 import {once} from 'node:events';
 import {DatabaseSync} from 'node:sqlite';
 import {SqliteSessionStore,sessionStoreSupported} from '../service/session-store.mjs';
-import {AGENT_EVENT_FORMAT,AGENT_EVENT_LIMITS} from '../service/agent-event-journal.mjs';
+import {AGENT_EVENT_FORMAT,AGENT_EVENT_LIMITS,createAgentEventJournal} from '../service/agent-event-journal.mjs';
 import {withOwnedTestChild} from './owned-test-child.mjs';
 import {readyRecords,runIntent,starting,active,activate,invocationIntent,requested,injected,unknown,uuid,legacyV3} from './fixtures/session-agent-records.mjs';
 import {fixture as executorFixture,until,deferred} from './fixtures/agent-executor-fixture.mjs';
@@ -20,6 +20,17 @@ async function fixture(t,options={}){
  const f={directory,path,store,owner,batch,detach};f.run=(row=runIntent())=>store.commitAgentRun(row,{owner}).run;f.inv=row=>store.commitAgentInvocation(row,{owner}).invocation;f.events=(after=0,options={})=>store.listAgentEvents(runIntent().agentRunId,batch.sessions[0].tenant,{after,...options},{owner});return f;
 }
 function all(f,after=0){const result=[];for(;;){const page=f.events(after);assert.equal(page.gap,false);result.push(...page.events);if(!page.hasMore)return result;assert.ok(page.nextCursor>after);after=page.nextCursor;}}
+
+test('internal validated windows are deeply immutable while legacy capture callers receive detached mutable copies',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),inv=invocationIntent(run);for(const row of [inv,requested(inv),injected(inv)])f.inv(row);
+ f.detach();const db=new DatabaseSync(f.path,{readOnly:true});try{
+  const journal=createAgentEventJournal(db,{fail(code){throw Object.assign(new Error(code),{code});}}),window=journal.captureValidatedWindow(run),before=structuredClone(window);
+  assert.equal(window.events.length,6);assert.ok(Object.isFrozen(window));assert.ok(Object.isFrozen(window.events));
+  const terminal=window.events.at(-1);assert.ok(Object.isFrozen(terminal.data.receipt));
+  assert.throws(()=>{window.latestSequence=0;},TypeError);assert.throws(()=>{window.events.pop();},TypeError);assert.throws(()=>{terminal.data.receipt.inputs=99;},TypeError);
+  const copy=journal.captureWindow(run);copy.latestSequence=0;copy.events.at(-1).data.receipt.inputs=99;copy.events.pop();assert.deepEqual(journal.captureValidatedWindow(run),before);assert.deepEqual(journal.captureWindow(run),before);
+ }finally{db.close();}
+});
 
 test('actual Agent transactions durably publish bounded ordered Run and Invocation metadata without private action or control fields',enabled,async t=>{
  const f=await fixture(t),run=activate(f.store,f.owner),inv=invocationIntent(run);for(const r of [inv,requested(inv),injected(inv)])f.inv(r);const events=all(f);

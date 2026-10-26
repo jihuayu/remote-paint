@@ -279,4 +279,56 @@ effects stay distinct. Rollback and business-success flags remain false. These m
 require `agents:read` or, for cancel, `agents:end` backend authority.
 
 This checkpoint targets Node, actual HTTP/SQLite contracts and isolated private packages.
-Python event parity, signed Webhooks and full original Native runtime qualification remain pending.
+Full original Native runtime qualification and explicit Source history-gap reconciliation remain pending.
+
+## Fixed Webhook subscriptions
+
+`runs.webhookEndpoints(run, options?)`, `runs.subscribeWebhook(run, {endpointId, after}, options?)`
+and `runs.webhookSubscription(run, subscriptionId, options?)` use the existing bounded ordinary
+HTTP pool, timeout, `AbortSignal` and retries (0–3). They require `agents:webhooks:read` or,
+for subscribe, `agents:webhooks:write`. Run read permission alone grants neither scope.
+An operator must provision the tenant's fixed automatic HTTPS endpoint beforehand.
+Public callers cannot provide URLs, HMAC keys or transport settings.
+
+Install the local private `.tgz` with `npm install /absolute/path/to/archive.tgz` in an
+empty consumer directory. Save the following as `subscribe.mjs`, set `REMOTE_PAINT_API`,
+`REMOTE_PAINT_API_KEY`, `REMOTE_PAINT_AGENT_RUN_ID` and `REMOTE_PAINT_WEBHOOK_AFTER`, then
+run `node subscribe.mjs`. `REMOTE_PAINT_WEBHOOK_AFTER` is an explicit original `aec1` cursor
+for that run, obtained from `runs.eventPage` or `runs.events`. Reading those event APIs also
+requires `agents:read`. Choose a retained start deliberately; using latest means future
+events only. Store the returned subscription ID and original start for later reads/retries.
+
+<!-- webhook-sdk-example:start -->
+```javascript
+import {AgentClient} from '@remote-paint/session-client/agent';
+const client = new AgentClient({
+  baseUrl: process.env.REMOTE_PAINT_API,
+  apiKey: process.env.REMOTE_PAINT_API_KEY,
+});
+const run = process.env.REMOTE_PAINT_AGENT_RUN_ID;
+const profiles = (await client.runs.webhookEndpoints(run)).data;
+const endpoint = profiles.endpoints.find(row => row.available);
+if (!endpoint) throw new Error('No available fixed Webhook endpoint');
+const subscription = (await client.runs.subscribeWebhook(run, {
+  endpointId: endpoint.endpointId,
+  after: process.env.REMOTE_PAINT_WEBHOOK_AFTER,
+}, {retries: 1})).data;
+const status = (await client.runs.webhookSubscription(run, subscription.subscriptionId)).data;
+console.log(JSON.stringify(status));
+```
+<!-- webhook-sdk-example:end -->
+
+Only `(after, acceptedThrough]` is sender-confirmed receiver acceptance. The initial
+`acceptedThrough === after` claims no earlier delivery. `reconciliationRequired` and its
+missing range remain explicit even when `pending === 0`; an exhausted eight-attempt head
+does not reset. Subscribe repeats the same natural `(run, endpoint)` key and immutable
+start, so retries send identical captured bytes without a separate Idempotency-Key.
+A changed start returns `AGENT_WEBHOOK_SUBSCRIPTION_CONFLICT`. Observer abort does not
+undo a committed subscription or stop automatic delivery, including after Source end.
+All returned metadata is recursively frozen; SDK validation rejects extra secret-bearing
+fields, mismatched identities, noncanonical cursors and inconsistent queue/head ranges.
+
+Receiver provisioning, HMAC verification and durable event-ID deduplication are described
+in `docs/agent-webhook-receiver.md` and `docs/agent-webhook-inbox.md` in the source checkout.
+Management credentials differ from receiver HMAC keys. Receiver acceptance does not prove
+downstream business success. This development package has not been published.

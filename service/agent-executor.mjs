@@ -3,7 +3,7 @@ import {publicDownload,captureDownloadFile,checkDownloadFileChunk} from './agent
 import {publicScreenshot,captureScreenshotDownload,checkScreenshotDownloadChunk} from './agent-screenshot-access.mjs';
 import {createHash,createHmac,randomUUID} from 'node:crypto';
 import {types} from 'node:util';
-import {SqliteSessionStore} from './session-store.mjs';
+import {SqliteSessionStore,SessionStoreError} from './session-store.mjs';
 import {agentNeverDispatchedDigest} from './session-agent-journal.mjs';
 import {AGENT_EVENT_LIMITS} from './agent-event-journal.mjs';
 import {createAgentWebhookDispatcher} from './agent-webhook-dispatcher.mjs';
@@ -11,7 +11,7 @@ import {createAgentWebhookDriver} from './agent-webhook-driver.mjs';
 import {sourceObservationContext,publicObservationContext,publicObservation,publicAccessibility} from './agent-observation-access.mjs';
 import {captureAgentRequest,captureAgentResult,agentReplyExpectation,AgentRpcError,agentFailure} from './agent-rpc.mjs';
 
-const codes=new Set(['AGENT_IDEMPOTENCY_CONFLICT','AGENT_INVOCATION_NOT_FOUND','AGENT_EXECUTOR_CLOSED','AGENT_EXECUTOR_CAPACITY','AGENT_EXECUTOR_BUSY','AGENT_RECOVERY_REQUIRED','AGENT_STORAGE_UNAVAILABLE','AGENT_EVENT_CURSOR_INVALID','AGENT_CANCELLATION_CURSOR_INVALID','AGENT_CANCELLATION_CHANGED']);
+const codes=new Set(['AGENT_WEBHOOK_ENDPOINT_NOT_FOUND','AGENT_WEBHOOK_ENDPOINT_UNAVAILABLE','AGENT_WEBHOOK_SUBSCRIPTION_NOT_FOUND','AGENT_WEBHOOK_SUBSCRIPTION_CONFLICT','AGENT_WEBHOOK_HISTORY_UNAVAILABLE','AGENT_WEBHOOK_CAPACITY','AGENT_WEBHOOK_NOT_CONFIGURED','AGENT_IDEMPOTENCY_CONFLICT','AGENT_INVOCATION_NOT_FOUND','AGENT_EXECUTOR_CLOSED','AGENT_EXECUTOR_CAPACITY','AGENT_EXECUTOR_BUSY','AGENT_RECOVERY_REQUIRED','AGENT_STORAGE_UNAVAILABLE','AGENT_EVENT_CURSOR_INVALID','AGENT_CANCELLATION_CURSOR_INVALID','AGENT_CANCELLATION_CHANGED']);
 export class AgentExecutionError extends Error {
  constructor(code,outcome='not-dispatched'){super('Agent execution is unavailable');this.name='AgentExecutionError';this.code=codes.has(code)||new AgentRpcError(code).code===code?code:'AGENT_INPUT_FAILED';this.outcome=outcome==='unknown'?'unknown':'not-dispatched';}
 }
@@ -182,17 +182,45 @@ export class DurableAgentExecutor {
  }
  status(){return Object.freeze({state:this.#fault?'fault':!this.#claimed?'closed':this.#stopping?'stopping':'active',ordinary:this.#ordinary.size,ending:this.#ending.size,ownerHeld:this.#claimed});}
  usesRegistry(registry){return this.#registryIdentity===registry;}
+ // Public management observes the original journal; it never owns a new
+ // delivery loop, URL/key configuration or Source action.
+ webhookEndpoints(value){
+  if(types.isProxy(value))fail('AGENT_INVALID_REQUEST');const ref=runRequest(value);this.#run(ref,{reconcile:false});
+  const endpoints=[];for(const [key,entry]of this.#webhooks)if(entry.automatic&&key.startsWith(ref.tenantId+'\0')){const status=entry.worker.status();endpoints.push({endpointId:key.slice(ref.tenantId.length+1),available:!this.#stopping&&!status.closed&&!status.stopping&&!status.faulted});}
+  endpoints.sort((a,b)=>a.endpointId.localeCompare(b.endpointId));return {schema:'agent-webhook-endpoints-v1',agentRunId:ref.agentRunId,endpoints};
+ }
+ #webhookFailure(error,writing=false){
+  if(error instanceof SessionStoreError){const expected={STATE_WEBHOOK_DISABLED:'AGENT_WEBHOOK_NOT_CONFIGURED',STATE_WEBHOOK_REFERENCE:'AGENT_WEBHOOK_SUBSCRIPTION_NOT_FOUND',STATE_WEBHOOK_CONFLICT:'AGENT_WEBHOOK_SUBSCRIPTION_CONFLICT',STATE_WEBHOOK_CURSOR:'AGENT_WEBHOOK_HISTORY_UNAVAILABLE',STATE_WEBHOOK_LIMIT:'AGENT_WEBHOOK_CAPACITY'};if(Object.hasOwn(expected,error.code))fail(expected[error.code]);}
+  this.#fault=true;fail('AGENT_STORAGE_UNAVAILABLE',writing?'unknown':'not-dispatched');
+ }
+ #webhookView(capture){
+  const {subscriptionId,agentRunId,sessionId,endpointId,after,acceptedThrough,queuedThrough,observedLatest,pending,reconciliationRequired,missingFrom,missingThrough}=capture,first=capture.deliveries[0];
+  return {schema:'agent-webhook-subscription-v1',subscriptionId,agentRunId,sessionId,endpointId,after,acceptedThrough,queuedThrough,observedLatest,pending,reconciliationRequired,missingFrom,missingThrough,head:first?{eventId:first.eventId,sequence:first.sequence,attempts:first.attempts,lastOutcome:first.lastOutcome}:null};
+ }
+ subscribeWebhook(value){
+  if(types.isProxy(value))fail('AGENT_INVALID_REQUEST');const v=data(value,['tenantId','agentRunId','endpointId','after']),ref=runRequest({tenantId:v.tenantId,agentRunId:v.agentRunId});this.#admit();const row=this.#run(ref,{reconcile:false});
+  if(!id(v.endpointId,'awh')||!Number.isSafeInteger(v.after)||v.after<0)fail('AGENT_INVALID_REQUEST');const entry=this.#webhooks.get(v.tenantId+'\0'+v.endpointId);if(!entry?.automatic)fail('AGENT_WEBHOOK_ENDPOINT_NOT_FOUND');const status=entry.worker.status();if(status.closed||status.stopping||status.faulted)fail('AGENT_WEBHOOK_ENDPOINT_UNAVAILABLE');
+  let sub;try{sub=this.#store.subscribeAgentWebhook(row.agentRunId,row.tenant,{endpointId:v.endpointId,after:v.after},{owner:this.#owner});}catch(error){this.#webhookFailure(error,true);}
+  // The committed revision is discovered by the original automatic driver.
+  // A lost HTTP response cannot undo it or create a second subscription.
+  try{return this.#webhookView(this.#store.readAgentWebhookCapture(sub.subscriptionId,row.tenant,{limit:1},{owner:this.#owner}));}catch{this.#fault=true;fail('AGENT_STORAGE_UNAVAILABLE','unknown');}
+ }
+ webhookSubscription(value){
+  if(types.isProxy(value))fail('AGENT_INVALID_REQUEST');const v=data(value,['tenantId','agentRunId','subscriptionId']),ref=runRequest({tenantId:v.tenantId,agentRunId:v.agentRunId});this.#run(ref,{reconcile:false});if(!id(v.subscriptionId,'awsub'))fail('AGENT_INVALID_REQUEST');let capture;
+  try{capture=this.#store.readAgentWebhookCapture(v.subscriptionId,v.tenantId,{limit:1},{owner:this.#owner});}catch(error){this.#webhookFailure(error);}
+  if(capture.agentRunId!==ref.agentRunId)fail('AGENT_WEBHOOK_SUBSCRIPTION_NOT_FOUND');return this.#webhookView(capture);
+ }
  createWebhookDispatcher(config){return this.#webhook(config,false);}
  registerWebhookEndpoint(config){return this.#webhook(config,true);}
  #webhook(config,automatic){
   this.#admit();if(types.isProxy(config))fail('AGENT_INVALID_REQUEST');const allowed=['tenantId','endpointId','url','keys','activeKeyId','ca','maxConcurrent','timeoutMs','retryBaseMs','lookup','dnsServers',...(automatic?['pollIntervalMs']:[])],v=data(config,allowed,['tenantId','endpointId','url','keys','activeKeyId']);if(!tenant(v.tenantId)||!id(v.endpointId,'awh'))fail('AGENT_INVALID_REQUEST');const key=v.tenantId+'\0'+v.endpointId,prior=this.#webhooks.get(key);
-  if(prior){const status=prior.status();if(!status.closed||status.inFlight)fail('AGENT_EXECUTOR_BUSY');this.#webhooks.delete(key);}
-  for(const [key,worker]of this.#webhooks)if(worker.status().closed&&worker.status().inFlight===0)this.#webhooks.delete(key);
-  if(this.#webhooks.size>=4)fail('AGENT_EXECUTOR_CAPACITY');const worker=(automatic?createAgentWebhookDriver:createAgentWebhookDispatcher)({...v,store:this.#store,owner:this.#owner});this.#webhooks.set(key,worker);return worker;
+  if(prior){const status=prior.worker.status();if(!status.closed||status.inFlight)fail('AGENT_EXECUTOR_BUSY');this.#webhooks.delete(key);}
+  for(const [key,{worker}]of this.#webhooks)if(worker.status().closed&&worker.status().inFlight===0)this.#webhooks.delete(key);
+  if(this.#webhooks.size>=4)fail('AGENT_EXECUTOR_CAPACITY');const worker=(automatic?createAgentWebhookDriver:createAgentWebhookDispatcher)({...v,store:this.#store,owner:this.#owner});this.#webhooks.set(key,{worker,automatic});return worker;
  }
  shutdown({timeoutMs=5000}={}){
   if(!Number.isInteger(timeoutMs)||timeoutMs<1||timeoutMs>120000)throw TypeError('Configure a bounded shutdown observation');
-  if(!this.#shutdown){this.#stopping=true;const webhookClosing=[...this.#webhooks.values()].map(worker=>worker.close());for(const closing of webhookClosing)closing.catch(()=>{});this.#shutdown=Promise.resolve().then(async()=>{
+  if(!this.#shutdown){this.#stopping=true;const webhookClosing=[...this.#webhooks.values()].map(({worker})=>worker.close());for(const closing of webhookClosing)closing.catch(()=>{});this.#shutdown=Promise.resolve().then(async()=>{
    if(!this.#fault&&this.#claimed){for(const row of this.#records('runs',{reservedOnly:true})){if(!row.reserved)continue;while(this.#ending.size>=this.#max)await Promise.race([...this.#ending.values()].map(x=>x.promise));this.end({tenantId:row.tenant,agentRunId:row.agentRunId});const end=this.#ending.get(row.agentRunId);if(end)await end.promise;}}
    while(this.#ordinary.size||this.#ending.size)await Promise.all([...this.#ordinary.values(),...this.#ending.values()].map(x=>x.promise));await Promise.all(webhookClosing);let remaining=[];if(!this.#fault&&this.#claimed)for(const row of this.#records('runs',{reservedOnly:true}))remaining.push(row.agentRunId);if(this.#claimed){this.#store.releaseAgentController(this.#owner);this.#claimed=false;}this.#actionKey.fill(0);return Object.freeze({status:this.#fault||remaining.length?'unconfirmed':'closed',remainingRuns:remaining});
   }).catch(()=>{this.#fault=true;return Object.freeze({status:'unconfirmed'});});}

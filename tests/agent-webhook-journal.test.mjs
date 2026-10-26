@@ -103,3 +103,50 @@ test('subscription discovery reports the retained prefix and explicit gap withou
 test('trusted dispatcher discovery captures its endpoint and revision without accepting per-read URLs or keys',enabled,async t=>{
  const {createAgentWebhookDispatcher}=await import('../service/agent-webhook-dispatcher.mjs'),f=await fixture(t),sub=f.subscribe(closedRun(f,1)),worker=createAgentWebhookDispatcher({store:f.store,owner:f.owner,tenantId:'tenant-a',endpointId:endpoint(1),url:'https://127.0.0.1:443/hook',keys:[{keyId:'fixture',secret:Buffer.alloc(32,0x57)}],activeKeyId:'fixture'});try{assert.equal(worker.revision(),f.store.agentWebhookHead({owner:f.owner}).revision);assert.equal(worker.list().subscriptions[0].subscriptionId,sub.subscriptionId);for(const options of [{endpointId:endpoint(2)},{url:'https://private/'},{keys:[]}])assert.throws(()=>worker.list(options),code('AGENT_WEBHOOK_STATE_UNAVAILABLE'));}finally{await worker.close();}
 });
+
+
+test('one capture validation shares a fresh invocation parent within the exact retained Source window',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),sub=f.subscribe(run);generate(f,run,1);const before=all(f,sub),expected=new Set(before.map(r=>JSON.parse(r.body).event).filter(e=>e.type==='invocation.updated').map(e=>e.data.invocationId)).size,prepare=DatabaseSync.prototype.prepare;let parentReads=0;
+ DatabaseSync.prototype.prepare=function(sql,...args){if(sql.startsWith('SELECT invocation_id,agent_run_id,tenant,session_id,body FROM agent_invocations WHERE invocation_id IN ('))parentReads++;return prepare.call(this,sql,...args);};try{assert.equal(f.read(sub).pending,6);}finally{DatabaseSync.prototype.prepare=prepare;}
+ assert.equal(parentReads,expected);assert.equal(parentReads,1);assert.deepEqual(all(f,sub),before);
+});
+test('retained capture equality rejects valid-but-different Source or captured event bytes after recomputing hashes',enabled,async t=>{
+ for(const side of ['source','capture']){const f=await fixture(t),run=activate(f.store,f.owner);f.subscribe(run);f.detach();edit(f.path,db=>{const table=side==='source'?'agent_events':'agent_webhook_deliveries',row=db.prepare('SELECT body FROM '+table+' WHERE sequence=1').get(),value=JSON.parse(row.body),event=side==='source'?value:value.event;event.observedAt=new Date(Date.parse(event.observedAt)+1).toISOString();const body=JSON.stringify(value);if(side==='source')db.prepare('UPDATE agent_events SET body=? WHERE sequence=1').run(body);else db.prepare('UPDATE agent_webhook_deliveries SET body=?,body_sha256=? WHERE sequence=1').run(body,digest(body));});assert.throws(()=>new SqliteSessionStore({path:f.path}),code('STATE_CORRUPT'));}
+});
+test('retained and evicted capture envelopes reject foreign routing and noncanonical bytes even with matching hashes',enabled,async t=>{
+ for(const evicted of [false,true])for(const mode of ['endpoint','extra','order','whitespace']){
+  const f=await fixture(t),run=activate(f.store,f.owner);f.subscribe(run);if(evicted)for(let n=1;n<=22;n++)generate(f,run,n);f.detach();
+  edit(f.path,db=>{const value=JSON.parse(db.prepare('SELECT body FROM agent_webhook_deliveries WHERE sequence=1').get().body);let body;
+   if(mode==='endpoint'){value.endpointId=endpoint(2);body=JSON.stringify(value);}else if(mode==='extra')body=JSON.stringify({...value,extra:true});else if(mode==='order')body=JSON.stringify({endpointId:value.endpointId,schema:value.schema,subscriptionId:value.subscriptionId,event:value.event});else body=' '+JSON.stringify(value);
+   db.prepare('UPDATE agent_webhook_deliveries SET body=?,body_sha256=? WHERE sequence=1').run(body,digest(body));
+  });assert.throws(()=>new SqliteSessionStore({path:f.path}),code('STATE_CORRUPT'));
+ }
+});
+test('original prefix evicted from Source replay still checks its real invocation parent after canonical hash recomputation',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner);f.subscribe(run);for(let i=1;i<=22;i++)generate(f,run,i);f.detach();edit(f.path,db=>{assert.equal(db.prepare('SELECT min(sequence) AS first FROM agent_events').get().first,6);const row=db.prepare('SELECT body FROM agent_webhook_deliveries WHERE sequence=4').get(),value=JSON.parse(row.body);value.event.data.tool='click';const body=JSON.stringify(value);db.prepare('UPDATE agent_webhook_deliveries SET body=?,body_sha256=? WHERE sequence=4').run(body,digest(body));});assert.throws(()=>new SqliteSessionStore({path:f.path}),code('STATE_CORRUPT'));
+});
+
+
+test('warm projection parsing never bypasses fresh current invocation ownership and semantic checks',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),sub=f.subscribe(run);generate(f,run,1);const before=all(f,sub),prepare=DatabaseSync.prototype.prepare;
+ for(const mode of ['tenant','tool','state']){DatabaseSync.prototype.prepare=function(sql,...args){const statement=prepare.call(this,sql,...args);if(!sql.startsWith('SELECT invocation_id,agent_run_id,tenant,session_id,body FROM agent_invocations WHERE invocation_id IN ('))return statement;return {all(...values){return statement.all(...values).map(row=>{if(mode==='tenant')return {...row,tenant:'foreign'};const current=JSON.parse(row.body);if(mode==='tool')current.tool='click';else current.state='unknown';return {...row,body:JSON.stringify(current)};});}};};try{assert.throws(()=>f.read(sub),code('STATE_CORRUPT'));}finally{DatabaseSync.prototype.prepare=prepare;}}
+ assert.deepEqual(all(f,sub),before);
+});
+test('a caller cannot mutate the internally cached exact event projection through a returned capture page',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),sub=f.subscribe(run),before=all(f,sub),page=f.store.listAgentEvents(run.agentRunId,run.tenant,{}, {owner:f.owner});page.events[0].data.state='closed';page.events[0].eventId='aevt_'+uuid(123);assert.deepEqual(all(f,sub),before);const again=f.store.listAgentEvents(run.agentRunId,run.tenant,{}, {owner:f.owner});assert.notEqual(again.events[0].data.state,'closed');assert.notEqual(again.events[0].eventId,page.events[0].eventId);
+});
+
+test('warm retained envelope reuse rejects fresh forged Source bytes capture bytes hashes and endpoint routing',enabled,async t=>{
+ const f=await fixture(t),run=activate(f.store,f.owner),sub=f.subscribe(run),before=all(f,sub),prepare=DatabaseSync.prototype.prepare;
+ for(const mode of ['source-body','capture-body','capture-hash','routing']){
+  assert.deepEqual(all(f,sub),before);
+  DatabaseSync.prototype.prepare=function(sql,...args){const statement=prepare.call(this,sql,...args);
+   if(mode==='routing'&&sql==='SELECT * FROM agent_webhooks WHERE subscription_id=? AND tenant=?')return {get(...values){return {...statement.get(...values),endpoint_id:endpoint(2)};}};
+   const source=sql==='SELECT * FROM agent_events WHERE agent_run_id=? ORDER BY sequence LIMIT 65',capture=sql==='SELECT * FROM agent_webhook_deliveries WHERE subscription_id=? ORDER BY sequence LIMIT 65';
+   if(!(source&&mode==='source-body'||capture&&mode.startsWith('capture-')))return statement;
+   return {all(...values){return statement.all(...values).map((row,i)=>{if(i)return row;if(mode==='capture-hash')return {...row,body_sha256:'0'.repeat(64)};const value=JSON.parse(row.body),event=source?value:value.event;event.observedAt=new Date(Date.parse(event.observedAt)+1).toISOString();const body=JSON.stringify(value);return source?{...row,body}:{...row,body,body_sha256:digest(body)};});}};
+  };
+  try{assert.throws(()=>f.read(sub),code('STATE_CORRUPT'));}finally{DatabaseSync.prototype.prepare=prepare;}
+ }
+ assert.deepEqual(all(f,sub),before);assert.equal(f.store.findAgentWriter(run.sessionId,{owner:f.owner}).reserved,true);
+});

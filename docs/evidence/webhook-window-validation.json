@@ -1,0 +1,165 @@
+{
+  "at": "2026-10-22T04:52:54.859853+00:00",
+  "executedCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-canonical-envelope-candidate-v1/frozen-version.json",
+  "candidateSha256": "ba749b9d7c46e58b07912db9a696b16bce9b4f20b98223e5d22c7baba279e574",
+  "scope": "Immutable freshly validated internal Source windows and complete retained-envelope byte comparison",
+  "firstCheckpoint": {
+    "macos": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-immutable-window-macos-journals-v2.log",
+      "sha256": "0d99189b0e3d46716c015875b2ba39a361454284f37edd2c14bc4acb0156654c",
+      "tests": 57,
+      "pass": 57,
+      "fail": 0,
+      "skipped": 0,
+      "failedNames": []
+    },
+    "linux": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-immutable-window-linux-journals-v2/files.log",
+      "sha256": "ee1e0ce1e800441b669b52e397d27e5d7a3306d7e2b26f8172fd944a507b5488",
+      "tests": 57,
+      "pass": 57,
+      "fail": 0,
+      "skipped": 0,
+      "failedNames": []
+    },
+    "checkpoint": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-immutable-window-checkpoint-v2.json"
+  },
+  "currentMacos": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-canonical-envelope-macos-v1.log",
+    "sha256": "0e0b5376d6d494ab09249f68f8c0f9292fb938bfd515a55920ff3b21712f63a8",
+    "tests": 102,
+    "pass": 100,
+    "fail": 2,
+    "skipped": 0,
+    "failedNames": [
+      "automatic delivery drains the retained prefix but preserves the exact original history gap",
+      "capture saturation retains the exact original gap; public retries cannot reset it or replay Source effects"
+    ]
+  },
+  "currentLinux": {
+    "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-canonical-envelope-linux-v1/files.log",
+    "sha256": "4c03b8c06612d86986f230a4253ea010e29bea7d0d7a0558578221a6f5ef0d93",
+    "tests": 127,
+    "pass": 125,
+    "fail": 2,
+    "skipped": 0,
+    "failedNames": [
+      "automatic delivery drains the retained prefix but preserves the exact original history gap",
+      "capture saturation retains the exact original gap; public retries cannot reset it or replay Source effects"
+    ]
+  },
+  "currentLinuxResult": {
+    "exitCode": 1,
+    "timedOut": false,
+    "seconds": 99.15549877198646,
+    "sourceFilesUnchanged": true,
+    "manifestSha256": "ba749b9d7c46e58b07912db9a696b16bce9b4f20b98223e5d22c7baba279e574",
+    "testFiles": 6,
+    "fullRootSuiteQualified": false,
+    "wholeGoalQualified": false
+  },
+  "attemptBudgetCorrection": {
+    "durableAttempts": 8,
+    "settledOriginalAttempts": 8,
+    "controlledActualHttpsRequests": 7,
+    "forcedFirstBeginMs": 90,
+    "originalDeadlineMs": 75,
+    "oldAssertionDiagnostic": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-attempt-count-diagnostic-v1/diagnostic.log",
+    "macosFilePassed": 25,
+    "currentLinuxDispatcherFilePassed": 25,
+    "productionAttemptLimitOrTimeoutChanged": false
+  },
+  "pythonResponseDiagnostic": {
+    "result": {
+      "exitCode": 0,
+      "timedOut": false,
+      "seconds": 97.51500536099775,
+      "sourceFilesUnchanged": true,
+      "manifestSha256": "7d2a874bfbe8cd8e70bd2272c1a69c0d6266e085263ee69a764237f11717f5e1",
+      "expectedTests": 210,
+      "sameInstalledSdkBytes": true,
+      "sourceFallbackUnavailable": true,
+      "scope": "full installed Python unit suite with bounded header-only observer",
+      "wholeGoalQualified": false
+    },
+    "log": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/sdk-response-diagnostic-linux-v3/python-unit.log",
+    "precedesCurrentProductionOptimization": true,
+    "priorFailureCauseProven": false,
+    "malformedResponseReproducedInThisRun": false,
+    "boundedMetadataOnly": true,
+    "maxRows": 8,
+    "noAuthOrBodyCapture": true
+  },
+  "prefixCostDiagnostic": {
+    "elapsedMs": 3259.7662910000004,
+    "actualReceivedRequests": 39,
+    "driver": {
+      "schema": "agent-webhook-driver-status-v1",
+      "closed": false,
+      "stopping": false,
+      "faulted": false,
+      "inFlight": 1,
+      "active": 1,
+      "capacity": 2,
+      "pollIntervalMs": 10,
+      "lastError": null
+    },
+    "storeCost": {
+      "readAgentWebhookCapture": {
+        "calls": 40,
+        "ms": 365.50958400000104
+      },
+      "beginAgentWebhookAttempt": {
+        "calls": 40,
+        "ms": 519.1915000000008
+      },
+      "settleAgentWebhookAttempt": {
+        "calls": 39,
+        "ms": 371.60132899999803
+      },
+      "listAgentWebhookSubscriptions": {
+        "calls": 80,
+        "ms": 590.1101750000025
+      },
+      "agentWebhookHead": {
+        "calls": 116,
+        "ms": 71.28483099999858
+      }
+    },
+    "diagnosticOnly": true
+  },
+  "prefixCostDiagnosticQualification": false,
+  "preservedFailures": [
+    "Initial new test opened a second connection while the Store held its exclusive database lock; corrected by closing the Store first",
+    "macOS first four-file run: 89/93, four failures",
+    "Linux first seven-file run: original 120s stage guard reached; not complete",
+    "First outer coordinator timed out at 160s while the same Linux container was still live; container was observed and allowed to reach its own original stage guard",
+    "Both current platforms still fail the same two original 3s observers",
+    "Previous four-concurrency root suite still has no complete passing result; original stderr/startup failures are not covered by this six-file run"
+  ],
+  "invariants": {
+    "retainedEvents": 64,
+    "eventBytes": 3072,
+    "webhookBodyBytes": 4096,
+    "attempts": 8,
+    "originalObservationMs": 3000,
+    "originalUnitStageSeconds": 120,
+    "cacheScope": "Only exact-byte pure event parsing; fresh indexed Source and invocation-parent checks on every operation",
+    "legacyAndPublicCopiesDetached": true,
+    "noNewCrossOperationAuthorizationCache": true
+  },
+  "protection": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/webhook-window-protection-v1.json",
+  "protectionSha256": "bd2919edf438e0785ecbbd9f892fd870b1ff5f440de436f44bee61b6147c11c0",
+  "ledger": {
+    "completeWithinScopes": 10,
+    "partial": 18,
+    "pending": 13,
+    "total": 41
+  },
+  "originalEightHourPassed": false,
+  "fullNativeQualified": false,
+  "mildLossQualified": false,
+  "fullRootQualified": false,
+  "wholeGoalQualified": false,
+  "noCommitPush": true
+}

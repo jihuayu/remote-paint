@@ -1,4 +1,4 @@
-import {AgentEventHttpError} from './agent-event-http.mjs';
+import {AgentEventHttpError,agentEventCursor,agentEventAfter} from './agent-event-http.mjs';
 import {capturePublicDownloadArmed,capturePublicDownloadInfo,capturePublicDownloadChunk,capturePublicDownloadReleased} from './agent-download-access.mjs';
 import {capturePublicScreenshot,capturePublicScreenshotChunk,capturePublicScreenshotReleased} from './agent-screenshot-access.mjs';
 import {DurableAgentExecutor,AgentExecutionError} from './agent-executor.mjs';
@@ -6,8 +6,9 @@ import {AgentRpcError,captureAgentContext} from './agent-rpc.mjs';
 import {capturePublicObservationContext,capturePublicObservation,capturePublicAccessibility} from './agent-observation-access.mjs';
 import {InputError} from '../live/input.mjs';
 
-export const AGENT_HTTP_SCOPES=Object.freeze(['agents:read','agents:write','agents:end','agents:observe']);
+export const AGENT_HTTP_SCOPES=Object.freeze(['agents:read','agents:write','agents:end','agents:observe','agents:webhooks:read','agents:webhooks:write']);
 const errors={
+ AGENT_WEBHOOK_ENDPOINT_NOT_FOUND:[404,'Automatic Webhook endpoint not found'],AGENT_WEBHOOK_ENDPOINT_UNAVAILABLE:[503,'Webhook endpoint is unavailable'],AGENT_WEBHOOK_SUBSCRIPTION_NOT_FOUND:[404,'Webhook subscription not found'],AGENT_WEBHOOK_SUBSCRIPTION_CONFLICT:[409,'Webhook subscription start cursor is immutable'],AGENT_WEBHOOK_HISTORY_UNAVAILABLE:[409,'Webhook requires retained original event history'],AGENT_WEBHOOK_CAPACITY:[429,'Webhook subscription capacity reached'],AGENT_WEBHOOK_NOT_CONFIGURED:[503,'Webhook capture is unavailable'],
  AGENT_CANCELLATION_CURSOR_INVALID:[400,'Invalid Agent cancellation cursor'],AGENT_CANCELLATION_CHANGED:[409,'Agent cancellation report changed; restart from its first page'],
  AGENT_EVENT_CURSOR_INVALID:[400,'Invalid Agent event cursor'],AGENT_EVENT_GAP:[409,'Agent event history is no longer retained'],AGENT_EVENT_STREAM_STALLED:[504,'Agent event reader did not drain'],
  STALE_AGENT_DOWNLOAD:[409,'Agent download handle is stale'],AGENT_DOWNLOAD_BUSY:[409,'Agent download is in flight'],AGENT_DOWNLOAD_LIMIT:[413,'Agent download exceeds the allowed limit'],AGENT_DOWNLOAD_FAILED:[502,'Agent download could not be confirmed'],AGENT_DOWNLOAD_TIMEOUT:[504,'Agent download window expired'],AGENT_DOWNLOAD_CANCELLED:[409,'Agent download was cancelled'],
@@ -30,17 +31,19 @@ export function agentHttpError(error){
 }
 const uuid='[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
 const runPath=new RegExp('^/v1/agent-runs/(arun_'+uuid+')(?:/(cancel|cancellation|events/stream|events|context|invocations|end|observation-context|observations|accessibility-observations|screenshot-observations|screenshot-chunks|screenshot-releases|screenshot-downloads|download-arms|download-observations|download-chunks|download-releases|download-files))?$');
+const webhookPath=new RegExp('^/v1/agent-runs/(arun_'+uuid+')/(webhook-endpoints|webhook-subscriptions)(?:/(awsub_'+uuid+'))?$');
 const invocationPath=new RegExp('^/v1/agent-invocations/(ainv_'+uuid+')$');
 const createPath=new RegExp('^/v1/sessions/(ses_'+uuid+')/agent-runs$');
 export function agentHttpRoute(path){
- let match;if((match=createPath.exec(path)))return {agent:true,method:'POST',scope:'agents:write',kind:'agent-create',id:match[1],needsBody:true};
+ let match;if((match=webhookPath.exec(path))){if(match[2]==='webhook-endpoints'&&match[3])return null;const creating=match[2]==='webhook-subscriptions'&&!match[3];return {agent:true,method:creating?'POST':'GET',scope:creating?'agents:webhooks:write':'agents:webhooks:read',kind:'agent-webhook-'+(creating?'subscribe':match[3]?'subscription':'endpoints'),id:match[1],...(match[3]?{subscriptionId:match[3]}:{}),needsBody:creating};}
+ if((match=createPath.exec(path)))return {agent:true,method:'POST',scope:'agents:write',kind:'agent-create',id:match[1],needsBody:true};
  if((match=invocationPath.exec(path)))return {agent:true,method:'GET',scope:'agents:read',kind:'agent-invocation',id:match[1]};
  if((match=runPath.exec(path))){const suffix=match[2],observation=['observations','observation-context','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix);return {agent:true,method:['invocations','end','cancel','observations','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix)?'POST':'GET',scope:observation?'agents:observe':suffix==='invocations'?'agents:write':['end','cancel'].includes(suffix)?'agents:end':'agents:read',kind:'agent-'+(suffix==='events/stream'?'event-stream':suffix??'run'),id:match[1],needsBody:['invocations','observations','accessibility-observations','screenshot-observations','screenshot-chunks','screenshot-releases','screenshot-downloads','download-arms','download-observations','download-chunks','download-releases','download-files'].includes(suffix)};}
  return null;
 }
 export function createAgentHttpAccess(executor,registry){
  if(executor===null)return null;if(!(executor instanceof DurableAgentExecutor)||!executor.usesRegistry(registry))throw TypeError('Agent executor must use the exact HTTP Registry');
- return Object.freeze(Object.fromEntries(['create','getRun','getInvocation','events','cancellation','context','observationContext','observe','observeAccessibility','screenshot','readScreenshot','releaseScreenshot','downloadScreenshot','armDownload','downloadInfo','readDownload','releaseDownload','downloadFile','perform','end'].map(name=>[name,executor[name].bind(executor)])));
+ return Object.freeze(Object.fromEntries(['create','getRun','getInvocation','events','cancellation','context','observationContext','observe','observeAccessibility','screenshot','readScreenshot','releaseScreenshot','downloadScreenshot','armDownload','downloadInfo','readDownload','releaseDownload','downloadFile','perform','end','webhookEndpoints','subscribeWebhook','webhookSubscription'].map(name=>[name,executor[name].bind(executor)])));
 }
 function data(value,allowed,required=allowed){
  if(!value||![Object.prototype,null].includes(Object.getPrototypeOf(value)))throw new AgentExecutionError('AGENT_INVALID_REQUEST');
@@ -49,9 +52,17 @@ function data(value,allowed,required=allowed){
 function rpcOptions(input){if(!Object.hasOwn(input,'rpcTimeoutMs'))return undefined;const n=input.rpcTimeoutMs;if(!Number.isInteger(n)||n<50||n>120000)throw new AgentExecutionError('AGENT_INVALID_REQUEST');return {timeoutMs:n};}
 function run(row){const {agentRunId,sessionId,region,version,state,holdsWriter,beginDispatch,endDispatch,createdAt,updatedAt,error}=row;return {agentRunId,sessionId,region,version,state,holdsWriter,beginDispatch,endDispatch,createdAt,updatedAt,error:error&&{code:error.code,outcome:error.outcome}};}
 function invocation(row){const {invocationId,agentRunId,sessionId,tool,fence,state,dispatchStarted,receipt,error,createdAt,updatedAt}=row;return {invocationId,agentRunId,sessionId,tool,fence:{controlSessionId:fence.controlSessionId,controlVersion:fence.controlVersion,pageEpoch:fence.pageEpoch,viewportVersion:fence.viewportVersion},state,dispatchStarted,receipt:receipt&&{stage:receipt.stage,inputs:receipt.inputs},error:error&&{code:error.code,outcome:error.outcome},createdAt,updatedAt};}
+function webhook(row){
+ const cursor=n=>agentEventCursor(row.agentRunId,n);
+ return {...row,after:cursor(row.after),acceptedThrough:cursor(row.acceptedThrough),queuedThrough:cursor(row.queuedThrough),observedLatest:cursor(row.observedLatest),missingFrom:row.missingFrom===null?null:cursor(row.missingFrom),missingThrough:row.missingThrough===null?null:cursor(row.missingThrough),head:row.head?{...row.head,cursor:cursor(row.head.sequence)}:null};
+}
 export async function handleAgentHttp({selected,principal,input,idempotencyKey,access,registry,wait,signal,screenshotSink,downloadSink}){
  if(!access)throw new AgentHttpError('AGENT_NOT_CONFIGURED');const tenantId=principal.tenantId,reference={tenantId,agentRunId:selected.id};let result,status=200,location;
- if(selected.kind==='agent-create'){
+ if(selected.kind==='agent-webhook-endpoints')result=access.webhookEndpoints(reference);
+ else if(selected.kind==='agent-webhook-subscription')result=webhook(access.webhookSubscription({...reference,subscriptionId:selected.subscriptionId}));
+ else if(selected.kind==='agent-webhook-subscribe'){
+  const body=data(input,['endpointId','after']);access.webhookEndpoints(reference);const after=agentEventAfter(selected.id,body.after);result=webhook(access.subscribeWebhook({...reference,endpointId:body.endpointId,after}));location='/v1/agent-runs/'+selected.id+'/webhook-subscriptions/'+result.subscriptionId;
+ }else if(selected.kind==='agent-create'){
   const body=data(input,['region','version','rpcTimeoutMs'],['region','version']),options=rpcOptions(body);registry.getSession(tenantId,selected.id);
   result=run(access.create({tenantId,sessionId:selected.id,region:body.region,version:body.version,idempotencyKey},options));status=['intent','starting','closing'].includes(result.state)?202:200;location='/v1/agent-runs/'+result.agentRunId;
  }else if(selected.kind==='agent-invocations'){
