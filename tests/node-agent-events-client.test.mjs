@@ -147,7 +147,9 @@ test('failed reader cancellation and releaseLock retain uncertain capacity inste
 test('deadline during reconnect cleanup joins one actual cancellation and releases the reader exactly once',async()=>{
  const cancellation=deferred();let releases=0,cancels=0,reads=0;
  const reader={async read(){if(reads++===0)return {done:false,value:new TextEncoder().encode(frame('ready',ready()))};throw Error('transport interrupted');},cancel(){cancels++;return cancellation.promise;},releaseLock(){releases++;}};
- const client=new AgentClient(config(()=>readerResponse(reader),{eventStreamTimeoutMs:100})),iterator=client.runs.events(agentRunId);await iterator.next();const pending=iterator.next();await until(()=>cancels===1);await assert.rejects(pending,expect('CLIENT_TIMEOUT'));cancellation.resolve();await iterator.return();assert.equal(cancels,1);assert.equal(releases,1);assert.equal(client.eventTransportStatus().streams,0);
+ const client=new AgentClient(config(()=>readerResponse(reader),{eventStreamTimeoutMs:100})),iterator=client.runs.events(agentRunId);await iterator.next();const pending=iterator.next(),observed=assert.rejects(pending,expect('CLIENT_TIMEOUT'));void observed.catch(()=>{});
+ try{await until(()=>cancels===1);await observed;}finally{cancellation.resolve();await iterator.return();}
+ assert.equal(cancels,1);assert.equal(releases,1);assert.equal(client.eventTransportStatus().streams,0);
 });
 test('actual HTTP event pages, cancellation pagination and stale-generation conflicts preserve original Run effects',{skip:!sessionStoreSupported},async t=>{
  const h=await harness(t),{run,context}=await h.active();for(let i=0;i<6;i++)await h.invocation(h.perform(run,context,'node-event-'+i));const id=run.agentRunId,p=await h.client.runs.eventPage(id);assert.equal(p.data.events.length,4);assert.equal(p.data.hasMore,true);const next=await h.client.runs.eventPage(id,{after:p.data.nextCursor});assert.equal(next.data.events[0].sequence,p.data.events.at(-1).sequence+1);

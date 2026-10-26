@@ -38,3 +38,17 @@ async def consume(client: AgentClient,run: AgentRunId,cursor: AgentEventCursor,a
             missing: Literal[True]=gap.missing_history
             print(missing,gap.oldest_cursor)
             gap.after=cursor  # type: ignore[misc]
+
+from remote_paint_session import (AgentWebhookEndpointId,AgentWebhookSubscriptionId,
+    AgentWebhookSubscribeInput,AgentWebhookEndpoints,AgentWebhookSubscription)
+async def webhooks(client: AgentClient,run: AgentRunId,event: AgentEventCursor,endpoint: AgentWebhookEndpointId,sub: AgentWebhookSubscriptionId) -> None:
+    profiles: AgentWebhookEndpoints=(await client.runs.webhook_endpoints(run)).data
+    subscribed: AgentWebhookSubscription=(await client.runs.subscribe_webhook(run,AgentWebhookSubscribeInput(endpoint,event))).data
+    status: AgentWebhookSubscription=(await client.runs.webhook_subscription(run,sub,retries=0)).data
+    accepted: AgentEventCursor=status.accepted_through
+    await client.runs.webhook_subscription(run,endpoint)  # type: ignore[arg-type]
+    AgentWebhookSubscribeInput(endpoint,AgentCancellationCursor('invalid'))  # type: ignore[arg-type]
+    AgentWebhookSubscribeInput(sub,event)  # type: ignore[arg-type]
+    AgentWebhookSubscribeInput(endpoint,event,url='https://receiver.test')  # type: ignore[call-arg]
+    profiles.endpoints.append(profiles.endpoints[0])  # type: ignore[attr-defined]
+    subscribed.accepted_through=accepted  # type: ignore[misc]

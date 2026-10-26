@@ -58,3 +58,21 @@ gap!.after=eventCursor;
 client.transportStatus().streams;
 // @ts-expect-error stream capacity metrics are readonly
 client.eventTransportStatus().streams=0;
+
+import type {AgentWebhookEndpointId,AgentWebhookSubscriptionId,AgentWebhookEndpoints,AgentWebhookSubscription} from '../../sdk/backend.mjs';
+declare const endpointId:AgentWebhookEndpointId;
+declare const subscriptionId:AgentWebhookSubscriptionId;
+const profiles:AgentWebhookEndpoints=(await client.runs.webhookEndpoints(run)).data;
+const subscribed:AgentWebhookSubscription=(await client.runs.subscribeWebhook(run,{endpointId,after:eventCursor})).data;
+const webhook:AgentWebhookSubscription=(await client.runs.webhookSubscription(run,subscriptionId,{retries:0})).data;
+const accepted:AgentEventCursor=webhook.acceptedThrough;
+// @ts-expect-error Endpoint and subscription IDs are distinct.
+await client.runs.webhookSubscription(run,endpointId);
+// @ts-expect-error A cancellation cursor cannot subscribe original events.
+await client.runs.subscribeWebhook(run,{endpointId,after:cancellationCursor});
+// @ts-expect-error Public callers cannot configure endpoint URLs.
+await client.runs.subscribeWebhook(run,{endpointId,after:eventCursor,url:'https://receiver.test'});
+// @ts-expect-error Returned endpoint profiles are readonly.
+profiles.endpoints.push({endpointId,available:true});
+// @ts-expect-error Returned acceptance is readonly.
+subscribed.acceptedThrough=accepted;

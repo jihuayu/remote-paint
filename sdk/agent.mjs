@@ -1,4 +1,5 @@
 import {captureEventOptions,validateAgentEventReply,captureEventErrorDetails,createAgentEventStreams} from './agent-events.mjs';
+import {captureWebhookRun,captureWebhookSubscriptionId,captureWebhookSubscription,validateWebhookReply} from './agent-webhooks.mjs';
 import {captureDownloadRequest,validateDownloadReply,readDownloadBinary} from './agent-download.mjs';
 import {captureObservationReference,captureObservationContext,captureObservationRequest,captureObservationOptions,validateObservationReply,captureAccessibilityRequest,validateAccessibilityReply,captureScreenshotRequest,captureScreenshotFileRequest,validateScreenshotReply,readScreenshotBinary} from './agent-observation.mjs';
 import {SessionClientError,createBackendTransport,freezeBackendData} from './backend-transport.mjs';
@@ -36,6 +37,7 @@ function invocation(v){
  return v.receipt===null&&error(v.error)&&(v.state==='unknown'?v.dispatchStarted&&v.error.outcome==='unknown':v.error.outcome==='not-dispatched');
 }
 function validate(status,value,expect,headers){
+ if(expect.kind.startsWith('agent-webhook-'))return validateWebhookReply(status,value,expect,headers);
  if(['agent-event-page','agent-cancel','agent-cancellation'].includes(expect.kind))return validateAgentEventReply(status,value,expect,headers);
  if(['agent-download-armed','agent-download-info','agent-download-chunk','agent-download-released'].includes(expect.kind))return validateDownloadReply(status,value,expect,headers);
  if(['agent-screenshot','agent-screenshot-chunk','agent-screenshot-released'].includes(expect.kind))return validateScreenshotReply(status,value,expect,headers);
@@ -81,6 +83,9 @@ export class AgentClient {
    get:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return call('GET','/v1/agent-runs/'+agentRunId,null,null,{kind:'agent-run-get',id:agentRunId},requestOptions(options));},
    context:async(run,options={})=>{const r=reference(run),result=await call('GET','/v1/agent-runs/'+r.agentRunId+'/context',null,null,{kind:'agent-context',sessionId:r.sessionId},requestOptions(options));return freezeBackendData({data:{agentRunId:r.agentRunId,...result.data},requestId:result.requestId});},
    events:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return this.#transport.events(agentRunId,captureEventOptions(options,agentRunId,invalid,'stream'));},
+   webhookEndpoints:(agentRunId,options={})=>{captureWebhookRun(agentRunId,invalid);return call('GET','/v1/agent-runs/'+agentRunId+'/webhook-endpoints',null,null,{kind:'agent-webhook-endpoints',id:agentRunId},requestOptions(options));},
+   subscribeWebhook:(agentRunId,input,options={})=>{captureWebhookRun(agentRunId,invalid);const v=captureWebhookSubscription(input,agentRunId,invalid);return call('POST','/v1/agent-runs/'+agentRunId+'/webhook-subscriptions',body(v),null,{kind:'agent-webhook-subscribe',id:agentRunId,...v},requestOptions(options));},
+   webhookSubscription:(agentRunId,subscriptionId,options={})=>{captureWebhookRun(agentRunId,invalid);captureWebhookSubscriptionId(subscriptionId,invalid);return call('GET','/v1/agent-runs/'+agentRunId+'/webhook-subscriptions/'+subscriptionId,null,null,{kind:'agent-webhook-subscription',id:agentRunId,subscriptionId},requestOptions(options));},
    eventPage:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();const {after,...request}=captureEventOptions(options,agentRunId,invalid,'page');return call('GET','/v1/agent-runs/'+agentRunId+'/events'+(after===undefined?'':'?after='+after),null,null,{kind:'agent-event-page',id:agentRunId,after},request);},
    cancellation:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();const {after,...request}=captureEventOptions(options,agentRunId,invalid,'cancellation');return call('GET','/v1/agent-runs/'+agentRunId+'/cancellation'+(after===undefined?'':'?after='+after),null,null,{kind:'agent-cancellation',id:agentRunId,after},request);},
    cancel:(agentRunId,options={})=>{if(!id(agentRunId,'arun_'))invalid();return call('POST','/v1/agent-runs/'+agentRunId+'/cancel',null,null,{kind:'agent-cancel',id:agentRunId},requestOptions(options));},

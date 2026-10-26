@@ -93,6 +93,18 @@ export interface AgentDownloadReleased extends AgentObservationContext {readonly
 export interface AgentDownloadFile extends AgentObservationContext {readonly stage:'download-delivered';readonly downloadId:AgentDownloadId;readonly mimeType:'application/octet-stream';readonly byteLength:number;readonly sha256:string;readonly completedAt:string;readonly bytes:Uint8Array;}
 /** Cursors bind one original Run. Runtime validation also enforces canonical safe integers. */
 export type AgentEventCursor=`aec1.${AgentRunId}.${number}`;
+export type AgentWebhookEndpointId=`awh_${string}`;
+export type AgentWebhookSubscriptionId=`awsub_${string}`;
+export interface AgentWebhookEndpoint {readonly endpointId:AgentWebhookEndpointId;readonly available:boolean;}
+export interface AgentWebhookEndpoints {readonly schema:'agent-webhook-endpoints-v1';readonly agentRunId:AgentRunId;readonly endpoints:readonly AgentWebhookEndpoint[];}
+export interface AgentWebhookSubscribeInput {readonly endpointId:AgentWebhookEndpointId;readonly after:AgentEventCursor;}
+export interface AgentWebhookHead {readonly eventId:`aevt_${string}`;readonly sequence:number;readonly attempts:number;readonly lastOutcome:'requested'|'unknown'|'not-accepted'|null;readonly cursor:AgentEventCursor;}
+/** Only (after,acceptedThrough] is receiver-accepted. This does not confirm business success. */
+export interface AgentWebhookSubscription extends AgentRunReference {
+ readonly schema:'agent-webhook-subscription-v1';readonly subscriptionId:AgentWebhookSubscriptionId;readonly endpointId:AgentWebhookEndpointId;
+ readonly after:AgentEventCursor;readonly acceptedThrough:AgentEventCursor;readonly queuedThrough:AgentEventCursor;readonly observedLatest:AgentEventCursor;
+ readonly pending:number;readonly reconciliationRequired:boolean;readonly missingFrom:AgentEventCursor|null;readonly missingThrough:AgentEventCursor|null;readonly head:AgentWebhookHead|null;
+}
 export type AgentCancellationCursor=`acc1.${AgentRunId}.${number}.${AgentInvocationId}`;
 export type AgentHistoryOrigin='created'|'migration-snapshot';
 export interface AgentEventOptions {readonly after?:AgentEventCursor;readonly signal?:AbortSignal;readonly reconnects?:0|1|2|3;}
@@ -139,6 +151,9 @@ export class AgentClient {
   readonly get:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentRun>>;
   readonly context:(run:AgentRunReference,options?:RequestOptions)=>Promise<ApiResult<AgentContext>>;
   readonly events:(agentRunId:AgentRunId,options?:AgentEventOptions)=>AsyncIterableIterator<AgentEventMessage>;
+  readonly webhookEndpoints:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentWebhookEndpoints>>;
+  readonly subscribeWebhook:(agentRunId:AgentRunId,input:AgentWebhookSubscribeInput,options?:RequestOptions)=>Promise<ApiResult<AgentWebhookSubscription>>;
+  readonly webhookSubscription:(agentRunId:AgentRunId,subscriptionId:AgentWebhookSubscriptionId,options?:RequestOptions)=>Promise<ApiResult<AgentWebhookSubscription>>;
   readonly eventPage:(agentRunId:AgentRunId,options?:AgentEventPageOptions)=>Promise<ApiResult<AgentEventPage>>;
   readonly cancellation:(agentRunId:AgentRunId,options?:AgentCancellationOptions)=>Promise<ApiResult<AgentCancellation>>;
   readonly cancel:(agentRunId:AgentRunId,options?:RequestOptions)=>Promise<ApiResult<AgentCancellation>>;

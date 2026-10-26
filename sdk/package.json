@@ -42,6 +42,7 @@
     "agent-observation.mjs",
     "agent-download.mjs",
     "agent-events.mjs",
+    "agent-webhooks.mjs",
     "agent.d.mts",
     "viewer-connection.mjs",
     "viewer-connection.d.mts",

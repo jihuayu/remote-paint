@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 import unittest
 import httpx
+from _fixture_process import close_node_fixture
+from urllib.parse import urlsplit
 from remote_paint_session import (AgentClient,AgentClientError,AgentClientCancelledError,AgentRunId,SessionId,
  AgentRunReference,AgentObservationReference,AgentObservationContext,AgentObservationDocument,AgentBinding,AgentSnapshotQuery,
  AgentLocateQuery,AgentElementQuery,AgentElementId,AgentObservationLimits,AgentObservationInput)
@@ -149,21 +151,64 @@ class ObservationContracts(unittest.IsolatedAsyncioTestCase):
 
 class ActualObservationHttp(unittest.IsolatedAsyncioTestCase):
  async def asyncSetUp(self):
-  self.child=await asyncio.create_subprocess_exec(os.environ.get('SESSION_PYTHON_TEST_NODE','node'),str(Path(__file__).resolve().parents[1]/'fixtures/observation-python-http.mjs'),stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE);self.addAsyncCleanup(self.close);self.ready=json.loads(await asyncio.wait_for(self.child.stdout.readline(),3));self.clients=[]
+  self.clients=[]
+  self.child=await asyncio.create_subprocess_exec(os.environ.get('SESSION_PYTHON_TEST_NODE','node'),str(Path(__file__).resolve().parents[1]/'fixtures/observation-python-http.mjs'),stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE);self.addAsyncCleanup(self.close)
+  self.ready=json.loads(await asyncio.wait_for(self.child.stdout.readline(),3))
  async def close(self):
-  for c in self.clients:await c.aclose()
-  if self.child.returncode is None:
-   self.child.stdin.write(b'close\n');await self.child.stdin.drain();self.child.stdin.close();await self.child.stdin.wait_closed();out,err=await asyncio.wait_for(self.child.communicate(),3);self.assertEqual(self.child.returncode,0,err.decode()[-2000:])
+  await close_node_fixture(self.child,self.clients)
  async def command(self,text):self.child.stdin.write((text+'\n').encode());await self.child.stdin.drain();return json.loads(await asyncio.wait_for(self.child.stdout.readline(),3))
  def client(self,role):
   c=AgentClient(base_url=self.ready['base'],api_key=self.ready['keys'][role]);self.clients.append(c);return c
  def reference(self):r=self.ready['run'];return AgentObservationReference(AgentRunId(r['agentRunId']),SessionId(r['sessionId']),r['version'])
  async def test_independent_scope_and_real_sqlite_executor_metadata(self):
-  reader=self.client('observe');c=(await reader.observations.context(self.reference())).data;result=(await reader.observations.read(c,AgentObservationInput(AgentLocateQuery('testId','SDK-PYTHON-PRIVATE-QUERY')))).data;self.assertEqual(result.nodes[0].text,'private-observation-DOM');self.assertEqual(result.version,self.reference().version)
+  reader=self.client('observe')
+  try:
+   c=(await reader.observations.context(self.reference())).data;result=(await reader.observations.read(c,AgentObservationInput(AgentLocateQuery('testId','SDK-PYTHON-PRIVATE-QUERY')))).data
+  except AgentClientError as error:
+   error.add_note('Actual observation fixture HTTP status: '+str(error.status));raise
+  self.assertEqual(result.nodes[0].text,'private-observation-DOM');self.assertEqual(result.version,self.reference().version)
   for coro in [reader.runs.context(AgentRunReference(c.agent_run_id,c.session_id)),reader.runs.end(c.agent_run_id),self.client('read').observations.context(self.reference())]:
    with self.assertRaises(AgentClientError)as e:await coro
    self.assertEqual(e.exception.code,'FORBIDDEN')
   self.assertEqual((await self.command('stats'))['effects'],0)
+ async def test_actual_preheader_timeout_is_typed_as_unconfirmed_http_error_without_source_dispatch(self):
+  before=await self.command('stats');responses=[];errors=[];tasks=set();writers=set()
+  async def relay(reader,writer):
+   task=asyncio.current_task();tasks.add(task);writers.add(writer);upstream=None
+   try:
+    raw=await asyncio.wait_for(reader.readuntil(b'\r\n\r\n'),3);self.assertLessEqual(len(raw),4096)
+    upstream_reader,upstream=await asyncio.wait_for(asyncio.open_connection('127.0.0.1',urlsplit(self.ready['base']).port),3);writers.add(upstream)
+    # Withhold the terminating blank line. The original 50ms Node parser
+    # deadline must expire before the control-service request handler exists.
+    upstream.write(raw[:-2]);await upstream.drain()
+    async def response_bytes():
+     chunks=[];size=0
+     while True:
+      part=await upstream_reader.read(4096-size)
+      if not part:return b''.join(chunks)
+      size+=len(part);self.assertLess(size,4096);chunks.append(part)
+    response=await asyncio.wait_for(response_bytes(),3);self.assertTrue(response);responses.append(response)
+    writer.write(response);await writer.drain()
+   except BaseException as error:errors.append(error)
+   finally:
+    for peer in [writer,upstream]:
+     if peer is not None:
+      peer.close()
+      try:await asyncio.wait_for(peer.wait_closed(),3)
+      except BaseException as error:errors.append(error)
+      writers.discard(peer)
+    tasks.discard(task)
+  proxy=await asyncio.start_server(relay,'127.0.0.1',0,limit=4096)
+  try:
+   async with AgentClient(base_url='http://127.0.0.1:'+str(proxy.sockets[0].getsockname()[1]),api_key=self.ready['keys']['observe'])as client:
+    with self.assertRaises(AgentClientError)as failure:await client.observations.context(self.reference())
+    self.assertEqual((failure.exception.code,failure.exception.status,failure.exception.outcome),('CLIENT_HTTP_ERROR',408,'unknown'));self.assertTrue(failure.exception.retryable)
+    await until(lambda:client.transport_status().ordinary==0)
+  finally:
+   proxy.close();await proxy.wait_closed()
+   for writer in list(writers):writer.close()
+   if tasks:await asyncio.wait_for(asyncio.gather(*list(tasks),return_exceptions=True),3)
+  self.assertEqual(errors,[]);self.assertEqual(len(responses),1);self.assertTrue(responses[0].startswith(b'HTTP/1.1 408 '));self.assertNotIn(b'content-type:',responses[0].lower());after=await self.command('stats');self.assertEqual(after,before)
  async def test_known_unknown_input_observable_without_recovery_or_history_upgrade(self):
   reader=self.client('observe');unknown=(await self.command('unknown'))['invocation'];before=(await self.command('stats'))['run'];c=(await reader.observations.context(self.reference())).data;self.assertEqual((await reader.observations.read(c,snapshot())).data.stage,'observed');self.assertEqual((await self.command('stats'))['run'],before);row=(await self.client('all').invocations.get(unknown['invocationId'])).data;self.assertEqual(row.state,'unknown');self.assertEqual(row.error.outcome,'unknown');await self.client('end').runs.end(c.agent_run_id)
  async def test_http_deadline_retains_executor_slot_and_independent_end(self):

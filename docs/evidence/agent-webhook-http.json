@@ -1,0 +1,208 @@
+{
+  "format": 1,
+  "at": "2026-10-22T02:35:22.479849+00:00",
+  "baseHead": "273f17406784237862b72853868eba11f9354198",
+  "status": "local-functional-scope-only-full-regression-not-passed",
+  "executedCandidate": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-candidate-v3/frozen-version.json",
+  "executedCandidateSha256": "d8aefb1d2d17b70ad4769274cb5f17482161e03e1748f2826dd066533fecda6b",
+  "executedSourceFiles": 1283,
+  "implementationFiles": {
+    "service/agent-event-journal.mjs": "ed4fe5edffe3ec0d6a550c0552d3623d73bd012f97e2bd2b022f57c4fffd9ab7",
+    "service/agent-executor.mjs": "44d7cfb809da162d410aa7a5695e47f658c0d89a27b416e97eebd2eb2e761a91",
+    "service/agent-http.mjs": "6f814f858c3dd5b0efa751a3cf6749f96bf3053335db922694a77e28ddb6082c",
+    "service/agent-webhook-journal.mjs": "3197a7dfab8b467df75b77db57bae7bcaf9d0b4243579b71454e2ebb72c7125f",
+    "service/session-http.mjs": "eca8fb5b9e39894bf8bc97a0f5ec525fafc6cce6c36e3c526a97340ab8ee39e8",
+    "tests/agent-webhook-http.test.mjs": "643007c176f51260928d8f462f34fa1a2c82b7afe2f6afdf03d12c6fa5478488",
+    "tests/agent-webhook-journal.test.mjs": "dd2f103bb5d30840e1a6b961c3c94cb575b61e41157f0ff8ebd57616c11dd33f",
+    "tests/agent-observation-http.test.mjs": "e009b88ff84257bfdb928007a1fabc3fc7fce626b20c04e4b8fd571a491b4d04",
+    "tests/agent-webhook-dispatcher.test.mjs": "1368e343b5d9630e4d12a2412420ba57b5447d7a17a0490810c6cf7146944cb6",
+    "tests/run-sdk-package-ci.py": "e28c7531f3a07e251e40e2a8aa30c1abcb1bc8995798edfbaace4a025dd45e12"
+  },
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/v1/agent-runs/:run/webhook-endpoints",
+      "scope": "agents:webhooks:read"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/agent-runs/:run/webhook-subscriptions",
+      "scope": "agents:webhooks:write"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/agent-runs/:run/webhook-subscriptions/:subscription",
+      "scope": "agents:webhooks:read"
+    }
+  ],
+  "publicControl": {
+    "requestBodyMaxBytes": 1024,
+    "fixedTrustedProfilesOnly": true,
+    "immutableRunEndpointCursor": true,
+    "readDoesNotMutateWriterOrAcceptance": true,
+    "unknownReferencesDoNotFenceHealthyExecutor": true,
+    "uncertainWriteOutcome": "unknown",
+    "noRawBodyUrlSignatureKeyOrSourceBindingInResponse": true,
+    "automaticOriginalDriverConsumesCommittedRevision": true,
+    "noCallerPerEventDispatch": true,
+    "acceptedRange": "(after, acceptedThrough], not the excluded prefix <=after"
+  },
+  "validationReuse": {
+    "pureExactBodyCacheMaxEntries": 64,
+    "rawBodyMaxBytes": 3072,
+    "rawCachedBytesBound": 196608,
+    "cachedAuthorization": false,
+    "currentParentsReadFreshPerWindow": true,
+    "parentQueryBatchMaxIds": 64,
+    "retainedCapturesRequireCanonicalEqualityWithFreshlyValidatedSource": true,
+    "evictedPrefixStillIndependentlyValidated": true,
+    "originalRetentionAndAttemptLimitsChanged": false
+  },
+  "verification": {
+    "macSerial": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-macos-serial-v1.log",
+      "sha256": "5c2ea8886ef8f9b508e732e93a75752728adabe21ea5d3001126a48f63448433",
+      "tests": 213,
+      "pass": 213,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "macObservationCompatibility": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-observation-compat-v1.log",
+      "sha256": "e77a990e8f09be753f0408f40301e7ddc56da12a4f034eeda83b9ce14dd05104",
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "updatedDnsFixture": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-dispatcher-start-observation-v1.log",
+      "sha256": "caa54cc3c82cfe775d30147f32a3d8334dc2ba7ba020d2a358f94ebda0d94a80",
+      "tests": 25,
+      "pass": 25,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "macDistinctCases": 227,
+    "linuxFull": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-full-linux-v4.log",
+      "sha256": "7d050350563d6d3ac15ef91234f72a7fa0aa0c7f0f59f3ad152a10d59975a1a2",
+      "tests": 1782,
+      "pass": 1773,
+      "fail": 3,
+      "cancelled": 0,
+      "skipped": 6,
+      "todo": 0
+    },
+    "linuxEnvironment": {
+      "node": "22.23.3",
+      "arch": "linux-arm64",
+      "cpus": 4,
+      "memoryGiB": 2,
+      "temp": "512MiB RAM temporary filesystem",
+      "testConcurrency": 1,
+      "network": "own internal bridge without external route"
+    },
+    "original1751NamesPreserved": true,
+    "existingSkipCountPreserved": 6,
+    "newCaseNames": [
+      "public Webhook routes use distinct read/write scopes and exact run/subscription IDs",
+      "authenticated subscribe automatically reaches the production durable receiver and later public Agent actions append original events",
+      "losing the committed subscription HTTP reply preserves its ID and automatic delivery; retry is immutable and idempotent",
+      "ordinary Agent permissions do not imply Webhook permissions and Webhook read/write are independent",
+      "authentication, backend Origin and tenant authorization precede original cursor interpretation",
+      "tenant and exact run ownership protect subscription metadata; failed probes do not fence original execution",
+      "only this tenant automatic profiles are discoverable or selectable; manual and unknown destinations remain private",
+      "public subscription cannot provision URLs, HMAC material, worker bounds or arbitrary private options",
+      "subscription natural key preserves its original cursor and never rewinds acceptance on a conflicting retry",
+      "future, cross-run and malformed cursors are rejected without changing the run or fencing healthy storage",
+      "an expired original history cannot be silently subscribed from zero or treated as a valid ACK cursor",
+      "closed automatic endpoint stays observable and re-registration resumes the same persisted subscription",
+      "metadata reads preserve original webhook revision, cursor, Source calls and run writer reservation",
+      "ordinary subscription capacity and configuration errors are typed and do not fence the executor",
+      "unconfirmed subscription commit reports unknown, fences new actions and never erases the already durable original subscription",
+      "read failure after a confirmed subscription is reported as unknown and does not claim the write was rejected",
+      "unknown read errors cannot impersonate expected reference codes or leak private backend text",
+      "public Source end remains independent of an original Webhook DNS callback and requested attempt",
+      "capture saturation retains the exact original gap; public retries cannot reset it or replay Source effects",
+      "slow management authentication retains ordinary capacity while public Source end uses its independent lane",
+      "public management rejects oversized bodies, misleading event headers, queries, methods and GET payloads",
+      "incomplete public subscription body expires without a durable subscription and releases ordinary admission",
+      "disabled public Agent access exposes a stable sanitized error without private endpoint provisioning",
+      "public executor metadata arguments reject proxies and getters before their traps execute",
+      "revoking public management credentials after commit cannot cancel durable automatic delivery",
+      "a fresh controller and public server read and resume the original closed Run subscription without repeating Source actions",
+      "one capture validation shares a fresh invocation parent within the exact retained Source window",
+      "retained capture equality rejects valid-but-different Source or captured event bytes after recomputing hashes",
+      "original prefix evicted from Source replay still checks its real invocation parent after canonical hash recomputation",
+      "warm projection parsing never bypasses fresh current invocation ownership and semantic checks",
+      "a caller cannot mutate the internally cached exact event projection through a returned capture page"
+    ],
+    "newCasesPassed": 31,
+    "newCasesFailed": 0,
+    "fullRegressionQualified": false,
+    "remainingFailedNames": [
+      "actual TCP backpressure stops Source chunk requests before EOF holds HTTP capacity and permits independent end",
+      "automatic delivery drains the retained prefix but preserves the exact original history gap",
+      "download actual TCP backpressure keeps HTTP ordinary capacity while independent end tears down the transfer"
+    ],
+    "sameEnvironmentCleanBaseReproduction": {
+      "path": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-baseline-three-v1.log",
+      "sha256": "010f4ca3c0bf180ea7e6cbeae525b6d00919760a0a2cceea4d0d668ea4cd89b1",
+      "tests": 3,
+      "pass": 0,
+      "fail": 3,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "baseReproducedSameThreeFailures": true,
+    "baselineDoesNotProveOtherConfigurations": true
+  },
+  "failuresRetained": {
+    "firstHttpFixture": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-fixture-failure-v1/failure.json",
+    "secondHttpFixture": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-fixture-failure-v2/failure.json",
+    "profile": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-gap-profile-v1/profile-summary.json",
+    "macParallelFailure": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-macos-qualified-v2.log",
+    "linuxDisk2Cpu": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-linux-full-failure-v1/failure.json",
+    "linuxDisk4CpuExplicitStop": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-linux-full-failure-v2/failure.json",
+    "linuxRamNoInterface": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-linux-full-failure-v3/failure.json"
+  },
+  "dnsEnvironment": {
+    "none": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-network-none-lookup-v1.jsonl",
+    "internalBridge": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-internal-bridge-lookup-v1.jsonl",
+    "officialReference": "https://github.com/nodejs/node/blob/v22.23.3/doc/api/dns.md#supported-getaddrinfo-flags",
+    "observed": "family4/all with hints32 returns ENOTFOUND without a non-loopback interface; private internal bridge returns127.0.0.1"
+  },
+  "sdk": {
+    "nodeArchive": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-sdk-archives-v1/remote-paint-session-client-0.0.0-dev.0.tgz",
+    "nodeArchiveSha256": "b19d8f23669165aa4654230c6cc7f0ba438f8ee1c14ffaec0cb4e03a02540402",
+    "sameNodeArchiveAsPrior": true,
+    "pythonSourceFilesUnchanged": 12,
+    "newInstalledSdkOrTypeCheckClaim": false,
+    "newTypedWebhookMethodsImplemented": false
+  },
+  "protectionAudit": "/Users/jihuayu/Documents/Codex/2026-10-16/new-chat/work/agent-webhook-http-protection-v1.json",
+  "originalEightHour": "failed; with-secondary Viewer memory growth remains unresolved",
+  "all41": {
+    "completedWithinScope": 10,
+    "partial": 18,
+    "pending": 13
+  },
+  "notQualified": [
+    "disk-backed/concurrent full regression timing",
+    "typed Node/Python public Webhook SDK wrappers",
+    "explicit original Source history gap reconciliation",
+    "original Native end-to-end and browser package qualification",
+    "original8hour/all41/N1 completion"
+  ],
+  "noCommitOrPush": true,
+  "noNativeSourcePrepareOrExtraMacSamplerExecution": true,
+  "wholeGoalQualified": false
+}
