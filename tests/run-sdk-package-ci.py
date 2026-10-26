@@ -96,12 +96,12 @@ def main() -> None:
         save('source-manifest.json',{'commit':commit,'sourceFiles':files})
         assert sys.platform in ['darwin','linux']
         test_files=sorted(p.relative_to(project).as_posix()for p in(project/'tests').glob('*.test.mjs'))
-        # Includes the two persistent-cache authority/proxy contract files.
-        assert len(test_files)==161
+        # Includes persistent-cache and five cluster contract files.
+        assert len(test_files)==166
         raw=run('full-js',['node','--test','--test-reporter=tap','--test-concurrency=4',*test_files])
         counts={key:int(re.search(r'^# '+key+r' (\d+)$',raw,re.M)[1])for key in ['tests','pass','fail','cancelled','skipped','todo']}
-        passed,skipped=(1805,15)if sys.platform=='darwin'else(1814,6)
-        assert counts==dict(tests=1820,**{'pass':passed},fail=0,cancelled=0,skipped=skipped,todo=0)
+        passed,skipped=(1850,15)if sys.platform=='darwin'else(1859,6)
+        assert counts==dict(tests=1865,**{'pass':passed},fail=0,cancelled=0,skipped=skipped,todo=0)
         archives=out/'archives';archives.mkdir()
         packed=json.loads(run('node-pack',['npm','pack','./sdk','--ignore-scripts','--json','--pack-destination',str(archives)]))
         assert len(packed)==1
@@ -116,16 +116,16 @@ def main() -> None:
             '--wheelhouse',str(args.wheelhouse.resolve()),'--pip-tooling',str(tooling),
             '--mypy-tooling',str(tooling),'--tsc',str(args.typescript.resolve()),'--output',str(out/'installed')])
         installed=json.loads((out/'installed/result.json').read_text())
-        assert installed['status']=='passed'and installed['nodeTests']==214 and installed['pythonTests']==210
+        assert installed['status']=='passed'and installed['nodeTests']==216 and installed['pythonTests']==210
         assert installed['sourceFallbackUnavailable']and installed['typescriptActual0']and installed['pythonInstalledTypeCheckActual0']
         assert all(sha(project/name)==digest for name,digest in files.items())
         runtime=json.loads(run('runtime',[sys.executable,'-c',"import platform,json,subprocess;print(json.dumps({'python':platform.python_version(),'platform':platform.system(),'arch':platform.machine(),'node':subprocess.check_output(['node','--version'],text=True).strip()}))"]))
         save('result.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'passed',
-            'commit':commit,'fullJs':counts,'installedNodeTests':214,'installedPythonTests':210,
+            'commit':commit,'fullJs':counts,'installedNodeTests':216,'installedPythonTests':210,
             'archives':{p.name:sha(p)for p in archives.iterdir()},'sourceManifestSha256':sha(out/'source-manifest.json'),
             'runtime':runtime,'stages':stages,'typescriptActual0':True,'installedMypyActual0':True,
             'originalNativeEventCancelQualified':False,'wholeGoalQualified':False,'publicPublishing':False})
-        print(json.dumps({'status':'passed','commit':commit,'fullJs':counts,'nodeTests':214,'pythonTests':210}))
+        print(json.dumps({'status':'passed','commit':commit,'fullJs':counts,'nodeTests':216,'pythonTests':210}))
     except BaseException as error:
         save('failed.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
             'status':'failed','error':str(error),'type':type(error).__name__,'stages':stages})
