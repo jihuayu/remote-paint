@@ -2,9 +2,16 @@ import {DatabaseSync} from 'node:sqlite';
 import {createHash} from 'node:crypto';
 import {openSync,writeFileSync,fsyncSync,closeSync,readFileSync,lstatSync} from 'node:fs';
 import {basename,dirname,isAbsolute,join} from 'node:path';
+import {setTimeout as delay} from 'node:timers/promises';
 import {ClusterPlacementStore} from './cluster-placement.mjs';
-import {ClusterRpcClient} from './cluster-rpc.mjs';
+import {ClusterRpcClient,createClusterRpcServer} from './cluster-rpc.mjs';
 import {ClusterSessionProvider} from './cluster-session-provider.mjs';
+import {createDockerClusterWorker} from './cluster-docker-worker.mjs';
+import {SqliteSessionStore} from './session-store.mjs';
+import {SessionRegistry} from './session-registry.mjs';
+import {DurableAgentExecutor} from './agent-executor.mjs';
+import {ViewerAccess} from './viewer-access.mjs';
+import {createSessionControlServer} from './session-http.mjs';
 
 export class ClusterOpsError extends Error {
  constructor(code,message='Cluster operations request rejected'){super(message);this.name='ClusterOpsError';this.code=code;}
@@ -34,6 +41,14 @@ function checkPrivateFile(filePath){
  let stat;try{stat=lstatSync(filePath);}catch{fail('CLUSTER_ARCHIVE_FILE','Archive file does not exist');}
  const uid=process.getuid?.();
  if(!stat.isFile()||stat.isSymbolicLink()||(stat.mode&0o777)!==0o600||(uid!==undefined&&stat.uid!==uid))fail('CLUSTER_ARCHIVE_FILE','Archive file must be a private 0600 regular file owned by the current user');
+}
+
+function checkPrivateFileIfPresent(filePath){
+ if(typeof filePath!=='string'||!isAbsolute(filePath))fail('CLUSTER_ARCHIVE_FILE','File must be an absolute path');
+ let stat;
+ try{stat=lstatSync(filePath);}catch(error){if(error?.code==='ENOENT')return;fail('CLUSTER_ARCHIVE_FILE','File cannot be inspected');}
+ const uid=process.getuid?.();
+ if(!stat.isFile()||stat.isSymbolicLink()||(stat.mode&0o777)!==0o600||(uid!==undefined&&stat.uid!==uid))fail('CLUSTER_ARCHIVE_FILE','File must be a private 0600 regular file owned by the current user');
 }
 
 function writePrivateExclusive(filePath,content){
@@ -117,6 +132,9 @@ export class ClusterOperations {
   const provider=this.#provider?this.#provider.metrics():null;
   return freeze({placement,provider});
  }
+ unresolvedSessions({nodeId=null,tenantId=null}={}){
+  return this.#store.unresolvedSessions({nodeId,tenantId});
+ }
  drainNode(nodeId){
   if(this.#provider){
    try{return this.#provider.drainWorker(nodeId,true);}catch(error){if(error?.code!=='CLUSTER_NODE_NOT_FOUND')throw error;}
@@ -128,6 +146,21 @@ export class ClusterOperations {
    try{return this.#provider.drainWorker(nodeId,false);}catch(error){if(error?.code!=='CLUSTER_NODE_NOT_FOUND')throw error;}
   }
   return this.#store.drainNode(nodeId,false);
+ }
+ reconnectWorker(nodeId,options={}){
+  if(!this.#provider)fail('CLUSTER_PROVIDER_REQUIRED','ClusterSessionProvider is required to reconnect a live Worker');
+  return this.#provider.reconnectWorker(nodeId,options);
+ }
+ async reconcileQuarantined({nodeId=null,tenantId=null,reason='worker-unavailable'}={}){
+  if(!this.#provider)fail('CLUSTER_PROVIDER_REQUIRED','ClusterSessionProvider is required to reconcile quarantined Sessions');
+  const candidates=this.#store.unresolvedSessions({nodeId,tenantId}).filter(r=>['quarantined','closing'].includes(r.state));
+  const sessions=[];
+  for(const row of candidates){
+   const outcome=await this.#provider.retryClose({tenantId:row.tenantId,sessionId:row.sessionId,region:row.region,reason});
+   sessions.push(freeze({sessionId:row.sessionId,tenantId:row.tenantId,nodeId:row.nodeId,generation:row.generation,epoch:row.epoch,status:outcome.status}));
+  }
+  const closed=sessions.filter(r=>r.status==='closed').length;
+  return freeze({attempted:sessions.length,closed,unconfirmed:sessions.length-closed,sessions:Object.freeze(sessions)});
  }
  planRollingUpgrade({region,arch,targetVersion,minTargetCapacity=1}={}){
   if(!id(region)||!['arm64','x64'].includes(arch)||!version(targetVersion)||!integer(minTargetCapacity,1,65536))throw new TypeError('Expected valid rolling upgrade target parameters');
@@ -200,6 +233,108 @@ export function assemblePrivateCluster({placementPath,region,arch,version:dataVe
  }catch(error){
   for(const {client}of clients.values())try{client.close();}catch{}
   if(placement)try{placement.close();}catch{}else if(db)try{db.close();}catch{}
+  throw error;
+ }
+}
+
+// Wires an initialized DockerSessionProvider and its node-local SqliteSessionStore
+// to an mTLS-authenticated ClusterWorkerService RPC server without generating
+// credentials or opening an unbound public listener.
+export function assembleClusterDockerWorker({provider,store,nodeId,incarnation,region,version:dataVersion,leaseMs=15000,maxSessions=64,tls,clientSha256,maxBytes=2*1024*1024,maxConcurrent=8,timeoutMs=75000}={}){
+ const worker=createDockerClusterWorker({provider,store,nodeId,incarnation,region,version:dataVersion,leaseMs,maxSessions});
+ let server=null;
+ try{
+  server=createClusterRpcServer({tls,clientSha256,handle:(method,payload,options)=>worker.handle(method,payload,options),maxBytes,maxConcurrent,timeoutMs});
+  return Object.freeze({
+   worker,server,
+   initialize:()=>worker.initialize(),
+   async close(){
+    server.closeAllConnections();
+    if(server.listening)await new Promise(r=>server.close(r));
+    return worker.close();
+   }
+  });
+ }catch(error){
+  void worker.close().catch(()=>{});
+  throw error;
+ }
+}
+
+// Wires the complete public Gateway control stack (SessionRegistry,
+// DurableAgentExecutor, ViewerAccess, createSessionControlServer) on top of
+// assemblePrivateCluster with coordinated recovery, quarantine reconciliation
+// and ordered shutdown.
+export function assembleClusterGateway({placementPath,registryPath,region,arch,version:dataVersion,leaseMs=15000,heartbeatMs=4000,maxNodes=64,maxSessions=10000,globalQuota=16,tenantQuota=4,defaultTtlSeconds=900,maxTtlSeconds=86400,actionKey,authenticate,controllerTls,workers,resolveSource=null,now}={}){
+ checkPrivateFileIfPresent(registryPath);
+ checkPrivateDir(dirname(registryPath));
+ if(placementPath===registryPath)throw new TypeError('Placement and Registry SQLite ledgers must use distinct private files');
+ if(resolveSource!==null&&typeof resolveSource!=='function')throw new TypeError('Optional resolveSource adapter must be a function');
+ const cluster=assemblePrivateCluster({placementPath,region,arch,version:dataVersion,leaseMs,heartbeatMs,maxNodes,maxSessions,controllerTls,workers,now});
+ let ledger=null,registry=null,agentExecutor=null,viewerAccess=null,http=null;
+ try{
+  const providers=new Map([[region,cluster.provider]]);
+  ledger=new SqliteSessionStore({path:registryPath});
+  registry=new SessionRegistry({store:ledger,providers,defaultRegion:region,globalQuota,tenantQuota,defaultTtlSeconds,maxTtlSeconds});
+  agentExecutor=new DurableAgentExecutor({store:ledger,registry,providers,actionKey});
+  const sourceResolver=resolveSource?(req=>resolveSource(req,cluster.provider)):(req=>cluster.provider.resolveSource(req));
+  viewerAccess=new ViewerAccess({registry,resolveSource:sourceResolver});
+  http=createSessionControlServer({registry,agentExecutor,viewerAccess,authenticate});
+  const waitOperation=async(tenantId,operationId)=>{
+   const deadline=performance.now()+30000;
+   for(;;){
+    const op=registry.getOperation(tenantId,operationId);
+    if(op.status!=='pending')return op;
+    if(performance.now()>=deadline)return op;
+    await delay(10);
+   }
+  };
+  return Object.freeze({
+   cluster,placement:cluster.placement,provider:cluster.provider,operations:cluster.operations,
+   ledger,registry,agentExecutor,viewerAccess,http,
+   async initialize(){
+    const providerStatus=await cluster.initialize();
+    const registryRecovery=await registry.recover();
+    return freeze({provider:providerStatus,registryRecovery});
+   },
+   async reconcile({nodeId=null,tenantId=null,reason='registry-recovery'}={}){
+    const initial=cluster.operations.unresolvedSessions({nodeId,tenantId});
+    await registry.recover();
+    const afterRecover=cluster.operations.unresolvedSessions({nodeId,tenantId});
+    for(const row of afterRecover){
+     try{
+      const session=registry.getSession(row.tenantId,row.sessionId);
+      if(session.holdsQuota&&['cleanup-failed','recovery-required'].includes(session.state)){
+       const op=registry.release(row.tenantId,row.sessionId);
+       await waitOperation(row.tenantId,op.operationId);
+      }
+     }catch{}
+    }
+    await cluster.operations.reconcileQuarantined({nodeId,tenantId,reason});
+    const registryRecovery=await registry.recover();
+    const remainingIds=new Set(cluster.operations.unresolvedSessions({nodeId,tenantId}).map(r=>r.sessionId));
+    const sessions=Object.freeze(initial.map(row=>freeze({sessionId:row.sessionId,tenantId:row.tenantId,nodeId:row.nodeId,generation:row.generation,epoch:row.epoch,status:remainingIds.has(row.sessionId)?'unconfirmed':'closed'})));
+    const closed=sessions.filter(r=>r.status==='closed').length;
+    const clusterRecovery=freeze({attempted:sessions.length,closed,unconfirmed:sessions.length-closed,sessions});
+    return freeze({registryRecovery,clusterRecovery});
+   },
+   async shutdown(){
+    http.closeAllConnections();
+    const agent=await agentExecutor.shutdown();
+    const reg=await registry.shutdown();
+    viewerAccess.close();
+    if(http.listening)await new Promise(r=>http.close(r));
+    const prov=await cluster.shutdown();
+    ledger.close();
+    return freeze({status:agent.status==='closed'&&reg.status==='closed'&&prov.status==='closed'?'closed':'unconfirmed',agent,registry:reg,provider:prov});
+   }
+  });
+ }catch(error){
+  try{http?.closeAllConnections();}catch{}
+  try{viewerAccess?.close();}catch{}
+  void agentExecutor?.shutdown().catch(()=>{});
+  void registry?.shutdown().catch(()=>{});
+  void cluster.shutdown().catch(()=>{});
+  try{ledger?.close();}catch{}
   throw error;
  }
 }

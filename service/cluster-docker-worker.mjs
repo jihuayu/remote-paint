@@ -15,7 +15,16 @@ export function createDockerClusterWorker({provider,store,...configuration}={}){
  const registry=new SessionRegistry({store,providers:new Map([[region,provider]]),defaultRegion:region,globalQuota:maxSessions,tenantQuota:maxSessions,sessionIdFactory:({tenantId,idempotencyKey})=>{const captured=pending.get(idempotencyKey);if(!captured||captured.tenantId!==tenantId)throw new Error('Missing authenticated placement');return captured.sessionId;}});
  let recovered=false;const recovery=registry.recover().then(result=>{if(result.status!=='closed')throw new ClusterRpcError('CLUSTER_DOCKER_RECOVERY_REQUIRED','not-dispatched');recovered=true;return result;});void recovery.catch(()=>{});
  const wait=async operation=>{const end=performance.now()+70000;for(;;){const current=registry.getOperation(operation.tenantId,operation.operationId);if(current.status!=='pending')return current;if(performance.now()>=end)throw new ClusterRpcError('CLUSTER_DOCKER_UNCONFIRMED');await delay(10);}};
- const close=async request=>{await recovery;const operation=registry.release(request.tenantId,request.sessionId),result=await wait({...operation,tenantId:request.tenantId});return {status:result.status==='succeeded'?'closed':'unconfirmed'};};
+ const closeWith=retry=>async request=>{
+  await recovery;
+  let known=true;
+  try{registry.getSession(request.tenantId,request.sessionId);}catch(error){if(error?.code==='SESSION_NOT_FOUND')known=false;else throw error;}
+  if(!known)return retry?provider.retryClose(request):provider.close(request);
+  const operation=registry.release(request.tenantId,request.sessionId),result=await wait({...operation,tenantId:request.tenantId});
+  if(result.status!=='succeeded')return {status:'unconfirmed'};
+  return provider.close(request);
+ };
+ const close=closeWith(false);
  const ready=request=>{const value=registry.requireReady(request.tenantId,request.sessionId);if(value.region!==request.region||value.version!==request.version)throw new ClusterRpcError('CLUSTER_DOCKER_SESSION_UNAVAILABLE','not-dispatched');};
  const backend={
   create(){throw new ClusterRpcError('CLUSTER_DOCKER_FENCE_REQUIRED','not-dispatched');},
@@ -26,7 +35,7 @@ export function createDockerClusterWorker({provider,store,...configuration}={}){
    if(operation.sessionId!==placement.sessionId)throw new ClusterRpcError('CLUSTER_DOCKER_IDENTITY','not-dispatched');
    const abort=()=>{try{registry.release(request.tenantId,request.sessionId);}catch{}};request.signal?.addEventListener('abort',abort,{once:true});if(request.signal?.aborted)abort();
    try{const result=await wait({...operation,tenantId:request.tenantId});if(result.status!=='succeeded')throw new ClusterRpcError('CLUSTER_DOCKER_START_FAILED');return {version:registry.requireReady(request.tenantId,request.sessionId).version};}finally{request.signal?.removeEventListener('abort',abort);}
-  },close,retryClose:close,
+  },close,retryClose:closeWith(true),
   resolveSource(request){ready(request);return provider.resolveSource(request);},agent(request){ready(request);return provider.agent(request);},
   subscribeUnavailable:callback=>provider.subscribeUnavailable(callback),status:()=>({...provider.status(),available:recovered&&provider.status().available}),
   async shutdown(){await recovery.catch(()=>{});const a=await registry.shutdown(),b=await provider.shutdown();return {status:a.status==='closed'&&b.status==='closed'?'closed':'unconfirmed'};}
