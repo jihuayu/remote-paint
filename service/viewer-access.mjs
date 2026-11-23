@@ -95,15 +95,22 @@ export class ViewerAccess {
     const target=await resolving;
     if(disposed||controller.signal.aborted||!this.#alive(row))throw new Error('Access ended');
     if(data(target,'tenantId')!==row.tenantId||data(target,'sessionId')!==row.sessionId||data(target,'region')!==row.region||data(target,'version')!==row.version)throw new Error('Private binding mismatch');
-    const key=data(target,'key'),privateOrigin=data(target,'origin'),streamOrigin=data(target,'streamOrigin');
-    if(typeof key!=='string'||!/^[A-Za-z0-9_-]{32,256}$/.test(key)||typeof privateOrigin!=='string'||typeof streamOrigin!=='string')throw new Error('Invalid private transport');
+    const key=data(target,'key'),privateOrigin=data(target,'origin'),streamOrigin=data(target,'streamOrigin'),connectStream=data(target,'connectStream');
+    if(typeof key!=='string'||!/^[A-Za-z0-9_-]{32,256}$/.test(key)||typeof privateOrigin!=='string'||typeof streamOrigin!=='string'||(connectStream!==undefined&&typeof connectStream!=='function'))throw new Error('Invalid private transport');
     const url=new URL(streamOrigin),sourceOrigin=new URL(privateOrigin);
     if(url.origin!==streamOrigin||!['http:','https:'].includes(url.protocol)||!['http:','https:'].includes(sourceOrigin.protocol)||sourceOrigin.origin!==privateOrigin)throw new Error('Invalid private transport');
-    url.protocol=url.protocol==='https:'?'wss:':'ws:';url.pathname='/stream';url.searchParams.set('key',key);
-    upstream=new WebSocket(url,{origin:privateOrigin,perMessageDeflate:false,maxPayload:LIVE_LIMITS.resourceBytes+LIVE_LIMITS.sceneBytes,handshakeTimeout:this.#deadline});
-    upstream.on('error',()=>{if(downstream)close(1011,'Viewer transport unavailable');});
-    upstream.on('close',code=>close([1000,1001,1008,1012,1013].includes(code)?code:1011,'Viewer transport ended'));
-    await new Promise((resolve,reject)=>{upstream.once('open',resolve);upstream.once('error',reject);upstream.once('unexpected-response',(_req,res)=>{res.resume();reject(new Error('Private transport rejected'));});});
+    if(connectStream){
+     upstream=await connectStream({signal:controller.signal});
+     upstream.on('error',()=>{if(downstream)close(1011,'Viewer transport unavailable');});
+     upstream.on('close',code=>close([1000,1001,1008,1012,1013].includes(code)?code:1011,'Viewer transport ended'));
+     if(upstream.readyState!==WebSocket.OPEN)throw new Error('Private transport rejected');
+    }else{
+     url.protocol=url.protocol==='https:'?'wss:':'ws:';url.pathname='/stream';url.searchParams.set('key',key);
+     upstream=new WebSocket(url,{origin:privateOrigin,perMessageDeflate:false,maxPayload:LIVE_LIMITS.resourceBytes+LIVE_LIMITS.sceneBytes,handshakeTimeout:this.#deadline});
+     upstream.on('error',()=>{if(downstream)close(1011,'Viewer transport unavailable');});
+     upstream.on('close',code=>close([1000,1001,1008,1012,1013].includes(code)?code:1011,'Viewer transport ended'));
+     await new Promise((resolve,reject)=>{upstream.once('open',resolve);upstream.once('error',reject);upstream.once('unexpected-response',(_req,res)=>{res.resume();reject(new Error('Private transport rejected'));});});
+    }
    })();
    try{await Promise.race([work,deadline]);}catch{reject(503);close(1011,'Viewer transport unavailable');return;}
    clearTimeout(timer);if(disposed||socket.destroyed||!this.#alive(row)){close();return;}

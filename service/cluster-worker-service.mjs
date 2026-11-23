@@ -1,4 +1,5 @@
-import {randomUUID,createHash} from 'node:crypto';
+import {randomUUID,createHash,timingSafeEqual} from 'node:crypto';
+import {WebSocket} from 'ws';
 import {ClusterWorkerFence} from './cluster-worker-fence.mjs';
 import {ClusterRpcError} from './cluster-rpc.mjs';
 import {captureAgentRequest,captureAgentResult,agentReplyExpectation,AgentRpcError,agentFailure} from './agent-rpc.mjs';
@@ -8,14 +9,15 @@ const fail=code=>{throw new ClusterRpcError(code,'not-dispatched');};
 const bindingKeys=['tenantId','sessionId','nodeId','generation','epoch'];
 const same=(a,b)=>bindingKeys.every(k=>a[k]===b[k]);
 const reasons=new Set(['released','ttl-expired','registry-shutdown','registry-recovery','registry-storage-fault','startup-failed','startup-cancelled','worker-unavailable']);
+const maxPayload=16*1024*1024;
 
 // Wraps an existing owned provider. Caller supplies the original deployment /
 // Engine/retirement verifier; this wrapper never invents physical evidence.
 export class ClusterWorkerService {
- #nodeId;#provider;#fence;#region;#version;#leaseMs;#challenge;#entries=new Map();#verify;#unsubscribe;#max;#closed=false;#shutdown;
- constructor({nodeId,incarnation,region,version,provider,verifyRetirement,leaseMs=15000,maxSessions=64}={}){
-  if(!id(region)||typeof version!=='string'||version.length<1||version.length>256||!provider||!['create','close','resolveSource','agent'].every(k=>typeof provider[k]==='function')||typeof verifyRetirement!=='function'||!Number.isSafeInteger(leaseMs)||leaseMs<100||leaseMs>60000||!Number.isSafeInteger(maxSessions)||maxSessions<1||maxSessions>10000)throw new TypeError('Configure fixed Worker data identity, existing provider and trusted retirement verifier');
-  this.#nodeId=nodeId;this.#provider=provider;this.#region=region;this.#version=version;this.#leaseMs=leaseMs;this.#verify=verifyRetirement;this.#max=maxSessions;
+ #nodeId;#provider;#fence;#region;#version;#leaseMs;#challenge;#entries=new Map();#verify;#resolveStreamTarget;#unsubscribe;#max;#closed=false;#shutdown;
+ constructor({nodeId,incarnation,region,version,provider,verifyRetirement,resolveStreamTarget=null,leaseMs=15000,maxSessions=64}={}){
+  if(!id(region)||typeof version!=='string'||version.length<1||version.length>256||!provider||!['create','close','resolveSource','agent'].every(k=>typeof provider[k]==='function')||typeof verifyRetirement!=='function'||(resolveStreamTarget!==null&&typeof resolveStreamTarget!=='function')||!Number.isSafeInteger(leaseMs)||leaseMs<100||leaseMs>60000||!Number.isSafeInteger(maxSessions)||maxSessions<1||maxSessions>10000)throw new TypeError('Configure fixed Worker data identity, existing provider and trusted retirement verifier');
+  this.#nodeId=nodeId;this.#provider=provider;this.#region=region;this.#version=version;this.#leaseMs=leaseMs;this.#verify=verifyRetirement;this.#resolveStreamTarget=resolveStreamTarget;this.#max=maxSessions;
   this.#fence=new ClusterWorkerFence({nodeId,incarnation,maxSessions,onExpired:async()=>{await Promise.all([...this.#entries.values()].map(entry=>this.#closeEntry(entry,false,'worker-unavailable')));}});
   this.#unsubscribe=provider.subscribeUnavailable?.(event=>{const entry=this.#entries.get(event.sessionId);if(entry&&event.tenantId===entry.request.tenantId&&event.region===region)entry.unavailable=true;});
  }
@@ -49,6 +51,35 @@ export class ClusterWorkerService {
    if(!exact(evidence,['sha256'])||!/^[a-f0-9]{64}$/.test(evidence.sha256))return {status:'unconfirmed'};
    return {status:'closed',evidence};
   }).catch(()=>({status:'unconfirmed'})).then(result=>{entry.closeState=result.status;return result;});return entry.closePromise;
+ }
+ async openStream({placement,request:reqIdentity,key,signal}={}){
+  if(this.#closed)fail('CLUSTER_WORKER_CLOSED');
+  const identity=this.#request(reqIdentity),entry=this.#entry(placement);
+  if(entry.closing||entry.unavailable||!['tenantId','sessionId','region','version'].every(k=>identity[k]===entry.request[k])||typeof key!=='string'||!/^[a-f0-9]{64}$/.test(key))fail('CLUSTER_WORKER_UNAVAILABLE');
+  this.#fence.check(entry.placement);
+  const combinedSignal=signal?AbortSignal.any([signal,this.#fence.signal,entry.controller.signal]):AbortSignal.any([this.#fence.signal,entry.controller.signal]);
+  const rawTarget=await this.#fence.run(entry.placement,()=>this.#provider.resolveSource({...identity,signal:combinedSignal}));
+  this.#fence.check(entry.placement);
+  if(entry.closing||entry.unavailable||combinedSignal.aborted)fail('CLUSTER_WORKER_UNAVAILABLE');
+  if(typeof rawTarget?.key!=='string'||rawTarget.key.length!==64||!timingSafeEqual(Buffer.from(rawTarget.key,'utf8'),Buffer.from(key,'utf8')))fail('CLUSTER_WORKER_SOURCE_KEY');
+  const target=this.#resolveStreamTarget?await this.#resolveStreamTarget(rawTarget,identity):rawTarget;
+  const streamOrigin=target?.streamOrigin,privateOrigin=target?.origin,streamKey=target?.key;
+  if(typeof streamOrigin!=='string'||typeof privateOrigin!=='string'||typeof streamKey!=='string'||!/^[A-Za-z0-9_-]{32,256}$/.test(streamKey))fail('CLUSTER_WORKER_SOURCE');
+  const url=new URL(streamOrigin),sourceOrigin=new URL(privateOrigin);
+  if(url.origin!==streamOrigin||!['http:','https:'].includes(url.protocol)||!['http:','https:'].includes(sourceOrigin.protocol)||sourceOrigin.origin!==privateOrigin)fail('CLUSTER_WORKER_SOURCE');
+  url.protocol=url.protocol==='https:'?'wss:':'ws:';url.pathname='/stream';url.searchParams.set('key',streamKey);
+  const upstream=new WebSocket(url,{origin:privateOrigin,perMessageDeflate:false,maxPayload,handshakeTimeout:5000});
+  const onAbort=()=>{try{upstream.terminate();}catch{}};
+  combinedSignal.addEventListener('abort',onAbort,{once:true});
+  upstream.once('close',()=>combinedSignal.removeEventListener('abort',onAbort));
+  await new Promise((resolve,reject)=>{
+   upstream.once('open',resolve);
+   upstream.once('error',()=>reject(new ClusterRpcError('CLUSTER_WORKER_STREAM','not-dispatched')));
+   upstream.once('unexpected-response',(_req,res)=>{res.resume();reject(new ClusterRpcError('CLUSTER_WORKER_STREAM','not-dispatched'));});
+  });
+  this.#fence.check(entry.placement);
+  if(entry.closing||entry.unavailable||combinedSignal.aborted){try{upstream.terminate();}catch{}fail('CLUSTER_WORKER_UNAVAILABLE');}
+  return upstream;
  }
  async handle(method,payload,{signal}={}){
   if(this.#closed)fail('CLUSTER_WORKER_CLOSED');

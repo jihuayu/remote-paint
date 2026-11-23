@@ -10,7 +10,7 @@
 | `service/docker-session-provider.mjs` | 固定 Engine 配置、资源身份、启动/健康/退役与 Source 解析 | 多个可信节点适配器的调度和路由 |
 | `service/session-worker-channel.mjs` | 私有 owner 通道、心跳、Ready/Unavailable、关闭结算 | 经过认证的跨节点传输和节点世代租约 |
 | `service/runtime-deployment-binding.mjs` | 固定部署和账本绑定 | 远程节点配置/身份连续性 |
-| `service/viewer-access.mjs` | Session/角色票据和经过认证的 Source 代理 | 接入验证后的 Worker resolver |
+| `service/viewer-access.mjs` | Session/角色票据和经过认证的 Source 代理 | 接入验证后的 Worker resolver 与 mTLS 数据面流能力 |
 
 原 owner 凭据、Agent fence、Engine 身份与物理退役合同继续有效，集群租约号不能替代这些能力。认证传输、原 provider/Registry 接线和单机独立容器验收已进一步完成，见 [RPC 装配与边界](cluster-rpc.md)；尚未部署生产集群。
 
@@ -30,7 +30,7 @@
 
 扩容先准备匹配架构、固定镜像和数据版本的可信节点，核对原部署绑定/运行时证据，再注册、续租、开放容量。缩容先 drain，保留既有路由，等待会话结束或显式释放，确认完整退役再停节点。不会自动创建机器、启用付费资源或强制终止长期会话。
 
-网络分区时 Worker 关闭 owner 资源并拒绝新操作，控制器继续保留不确定资源占额。浏览器可能已经向外部网站发出副作用，无法承诺撤销或安全重放。节点/Session 历史保留有界，满额拒绝新增；现已提供受控指标、排空、滚动升级规划、有界历史归档、节点删除、整链路装配与分区对账恢复工具（`service/cluster-ops.mjs`）：
+网络分区时 Worker 关闭 owner 资源并拒绝新操作，控制器继续保留不确定资源占额。浏览器可能已经向外部网站发出副作用，无法承诺撤销或安全重放。节点/Session 历史保留有界，满额拒绝新增；现已提供受控指标、排空、滚动升级规划、有界历史归档、节点删除、整链路装配、跨机私有数据面 mTLS 隧道、X.509 身份材料审计/在线轮换与部署环境预检工具（`service/cluster-ops.mjs`）：
 
 - **健康/容量/清理指标**：`ClusterPlacementStore.metrics()` 与 `ClusterSessionProvider.metrics()` 返回按节点与集群聚合的容量、剩余槽位、各状态 Session 计数（`reserved`/`ready`/`closing`/`quarantined`/`closed`）、租约余量、`safeToStop`/`removable` 及未确认关闭计数。
 - **操作者排空与滚动升级规划**：`ClusterPlacementStore.drainNode(nodeId, enabled)` 与 `ClusterSessionProvider.drainWorker(nodeId, enabled)` 允许操作者在保留既有路由的前提下停止节点新分配；`ClusterOperations.planRollingUpgrade()` 要求目标版本已有足够的活跃容量后才建议排空旧版本节点，并区分待排空、排空中、被隔离阻塞、待归档与可移除节点。
@@ -39,6 +39,10 @@
   - `assembleClusterDockerWorker()` 将已初始化的 `DockerSessionProvider` 与节点本地 `SqliteSessionStore` 通过 `createDockerClusterWorker()` 封装为双向 mTLS 认证的 `createClusterRpcServer`；
   - `assembleClusterGateway()` 在 `assemblePrivateCluster()` 之上装配完整公共控制栈（`SessionRegistry`、`DurableAgentExecutor`、`ViewerAccess`、`createSessionControlServer`）；
   - `ClusterSessionProvider.reconnectWorker()` 与 `ClusterOperations.reconcileQuarantined()` / `gateway.reconcile()` 支持节点分区恢复或跨世代重启（`incarnation` 变更）后重新握手租约，向恢复中的节点核对旧世代隔离或未派发会话的不可变 `.retirement.json` / `owned-provider-not-dispatched-v1` 退役收据，在确认退役后自动将节点从 `recovering` 提升回 `active` 并释放控制器与 `SessionRegistry` 占额；若延迟的 `create` 包在关闭栅栏之后到达 Worker，Worker 将直接以 `CLUSTER_WORKER_CONFLICT`（`not-dispatched`）拒绝，不会产生幽灵容器。
+- **跨机器私有数据面 mTLS 隧道、受管 Agent/CDP 隔离、X.509 身份校验与在线轮换/吊销**：
+  - **跨机私有数据面隧道（`GET /v1/cluster/stream`）**：当 Gateway 与 Worker 部署在不同主机且容器 bridge IP（如 `198.19.192.x:4176`）仅在 Worker 宿主机本地可达时，`ClusterSessionProvider.resolveSourceStream()` 与 `ClusterRpcClient.openStream()` 通过固定证书指纹绑定的 mTLS 升级请求（`wss://<worker_ip>:<port>/v1/cluster/stream`，携带 `x-cluster-stream` 绑定信封）将 `ViewerAccess` 数据面桥接至目标 Worker；Worker 端 `ClusterWorkerService.openStream()` 核对控制器证书、placement fence、活跃租约及常量时间（`timingSafeEqual`）64 位派生 Source `key` 后再连接本机容器 `/stream`，并在会话关闭或租约到期时立即中断流。
+  - **受管 Agent/观察路由与裸 CDP 隔离**：DOM 观察（`observation-context`/`observe`）、无障碍树（`observe-ax`）、截图分块与下载均经由 mTLS RPC 路由至 Worker 本地 `DockerSessionProvider` 的 Unix socket `attach` 通道；公共 Gateway 与 Worker RPC 端点严格拒绝 `/json`、`/json/version`、`/devtools/...` 等裸 CDP HTTP/WebSocket 路径。
+  - **真实 X.509 身份材料校验、在线轮换与部署预检**：`loadPrivateTlsMaterial()` 与 `verifyTlsIdentityMaterial()` 强制校验 `0700`/`0600` 私密文件权限、CA `basicConstraints`（`CA:TRUE`）、叶证书签名、私钥配对、有效期窗口与 SAN 主机名；`worker.rotatePeers()` 与 `gateway.operations.rotateWorkerTls()` 支持双信任窗口平滑轮换控制器/Worker 证书并在吊销旧指纹时立即断开被吊销证书的在途流与连接；`verifyClusterDeploymentEnvironment()` 对账本/归档权限、身份材料、角色指纹分离及禁止裸 CDP 端口（`4175`/`4176`/`9222`/`9229`）生成可复核的预检摘要回执。
 
 生产配置应明确单控制器私有持久卷、Worker allowlist、已有身份材料、固定镜像/版本/容量、每 Session 原有 Docker/网络/Profile 隔离，以及 Native 全进程退役证据入口。CDP 保持私有网络或节点 loopback；公共 API 不返回内部 Source URL、owner 凭据或裸 CDP。
 
@@ -49,7 +53,7 @@
 要求 Node 22.13+ 的 node:sqlite。在已准备源码/依赖的目录执行：
 
 ```sh
-node --test tests/cluster-placement.test.mjs tests/cluster-worker-fence.test.mjs tests/cluster-control-integration.test.mjs tests/cluster-rpc.test.mjs tests/cluster-gateway.test.mjs tests/cluster-ops.test.mjs tests/cluster-full-chain.test.mjs
+node --test tests/cluster-placement.test.mjs tests/cluster-worker-fence.test.mjs tests/cluster-control-integration.test.mjs tests/cluster-rpc.test.mjs tests/cluster-gateway.test.mjs tests/cluster-ops.test.mjs tests/cluster-full-chain.test.mjs tests/cluster-data-plane-pki.test.mjs
 ```
 
 本次复用已交付 ARM64 镜像、Node 22.23.3，容器网络 none，无宿主端口，零 Docker/Chromium 编译。合同使用真实 SQLite、两个独立 Node IPC Worker 和真实租约定时器；其资源为明确的虚拟夹具。真实 Chromium 多 Worker 结果另行记录，不等同于跨机器集群或独立内核隔离。

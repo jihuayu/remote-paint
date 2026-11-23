@@ -1,5 +1,6 @@
 import {DatabaseSync} from 'node:sqlite';
-import {createHash} from 'node:crypto';
+import {createHash,X509Certificate,createPrivateKey} from 'node:crypto';
+import {isIP} from 'node:net';
 import {openSync,writeFileSync,fsyncSync,closeSync,readFileSync,lstatSync} from 'node:fs';
 import {basename,dirname,isAbsolute,join} from 'node:path';
 import {setTimeout as delay} from 'node:timers/promises';
@@ -28,6 +29,7 @@ const digestJson=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex')
 const digestBytes=v=>createHash('sha256').update(v).digest('hex');
 const recordKeys=['sessionId','tenantId','region','arch','version','nodeId','generation','epoch','state','retirementSha256'];
 const workerSpecKeys=['nodeId','incarnation','endpoint','serverName','serverSha256','capacity','validateSource'];
+const forbiddenCdpPorts=new Set([4175,4176,9222,9229]);
 
 function checkPrivateDir(dir){
  if(typeof dir!=='string'||!isAbsolute(dir))fail('CLUSTER_ARCHIVE_DIR','Archive directory must be an absolute path');
@@ -59,6 +61,101 @@ function writePrivateExclusive(filePath,content){
  }finally{
   closeSync(fd);
  }
+}
+
+export function verifyTlsIdentityMaterial(tls,{now=()=>Date.now(),expectedServerName=null}={}){
+ if(!exact(tls,['key','cert','ca'])||typeof now!=='function')fail('CLUSTER_TLS_INVALID','Expected explicit key, cert and ca TLS material');
+ for(const k of ['key','cert','ca']){
+  const v=tls[k];
+  if(!(typeof v==='string'||Buffer.isBuffer(v))||Buffer.byteLength(v)<1||Buffer.byteLength(v)>65536)fail('CLUSTER_TLS_INVALID','TLS material must be non-empty and bounded');
+ }
+ const at=now();
+ if(!Number.isFinite(at))fail('CLUSTER_TLS_INVALID','Invalid TLS verification clock');
+ let leaf,ca,privKey;
+ try{
+  leaf=new X509Certificate(tls.cert);
+  ca=new X509Certificate(tls.ca);
+  privKey=createPrivateKey(tls.key);
+ }catch{
+  fail('CLUSTER_TLS_INVALID','Malformed X.509 certificate or private key');
+ }
+ if(ca.ca!==true||leaf.ca!==false)fail('CLUSTER_TLS_CA','Expected a CA trust anchor and a non-CA leaf certificate');
+ let signed=false,keyMatches=false;
+ try{signed=leaf.verify(ca.publicKey)===true;keyMatches=leaf.checkPrivateKey(privKey)===true;}catch{}
+ if(!signed)fail('CLUSTER_TLS_UNTRUSTED','Leaf certificate is not signed by the configured CA');
+ if(!keyMatches)fail('CLUSTER_TLS_KEY_MISMATCH','Leaf certificate does not match the configured private key');
+ const leafFrom=Date.parse(leaf.validFrom),leafTo=Date.parse(leaf.validTo),caFrom=Date.parse(ca.validFrom),caTo=Date.parse(ca.validTo);
+ if(!Number.isFinite(leafFrom)||!Number.isFinite(leafTo)||!Number.isFinite(caFrom)||!Number.isFinite(caTo)||at<leafFrom||at>=leafTo||at<caFrom||at>=caTo){
+  fail('CLUSTER_TLS_EXPIRED','Certificate or CA is outside its validity window');
+ }
+ if(expectedServerName!==null){
+  if(typeof expectedServerName!=='string'||!/^[A-Za-z0-9][A-Za-z0-9.-]{0,252}$/.test(expectedServerName)||leaf.checkHost(expectedServerName)!==expectedServerName){
+   fail('CLUSTER_TLS_HOSTNAME','Leaf certificate SAN does not match expectedServerName');
+  }
+ }
+ const sha256=digestBytes(leaf.raw),caSha256=digestBytes(ca.raw);
+ return freeze({
+  tls:freeze({key:tls.key,cert:tls.cert,ca:tls.ca}),
+  sha256,caSha256,
+  subject:leaf.subject,issuer:leaf.issuer,
+  subjectAltName:leaf.subjectAltName??null,
+  serialNumber:leaf.serialNumber,
+  validFrom:new Date(leafFrom).toISOString(),
+  validTo:new Date(leafTo).toISOString()
+ });
+}
+
+export function loadPrivateTlsMaterial({directory,keyFile='key.pem',certFile='cert.pem',caFile='ca.pem',now=()=>Date.now(),expectedServerName=null}={}){
+ checkPrivateDir(directory);
+ for(const name of [keyFile,certFile,caFile]){
+  if(typeof name!=='string'||!name.length||basename(name)!==name||name.includes('..'))fail('CLUSTER_TLS_FILE','Invalid TLS filename');
+ }
+ const keyPath=join(directory,keyFile),certPath=join(directory,certFile),caPath=join(directory,caFile);
+ checkPrivateFile(keyPath);checkPrivateFile(certPath);checkPrivateFile(caPath);
+ const tls={key:readFileSync(keyPath,'utf8'),cert:readFileSync(certPath,'utf8'),ca:readFileSync(caPath,'utf8')};
+ return verifyTlsIdentityMaterial(tls,{now,expectedServerName});
+}
+
+export function verifyClusterDeploymentEnvironment({placementPath,registryPath=null,archiveDir=null,region,arch,version:dataVersion,controllerTls,workers,now=()=>Date.now()}={}){
+ if(!id(region)||!['arm64','x64'].includes(arch)||!version(dataVersion)||!Array.isArray(workers)||workers.length<1||workers.length>64){
+  fail('CLUSTER_DEPLOYMENT_INVALID','Configure valid region, arch, version and 1..64 Worker specifications');
+ }
+ checkPrivateFile(placementPath);
+ checkPrivateDir(dirname(placementPath));
+ if(registryPath!==null){
+  if(registryPath===placementPath)fail('CLUSTER_DEPLOYMENT_INVALID','Placement and Registry SQLite ledgers must use distinct private files');
+  checkPrivateFileIfPresent(registryPath);
+  checkPrivateDir(dirname(registryPath));
+ }
+ if(archiveDir!==null)checkPrivateDir(archiveDir);
+ const controllerIdentity=verifyTlsIdentityMaterial(controllerTls,{now});
+ const seenNodes=new Set(),seenEndpoints=new Set(),verifiedWorkers=[];
+ for(const spec of workers){
+  if(!exact(spec,workerSpecKeys)||!id(spec.nodeId)||!id(spec.incarnation)||!sha256Hex(spec.serverSha256)||!integer(spec.capacity,1,1024)||typeof spec.validateSource!=='function'){
+   fail('CLUSTER_DEPLOYMENT_INVALID','Invalid Worker deployment specification');
+  }
+  if(seenNodes.has(spec.nodeId)||seenEndpoints.has(spec.endpoint))fail('CLUSTER_DEPLOYMENT_DUPLICATE','Worker nodeId and endpoint must be unique');
+  if(spec.serverSha256===controllerIdentity.sha256)fail('CLUSTER_DEPLOYMENT_ROLE_CONFLICT','Controller certificate fingerprint cannot match a Worker server certificate pin');
+  let url;try{url=new URL(spec.endpoint);}catch{fail('CLUSTER_DEPLOYMENT_ENDPOINT','Worker endpoint must be a valid HTTPS origin');}
+  if(url.origin!==spec.endpoint||url.protocol!=='https:'||!isIP(url.hostname.replace(/^\[|\]$/g,''))||typeof spec.serverName!=='string'||!/^[A-Za-z0-9][A-Za-z0-9.-]{0,252}$/.test(spec.serverName)){
+   fail('CLUSTER_DEPLOYMENT_ENDPOINT','Worker endpoint must be an IP-pinned HTTPS origin with explicit TLS serverName');
+  }
+  const port=url.port?Number(url.port):443;
+  if(forbiddenCdpPorts.has(port))fail('CLUSTER_DEPLOYMENT_CDP_FORBIDDEN','Worker RPC endpoint cannot bind internal Source or raw CDP ports');
+  seenNodes.add(spec.nodeId);seenEndpoints.add(spec.endpoint);
+  verifiedWorkers.push(freeze({nodeId:spec.nodeId,incarnation:spec.incarnation,endpoint:spec.endpoint,serverName:spec.serverName,serverSha256:spec.serverSha256,capacity:spec.capacity}));
+ }
+ const summary={
+  schema:'cluster-deployment-environment-v1',
+  valid:true,
+  region,arch,version:dataVersion,
+  controllerSha256:controllerIdentity.sha256,
+  caSha256:controllerIdentity.caSha256,
+  workerCount:verifiedWorkers.length,
+  workers:Object.freeze(verifiedWorkers),
+  rawCdpExposed:false
+ };
+ return freeze({...summary,sha256:digestJson(summary)});
 }
 
 function validateRecord(record){
@@ -151,6 +248,10 @@ export class ClusterOperations {
   if(!this.#provider)fail('CLUSTER_PROVIDER_REQUIRED','ClusterSessionProvider is required to reconnect a live Worker');
   return this.#provider.reconnectWorker(nodeId,options);
  }
+ rotateWorkerTls(nodeId,options={}){
+  if(!this.#provider)fail('CLUSTER_PROVIDER_REQUIRED','ClusterSessionProvider is required to rotate Worker mTLS credentials');
+  return this.#provider.rotateWorkerTls(nodeId,options);
+ }
  async reconcileQuarantined({nodeId=null,tenantId=null,reason='worker-unavailable'}={}){
   if(!this.#provider)fail('CLUSTER_PROVIDER_REQUIRED','ClusterSessionProvider is required to reconcile quarantined Sessions');
   const candidates=this.#store.unresolvedSessions({nodeId,tenantId}).filter(r=>['quarantined','closing'].includes(r.state));
@@ -238,16 +339,22 @@ export function assemblePrivateCluster({placementPath,region,arch,version:dataVe
 }
 
 // Wires an initialized DockerSessionProvider and its node-local SqliteSessionStore
-// to an mTLS-authenticated ClusterWorkerService RPC server without generating
-// credentials or opening an unbound public listener.
-export function assembleClusterDockerWorker({provider,store,nodeId,incarnation,region,version:dataVersion,leaseMs=15000,maxSessions=64,tls,clientSha256,maxBytes=2*1024*1024,maxConcurrent=8,timeoutMs=75000}={}){
- const worker=createDockerClusterWorker({provider,store,nodeId,incarnation,region,version:dataVersion,leaseMs,maxSessions});
+// to an mTLS-authenticated ClusterWorkerService RPC and private data-plane server
+// without generating credentials or opening an unbound public listener.
+export function assembleClusterDockerWorker({provider,store,nodeId,incarnation,region,version:dataVersion,leaseMs=15000,maxSessions=64,resolveStreamTarget=null,tls,clientSha256,maxBytes=2*1024*1024,maxConcurrent=8,maxStreams=16,timeoutMs=75000}={}){
+ const worker=createDockerClusterWorker({provider,store,nodeId,incarnation,region,version:dataVersion,leaseMs,maxSessions,resolveStreamTarget});
  let server=null;
  try{
-  server=createClusterRpcServer({tls,clientSha256,handle:(method,payload,options)=>worker.handle(method,payload,options),maxBytes,maxConcurrent,timeoutMs});
+  server=createClusterRpcServer({
+   tls,clientSha256,
+   handle:(method,payload,options)=>worker.handle(method,payload,options),
+   handleStream:options=>worker.openStream(options),
+   maxBytes,maxConcurrent,maxStreams,timeoutMs
+  });
   return Object.freeze({
    worker,server,
    initialize:()=>worker.initialize(),
+   rotatePeers:peers=>server.rotatePeers(peers),
    async close(){
     server.closeAllConnections();
     if(server.listening)await new Promise(r=>server.close(r));
@@ -262,8 +369,8 @@ export function assembleClusterDockerWorker({provider,store,nodeId,incarnation,r
 
 // Wires the complete public Gateway control stack (SessionRegistry,
 // DurableAgentExecutor, ViewerAccess, createSessionControlServer) on top of
-// assemblePrivateCluster with coordinated recovery, quarantine reconciliation
-// and ordered shutdown.
+// assemblePrivateCluster with mTLS private data-plane streaming, coordinated
+// recovery, quarantine reconciliation and ordered shutdown.
 export function assembleClusterGateway({placementPath,registryPath,region,arch,version:dataVersion,leaseMs=15000,heartbeatMs=4000,maxNodes=64,maxSessions=10000,globalQuota=16,tenantQuota=4,defaultTtlSeconds=900,maxTtlSeconds=86400,actionKey,authenticate,controllerTls,workers,resolveSource=null,now}={}){
  checkPrivateFileIfPresent(registryPath);
  checkPrivateDir(dirname(registryPath));
@@ -276,7 +383,7 @@ export function assembleClusterGateway({placementPath,registryPath,region,arch,v
   ledger=new SqliteSessionStore({path:registryPath});
   registry=new SessionRegistry({store:ledger,providers,defaultRegion:region,globalQuota,tenantQuota,defaultTtlSeconds,maxTtlSeconds});
   agentExecutor=new DurableAgentExecutor({store:ledger,registry,providers,actionKey});
-  const sourceResolver=resolveSource?(req=>resolveSource(req,cluster.provider)):(req=>cluster.provider.resolveSource(req));
+  const sourceResolver=resolveSource?(req=>resolveSource(req,cluster.provider)):(req=>cluster.provider.resolveSourceStream(req));
   viewerAccess=new ViewerAccess({registry,resolveSource:sourceResolver});
   http=createSessionControlServer({registry,agentExecutor,viewerAccess,authenticate});
   const waitOperation=async(tenantId,operationId)=>{
