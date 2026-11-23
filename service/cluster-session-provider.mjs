@@ -66,6 +66,22 @@ export class ClusterSessionProvider {
    throw error instanceof ClusterRpcError?error:new ClusterRpcError(error?.code??'CLUSTER_PROVIDER_UNAVAILABLE','not-dispatched');
   }
  }
+ async rotateWorkerTls(nodeId,{tls,serverSha256,endpoint,serverName,incarnation}={}){
+  if(this.#phase!=='available')fail('CLUSTER_PROVIDER_CLOSED');
+  const worker=this.#workers.get(nodeId);if(!worker)fail('CLUSTER_NODE_NOT_FOUND');
+  const client=new ClusterRpcClient({
+   endpoint:endpoint??worker.client.endpoint,
+   serverName:serverName??worker.client.serverName,
+   serverSha256:serverSha256??worker.client.serverSha256,
+   tls
+  });
+  try{
+   return await this.reconnectWorker(nodeId,{client,...(incarnation!==undefined?{incarnation}:{})});
+  }catch(error){
+   try{client.close();}catch{}
+   throw error;
+  }
+ }
  metrics(){
   const placement=this.#store.metrics();
   const workers=Object.freeze([...this.#workers.entries()].map(([nodeId,worker])=>{
@@ -99,6 +115,13 @@ export class ClusterSessionProvider {
  async resolveSource(request){
   const {entry,worker}=this.#current(request),target=await worker.client.call('resolve',{placement:entry.placement,request:identity(request)},{signal:request.signal});this.#current(request);
   if(worker.validateSource(target,identity(request))!==true)fail('CLUSTER_PROVIDER_SOURCE');return target;
+ }
+ async resolveSourceStream(request){
+  const {entry,worker}=this.#current(request),target=await this.resolveSource(request);this.#current(request);
+  return Object.freeze({...target,connectStream:({signal}={})=>{
+   this.#current(request);
+   return worker.client.openStream({placement:entry.placement,request:identity(request),key:target.key,signal});
+  }});
  }
  async agent(request){
   let entry,worker,command;try{({entry,worker}=this.#current(request));command=captureAgentRequest(request.command);if(command.context&&(command.context.binding.tenantId!==request.tenantId||command.context.binding.sessionId!==request.sessionId))throw new AgentRpcError('AGENT_INVALID_CONTEXT','not-dispatched');}catch(error){throw error instanceof AgentRpcError?error:new AgentRpcError('AGENT_UNAVAILABLE','not-dispatched');}
