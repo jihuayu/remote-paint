@@ -44,6 +44,8 @@ export class ClusterPlacementStore {
    database.exec(`BEGIN EXCLUSIVE;
     CREATE TABLE IF NOT EXISTS cluster_meta(id INTEGER PRIMARY KEY CHECK(id=1), format INTEGER NOT NULL CHECK(format=1), epoch INTEGER NOT NULL CHECK(epoch>=0)) STRICT;
     INSERT OR IGNORE INTO cluster_meta VALUES(1,1,0);
+    CREATE TABLE IF NOT EXISTS cluster_ops_meta(id INTEGER PRIMARY KEY CHECK(id=1), generationFloor INTEGER NOT NULL CHECK(generationFloor>=0), archivedSessions INTEGER NOT NULL CHECK(archivedSessions>=0), archivedBatches INTEGER NOT NULL CHECK(archivedBatches>=0)) STRICT;
+    INSERT OR IGNORE INTO cluster_ops_meta VALUES(1,0,0,0);
     CREATE TABLE IF NOT EXISTS cluster_nodes(nodeId TEXT PRIMARY KEY, incarnation TEXT NOT NULL, generation INTEGER NOT NULL, region TEXT NOT NULL, arch TEXT NOT NULL, version TEXT NOT NULL, capacity INTEGER NOT NULL, mode TEXT NOT NULL, deadline INTEGER NOT NULL) STRICT;
     CREATE TABLE IF NOT EXISTS cluster_sessions(sessionId TEXT PRIMARY KEY, tenantId TEXT NOT NULL, region TEXT NOT NULL, arch TEXT NOT NULL, version TEXT NOT NULL, fingerprint TEXT NOT NULL, nodeId TEXT NOT NULL REFERENCES cluster_nodes(nodeId), generation INTEGER NOT NULL, epoch INTEGER NOT NULL UNIQUE, state TEXT NOT NULL, retirementSha256 TEXT) STRICT;
     UPDATE cluster_nodes SET deadline=0,mode='expired';
@@ -81,7 +83,8 @@ export class ClusterPlacementStore {
    this.#sweep(at);const old=this.#db.prepare('SELECT * FROM cluster_nodes WHERE nodeId=?').get(value.nodeId);
    if(old&&old.deadline>at)fail('CLUSTER_NODE_OWNED');
    if(!old&&this.#db.prepare('SELECT count(*) AS n FROM cluster_nodes').get().n>=this.#maxNodes)fail('CLUSTER_NODE_LIMIT');
-   const generation=(old?.generation??0)+1;if(!Number.isSafeInteger(generation))fail('CLUSTER_FENCE_LIMIT');
+   const floor=this.#db.prepare('SELECT generationFloor FROM cluster_ops_meta WHERE id=1').get().generationFloor;
+   const generation=Math.max(old?.generation??0,floor)+1;if(!Number.isSafeInteger(generation))fail('CLUSTER_FENCE_LIMIT');
    const unresolved=this.#db.prepare("SELECT count(*) AS n FROM cluster_sessions WHERE nodeId=? AND state!='closed'").get(value.nodeId).n;
    this.#db.prepare('INSERT INTO cluster_nodes VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(nodeId) DO UPDATE SET incarnation=excluded.incarnation,generation=excluded.generation,region=excluded.region,arch=excluded.arch,version=excluded.version,capacity=excluded.capacity,mode=excluded.mode,deadline=excluded.deadline').run(value.nodeId,value.incarnation,generation,value.region,value.arch,value.version,value.capacity,unresolved?'recovering':'active',at+this.#ttl);
    return freeze({nodeId:value.nodeId,incarnation:value.incarnation,generation});
@@ -89,6 +92,23 @@ export class ClusterPlacementStore {
  }
  heartbeat(lease){return this.#transaction(at=>{this.#lease(lease,at);this.#db.prepare('UPDATE cluster_nodes SET deadline=? WHERE nodeId=?').run(at+this.#ttl,lease.nodeId);return freeze(lease);});}
  drain(lease,enabled=true){if(typeof enabled!=='boolean')throw new TypeError('Expected a drain boolean');return this.#transaction(at=>{const node=this.#lease(lease,at);if(node.mode==='recovering')fail('CLUSTER_RECOVERY_REQUIRED');this.#db.prepare('UPDATE cluster_nodes SET mode=? WHERE nodeId=?').run(enabled?'draining':'active',lease.nodeId);return freeze({nodeId:lease.nodeId,draining:enabled});});}
+ drainNode(nodeId,enabled=true){
+  if(!id(nodeId)||typeof enabled!=='boolean')throw new TypeError('Expected a valid nodeId and drain boolean');
+  return this.#transaction(at=>{
+   this.#sweep(at);const node=this.#db.prepare('SELECT * FROM cluster_nodes WHERE nodeId=?').get(nodeId);
+   if(!node)fail('CLUSTER_NODE_NOT_FOUND');
+   if(node.mode==='recovering')fail('CLUSTER_RECOVERY_REQUIRED');
+   const counts=this.#db.prepare("SELECT count(*) AS held, sum(CASE WHEN state='quarantined' THEN 1 ELSE 0 END) AS quarantined FROM cluster_sessions WHERE nodeId=? AND state!='closed'").get(nodeId);
+   const heldSlots=counts.held,quarantinedSessions=counts.quarantined??0;
+   if(node.mode==='expired'||node.deadline<=at){
+    if(!enabled)fail('CLUSTER_LEASE');
+    return freeze({nodeId,mode:'expired',draining:true,heldSlots,quarantinedSessions,safeToStop:heldSlots===0});
+   }
+   const mode=enabled?'draining':'active';
+   this.#db.prepare('UPDATE cluster_nodes SET mode=? WHERE nodeId=?').run(mode,nodeId);
+   return freeze({nodeId,mode,draining:enabled,heldSlots,quarantinedSessions,safeToStop:enabled&&heldSlots===0});
+  });
+ }
  reserve(value){
   if(!exact(value,requestKeys)||!requestKeys.filter(k=>k!=='version').every(k=>id(value[k]))||!version(value.version)||!['arm64','x64'].includes(value.arch))throw new TypeError('Expected a captured Session placement request');
   const fingerprint=digest(requestKeys.map(k=>value[k]));
@@ -126,6 +146,73 @@ export class ClusterPlacementStore {
    const remaining=this.#db.prepare("SELECT count(*) AS n FROM cluster_sessions WHERE nodeId=? AND state!='closed'").get(row.nodeId).n;
    if(!remaining)this.#db.prepare("UPDATE cluster_nodes SET mode='active' WHERE nodeId=? AND mode='recovering'").run(row.nodeId);
    return freeze({status:'closed'});
+  });
+ }
+ archiveClosedSessions({limit=100,beforeEpoch=null,nodeId=null,onArchive}={}){
+  if(!integer(limit,1,1000)||(beforeEpoch!==null&&!integer(beforeEpoch,1,Number.MAX_SAFE_INTEGER))||(nodeId!==null&&!id(nodeId))||typeof onArchive!=='function')throw new TypeError('Configure bounded archive parameters and a synchronous archive sink');
+  return this.#transaction(at=>{
+   this.#sweep(at);
+   const filters=["state='closed'","retirementSha256 IS NOT NULL"],params=[];
+   if(beforeEpoch!==null){filters.push('epoch<?');params.push(beforeEpoch);}
+   if(nodeId!==null){filters.push('nodeId=?');params.push(nodeId);}
+   params.push(limit);
+   const rows=this.#db.prepare(`SELECT sessionId,tenantId,region,arch,version,nodeId,generation,epoch,state,retirementSha256 FROM cluster_sessions WHERE ${filters.join(' AND ')} ORDER BY epoch ASC LIMIT ?`).all(...params);
+   if(!rows.length)return freeze({format:1,archived:0,minEpoch:null,maxEpoch:null,sha256:null,records:Object.freeze([])});
+   const records=Object.freeze(rows.map(r=>freeze({sessionId:r.sessionId,tenantId:r.tenantId,region:r.region,arch:r.arch,version:r.version,nodeId:r.nodeId,generation:r.generation,epoch:r.epoch,state:'closed',retirementSha256:r.retirementSha256})));
+   const batch=freeze({format:1,archived:records.length,minEpoch:records[0].epoch,maxEpoch:records[records.length-1].epoch,sha256:digest(records),records});
+   let accepted;try{accepted=onArchive(batch);if(accepted?.then)void Promise.resolve(accepted).catch(()=>{});}catch{fail('CLUSTER_ARCHIVE_FAILED');}
+   if(accepted!==true)fail('CLUSTER_ARCHIVE_FAILED');
+   const del=this.#db.prepare("DELETE FROM cluster_sessions WHERE sessionId=? AND state='closed' AND retirementSha256 IS NOT NULL");
+   for(const record of records)del.run(record.sessionId);
+   this.#db.prepare('UPDATE cluster_ops_meta SET archivedSessions=archivedSessions+?,archivedBatches=archivedBatches+1 WHERE id=1').run(records.length);
+   return batch;
+  });
+ }
+ removeNode(nodeId){
+  if(!id(nodeId))throw new TypeError('Expected a valid nodeId');
+  return this.#transaction(at=>{
+   this.#sweep(at);const node=this.#db.prepare('SELECT * FROM cluster_nodes WHERE nodeId=?').get(nodeId);
+   if(!node)fail('CLUSTER_NODE_NOT_FOUND');
+   if(node.mode==='active'&&node.deadline>at)fail('CLUSTER_NODE_ACTIVE');
+   const unresolved=this.#db.prepare("SELECT count(*) AS n FROM cluster_sessions WHERE nodeId=? AND state!='closed'").get(nodeId).n;
+   if(unresolved>0)fail('CLUSTER_NODE_IN_USE');
+   const retained=this.#db.prepare('SELECT count(*) AS n FROM cluster_sessions WHERE nodeId=?').get(nodeId).n;
+   if(retained>0)fail('CLUSTER_NODE_HAS_HISTORY');
+   this.#db.prepare('UPDATE cluster_ops_meta SET generationFloor=MAX(generationFloor,?) WHERE id=1').run(node.generation);
+   const generationFloor=this.#db.prepare('SELECT generationFloor FROM cluster_ops_meta WHERE id=1').get().generationFloor;
+   this.#db.prepare('DELETE FROM cluster_nodes WHERE nodeId=?').run(nodeId);
+   return freeze({nodeId,removedGeneration:node.generation,generationFloor});
+  });
+ }
+ metrics(){
+  return this.#transaction(at=>{
+   this.#sweep(at);
+   const ops=this.#db.prepare('SELECT generationFloor,archivedSessions,archivedBatches FROM cluster_ops_meta WHERE id=1').get();
+   const rawNodes=this.#db.prepare('SELECT * FROM cluster_nodes ORDER BY nodeId ASC').all();
+   const stateRows=this.#db.prepare('SELECT nodeId,state,count(*) AS n FROM cluster_sessions GROUP BY nodeId,state').all();
+   const perNodeCounts=new Map();
+   for(const row of stateRows){
+    let counts=perNodeCounts.get(row.nodeId);
+    if(!counts){counts={reserved:0,ready:0,closing:0,quarantined:0,closed:0};perNodeCounts.set(row.nodeId,counts);}
+    if(Object.hasOwn(counts,row.state))counts[row.state]=row.n;
+   }
+   const byMode={active:0,draining:0,recovering:0,expired:0};
+   const byState={reserved:0,ready:0,closing:0,quarantined:0,closed:0};
+   let totalCapacity=0,activeCapacity=0,heldSlots=0,availableSlots=0,retainedSessions=0;
+   const nodes=Object.freeze(rawNodes.map(node=>{
+    const counts=perNodeCounts.get(node.nodeId)??{reserved:0,ready:0,closing:0,quarantined:0,closed:0};
+    const nodeHeld=counts.reserved+counts.ready+counts.closing+counts.quarantined;
+    const nodeFree=node.mode==='active'?Math.max(0,node.capacity-nodeHeld):0;
+    const safeToStop=(node.mode==='draining'||node.mode==='expired')&&nodeHeld===0;
+    const removable=safeToStop&&counts.closed===0;
+    if(Object.hasOwn(byMode,node.mode))byMode[node.mode]++;
+    for(const key of Object.keys(byState))byState[key]+=counts[key];
+    totalCapacity+=node.capacity;
+    if(node.mode==='active')activeCapacity+=node.capacity;
+    heldSlots+=nodeHeld;availableSlots+=nodeFree;retainedSessions+=nodeHeld+counts.closed;
+    return freeze({nodeId:node.nodeId,incarnation:node.incarnation,generation:node.generation,region:node.region,arch:node.arch,version:node.version,mode:node.mode,capacity:node.capacity,heldSlots:nodeHeld,freeSlots:nodeFree,leaseRemainingMs:Math.max(0,node.deadline-at),sessions:freeze(counts),safeToStop,removable});
+   }));
+   return freeze({nodes,totals:freeze({nodes:nodes.length,maxNodes:this.#maxNodes,totalCapacity,activeCapacity,heldSlots,availableSlots,retainedSessions,maxSessions:this.#maxSessions,archivedSessions:ops.archivedSessions,archivedBatches:ops.archivedBatches,generationFloor:ops.generationFloor,byMode:freeze(byMode),byState:freeze(byState)})});
   });
  }
  status(){return this.#transaction(at=>{this.#sweep(at);return freeze({nodes:this.#db.prepare('SELECT count(*) AS n FROM cluster_nodes').get().n,retainedSessions:this.#db.prepare('SELECT count(*) AS n FROM cluster_sessions').get().n,heldSlots:this.#db.prepare("SELECT count(*) AS n FROM cluster_sessions WHERE state!='closed'").get().n,quarantined:this.#db.prepare("SELECT count(*) AS n FROM cluster_sessions WHERE state='quarantined'").get().n});});}

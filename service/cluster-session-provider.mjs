@@ -13,7 +13,7 @@ export class ClusterSessionProvider {
  constructor({store,region,arch,version,workers,leaseMs=15000,heartbeatMs=4000}={}){
   if(!(store instanceof ClusterPlacementStore)||owners.has(store)||typeof region!=='string'||!['arm64','x64'].includes(arch)||typeof version!=='string'||!(workers instanceof Map)||workers.size<1||workers.size>64||!Number.isSafeInteger(leaseMs)||leaseMs<100||leaseMs>60000||!Number.isSafeInteger(heartbeatMs)||heartbeatMs<20||heartbeatMs>=leaseMs/2)throw new TypeError('Configure one placement owner and fixed trusted Worker clients');
   this.#store=store;this.#region=region;this.#arch=arch;this.#version=version;this.#leaseMs=leaseMs;this.#interval=heartbeatMs;this.#workers=new Map();
-  for(const [nodeId,value]of workers){const {client,descriptor,validateSource}=value;if(!(client instanceof ClusterRpcClient)||descriptor?.nodeId!==nodeId||descriptor.region!==region||descriptor.arch!==arch||descriptor.version!==version||typeof validateSource!=='function')throw new TypeError('Configure matching Worker descriptors and explicit Source endpoint policy');this.#workers.set(nodeId,{client,descriptor:structuredClone(descriptor),validateSource,lease:null,timer:null,heartbeat:null,available:false});}
+  for(const [nodeId,value]of workers){const {client,descriptor,validateSource}=value;if(!(client instanceof ClusterRpcClient)||descriptor?.nodeId!==nodeId||descriptor.region!==region||descriptor.arch!==arch||descriptor.version!==version||typeof validateSource!=='function')throw new TypeError('Configure matching Worker descriptors and explicit Source endpoint policy');this.#workers.set(nodeId,{client,descriptor:structuredClone(descriptor),validateSource,lease:null,timer:null,heartbeat:null,available:false,draining:false});}
   owners.add(store);
  }
  initialize(){
@@ -26,12 +26,32 @@ export class ClusterSessionProvider {
  async #heartbeat(worker){try{
   const begin=await worker.client.call('lease-begin',{}),lease=this.#store.heartbeat(worker.lease);await worker.client.call('lease-accept',{challenge:begin.challenge,lease,leaseMs:this.#leaseMs});
   const status=await worker.client.call('status',{});if(status.lease?.state!=='active'||!Array.isArray(status.unavailable)||status.unavailable.length>10000)throw new Error('Worker status');
-  if(status.admissionAvailable===false)this.#store.drain(worker.lease);
+  if(status.admissionAvailable===false){worker.draining=true;this.#store.drain(worker.lease);}
   for(const item of status.unavailable){const entry=this.#entries.get(item.sessionId);if(entry&&entry.placement.nodeId===worker.descriptor.nodeId&&entry.request.tenantId===item.tenantId&&item.region===this.#region)this.#notify(entry);}
  }catch{this.#lose(worker);}}
  #notify(entry){if(entry.unavailable)return;entry.unavailable=true;for(const callback of this.#listeners){try{const result=callback(Object.freeze({sessionId:entry.request.sessionId,tenantId:entry.request.tenantId,region:this.#region}));if(result?.then)void Promise.resolve(result).catch(()=>{});}catch{}}}
  #lose(worker){worker.available=false;clearTimeout(worker.timer);if(worker.lease)try{this.#store.drain(worker.lease);}catch{}for(const entry of this.#entries.values())if(entry.placement.nodeId===worker.descriptor.nodeId)this.#notify(entry);}
  subscribeUnavailable(callback){if(typeof callback!=='function')throw new TypeError('Expected provider callback');this.#listeners.add(callback);return()=>this.#listeners.delete(callback);}
+ drainWorker(nodeId,enabled=true){
+  if(typeof nodeId!=='string'||typeof enabled!=='boolean')throw new TypeError('Expected a configured worker nodeId and drain boolean');
+  const worker=this.#workers.get(nodeId);if(!worker)fail('CLUSTER_NODE_NOT_FOUND');
+  const result=this.#store.drainNode(nodeId,enabled);worker.draining=result.draining;return result;
+ }
+ metrics(){
+  const placement=this.#store.metrics();
+  const workers=Object.freeze([...this.#workers.entries()].map(([nodeId,worker])=>{
+   let activeEntries=0,closingEntries=0,unconfirmedCloses=0,unavailableEntries=0;
+   for(const entry of this.#entries.values()){
+    if(entry.placement.nodeId!==nodeId)continue;
+    if(entry.closeState==='closed')continue;
+    if(entry.closeState==='unconfirmed')unconfirmedCloses++;
+    if(entry.closing)closingEntries++;else activeEntries++;
+    if(entry.unavailable)unavailableEntries++;
+   }
+   return Object.freeze({nodeId,available:worker.available,draining:worker.draining,leaseGeneration:worker.lease?.generation??null,activeEntries,closingEntries,unconfirmedCloses,unavailableEntries});
+  }));
+  return Object.freeze({phase:this.#phase,region:this.#region,arch:this.#arch,version:this.#version,available:this.#phase==='available'&&workers.some(w=>w.available),availableWorkers:workers.filter(w=>w.available).length,drainingWorkers:workers.filter(w=>w.draining).length,workers,placement});
+ }
  status(){return Object.freeze({phase:this.#phase,available:this.#phase==='available'&&[...this.#workers.values()].some(w=>w.available),availableWorkers:[...this.#workers.values()].filter(w=>w.available).length});}
  create(request){
   if(this.#phase!=='available')return Promise.reject(new ClusterRpcError('CLUSTER_PROVIDER_CLOSED','not-dispatched'));
