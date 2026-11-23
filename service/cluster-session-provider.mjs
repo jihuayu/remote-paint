@@ -13,7 +13,7 @@ export class ClusterSessionProvider {
  constructor({store,region,arch,version,workers,leaseMs=15000,heartbeatMs=4000}={}){
   if(!(store instanceof ClusterPlacementStore)||owners.has(store)||typeof region!=='string'||!['arm64','x64'].includes(arch)||typeof version!=='string'||!(workers instanceof Map)||workers.size<1||workers.size>64||!Number.isSafeInteger(leaseMs)||leaseMs<100||leaseMs>60000||!Number.isSafeInteger(heartbeatMs)||heartbeatMs<20||heartbeatMs>=leaseMs/2)throw new TypeError('Configure one placement owner and fixed trusted Worker clients');
   this.#store=store;this.#region=region;this.#arch=arch;this.#version=version;this.#leaseMs=leaseMs;this.#interval=heartbeatMs;this.#workers=new Map();
-  for(const [nodeId,value]of workers){const {client,descriptor,validateSource}=value;if(!(client instanceof ClusterRpcClient)||descriptor?.nodeId!==nodeId||descriptor.region!==region||descriptor.arch!==arch||descriptor.version!==version||typeof validateSource!=='function')throw new TypeError('Configure matching Worker descriptors and explicit Source endpoint policy');this.#workers.set(nodeId,{client,descriptor:structuredClone(descriptor),validateSource,lease:null,timer:null,heartbeat:null,available:false,draining:false});}
+  for(const [nodeId,value]of workers){const {client,descriptor,validateSource}=value;if(!(client instanceof ClusterRpcClient)||descriptor?.nodeId!==nodeId||descriptor.region!==region||descriptor.arch!==arch||descriptor.version!==version||typeof validateSource!=='function')throw new TypeError('Configure matching Worker descriptors and explicit Source endpoint policy');this.#workers.set(nodeId,{client,descriptor:structuredClone(descriptor),validateSource,lease:null,timer:null,heartbeat:null,available:false,draining:false,operatorDrained:false});}
   owners.add(store);
  }
  initialize(){
@@ -30,12 +30,41 @@ export class ClusterSessionProvider {
   for(const item of status.unavailable){const entry=this.#entries.get(item.sessionId);if(entry&&entry.placement.nodeId===worker.descriptor.nodeId&&entry.request.tenantId===item.tenantId&&item.region===this.#region)this.#notify(entry);}
  }catch{this.#lose(worker);}}
  #notify(entry){if(entry.unavailable)return;entry.unavailable=true;for(const callback of this.#listeners){try{const result=callback(Object.freeze({sessionId:entry.request.sessionId,tenantId:entry.request.tenantId,region:this.#region}));if(result?.then)void Promise.resolve(result).catch(()=>{});}catch{}}}
- #lose(worker){worker.available=false;clearTimeout(worker.timer);if(worker.lease)try{this.#store.drain(worker.lease);}catch{}for(const entry of this.#entries.values())if(entry.placement.nodeId===worker.descriptor.nodeId)this.#notify(entry);}
+ #lose(worker){worker.available=false;clearTimeout(worker.timer);worker.timer=null;if(worker.lease)try{this.#store.drain(worker.lease);}catch{}for(const entry of this.#entries.values())if(entry.placement.nodeId===worker.descriptor.nodeId)this.#notify(entry);}
  subscribeUnavailable(callback){if(typeof callback!=='function')throw new TypeError('Expected provider callback');this.#listeners.add(callback);return()=>this.#listeners.delete(callback);}
  drainWorker(nodeId,enabled=true){
   if(typeof nodeId!=='string'||typeof enabled!=='boolean')throw new TypeError('Expected a configured worker nodeId and drain boolean');
   const worker=this.#workers.get(nodeId);if(!worker)fail('CLUSTER_NODE_NOT_FOUND');
-  const result=this.#store.drainNode(nodeId,enabled);worker.draining=result.draining;return result;
+  const result=this.#store.drainNode(nodeId,enabled);worker.operatorDrained=enabled;worker.draining=result.draining;return result;
+ }
+ async reconnectWorker(nodeId,{incarnation,client}={}){
+  if(this.#phase!=='available')fail('CLUSTER_PROVIDER_CLOSED');
+  if(typeof nodeId!=='string'||(incarnation!==undefined&&(typeof incarnation!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/.test(incarnation)))||(client!==undefined&&!(client instanceof ClusterRpcClient)))throw new TypeError('Expected a configured worker nodeId and optional valid incarnation or ClusterRpcClient');
+  const worker=this.#workers.get(nodeId);if(!worker)fail('CLUSTER_NODE_NOT_FOUND');
+  clearTimeout(worker.timer);worker.timer=null;await worker.heartbeat;
+  if(client!==undefined&&client!==worker.client){try{worker.client.close();}catch{}worker.client=client;}
+  const incarnationChanged=incarnation!==undefined&&incarnation!==worker.descriptor.incarnation;
+  if(incarnation!==undefined)worker.descriptor={...worker.descriptor,incarnation};
+  try{
+   const begin=await worker.client.call('lease-begin',{});
+   let lease=null;
+   if(!incarnationChanged&&worker.lease){try{lease=this.#store.heartbeat(worker.lease);}catch{lease=null;}}
+   if(!lease)lease=this.#store.registerNode(worker.descriptor);
+   await worker.client.call('lease-accept',{challenge:begin.challenge,lease,leaseMs:this.#leaseMs});
+   const status=await worker.client.call('status',{});
+   if(status.lease?.state!=='active'||!Array.isArray(status.unavailable)||status.unavailable.length>10000)throw new Error('Worker status');
+   worker.lease=lease;worker.available=true;
+   if(status.admissionAvailable===false||worker.operatorDrained){
+    worker.draining=true;try{this.#store.drain(worker.lease,true);}catch{}
+   }else{
+    try{this.#store.drain(worker.lease,false);worker.draining=false;}catch{worker.draining=false;}
+   }
+   this.#schedule(worker);
+   return Object.freeze({nodeId,available:true,draining:worker.draining,lease});
+  }catch(error){
+   this.#lose(worker);
+   throw error instanceof ClusterRpcError?error:new ClusterRpcError(error?.code??'CLUSTER_PROVIDER_UNAVAILABLE','not-dispatched');
+  }
  }
  metrics(){
   const placement=this.#store.metrics();
@@ -59,8 +88,8 @@ export class ClusterSessionProvider {
   if(captured.region!==this.#region||request.signal?.aborted)return Promise.reject(new ClusterRpcError('CLUSTER_PROVIDER_REQUEST','not-dispatched'));
   const previous=this.#entries.get(captured.sessionId);if(previous){if(fingerprint(previous.request)!==fingerprint(captured)||previous.closing)return Promise.reject(new ClusterRpcError('CLUSTER_PROVIDER_CONFLICT','not-dispatched'));return previous.start;}
   let placed;try{placed=this.#store.reserve({...identity({...captured,version:this.#version}),arch:this.#arch});if(placed.state!=='reserved')fail('CLUSTER_PROVIDER_RECOVERY_REQUIRED');}catch(error){return Promise.reject(error);}
-  const worker=this.#workers.get(placed.nodeId),entry={placement:binding(placed),request:captured,start:null,dispatched:false,closing:false,closePromise:null,closeState:null,unavailable:false};this.#entries.set(captured.sessionId,entry);
-  entry.start=Promise.resolve().then(async()=>{if(!worker?.available)fail('CLUSTER_PROVIDER_UNAVAILABLE');if(entry.closing||request.signal?.aborted)fail('CLUSTER_PROVIDER_CANCELLED');entry.dispatched=true;const result=await worker.client.call('create',{placement:entry.placement,request:{...captured,version:this.#version}},{signal:request.signal,timeoutMs:70000});if(entry.closing||request.signal?.aborted||result?.version!==this.#version||!worker.available)fail('CLUSTER_PROVIDER_UNAVAILABLE');this.#store.ready(entry.placement);return {version:result.version};});void entry.start.catch(()=>{});return entry.start;
+  const worker=this.#workers.get(placed.nodeId),entry={placement:binding(placed),request:captured,controller:new AbortController(),start:null,dispatched:false,closing:false,closePromise:null,closeState:null,unavailable:false};this.#entries.set(captured.sessionId,entry);
+  entry.start=Promise.resolve().then(async()=>{if(!worker?.available)fail('CLUSTER_PROVIDER_UNAVAILABLE');if(entry.closing||request.signal?.aborted||entry.controller.signal.aborted)fail('CLUSTER_PROVIDER_CANCELLED');entry.dispatched=true;const signal=request.signal?AbortSignal.any([request.signal,entry.controller.signal]):entry.controller.signal;const result=await worker.client.call('create',{placement:entry.placement,request:{...captured,version:this.#version}},{signal,timeoutMs:70000});if(entry.closing||request.signal?.aborted||entry.controller.signal.aborted||result?.version!==this.#version||!worker.available)throw new ClusterRpcError('CLUSTER_PROVIDER_UNAVAILABLE','unknown');this.#store.ready(entry.placement);return {version:result.version};});void entry.start.catch(()=>{});return entry.start;
  }
  #current(request){
   if(this.#phase!=='available'||request.region!==this.#region||request.version!==this.#version)fail('CLUSTER_PROVIDER_UNAVAILABLE');
@@ -79,9 +108,16 @@ export class ClusterSessionProvider {
  close(request){return this.#close(request,false);}
  retryClose(request){return this.#close(request,true);}
  #close(request,retry){
-  const entry=this.#entries.get(request.sessionId);if(!entry||entry.request.tenantId!==request.tenantId||request.region!==this.#region)return Promise.resolve({status:'unconfirmed'});
+  if(!request||request.region!==this.#region||typeof request.tenantId!=='string'||typeof request.sessionId!=='string')return Promise.resolve({status:'unconfirmed'});
+  let entry=this.#entries.get(request.sessionId);
+  if(!entry){
+   let placed;try{placed=this.#store.beginRelease({tenantId:request.tenantId,sessionId:request.sessionId});}catch{return Promise.resolve({status:'unconfirmed'});}
+   entry={placement:binding(placed),request:{tenantId:request.tenantId,sessionId:request.sessionId,region:this.#region},controller:new AbortController(),start:null,dispatched:true,closing:false,closePromise:null,closeState:null,unavailable:true};
+   this.#entries.set(request.sessionId,entry);
+  }
+  if(entry.request.tenantId!==request.tenantId)return Promise.resolve({status:'unconfirmed'});
   if(entry.closePromise&&(!retry||entry.closeState===null||entry.closeState==='closed'))return entry.closePromise;
-  entry.closing=true;entry.closeState=null;try{this.#store.beginRelease(entry.request);}catch{return Promise.resolve({status:'unconfirmed'});}
+  entry.closing=true;entry.closeState=null;entry.controller?.abort();try{this.#store.beginRelease(entry.request);}catch{return Promise.resolve({status:'unconfirmed'});}
   entry.closePromise=Promise.resolve().then(async()=>{
    try{await entry.start;}catch{}
    if(!entry.dispatched){const sha256=createHash('sha256').update(JSON.stringify({placement:entry.placement,kind:'controller-not-dispatched'})).digest('hex');this.#proofs.set(entry.request.sessionId,{placement:entry.placement,sha256});this.#store.confirmRetired(entry.placement,{sha256});return {status:'closed'};}

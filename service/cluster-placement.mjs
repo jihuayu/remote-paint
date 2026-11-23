@@ -148,6 +148,17 @@ export class ClusterPlacementStore {
    return freeze({status:'closed'});
   });
  }
+ unresolvedSessions({nodeId=null,tenantId=null}={}){
+  if((nodeId!==null&&!id(nodeId))||(tenantId!==null&&!id(tenantId)))throw new TypeError('Expected optional valid nodeId and tenantId filters');
+  return this.#transaction(at=>{
+   this.#sweep(at);
+   const filters=["state!='closed'"],params=[];
+   if(nodeId!==null){filters.push('nodeId=?');params.push(nodeId);}
+   if(tenantId!==null){filters.push('tenantId=?');params.push(tenantId);}
+   const rows=this.#db.prepare(`SELECT sessionId,tenantId,region,arch,version,nodeId,generation,epoch,state FROM cluster_sessions WHERE ${filters.join(' AND ')} ORDER BY epoch ASC`).all(...params);
+   return Object.freeze(rows.map(r=>freeze({sessionId:r.sessionId,tenantId:r.tenantId,region:r.region,arch:r.arch,version:r.version,nodeId:r.nodeId,generation:r.generation,epoch:r.epoch,state:r.state})));
+  });
+ }
  archiveClosedSessions({limit=100,beforeEpoch=null,nodeId=null,onArchive}={}){
   if(!integer(limit,1,1000)||(beforeEpoch!==null&&!integer(beforeEpoch,1,Number.MAX_SAFE_INTEGER))||(nodeId!==null&&!id(nodeId))||typeof onArchive!=='function')throw new TypeError('Configure bounded archive parameters and a synchronous archive sink');
   return this.#transaction(at=>{
